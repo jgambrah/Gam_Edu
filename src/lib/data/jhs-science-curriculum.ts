@@ -2773,7 +2773,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.223Z"
+    "updatedAt": "2026-10-08T17:13:54.429Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5503,7 +5503,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.226Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -5983,7 +5983,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.226Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8708,7 +8708,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.226Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11433,7 +11433,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.226Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14157,7 +14157,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.226Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16883,7 +16883,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -19608,7 +19608,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -22324,7 +22324,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.430Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -25064,7 +25064,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -27840,7 +27840,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -30603,7 +30603,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -33402,7 +33402,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -33600,7 +33600,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -36384,7 +36384,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -39133,7 +39133,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.227Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -41880,7 +41880,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.228Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -44610,82 +44610,2618 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.228Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   },
   {
     "id": "sci_strand5_soil_science",
     "topicId": "sci_strand5_soil_science",
-    "title": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "title": "Our Solar System, Earth & Celestial Dynamics (Planetary Architecture, Orbital Motions, Lunar Phases & Eclipses)",
     "strand": "STRAND 5: HUMANS AND THE ENVIRONMENT",
     "strandCode": "S5",
-    "subStrand": "Understanding Our Environment (Pedology, Physical Landforms & Soil Conservation)",
+    "subStrand": "Our Solar System and the Earth (Planetary Architecture, Orbital Dynamics, Moon & Eclipses)",
     "subject": "Integrated Science",
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
-    "description": "Examine the terrestrial lithosphere, geological weathering, and pedology through interactive sedimentology labs. Measures soil profile horizons, calculates soil moisture retention and percolation velocities, and implements engineering interventions to halt gully and sheet erosion.",
-    "totalPracticeQuestions": 9,
+    "description": "Comprehensive exploration of the solar system components (Sun, terrestrial and Jovian planets, dwarf planets, asteroids, comets, meteoroids), Earth rotation and revolution physics (day/night, seasons, equinoxes/solstices), lunar synchronous rotation and phases, tidal dynamics (spring vs neap), and the geometric mechanics of solar and lunar eclipses.",
+    "totalPracticeQuestions": 156,
     "version": 1,
     "aliases": [
-      "b7_strand5_soil_weathering"
+      "b7_strand5_soil_weathering",
+      "sci_strand5_solar_system_earth",
+      "CARD_19_SOLAR_SYSTEM_AND_EARTH"
     ],
     "levels": {
       "b7": {
-        "levelTitle": "Basic 7 (JHS 1) • Rock Weathering, Soil Texture & Physical Soil Properties",
-        "summary": "Differentiate physical, chemical, and biological rock weathering; measure soil texture fractions, capillarity, and water retention.",
-        "notes": "### Pedology: Rock Weathering, Soil Texture & Physical Properties\n* **NaCCA Curriculum Code:** `B7.5.5.1`\n* **Core Competency:** Differentiate physical, chemical, and biological rock weathering, analyze soil fractions, and measure capillarity and water retention.\n\n#### 1. The Process of Soil Formation (Pedogenesis)\nSoil is the upper weathered layer of Earth's crust capable of sustaining plant life, formed by the progressive disintegration of parent bedrock:\n* **Physical (Mechanical) Weathering:** Breakdown of rocks into smaller fragments without altering chemical composition:\n  * *Thermal Exfoliation:* Alternate rapid heating (expansion by day) and cooling (contraction by night) in arid zones causes outer rock layers to crack and peel off.\n  * *Freeze-Thaw (Frost Wedging):* Water penetrates rock fissures, freezes, expands by $9\\%$, and wedges the rock apart.\n  * *Abrasion:* Wind-blown sand and tumbling river boulders grind rock faces.\n* **Chemical Weathering:** Decomposition altering the chemical mineral structure of rocks:\n  * *Carbonation:* Rainwater dissolves atmospheric $CO_2$ forming dilute carbonic acid ($\\text{H}_2\\text{CO}_3$), which dissolves limestone (calcium carbonate):\n    $$\\text{CaCO}_{3(s)} + \\text{H}_2\\text{CO}_{3(aq)} \\rightarrow \\text{Ca(HCO}_3)_{2(aq)}$$\n  * *Hydration & Hydrolysis:* Chemical absorption of water molecules into mineral crystal lattices.\n  * *Oxidation:* Reaction of atmospheric oxygen with iron minerals forming reddish, crumbly iron oxide (rust).\n* **Biological Weathering:** Living organisms disintegrating rocks:\n  * Tree roots growing into microscopic cracks and exerting outward wedge pressure.\n  * Lichens and mosses secreting organic chelating acids that etch rock surfaces.\n  * Burrowing animals (earthworms, termites, rodents) pulverizing and aerating rock debris.\n\n#### 2. Soil Texture & Physical Particle Fractions\n* **Sand Particles ($0.05 - 2.0\\text{ mm}$):** Coarse, gritty feel, large macropores. Excellent aeration, rapid percolation drainage, poor water and nutrient retention.\n* **Silt Particles ($0.002 - 0.05\\text{ mm}$):** Silky, smooth, flour-like texture when dry; moderate drainage.\n* **Clay Particles ($<0.002\\text{ mm}$):** Microscopic colloidal plates, sticky and plastic when wet, hard when dry. Tiny micropores, very slow percolation drainage, massive water retention capacity, high cation exchange capacity (CEC).\n* **Loam Soil:** The ideal agricultural mixture (roughly $40\\%$ sand, $40\\%$ silt, $20\\%$ clay, rich in organic humus), offering optimal balance between drainage, aeration, and moisture/nutrient retention.",
+        "levelTitle": "Basic 7 (JHS 1) • Planetary Architecture, Earth-Moon Movements, Seasons & Eclipses",
+        "summary": "Master astronomical definitions, solar system architecture and planetary classifications (inner terrestrial vs outer Jovian giants, dwarf planets, asteroids, comets, meteoroids), the physics of Earth rotation (24h period, day/night cycle, Coriolis effect) and revolution (365.25d period, 23.5° axial tilt, equinoxes and solstices), lunar synchronous rotation (27.3d) and the 8-phase synodic cycle (29.5d), gravitational ocean tides (spring vs neap tides), and the celestial mechanics of solar (total, partial, annular) and lunar (total blood moon, partial, penumbral) eclipses.",
+        "notes": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 5: OUR SOLAR SYSTEM AND THE EARTH\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 5 — Our Solar System and the Earth\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standard:**\n  - **B7.5.5.1:** Demonstrate an understanding of the solar system, the celestial bodies, the movements of the Earth and Moon, and their resultant natural phenomena.\n- **Indicator:**\n  - **B7.5.5.1.1:** Describe the components and structure of the solar system, movements of the Earth and Moon, and explain phenomena such as day and night, seasons, and eclipses.\n- **Pedagogical Approach:** Direct instructional notes incorporating astronomical definitions, classifications of celestial bodies (planets, dwarf planets, moons, asteroids, comets, meteoroids), planetary motions, orbital dynamics, the physics of day and night, seasonal cycles, lunar phases, and solar and lunar eclipses.\n- **Core Competencies:** Critical Thinking and Problem Solving, Scientific Literacy, Spatial Reasoning, Observation and Mathematical Modeling.\n\n---\n\n### MODULE 1: Components and Architecture of the Solar System\n\n#### 1.1 Astronomical Definitions and Gravitational Binding\n1. **The Solar System:**\n   - *Scientific Definition:* The gravitationally bound planetary system comprising the Sun at the center and all celestial objects that orbit it directly or indirectly, including eight planets, their natural satellites (moons), dwarf planets, asteroids, comets, meteoroids, and interplanetary dust and gas.\n   - *Gravitational Primacy:* All orbital motions within the solar system are governed by **Newton's Universal Law of Gravitation** ($F = G \\frac{m_1 m_2}{r^2}$). Because the central star constitutes the overwhelming majority of total system mass, its intense gravitational well dictates the elliptical trajectories of all circulating bodies according to **Kepler's Laws of Planetary Motion**.\n2. **The Sun:**\n   - *Astrophysical Classification:* A **G-type main-sequence star (yellow dwarf)** situated at the gravitational center of the solar system.\n   - *Mass & Proportion:* The Sun possesses a mass of approximately $1.989 \\times 10^{30}\\text{ kg}$, which constitutes **$99.86\\%$ of the total mass** of the entire solar system.\n   - *Thermonuclear Core Fusion:* It generates immense radiant electromagnetic energy through the **proton-proton chain reaction**, continuously fusing hydrogen nuclei into helium nuclei in its super-dense core ($T_{\\text{core}} \\approx 15,000,000\\text{ K}$) at a mass-energy conversion rate governed by Einstein's equation ($E = \\Delta m c^2$).\n   - *Structure:* Comprises the thermonuclear core, radiative zone, convective zone, photosphere (the visible luminous surface, $T \\approx 5,778\\text{ K}$), chromosphere, and the tenuous, ultra-hot outer corona visible during total solar eclipses.\n\n---\n\n#### 1.2 Planetary Classification: Inner Terrestrial vs. Outer Jovian Planets\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"340\" viewBox=\"0 0 800 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"340\" rx=\"10\" fill=\"#0b0f19\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    ARCHITECTURE OF THE SOLAR SYSTEM: TERRESTRIAL &amp; JOVIAN PLANETARY ZONATION\n  </text>\n  \n  <!-- SUN -->\n  <g transform=\"translate(-10, 50)\">\n    <circle cx=\"10\" cy=\"120\" r=\"80\" fill=\"url(#sunGrad)\" stroke=\"#f59e0b\" stroke-width=\"2\"/>\n    <text x=\"65\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">THE SUN</text>\n    <text x=\"65\" y=\"140\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#fef08a\" text-anchor=\"middle\">99.86% Solar Mass</text>\n  </g>\n\n  <!-- INNER TERRESTRIAL PLANETS ZONE -->\n  <g transform=\"translate(110, 45)\">\n    <rect width=\"210\" height=\"235\" rx=\"6\" fill=\"#1e1b4b\" fill-opacity=\"0.3\" stroke=\"#4f46e5\" stroke-width=\"1\" stroke-dasharray=\"4,3\"/>\n    <text x=\"105\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#a5b4fc\" text-anchor=\"middle\">INNER TERRESTRIAL PLANETS</text>\n    <text x=\"105\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#c7d2fe\" text-anchor=\"middle\">(Rocky, High Density, Metallic Cores)</text>\n    \n    <!-- Mercury -->\n    <circle cx=\"28\" cy=\"80\" r=\"7\" fill=\"#9ca3af\" stroke=\"#d1d5db\" stroke-width=\"1\"/>\n    <text x=\"28\" y=\"102\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#e5e7eb\" text-anchor=\"middle\">Mercury</text>\n    <text x=\"28\" y=\"112\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#9ca3af\" text-anchor=\"middle\">0.39 AU</text>\n    <text x=\"28\" y=\"122\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#cbd5e1\" text-anchor=\"middle\">No Moons</text>\n\n    <!-- Venus -->\n    <circle cx=\"78\" cy=\"80\" r=\"12\" fill=\"#fde047\" stroke=\"#eab308\" stroke-width=\"1\"/>\n    <text x=\"78\" y=\"104\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#fef08a\" text-anchor=\"middle\">Venus</text>\n    <text x=\"78\" y=\"114\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fef08a\" text-anchor=\"middle\">0.72 AU</text>\n    <text x=\"78\" y=\"124\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fef9c3\" text-anchor=\"middle\">Runaway CO₂</text>\n\n    <!-- Earth -->\n    <circle cx=\"132\" cy=\"80\" r=\"13\" fill=\"#38bdf8\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    <text x=\"132\" y=\"105\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#bae6fd\" text-anchor=\"middle\">Earth</text>\n    <text x=\"132\" y=\"115\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#bae6fd\" text-anchor=\"middle\">1.00 AU</text>\n    <text x=\"132\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#e0f2fe\" text-anchor=\"middle\">1 Moon (Life)</text>\n\n    <!-- Mars -->\n    <circle cx=\"182\" cy=\"80\" r=\"9\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    <text x=\"182\" y=\"103\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#fca5a5\" text-anchor=\"middle\">Mars</text>\n    <text x=\"182\" y=\"113\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fca5a5\" text-anchor=\"middle\">1.52 AU</text>\n    <text x=\"182\" y=\"123\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fecaca\" text-anchor=\"middle\">Rust (Fe₂O₃)</text>\n\n    <rect x=\"15\" y=\"150\" width=\"180\" height=\"70\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"105\" y=\"166\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">Terrestrial Hallmarks:</text>\n    <text x=\"25\" y=\"180\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Silicate rock crust &amp; mantle</text>\n    <text x=\"25\" y=\"192\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Dense Iron-Nickel core</text>\n    <text x=\"25\" y=\"204\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Densities: 3.9 - 5.5 g/cm³</text>\n  </g>\n\n  <!-- MAIN ASTEROID BELT -->\n  <g transform=\"translate(328, 45)\">\n    <rect width=\"44\" height=\"235\" rx=\"4\" fill=\"#1c1917\" fill-opacity=\"0.4\" stroke=\"#78716c\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/>\n    <text x=\"22\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#d6d3d1\" text-anchor=\"middle\">ASTEROID</text>\n    <text x=\"22\" y=\"30\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#d6d3d1\" text-anchor=\"middle\">BELT</text>\n    <!-- Debris dots -->\n    <circle cx=\"15\" cy=\"55\" r=\"1.5\" fill=\"#a8a29e\"/><circle cx=\"28\" cy=\"70\" r=\"2\" fill=\"#d6d3d1\"/><circle cx=\"18\" cy=\"90\" r=\"1.2\" fill=\"#78716c\"/>\n    <circle cx=\"30\" cy=\"110\" r=\"2.5\" fill=\"#e7e5e4\"/><circle cx=\"14\" cy=\"135\" r=\"1.8\" fill=\"#a8a29e\"/><circle cx=\"26\" cy=\"160\" r=\"2.2\" fill=\"#d6d3d1\"/>\n    <circle cx=\"19\" cy=\"185\" r=\"1.5\" fill=\"#78716c\"/><circle cx=\"27\" cy=\"210\" r=\"2\" fill=\"#e7e5e4\"/>\n    <text x=\"22\" y=\"240\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#a8a29e\" text-anchor=\"middle\">Ceres</text>\n  </g>\n\n  <!-- OUTER JOVIAN GIANTS ZONE -->\n  <g transform=\"translate(380, 45)\">\n    <rect width=\"405\" height=\"235\" rx=\"6\" fill=\"#082f49\" fill-opacity=\"0.25\" stroke=\"#0284c7\" stroke-width=\"1\" stroke-dasharray=\"4,3\"/>\n    <text x=\"202\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">OUTER JOVIAN PLANETS (GAS &amp; ICE GIANTS)</text>\n    <text x=\"202\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#bae6fd\" text-anchor=\"middle\">(Low Density, Vast Rings, Extensive Satellites)</text>\n\n    <!-- Jupiter -->\n    <circle cx=\"50\" cy=\"80\" r=\"26\" fill=\"#ea580c\" stroke=\"#c2410c\" stroke-width=\"1.5\"/>\n    <line x1=\"26\" y1=\"74\" x2=\"74\" y2=\"74\" stroke=\"#fed7aa\" stroke-width=\"3\"/>\n    <line x1=\"28\" y1=\"84\" x2=\"72\" y2=\"84\" stroke=\"#9a3412\" stroke-width=\"3\"/>\n    <circle cx=\"62\" cy=\"88\" r=\"4\" fill=\"#b91c1c\"/>\n    <text x=\"50\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#fed7aa\" text-anchor=\"middle\">Jupiter</text>\n    <text x=\"50\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fdba74\" text-anchor=\"middle\">5.20 AU</text>\n    <text x=\"50\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fed7aa\" text-anchor=\"middle\">Great Red Spot</text>\n\n    <!-- Saturn -->\n    <g transform=\"translate(150, 80)\">\n      <ellipse cx=\"0\" cy=\"0\" rx=\"35\" ry=\"8\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"3\" stroke-opacity=\"0.8\" transform=\"rotate(-15)\"/>\n      <circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"#eab308\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/>\n      <ellipse cx=\"0\" cy=\"0\" rx=\"35\" ry=\"8\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2\" stroke-opacity=\"0.9\" stroke-dasharray=\"10,2\" transform=\"rotate(-15)\"/>\n    </g>\n    <text x=\"150\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#fef08a\" text-anchor=\"middle\">Saturn</text>\n    <text x=\"150\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fef08a\" text-anchor=\"middle\">9.58 AU</text>\n    <text x=\"150\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fef9c3\" text-anchor=\"middle\">Ring System</text>\n\n    <!-- Uranus -->\n    <circle cx=\"255\" cy=\"80\" r=\"16\" fill=\"#67e8f9\" stroke=\"#06b6d4\" stroke-width=\"1.2\"/>\n    <line x1=\"255\" y1=\"56\" x2=\"255\" y2=\"104\" stroke=\"#a5f3fc\" stroke-width=\"1.5\" stroke-dasharray=\"2,2\"/>\n    <text x=\"255\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#a5f3fc\" text-anchor=\"middle\">Uranus</text>\n    <text x=\"255\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#a5f3fc\" text-anchor=\"middle\">19.22 AU</text>\n    <text x=\"255\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#cffafe\" text-anchor=\"middle\">98° Tilt (Side)</text>\n\n    <!-- Neptune -->\n    <circle cx=\"345\" cy=\"80\" r=\"15\" fill=\"#2563eb\" stroke=\"#1d4ed8\" stroke-width=\"1.2\"/>\n    <text x=\"345\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#93c5fd\" text-anchor=\"middle\">Neptune</text>\n    <text x=\"345\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#93c5fd\" text-anchor=\"middle\">30.05 AU</text>\n    <text x=\"345\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#bfdbfe\" text-anchor=\"middle\">Supersonic Winds</text>\n\n    <rect x=\"20\" y=\"150\" width=\"365\" height=\"70\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"202\" y=\"166\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">Jovian Hallmarks:</text>\n    <text x=\"30\" y=\"180\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Deep H₂ / He atmospheres (Jupiter/Saturn) &amp; Volatile Ices H₂O/NH₃/CH₄ (Uranus/Neptune)</text>\n    <text x=\"30\" y=\"192\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Low average densities (Saturn density = 0.69 g/cm³; floats on water!)</text>\n    <text x=\"30\" y=\"204\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Hundreds of moons (Ganymede, Titan, Io, Europa, Callisto, Triton) &amp; complex rings</text>\n  </g>\n\n  <!-- Gradients -->\n  <defs>\n    <radialGradient id=\"sunGrad\" cx=\"50%\" cy=\"50%\" r=\"50%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\"/>\n      <stop offset=\"60%\" stop-color=\"#f59e0b\"/>\n      <stop offset=\"100%\" stop-color=\"#ea580c\"/>\n    </radialGradient>\n  </defs>\n</svg>\n</div>\n\nThe eight major planets are divided into two distinct zones separated by the Main Asteroid Belt:\n\n##### A. Inner Terrestrial (Rocky) Planets\n*General Characteristics:* Located closest to the Sun; characterized by solid, rocky silicate crusts and mantles, metallic cores composed predominantly of iron and nickel, high mean bulk densities ($3.9\\text{--}5.5\\text{ g/cm}^3$), small diameters, slow axial rotation rates, few or no natural satellites, and the complete absence of planetary ring systems.\n\n1. **Mercury:**\n   - *Orbital Distance & Period:* Mean distance of $0.39\\text{ AU}$ ($57.9\\text{ million km}$); orbital period of $88\\text{ Earth days}$.\n   - *Physical Characteristics:* Smallest planet in the solar system (radius $\\approx 2,440\\text{ km}$, slightly larger than Earth's Moon). Heavily cratered surface resembling the lunar highlands, possessing an exceptionally large iron-nickel core constituting $\\approx 75\\%$ of its planetary radius.\n   - *Atmosphere & Temperature:* Possesses virtually no substantial atmosphere (only a tenuous, transient exosphere composed of atoms sputtered off by solar wind). Consequently, it experiences the most extreme diurnal temperature fluctuations in the solar system: soaring to $+430^\\circ\\text{C}$ on the sunlit hemisphere and plummeting to $-180^\\circ\\text{C}$ on the night side.\n   - *Satellites:* Zero ($0$) natural moons.\n\n2. **Venus:**\n   - *Orbital Distance & Period:* Mean distance of $0.72\\text{ AU}$ ($108.2\\text{ million km}$); orbital period of $224.7\\text{ Earth days}$.\n   - *Structural Similarity:* Often termed Earth's \"twin\" or \"sister planet\" due to nearly identical size, mass, and bulk density (radius $\\approx 6,052\\text{ km}$).\n   - *Runaway Greenhouse Atmosphere:* Venus is shrouded by an exceedingly dense, toxic atmosphere composed of **$96.5\\%$ Carbon Dioxide ($CO_2$)** with thick clouds of corrosive sulfuric acid ($H_2SO_4$). Surface atmospheric pressure is **$92\\text{ times}$** that of Earth (equivalent to $900\\text{ meters}$ under oceanic water).\n   - *Thermal State:* The extreme carbon dioxide blanket drives a catastrophic **runaway greenhouse effect**, trapping infrared heat and maintaining a uniform global surface temperature of approximately **$+465^\\circ\\text{C}$** day and night—making Venus the hottest planet in the solar system, hotter even than Mercury despite being nearly twice as far from the Sun.\n   - *Retrograde Rotation:* Rotates clockwise on its axis (**retrograde rotation**) from east to west (opposite to Earth and most other planets), taking $243\\text{ Earth days}$ to complete one axial rotation (longer than its orbital year!). Zero ($0$) moons.\n\n3. **Earth:**\n   - *Orbital Distance & Period:* Mean distance of $1.00\\text{ AU}$ ($149.6\\text{ million km}$); orbital period of $365.25\\text{ days}$.\n   - *Habitability & Uniqueness:* The third planet from the Sun and the only known celestial body in the universe verified to harbor biological life.\n   - *Physical Properties:* Possesses dynamic surface lithospheric plate tectonics, abundant liquid surface water covering approximately $71\\%$ of its surface (hydrosphere), an active protective geomagnetic field generated by geodynamo convection in its liquid iron outer core, and an atmosphere composed of **$78\\%$ Nitrogen ($N_2$)**, **$21\\%$ Oxygen ($O_2$)**, and trace argon, carbon dioxide, and water vapor.\n   - *Satellites:* Possesses one large natural satellite: the Moon (*Luna*).\n\n4. **Mars:**\n   - *Orbital Distance & Period:* Mean distance of $1.52\\text{ AU}$ ($227.9\\text{ million km}$); orbital period of $687\\text{ Earth days}$.\n   - *The \"Red Planet\":* Known for its characteristic reddish-orange hue, produced by widespread oxidation of iron minerals on its surface, coating the regolith in abundant iron(III) oxide ($\text{Fe}_2\text{O}_3$, or rust).\n   - *Topography & Geology:* Features the solar system's largest volcano, **Olympus Mons** (a shield volcano rising $22\\text{ km}$ high, nearly three times the height of Mount Everest), and the vast canyon rift system **Valles Marineris** ($4,000\\text{ km}$ long and up to $7\\text{ km}$ deep).\n   - *Atmosphere & Ice Caps:* Has a thin atmosphere (surface pressure $\\approx 0.6\\%$ of Earth's) dominated by $95\\%\\, CO_2$. Possesses permanent polar ice caps composed of water ice overlain by seasonal frozen dry ice (solid carbon dioxide).\n   - *Satellites:* Two small, irregularly shaped, captured asteroidal moons: **Phobos** (fear) and **Deimos** (dread).\n\n---\n\n##### B. Outer Jovian (Giant) Planets\n*General Characteristics:* Located beyond the Main Asteroid Belt; massive in volume and mass, low average densities ($0.69\\text{--}1.64\\text{ g/cm}^3$), lacking a well-defined solid surface, composed primarily of hydrogen, helium, or volatile hydrogen compounds (water, ammonia, methane ices). They possess deep turbulent atmospheres, powerful magnetic fields, extensive systems of natural satellites, and intricate circumplanetary ring systems.\n\n1. **Jupiter:**\n   - *Orbital Distance & Period:* Mean distance of $5.20\\text{ AU}$ ($778.5\\text{ million km}$); orbital period of $11.86\\text{ Earth years}$.\n   - *Mass & Scale:* The largest planet in the solar system, with a mass $318\\text{ times}$ that of Earth and more than **$2.5\\text{ times}$ the combined mass of all other seven planets combined**.\n   - *Composition & Internal Structure:* A gas giant composed of $\\approx 90\\%$ hydrogen and $\\approx 10\\%$ helium. At extreme interior depths, crushing pressures convert molecular hydrogen into an exotic electrically conducting fluid state known as **liquid metallic hydrogen**, generating an immense planetary magnetosphere.\n   - *Atmospheric Meteorology:* Marked by alternating bright zones (upwelling cold ammonia-ice clouds) and dark belts (downwelling warm clouds), whipped by zonal winds exceeding $500\\text{ km/h}$. Features the **Great Red Spot**, a gigantic anticyclonic storm larger than the diameter of Earth that has persisted for over 350 years.\n   - *Satellites:* Hosts over 95 confirmed moons, including the four massive **Galilean moons** discovered by Galileo Galilei in 1610:\n     - **Io:** The most volcanically active body in the solar system, covered in sulfur volcanoes driven by tidal gravitational kneading from Jupiter.\n     - **Europa:** Possesses a smooth, fractured water-ice shell overlying a vast global subsurface liquid water ocean that holds more liquid water than all Earth's oceans combined.\n     - **Ganymede:** The largest moon in the solar system (larger than planet Mercury), possessing its own intrinsic magnetic field.\n     - **Callisto:** Heavily cratered, geologically ancient ice-rock body.\n\n2. **Saturn:**\n   - *Orbital Distance & Period:* Mean distance of $9.58\\text{ AU}$ ($1.43\\text{ billion km}$); orbital period of $29.46\\text{ Earth years}$.\n   - *Density Anomaly:* The second-largest planet, famous for having the lowest bulk density of any celestial body in the solar system ($approx 0.69\\text{ g/cm}^3$, which is **less dense than liquid water**—meaning Saturn would float if placed in a sufficiently vast ocean).\n   - *Ring System:* Possesses the most extensive, luminous, and spectacular ring system in the solar system, spanning up to $282,000\\text{ km}$ across but measuring merely $10\\text{ to }100\\text{ meters}$ in vertical thickness. The rings are composed of billions of individual particles ranging in size from microscopic dust grains to house-sized boulders, composed of **$99\\%$ pure water ice** with silicate impurities.\n   - *Satellites:* Over 140 confirmed moons. Prominent among them is **Titan**, the second-largest moon in the solar system, which possesses a dense nitrogen-rich atmosphere ($1.5\\text{ atm}$) with clouds, rain, rivers, and lakes of liquid hydrocarbons (methane and ethane); and **Enceladus**, an active icy moon erupting cryovolcanic geysers of water vapor and organic salts from a subsurface ocean.\n\n3. **Uranus:**\n   - *Orbital Distance & Period:* Mean distance of $19.22\\text{ AU}$ ($2.87\\text{ billion km}$); orbital period of $84.01\\text{ Earth years}$.\n   - *Ice Giant Classification:* An \"ice giant\" composed primarily of heavier volatile elements (water, ammonia, methane ices) surrounding a small rocky core, rather than gas.\n   - *Coloration:* Distinctive pale cyan/aquamarine color caused by atmospheric methane ($CH_4$), which strongly absorbs red photons from sunlight and reflects blue-green light back into space.\n   - *Extreme Axial Tilt:* Has an extraordinary axial tilt of **$97.8^\\circ$**, meaning it essentially **rotates on its side** relative to its orbital plane. This produces extreme 42-year seasons, where each pole spends 42 continuous Earth years in perpetual sunlight followed by 42 continuous Earth years of total darkness.\n   - *Satellites & Rings:* Possesses 28 known moons (named after characters from Shakespeare and Alexander Pope, such as Titania, Oberon, and Miranda) and a system of 13 narrow, dark rings.\n\n4. **Neptune:**\n   - *Orbital Distance & Period:* Mean distance of $30.05\\text{ AU}$ ($4.50\\text{ billion km}$); orbital period of $164.8\\text{ Earth years}$.\n   - *Atmospheric Dynamics:* The outermost recognized major planet. Characterized by a deep, vivid azure blue coloration (due to higher methane concentrations and unknown atmospheric chromophores).\n   - *Supersonic Wind Speeds:* Features the most violent atmospheric wind speeds recorded in the solar system, with retrograde jet streams exceeding **$2,100\\text{ km/h}$ ($580\\text{ m/s}$)**. Hosted the **Great Dark Spot**, an Earth-sized cyclonic storm system observed by NASA's Voyager 2 in 1989.\n   - *Satellites:* 16 confirmed moons. Dominant among them is **Triton**, a large, geologically active moon with nitrogen cryogeysers that orbits Neptune in a **retrograde direction** (opposite to the planet's rotation), indicating it was a dwarf planet captured gravitationally from the Kuiper Belt.\n\n---\n\n#### 1.3 Other Celestial Bodies in the Solar Architecture\n\n##### 1. Dwarf Planets\n- *Formal Astronomical Definition (IAU 2006 Resolution):* A celestial body that:\n  1. Is in direct orbit around the Sun.\n  2. Possesses sufficient mass for its self-gravity to overcome rigid-body forces, achieving a nearly spherical shape (**hydrostatic equilibrium**).\n  3. **Has NOT cleared the neighborhood around its orbit** (shares its orbital zone with numerous other bodies).\n  4. Is not a satellite (moon) of another planet.\n- *Prominent Examples:*\n  - **Pluto:** Located in the Kuiper Belt; reclassified from major planet to dwarf planet in 2006; has a nitrogen-methane ice surface, a heart-shaped nitrogen glacier (*Tombaugh Regio*), and five moons (dominated by *Charon*).\n  - **Eris:** Massive dwarf planet located in the scattered disc beyond the Kuiper Belt; possesses one moon (*Dysnomia*).\n  - **Ceres:** The only dwarf planet located in the inner solar system, residing inside the Main Asteroid Belt between Mars and Jupiter.\n  - **Haumea:** Kuiper Belt dwarf planet known for its rapid rotation ($3.9\\text{ hours}$), which stretches it into an elongated triaxial ellipsoid.\n  - **Makemake:** Bright Kuiper Belt dwarf planet coated in frozen methane and ethane.\n\n##### 2. Asteroids\n- *Nature & Distribution:* Small, irregularly shaped, rocky and metallic bodies lacking atmospheres, left over from the accretion disk of the early solar nebula $4.6\\text{ billion years ago}$.\n- *Main Asteroid Belt:* The vast majority orbit the Sun between the orbits of Mars and Jupiter (at distances between $2.1\\text{ and }3.3\\text{ AU}$). Jupiter's intense gravitational perturbations prevented the rocky planetesimals in this region from accreting into a single planet.\n- *Compositional Classes:*\n  - **C-type (Carbonaceous):** Dark, carbon-rich bodies constituting over $75\\%$ of known asteroids.\n  - **S-type (Silicate):** Composed of iron- and magnesium-silicates and metals.\n  - **M-type (Metallic):** Composed almost entirely of nickel-iron metal (e.g., *16 Psyche*).\n\n##### 3. Comets\n- *Nature:* Known colloquially as \"dirty snowballs\" or \"icy dirtballs\"; composed of frozen volatile ices (water, carbon dioxide, carbon monoxide, methane, ammonia) intimately mixed with silicate dust grains, complex hydrocarbons, and rocky debris.\n- *Reservoirs of Origin:*\n  - **Kuiper Belt:** A donut-shaped circumstellar disc extending from Neptune's orbit ($30\\text{ AU}$) to approximately $50\\text{ AU}$, hosting short-period comets ($T < 200\\text{ years}$, such as Halley's Comet).\n  - **Oort Cloud:** A hypothetical vast spherical halo of icy bodies enveloping the solar system out to $50,000\\text{ to }100,000\\text{ AU}$ ($1\\text{ to }1.5\\text{ light-years}$), source of long-period comets ($T > 200\\text{ years}$).\n- *Anatomy Near Perihelion:* As a comet approaches the Sun, solar radiative heating causes the frozen volatile ices to **sublimate** directly from solid into gas:\n  - **Nucleus:** The solid, dark, central icy-rocky core (typically $1\\text{ to }20\\text{ km}$ across).\n  - **Coma:** A dense, glowing cloud of sublimated gas and dust surrounding the nucleus, spanning up to hundreds of thousands of kilometers.\n  - **Ion (Gas) Tail:** Formed from ionized gas atoms pushed directly and linearly away from the Sun by the **solar wind**; glows with a distinct bluish light (due to $CO^+$ ion fluorescence) and always points straight away from the Sun.\n  - **Dust Tail:** Formed from microscopic dust particles pushed outward by solar radiation pressure; curves gently along the comet's orbital path and shines by reflected yellowish sunlight.\n\n##### 4. Meteoroids, Meteors, and Meteorites: The Three-Stage Transition\n- **Meteoroid:** A small solid rocky or metallic particle (ranging in size from a grain of sand to a boulder under $1\\text{ meter}$) traveling through interplanetary space.\n- **Meteor:** The incandescent, glowing streak of light produced in the night sky (popularly termed a **\"shooting star\"**) when a meteoroid enters Earth's upper atmosphere at extreme velocities ($11\\text{ to }72\\text{ km/s}$). Atmospheric compression and friction superheat the leading air column, vaporizing the meteoroid and ionizing surrounding atmospheric gas into a brief streak of light at altitudes of $80\\text{ to }110\\text{ km}$ (in the mesosphere).\n- **Meteorite:** Any surviving portion of a meteoroid that does not completely vaporize during atmospheric ablation and successfully **impacts the Earth's surface**. Meteorites provide vital chemical records of the primitive solar nebula. Classified into Stony (silicates), Iron (nickel-iron alloys), and Stony-Iron (pallasites).\n\n---\n\n### MODULE 2: Movements of the Earth and Moon: Day, Night, and Seasons\n\n#### 2.1 Earth Rotation: Diurnal Physics and Consequences\n1. **Definition of Rotation:** The spinning of the Earth on its imaginary internal geographic axis that passes through the North and South Poles.\n2. **Direction of Rotation:** The Earth rotates from **west to east** (counter-clockwise when viewed from above the geographic North Pole). This eastward spin causes the apparent westward motion of celestial bodies across the sky.\n3. **Period of Rotation:**\n   - **Sidereal Day:** The precise time required for the Earth to complete one full $360^\\circ$ rotation relative to the fixed distant stars. Duration: **$23\\text{ hours, } 56\\text{ minutes, } 4.09\\text{ seconds}$** ($23.934\\text{ hours}$).\n   - **Solar Day:** The time taken for the Earth to rotate until the Sun reappears on the exact same meridian of longitude. Because the Earth simultaneously advances approximately $1^\\circ$ along its orbit around the Sun each day, it must rotate an additional $360^\\circ / 365.25 \\approx 0.986^\\circ$ to realign with the Sun. This extra rotation takes approximately $4\\text{ minutes}$, defining the standard **$24\\text{ hours, } 00\\text{ minutes}$** solar day.\n4. **Axial Tilt (Obliquity):** Earth's geographic rotational axis is not perpendicular to its orbital plane (the plane of the ecliptic). It is inclined at a fixed angle of **$23.5^\\circ$** from the perpendicular to the orbital plane (or **$66.5^\\circ$** to the plane of the ecliptic).\n5. **Physical Consequences of Rotation:**\n   - **Alternation of Day and Night:** The spherical Earth is illuminated by the Sun from one direction. At any given moment, the half facing the Sun receives light and experiences day, while the opposite half is in shadow and experiences night. The boundary separating day and night is termed the **terminator line** (circle of illumination).\n   - **Apparent Diurnal Celestial Motion:** Because of Earth's eastward spin, the Sun, Moon, planets, and constellations appear to rise along the eastern horizon, transit the meridian at local noon, and set along the western horizon.\n   - **Coriolis Effect:** The rotational velocity varies with latitude (maximum at the Equator: $\\approx 1,670\\text{ km/h}$; decreasing to $0\\text{ km/h}$ at the poles). This latitude-dependent linear velocity deflects freely moving fluids (winds, hurricanes, and ocean currents) to the **right in the Northern Hemisphere** and to the **left in the Southern Hemisphere**.\n   - **Diurnal Fluctuation of Shadows:** Solar elevation angles change continuously from dawn to dusk, causing shadow lengths to be longest at sunrise and sunset (low solar elevation) and shortest at solar noon (maximum solar elevation).\n\n---\n\n#### 2.2 Earth Revolution: Orbital Physics and Seasonal Dynamics\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"360\" viewBox=\"0 0 800 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"360\" rx=\"10\" fill=\"#090d16\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    EARTH'S 23.5° AXIAL TILT, ORBITAL REVOLUTION &amp; THE FOUR SEASONAL NODES\n  </text>\n\n  <!-- Central Sun -->\n  <circle cx=\"400\" cy=\"180\" r=\"32\" fill=\"#facc15\" stroke=\"#f59e0b\" stroke-width=\"3\"/>\n  <text x=\"400\" y=\"185\" font-family=\"system-ui, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">SUN</text>\n  \n  <!-- Elliptical Orbital Path -->\n  <ellipse cx=\"400\" cy=\"180\" rx=\"310\" ry=\"120\" fill=\"none\" stroke=\"#334155\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\"/>\n\n  <!-- NODE 1: SUMMER SOLSTICE (JUNE 21) - LEFT -->\n  <g transform=\"translate(100, 180)\">\n    <!-- Tilted Axis -->\n    <line x1=\"-12\" y1=\"-45\" x2=\"12\" y2=\"45\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"22\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/>\n    <!-- Day/Night Terminator -->\n    <path d=\"M 0 -22 A 22 22 0 0 1 0 22 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <!-- Equator -->\n    <line x1=\"-20\" y1=\"8\" x2=\"20\" y2=\"-8\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/>\n    <text x=\"0\" y=\"-50\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#f87171\" text-anchor=\"middle\">JUNE 21: SUMMER SOLSTICE</text>\n    <text x=\"0\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#bae6fd\" text-anchor=\"middle\">Sun over Tropic of Cancer (23.5°N)</text>\n    <text x=\"0\" y=\"50\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\" text-anchor=\"middle\">Longest day in North; 24h light at Arctic</text>\n  </g>\n\n  <!-- NODE 2: WINTER SOLSTICE (DECEMBER 21) - RIGHT -->\n  <g transform=\"translate(700, 180)\">\n    <!-- Tilted Axis (Parallelism) -->\n    <line x1=\"-12\" y1=\"-45\" x2=\"12\" y2=\"45\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"22\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/>\n    <!-- Day/Night Terminator -->\n    <path d=\"M 0 -22 A 22 22 0 0 0 0 22 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <!-- Equator -->\n    <line x1=\"-20\" y1=\"8\" x2=\"20\" y2=\"-8\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/>\n    <text x=\"0\" y=\"-50\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#60a5fa\" text-anchor=\"middle\">DEC 21: WINTER SOLSTICE</text>\n    <text x=\"0\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#bae6fd\" text-anchor=\"middle\">Sun over Tropic of Capricorn (23.5°S)</text>\n    <text x=\"0\" y=\"50\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\" text-anchor=\"middle\">Shortest day in North; 24h night at Arctic</text>\n  </g>\n\n  <!-- NODE 3: VERNAL EQUINOX (MARCH 21) - TOP -->\n  <g transform=\"translate(400, 60)\">\n    <line x1=\"-12\" y1=\"-30\" x2=\"12\" y2=\"30\" stroke=\"#ef4444\" stroke-width=\"1.8\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"18\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.2\"/>\n    <path d=\"M -18 0 A 18 18 0 0 1 18 0 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <text x=\"0\" y=\"-36\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#4ade80\" text-anchor=\"middle\">MARCH 21: VERNAL EQUINOX</text>\n    <text x=\"0\" y=\"28\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#86efac\" text-anchor=\"middle\">Sun overhead at Equator (0°)</text>\n    <text x=\"0\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#cbd5e1\" text-anchor=\"middle\">Global Equal Day &amp; Night (12h / 12h)</text>\n  </g>\n\n  <!-- NODE 4: AUTUMNAL EQUINOX (SEPTEMBER 23) - BOTTOM -->\n  <g transform=\"translate(400, 300)\">\n    <line x1=\"-12\" y1=\"-30\" x2=\"12\" y2=\"30\" stroke=\"#ef4444\" stroke-width=\"1.8\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"18\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.2\"/>\n    <path d=\"M -18 0 A 18 18 0 0 0 18 0 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <text x=\"0\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#fbbf24\" text-anchor=\"middle\">SEPT 23: AUTUMNAL EQUINOX</text>\n    <text x=\"0\" y=\"44\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fde68a\" text-anchor=\"middle\">Sun overhead at Equator (0°)</text>\n    <text x=\"0\" y=\"54\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#cbd5e1\" text-anchor=\"middle\">Global Equal Day &amp; Night (12h / 12h)</text>\n  </g>\n\n  <!-- Orbital Direction Arrows -->\n  <path d=\"M 230 90 Q 280 70 330 65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"2\" marker-end=\"url(#arrowBlue)\"/>\n  <path d=\"M 570 270 Q 520 290 470 295\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n</svg>\n</div>\n\n1. **Definition of Revolution:** The orbital movement of the Earth around the Sun along a closed, slightly elliptical orbital path.\n2. **Period of Revolution:**\n   - **Tropical Year:** The time taken for the Earth to complete one full revolution relative to the vernal equinox. Duration: **$365.25\\text{ days}$** ($365\\text{ days, } 5\\text{ hours, } 48\\text{ minutes, } 46\\text{ seconds}$).\n   - **Leap Year Mechanics:** In the standard Gregorian calendar, an ordinary year is assigned exactly 365 days. The fractional surplus of approximately $0.25\\text{ days}$ ($6\\text{ hours}$) accumulates over four consecutive years to form one complete day ($0.25 \\times 4 = 1.0\\text{ day}$). This extra day is added to the calendar as **February 29th** every four years, producing a **Leap Year of 366 days** to prevent calendar drift against astronomical seasons.\n3. **The Physics of Seasons:**\n   - *Crucial Misconception Refuted:* Seasons are **NOT** caused by variations in the Earth's distance from the Sun! Earth's orbit has a very low eccentricity ($e = 0.0167$). Perihelion (closest approach, $\\approx 147.1\\text{ million km}$) occurs in early **January** during the Northern Hemisphere's winter, while Aphelion (farthest distance, $\\approx 152.1\\text{ million km}$) occurs in early **July** during the Northern Hemisphere's summer.\n   - *True Physical Cause:* The seasonal cycle is driven by the interaction of two immutable geometric facts:\n     1. The Earth's permanent **axial tilt of $23.5^\\circ$**.\n     2. **Parallelism of the Axis:** As the Earth revolves around the Sun, its rotational axis remains pointing in the same fixed direction in space (toward Polaris, the North Star).\n   - This geometric constancy causes the Northern and Southern Hemispheres to lean alternately toward or away from the Sun over the course of the 365.25-day orbit, varying the angle of solar incidence and daily sunshine duration (insolation).\n\n---\n\n#### 2.3 The Four Cardinal Solstice and Equinox Nodes\n\n| Astronomical Node | Approximate Date | Solar Declination (Subsolar Point) | Northern Hemisphere Condition | Southern Hemisphere Condition | Day / Night Length Distribution |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Summer Solstice** | **June 21** | Tropic of Cancer ($23.5^\\circ\\text{ N}$) | Summer begins; Sun reaches maximum northern altitude. | Winter begins; Sun reaches lowest northern altitude. | **Longest day / shortest night** in Northern Hemisphere. Perpetual daylight ($24\\text{h}$) within Arctic Circle ($66.5^\\circ\\text{ N}$). |\n| **Autumnal Equinox** | **September 23** | Equator ($0^\\circ$) | Autumn begins; solar radiation strikes perpendicularly. | Spring begins; solar radiation strikes perpendicularly. | **Equal day and night globally** ($12\\text{ hours}$ day, $12\\text{ hours}$ night at all latitudes). |\n| **Winter Solstice** | **December 21** | Tropic of Capricorn ($23.5^\\circ\\text{ S}$) | Winter begins; Northern Hemisphere tilted away from Sun. | Summer begins; Southern Hemisphere tilted toward Sun. | **Shortest day / longest night** in Northern Hemisphere. Perpetual darkness ($24\\text{h}$) within Arctic Circle; $24\\text{h}$ daylight at Antarctic. |\n| **Vernal (Spring) Equinox** | **March 21** | Equator ($0^\\circ$) | Spring begins; solar declination crosses into northern sky. | Autumn begins; solar declination crosses into southern sky. | **Equal day and night globally** ($12\\text{ hours}$ day, $12\\text{ hours}$ night across the entire globe). |\n\n---\n\n### MODULE 3: The Moon, Lunar Phases, and Tidal Dynamics\n\n#### 3.1 Physical Characteristics and Synchronous Rotation\n1. **Lunar Physical Properties:**\n   - *Dimensions:* Earth's only permanent natural satellite; diameter $\\approx 3,474\\text{ km}$ (about one-fourth the diameter of Earth).\n   - *Surface Environment:* Highly cratered, rocky, arid, and geologically dead world devoid of liquid surface water and any significant atmosphere.\n   - *Surface Gravity:* The Moon's surface gravitational acceleration is approximately **one-sixth ($1/6$)** of Earth's:\n     $$g_{\\text{moon}} \\approx 1.62\\text{ m/s}^2 \\quad \\left(\\approx 0.166 \\times g_{\\text{earth}}\\right)$$\n   - *Thermal Extremes:* Because it lacks an atmospheric thermal blanket, equatorial surface temperatures range from $+120^\\circ\\text{C}$ during lunar day to $-130^\\circ\\text{C}$ during lunar night (and down to $-240^\\circ\\text{C}$ in permanently shadowed polar craters).\n2. **Synchronous Rotation and Tidal Locking:**\n   - *Orbital Period (Sidereal Month):* The Moon takes **$27.3\\text{ days}$** ($27.32\\text{ days}$) to complete one full $360^\\circ$ revolution around the Earth.\n   - *Rotational Period:* The Moon takes exactly the same duration—**$27.3\\text{ days}$**—to complete one rotation on its geographic axis.\n   - *Physical Consequence:* Because its rotational period exactly equals its orbital period (a gravitational state known as **tidal locking**), the Moon always presents the **same face (the near side)** toward observers on Earth. The opposite hemisphere (**the far side**, often incorrectly termed the \"dark side\") never faces Earth directly and was first photographed by the Soviet spacecraft *Luna 3* in 1959.\n\n---\n\n#### 3.2 The Synodic Lunar Phase Cycle\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"380\" viewBox=\"0 0 800 380\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"380\" rx=\"10\" fill=\"#0b0f19\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    THE 8 PHASES OF THE MOON &amp; GRAVITATIONAL TIDAL SYZYGY\n  </text>\n\n  <!-- SUNLIGHT INCOMING FROM RIGHT -->\n  <g transform=\"translate(730, 60)\">\n    <text x=\"30\" y=\"100\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#facc15\" text-anchor=\"middle\">SUNLIGHT</text>\n    <line x1=\"60\" y1=\"40\" x2=\"0\" y2=\"40\" stroke=\"#facc15\" stroke-width=\"2\"/>\n    <line x1=\"60\" y1=\"80\" x2=\"0\" y2=\"80\" stroke=\"#facc15\" stroke-width=\"2.5\"/>\n    <line x1=\"60\" y1=\"120\" x2=\"0\" y2=\"120\" stroke=\"#facc15\" stroke-width=\"2.5\"/>\n    <line x1=\"60\" y1=\"160\" x2=\"0\" y2=\"160\" stroke=\"#facc15\" stroke-width=\"2\"/>\n    <line x1=\"60\" y1=\"200\" x2=\"0\" y2=\"200\" stroke=\"#facc15\" stroke-width=\"2\"/>\n  </g>\n\n  <!-- CENTRAL EARTH -->\n  <g transform=\"translate(380, 160)\">\n    <circle cx=\"0\" cy=\"0\" r=\"28\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n    <!-- Terminator (Sun from right) -->\n    <path d=\"M 0 -28 A 28 28 0 0 0 0 28 Z\" fill=\"#0f172a\" fill-opacity=\"0.8\"/>\n    <text x=\"0\" y=\"4\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EARTH</text>\n  </g>\n\n  <!-- LUNAR ORBIT -->\n  <circle cx=\"380\" cy=\"160\" r=\"115\" fill=\"none\" stroke=\"#334155\" stroke-width=\"1.5\" stroke-dasharray=\"4,4\"/>\n\n  <!-- 8 PHASES -->\n  <!-- 1. NEW MOON (Right, closest to Sun) -->\n  <g transform=\"translate(495, 160)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"24\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">1. New Moon</text>\n    <text x=\"0\" y=\"34\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#94a3b8\" text-anchor=\"middle\">(Invisible)</text>\n  </g>\n\n  <!-- 2. WAXING CRESCENT (Top-Right) -->\n  <g transform=\"translate(461, 79)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"35\" y=\"-5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">2. Waxing</text>\n    <text x=\"35\" y=\"5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Crescent</text>\n  </g>\n\n  <!-- 3. FIRST QUARTER (Top) -->\n  <g transform=\"translate(380, 45)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"-18\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">3. First Quarter (Half)</text>\n  </g>\n\n  <!-- 4. WAXING GIBBOUS (Top-Left) -->\n  <g transform=\"translate(299, 79)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"-35\" y=\"-5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">4. Waxing</text>\n    <text x=\"-35\" y=\"5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Gibbous</text>\n  </g>\n\n  <!-- 5. FULL MOON (Left, opposite Sun) -->\n  <g transform=\"translate(265, 160)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"24\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">5. Full Moon</text>\n    <text x=\"0\" y=\"34\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#facc15\" text-anchor=\"middle\">(Fully Lit)</text>\n  </g>\n\n  <!-- 6. WANING GIBBOUS (Bottom-Left) -->\n  <g transform=\"translate(299, 241)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"-35\" y=\"10\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">6. Waning</text>\n    <text x=\"-35\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Gibbous</text>\n  </g>\n\n  <!-- 7. THIRD QUARTER (Bottom) -->\n  <g transform=\"translate(380, 275)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">7. Third (Last) Quarter</text>\n  </g>\n\n  <!-- 8. WANING CRESCENT (Bottom-Right) -->\n  <g transform=\"translate(461, 241)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"35\" y=\"10\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">8. Waning</text>\n    <text x=\"35\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Crescent</text>\n  </g>\n\n  <!-- TIDAL DYNAMICS PANEL AT BOTTOM -->\n  <g transform=\"translate(30, 310)\">\n    <rect width=\"350\" height=\"55\" rx=\"5\" fill=\"#1e1b4b\" stroke=\"#4f46e5\"/>\n    <text x=\"175\" y=\"18\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#c7d2fe\" text-anchor=\"middle\">SPRING TIDES (Syzygy Alignment)</text>\n    <text x=\"175\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#e0e7ff\" text-anchor=\"middle\">Occurs at NEW &amp; FULL MOON (Sun + Moon align)</text>\n    <text x=\"175\" y=\"44\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#a5b4fc\" text-anchor=\"middle\">Maximum tidal bulge; highest high tides, lowest low tides</text>\n  </g>\n\n  <g transform=\"translate(420, 310)\">\n    <rect width=\"350\" height=\"55\" rx=\"5\" fill=\"#082f49\" stroke=\"#0284c7\"/>\n    <text x=\"175\" y=\"18\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#7dd3fc\" text-anchor=\"middle\">NEAP TIDES (Quadrature 90° Pull)</text>\n    <text x=\"175\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#e0f2fe\" text-anchor=\"middle\">Occurs at FIRST &amp; THIRD QUARTER (Right angle)</text>\n    <text x=\"175\" y=\"44\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#38bdf8\" text-anchor=\"middle\">Tidal forces partially cancel; moderate, minimal tidal range</text>\n  </g>\n</svg>\n</div>\n\n1. **Synodic Month vs. Sidereal Month:**\n   - While the Moon completes one physical orbit around Earth in $27.3\\text{ days}$ (sidereal period), the complete cycle of lunar phases from one New Moon to the next New Moon takes **$29.5\\text{ days}$** ($29.53\\text{ days}$), known as a **synodic month**.\n   - This $2.2\\text{-day}$ difference arises because, as the Moon orbits the Earth, the Earth-Moon system simultaneously travels along its orbit around the Sun. The Moon must therefore travel an additional $\\approx 27^\\circ$ along its orbit to re-establish the exact same alignment relative to the Sun.\n2. **Mechanism of Lunar Phases:**\n   - The Moon does not generate its own visible light; it shines entirely by **reflecting sunlight**.\n   - Exactly **half ($50\\%$)** of the spherical lunar surface is illuminated by direct sunlight at all times (except during lunar eclipses).\n   - The phases of the Moon are caused by the **changing relative geometry of the Sun, Earth, and Moon** as the Moon revolves around Earth, altering the proportion of the illuminated lunar hemisphere visible to an observer on Earth's surface.\n\n3. **Sequential Breakdown of the 8 Lunar Phases:**\n   1. **New Moon:** The Moon is situated between the Earth and the Sun. Its sunlit hemisphere faces directly away from Earth, while its shadowed hemisphere faces Earth. The Moon is invisible in the night sky and rises and sets roughly with the Sun.\n   2. **Waxing Crescent:** As the Moon moves east of the Sun in its orbit, a thin sliver of illuminated lunar surface becomes visible along its western limb in the early evening sky. \"Waxing\" denotes that the visible illuminated fraction is progressively growing nightly.\n   3. **First Quarter:** The Moon has traversed one-quarter ($90^\\circ$) of its orbit from New Moon. Exactly half ($50\\%$) of the visible lunar disk is illuminated on the right-hand side (as viewed from the Northern Hemisphere). The Earth-Moon radius is perpendicular to the Earth-Sun line. Rises at noon and sets at midnight.\n   4. **Waxing Gibbous:** More than half, but not yet all, of the visible lunar disk is illuminated. The illuminated fraction expands nightly toward full disk illumination.\n   5. **Full Moon:** The Earth is situated between the Sun and the Moon (at an angular elongation of $180^\\circ$). The Moon's entire sunlit hemisphere faces Earth directly. The Full Moon rises in the east at sunset, reaches its highest altitude at midnight, and sets in the west at sunrise.\n   6. **Waning Gibbous:** The Moon begins moving back toward the Sun. The illuminated fraction begins to decrease (\"waning\"), showing slightly less than a full disk with darkness creeping in from the right edge.\n   7. **Third (Last) Quarter:** The Moon has traversed three-quarters ($270^\\circ$) of its orbit. Exactly half of the visible disk is illuminated on the left-hand side (opposite to First Quarter). Rises at midnight and sets at noon.\n   8. **Waning Crescent:** A thin, diminishing crescent visible in the eastern sky just before dawn, preceding the next New Moon.\n\n---\n\n#### 3.3 Gravitational Tidal Dynamics: Spring vs. Neap Tides\nOcean tides are the periodic, rhythmic rise and fall of coastal sea levels caused by the **differential gravitational attractive forces** exerted on Earth's water bodies by the Moon and the Sun, combined with the centripetal acceleration of Earth's orbital rotation around the Earth-Moon barycenter.\n\n1. **Differential Tidal Force Physics:**\n   - The gravitational attraction between two bodies follows Newton's inverse-square law ($F \\propto 1/r^2$). However, because the Earth has a finite diameter ($d \\approx 12,742\\text{ km}$), the gravitational pull of the Moon is significantly stronger on the near side of the Earth facing the Moon than at the Earth's center, and weakest on the far side.\n   - This gravitational gradient across Earth's diameter generates a **differential tidal force** that scales inversely with the **cube of the distance** ($F_{\\text{tide}} \\propto M / r^3$).\n   - Consequently, water is pulled into two simultaneous tidal bulges: one on the side directly facing the Moon (direct tide) and an equal bulge on the side directly opposite the Moon (indirect/inertial tide).\n   - Although the Sun is $27\\text{ million times}$ more massive than the Moon, it is $390\\text{ times}$ farther away. Because tidal forces scale as $1/r^3$, the **Moon's tidal generating force is approximately $2.18\\text{ times}$ stronger than the Sun's** ($F_{\\text{tide, Moon}} \\approx 2.18 \\times F_{\\text{tide, Sun}}$).\n\n2. **Classification of Tides:**\n   - **Spring Tides (Maximum Tidal Range):**\n     - *Orbital Alignment:* Occurs during the **New Moon** and **Full Moon** phases, when the Sun, Earth, and Moon are aligned in a straight line—an astronomical configuration called **syzygy**.\n     - *Mechanics:* The gravitational tidal forces of the Moon and the Sun act in the exact same axis, reinforcing one another constructively.\n     - *Consequence:* Produces exceptionally high high tides and exceptionally low low tides, resulting in the **maximum tidal range**.\n   - **Neap Tides (Minimum Tidal Range):**\n     - *Orbital Alignment:* Occurs during the **First Quarter** and **Third (Last) Quarter** moon phases, when the gravitational pull of the Sun and Moon act at right angles ($90^\\circ$) to each other—a configuration termed **quadrature**.\n     - *Mechanics:* The solar tidal bulge acts against the lunar tidal bulge, partially cancelling out the gravitational influence.\n     - *Consequence:* Produces moderate high tides and unusually high low tides, resulting in the **minimum tidal range** (weakest tides).\n\n---\n\n### MODULE 4: Eclipses: Mechanics of Solar and Lunar Eclipses\n\n#### 4.1 Astronomical Shadow Components: Umbra vs. Penumbra\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"380\" viewBox=\"0 0 800 380\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"380\" rx=\"10\" fill=\"#080c14\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    CELESTIAL ECLIPSE GEOMETRY: SOLAR (UMBRA/PENUMBRA) &amp; LUNAR (BLOOD MOON)\n  </text>\n\n  <!-- PANEL A: SOLAR ECLIPSE -->\n  <g transform=\"translate(30, 45)\">\n    <rect width=\"740\" height=\"150\" rx=\"6\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"15\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#f59e0b\">A. SOLAR ECLIPSE GEOMETRY (Alignment: Sun — Moon — Earth)</text>\n    \n    <!-- Sun -->\n    <circle cx=\"50\" cy=\"85\" r=\"35\" fill=\"#facc15\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <text x=\"50\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">SUN</text>\n\n    <!-- Moon -->\n    <circle cx=\"340\" cy=\"85\" r=\"12\" fill=\"#64748b\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n    <text x=\"340\" y=\"65\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#e2e8f0\" text-anchor=\"middle\">MOON</text>\n\n    <!-- Earth -->\n    <circle cx=\"580\" cy=\"85\" r=\"28\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/>\n    <text x=\"580\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EARTH</text>\n\n    <!-- Umbra Cone (Dark) -->\n    <polygon points=\"340,73 340,97 580,87 580,83\" fill=\"#000000\" fill-opacity=\"0.9\" stroke=\"#f43f5e\" stroke-width=\"0.8\"/>\n    \n    <!-- Penumbra Cone (Lighter) -->\n    <polygon points=\"50,50 340,97 580,135 580,35 340,73\" fill=\"#64748b\" fill-opacity=\"0.18\"/>\n\n    <!-- Labels -->\n    <text x=\"470\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#f43f5e\">Umbra (Total Eclipse)</text>\n    <text x=\"470\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#cbd5e1\">Penumbra (Partial Eclipse)</text>\n    <text x=\"640\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fef08a\">• Totality: Corona Visible</text>\n    <text x=\"640\" y=\"92\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fef08a\">• Annular: Ring of Fire</text>\n  </g>\n\n  <!-- PANEL B: LUNAR ECLIPSE -->\n  <g transform=\"translate(30, 210)\">\n    <rect width=\"740\" height=\"150\" rx=\"6\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"15\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#ef4444\">B. LUNAR ECLIPSE GEOMETRY (Alignment: Sun — Earth — Moon)</text>\n\n    <!-- Sun -->\n    <circle cx=\"50\" cy=\"85\" r=\"35\" fill=\"#facc15\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <text x=\"50\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">SUN</text>\n\n    <!-- Earth -->\n    <circle cx=\"340\" cy=\"85\" r=\"26\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n    <text x=\"340\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EARTH</text>\n\n    <!-- Moon in Earth Umbra -->\n    <circle cx=\"600\" cy=\"85\" r=\"12\" fill=\"#b91c1c\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n    <text x=\"600\" y=\"65\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#fca5a5\" text-anchor=\"middle\">MOON (Blood Moon)</text>\n\n    <!-- Earth Umbra -->\n    <polygon points=\"340,59 340,111 680,95 680,75\" fill=\"#450a0a\" fill-opacity=\"0.8\" stroke=\"#ef4444\" stroke-width=\"0.8\"/>\n    <!-- Earth Penumbra -->\n    <polygon points=\"50,50 340,111 680,145 680,25 340,59\" fill=\"#64748b\" fill-opacity=\"0.18\"/>\n\n    <!-- Labels -->\n    <text x=\"470\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#f87171\">Earth Umbra Shadow</text>\n    <text x=\"470\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#cbd5e1\">Earth Penumbra Shadow</text>\n    <text x=\"640\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fca5a5\">• Total Umbral Pass</text>\n    <text x=\"640\" y=\"92\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fca5a5\">• Rayleigh Refraction</text>\n  </g>\n</svg>\n</div>\n\nAn eclipse occurs when one celestial body moves into the shadow cast by another, or has its light temporarily blocked by another celestial body passing directly along the observer's line of sight. Any opaque spherical body illuminated by an extended light source (like the Sun) casts a conical shadow structure with two distinct optical zones:\n1. **The Umbra:**\n   - The central, completely dark, conical core of the shadow where **all direct light from the Sun is entirely blocked**.\n   - An observer positioned within the umbra experiences a **Total Eclipse**, plunged into complete darkness where only indirect or scattered light can penetrate.\n2. **The Penumbra:**\n   - The lighter, outer, divergent conical fringe of the shadow where **only a portion of the solar disk is obscured**, while the remaining portion remains directly visible.\n   - An observer located within the penumbral zone experiences a **Partial Eclipse**.\n3. **The Antumbra:**\n   - The region of the shadow extending beyond the apex of the umbral cone. In this zone, the obscuring body appears completely within the disk of the light source, leaving a bright outer ring of unblocked light. An observer positioned in the antumbra observes an **Annular Eclipse**.\n\n---\n\n#### 4.2 Solar Eclipse Dynamics (Sun — Moon — Earth Alignment)\nA **Solar Eclipse** occurs when the Moon passes directly between the Sun and the Earth during the **New Moon phase**, casting its shadow onto the Earth's surface.\n\n1. **Cosmic Coincidence of Angular Diameters:**\n   - The Sun's physical diameter ($D_{\\odot} \\approx 1,392,700\\text{ km}$) is approximately **$400\\text{ times}$ larger** than the Moon's diameter ($D_{\\text{moon}} \\approx 3,474\\text{ km}$).\n   - However, the Sun is also approximately **$400\\text{ times}$ farther away** from Earth ($d_{\\odot} \\approx 149,600,000\\text{ km}$) than the Moon ($d_{\\text{moon}} \\approx 384,400\\text{ km}$).\n   - Consequently, both the Sun and the Moon possess almost identical **angular diameters in Earth's sky: approximately $0.5^\\circ$ ($31'\\text{ to }32'\\text{ of arc}$)**. This extraordinary geometric parity enables the tiny Moon to completely cover the solar disk during total eclipses.\n\n2. **Types of Solar Eclipses:**\n   - **Total Solar Eclipse:**\n     - Occurs when the Moon is sufficiently close to Earth along its elliptical orbit (at or near perigee), so that its umbral shadow cone extends all the way to reach Earth's surface.\n     - The dark tip of the umbra traces a narrow path (typically $100\\text{ to }250\\text{ km}$ wide) across the moving Earth, called the **path of totality**.\n     - Observers inside this narrow path witness the Moon completely block the bright photosphere, causing daytime sky darkness where stars appear and revealing the pearly white, gossamer **solar corona** (the Sun's million-degree ionized outer atmosphere).\n     - Maximum duration of totality at any single location cannot exceed $7\\text{ minutes, } 32\\text{ seconds}$.\n   - **Partial Solar Eclipse:**\n     - Observed from within the much broader penumbral shadow region flanking the path of totality. Observers see the Moon obscure a portion of the solar disk, looking like a \"bite\" taken out of the Sun.\n   - **Annular Solar Eclipse:**\n     - Occurs when the Moon is at or near **apogee** (its farthest orbital distance from Earth, $\\approx 406,000\\text{ km}$).\n     - Because of the increased distance, the Moon's angular diameter appears smaller than the Sun's angular diameter ($D_{\\text{angular, moon}} < D_{\\text{angular, sun}}$).\n     - The tip of the umbra terminates before reaching Earth, and the antumbra reaches the ground. The Moon cannot completely cover the Sun, leaving a brilliant, blazing outer circle of the solar photosphere exposed—creating the dramatic **\"Ring of Fire\" (annulus)**.\n   - **Hybrid Solar Eclipse:**\n     - A rare eclipse that shifts between annular and total along different points of its path, due to the curvature of the Earth bringing the surface into and out of the umbral cone apex.\n\n---\n\n#### 4.3 Lunar Eclipse Dynamics (Sun — Earth — Moon Alignment)\nA **Lunar Eclipse** occurs when the Earth passes directly between the Sun and the Moon during the **Full Moon phase**, casting Earth's massive shadow onto the Moon.\n\n1. **Characteristics of Lunar Eclipses:**\n   - Because the Earth is vastly larger than the Moon (Earth's diameter is $3.7\\text{ times}$ lunar diameter), Earth's umbral shadow cone at lunar distance is vast (spanning nearly $9,000\\text{ km}$ wide, almost three times the diameter of the Moon).\n   - Consequently, a lunar eclipse is **visible simultaneously from the entire night hemisphere of Earth** (any place where the Moon is above the horizon).\n   - Totality can endure for up to **$1\\text{ hour and }45\\text{ minutes}$**, and the entire eclipse event can span over five hours.\n\n2. **Types of Lunar Eclipses:**\n   - **Total Lunar Eclipse:** The entire Moon passes completely inside Earth's umbral shadow.\n   - **Partial Lunar Eclipse:** Only a portion of the lunar disk passes through Earth's umbra, while the rest remains in the penumbra.\n   - **Penumbral Lunar Eclipse:** The Moon passes exclusively through Earth's faint penumbral shadow. Because the penumbra only slightly dims the sunlight, the resulting subtle shading across the lunar surface is often difficult to detect with the naked eye.\n\n3. **Physics of the \"Blood Moon\": Rayleigh Scattering and Atmospheric Refraction:**\n   - During a Total Lunar Eclipse, the Moon does not become completely black and invisible. Instead, it glows with a striking **coppery-red or deep reddish-orange illumination**, colloquially called a **\"Blood Moon\"**.\n   - *Optical Mechanism:* The Earth's atmosphere acts as a spherical lens. As sunlight grazes the perimeter of Earth's atmospheric limb, short-wavelength blue and violet photons are intensely scattered away into space by nitrogen and oxygen gas molecules through **Rayleigh scattering** (the exact same physical mechanism that makes the daytime sky blue).\n   - However, the longer red, orange, and amber wavelengths pass through the dense atmospheric column with minimal scattering. These red rays are **refracted (bent) inward** by the atmosphere toward the central umbral shadow cone, projecting the combined red glow of all the sunrises and sunsets occurring around the Earth directly onto the surface of the eclipsed Moon!\n\n---\n\n#### 4.4 The 5° Orbital Inclination: Why Eclipses Do Not Occur Every Month\n- *The Fundamental Question:* Since the New Moon phase occurs every $29.5\\text{ days}$ (when the Moon passes between Earth and Sun) and the Full Moon phase occurs every $29.5\\text{ days}$ (when Earth is between Sun and Moon), why do we not observe a solar eclipse at every New Moon and a lunar eclipse at every Full Moon?\n- *The Astronomical Reason:* The Moon's orbital plane around the Earth is **inclined at an angle of approximately $5.14^\\circ$ ($5^\\circ$)** relative to the **ecliptic plane** (the Earth's orbital plane around the Sun).\n- *Consequences of the $5^\\circ$ Tilt:*\n  - During most New Moons, the tilted Moon passes either slightly **above (north of)** or slightly **below (south of)** the Sun in the sky, so its shadow misses the Earth and passes into empty space.\n  - During most Full Moons, the Moon passes either above or below the Earth's umbral shadow cone, avoiding an eclipse completely.\n- *Orbital Nodes and Eclipse Seasons:*\n  - The Moon's orbital plane intersects the Earth's ecliptic plane at two points called **nodes**:\n    - **Ascending Node:** Where the Moon crosses the ecliptic traveling northward.\n    - **Descending Node:** Where the Moon crosses the ecliptic traveling southward.\n  - An eclipse can occur **ONLY** when the Moon is situated at or very close to one of these **nodes at the exact time** of a New Moon or Full Moon.\n  - The line connecting the nodes (line of nodes) points toward the Sun approximately twice a year, creating two **eclipse seasons** (separated by approximately $173.3\\text{ days}$), during which at least two (and up to three) solar and lunar eclipses occur.\n\n---\n\n### MODULE 5: Quantitative Astronomical Worked Examples & Computational Case Studies\n\n---\n\n#### Worked Example 1: Earth Orbital Speed and Heliocentric Velocity\n**Concept:** Uniform Circular / Elliptical Planetary Orbital Dynamics ($v = \\frac{2\\pi r}{T}$)\n\n**Problem:**\nThe Earth orbits the Sun at an average distance (semi-major axis) of $r = 1.00\\text{ AU} = 1.496 \\times 10^8\\text{ km}$ ($1.496 \\times 10^{11}\\text{ m}$). The Earth completes one full orbit in one tropical year ($T = 365.25\\text{ days}$).\n(a) Convert the orbital period $T$ into seconds.\n(b) Assuming a circular orbit approximation, calculate the total orbital circumference traveled by the Earth in one year (in kilometers).\n(c) Determine the Earth's average orbital velocity in kilometers per second ($\\text{km/s}$) and in kilometers per hour ($\\text{km/h}$).\n(d) Explain how this orbital speed reconciles with Kepler's Second Law of Planetary Motion at perihelion versus aphelion.\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Conversion of Orbital Period $T$ into Seconds:**\n   $$\\begin{aligned}\n   T &= 365.25\\text{ days} \\times 24\\frac{\\text{hours}}{\\text{day}} \\times 60\\frac{\\text{minutes}}{\\text{hour}} \\times 60\\frac{\\text{seconds}}{\\text{minute}} \\\\\n   T &= 365.25 \\times 86,400\\text{ s} = 31,557,600\\text{ seconds} \\quad (3.156 \\times 10^7\\text{ s})\n   \\end{aligned}$$\n\n2. **Calculation of Orbital Circumference ($C$):**\n   $$\\begin{aligned}\n   C &= 2\\pi r \\\\\n   C &= 2 \\times 3.14159265 \\times 1.496 \\times 10^8\\text{ km} \\\\\n   C &\\approx 9.3996 \\times 10^8\\text{ km} \\approx 940,000,000\\text{ km}\n   \\end{aligned}$$\n   *The Earth travels approximately 940 million kilometers through space each year.*\n\n3. **Determination of Average Orbital Velocity ($v$):**\n   $$\\begin{aligned}\n   v &= \\frac{C}{T} = \\frac{2\\pi r}{T} \\\\\n   v &= \\frac{9.3996 \\times 10^8\\text{ km}}{3.15576 \\times 10^7\\text{ s}} \\approx 29.785\\text{ km/s} \\approx 29.8\\text{ km/s}\n   \\end{aligned}$$\n   *Converting to kilometers per hour:*\n   $$v = 29.785\\text{ km/s} \\times 3,600\\frac{\\text{s}}{\\text{h}} \\approx 107,226\\text{ km/h}$$\n\n4. **Keplerian Orbital Dynamic Reconciliation:**\n   - Because Earth's orbit is slightly elliptical ($e = 0.0167$), its speed is not strictly constant.\n   - In accordance with **Kepler's Second Law (Law of Equal Areas)**, a line segment joining a planet and the Sun sweeps out equal areas during equal intervals of time ($dA/dt = \\text{constant}$).\n   - Therefore, when Earth is at **perihelion** (closest approach in early January, $r \\approx 147.1 \\times 10^6\\text{ km}$), conservation of angular momentum accelerates the Earth to its maximum orbital speed of **$30.3\\text{ km/s}$**.\n   - Conversely, at **aphelion** (farthest distance in early July, $r \\approx 152.1 \\times 10^6\\text{ km}$), the orbital velocity decreases to its minimum of **$29.3\\text{ km/s}$**.\n\n*Pedagogical Takeaway:* Even while sitting motionless in a classroom, every human is hurtling through the solar system at an astonishing speed of approximately **$29.8\\text{ km/s}$** ($107,200\\text{ km/h}$), completing nearly a billion kilometers of orbital journey annually.\n\n---\n\n#### Worked Example 2: Mathematical Derivation of the Synodic Lunar Month\n**Concept:** Relative Angular Frequency and Orbital Period Coupling (Sidereal vs. Synodic Periods)\n\n**Problem:**\nThe Moon revolves around the Earth with a sidereal period of $T_{\\text{sid}} = 27.3217\\text{ days}$ relative to the distant stars. During this time, the Earth revolves around the Sun with an orbital period of $T_{\\text{earth}} = 365.2564\\text{ days}$.\n(a) Calculate the daily angular velocity of the Moon ($\\omega_{\\text{moon}}$ in degrees per day).\n(b) Calculate the daily angular velocity of the Earth ($\\omega_{\\text{earth}}$ in degrees per day).\n(c) Using the coupled angular frequency relation $\\frac{1}{T_{\\text{syn}}} = \\frac{1}{T_{\\text{sid}}} - \\frac{1}{T_{\\text{earth}}}$, derive the exact length of the synodic month ($T_{\\text{syn}}$) from New Moon to New Moon.\n(d) Explain physically why the synodic month is approximately 2.2 days longer than the sidereal month.\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Daily Angular Velocity of the Moon ($\\omega_{\\text{moon}}$):**\n   $$\\omega_{\\text{moon}} = \\frac{360^\\circ}{T_{\\text{sid}}} = \\frac{360^\\circ}{27.3217\\text{ days}} \\approx 13.1763^\\circ\\text{ per day}$$\n\n2. **Daily Angular Velocity of the Earth ($\\omega_{\\text{earth}}$):**\n   $$\\omega_{\\text{earth}} = \\frac{360^\\circ}{T_{\\text{earth}}} = \\frac{360^\\circ}{365.2564\\text{ days}} \\approx 0.9856^\\circ\\text{ per day}$$\n\n3. **Derivation of the Synodic Period ($T_{\\text{syn}}$):**\n   - For the Moon to return to the exact same phase (e.g., from one New Moon to the next), it must complete a full $360^\\circ$ relative to the moving Earth-Sun line.\n   - The relative angular rate of separation is:\n     $$\\omega_{\\text{rel}} = \\omega_{\\text{moon}} - \\omega_{\\text{earth}} = 13.1763^\\circ - 0.9856^\\circ = 12.1907^\\circ\\text{ per day}$$\n   - Setting the total relative rotation to $360^\\circ$:\n     $$T_{\\text{syn}} = \\frac{360^\\circ}{\\omega_{\\text{rel}}} = \\frac{360^\\circ}{12.1907^\\circ\\text{/day}} \\approx 29.5307\\text{ days}$$\n   - Alternatively, using the reciprocal period equation:\n     $$\\frac{1}{T_{\\text{syn}}} = \\frac{1}{T_{\\text{sid}}} - \\frac{1}{T_{\\text{earth}}}$$\n     $$\\frac{1}{T_{\\text{syn}}} = \\frac{1}{27.3217} - \\frac{1}{365.2564} = 0.036601 - 0.002738 = 0.033863\\text{ days}^{-1}$$\n     $$T_{\\text{syn}} = \\frac{1}{0.033863} \\approx 29.53\\text{ days}$$\n     $$T_{\\text{syn}} = 29\\text{ days, } 12\\text{ hours, } 44\\text{ minutes, } 3\\text{ seconds}$$\n\n4. **Physical Explanation for the 2.2-Day Discrepancy:**\n   - Over the $27.32\\text{ days}$ it takes the Moon to complete a true $360^\\circ$ physical revolution around Earth, the Earth has traveled forward along its heliocentric orbit by:\n     $$\\Delta \\theta_{\\text{earth}} = 27.3217\\text{ days} \\times 0.9856^\\circ\\text{/day} \\approx 26.93^\\circ$$\n   - Because the Earth has moved forward, the Sun is no longer in the same relative direction in space.\n   - The Moon must travel this additional $26.93^\\circ$ of orbital arc to catch up with the moving Sun-Earth alignment line:\n     $$\\Delta t = \\frac{26.93^\\circ}{12.1907^\\circ\\text{/day}} \\approx 2.21\\text{ days}$$\n   - Adding $27.32 + 2.21 = 29.53\\text{ days}$, precisely accounting for the full synodic phase cycle.\n\n---\n\n#### Worked Example 3: Gravitational Tidal Forces and Differential Ocean Acceleration\n**Concept:** Differential Gravitational Gradients ($F_{\\text{tide}} \\propto \\frac{M}{r^3}$) & Lunar-Solar Force Ratio\n\n**Problem:**\nThe magnitude of the differential tidal acceleration ($a_{\\text{tide}}$) exerted by a celestial body of mass $M$ at distance $r$ across a planet of radius $R$ is given by:\n$$a_{\\text{tide}} = \\frac{2 G M R}{r^3}$$\nGiven the following astronomical parameters:\n- Gravitational constant: $G = 6.674 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$\n- Earth radius: $R_{\\oplus} = 6.371 \\times 10^6\\text{ m}$\n- Moon mass: $M_{\\text{moon}} = 7.348 \\times 10^{22}\\text{ kg}$\n- Earth-Moon distance: $r_{\\text{moon}} = 3.844 \\times 10^8\\text{ m}$\n- Sun mass: $M_{\\odot} = 1.989 \\times 10^{30}\\text{ kg}$\n- Earth-Sun distance: $r_{\\odot} = 1.496 \\times 10^{11}\\text{ m}$\n(a) Calculate the differential tidal acceleration produced by the Moon ($a_{\\text{tide, moon}}$).\n(b) Calculate the differential tidal acceleration produced by the Sun ($a_{\\text{tide, sun}}$).\n(c) Compute the ratio $\\frac{a_{\\text{tide, moon}}}{a_{\\text{tide, sun}}}$ and explain why the tiny Moon dominates Earth's tides over the massive Sun.\n(d) Calculate the ratio of tidal ranges between Spring Tides ($a_{\\text{spring}} = a_{\\text{moon}} + a_{\\text{sun}}$) and Neap Tides ($a_{\\text{neap}} = a_{\\text{moon}} - a_{\\text{sun}}$).\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Differential Tidal Acceleration of the Moon ($a_{\\text{tide, moon}}$):**\n   $$r_{\\text{moon}}^3 = (3.844 \\times 10^8\\text{ m})^3 = 5.6797 \\times 10^{25}\\text{ m}^3$$\n   $$\\begin{aligned}\n   a_{\\text{tide, moon}} &= \\frac{2 \\times (6.674 \\times 10^{-11}) \\times (7.348 \\times 10^{22}) \\times (6.371 \\times 10^6)}{5.6797 \\times 10^{25}} \\\\\n   &= \\frac{6.2494 \\times 10^{19}}{5.6797 \\times 10^{25}} \\approx 1.1003 \\times 10^{-6}\\text{ m/s}^2\n   \\end{aligned}$$\n\n2. **Differential Tidal Acceleration of the Sun ($a_{\\text{tide, sun}}$):**\n   $$r_{\\odot}^3 = (1.496 \\times 10^{11}\\text{ m})^3 = 3.3481 \\times 10^{33}\\text{ m}^3$$\n   $$\\begin{aligned}\n   a_{\\text{tide, sun}} &= \\frac{2 \\times (6.674 \\times 10^{-11}) \\times (1.989 \\times 10^{30}) \\times (6.371 \\times 10^6)}{3.3481 \\times 10^{33}} \\\\\n   &= \\frac{1.6914 \\times 10^{27}}{3.3481 \\times 10^{33}} \\approx 5.0519 \\times 10^{-7}\\text{ m/s}^2\n   \\end{aligned}$$\n\n3. **Ratio of Lunar to Solar Tidal Influence:**\n   $$\\text{Ratio} = \\frac{a_{\\text{tide, moon}}}{a_{\\text{tide, sun}}} = \\frac{1.1003 \\times 10^{-6}\\text{ m/s}^2}{5.0519 \\times 10^{-7}\\text{ m/s}^2} \\approx 2.178 \\approx 2.18$$\n   - *Physical Explanation:*\n     - The Sun is $\\approx 27,000,000\\text{ times}$ more massive than the Moon. If tides depended on direct gravitational force ($F \\propto M/r^2$), the Sun would overpower the Moon by a factor of 178!\n     - However, tidal forces represent a **spatial gradient** (the rate of change of gravity across distance), which is the derivative of Newton's law:\n       $$\\frac{d}{dr}\\left(\\frac{GM}{r^2}\\right) = -\\frac{2GM}{r^3}$$\n     - Because distance appears as a **cubic term ($r^3$)** in the denominator, the fact that the Sun is $389\\text{ times}$ farther away dilutes its tidal force by:\n       $$389^3 = 58,850,000\\text{ times!}$$\n     - Dividing $27,000,000 / 58,850,000 \\approx 0.46$, meaning the solar tidal force is only $46\\%$ of the lunar tidal force. Hence, the Moon's tidal force is $1 / 0.46 \\approx 2.18\\text{ times}$ stronger than the Sun's.\n\n4. **Spring Tide vs. Neap Tide Ratio:**\n   - At **Spring Tides** (Syzygy: New/Full Moon), forces reinforce:\n     $$a_{\\text{spring}} = a_{\\text{moon}} + a_{\\text{sun}} = 1.1003 \\times 10^{-6} + 0.5052 \\times 10^{-6} = 1.6055 \\times 10^{-6}\\text{ m/s}^2$$\n   - At **Neap Tides** (Quadrature: 1st/3rd Quarter), forces oppose:\n     $$a_{\\text{neap}} = a_{\\text{moon}} - a_{\\text{sun}} = 1.1003 \\times 10^{-6} - 0.5052 \\times 10^{-6} = 0.5951 \\times 10^{-6}\\text{ m/s}^2$$\n   - Relative Amplitude Ratio:\n     $$\\frac{a_{\\text{spring}}}{a_{\\text{neap}}} = \\frac{1.6055}{0.5951} \\approx 2.70$$\n   *Pedagogical Takeaway:* Spring tides exhibit tidal forces nearly **$2.7\\text{ times}$ greater** than neap tides, generating dramatically higher high-water levels and swifter coastal tidal currents.\n\n---\n\n#### Worked Example 4: Umbral Shadow Geometry & Total vs. Annular Eclipse Thresholds\n**Concept:** Similar Triangles, Angular Diameters, and Umbral Cone Length ($L = \\frac{D_{\\text{moon}} \\cdot d_{\\odot}}{D_{\\odot} - D_{\\text{moon}}}$)\n\n**Problem:**\nConsider the following celestial parameters:\n- Solar diameter: $D_{\\odot} = 1,392,700\\text{ km}$\n- Lunar diameter: $D_{\\text{moon}} = 3,474\\text{ km}$\n- Earth-Sun distance: $d_{\\odot} = 1.496 \\times 10^8\\text{ km}$\n- Moon perigee distance (closest to Earth): $d_{\\text{perigee}} = 363,300\\text{ km}$\n- Moon apogee distance (farthest from Earth): $d_{\\text{apogee}} = 405,500\\text{ km}$\n- Mean Moon distance: $d_{\\text{mean}} = 384,400\\text{ km}$\n(a) Using the geometric similarity of shadow cones, calculate the exact length of the Moon's umbral shadow cone ($L_{\\text{umbra}}$).\n(b) Compare $L_{\\text{umbra}}$ to $d_{\\text{perigee}}$ and $d_{\\text{apogee}}$. Explain mathematically whether a Total Solar Eclipse or an Annular Solar Eclipse occurs at perigee versus apogee.\n(c) Calculate the width ($W$) of the umbral shadow spot on Earth's surface during a perigee eclipse.\n(d) Calculate the angular diameter of the Sun and Moon (in arcminutes) at perigee and apogee to demonstrate the \"Ring of Fire\" phenomenon.\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Derivation and Calculation of Umbral Cone Length ($L_{\\text{umbra}}$):**\n   - By similar triangles formed by the solar tangent rays:\n     $$\\frac{D_{\\odot}}{d_{\\odot} + L} = \\frac{D_{\\text{moon}}}{L}$$\n     $$D_{\\odot} \\cdot L = D_{\\text{moon}} \\cdot d_{\\odot} + D_{\\text{moon}} \\cdot L$$\n     $$L \\left(D_{\\odot} - D_{\\text{moon}}\\right) = D_{\\text{moon}} \\cdot d_{\\odot}$$\n     $$L_{\\text{umbra}} = \\frac{D_{\\text{moon}} \\cdot d_{\\odot}}{D_{\\odot} - D_{\\text{moon}}}$$\n   - Substituting the values:\n     $$D_{\\odot} - D_{\\text{moon}} = 1,392,700 - 3,474 = 1,389,226\\text{ km}$$\n     $$L_{\\text{umbra}} = \\frac{3,474\\text{ km} \\times 1.496 \\times 10^8\\text{ km}}{1,389,226\\text{ km}} \\approx 374,093\\text{ km}$$\n   *The Moon's dark umbral shadow cone extends into space for approximately $374,100\\text{ km}$.*\n\n2. **Comparison with Perigee and Apogee Distances:**\n   - **Case A: At Perigee ($d_{\\text{perigee}} = 363,300\\text{ km}$):**\n     $$d_{\\text{perigee}} (363,300\\text{ km}) < L_{\\text{umbra}} (374,100\\text{ km})$$\n     - Because the Earth is closer than the tip of the umbral cone, the umbra reaches the Earth's surface with $10,800\\text{ km}$ to spare!\n     - *Result:* A **TOTAL SOLAR ECLIPSE** occurs. Observers within the umbral ground spot witness the complete obstruction of the Sun and see the solar corona.\n   - **Case B: At Apogee ($d_{\\text{apogee}} = 405,500\\text{ km}$):**\n     $$d_{\\text{apogee}} (405,500\\text{ km}) > L_{\\text{umbra}} (374,100\\text{ km})$$\n     - The umbral cone tapers to a point and ends $31,400\\text{ km}$ before reaching the Earth's surface.\n     - Beyond the cone tip, the shadow expands as the **antumbra**.\n     - *Result:* An **ANNULAR SOLAR ECLIPSE** occurs. The Moon is too small to cover the entire solar disk, leaving the exposed perimeter visible as the \"Ring of Fire\".\n\n3. **Width of the Umbral Spot on Earth at Perigee ($W$):**\n   - Remaining cone length reaching Earth: $\\Delta L = L_{\\text{umbra}} - d_{\\text{perigee}} = 374,093 - 363,300 = 10,793\\text{ km}$.\n   - By similar triangles:\n     $$\\frac{W}{\\Delta L} = \\frac{D_{\\text{moon}}}{L_{\\text{umbra}}}$$\n     $$W = D_{\\text{moon}} \\times \\frac{\\Delta L}{L_{\\text{umbra}}} = 3,474\\text{ km} \\times \\frac{10,793\\text{ km}}{374,093\\text{ km}} \\approx 100.2\\text{ km}$$\n   *The umbra casts a circular dark spot of approximately $100\\text{ km}$ diameter moving across Earth's surface.*\n\n4. **Angular Diameter Calculations ($\\theta = \\frac{D}{d} \\times \\frac{180}{\\pi} \\times 60\\text{ arcmin}$):**\n   - **Solar Angular Diameter:**\n     $$\\theta_{\\odot} = \\frac{1,392,700}{149,600,000} = 0.0093095\\text{ radians} \\times 3,437.75\\text{ arcmin/rad} \\approx 32.00'\\text{ (32 arcminutes)}$$\n   - **Moon Angular Diameter at Perigee:**\n     $$\\theta_{\\text{moon, perigee}} = \\frac{3,474}{363,300} = 0.0095623\\text{ radians} \\approx 32.87'\\text{ (32.9 arcminutes)}$$\n     - Here $\\theta_{\\text{moon}} > \\theta_{\\odot}$ (by $\\approx 0.9'$), allowing total coverage and a Total Eclipse.\n   - **Moon Angular Diameter at Apogee:**\n     $$\\theta_{\\text{moon, apogee}} = \\frac{3,474}{405,500} = 0.0085672\\text{ radians} \\approx 29.45'\\text{ (29.5 arcminutes)}$$\n     - Here $\\theta_{\\text{moon}} < \\theta_{\\odot}$ (by $\\approx 2.5'$), leaving an uncovered solar border of $1.25'$ width around the Moon, forming the brilliant Annular \"Ring of Fire\".\n\n*Pedagogical Conclusion:* The occurrence of a Total versus Annular Solar Eclipse is purely dictated by orbital mechanics and the Moon's varying distance along its Keplerian ellipse.\n",
         "workedExamples": [
           {
-            "id": "ex_b7_s19_1",
-            "title": "Worked Example: Investigating Soil Water Retention Capacity",
-            "problem": "A student places 100 grams of dry sandy soil and 100 grams of dry clay soil into two identical filter funnels plugged with cotton wool. Exactly 100 cm³ of water is poured into each funnel. After 30 minutes, 85 cm³ of water has filtered through the sand, while only 25 cm³ has filtered through the clay. Calculate the volume of water retained by each soil type and explain the difference.",
-            "steps": [
-              "Step 1: Calculate water retained by Sand: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 85 cm³ = 15 cm³.",
-              "Step 2: Calculate water retained by Clay: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 25 cm³ = 75 cm³.",
-              "Step 3: Scientific explanation of the difference: Sandy soil consists of large particles with large non-capillary macropores that allow water to drain rapidly under gravity with minimal retention. Clay soil consists of microscopic colloidal particles packed tightly with immense total surface area and tiny micropores, generating powerful capillary forces that hold large volumes of water."
-            ],
-            "finalAnswer": "Examiner Tip: State the calculation clearly: Volume retained = Initial water added - Volume collected in measuring cylinder."
+            "id": "WE_B7_SS_01",
+            "title": "Worked Example 1: Earth Orbital Speed and Heliocentric Velocity",
+            "problem": "The Earth orbits the Sun at an average distance of r = 1.00 AU = 1.496 * 10^8 km in a tropical year of T = 365.25 days. (a) Convert T to seconds. (b) Calculate total orbital circumference C = 2πr. (c) Calculate Earth's average orbital velocity in km/s and km/h. (d) Reconcile with Kepler's Second Law at perihelion vs aphelion.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_SS_02",
+            "title": "Worked Example 2: Mathematical Derivation of the Synodic Lunar Month",
+            "problem": "The Moon revolves around Earth with a sidereal period of T_sid = 27.3217 days relative to fixed stars, while Earth orbits the Sun with period T_earth = 365.2564 days. (a) Find daily angular rates of Moon and Earth. (b) Derive the synodic lunar month T_syn. (c) Explain physically why the synodic month is ~2.2 days longer than the sidereal month.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_SS_03",
+            "title": "Worked Example 3: Gravitational Tidal Forces and Differential Ocean Acceleration",
+            "problem": "The differential tidal acceleration across Earth (radius R = 6.371 * 10^6 m) is a_tide = 2GMR / r^3. Given M_moon = 7.348 * 10^22 kg, r_moon = 3.844 * 10^8 m, M_sun = 1.989 * 10^30 kg, r_sun = 1.496 * 10^11 m: (a) Calculate lunar tidal acceleration. (b) Calculate solar tidal acceleration. (c) Find lunar/solar ratio. (d) Find Spring vs Neap tide force ratio.",
+            "steps": [],
+            "finalAnswer": ""
+          },
+          {
+            "id": "WE_B7_SS_04",
+            "title": "Worked Example 4: Umbral Shadow Geometry & Total vs. Annular Eclipse Thresholds",
+            "problem": "Given D_sun = 1,392,700 km, D_moon = 3,474 km, d_sun = 1.496 * 10^8 km, Moon perigee d_per = 363,300 km, Moon apogee d_apo = 405,500 km: (a) Calculate length of Moon's umbra L. (b) Compare L to perigee and apogee to explain Total vs Annular eclipses. (c) Calculate width of umbral spot on Earth at perigee. (d) Calculate angular diameter of Sun and Moon at perigee/apogee.",
+            "steps": [],
+            "finalAnswer": ""
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b7_s19_1",
+              "id": "B7_SS_F01",
               "difficulty": "low",
-              "prompt": "The disintegration of rocks into smaller pieces without any change in their chemical composition is called:",
+              "prompt": "What is the solar system scientifically defined as?",
               "options": [
-                "Chemical weathering",
-                "Physical (mechanical) weathering",
-                "Biological oxidation",
-                "Erosion"
+                "A. A collection of distant galaxies outside the Milky Way",
+                "B. The gravitationally bound system comprising the Sun and all celestial bodies orbiting it",
+                "C. The layer of gases that surrounds the planet Earth",
+                "D. An asteroid belt located between the Earth and the Moon"
               ],
-              "correctAnswer": "Physical (mechanical) weathering",
-              "hint": "Temperature changes and frost wedging are typical examples.",
-              "workedSolution": "Physical (mechanical) weathering fractures rocks into smaller fragments through mechanical forces (temperature expansion, frost wedging, abrasion) without altering chemical mineral identity.",
+              "correctAnswer": "B. The gravitationally bound system comprising the Sun and all celestial bodies orbiting it",
+              "hint": "The solar system consists of the Sun at its gravitational center and all celestial objects orbiting it directly or indirectly.",
+              "workedSolution": "The solar system consists of the Sun at its gravitational center and all celestial objects orbiting it directly or indirectly.",
               "points": 1,
-              "learningCompetency": "B7.5.5.1",
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F02",
+              "difficulty": "low",
+              "prompt": "What type of celestial body is the Sun situated at the center of the solar system?",
+              "options": [
+                "A. A rocky terrestrial planet",
+                "B. A dwarf planet",
+                "C. A star (yellow dwarf)",
+                "D. A luminous comet"
+              ],
+              "correctAnswer": "C. A star (yellow dwarf)",
+              "hint": "The Sun is an intermediate-sized main-sequence star (yellow dwarf) that generates heat and light by nuclear fusion.",
+              "workedSolution": "The Sun is an intermediate-sized main-sequence star (yellow dwarf) that generates heat and light by nuclear fusion.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F03",
+              "difficulty": "low",
+              "prompt": "How many recognized major planets are there in our solar system?",
+              "options": [
+                "A. Seven",
+                "B. Eight",
+                "C. Nine",
+                "D. Twelve"
+              ],
+              "correctAnswer": "B. Eight",
+              "hint": "Following the 2006 IAU classification, there are eight major planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.",
+              "workedSolution": "Following the 2006 IAU classification, there are eight major planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F04",
+              "difficulty": "low",
+              "prompt": "Which of the following is the planet located closest to the Sun?",
+              "options": [
+                "A. Venus",
+                "B. Mercury",
+                "C. Mars",
+                "D. Earth"
+              ],
+              "correctAnswer": "B. Mercury",
+              "hint": "Mercury is the innermost and smallest of the eight planets in our solar system.",
+              "workedSolution": "Mercury is the innermost and smallest of the eight planets in our solar system.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F05",
+              "difficulty": "low",
+              "prompt": "Which planet is commonly referred to as the 'Red Planet' due to iron oxide on its surface?",
+              "options": [
+                "A. Jupiter",
+                "B. Mars",
+                "C. Saturn",
+                "D. Mercury"
+              ],
+              "correctAnswer": "B. Mars",
+              "hint": "Mars appears reddish because of the abundance of iron(III) oxide (rust) covering its rocky surface.",
+              "workedSolution": "Mars appears reddish because of the abundance of iron(III) oxide (rust) covering its rocky surface.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F06",
+              "difficulty": "low",
+              "prompt": "Which is the hottest planet in the solar system due to a dense carbon dioxide greenhouse atmosphere?",
+              "options": [
+                "A. Mercury",
+                "B. Venus",
+                "C. Mars",
+                "D. Jupiter"
+              ],
+              "correctAnswer": "B. Venus",
+              "hint": "Venus has a thick atmosphere rich in carbon dioxide, producing a runaway greenhouse effect that makes it hotter than Mercury.",
+              "workedSolution": "Venus has a thick atmosphere rich in carbon dioxide, producing a runaway greenhouse effect that makes it hotter than Mercury.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F07",
+              "difficulty": "low",
+              "prompt": "Which is the largest planet in our solar system?",
+              "options": [
+                "A. Saturn",
+                "B. Neptune",
+                "C. Jupiter",
+                "D. Uranus"
+              ],
+              "correctAnswer": "C. Jupiter",
+              "hint": "Jupiter is the most massive and largest planet, containing more mass than all other planets combined.",
+              "workedSolution": "Jupiter is the most massive and largest planet, containing more mass than all other planets combined.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F08",
+              "difficulty": "low",
+              "prompt": "Which planet is famous for having a large, prominent system of rings composed of ice and rock particles?",
+              "options": [
+                "A. Saturn",
+                "B. Mars",
+                "C. Venus",
+                "D. Mercury"
+              ],
+              "correctAnswer": "A. Saturn",
+              "hint": "Saturn is distinguished by its extensive, highly reflective ring system consisting of water ice and rocky debris.",
+              "workedSolution": "Saturn is distinguished by its extensive, highly reflective ring system consisting of water ice and rocky debris.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F09",
+              "difficulty": "low",
+              "prompt": "The four inner planets with solid rocky crusts and metallic cores are known as:",
+              "options": [
+                "A. Jovian planets",
+                "B. Terrestrial planets",
+                "C. Gas giants",
+                "D. Ice giants"
+              ],
+              "correctAnswer": "B. Terrestrial planets",
+              "hint": "Mercury, Venus, Earth, and Mars are designated as terrestrial (rocky) planets due to their dense, solid silicate compositions.",
+              "workedSolution": "Mercury, Venus, Earth, and Mars are designated as terrestrial (rocky) planets due to their dense, solid silicate compositions.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F10",
+              "difficulty": "low",
+              "prompt": "The main asteroid belt in our solar system is located between the orbits of which two planets?",
+              "options": [
+                "A. Earth and Mars",
+                "B. Mars and Jupiter",
+                "C. Jupiter and Saturn",
+                "D. Venus and Earth"
+              ],
+              "correctAnswer": "B. Mars and Jupiter",
+              "hint": "The asteroid belt orbits between Mars and Jupiter, separating the inner terrestrial planets from the outer gas giants.",
+              "workedSolution": "The asteroid belt orbits between Mars and Jupiter, separating the inner terrestrial planets from the outer gas giants.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F11",
+              "difficulty": "low",
+              "prompt": "Why was Pluto reclassified as a 'dwarf planet' by the International Astronomical Union in 2006?",
+              "options": [
+                "A. It stopped revolving around the Sun",
+                "B. It has not cleared the neighborhood around its orbit",
+                "C. It lost all its natural moons",
+                "D. It turned into a comet"
+              ],
+              "correctAnswer": "B. It has not cleared the neighborhood around its orbit",
+              "hint": "Pluto shares its orbital zone in the Kuiper Belt with numerous other icy bodies and has not cleared its orbital neighborhood.",
+              "workedSolution": "Pluto shares its orbital zone in the Kuiper Belt with numerous other icy bodies and has not cleared its orbital neighborhood.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F12",
+              "difficulty": "low",
+              "prompt": "What is a comet primarily composed of?",
+              "options": [
+                "A. Molten iron and nickel",
+                "B. Frozen ices, rock dust, and organic compounds",
+                "C. Dense radioactive metals",
+                "D. Compressed liquid petroleum"
+              ],
+              "correctAnswer": "B. Frozen ices, rock dust, and organic compounds",
+              "hint": "Comets are often described as 'dirty snowballs' made of water ice, frozen gases, dust, and rocky materials.",
+              "workedSolution": "Comets are often described as 'dirty snowballs' made of water ice, frozen gases, dust, and rocky materials.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F13",
+              "difficulty": "low",
+              "prompt": "What is a 'shooting star' scientifically recognized as?",
+              "options": [
+                "A. A dying star collapsing in deep space",
+                "B. A meteor vaporizing due to friction in Earth's atmosphere",
+                "C. A piece of the Moon falling into the sea",
+                "D. An active nuclear explosion on Venus"
+              ],
+              "correctAnswer": "B. A meteor vaporizing due to friction in Earth's atmosphere",
+              "hint": "A meteor is the glowing streak of light produced when a meteoroid enters Earth's atmosphere and vaporizes through friction.",
+              "workedSolution": "A meteor is the glowing streak of light produced when a meteoroid enters Earth's atmosphere and vaporizes through friction.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F14",
+              "difficulty": "low",
+              "prompt": "A solid fragment of interplanetary rock that survives atmospheric entry and lands on Earth's surface is called a:",
+              "options": [
+                "A. Meteoroid",
+                "B. Meteor",
+                "C. Meteorite",
+                "D. Asteroid"
+              ],
+              "correctAnswer": "C. Meteorite",
+              "hint": "Surviving debris that impacts the ground is termed a meteorite.",
+              "workedSolution": "Surviving debris that impacts the ground is termed a meteorite.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F15",
+              "difficulty": "low",
+              "prompt": "What is Earth's rotation?",
+              "options": [
+                "A. The movement of the Earth along its elliptical orbit around the Sun",
+                "B. The spinning of the Earth on its imaginary axis",
+                "C. The wobbling of the ocean floor",
+                "D. The movement of the Moon around the Earth"
+              ],
+              "correctAnswer": "B. The spinning of the Earth on its imaginary axis",
+              "hint": "Rotation refers to the daily spinning of Earth on its geographic axis.",
+              "workedSolution": "Rotation refers to the daily spinning of Earth on its geographic axis.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F16",
+              "difficulty": "low",
+              "prompt": "In which direction does the Earth rotate on its axis when viewed from above the North Pole?",
+              "options": [
+                "A. From east to west (clockwise)",
+                "B. From west to east (counter-clockwise)",
+                "C. From north to south",
+                "D. From south to north"
+              ],
+              "correctAnswer": "B. From west to east (counter-clockwise)",
+              "hint": "Earth rotates eastward (west to east), causing the Sun, Moon, and stars to appear to rise in the east and set in the west.",
+              "workedSolution": "Earth rotates eastward (west to east), causing the Sun, Moon, and stars to appear to rise in the east and set in the west.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F17",
+              "difficulty": "low",
+              "prompt": "How long does it take the Earth to complete one full rotation on its axis?",
+              "options": [
+                "A. 12 hours",
+                "B. Approximately 24 hours (1 day)",
+                "C. 30 days",
+                "D. 365.25 days"
+              ],
+              "correctAnswer": "B. Approximately 24 hours (1 day)",
+              "hint": "One solar day—the time for Earth to complete one full rotation relative to the Sun—is approximately 24 hours.",
+              "workedSolution": "One solar day—the time for Earth to complete one full rotation relative to the Sun—is approximately 24 hours.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F18",
+              "difficulty": "low",
+              "prompt": "What primary natural phenomenon is caused by the rotation of the Earth?",
+              "options": [
+                "A. Alternation of day and night",
+                "B. The four annual seasons",
+                "C. Total solar eclipses",
+                "D. Phases of the Moon"
+              ],
+              "correctAnswer": "A. Alternation of day and night",
+              "hint": "As the Earth spins, the half facing the Sun experiences daylight, while the half turned away experiences darkness (night).",
+              "workedSolution": "As the Earth spins, the half facing the Sun experiences daylight, while the half turned away experiences darkness (night).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F19",
+              "difficulty": "low",
+              "prompt": "At what angle is the Earth's rotational axis tilted relative to the perpendicular of its orbital plane?",
+              "options": [
+                "A. 0°",
+                "B. 15.0°",
+                "C. 23.5°",
+                "D. 90.0°"
+              ],
+              "correctAnswer": "C. 23.5°",
+              "hint": "The Earth's rotational axis is tilted at an angle of 23.5° from the vertical (or 66.5° from the orbital plane).",
+              "workedSolution": "The Earth's rotational axis is tilted at an angle of 23.5° from the vertical (or 66.5° from the orbital plane).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F20",
+              "difficulty": "low",
+              "prompt": "What is the orbital movement of the Earth around the Sun called?",
+              "options": [
+                "A. Revolution",
+                "B. Rotation",
+                "C. Precession",
+                "D. Libration"
+              ],
+              "correctAnswer": "A. Revolution",
+              "hint": "The traveling of the Earth along its orbital path around the Sun is termed revolution.",
+              "workedSolution": "The traveling of the Earth along its orbital path around the Sun is termed revolution.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F21",
+              "difficulty": "low",
+              "prompt": "How long does the Earth take to complete one full revolution around the Sun?",
+              "options": [
+                "A. 24 hours",
+                "B. 29.5 days",
+                "C. Approximately 365.25 days (1 year)",
+                "D. Exactly 100 days"
+              ],
+              "correctAnswer": "C. Approximately 365.25 days (1 year)",
+              "hint": "Earth's orbital revolution takes approximately 365.25 days, which forms the basis of our calendar year.",
+              "workedSolution": "Earth's orbital revolution takes approximately 365.25 days, which forms the basis of our calendar year.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F22",
+              "difficulty": "low",
+              "prompt": "What astronomical cause accounts for the occurrence of a leap year every four years?",
+              "options": [
+                "A. Earth spins faster once every four years",
+                "B. Accumulation of the fractional 0.25 day (6 hours) per year into an extra 24-hour day",
+                "C. The Moon stops orbiting for 24 hours",
+                "D. The Sun expands slightly every four years"
+              ],
+              "correctAnswer": "B. Accumulation of the fractional 0.25 day (6 hours) per year into an extra 24-hour day",
+              "hint": "The 0.25 day from each year adds up to one full day (4 × 0.25 = 1 day) every four years, added to February as the 29th day.",
+              "workedSolution": "The 0.25 day from each year adds up to one full day (4 × 0.25 = 1 day) every four years, added to February as the 29th day.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F23",
+              "difficulty": "low",
+              "prompt": "The cycle of the seasons (Spring, Summer, Autumn, Winter) is caused by:",
+              "options": [
+                "A. Earth's changing distance from the Sun alone",
+                "B. The revolution of the Earth combined with its constant 23.5° axial tilt",
+                "C. The daily rotation of the Earth on its axis",
+                "D. Shadow cast by the Moon on the oceans"
+              ],
+              "correctAnswer": "B. The revolution of the Earth combined with its constant 23.5° axial tilt",
+              "hint": "The combination of the fixed 23.5° axial tilt and revolution causes different hemispheres to receive varying sunlight throughout the year.",
+              "workedSolution": "The combination of the fixed 23.5° axial tilt and revolution causes different hemispheres to receive varying sunlight throughout the year.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F24",
+              "difficulty": "low",
+              "prompt": "What is an equinox?",
+              "options": [
+                "A. A day when the Sun never sets at the equator",
+                "B. An astronomical date when day and night are of approximately equal length worldwide",
+                "C. The day when the Earth is closest to the Sun",
+                "D. The longest night of the year in the tropics"
+              ],
+              "correctAnswer": "B. An astronomical date when day and night are of approximately equal length worldwide",
+              "hint": "During an equinox (around March 21 and September 23), the Sun is directly over the equator, resulting in 12 hours of day and 12 hours of night globally.",
+              "workedSolution": "During an equinox (around March 21 and September 23), the Sun is directly over the equator, resulting in 12 hours of day and 12 hours of night globally.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F25",
+              "difficulty": "low",
+              "prompt": "The day of the year with the longest period of daylight in the Northern Hemisphere (around June 21) is called the:",
+              "options": [
+                "A. Summer solstice",
+                "B. Winter solstice",
+                "C. Vernal equinox",
+                "D. Autumnal equinox"
+              ],
+              "correctAnswer": "A. Summer solstice",
+              "hint": "The summer solstice occurs around June 21 when the Northern Hemisphere is tilted at its maximum toward the Sun.",
+              "workedSolution": "The summer solstice occurs around June 21 when the Northern Hemisphere is tilted at its maximum toward the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F26",
+              "difficulty": "low",
+              "prompt": "What is Earth's only natural satellite?",
+              "options": [
+                "A. Titan",
+                "B. Ganymede",
+                "C. The Moon",
+                "D. Europa"
+              ],
+              "correctAnswer": "C. The Moon",
+              "hint": "The Moon is Earth's sole permanent natural satellite.",
+              "workedSolution": "The Moon is Earth's sole permanent natural satellite.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F27",
+              "difficulty": "low",
+              "prompt": "Why does the Moon appear bright in the nighttime sky?",
+              "options": [
+                "A. It undergoes nuclear fusion like the Sun",
+                "B. It reflects sunlight directed at its surface",
+                "C. It contains glowing radioactive rocks",
+                "D. It generates bioluminescence"
+              ],
+              "correctAnswer": "B. It reflects sunlight directed at its surface",
+              "hint": "The Moon does not produce its own light; it reflects light emitted by the Sun.",
+              "workedSolution": "The Moon does not produce its own light; it reflects light emitted by the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F28",
+              "difficulty": "low",
+              "prompt": "Why do observers on Earth always see the same side of the Moon (synchronous rotation)?",
+              "options": [
+                "A. The Moon does not rotate on its axis at all",
+                "B. The Moon's rotational period matches its orbital period around Earth (27.3 days)",
+                "C. Earth does not rotate relative to the Moon",
+                "D. Clouds permanently obscure the far side"
+              ],
+              "correctAnswer": "B. The Moon's rotational period matches its orbital period around Earth (27.3 days)",
+              "hint": "Because the Moon's orbital period equals its rotational period, the same hemisphere constantly faces Earth.",
+              "workedSolution": "Because the Moon's orbital period equals its rotational period, the same hemisphere constantly faces Earth.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F29",
+              "difficulty": "low",
+              "prompt": "How long is the complete cycle of lunar phases (synodic month, from New Moon to New Moon)?",
+              "options": [
+                "A. 24 hours",
+                "B. 14 days",
+                "C. Approximately 29.5 days",
+                "D. 365 days"
+              ],
+              "correctAnswer": "C. Approximately 29.5 days",
+              "hint": "The synodic month—the time from one New Moon to the next—takes approximately 29.5 days.",
+              "workedSolution": "The synodic month—the time from one New Moon to the next—takes approximately 29.5 days.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F30",
+              "difficulty": "low",
+              "prompt": "During which lunar phase is the Moon positioned directly between the Earth and the Sun, making its near side dark and invisible?",
+              "options": [
+                "A. Full Moon",
+                "B. New Moon",
+                "C. First Quarter",
+                "D. Waxing Gibbous"
+              ],
+              "correctAnswer": "B. New Moon",
+              "hint": "At New Moon, the illuminated face of the Moon is directed away from Earth, rendering it invisible against the daylight sky.",
+              "workedSolution": "At New Moon, the illuminated face of the Moon is directed away from Earth, rendering it invisible against the daylight sky.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F31",
+              "difficulty": "low",
+              "prompt": "During which lunar phase is the entire illuminated hemisphere of the Moon visible from Earth?",
+              "options": [
+                "A. New Moon",
+                "B. Full Moon",
+                "C. Third Quarter",
+                "D. Waxing Crescent"
+              ],
+              "correctAnswer": "B. Full Moon",
+              "hint": "At Full Moon, Earth is between the Sun and Moon, so the entire near side is illuminated by direct sunlight.",
+              "workedSolution": "At Full Moon, Earth is between the Sun and Moon, so the entire near side is illuminated by direct sunlight.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F32",
+              "difficulty": "low",
+              "prompt": "The regular, periodic rise and fall of ocean surface levels is called:",
+              "options": [
+                "A. Tsunami",
+                "B. Tides",
+                "C. Rip currents",
+                "D. Whirlpools"
+              ],
+              "correctAnswer": "B. Tides",
+              "hint": "Tides are the periodic vertical movement of ocean waters caused by the gravitational forces of the Moon and Sun.",
+              "workedSolution": "Tides are the periodic vertical movement of ocean waters caused by the gravitational forces of the Moon and Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F33",
+              "difficulty": "low",
+              "prompt": "Which celestial body exerts the greatest gravitational pull in causing ocean tides on Earth?",
+              "options": [
+                "A. The Sun",
+                "B. The Moon",
+                "C. Jupiter",
+                "D. Mars"
+              ],
+              "correctAnswer": "B. The Moon",
+              "hint": "Although much smaller than the Sun, the Moon is much closer to Earth, exerting roughly twice the tide-generating force of the Sun.",
+              "workedSolution": "Although much smaller than the Sun, the Moon is much closer to Earth, exerting roughly twice the tide-generating force of the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F34",
+              "difficulty": "low",
+              "prompt": "Tides with the greatest tidal range (exceptionally high high tides and low low tides) are known as:",
+              "options": [
+                "A. Neap tides",
+                "B. Spring tides",
+                "C. Ebb tides",
+                "D. Rip tides"
+              ],
+              "correctAnswer": "B. Spring tides",
+              "hint": "Spring tides occur during New Moon and Full Moon when the Sun, Earth, and Moon align, combining their gravitational pulls.",
+              "workedSolution": "Spring tides occur during New Moon and Full Moon when the Sun, Earth, and Moon align, combining their gravitational pulls.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F35",
+              "difficulty": "low",
+              "prompt": "During which lunar phases do neap tides (tides with the lowest tidal range) occur?",
+              "options": [
+                "A. New Moon and Full Moon",
+                "B. First Quarter and Third Quarter moons",
+                "C. Waxing Crescent only",
+                "D. Waning Crescent only"
+              ],
+              "correctAnswer": "B. First Quarter and Third Quarter moons",
+              "hint": "Neap tides occur when the Sun and Moon are at right angles (90°) relative to Earth, partially canceling their gravitational forces.",
+              "workedSolution": "Neap tides occur when the Sun and Moon are at right angles (90°) relative to Earth, partially canceling their gravitational forces.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F36",
+              "difficulty": "low",
+              "prompt": "What is an astronomical eclipse?",
+              "options": [
+                "A. The explosion of a meteor in the atmosphere",
+                "B. The obscuring of light from one celestial body by the passage of another between it and the observer",
+                "C. The formation of northern lights in polar skies",
+                "D. The rapid freezing of ocean tides"
+              ],
+              "correctAnswer": "B. The obscuring of light from one celestial body by the passage of another between it and the observer",
+              "hint": "An eclipse occurs when a celestial body moves into the shadow of another body or passes directly between an observer and a light source.",
+              "workedSolution": "An eclipse occurs when a celestial body moves into the shadow of another body or passes directly between an observer and a light source.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F37",
+              "difficulty": "low",
+              "prompt": "What is the central, darkest, and fully obscured region of a shadow called?",
+              "options": [
+                "A. Penumbra",
+                "B. Umbra",
+                "C. Antumbra",
+                "D. Corona"
+              ],
+              "correctAnswer": "B. Umbra",
+              "hint": "The umbra is the inner cone of complete shadow where the light source is totally blocked.",
+              "workedSolution": "The umbra is the inner cone of complete shadow where the light source is totally blocked.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F38",
+              "difficulty": "low",
+              "prompt": "What is the lighter, outer portion of a shadow where only part of the light source is blocked?",
+              "options": [
+                "A. Umbra",
+                "B. Penumbra",
+                "C. Focus",
+                "D. Halo"
+              ],
+              "correctAnswer": "B. Penumbra",
+              "hint": "The penumbra is the outer fringe of a shadow where illumination is only partially obscured.",
+              "workedSolution": "The penumbra is the outer fringe of a shadow where illumination is only partially obscured.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F39",
+              "difficulty": "low",
+              "prompt": "In what order are the Sun, Earth, and Moon aligned during a solar eclipse?",
+              "options": [
+                "A. Sun — Earth — Moon",
+                "B. Sun — Moon — Earth",
+                "C. Earth — Sun — Moon",
+                "D. Moon — Sun — Earth"
+              ],
+              "correctAnswer": "B. Sun — Moon — Earth",
+              "hint": "A solar eclipse occurs when the Moon passes between the Sun and Earth, casting its shadow on Earth.",
+              "workedSolution": "A solar eclipse occurs when the Moon passes between the Sun and Earth, casting its shadow on Earth.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F40",
+              "difficulty": "low",
+              "prompt": "During which lunar phase can a solar eclipse occur?",
+              "options": [
+                "A. Full Moon",
+                "B. New Moon",
+                "C. First Quarter",
+                "D. Waning Gibbous"
+              ],
+              "correctAnswer": "B. New Moon",
+              "hint": "A solar eclipse can only happen at New Moon when the Moon passes between Earth and the Sun.",
+              "workedSolution": "A solar eclipse can only happen at New Moon when the Moon passes between Earth and the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F41",
+              "difficulty": "low",
+              "prompt": "What type of solar eclipse occurs when the Moon completely blocks the bright disk of the Sun?",
+              "options": [
+                "A. Annular solar eclipse",
+                "B. Partial solar eclipse",
+                "C. Total solar eclipse",
+                "D. Penumbral solar eclipse"
+              ],
+              "correctAnswer": "C. Total solar eclipse",
+              "hint": "In a total solar eclipse, observers within the Moon's umbra see the solar disk completely covered.",
+              "workedSolution": "In a total solar eclipse, observers within the Moon's umbra see the solar disk completely covered.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F42",
+              "difficulty": "low",
+              "prompt": "A solar eclipse where a thin outer 'ring of fire' (annulus) of the Sun remains visible around the dark Moon is a/an:",
+              "options": [
+                "A. Total solar eclipse",
+                "B. Annular solar eclipse",
+                "C. Hybrid lunar eclipse",
+                "D. Total lunar eclipse"
+              ],
+              "correctAnswer": "B. Annular solar eclipse",
+              "hint": "An annular eclipse happens when the Moon is near apogee and its apparent size is too small to cover the entire solar disk.",
+              "workedSolution": "An annular eclipse happens when the Moon is near apogee and its apparent size is too small to cover the entire solar disk.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F43",
+              "difficulty": "low",
+              "prompt": "In what order are the Sun, Earth, and Moon aligned during a lunar eclipse?",
+              "options": [
+                "A. Sun — Moon — Earth",
+                "B. Sun — Earth — Moon",
+                "C. Earth — Moon — Sun",
+                "D. Moon — Earth — Sun"
+              ],
+              "correctAnswer": "B. Sun — Earth — Moon",
+              "hint": "A lunar eclipse occurs when Earth passes directly between the Sun and Moon, casting its shadow onto the Moon.",
+              "workedSolution": "A lunar eclipse occurs when Earth passes directly between the Sun and Moon, casting its shadow onto the Moon.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F44",
+              "difficulty": "low",
+              "prompt": "During which lunar phase can a lunar eclipse occur?",
+              "options": [
+                "A. New Moon",
+                "B. First Quarter",
+                "C. Full Moon",
+                "D. Waning Crescent"
+              ],
+              "correctAnswer": "C. Full Moon",
+              "hint": "A lunar eclipse can only occur during the Full Moon phase when the Moon is opposite the Sun relative to Earth.",
+              "workedSolution": "A lunar eclipse can only occur during the Full Moon phase when the Moon is opposite the Sun relative to Earth.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F45",
+              "difficulty": "low",
+              "prompt": "Why does the Moon often take on a reddish or coppery color ('Blood Moon') during a total lunar eclipse?",
+              "options": [
+                "A. The Moon absorbs lava from active volcanoes",
+                "B. Earth's atmosphere bends and filters sunlight, scattering blue light and allowing refracted red light to reach the Moon",
+                "C. The Moon's surface catches fire",
+                "D. Carbon monoxide gas covers the lunar crust"
+              ],
+              "correctAnswer": "B. Earth's atmosphere bends and filters sunlight, scattering blue light and allowing refracted red light to reach the Moon",
+              "hint": "Rayleigh scattering in Earth's atmosphere filters out shorter blue wavelengths, while longer red wavelengths bend into the umbra.",
+              "workedSolution": "Rayleigh scattering in Earth's atmosphere filters out shorter blue wavelengths, while longer red wavelengths bend into the umbra.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F46",
+              "difficulty": "low",
+              "prompt": "Why do eclipses NOT occur every month at every New Moon and Full Moon?",
+              "options": [
+                "A. The Moon stops revolving during certain months",
+                "B. The Moon's orbital plane is tilted by approximately 5° relative to Earth's orbital plane (ecliptic)",
+                "C. The Sun changes its position in space monthly",
+                "D. The Earth's shadow vanishes during winter"
+              ],
+              "correctAnswer": "B. The Moon's orbital plane is tilted by approximately 5° relative to Earth's orbital plane (ecliptic)",
+              "hint": "Because the Moon's orbit is tilted 5°, the Moon usually passes slightly above or below the plane of Earth's orbit at syzygy.",
+              "workedSolution": "Because the Moon's orbit is tilted 5°, the Moon usually passes slightly above or below the plane of Earth's orbit at syzygy.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F47",
+              "difficulty": "low",
+              "prompt": "What is the faint, pearly white outer atmosphere of the Sun visible to the naked eye only during a total solar eclipse?",
+              "options": [
+                "A. Photosphere",
+                "B. Chromosphere",
+                "C. Corona",
+                "D. Core"
+              ],
+              "correctAnswer": "C. Corona",
+              "hint": "The solar corona is the outermost plasma atmosphere, visible only when the brilliant photosphere is occulted by the Moon.",
+              "workedSolution": "The solar corona is the outermost plasma atmosphere, visible only when the brilliant photosphere is occulted by the Moon.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F48",
+              "difficulty": "low",
+              "prompt": "Which of the following planets rotates on its side with an extreme axial tilt of approximately 98°?",
+              "options": [
+                "A. Jupiter",
+                "B. Uranus",
+                "C. Mars",
+                "D. Saturn"
+              ],
+              "correctAnswer": "B. Uranus",
+              "hint": "Uranus has an unusual axial tilt of ~98°, causing it to rotate nearly on its side relative to its orbital plane.",
+              "workedSolution": "Uranus has an unusual axial tilt of ~98°, causing it to rotate nearly on its side relative to its orbital plane.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F49",
+              "difficulty": "low",
+              "prompt": "What is the primary factor that allows liquid water and biological life to exist on Earth?",
+              "options": [
+                "A. Earth's location in the habitable 'Goldilocks' zone at an ideal distance from the Sun",
+                "B. Earth has two large natural moons",
+                "C. Earth revolves in a perfect square orbit",
+                "D. Earth has no atmosphere"
+              ],
+              "correctAnswer": "A. Earth's location in the habitable 'Goldilocks' zone at an ideal distance from the Sun",
+              "hint": "Earth's orbit sits within the circumstellar habitable zone where temperatures allow water to remain liquid.",
+              "workedSolution": "Earth's orbit sits within the circumstellar habitable zone where temperatures allow water to remain liquid.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_F50",
+              "difficulty": "low",
+              "prompt": "What is the name of the apparent boundary line dividing the daylight hemisphere from the dark hemisphere on Earth?",
+              "options": [
+                "A. Tropic of Cancer",
+                "B. Prime Meridian",
+                "C. Circle of illumination (terminator)",
+                "D. International Date Line"
+              ],
+              "correctAnswer": "C. Circle of illumination (terminator)",
+              "hint": "The circle of illumination (or terminator) is the moving boundary dividing the sunlit half of Earth from the nighttime half.",
+              "workedSolution": "The circle of illumination (or terminator) is the moving boundary dividing the sunlit half of Earth from the nighttime half.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b7_s19_2",
+              "id": "B7_SS_I01",
               "difficulty": "medium",
-              "prompt": "Which soil type possesses the highest water-holding capacity and highest capillarity, but drains the slowest?",
+              "prompt": "How does the composition of the Jovian outer gas giants differ fundamentally from the inner terrestrial planets?",
               "options": [
-                "Coarse sandy soil",
-                "Gravel",
-                "Clay soil",
-                "Pure silt"
+                "A. Jovian planets lack solid surfaces and are composed predominantly of light hydrogen and helium gases with low densities",
+                "B. Jovian planets are composed of solid granite rock",
+                "C. Terrestrial planets are hollow gas shells",
+                "D. Jovian planets have higher densities than terrestrial planets"
               ],
-              "correctAnswer": "Clay soil",
-              "hint": "Its microscopic particles create tiny capillary micropores.",
-              "workedSolution": "Clay particles are sub-microscopic with vast total surface area and tiny micropores, exerting high surface tension forces that retain large volumes of water and produce high capillary rise.",
+              "correctAnswer": "A. Jovian planets lack solid surfaces and are composed predominantly of light hydrogen and helium gases with low densities",
+              "hint": "The Jovian giants (Jupiter, Saturn) consist primarily of thick gaseous envelopes of hydrogen and helium, resulting in low mean densities.",
+              "workedSolution": "The Jovian giants (Jupiter, Saturn) consist primarily of thick gaseous envelopes of hydrogen and helium, resulting in low mean densities.",
               "points": 1,
-              "learningCompetency": "B7.5.5.1",
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I02",
+              "difficulty": "medium",
+              "prompt": "Why does Venus experience surface temperatures (~465°C) higher than Mercury, despite being farther from the Sun?",
+              "options": [
+                "A. Venus has an extreme runaway greenhouse effect caused by a dense atmosphere of 96% carbon dioxide",
+                "B. Venus generates internal heat through active nuclear fission in its oceans",
+                "C. Mercury has an atmosphere composed of pure ice crystals",
+                "D. Venus has several active artificial heaters"
+              ],
+              "correctAnswer": "A. Venus has an extreme runaway greenhouse effect caused by a dense atmosphere of 96% carbon dioxide",
+              "hint": "The massive, high-pressure carbon dioxide atmosphere on Venus traps outgoing infrared radiation, driving surface temperatures higher than Mercury's.",
+              "workedSolution": "The massive, high-pressure carbon dioxide atmosphere on Venus traps outgoing infrared radiation, driving surface temperatures higher than Mercury's.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I03",
+              "difficulty": "medium",
+              "prompt": "What physical mechanism creates the characteristic glowing coma and twin tails of a comet as it nears perihelion?",
+              "options": [
+                "A. Solar heat sublimates frozen volatile ices into gas, while solar wind and radiation pressure push ions and dust away from the Sun",
+                "B. Friction with interstellar gas burns the comet",
+                "C. The comet collides with asteroids in space",
+                "D. The comet's core undergoes volcanic combustion"
+              ],
+              "correctAnswer": "A. Solar heat sublimates frozen volatile ices into gas, while solar wind and radiation pressure push ions and dust away from the Sun",
+              "hint": "Solar radiant heating causes volatile ices to sublimate; radiation pressure and the solar wind then blow dust and ionized gas away from the Sun.",
+              "workedSolution": "Solar radiant heating causes volatile ices to sublimate; radiation pressure and the solar wind then blow dust and ionized gas away from the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I04",
+              "difficulty": "medium",
+              "prompt": "Why do the ion tail and dust tail of a comet point in slightly different directions away from the Sun?",
+              "options": [
+                "A. Lightweight ions are accelerated directly anti-solar by the magnetic solar wind, while heavier dust grains lag along the orbital path",
+                "B. The ion tail is pulled by Earth's gravity",
+                "C. Dust grains are repelled by the Moon",
+                "D. Ions are attracted toward Jupiter"
+              ],
+              "correctAnswer": "A. Lightweight ions are accelerated directly anti-solar by the magnetic solar wind, while heavier dust grains lag along the orbital path",
+              "hint": "The ionized gas tail aligns strictly with the radial solar wind lines, whereas dust particles experience photon pressure and lag behind the comet's curved trajectory.",
+              "workedSolution": "The ionized gas tail aligns strictly with the radial solar wind lines, whereas dust particles experience photon pressure and lag behind the comet's curved trajectory.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I05",
+              "difficulty": "medium",
+              "prompt": "What is the difference between a sidereal day and a solar day on Earth?",
+              "options": [
+                "A. A sidereal day (23 h 56 min) measures one rotation relative to distant stars, while a solar day (24 h) accounts for Earth's simultaneous orbital progress",
+                "B. A sidereal day is 48 hours long",
+                "C. A solar day is measured only during eclipses",
+                "D. A sidereal day occurs only during leap years"
+              ],
+              "correctAnswer": "A. A sidereal day (23 h 56 min) measures one rotation relative to distant stars, while a solar day (24 h) accounts for Earth's simultaneous orbital progress",
+              "hint": "Because Earth travels along its orbit while spinning, it must rotate roughly 1° extra (~4 minutes) to realign with the Sun, making a solar day 24 hours.",
+              "workedSolution": "Because Earth travels along its orbit while spinning, it must rotate roughly 1° extra (~4 minutes) to realign with the Sun, making a solar day 24 hours.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I06",
+              "difficulty": "medium",
+              "prompt": "How does the Coriolis effect, caused by Earth's axial rotation, alter wind patterns in the Northern and Southern Hemispheres?",
+              "options": [
+                "A. It deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+                "B. It deflects winds to the left in the Northern Hemisphere and to the right in the Southern",
+                "C. It stops all horizontal wind motion at the equator",
+                "D. It blows all air directly toward the poles"
+              ],
+              "correctAnswer": "A. It deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+              "hint": "Due to Earth's counter-clockwise rotation, moving air parcels are deflected rightward in the Northern Hemisphere and leftward in the Southern Hemisphere.",
+              "workedSolution": "Due to Earth's counter-clockwise rotation, moving air parcels are deflected rightward in the Northern Hemisphere and leftward in the Southern Hemisphere.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I07",
+              "difficulty": "medium",
+              "prompt": "What is meant by the 'parallelism of the Earth's axis' during its annual revolution?",
+              "options": [
+                "A. Earth's axis remains pointing toward the same direction in space (toward Polaris) throughout its orbit",
+                "B. The axis flips upside down every six months",
+                "C. The axis rotates 360° horizontally each week",
+                "D. The axis aligns parallel to the equator"
+              ],
+              "correctAnswer": "A. Earth's axis remains pointing toward the same direction in space (toward Polaris) throughout its orbit",
+              "hint": "Parallelism of the axis means Earth's tilt maintains a fixed orientation in space as it orbits, altering hemispheric insolation.",
+              "workedSolution": "Parallelism of the axis means Earth's tilt maintains a fixed orientation in space as it orbits, altering hemispheric insolation.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I08",
+              "difficulty": "medium",
+              "prompt": "Why do equatorial regions like Ghana experience roughly equal 12-hour days and 12-hour nights year-round?",
+              "options": [
+                "A. The circle of illumination bisects the equator almost equally regardless of the seasonal tilt of the poles",
+                "B. Ghana is located on the North Pole",
+                "C. The Sun does not shine on the equator during winter",
+                "D. The atmosphere at the equator is three times thicker"
+              ],
+              "correctAnswer": "A. The circle of illumination bisects the equator almost equally regardless of the seasonal tilt of the poles",
+              "hint": "Because the equator is a great circle equidistant from both poles, the circle of illumination divides it in half in all seasons.",
+              "workedSolution": "Because the equator is a great circle equidistant from both poles, the circle of illumination divides it in half in all seasons.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I09",
+              "difficulty": "medium",
+              "prompt": "What astronomical event occurs in the Southern Hemisphere on December 21 when the Tropic of Capricorn receives overhead noon sunlight?",
+              "options": [
+                "A. Summer solstice (longest daylight of the year)",
+                "B. Winter solstice (shortest daylight of the year)",
+                "C. Vernal equinox",
+                "D. Total solar eclipse"
+              ],
+              "correctAnswer": "A. Summer solstice (longest daylight of the year)",
+              "hint": "On December 21, the Southern Hemisphere is tilted maximally toward the Sun, experiencing its summer solstice and longest day.",
+              "workedSolution": "On December 21, the Southern Hemisphere is tilted maximally toward the Sun, experiencing its summer solstice and longest day.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I10",
+              "difficulty": "medium",
+              "prompt": "Why does the Moon lack an atmosphere and liquid surface water?",
+              "options": [
+                "A. Its low mass and weak surface gravity (1/6 of Earth) cannot retain gaseous molecules against thermal escape and solar wind stripping",
+                "B. The Moon is too hot to hold any chemical elements",
+                "C. Earth's gravity pulled all the Moon's gases away",
+                "D. Nuclear reactions on the Moon destroyed all water"
+              ],
+              "correctAnswer": "A. Its low mass and weak surface gravity (1/6 of Earth) cannot retain gaseous molecules against thermal escape and solar wind stripping",
+              "hint": "Weak lunar gravity yields an escape velocity too low to retain gas molecules excited by intense daytime solar heating.",
+              "workedSolution": "Weak lunar gravity yields an escape velocity too low to retain gas molecules excited by intense daytime solar heating.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I11",
+              "difficulty": "medium",
+              "prompt": "What causes the apparent changing shapes of the Moon (phases) seen from Earth over a month?",
+              "options": [
+                "A. Earth's shadow falling on the Moon every night",
+                "B. The varying perspective from which observers on Earth view the Moon's sunlit hemisphere as it orbits Earth",
+                "C. Clouds covering different parts of the Moon",
+                "D. The Moon expanding and contracting physically"
+              ],
+              "correctAnswer": "B. The varying perspective from which observers on Earth view the Moon's sunlit hemisphere as it orbits Earth",
+              "hint": "Half of the Moon is always sunlit; as it orbits Earth, observers see varying fractions of that illuminated half.",
+              "workedSolution": "Half of the Moon is always sunlit; as it orbits Earth, observers see varying fractions of that illuminated half.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I12",
+              "difficulty": "medium",
+              "prompt": "What is the sequence of lunar phases during the waxing portion of the cycle?",
+              "options": [
+                "A. New Moon → Waxing Crescent → First Quarter → Waxing Gibbous → Full Moon",
+                "B. Full Moon → Waning Gibbous → Third Quarter → New Moon",
+                "C. New Moon → Full Moon → Third Quarter → First Quarter",
+                "D. First Quarter → New Moon → Full Moon → Third Quarter"
+              ],
+              "correctAnswer": "A. New Moon → Waxing Crescent → First Quarter → Waxing Gibbous → Full Moon",
+              "hint": "'Waxing' denotes increasing illumination, progressing from New Moon through crescent, quarter, and gibbous to Full Moon.",
+              "workedSolution": "'Waxing' denotes increasing illumination, progressing from New Moon through crescent, quarter, and gibbous to Full Moon.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I13",
+              "difficulty": "medium",
+              "prompt": "How does the gravitational pull of the Moon produce two tidal bulges on opposite sides of the Earth simultaneously?",
+              "options": [
+                "A. It pulls ocean water toward it on the near side, and pulls the solid Earth away from water on the far side",
+                "B. The Moon pushes water away on both sides",
+                "C. The Sun creates both bulges alone",
+                "D. Earth's core pumps water outward"
+              ],
+              "correctAnswer": "A. It pulls ocean water toward it on the near side, and pulls the solid Earth away from water on the far side",
+              "hint": "Differential gravity attracts near-side ocean water strongly, while on the far side, Earth is pulled away from water, creating opposing bulges.",
+              "workedSolution": "Differential gravity attracts near-side ocean water strongly, while on the far side, Earth is pulled away from water, creating opposing bulges.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I14",
+              "difficulty": "medium",
+              "prompt": "Why do spring tides occur specifically during New Moon and Full Moon alignments (syzygy)?",
+              "options": [
+                "A. The gravitational tidal forces of the Sun and Moon reinforce one another along the same axis",
+                "B. The Moon is closest to Jupiter",
+                "C. Earth's rotational speed doubles",
+                "D. The Sun blocks the Moon's gravity"
+              ],
+              "correctAnswer": "A. The gravitational tidal forces of the Sun and Moon reinforce one another along the same axis",
+              "hint": "When the Sun, Earth, and Moon align linearly, their tidal bulges superimpose, maximizing tidal amplitude.",
+              "workedSolution": "When the Sun, Earth, and Moon align linearly, their tidal bulges superimpose, maximizing tidal amplitude.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I15",
+              "difficulty": "medium",
+              "prompt": "Why are total solar eclipses visible from only a very narrow geographic track on Earth's surface?",
+              "options": [
+                "A. The Moon's umbral shadow cone converges to a small tip (~100 to 250 km wide) by the time it reaches Earth",
+                "B. The Sun only shines on small countries",
+                "C. The Moon's shadow is absorbed by clouds",
+                "D. Earth's magnetic field bends the shadow away"
+              ],
+              "correctAnswer": "A. The Moon's umbral shadow cone converges to a small tip (~100 to 250 km wide) by the time it reaches Earth",
+              "hint": "Because the Moon is small and its distance places the apex of its umbra near Earth, the umbral footprint on Earth's surface is narrow.",
+              "workedSolution": "Because the Moon is small and its distance places the apex of its umbra near Earth, the umbral footprint on Earth's surface is narrow.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I16",
+              "difficulty": "medium",
+              "prompt": "What optical circumstance causes an annular solar eclipse rather than a total solar eclipse?",
+              "options": [
+                "A. The Moon is near apogee (farthest from Earth), so its angular diameter is smaller than the Sun's",
+                "B. The Moon is near perigee (closest to Earth)",
+                "C. Earth is at its maximum distance from the Sun",
+                "D. Clouds blur the outer edges of the Sun"
+              ],
+              "correctAnswer": "A. The Moon is near apogee (farthest from Earth), so its angular diameter is smaller than the Sun's",
+              "hint": "When the Moon is at apogee, its apparent disk cannot fully cover the Sun, leaving a bright ring (annulus) visible.",
+              "workedSolution": "When the Moon is at apogee, its apparent disk cannot fully cover the Sun, leaving a bright ring (annulus) visible.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I17",
+              "difficulty": "medium",
+              "prompt": "Why is a lunar eclipse safe to view with the naked eye, whereas a solar eclipse requires specialized protective filters?",
+              "options": [
+                "A. A lunar eclipse involves viewing reflected, filtered sunlight from the Moon, while a solar eclipse exposes retinas to intense direct solar radiation",
+                "B. The Moon emits cool ultraviolet rays",
+                "C. The Sun produces no light during eclipses",
+                "D. Lunar rock absorbs all thermal heat"
+              ],
+              "correctAnswer": "A. A lunar eclipse involves viewing reflected, filtered sunlight from the Moon, while a solar eclipse exposes retinas to intense direct solar radiation",
+              "hint": "Looking directly at the Sun concentrates intense rays that can permanently burn retinal tissue; the Moon merely reflects dim light.",
+              "workedSolution": "Looking directly at the Sun concentrates intense rays that can permanently burn retinal tissue; the Moon merely reflects dim light.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I18",
+              "difficulty": "medium",
+              "prompt": "What is the term for the two intersection points where the Moon's tilted orbital plane crosses the ecliptic plane?",
+              "options": [
+                "A. Apogee and Perigee",
+                "B. Orbital nodes (ascending and descending nodes)",
+                "C. Solstices",
+                "D. Perihelion and Aphelion"
+              ],
+              "correctAnswer": "B. Orbital nodes (ascending and descending nodes)",
+              "hint": "Nodes are the two points where the Moon's 5°-tilted orbit intersects the plane of Earth's orbit around the Sun.",
+              "workedSolution": "Nodes are the two points where the Moon's 5°-tilted orbit intersects the plane of Earth's orbit around the Sun.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I19",
+              "difficulty": "medium",
+              "prompt": "Why do lunar eclipses last significantly longer (often hours) than total solar eclipses (a few minutes)?",
+              "options": [
+                "A. Earth's umbral shadow is much larger than the Moon's umbra, so the Moon takes longer to transit across it",
+                "B. The Moon stops moving during lunar eclipses",
+                "C. Earth revolves faster during solar eclipses",
+                "D. The Sun shuts off light during lunar eclipses"
+              ],
+              "correctAnswer": "A. Earth's umbral shadow is much larger than the Moon's umbra, so the Moon takes longer to transit across it",
+              "hint": "Earth's shadow at the Moon's distance is roughly three times the Moon's diameter, requiring hours for the Moon to pass through.",
+              "workedSolution": "Earth's shadow at the Moon's distance is roughly three times the Moon's diameter, requiring hours for the Moon to pass through.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I20",
+              "difficulty": "medium",
+              "prompt": "How does the apparent path of the Sun across the sky change between June and December in the Northern Hemisphere?",
+              "options": [
+                "A. The noon Sun reaches its highest altitude in June and its lowest altitude in December",
+                "B. The Sun rises in the west in June",
+                "C. The noon Sun is highest in December",
+                "D. The Sun never rises in December anywhere"
+              ],
+              "correctAnswer": "A. The noon Sun reaches its highest altitude in June and its lowest altitude in December",
+              "hint": "Due to northern tilt toward the Sun in June, the Sun tracks higher noon arcs; in December, it tracks lower across the southern sky.",
+              "workedSolution": "Due to northern tilt toward the Sun in June, the Sun tracks higher noon arcs; in December, it tracks lower across the southern sky.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I21",
+              "difficulty": "medium",
+              "prompt": "What defines the astronomical point of 'perihelion' in Earth's orbit?",
+              "options": [
+                "A. The point where Earth is closest to the Sun in early January",
+                "B. The point where Earth is farthest from the Sun in July",
+                "C. The point where Earth crosses the equator",
+                "D. The moment an eclipse begins"
+              ],
+              "correctAnswer": "A. The point where Earth is closest to the Sun in early January",
+              "hint": "Perihelion is the orbital point closest to the Sun (~147 million km), occurring annually around January 3.",
+              "workedSolution": "Perihelion is the orbital point closest to the Sun (~147 million km), occurring annually around January 3.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I22",
+              "difficulty": "medium",
+              "prompt": "What is the Kuiper Belt?",
+              "options": [
+                "A. A disk-shaped region of icy bodies and dwarf planets extending beyond the orbit of Neptune",
+                "B. The ring system orbiting Saturn",
+                "C. The dust cloud surrounding Mercury",
+                "D. An asteroid belt between Earth and Mars"
+              ],
+              "correctAnswer": "A. A disk-shaped region of icy bodies and dwarf planets extending beyond the orbit of Neptune",
+              "hint": "The Kuiper Belt is a circumstellar reservoir of icy planetesimals and dwarf planets located beyond Neptune (30–50 AU).",
+              "workedSolution": "The Kuiper Belt is a circumstellar reservoir of icy planetesimals and dwarf planets located beyond Neptune (30–50 AU).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I23",
+              "difficulty": "medium",
+              "prompt": "Why is the Galilean moon Europa considered a prime candidate in the search for extraterrestrial microbial life?",
+              "options": [
+                "A. It possesses a subsurface liquid water ocean beneath a cracked ice crust, heated by tidal flexing",
+                "B. It has dense oxygen forests",
+                "C. Its surface is covered in warm soil",
+                "D. It orbits very close to the Sun"
+              ],
+              "correctAnswer": "A. It possesses a subsurface liquid water ocean beneath a cracked ice crust, heated by tidal flexing",
+              "hint": "Jupiter's tidal pull warms Europa's interior, maintaining a deep global liquid water ocean beneath its outer ice shell.",
+              "workedSolution": "Jupiter's tidal pull warms Europa's interior, maintaining a deep global liquid water ocean beneath its outer ice shell.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I24",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor that prevents objects in the asteroid belt from coalescing into a single planet?",
+              "options": [
+                "A. The strong gravitational perturbations exerted by nearby massive Jupiter",
+                "B. Solar radiation melted all the rock",
+                "C. The asteroids travel too slowly to collide",
+                "D. Earth's magnetic field repels them"
+              ],
+              "correctAnswer": "A. The strong gravitational perturbations exerted by nearby massive Jupiter",
+              "hint": "Jupiter's massive gravitational resonance stirred asteroid orbits, increasing collision velocities and preventing accretion into a planet.",
+              "workedSolution": "Jupiter's massive gravitational resonance stirred asteroid orbits, increasing collision velocities and preventing accretion into a planet.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I25",
+              "difficulty": "medium",
+              "prompt": "Which layer of the Sun is the visible surface from which most light is emitted into space?",
+              "options": [
+                "A. Photosphere",
+                "B. Corona",
+                "C. Chromosphere",
+                "D. Core"
+              ],
+              "correctAnswer": "A. Photosphere",
+              "hint": "The photosphere (~5,500°C) is the luminous atmospheric layer that emits the visible light we observe from Earth.",
+              "workedSolution": "The photosphere (~5,500°C) is the luminous atmospheric layer that emits the visible light we observe from Earth.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I26",
+              "difficulty": "medium",
+              "prompt": "What causes the solar wind that flows continuously throughout the solar system?",
+              "options": [
+                "A. Plasma of high-energy protons and electrons escaping the Sun's hot corona",
+                "B. Steam boiling from comets",
+                "C. Air currents produced by rotating planets",
+                "D. Dust blown from Saturn's rings"
+              ],
+              "correctAnswer": "A. Plasma of high-energy protons and electrons escaping the Sun's hot corona",
+              "hint": "The solar wind is a stream of charged plasma particles ejected outward from the Sun's corona into interplanetary space.",
+              "workedSolution": "The solar wind is a stream of charged plasma particles ejected outward from the Sun's corona into interplanetary space.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I27",
+              "difficulty": "medium",
+              "prompt": "How does Earth's geomagnetic field protect the biosphere from the solar wind?",
+              "options": [
+                "A. It deflects charged solar plasma around the planet within the magnetosphere",
+                "B. It absorbs all sunlight before it reaches ground",
+                "C. It freezes the solar wind into water",
+                "D. It converts solar particles into oxygen"
+              ],
+              "correctAnswer": "A. It deflects charged solar plasma around the planet within the magnetosphere",
+              "hint": "Earth's magnetic field shields our atmosphere from erosion by deflecting harmful charged particles toward the magnetic poles.",
+              "workedSolution": "Earth's magnetic field shields our atmosphere from erosion by deflecting harmful charged particles toward the magnetic poles.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I28",
+              "difficulty": "medium",
+              "prompt": "Why does a solar eclipse not occur at every New Moon?",
+              "options": [
+                "A. The 5° inclination of the Moon's orbit means its shadow usually misses Earth above or below",
+                "B. The Moon moves too fast to cast a shadow",
+                "C. The Sun's rays bend around the Moon",
+                "D. New Moon only happens once a year"
+              ],
+              "correctAnswer": "A. The 5° inclination of the Moon's orbit means its shadow usually misses Earth above or below",
+              "hint": "Due to the 5° tilt of the lunar orbital plane, syzygy does not usually coincide with crossing the ecliptic nodes.",
+              "workedSolution": "Due to the 5° tilt of the lunar orbital plane, syzygy does not usually coincide with crossing the ecliptic nodes.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I29",
+              "difficulty": "medium",
+              "prompt": "What is an annular eclipse an example of?",
+              "options": [
+                "A. A partial eclipse of the Moon",
+                "B. A central solar eclipse where the antumbra reaches Earth's surface",
+                "C. A total eclipse of the stars",
+                "D. An eclipse occurring at midnight"
+              ],
+              "correctAnswer": "B. A central solar eclipse where the antumbra reaches Earth's surface",
+              "hint": "In an annular eclipse, the Moon's umbra terminates before reaching Earth, and the antumbra extends to the surface.",
+              "workedSolution": "In an annular eclipse, the Moon's umbra terminates before reaching Earth, and the antumbra extends to the surface.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I30",
+              "difficulty": "medium",
+              "prompt": "Why are lunar craters preserved for billions of years, unlike craters on Earth?",
+              "options": [
+                "A. The Moon lacks water, wind, and active plate tectonics to erode surface features",
+                "B. Lunar craters are made of diamond",
+                "C. New rock covers craters weekly",
+                "D. The Moon's gravity repairs craters"
+              ],
+              "correctAnswer": "A. The Moon lacks water, wind, and active plate tectonics to erode surface features",
+              "hint": "Without atmospheric weather, precipitation, or crustal recycling, impact structures on the Moon remain intact over geological time.",
+              "workedSolution": "Without atmospheric weather, precipitation, or crustal recycling, impact structures on the Moon remain intact over geological time.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I31",
+              "difficulty": "medium",
+              "prompt": "What is the primary chemical element being fused inside the Sun's core to produce energy?",
+              "options": [
+                "A. Hydrogen into Helium",
+                "B. Carbon into Iron",
+                "C. Uranium into Lead",
+                "D. Oxygen into Water"
+              ],
+              "correctAnswer": "A. Hydrogen into Helium",
+              "hint": "Nuclear fusion in the solar core fuses four hydrogen nuclei (protons) into a single helium nucleus, releasing energy.",
+              "workedSolution": "Nuclear fusion in the solar core fuses four hydrogen nuclei (protons) into a single helium nucleus, releasing energy.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I32",
+              "difficulty": "medium",
+              "prompt": "How do the orbital speeds of inner planets compare to those of outer planets according to Kepler's laws?",
+              "options": [
+                "A. Inner planets travel much faster in their orbits than outer planets",
+                "B. All planets travel at identical orbital velocities",
+                "C. Outer planets move faster because they are larger",
+                "D. Planet speed depends on the number of moons"
+              ],
+              "correctAnswer": "A. Inner planets travel much faster in their orbits than outer planets",
+              "hint": "Gravitational pull decreases with distance; inner planets orbit much faster (e.g., Mercury ~47 km/s vs. Neptune ~5.4 km/s).",
+              "workedSolution": "Gravitational pull decreases with distance; inner planets orbit much faster (e.g., Mercury ~47 km/s vs. Neptune ~5.4 km/s).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I33",
+              "difficulty": "medium",
+              "prompt": "Which planet in the solar system has the shortest rotational period (day length)?",
+              "options": [
+                "A. Jupiter (~10 hours)",
+                "B. Venus (~243 days)",
+                "C. Earth (24 hours)",
+                "D. Mercury (~59 days)"
+              ],
+              "correctAnswer": "A. Jupiter (~10 hours)",
+              "hint": "Despite being the largest planet, Jupiter has the fastest axial spin, completing one rotation in approximately 9 hours and 55 minutes.",
+              "workedSolution": "Despite being the largest planet, Jupiter has the fastest axial spin, completing one rotation in approximately 9 hours and 55 minutes.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I34",
+              "difficulty": "medium",
+              "prompt": "What is the Great Red Spot on Jupiter?",
+              "options": [
+                "A. A massive, persistent high-pressure anticyclonic storm larger than Earth",
+                "B. An active volcanic caldera",
+                "C. A deep ocean of liquid water",
+                "D. A crater from an asteroid impact"
+              ],
+              "correctAnswer": "A. A massive, persistent high-pressure anticyclonic storm larger than Earth",
+              "hint": "The Great Red Spot is an enormous anticyclonic storm system that has persisted in Jupiter's atmosphere for centuries.",
+              "workedSolution": "The Great Red Spot is an enormous anticyclonic storm system that has persisted in Jupiter's atmosphere for centuries.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I35",
+              "difficulty": "medium",
+              "prompt": "What gives Neptune its intense deep blue coloration?",
+              "options": [
+                "A. Absorption of red light by atmospheric methane",
+                "B. Liquid water oceans covering the entire globe",
+                "C. Solid nitrogen crystals reflecting sunlight",
+                "D. Chemical sulfur reactions in clouds"
+              ],
+              "correctAnswer": "A. Absorption of red light by atmospheric methane",
+              "hint": "Atmospheric methane absorbs red wavelengths of light while reflecting blue light back into space.",
+              "workedSolution": "Atmospheric methane absorbs red wavelengths of light while reflecting blue light back into space.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I36",
+              "difficulty": "medium",
+              "prompt": "What is the primary difference between an asteroid and a meteoroid?",
+              "options": [
+                "A. Size: Asteroids are larger bodies (>1 meter up to hundreds of kilometers), while meteoroids are smaller fragments",
+                "B. Asteroids are made of ice, while meteoroids are gas",
+                "C. Asteroids never orbit the Sun",
+                "D. Meteoroids are always larger than planets"
+              ],
+              "correctAnswer": "A. Size: Asteroids are larger bodies (>1 meter up to hundreds of kilometers), while meteoroids are smaller fragments",
+              "hint": "Asteroids are larger rocky bodies, while meteoroids are smaller rocky fragments and debris in space.",
+              "workedSolution": "Asteroids are larger rocky bodies, while meteoroids are smaller rocky fragments and debris in space.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I37",
+              "difficulty": "medium",
+              "prompt": "What is the Oort Cloud?",
+              "options": [
+                "A. A theoretical spherical shell of distant icy planetesimals surrounding the outer boundary of the solar system",
+                "B. The cloud layer on Venus",
+                "C. A dust storm on Mars",
+                "D. The ring system around Uranus"
+              ],
+              "correctAnswer": "A. A theoretical spherical shell of distant icy planetesimals surrounding the outer boundary of the solar system",
+              "hint": "The Oort Cloud is an immense spherical cloud of icy cometary bodies encompassing the solar system out to ~100,000 AU.",
+              "workedSolution": "The Oort Cloud is an immense spherical cloud of icy cometary bodies encompassing the solar system out to ~100,000 AU.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I38",
+              "difficulty": "medium",
+              "prompt": "During which phase does the Moon appear as a half-disk illuminated on the observer's left-hand side (in Northern Hemisphere)?",
+              "options": [
+                "A. Third (Last) Quarter",
+                "B. First Quarter",
+                "C. Full Moon",
+                "D. Waxing Crescent"
+              ],
+              "correctAnswer": "A. Third (Last) Quarter",
+              "hint": "At Third Quarter, the Moon is three-quarters through its orbit, displaying half illumination on the western (left) side.",
+              "workedSolution": "At Third Quarter, the Moon is three-quarters through its orbit, displaying half illumination on the western (left) side.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I39",
+              "difficulty": "medium",
+              "prompt": "What is the primary reason why solar eclipses are shorter in duration than lunar eclipses?",
+              "options": [
+                "A. The Moon's shadow on Earth is very small, so the orbital motion sweeps it across the ground rapidly",
+                "B. Earth moves slower than the Moon",
+                "C. Sunlight travels faster during the day",
+                "D. The Sun shrinks during an eclipse"
+              ],
+              "correctAnswer": "A. The Moon's shadow on Earth is very small, so the orbital motion sweeps it across the ground rapidly",
+              "hint": "The Moon's small umbral shadow travels across Earth at over 1,700 km/h, limiting totality at any spot to under 7.5 minutes.",
+              "workedSolution": "The Moon's small umbral shadow travels across Earth at over 1,700 km/h, limiting totality at any spot to under 7.5 minutes.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I40",
+              "difficulty": "medium",
+              "prompt": "What is an antumbra?",
+              "options": [
+                "A. The region beyond the umbra where the obscuring body appears completely within the light source, creating an annulus",
+                "B. The center of the Earth",
+                "C. The bright surface of the Sun",
+                "D. A crater on the Moon"
+              ],
+              "correctAnswer": "A. The region beyond the umbra where the obscuring body appears completely within the light source, creating an annulus",
+              "hint": "The antumbra is the extension of the shadow beyond the umbra's apex, where the blocking body appears rimmed by light.",
+              "workedSolution": "The antumbra is the extension of the shadow beyond the umbra's apex, where the blocking body appears rimmed by light.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I41",
+              "difficulty": "medium",
+              "prompt": "Which planet in our solar system has the highest density?",
+              "options": [
+                "A. Earth",
+                "B. Jupiter",
+                "C. Saturn",
+                "D. Mercury"
+              ],
+              "correctAnswer": "A. Earth",
+              "hint": "Earth is the densest planet in the solar system (~5.51 g/cm³) due to its metallic core and gravitational compression.",
+              "workedSolution": "Earth is the densest planet in the solar system (~5.51 g/cm³) due to its metallic core and gravitational compression.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I42",
+              "difficulty": "medium",
+              "prompt": "Which planet has a density so low that it would theoretically float in a sufficiently large body of water?",
+              "options": [
+                "A. Saturn (~0.69 g/cm³)",
+                "B. Earth (~5.51 g/cm³)",
+                "C. Mars (~3.93 g/cm³)",
+                "D. Venus (~5.24 g/cm³)"
+              ],
+              "correctAnswer": "A. Saturn (~0.69 g/cm³)",
+              "hint": "Saturn's mean density is less than that of water (1.0 g/cm³), making it the least dense planet.",
+              "workedSolution": "Saturn's mean density is less than that of water (1.0 g/cm³), making it the least dense planet.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I43",
+              "difficulty": "medium",
+              "prompt": "Why does Mars have cold surface temperatures despite having a carbon dioxide atmosphere?",
+              "options": [
+                "A. Its atmosphere is extremely thin (<1% of Earth's pressure), retaining negligible heat",
+                "B. Its atmosphere is made of ice",
+                "C. Mars is too close to the Sun",
+                "D. Mars reflects 100% of solar light"
+              ],
+              "correctAnswer": "A. Its atmosphere is extremely thin (<1% of Earth's pressure), retaining negligible heat",
+              "hint": "Although Mars's atmosphere is mostly CO2, its low surface pressure (~6 mbar) is too sparse to provide significant greenhouse warming.",
+              "workedSolution": "Although Mars's atmosphere is mostly CO2, its low surface pressure (~6 mbar) is too sparse to provide significant greenhouse warming.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I44",
+              "difficulty": "medium",
+              "prompt": "What is the term for a planetary day on Mars?",
+              "options": [
+                "A. Sol",
+                "B. Lunar day",
+                "C. Epoch",
+                "D. Light year"
+              ],
+              "correctAnswer": "A. Sol",
+              "hint": "A Martian solar day is termed a 'sol', lasting approximately 24 hours, 39 minutes, and 35 seconds.",
+              "workedSolution": "A Martian solar day is termed a 'sol', lasting approximately 24 hours, 39 minutes, and 35 seconds.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I45",
+              "difficulty": "medium",
+              "prompt": "What creates the high-tide bulge on the side of Earth opposite to the Moon?",
+              "options": [
+                "A. The solid Earth is pulled toward the Moon more strongly than the water on the far side, leaving the water behind",
+                "B. Solar radiation pushes the water outward",
+                "C. The Moon's magnetic field repels the water",
+                "D. Earth's rotation creates a vacuum on that side"
+              ],
+              "correctAnswer": "A. The solid Earth is pulled toward the Moon more strongly than the water on the far side, leaving the water behind",
+              "hint": "Inertia and differential gravitational gradient leave water behind on the far side as Earth is pulled toward the Moon.",
+              "workedSolution": "Inertia and differential gravitational gradient leave water behind on the far side as Earth is pulled toward the Moon.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I46",
+              "difficulty": "medium",
+              "prompt": "Why does the Moon appear to rise approximately 50 minutes later each day?",
+              "options": [
+                "A. The Moon moves eastward in its orbit, so Earth must rotate further each day to bring the Moon into view",
+                "B. The Moon moves backward in space",
+                "C. Earth's rotation slows down each day",
+                "D. Earth's orbit tilts back and forth daily"
+              ],
+              "correctAnswer": "A. The Moon moves eastward in its orbit, so Earth must rotate further each day to bring the Moon into view",
+              "hint": "Because the Moon revolves eastward ~13° daily, Earth must rotate an extra ~50 minutes to realign with it.",
+              "workedSolution": "Because the Moon revolves eastward ~13° daily, Earth must rotate an extra ~50 minutes to realign with it.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I47",
+              "difficulty": "medium",
+              "prompt": "What causes the phenomenon known as 'Baily's beads' during a total solar eclipse?",
+              "options": [
+                "A. Sunlight shining through valleys along the rugged topographical limb of the Moon",
+                "B. Asteroids colliding with the Sun",
+                "C. Water droplets in the upper atmosphere",
+                "D. Reflection off satellites in orbit"
+              ],
+              "correctAnswer": "A. Sunlight shining through valleys along the rugged topographical limb of the Moon",
+              "hint": "Right before and after totality, beads of sunlight shine through valleys between lunar mountains along the Moon's edge.",
+              "workedSolution": "Right before and after totality, beads of sunlight shine through valleys between lunar mountains along the Moon's edge.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I48",
+              "difficulty": "medium",
+              "prompt": "What is the 'diamond ring effect' in a total solar eclipse?",
+              "options": [
+                "A. The single bright bead of sunlight remaining just before totality begins or ends, set against the corona",
+                "B. A ring of ice around the Moon",
+                "C. A halo caused by clouds on Earth",
+                "D. The reflection of Earth's oceans onto the Moon"
+              ],
+              "correctAnswer": "A. The single bright bead of sunlight remaining just before totality begins or ends, set against the corona",
+              "hint": "When only one point of sunlight shines through a lunar valley, it resembles a brilliant diamond on a ring formed by the corona.",
+              "workedSolution": "When only one point of sunlight shines through a lunar valley, it resembles a brilliant diamond on a ring formed by the corona.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I49",
+              "difficulty": "medium",
+              "prompt": "Why is retrograde rotation unique among major planets in Venus and Uranus?",
+              "options": [
+                "A. They rotate clockwise (east to west), opposite to most planets in the solar system",
+                "B. They do not revolve around the Sun",
+                "C. They change direction every month",
+                "D. They spin faster than light"
+              ],
+              "correctAnswer": "A. They rotate clockwise (east to west), opposite to most planets in the solar system",
+              "hint": "Most planets spin counter-clockwise; Venus and Uranus exhibit retrograde (clockwise) axial rotation.",
+              "workedSolution": "Most planets spin counter-clockwise; Venus and Uranus exhibit retrograde (clockwise) axial rotation.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_I50",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor determining the orbital eccentricity of planetary paths in the solar system?",
+              "options": [
+                "A. Kepler's First Law: All planets orbit in ellipses with the Sun at one focus",
+                "B. The number of active volcanoes on the planet",
+                "C. The speed of light in a vacuum",
+                "D. The composition of the solar core"
+              ],
+              "correctAnswer": "A. Kepler's First Law: All planets orbit in ellipses with the Sun at one focus",
+              "hint": "Kepler's First Law states that planetary orbits are ellipses of varying eccentricity, with the Sun situated at one focus.",
+              "workedSolution": "Kepler's First Law states that planetary orbits are ellipses of varying eccentricity, with the Sun situated at one focus.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B7_SS_A01",
+              "difficulty": "hard",
+              "prompt": "Earth's orbit has an eccentricity of 0.0167 with a semi-major axis of $1.496 \\times 10^8\\text{ km}$. If perihelion is $1.471 \\times 10^8\\text{ km}$, what is the aphelion distance?",
+              "options": [
+                "A. $1.496 \\times 10^8\\text{ km}$",
+                "B. $1.521 \\times 10^8\\text{ km}$",
+                "C. $1.550 \\times 10^8\\text{ km}$",
+                "D. $1.600 \\times 10^8\\text{ km}$"
+              ],
+              "correctAnswer": "B. $1.521 \\times 10^8\\text{ km}$",
+              "hint": "Aphelion $r_a = a(1 + e) = 1.496 \\times 10^8 \\times (1 + 0.0167) \\approx 1.521 \\times 10^8\\text{ km}$.",
+              "workedSolution": "Aphelion $r_a = a(1 + e) = 1.496 \\times 10^8 \\times (1 + 0.0167) \\approx 1.521 \\times 10^8\\text{ km}$.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A02",
+              "difficulty": "hard",
+              "prompt": "According to Kepler's Third Law ($T^2 \\propto r^3$), if an asteroid orbits at an average distance of 4 Astronomical Units (AU) from the Sun, what is its orbital period?",
+              "options": [
+                "A. 2 Earth years",
+                "B. 4 Earth years",
+                "C. 8 Earth years",
+                "D. 16 Earth years"
+              ],
+              "correctAnswer": "C. 8 Earth years",
+              "hint": "$T^2 = r^3 = 4^3 = 64$. Therefore, $T = \\sqrt{64} = 8\\text{ Earth years}$.",
+              "workedSolution": "$T^2 = r^3 = 4^3 = 64$. Therefore, $T = \\sqrt{64} = 8\\text{ Earth years}$.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A03",
+              "difficulty": "hard",
+              "prompt": "Why does the synodic month (29.5 days) take longer than the sidereal month (27.3 days) for the Moon?",
+              "options": [
+                "A. Earth moves along its orbit, so the Moon must travel an additional ~27° to re-align between Earth and Sun",
+                "B. The Moon expands in size during the month",
+                "C. Lunar gravity weakens at Full Moon",
+                "D. Earth's rotational speed drops by 10%"
+              ],
+              "correctAnswer": "A. Earth moves along its orbit, so the Moon must travel an additional ~27° to re-align between Earth and Sun",
+              "hint": "Because Earth travels along its orbit around the Sun, the Moon must revolve roughly 2.2 extra days to return to the same Sun-Earth geometry.",
+              "workedSolution": "Because Earth travels along its orbit around the Sun, the Moon must revolve roughly 2.2 extra days to return to the same Sun-Earth geometry.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A04",
+              "difficulty": "hard",
+              "prompt": "What is the Saros cycle (~18 years, 11 days, 8 hours) in eclipse prediction?",
+              "options": [
+                "A. The period after which the relative orbital geometries of the Sun, Earth, and Moon repeat almost identically",
+                "B. The time for the Sun to complete one galactic orbit",
+                "C. The lifespan of a sunspot",
+                "D. The time between successive leap years"
+              ],
+              "correctAnswer": "A. The period after which the relative orbital geometries of the Sun, Earth, and Moon repeat almost identically",
+              "hint": "The Saros cycle harmonizes three lunar orbital periods (synodic, draconic, and anomalistic), repeating eclipse geometries every ~18.03 years.",
+              "workedSolution": "The Saros cycle harmonizes three lunar orbital periods (synodic, draconic, and anomalistic), repeating eclipse geometries every ~18.03 years.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A05",
+              "difficulty": "hard",
+              "prompt": "Why is the tidal force proportional to the inverse cube of the distance ($F_{\\text{tidal}} \\propto 1/d^3$), whereas gravitational attraction is proportional to the inverse square ($F_g \\propto 1/d^2$)?",
+              "options": [
+                "A. Tidal force measures the spatial gradient (differential change) of gravitational attraction across a planetary diameter",
+                "B. Tides are produced by magnetic resonance",
+                "C. Water has three physical states (ice, liquid, vapor)",
+                "D. Gravity drops to zero in space"
+              ],
+              "correctAnswer": "A. Tidal force measures the spatial gradient (differential change) of gravitational attraction across a planetary diameter",
+              "hint": "Tides arise from the difference in gravity across Earth's body: differentiating $1/d^2$ with respect to distance yields a $1/d^3$ gradient dependence.",
+              "workedSolution": "Tides arise from the difference in gravity across Earth's body: differentiating $1/d^2$ with respect to distance yields a $1/d^3$ gradient dependence.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A06",
+              "difficulty": "hard",
+              "prompt": "Calculate the solar constant variation: If solar irradiance is $1,361\\text{ W/m}^2$ at 1 AU, what is the irradiance at Mars (1.524 AU) using the inverse-square law?",
+              "options": [
+                "A. $586\\text{ W/m}^2$",
+                "B. $893\\text{ W/m}^2$",
+                "C. $1,000\\text{ W/m}^2$",
+                "D. $1,361\\text{ W/m}^2$"
+              ],
+              "correctAnswer": "A. $586\\text{ W/m}^2$",
+              "hint": "$S_{\\text{Mars}} = S_{\\text{Earth}} / (r)^2 = 1,361 / (1.524)^2 = 1,361 / 2.3226 \\approx 586\\text{ W/m}^2$.",
+              "workedSolution": "$S_{\\text{Mars}} = S_{\\text{Earth}} / (r)^2 = 1,361 / (1.524)^2 = 1,361 / 2.3226 \\approx 586\\text{ W/m}^2$.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A07",
+              "difficulty": "hard",
+              "prompt": "Why does a penumbral lunar eclipse produce only a subtle darkening of the lunar surface rather than a dramatic eclipse?",
+              "options": [
+                "A. Observers on the Moon would still see a large portion of the solar disk unblocked by Earth, providing substantial direct illumination",
+                "B. Penumbral shadows do not exist in space",
+                "C. The Moon turns transparent during penumbra",
+                "D. Earth's atmosphere filters all shadow"
+              ],
+              "correctAnswer": "A. Observers on the Moon would still see a large portion of the solar disk unblocked by Earth, providing substantial direct illumination",
+              "hint": "In the penumbra, direct sunlight is only partially blocked; the remaining illumination keeps the lunar surface fairly bright.",
+              "workedSolution": "In the penumbra, direct sunlight is only partially blocked; the remaining illumination keeps the lunar surface fairly bright.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A08",
+              "difficulty": "hard",
+              "prompt": "How does the conservation of angular momentum explain why the inner planets orbit faster than outer planets?",
+              "options": [
+                "A. In a central gravitational field, orbital velocity must increase as radius decreases ($v = \\sqrt{GM/r}$) to maintain stable equilibrium",
+                "B. Inner planets possess greater mass than outer planets",
+                "C. Solar wind pushes outer planets backward",
+                "D. Friction slows down planets near Neptune"
+              ],
+              "correctAnswer": "A. In a central gravitational field, orbital velocity must increase as radius decreases ($v = \\sqrt{GM/r}$) to maintain stable equilibrium",
+              "hint": "Equating gravitational force to centripetal acceleration ($GMm/r^2 = mv^2/r$) gives $v = \\sqrt{GM/r}$; smaller radii necessitate higher orbital speeds.",
+              "workedSolution": "Equating gravitational force to centripetal acceleration ($GMm/r^2 = mv^2/r$) gives $v = \\sqrt{GM/r}$; smaller radii necessitate higher orbital speeds.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A09",
+              "difficulty": "hard",
+              "prompt": "What is the cause of the Milankovitch cycles that drive long-term Ice Ages on Earth?",
+              "options": [
+                "A. Periodic variations in Earth's orbital eccentricity, axial tilt (obliquity), and precession over tens of thousands of years",
+                "B. Fluctuations in the Sun's core nuclear fusion",
+                "C. Volcanic eruptions occurring every 10 years",
+                "D. Collisions between the Moon and asteroids"
+              ],
+              "correctAnswer": "A. Periodic variations in Earth's orbital eccentricity, axial tilt (obliquity), and precession over tens of thousands of years",
+              "hint": "Milankovitch cycles involve changes in eccentricity (~100k yr), tilt (~41k yr), and precession (~26k yr), altering seasonal insolation.",
+              "workedSolution": "Milankovitch cycles involve changes in eccentricity (~100k yr), tilt (~41k yr), and precession (~26k yr), altering seasonal insolation.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A10",
+              "difficulty": "hard",
+              "prompt": "Why does Rayleigh scattering in Earth's atmosphere cause the Moon to look reddish during a total lunar eclipse?",
+              "options": [
+                "A. Short blue wavelengths are scattered away by atmospheric gas molecules, while longer red wavelengths refract into Earth's umbra",
+                "B. Red light is absorbed by the Moon's rocks",
+                "C. Earth's core shines red light into space",
+                "D. The Moon's atmosphere reflects infrared rays"
+              ],
+              "correctAnswer": "A. Short blue wavelengths are scattered away by atmospheric gas molecules, while longer red wavelengths refract into Earth's umbra",
+              "hint": "Shorter wavelengths scatter out of the beam; only refracted red light passes through the atmospheric perimeter into the umbra.",
+              "workedSolution": "Shorter wavelengths scatter out of the beam; only refracted red light passes through the atmospheric perimeter into the umbra.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A11",
+              "difficulty": "hard",
+              "prompt": "What is the escape velocity from Earth's surface ($v_e = \\sqrt{2GM/R}$), given $G = 6.674 \\times 10^{-11}\\text{ m}^3/\\text{kg}\\cdot\\text{s}^2$, $M = 5.972 \\times 10^{24}\\text{ kg}$, and $R = 6.371 \\times 10^6\\text{ m}$?",
+              "options": [
+                "A. $7.9\\text{ km/s}$",
+                "B. $11.2\\text{ km/s}$",
+                "C. $25.0\\text{ km/s}$",
+                "D. $42.1\\text{ km/s}$"
+              ],
+              "correctAnswer": "B. $11.2\\text{ km/s}$",
+              "hint": "$v_e = \\sqrt{2 \\times 6.674 \\times 10^{-11} \\times 5.972 \\times 10^{24} / 6.371 \\times 10^6} = \\sqrt{1.2515 \\times 10^8} \\approx 11,187\\text{ m/s} \\approx 11.2\\text{ km/s}$.",
+              "workedSolution": "$v_e = \\sqrt{2 \\times 6.674 \\times 10^{-11} \\times 5.972 \\times 10^{24} / 6.371 \\times 10^6} = \\sqrt{1.2515 \\times 10^8} \\approx 11,187\\text{ m/s} \\approx 11.2\\text{ km/s}$.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A12",
+              "difficulty": "hard",
+              "prompt": "Why does Mercury experience extreme diurnal temperature swings from -180°C at night to +430°C during the day?",
+              "options": [
+                "A. It lacks an insulating atmosphere and has a slow rotation period (~59 Earth days per rotation)",
+                "B. It has oceans that boil every morning",
+                "C. Its core shuts down at night",
+                "D. Its orbit takes it outside the solar system"
+              ],
+              "correctAnswer": "A. It lacks an insulating atmosphere and has a slow rotation period (~59 Earth days per rotation)",
+              "hint": "Without an atmosphere to trap heat or distribute temperatures, prolonged exposure to intense sunlight alternates with long radiative cooling nights.",
+              "workedSolution": "Without an atmosphere to trap heat or distribute temperatures, prolonged exposure to intense sunlight alternates with long radiative cooling nights.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A13",
+              "difficulty": "hard",
+              "prompt": "What is the Roche limit in planetary astrophysics?",
+              "options": [
+                "A. The minimum distance to which a celestial body, held together only by gravity, can approach a planet without being torn apart by tidal forces",
+                "B. The distance at which planets stop orbiting the Sun",
+                "C. The edge of the observable universe",
+                "D. The temperature at which ice melts on comets"
+              ],
+              "correctAnswer": "A. The minimum distance to which a celestial body, held together only by gravity, can approach a planet without being torn apart by tidal forces",
+              "hint": "Inside the Roche limit, tidal differential forces exceed the satellite's self-gravitational cohesion, breaking it into rings.",
+              "workedSolution": "Inside the Roche limit, tidal differential forces exceed the satellite's self-gravitational cohesion, breaking it into rings.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A14",
+              "difficulty": "hard",
+              "prompt": "Why are Saturn's rings composed primarily of water ice rather than heavy silicate minerals?",
+              "options": [
+                "A. They formed from the tidal disruption of an ancient icy moon or comet that crossed inside Saturn's Roche limit",
+                "B. Saturn's core emits cold ice water",
+                "C. Solar wind freezes hydrogen into ice",
+                "D. Comets carry only gold and iron"
+              ],
+              "correctAnswer": "A. They formed from the tidal disruption of an ancient icy moon or comet that crossed inside Saturn's Roche limit",
+              "hint": "Ring particles are clean water ice fragments generated by the tidal shredding of an icy satellite or comet outside the snow line.",
+              "workedSolution": "Ring particles are clean water ice fragments generated by the tidal shredding of an icy satellite or comet outside the snow line.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A15",
+              "difficulty": "hard",
+              "prompt": "What is the physical cause of planetary differentiation during the early formation of terrestrial planets?",
+              "options": [
+                "A. Dense metallic iron-nickel sank to form cores, while lighter silicate minerals floated to form crusts and mantles",
+                "B. Planets were formed from cold solid sheets",
+                "C. Solar wind separated elements by color",
+                "D. Centrifugal force pushed heavy elements into space"
+              ],
+              "correctAnswer": "A. Dense metallic iron-nickel sank to form cores, while lighter silicate minerals floated to form crusts and mantles",
+              "hint": "In molten proto-planets, gravitational separation caused heavy metals to sink inward, forming dense cores surrounded by silicate mantles.",
+              "workedSolution": "In molten proto-planets, gravitational separation caused heavy metals to sink inward, forming dense cores surrounded by silicate mantles.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A16",
+              "difficulty": "hard",
+              "prompt": "Why does Venus rotate retrograde (clockwise) unlike most planets in the solar system?",
+              "options": [
+                "A. A massive collision during early accretion likely inverted its spin, or core-mantle-atmospheric tidal friction flipped its axis",
+                "B. The Sun's magnetic field reversed its direction",
+                "C. It was captured from another star system",
+                "D. Solar wind pushed its mountains backward"
+              ],
+              "correctAnswer": "A. A massive collision during early accretion likely inverted its spin, or core-mantle-atmospheric tidal friction flipped its axis",
+              "hint": "Giant protoplanetary impacts or atmospheric thermal tidal torques are the leading scientific explanations for Venus's reversed spin.",
+              "workedSolution": "Giant protoplanetary impacts or atmospheric thermal tidal torques are the leading scientific explanations for Venus's reversed spin.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A17",
+              "difficulty": "hard",
+              "prompt": "What is the 'ecliptic plane' in astronomical coordinates?",
+              "options": [
+                "A. The geometric plane defined by Earth's orbital path around the Sun",
+                "B. The plane of the Milky Way galaxy",
+                "C. The equator of the planet Mars",
+                "D. The boundary of the asteroid belt"
+              ],
+              "correctAnswer": "A. The geometric plane defined by Earth's orbital path around the Sun",
+              "hint": "The ecliptic is the reference plane containing Earth's orbit around the Sun, against which other orbital tilts are measured.",
+              "workedSolution": "The ecliptic is the reference plane containing Earth's orbit around the Sun, against which other orbital tilts are measured.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A18",
+              "difficulty": "hard",
+              "prompt": "How does the Moon's 5° orbital inclination relative to the ecliptic create eclipse seasons?",
+              "options": [
+                "A. Syzygy must coincide with nodal alignment, which happens only twice a year roughly every 173.3 days",
+                "B. Eclipses can only occur during leap years",
+                "C. The Moon's tilt changes from 0° to 90° monthly",
+                "D. Earth's axis wobbles every week"
+              ],
+              "correctAnswer": "A. Syzygy must coincide with nodal alignment, which happens only twice a year roughly every 173.3 days",
+              "hint": "Eclipse seasons occur when the line of nodes points toward the Sun, allowing shadows to align at New and Full Moon.",
+              "workedSolution": "Eclipse seasons occur when the line of nodes points toward the Sun, allowing shadows to align at New and Full Moon.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A19",
+              "difficulty": "hard",
+              "prompt": "What is tidal acceleration and its effect on the Earth-Moon system over geological time?",
+              "options": [
+                "A. Tidal friction transfers Earth's rotational momentum to the Moon, slowing Earth's spin and increasing lunar orbital radius (~3.8 cm/year)",
+                "B. The Moon is pulled closer to Earth each year",
+                "C. Earth spins faster by 1 hour per century",
+                "D. Ocean tides are disappearing completely"
+              ],
+              "correctAnswer": "A. Tidal friction transfers Earth's rotational momentum to the Moon, slowing Earth's spin and increasing lunar orbital radius (~3.8 cm/year)",
+              "hint": "Tidal bulges lead the Moon's position, exerting a gravitational torque that boosts the Moon into a higher orbit while braking Earth's rotation.",
+              "workedSolution": "Tidal bulges lead the Moon's position, exerting a gravitational torque that boosts the Moon into a higher orbit while braking Earth's rotation.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A20",
+              "difficulty": "hard",
+              "prompt": "What is the solar chromosphere?",
+              "options": [
+                "A. A thin reddish layer of the Sun's atmosphere above the photosphere, characterized by hydrogen-alpha emissions",
+                "B. The dark core of the Sun",
+                "C. The outer boundary of the solar system",
+                "D. A layer of cold carbon on the Sun"
+              ],
+              "correctAnswer": "A. A thin reddish layer of the Sun's atmosphere above the photosphere, characterized by hydrogen-alpha emissions",
+              "hint": "The chromosphere is a gaseous layer (~2,000 km thick) glowing with reddish hydrogen-alpha emission, visible during total solar eclipses.",
+              "workedSolution": "The chromosphere is a gaseous layer (~2,000 km thick) glowing with reddish hydrogen-alpha emission, visible during total solar eclipses.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A21",
+              "difficulty": "hard",
+              "prompt": "Why does the Sun appear slightly flattened at sunrise and sunset?",
+              "options": [
+                "A. Atmospheric refraction bends light from the bottom limb more than the top limb across the vertical air density gradient",
+                "B. The Sun actually flattens due to heat loss",
+                "C. Earth's gravity pulls on the Sun's shape",
+                "D. The Moon casts an invisible shadow"
+              ],
+              "correctAnswer": "A. Atmospheric refraction bends light from the bottom limb more than the top limb across the vertical air density gradient",
+              "hint": "Greater refraction near the horizon lifts the lower limb more than the upper limb, vertically compressing the solar disk.",
+              "workedSolution": "Greater refraction near the horizon lifts the lower limb more than the upper limb, vertically compressing the solar disk.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A22",
+              "difficulty": "hard",
+              "prompt": "What causes the solar cycle of sunspots, solar flares, and coronal mass ejections occurring roughly every 11 years?",
+              "options": [
+                "A. Differential solar rotation winds up and distorts the Sun's internal magnetic field until it reverses polarity",
+                "B. The gravitational pull of Jupiter orbiting every 11 years",
+                "C. Periodic collisions with comets",
+                "D. Fuel shortages in the solar core"
+              ],
+              "correctAnswer": "A. Differential solar rotation winds up and distorts the Sun's internal magnetic field until it reverses polarity",
+              "hint": "The Sun's equatorial plasma rotates faster than its poles, twisting magnetic field lines into concentrated flux tubes that erupt as sunspots.",
+              "workedSolution": "The Sun's equatorial plasma rotates faster than its poles, twisting magnetic field lines into concentrated flux tubes that erupt as sunspots.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A23",
+              "difficulty": "hard",
+              "prompt": "What is an astronomical unit (AU) based on?",
+              "options": [
+                "A. The mean distance between the center of the Earth and the center of the Sun (~149.6 million km)",
+                "B. The diameter of the planet Jupiter",
+                "C. The distance from Earth to the Moon",
+                "D. The distance light travels in one hour"
+              ],
+              "correctAnswer": "A. The mean distance between the center of the Earth and the center of the Sun (~149.6 million km)",
+              "hint": "One AU is defined as exactly 149,597,870,700 meters (~149.6 million km), representing the mean Earth-Sun orbital radius.",
+              "workedSolution": "One AU is defined as exactly 149,597,870,700 meters (~149.6 million km), representing the mean Earth-Sun orbital radius.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A24",
+              "difficulty": "hard",
+              "prompt": "Why is the synodic rotation period of the Sun (~27 days at equator) different from its sidereal rotation period (~25 days)?",
+              "options": [
+                "A. Earth orbits the Sun in the same direction, requiring extra rotation for a surface feature to realign with Earth",
+                "B. The Sun's core does not spin",
+                "C. Sunspots move backward",
+                "D. Earth's orbit is perpendicular to the Sun"
+              ],
+              "correctAnswer": "A. Earth orbits the Sun in the same direction, requiring extra rotation for a surface feature to realign with Earth",
+              "hint": "Because Earth travels along its orbit while the Sun rotates, solar surface features require ~2 extra days to face Earth again.",
+              "workedSolution": "Because Earth travels along its orbit while the Sun rotates, solar surface features require ~2 extra days to face Earth again.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A25",
+              "difficulty": "hard",
+              "prompt": "What is hydrostatic equilibrium in planetary physics?",
+              "options": [
+                "A. The balance between inward gravitational collapse and outward internal pressure that gives large celestial bodies a rounded shape",
+                "B. The point where water boils in space",
+                "C. The state where ocean tides stop moving",
+                "D. The balance between orbital speed and light"
+              ],
+              "correctAnswer": "A. The balance between inward gravitational collapse and outward internal pressure that gives large celestial bodies a rounded shape",
+              "hint": "When an object has sufficient mass, self-gravity overcomes rigid body forces, pulling it into a spherical shape (hydrostatic equilibrium).",
+              "workedSolution": "When an object has sufficient mass, self-gravity overcomes rigid body forces, pulling it into a spherical shape (hydrostatic equilibrium).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A26",
+              "difficulty": "hard",
+              "prompt": "Why do the Galilean satellites exhibit orbital resonance around Jupiter (1 Io : 2 Europa : 4 Ganymede)?",
+              "options": [
+                "A. Mutual gravitational interactions locked their orbital periods into exact small-integer Laplace ratios",
+                "B. They were created by an artificial satellite",
+                "C. Jupiter's magnetic field repels them equally",
+                "D. Solar wind forces them into alignment"
+              ],
+              "correctAnswer": "A. Mutual gravitational interactions locked their orbital periods into exact small-integer Laplace ratios",
+              "hint": "Gravitational tugs between Io, Europa, and Ganymede maintain stable 4:2:1 Laplace orbital resonance.",
+              "workedSolution": "Gravitational tugs between Io, Europa, and Ganymede maintain stable 4:2:1 Laplace orbital resonance.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A27",
+              "difficulty": "hard",
+              "prompt": "What fuels the active cryovolcanism observed on Saturn's moon Enceladus?",
+              "options": [
+                "A. Tidal heating from orbital resonance with Dione flexes the icy crust, maintaining a warm subsurface liquid ocean",
+                "B. Nuclear fission of surface uranium",
+                "C. Solar rays melting the ice crust",
+                "D. Combustion of atmospheric methane"
+              ],
+              "correctAnswer": "A. Tidal heating from orbital resonance with Dione flexes the icy crust, maintaining a warm subsurface liquid ocean",
+              "hint": "Tidal kneading from Saturn and neighboring moons generates geothermal friction, venting water vapor plumes through 'tiger stripes'.",
+              "workedSolution": "Tidal kneading from Saturn and neighboring moons generates geothermal friction, venting water vapor plumes through 'tiger stripes'.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A28",
+              "difficulty": "hard",
+              "prompt": "Why does the atmosphere of Titan exhibit surface pressure (1.5 bar) higher than Earth's, despite Titan's smaller size?",
+              "options": [
+                "A. Its cold temperature (~94 K) reduces gas kinetic energy, while abundant dense nitrogen forms a thick, heavy column",
+                "B. Titan has stronger gravity than Earth",
+                "C. Titan is made entirely of compressed iron",
+                "D. Titan's atmosphere is trapped under glass"
+              ],
+              "correctAnswer": "A. Its cold temperature (~94 K) reduces gas kinetic energy, while abundant dense nitrogen forms a thick, heavy column",
+              "hint": "Extreme cold slows molecular thermal escape, enabling dense nitrogen to build substantial surface atmospheric pressure.",
+              "workedSolution": "Extreme cold slows molecular thermal escape, enabling dense nitrogen to build substantial surface atmospheric pressure.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A29",
+              "difficulty": "hard",
+              "prompt": "What is the primary constituent of the ice giants Uranus and Neptune compared to the gas giants Jupiter and Saturn?",
+              "options": [
+                "A. Volatile 'ices' (water, ammonia, methane) forming a dense fluid mantle above a rocky core",
+                "B. Pure liquid metallic hydrogen only",
+                "C. Solid iron-nickel without atmospheres",
+                "D. Compressed liquid nitrogen"
+              ],
+              "correctAnswer": "A. Volatile 'ices' (water, ammonia, methane) forming a dense fluid mantle above a rocky core",
+              "hint": "Uranus and Neptune contain heavier volatile compounds ('ices': $H_2O, NH_3, CH_4$) rather than primarily hydrogen and helium.",
+              "workedSolution": "Uranus and Neptune contain heavier volatile compounds ('ices': $H_2O, NH_3, CH_4$) rather than primarily hydrogen and helium.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A30",
+              "difficulty": "hard",
+              "prompt": "Why does Mercury have an iron core that accounts for roughly 70% of its total mass and 85% of its radius?",
+              "options": [
+                "A. A giant impact likely stripped away much of its original silicate mantle, or solar vaporization depleted outer silicates",
+                "B. Mercury accreted only from iron meteorites",
+                "C. The Sun's gravity converted rock into iron",
+                "D. It is a dead star core"
+              ],
+              "correctAnswer": "A. A giant impact likely stripped away much of its original silicate mantle, or solar vaporization depleted outer silicates",
+              "hint": "Collision models indicate an energetic proto-planetary impact stripped Mercury's outer mantle, leaving an oversized metallic core.",
+              "workedSolution": "Collision models indicate an energetic proto-planetary impact stripped Mercury's outer mantle, leaving an oversized metallic core.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A31",
+              "difficulty": "hard",
+              "prompt": "What creates the Kirkwood gaps in the main asteroid belt?",
+              "options": [
+                "A. Orbital resonances with Jupiter that systematically clear out asteroids from specific semi-major axes",
+                "B. Space collisions with the Moon",
+                "C. The Sun's shadow freezing asteroids",
+                "D. Solar flares melting asteroids"
+              ],
+              "correctAnswer": "A. Orbital resonances with Jupiter that systematically clear out asteroids from specific semi-major axes",
+              "hint": "Asteroids orbiting at resonance ratios (e.g., 3:1, 2:1 with Jupiter) receive regular gravitational kicks that destabilize their orbits.",
+              "workedSolution": "Asteroids orbiting at resonance ratios (e.g., 3:1, 2:1 with Jupiter) receive regular gravitational kicks that destabilize their orbits.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A32",
+              "difficulty": "hard",
+              "prompt": "What is the primary mechanism of solar energy transport through the radiative zone of the Sun?",
+              "options": [
+                "A. Photons undergo repeated absorption and re-emission by dense plasma in a 'random walk' lasting over 100,000 years",
+                "B. Boiling convection currents",
+                "C. Sound waves traveling through gas",
+                "D. Direct electrical conduction through wires"
+              ],
+              "correctAnswer": "A. Photons undergo repeated absorption and re-emission by dense plasma in a 'random walk' lasting over 100,000 years",
+              "hint": "In the radiative zone, gamma photons scatter repeatedly off electrons, taking tens of millennia to migrate outward.",
+              "workedSolution": "In the radiative zone, gamma photons scatter repeatedly off electrons, taking tens of millennia to migrate outward.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A33",
+              "difficulty": "hard",
+              "prompt": "Why is the solar corona (~1,000,000 K) significantly hotter than the underlying photosphere (~5,500 K)?",
+              "options": [
+                "A. Magnetic reconnection events and magnetohydrodynamic Alfvén waves dissipate intense energy into the upper plasma",
+                "B. The corona is closer to other stars",
+                "C. Nuclear fusion occurs in the corona",
+                "D. The corona absorbs light from Earth"
+              ],
+              "correctAnswer": "A. Magnetic reconnection events and magnetohydrodynamic Alfvén waves dissipate intense energy into the upper plasma",
+              "hint": "Magnetic energy dissipation and acoustic/Alfvén wave damping heat the corona to millions of degrees above the cooler surface.",
+              "workedSolution": "Magnetic energy dissipation and acoustic/Alfvén wave damping heat the corona to millions of degrees above the cooler surface.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A34",
+              "difficulty": "hard",
+              "prompt": "What is the 'terminator' on a planetary body?",
+              "options": [
+                "A. The dividing boundary line between the illuminated day side and the dark night side",
+                "B. The highest mountain on the planet",
+                "C. An active impact crater",
+                "D. The magnetic south pole"
+              ],
+              "correctAnswer": "A. The dividing boundary line between the illuminated day side and the dark night side",
+              "hint": "The terminator is the locus of points experiencing sunrise or sunset, separating sunlit and shadowed hemispheres.",
+              "workedSolution": "The terminator is the locus of points experiencing sunrise or sunset, separating sunlit and shadowed hemispheres.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A35",
+              "difficulty": "hard",
+              "prompt": "Why do shadows cast by objects on Earth appear longest at sunrise and sunset and shortest at solar noon?",
+              "options": [
+                "A. The Sun's angle of elevation (altitude) is lowest near the horizon and highest at meridian transit",
+                "B. Sunlight travels slower at noon",
+                "C. The Earth expands at noon",
+                "D. Air pressure compresses shadows"
+              ],
+              "correctAnswer": "A. The Sun's angle of elevation (altitude) is lowest near the horizon and highest at meridian transit",
+              "hint": "Low solar elevation angles project long geometric shadows; high noon angles project minimal horizontal shadows.",
+              "workedSolution": "Low solar elevation angles project long geometric shadows; high noon angles project minimal horizontal shadows.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A36",
+              "difficulty": "hard",
+              "prompt": "What is the difference between an umbral and a penumbral lunar eclipse?",
+              "options": [
+                "A. In an umbral eclipse, the Moon enters Earth's dark inner shadow; in a penumbral eclipse, it passes only through the faint outer shadow",
+                "B. Umbral eclipses happen only during day",
+                "C. Penumbral eclipses make the Moon green",
+                "D. Umbral eclipses occur only at New Moon"
+              ],
+              "correctAnswer": "A. In an umbral eclipse, the Moon enters Earth's dark inner shadow; in a penumbral eclipse, it passes only through the faint outer shadow",
+              "hint": "An umbral eclipse involves passage into Earth's direct shadow cone; a penumbral eclipse involves subtle partial dimming.",
+              "workedSolution": "An umbral eclipse involves passage into Earth's direct shadow cone; a penumbral eclipse involves subtle partial dimming.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A37",
+              "difficulty": "hard",
+              "prompt": "How does the Moon's orbital eccentricity ($e = 0.0549$) affect eclipse phenomena on Earth?",
+              "options": [
+                "A. It changes the Moon's apparent angular size, determining whether a central solar eclipse is total or annular",
+                "B. It causes the Moon to change chemical composition",
+                "C. It stops tides during apogee",
+                "D. It flips Earth's axis of rotation"
+              ],
+              "correctAnswer": "A. It changes the Moon's apparent angular size, determining whether a central solar eclipse is total or annular",
+              "hint": "Varying distance alters the lunar angular diameter ($29.3'$ at apogee to $33.5'$ at perigee), dictating total vs. annular solar eclipses.",
+              "workedSolution": "Varying distance alters the lunar angular diameter ($29.3'$ at apogee to $33.5'$ at perigee), dictating total vs. annular solar eclipses.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A38",
+              "difficulty": "hard",
+              "prompt": "Why is the Far Side of the Moon more heavily cratered than the Near Side?",
+              "options": [
+                "A. The near-side crust is thinner and was flooded by extensive volcanic basalt (maria), burying older craters",
+                "B. The far side attracted all asteroids",
+                "C. The near side is protected by clouds",
+                "D. Earth's oceans covered near-side craters"
+              ],
+              "correctAnswer": "A. The near-side crust is thinner and was flooded by extensive volcanic basalt (maria), burying older craters",
+              "hint": "Thinner near-side crust allowed volcanic lava flows to pool in basins, forming dark maria that erased early impact craters.",
+              "workedSolution": "Thinner near-side crust allowed volcanic lava flows to pool in basins, forming dark maria that erased early impact craters.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A39",
+              "difficulty": "hard",
+              "prompt": "What is a transit of Mercury or Venus?",
+              "options": [
+                "A. The planet passes directly between the Sun and Earth, appearing as a small dark silhouette crossing the solar disk",
+                "B. The planet collides with the Moon",
+                "C. The planet explodes inside the Sun",
+                "D. The planet reflects solar flares"
+              ],
+              "correctAnswer": "A. The planet passes directly between the Sun and Earth, appearing as a small dark silhouette crossing the solar disk",
+              "hint": "An inferior planet transiting the Sun occults a fraction of the solar disk, visible as a small moving black dot.",
+              "workedSolution": "An inferior planet transiting the Sun occults a fraction of the solar disk, visible as a small moving black dot.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A40",
+              "difficulty": "hard",
+              "prompt": "What is the primary reason why solar eclipses occur during the day while lunar eclipses occur at night?",
+              "options": [
+                "A. Solar eclipses block the daytime Sun; lunar eclipses require viewing the Full Moon, which is opposite the Sun in the night sky",
+                "B. The Sun only exists during daytime",
+                "C. Lunar eclipses can only happen at noon",
+                "D. Solar eclipses reflect moonlight"
+              ],
+              "correctAnswer": "A. Solar eclipses block the daytime Sun; lunar eclipses require viewing the Full Moon, which is opposite the Sun in the night sky",
+              "hint": "Solar eclipses obscure daytime sunlight; lunar eclipses occur at Full Moon when the Moon is above the nighttime horizon.",
+              "workedSolution": "Solar eclipses obscure daytime sunlight; lunar eclipses occur at Full Moon when the Moon is above the nighttime horizon.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A41",
+              "difficulty": "hard",
+              "prompt": "What is the cause of the libration of the Moon, allowing observers on Earth to see roughly 59% of the lunar surface over time?",
+              "options": [
+                "A. The Moon's elliptical orbit causes variable orbital speed while its rotational speed remains uniform",
+                "B. The Moon rolls like a ball",
+                "C. Earth tilts by 90° every month",
+                "D. The Moon's axis is broken"
+              ],
+              "correctAnswer": "A. The Moon's elliptical orbit causes variable orbital speed while its rotational speed remains uniform",
+              "hint": "Uniform rotation combined with variable orbital velocity (Kepler's Second Law) lets us peer slightly around lunar limbs (libration).",
+              "workedSolution": "Uniform rotation combined with variable orbital velocity (Kepler's Second Law) lets us peer slightly around lunar limbs (libration).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A42",
+              "difficulty": "hard",
+              "prompt": "Why does a total solar eclipse cause local temperature drops and changes in animal behavior on Earth?",
+              "options": [
+                "A. The Moon's shadow cuts off direct solar irradiance abruptly, causing surface cooling and false-twilight behavioral cues",
+                "B. The Moon emits cold radiation",
+                "C. Animals sense magnetic reversals",
+                "D. The atmosphere loses all oxygen"
+              ],
+              "correctAnswer": "A. The Moon's shadow cuts off direct solar irradiance abruptly, causing surface cooling and false-twilight behavioral cues",
+              "hint": "Blocking solar irradiance drops ambient temperature rapidly; the sudden darkness prompts nocturnal instincts in fauna.",
+              "workedSolution": "Blocking solar irradiance drops ambient temperature rapidly; the sudden darkness prompts nocturnal instincts in fauna.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A43",
+              "difficulty": "hard",
+              "prompt": "What is the heliosphere?",
+              "options": [
+                "A. The vast bubble of space dominated by the Sun's magnetic field and solar wind, shielding the planets from galactic cosmic rays",
+                "B. The rocky core of Mars",
+                "C. A ring around Venus",
+                "D. The atmosphere of Mercury"
+              ],
+              "correctAnswer": "A. The vast bubble of space dominated by the Sun's magnetic field and solar wind, shielding the planets from galactic cosmic rays",
+              "hint": "The heliosphere is the protective cavity inflated by the solar wind into the interstellar medium, enclosing our planetary system.",
+              "workedSolution": "The heliosphere is the protective cavity inflated by the solar wind into the interstellar medium, enclosing our planetary system.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A44",
+              "difficulty": "hard",
+              "prompt": "How does the obliquity (tilt) of Mars's axis (~25.2°) compare to Earth's (~23.5°)?",
+              "options": [
+                "A. It is very similar, so Mars experiences seasonal cycles analogous to Earth's, though each season is nearly twice as long",
+                "B. Mars has zero tilt and no seasons",
+                "C. Mars is tilted by 180°",
+                "D. Mars seasons last only 2 days"
+              ],
+              "correctAnswer": "A. It is very similar, so Mars experiences seasonal cycles analogous to Earth's, though each season is nearly twice as long",
+              "hint": "Mars's 25.2° tilt produces four distinct seasons, but because its orbital year is 687 days, each season lasts roughly twice as long as Earth's.",
+              "workedSolution": "Mars's 25.2° tilt produces four distinct seasons, but because its orbital year is 687 days, each season lasts roughly twice as long as Earth's.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A45",
+              "difficulty": "hard",
+              "prompt": "Why is the greenhouse effect on Earth vital for life, whereas on Venus it is destructive?",
+              "options": [
+                "A. Earth's moderate greenhouse keeps surface water liquid (~15°C mean); Venus's runaway CO2 greenhouse drives temperatures to ~465°C",
+                "B. Earth has no greenhouse gases",
+                "C. Venus has liquid water oceans",
+                "D. Greenhouse gases on Venus are frozen"
+              ],
+              "correctAnswer": "A. Earth's moderate greenhouse keeps surface water liquid (~15°C mean); Venus's runaway CO2 greenhouse drives temperatures to ~465°C",
+              "hint": "Earth's balanced greenhouse keeps temperatures temperate; Venus's dense CO2 atmosphere traps heat to sterilizing extremes.",
+              "workedSolution": "Earth's balanced greenhouse keeps temperatures temperate; Venus's dense CO2 atmosphere traps heat to sterilizing extremes.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A46",
+              "difficulty": "hard",
+              "prompt": "What is the solar transition region?",
+              "options": [
+                "A. The narrow boundary layer between the chromosphere and corona where temperature surges from ~20,000 K to over 1,000,000 K",
+                "B. The center of Jupiter",
+                "C. The orbit of Earth",
+                "D. The surface of the Moon"
+              ],
+              "correctAnswer": "A. The narrow boundary layer between the chromosphere and corona where temperature surges from ~20,000 K to over 1,000,000 K",
+              "hint": "The transition region is an abrupt thermal boundary layer where solar plasma rapidly ionizes and heats into the coronal regime.",
+              "workedSolution": "The transition region is an abrupt thermal boundary layer where solar plasma rapidly ionizes and heats into the coronal regime.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A47",
+              "difficulty": "hard",
+              "prompt": "Why are meteor showers associated with comets?",
+              "options": [
+                "A. Earth passes through debris trails of dust and grit shed by comets along their orbits",
+                "B. Comets explode when hitting Earth",
+                "C. Meteors pull comets toward the Sun",
+                "D. Comets reflect moonlight into clouds"
+              ],
+              "correctAnswer": "A. Earth passes through debris trails of dust and grit shed by comets along their orbits",
+              "hint": "Periodic meteor showers occur when Earth intersects cometary dust streams, vaporizing grains as atmospheric meteors.",
+              "workedSolution": "Periodic meteor showers occur when Earth intersects cometary dust streams, vaporizing grains as atmospheric meteors.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A48",
+              "difficulty": "hard",
+              "prompt": "What is the primary factor distinguishing dwarf planet Ceres from neighboring asteroids in the main belt?",
+              "options": [
+                "A. Ceres has sufficient mass for its self-gravity to make it spherical (hydrostatic equilibrium)",
+                "B. Ceres is made entirely of gas",
+                "C. Ceres orbits the Moon",
+                "D. Ceres has planetary rings"
+              ],
+              "correctAnswer": "A. Ceres has sufficient mass for its self-gravity to make it spherical (hydrostatic equilibrium)",
+              "hint": "Ceres is massive enough to be rounded into hydrostatic equilibrium, classifying it as a dwarf planet rather than an irregular asteroid.",
+              "workedSolution": "Ceres is massive enough to be rounded into hydrostatic equilibrium, classifying it as a dwarf planet rather than an irregular asteroid.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A49",
+              "difficulty": "hard",
+              "prompt": "How does the alignment of the Earth, Moon, and Sun during a hybrid solar eclipse create different eclipse types along its path?",
+              "options": [
+                "A. Earth's curvature causes the eclipse to transition between annular and total along different points of the narrow shadow track",
+                "B. The Moon splits in half",
+                "C. The Sun changes temperature",
+                "D. The shadow bounces off the ocean"
+              ],
+              "correctAnswer": "A. Earth's curvature causes the eclipse to transition between annular and total along different points of the narrow shadow track",
+              "hint": "Along the curved path on Earth, the vertex of the Moon's umbra touches the surface in some places (total) and falls short in others (annular).",
+              "workedSolution": "Along the curved path on Earth, the vertex of the Moon's umbra touches the surface in some places (total) and falls short in others (annular).",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            },
+            {
+              "id": "B7_SS_A50",
+              "difficulty": "hard",
+              "prompt": "What is the ultimate fate of our Sun approximately 5 billion years from now?",
+              "options": [
+                "A. It will exhaust core hydrogen, expand into a Red Giant, shed outer layers as a planetary nebula, and leave a White Dwarf",
+                "B. It will explode as a supernova instantly tomorrow",
+                "C. It will turn into a terrestrial rocky planet",
+                "D. It will freeze into a giant comet"
+              ],
+              "correctAnswer": "A. It will exhaust core hydrogen, expand into a Red Giant, shed outer layers as a planetary nebula, and leave a White Dwarf",
+              "hint": "As a medium-mass star, the Sun will expand into a red giant, engulfing inner planets before shedding its envelope into a white dwarf.",
+              "workedSolution": "As a medium-mass star, the Sun will expand into a red giant, engulfing inner planets before shedding its envelope into a white dwarf.",
+              "points": 1,
+              "learningCompetency": "B7.5.5.1.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b8": {
@@ -44807,7 +47343,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-08T16:09:26.228Z"
+    "updatedAt": "2026-10-08T17:13:54.431Z"
   }
 ];
 
@@ -86057,51 +88593,2437 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS7",
     "strandNumber": 5,
     "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
-    "subStrandTitle": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "subStrandTitle": "Our Solar System, Earth & Celestial Dynamics (Planetary Architecture, Orbital Motions, Lunar Phases & Eclipses)",
     "order": 55,
     "notes": {
-      "summaryMarkdown": "### Pedology: Rock Weathering, Soil Texture & Physical Properties\n* **NaCCA Curriculum Code:** `B7.5.5.1`\n* **Core Competency:** Differentiate physical, chemical, and biological rock weathering, analyze soil fractions, and measure capillarity and water retention.\n\n#### 1. The Process of Soil Formation (Pedogenesis)\nSoil is the upper weathered layer of Earth's crust capable of sustaining plant life, formed by the progressive disintegration of parent bedrock:\n* **Physical (Mechanical) Weathering:** Breakdown of rocks into smaller fragments without altering chemical composition:\n  * *Thermal Exfoliation:* Alternate rapid heating (expansion by day) and cooling (contraction by night) in arid zones causes outer rock layers to crack and peel off.\n  * *Freeze-Thaw (Frost Wedging):* Water penetrates rock fissures, freezes, expands by $9\\%$, and wedges the rock apart.\n  * *Abrasion:* Wind-blown sand and tumbling river boulders grind rock faces.\n* **Chemical Weathering:** Decomposition altering the chemical mineral structure of rocks:\n  * *Carbonation:* Rainwater dissolves atmospheric $CO_2$ forming dilute carbonic acid ($\\text{H}_2\\text{CO}_3$), which dissolves limestone (calcium carbonate):\n    $$\\text{CaCO}_{3(s)} + \\text{H}_2\\text{CO}_{3(aq)} \\rightarrow \\text{Ca(HCO}_3)_{2(aq)}$$\n  * *Hydration & Hydrolysis:* Chemical absorption of water molecules into mineral crystal lattices.\n  * *Oxidation:* Reaction of atmospheric oxygen with iron minerals forming reddish, crumbly iron oxide (rust).\n* **Biological Weathering:** Living organisms disintegrating rocks:\n  * Tree roots growing into microscopic cracks and exerting outward wedge pressure.\n  * Lichens and mosses secreting organic chelating acids that etch rock surfaces.\n  * Burrowing animals (earthworms, termites, rodents) pulverizing and aerating rock debris.\n\n#### 2. Soil Texture & Physical Particle Fractions\n* **Sand Particles ($0.05 - 2.0\\text{ mm}$):** Coarse, gritty feel, large macropores. Excellent aeration, rapid percolation drainage, poor water and nutrient retention.\n* **Silt Particles ($0.002 - 0.05\\text{ mm}$):** Silky, smooth, flour-like texture when dry; moderate drainage.\n* **Clay Particles ($<0.002\\text{ mm}$):** Microscopic colloidal plates, sticky and plastic when wet, hard when dry. Tiny micropores, very slow percolation drainage, massive water retention capacity, high cation exchange capacity (CEC).\n* **Loam Soil:** The ideal agricultural mixture (roughly $40\\%$ sand, $40\\%$ silt, $20\\%$ clay, rich in organic humus), offering optimal balance between drainage, aeration, and moisture/nutrient retention.",
+      "summaryMarkdown": "# STRAND 5: HUMANS AND THE ENVIRONMENT\n## SUB-STRAND 5: OUR SOLAR SYSTEM AND THE EARTH\n### Basic 7 (JHS 1) — Comprehensive Instructional Notes & Vector Visual Suite\n\n---\n\n### Unit Overview & Curriculum Alignment\n- **Curriculum Framework:** Ministry of Education & National Council for Curriculum and Assessment (NaCCA) — Ghana Basic Education Common Core Programme (CCP).\n- **Strand:** 5 — Humans and the Environment\n- **Sub-Strand:** 5 — Our Solar System and the Earth\n- **Grade Level:** Basic 7 (Junior High School 1 / JHS 1)\n- **Content Standard:**\n  - **B7.5.5.1:** Demonstrate an understanding of the solar system, the celestial bodies, the movements of the Earth and Moon, and their resultant natural phenomena.\n- **Indicator:**\n  - **B7.5.5.1.1:** Describe the components and structure of the solar system, movements of the Earth and Moon, and explain phenomena such as day and night, seasons, and eclipses.\n- **Pedagogical Approach:** Direct instructional notes incorporating astronomical definitions, classifications of celestial bodies (planets, dwarf planets, moons, asteroids, comets, meteoroids), planetary motions, orbital dynamics, the physics of day and night, seasonal cycles, lunar phases, and solar and lunar eclipses.\n- **Core Competencies:** Critical Thinking and Problem Solving, Scientific Literacy, Spatial Reasoning, Observation and Mathematical Modeling.\n\n---\n\n### MODULE 1: Components and Architecture of the Solar System\n\n#### 1.1 Astronomical Definitions and Gravitational Binding\n1. **The Solar System:**\n   - *Scientific Definition:* The gravitationally bound planetary system comprising the Sun at the center and all celestial objects that orbit it directly or indirectly, including eight planets, their natural satellites (moons), dwarf planets, asteroids, comets, meteoroids, and interplanetary dust and gas.\n   - *Gravitational Primacy:* All orbital motions within the solar system are governed by **Newton's Universal Law of Gravitation** ($F = G \\frac{m_1 m_2}{r^2}$). Because the central star constitutes the overwhelming majority of total system mass, its intense gravitational well dictates the elliptical trajectories of all circulating bodies according to **Kepler's Laws of Planetary Motion**.\n2. **The Sun:**\n   - *Astrophysical Classification:* A **G-type main-sequence star (yellow dwarf)** situated at the gravitational center of the solar system.\n   - *Mass & Proportion:* The Sun possesses a mass of approximately $1.989 \\times 10^{30}\\text{ kg}$, which constitutes **$99.86\\%$ of the total mass** of the entire solar system.\n   - *Thermonuclear Core Fusion:* It generates immense radiant electromagnetic energy through the **proton-proton chain reaction**, continuously fusing hydrogen nuclei into helium nuclei in its super-dense core ($T_{\\text{core}} \\approx 15,000,000\\text{ K}$) at a mass-energy conversion rate governed by Einstein's equation ($E = \\Delta m c^2$).\n   - *Structure:* Comprises the thermonuclear core, radiative zone, convective zone, photosphere (the visible luminous surface, $T \\approx 5,778\\text{ K}$), chromosphere, and the tenuous, ultra-hot outer corona visible during total solar eclipses.\n\n---\n\n#### 1.2 Planetary Classification: Inner Terrestrial vs. Outer Jovian Planets\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"340\" viewBox=\"0 0 800 340\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"340\" rx=\"10\" fill=\"#0b0f19\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    ARCHITECTURE OF THE SOLAR SYSTEM: TERRESTRIAL &amp; JOVIAN PLANETARY ZONATION\n  </text>\n  \n  <!-- SUN -->\n  <g transform=\"translate(-10, 50)\">\n    <circle cx=\"10\" cy=\"120\" r=\"80\" fill=\"url(#sunGrad)\" stroke=\"#f59e0b\" stroke-width=\"2\"/>\n    <text x=\"65\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">THE SUN</text>\n    <text x=\"65\" y=\"140\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#fef08a\" text-anchor=\"middle\">99.86% Solar Mass</text>\n  </g>\n\n  <!-- INNER TERRESTRIAL PLANETS ZONE -->\n  <g transform=\"translate(110, 45)\">\n    <rect width=\"210\" height=\"235\" rx=\"6\" fill=\"#1e1b4b\" fill-opacity=\"0.3\" stroke=\"#4f46e5\" stroke-width=\"1\" stroke-dasharray=\"4,3\"/>\n    <text x=\"105\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#a5b4fc\" text-anchor=\"middle\">INNER TERRESTRIAL PLANETS</text>\n    <text x=\"105\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#c7d2fe\" text-anchor=\"middle\">(Rocky, High Density, Metallic Cores)</text>\n    \n    <!-- Mercury -->\n    <circle cx=\"28\" cy=\"80\" r=\"7\" fill=\"#9ca3af\" stroke=\"#d1d5db\" stroke-width=\"1\"/>\n    <text x=\"28\" y=\"102\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#e5e7eb\" text-anchor=\"middle\">Mercury</text>\n    <text x=\"28\" y=\"112\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#9ca3af\" text-anchor=\"middle\">0.39 AU</text>\n    <text x=\"28\" y=\"122\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#cbd5e1\" text-anchor=\"middle\">No Moons</text>\n\n    <!-- Venus -->\n    <circle cx=\"78\" cy=\"80\" r=\"12\" fill=\"#fde047\" stroke=\"#eab308\" stroke-width=\"1\"/>\n    <text x=\"78\" y=\"104\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#fef08a\" text-anchor=\"middle\">Venus</text>\n    <text x=\"78\" y=\"114\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fef08a\" text-anchor=\"middle\">0.72 AU</text>\n    <text x=\"78\" y=\"124\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fef9c3\" text-anchor=\"middle\">Runaway CO₂</text>\n\n    <!-- Earth -->\n    <circle cx=\"132\" cy=\"80\" r=\"13\" fill=\"#38bdf8\" stroke=\"#0284c7\" stroke-width=\"1\"/>\n    <text x=\"132\" y=\"105\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#bae6fd\" text-anchor=\"middle\">Earth</text>\n    <text x=\"132\" y=\"115\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#bae6fd\" text-anchor=\"middle\">1.00 AU</text>\n    <text x=\"132\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#e0f2fe\" text-anchor=\"middle\">1 Moon (Life)</text>\n\n    <!-- Mars -->\n    <circle cx=\"182\" cy=\"80\" r=\"9\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/>\n    <text x=\"182\" y=\"103\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#fca5a5\" text-anchor=\"middle\">Mars</text>\n    <text x=\"182\" y=\"113\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fca5a5\" text-anchor=\"middle\">1.52 AU</text>\n    <text x=\"182\" y=\"123\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fecaca\" text-anchor=\"middle\">Rust (Fe₂O₃)</text>\n\n    <rect x=\"15\" y=\"150\" width=\"180\" height=\"70\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"105\" y=\"166\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">Terrestrial Hallmarks:</text>\n    <text x=\"25\" y=\"180\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Silicate rock crust &amp; mantle</text>\n    <text x=\"25\" y=\"192\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Dense Iron-Nickel core</text>\n    <text x=\"25\" y=\"204\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Densities: 3.9 - 5.5 g/cm³</text>\n  </g>\n\n  <!-- MAIN ASTEROID BELT -->\n  <g transform=\"translate(328, 45)\">\n    <rect width=\"44\" height=\"235\" rx=\"4\" fill=\"#1c1917\" fill-opacity=\"0.4\" stroke=\"#78716c\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/>\n    <text x=\"22\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#d6d3d1\" text-anchor=\"middle\">ASTEROID</text>\n    <text x=\"22\" y=\"30\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#d6d3d1\" text-anchor=\"middle\">BELT</text>\n    <!-- Debris dots -->\n    <circle cx=\"15\" cy=\"55\" r=\"1.5\" fill=\"#a8a29e\"/><circle cx=\"28\" cy=\"70\" r=\"2\" fill=\"#d6d3d1\"/><circle cx=\"18\" cy=\"90\" r=\"1.2\" fill=\"#78716c\"/>\n    <circle cx=\"30\" cy=\"110\" r=\"2.5\" fill=\"#e7e5e4\"/><circle cx=\"14\" cy=\"135\" r=\"1.8\" fill=\"#a8a29e\"/><circle cx=\"26\" cy=\"160\" r=\"2.2\" fill=\"#d6d3d1\"/>\n    <circle cx=\"19\" cy=\"185\" r=\"1.5\" fill=\"#78716c\"/><circle cx=\"27\" cy=\"210\" r=\"2\" fill=\"#e7e5e4\"/>\n    <text x=\"22\" y=\"240\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#a8a29e\" text-anchor=\"middle\">Ceres</text>\n  </g>\n\n  <!-- OUTER JOVIAN GIANTS ZONE -->\n  <g transform=\"translate(380, 45)\">\n    <rect width=\"405\" height=\"235\" rx=\"6\" fill=\"#082f49\" fill-opacity=\"0.25\" stroke=\"#0284c7\" stroke-width=\"1\" stroke-dasharray=\"4,3\"/>\n    <text x=\"202\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">OUTER JOVIAN PLANETS (GAS &amp; ICE GIANTS)</text>\n    <text x=\"202\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#bae6fd\" text-anchor=\"middle\">(Low Density, Vast Rings, Extensive Satellites)</text>\n\n    <!-- Jupiter -->\n    <circle cx=\"50\" cy=\"80\" r=\"26\" fill=\"#ea580c\" stroke=\"#c2410c\" stroke-width=\"1.5\"/>\n    <line x1=\"26\" y1=\"74\" x2=\"74\" y2=\"74\" stroke=\"#fed7aa\" stroke-width=\"3\"/>\n    <line x1=\"28\" y1=\"84\" x2=\"72\" y2=\"84\" stroke=\"#9a3412\" stroke-width=\"3\"/>\n    <circle cx=\"62\" cy=\"88\" r=\"4\" fill=\"#b91c1c\"/>\n    <text x=\"50\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#fed7aa\" text-anchor=\"middle\">Jupiter</text>\n    <text x=\"50\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fdba74\" text-anchor=\"middle\">5.20 AU</text>\n    <text x=\"50\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fed7aa\" text-anchor=\"middle\">Great Red Spot</text>\n\n    <!-- Saturn -->\n    <g transform=\"translate(150, 80)\">\n      <ellipse cx=\"0\" cy=\"0\" rx=\"35\" ry=\"8\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"3\" stroke-opacity=\"0.8\" transform=\"rotate(-15)\"/>\n      <circle cx=\"0\" cy=\"0\" r=\"20\" fill=\"#eab308\" stroke=\"#ca8a04\" stroke-width=\"1.5\"/>\n      <ellipse cx=\"0\" cy=\"0\" rx=\"35\" ry=\"8\" fill=\"none\" stroke=\"#fde047\" stroke-width=\"2\" stroke-opacity=\"0.9\" stroke-dasharray=\"10,2\" transform=\"rotate(-15)\"/>\n    </g>\n    <text x=\"150\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#fef08a\" text-anchor=\"middle\">Saturn</text>\n    <text x=\"150\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#fef08a\" text-anchor=\"middle\">9.58 AU</text>\n    <text x=\"150\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#fef9c3\" text-anchor=\"middle\">Ring System</text>\n\n    <!-- Uranus -->\n    <circle cx=\"255\" cy=\"80\" r=\"16\" fill=\"#67e8f9\" stroke=\"#06b6d4\" stroke-width=\"1.2\"/>\n    <line x1=\"255\" y1=\"56\" x2=\"255\" y2=\"104\" stroke=\"#a5f3fc\" stroke-width=\"1.5\" stroke-dasharray=\"2,2\"/>\n    <text x=\"255\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#a5f3fc\" text-anchor=\"middle\">Uranus</text>\n    <text x=\"255\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#a5f3fc\" text-anchor=\"middle\">19.22 AU</text>\n    <text x=\"255\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#cffafe\" text-anchor=\"middle\">98° Tilt (Side)</text>\n\n    <!-- Neptune -->\n    <circle cx=\"345\" cy=\"80\" r=\"15\" fill=\"#2563eb\" stroke=\"#1d4ed8\" stroke-width=\"1.2\"/>\n    <text x=\"345\" y=\"118\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#93c5fd\" text-anchor=\"middle\">Neptune</text>\n    <text x=\"345\" y=\"128\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#93c5fd\" text-anchor=\"middle\">30.05 AU</text>\n    <text x=\"345\" y=\"138\" font-family=\"system-ui, sans-serif\" font-size=\"6\" fill=\"#bfdbfe\" text-anchor=\"middle\">Supersonic Winds</text>\n\n    <rect x=\"20\" y=\"150\" width=\"365\" height=\"70\" rx=\"4\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"202\" y=\"166\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#38bdf8\" text-anchor=\"middle\">Jovian Hallmarks:</text>\n    <text x=\"30\" y=\"180\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Deep H₂ / He atmospheres (Jupiter/Saturn) &amp; Volatile Ices H₂O/NH₃/CH₄ (Uranus/Neptune)</text>\n    <text x=\"30\" y=\"192\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Low average densities (Saturn density = 0.69 g/cm³; floats on water!)</text>\n    <text x=\"30\" y=\"204\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\">• Hundreds of moons (Ganymede, Titan, Io, Europa, Callisto, Triton) &amp; complex rings</text>\n  </g>\n\n  <!-- Gradients -->\n  <defs>\n    <radialGradient id=\"sunGrad\" cx=\"50%\" cy=\"50%\" r=\"50%\">\n      <stop offset=\"0%\" stop-color=\"#fef08a\"/>\n      <stop offset=\"60%\" stop-color=\"#f59e0b\"/>\n      <stop offset=\"100%\" stop-color=\"#ea580c\"/>\n    </radialGradient>\n  </defs>\n</svg>\n</div>\n\nThe eight major planets are divided into two distinct zones separated by the Main Asteroid Belt:\n\n##### A. Inner Terrestrial (Rocky) Planets\n*General Characteristics:* Located closest to the Sun; characterized by solid, rocky silicate crusts and mantles, metallic cores composed predominantly of iron and nickel, high mean bulk densities ($3.9\\text{--}5.5\\text{ g/cm}^3$), small diameters, slow axial rotation rates, few or no natural satellites, and the complete absence of planetary ring systems.\n\n1. **Mercury:**\n   - *Orbital Distance & Period:* Mean distance of $0.39\\text{ AU}$ ($57.9\\text{ million km}$); orbital period of $88\\text{ Earth days}$.\n   - *Physical Characteristics:* Smallest planet in the solar system (radius $\\approx 2,440\\text{ km}$, slightly larger than Earth's Moon). Heavily cratered surface resembling the lunar highlands, possessing an exceptionally large iron-nickel core constituting $\\approx 75\\%$ of its planetary radius.\n   - *Atmosphere & Temperature:* Possesses virtually no substantial atmosphere (only a tenuous, transient exosphere composed of atoms sputtered off by solar wind). Consequently, it experiences the most extreme diurnal temperature fluctuations in the solar system: soaring to $+430^\\circ\\text{C}$ on the sunlit hemisphere and plummeting to $-180^\\circ\\text{C}$ on the night side.\n   - *Satellites:* Zero ($0$) natural moons.\n\n2. **Venus:**\n   - *Orbital Distance & Period:* Mean distance of $0.72\\text{ AU}$ ($108.2\\text{ million km}$); orbital period of $224.7\\text{ Earth days}$.\n   - *Structural Similarity:* Often termed Earth's \"twin\" or \"sister planet\" due to nearly identical size, mass, and bulk density (radius $\\approx 6,052\\text{ km}$).\n   - *Runaway Greenhouse Atmosphere:* Venus is shrouded by an exceedingly dense, toxic atmosphere composed of **$96.5\\%$ Carbon Dioxide ($CO_2$)** with thick clouds of corrosive sulfuric acid ($H_2SO_4$). Surface atmospheric pressure is **$92\\text{ times}$** that of Earth (equivalent to $900\\text{ meters}$ under oceanic water).\n   - *Thermal State:* The extreme carbon dioxide blanket drives a catastrophic **runaway greenhouse effect**, trapping infrared heat and maintaining a uniform global surface temperature of approximately **$+465^\\circ\\text{C}$** day and night—making Venus the hottest planet in the solar system, hotter even than Mercury despite being nearly twice as far from the Sun.\n   - *Retrograde Rotation:* Rotates clockwise on its axis (**retrograde rotation**) from east to west (opposite to Earth and most other planets), taking $243\\text{ Earth days}$ to complete one axial rotation (longer than its orbital year!). Zero ($0$) moons.\n\n3. **Earth:**\n   - *Orbital Distance & Period:* Mean distance of $1.00\\text{ AU}$ ($149.6\\text{ million km}$); orbital period of $365.25\\text{ days}$.\n   - *Habitability & Uniqueness:* The third planet from the Sun and the only known celestial body in the universe verified to harbor biological life.\n   - *Physical Properties:* Possesses dynamic surface lithospheric plate tectonics, abundant liquid surface water covering approximately $71\\%$ of its surface (hydrosphere), an active protective geomagnetic field generated by geodynamo convection in its liquid iron outer core, and an atmosphere composed of **$78\\%$ Nitrogen ($N_2$)**, **$21\\%$ Oxygen ($O_2$)**, and trace argon, carbon dioxide, and water vapor.\n   - *Satellites:* Possesses one large natural satellite: the Moon (*Luna*).\n\n4. **Mars:**\n   - *Orbital Distance & Period:* Mean distance of $1.52\\text{ AU}$ ($227.9\\text{ million km}$); orbital period of $687\\text{ Earth days}$.\n   - *The \"Red Planet\":* Known for its characteristic reddish-orange hue, produced by widespread oxidation of iron minerals on its surface, coating the regolith in abundant iron(III) oxide ($\text{Fe}_2\text{O}_3$, or rust).\n   - *Topography & Geology:* Features the solar system's largest volcano, **Olympus Mons** (a shield volcano rising $22\\text{ km}$ high, nearly three times the height of Mount Everest), and the vast canyon rift system **Valles Marineris** ($4,000\\text{ km}$ long and up to $7\\text{ km}$ deep).\n   - *Atmosphere & Ice Caps:* Has a thin atmosphere (surface pressure $\\approx 0.6\\%$ of Earth's) dominated by $95\\%\\, CO_2$. Possesses permanent polar ice caps composed of water ice overlain by seasonal frozen dry ice (solid carbon dioxide).\n   - *Satellites:* Two small, irregularly shaped, captured asteroidal moons: **Phobos** (fear) and **Deimos** (dread).\n\n---\n\n##### B. Outer Jovian (Giant) Planets\n*General Characteristics:* Located beyond the Main Asteroid Belt; massive in volume and mass, low average densities ($0.69\\text{--}1.64\\text{ g/cm}^3$), lacking a well-defined solid surface, composed primarily of hydrogen, helium, or volatile hydrogen compounds (water, ammonia, methane ices). They possess deep turbulent atmospheres, powerful magnetic fields, extensive systems of natural satellites, and intricate circumplanetary ring systems.\n\n1. **Jupiter:**\n   - *Orbital Distance & Period:* Mean distance of $5.20\\text{ AU}$ ($778.5\\text{ million km}$); orbital period of $11.86\\text{ Earth years}$.\n   - *Mass & Scale:* The largest planet in the solar system, with a mass $318\\text{ times}$ that of Earth and more than **$2.5\\text{ times}$ the combined mass of all other seven planets combined**.\n   - *Composition & Internal Structure:* A gas giant composed of $\\approx 90\\%$ hydrogen and $\\approx 10\\%$ helium. At extreme interior depths, crushing pressures convert molecular hydrogen into an exotic electrically conducting fluid state known as **liquid metallic hydrogen**, generating an immense planetary magnetosphere.\n   - *Atmospheric Meteorology:* Marked by alternating bright zones (upwelling cold ammonia-ice clouds) and dark belts (downwelling warm clouds), whipped by zonal winds exceeding $500\\text{ km/h}$. Features the **Great Red Spot**, a gigantic anticyclonic storm larger than the diameter of Earth that has persisted for over 350 years.\n   - *Satellites:* Hosts over 95 confirmed moons, including the four massive **Galilean moons** discovered by Galileo Galilei in 1610:\n     - **Io:** The most volcanically active body in the solar system, covered in sulfur volcanoes driven by tidal gravitational kneading from Jupiter.\n     - **Europa:** Possesses a smooth, fractured water-ice shell overlying a vast global subsurface liquid water ocean that holds more liquid water than all Earth's oceans combined.\n     - **Ganymede:** The largest moon in the solar system (larger than planet Mercury), possessing its own intrinsic magnetic field.\n     - **Callisto:** Heavily cratered, geologically ancient ice-rock body.\n\n2. **Saturn:**\n   - *Orbital Distance & Period:* Mean distance of $9.58\\text{ AU}$ ($1.43\\text{ billion km}$); orbital period of $29.46\\text{ Earth years}$.\n   - *Density Anomaly:* The second-largest planet, famous for having the lowest bulk density of any celestial body in the solar system ($approx 0.69\\text{ g/cm}^3$, which is **less dense than liquid water**—meaning Saturn would float if placed in a sufficiently vast ocean).\n   - *Ring System:* Possesses the most extensive, luminous, and spectacular ring system in the solar system, spanning up to $282,000\\text{ km}$ across but measuring merely $10\\text{ to }100\\text{ meters}$ in vertical thickness. The rings are composed of billions of individual particles ranging in size from microscopic dust grains to house-sized boulders, composed of **$99\\%$ pure water ice** with silicate impurities.\n   - *Satellites:* Over 140 confirmed moons. Prominent among them is **Titan**, the second-largest moon in the solar system, which possesses a dense nitrogen-rich atmosphere ($1.5\\text{ atm}$) with clouds, rain, rivers, and lakes of liquid hydrocarbons (methane and ethane); and **Enceladus**, an active icy moon erupting cryovolcanic geysers of water vapor and organic salts from a subsurface ocean.\n\n3. **Uranus:**\n   - *Orbital Distance & Period:* Mean distance of $19.22\\text{ AU}$ ($2.87\\text{ billion km}$); orbital period of $84.01\\text{ Earth years}$.\n   - *Ice Giant Classification:* An \"ice giant\" composed primarily of heavier volatile elements (water, ammonia, methane ices) surrounding a small rocky core, rather than gas.\n   - *Coloration:* Distinctive pale cyan/aquamarine color caused by atmospheric methane ($CH_4$), which strongly absorbs red photons from sunlight and reflects blue-green light back into space.\n   - *Extreme Axial Tilt:* Has an extraordinary axial tilt of **$97.8^\\circ$**, meaning it essentially **rotates on its side** relative to its orbital plane. This produces extreme 42-year seasons, where each pole spends 42 continuous Earth years in perpetual sunlight followed by 42 continuous Earth years of total darkness.\n   - *Satellites & Rings:* Possesses 28 known moons (named after characters from Shakespeare and Alexander Pope, such as Titania, Oberon, and Miranda) and a system of 13 narrow, dark rings.\n\n4. **Neptune:**\n   - *Orbital Distance & Period:* Mean distance of $30.05\\text{ AU}$ ($4.50\\text{ billion km}$); orbital period of $164.8\\text{ Earth years}$.\n   - *Atmospheric Dynamics:* The outermost recognized major planet. Characterized by a deep, vivid azure blue coloration (due to higher methane concentrations and unknown atmospheric chromophores).\n   - *Supersonic Wind Speeds:* Features the most violent atmospheric wind speeds recorded in the solar system, with retrograde jet streams exceeding **$2,100\\text{ km/h}$ ($580\\text{ m/s}$)**. Hosted the **Great Dark Spot**, an Earth-sized cyclonic storm system observed by NASA's Voyager 2 in 1989.\n   - *Satellites:* 16 confirmed moons. Dominant among them is **Triton**, a large, geologically active moon with nitrogen cryogeysers that orbits Neptune in a **retrograde direction** (opposite to the planet's rotation), indicating it was a dwarf planet captured gravitationally from the Kuiper Belt.\n\n---\n\n#### 1.3 Other Celestial Bodies in the Solar Architecture\n\n##### 1. Dwarf Planets\n- *Formal Astronomical Definition (IAU 2006 Resolution):* A celestial body that:\n  1. Is in direct orbit around the Sun.\n  2. Possesses sufficient mass for its self-gravity to overcome rigid-body forces, achieving a nearly spherical shape (**hydrostatic equilibrium**).\n  3. **Has NOT cleared the neighborhood around its orbit** (shares its orbital zone with numerous other bodies).\n  4. Is not a satellite (moon) of another planet.\n- *Prominent Examples:*\n  - **Pluto:** Located in the Kuiper Belt; reclassified from major planet to dwarf planet in 2006; has a nitrogen-methane ice surface, a heart-shaped nitrogen glacier (*Tombaugh Regio*), and five moons (dominated by *Charon*).\n  - **Eris:** Massive dwarf planet located in the scattered disc beyond the Kuiper Belt; possesses one moon (*Dysnomia*).\n  - **Ceres:** The only dwarf planet located in the inner solar system, residing inside the Main Asteroid Belt between Mars and Jupiter.\n  - **Haumea:** Kuiper Belt dwarf planet known for its rapid rotation ($3.9\\text{ hours}$), which stretches it into an elongated triaxial ellipsoid.\n  - **Makemake:** Bright Kuiper Belt dwarf planet coated in frozen methane and ethane.\n\n##### 2. Asteroids\n- *Nature & Distribution:* Small, irregularly shaped, rocky and metallic bodies lacking atmospheres, left over from the accretion disk of the early solar nebula $4.6\\text{ billion years ago}$.\n- *Main Asteroid Belt:* The vast majority orbit the Sun between the orbits of Mars and Jupiter (at distances between $2.1\\text{ and }3.3\\text{ AU}$). Jupiter's intense gravitational perturbations prevented the rocky planetesimals in this region from accreting into a single planet.\n- *Compositional Classes:*\n  - **C-type (Carbonaceous):** Dark, carbon-rich bodies constituting over $75\\%$ of known asteroids.\n  - **S-type (Silicate):** Composed of iron- and magnesium-silicates and metals.\n  - **M-type (Metallic):** Composed almost entirely of nickel-iron metal (e.g., *16 Psyche*).\n\n##### 3. Comets\n- *Nature:* Known colloquially as \"dirty snowballs\" or \"icy dirtballs\"; composed of frozen volatile ices (water, carbon dioxide, carbon monoxide, methane, ammonia) intimately mixed with silicate dust grains, complex hydrocarbons, and rocky debris.\n- *Reservoirs of Origin:*\n  - **Kuiper Belt:** A donut-shaped circumstellar disc extending from Neptune's orbit ($30\\text{ AU}$) to approximately $50\\text{ AU}$, hosting short-period comets ($T < 200\\text{ years}$, such as Halley's Comet).\n  - **Oort Cloud:** A hypothetical vast spherical halo of icy bodies enveloping the solar system out to $50,000\\text{ to }100,000\\text{ AU}$ ($1\\text{ to }1.5\\text{ light-years}$), source of long-period comets ($T > 200\\text{ years}$).\n- *Anatomy Near Perihelion:* As a comet approaches the Sun, solar radiative heating causes the frozen volatile ices to **sublimate** directly from solid into gas:\n  - **Nucleus:** The solid, dark, central icy-rocky core (typically $1\\text{ to }20\\text{ km}$ across).\n  - **Coma:** A dense, glowing cloud of sublimated gas and dust surrounding the nucleus, spanning up to hundreds of thousands of kilometers.\n  - **Ion (Gas) Tail:** Formed from ionized gas atoms pushed directly and linearly away from the Sun by the **solar wind**; glows with a distinct bluish light (due to $CO^+$ ion fluorescence) and always points straight away from the Sun.\n  - **Dust Tail:** Formed from microscopic dust particles pushed outward by solar radiation pressure; curves gently along the comet's orbital path and shines by reflected yellowish sunlight.\n\n##### 4. Meteoroids, Meteors, and Meteorites: The Three-Stage Transition\n- **Meteoroid:** A small solid rocky or metallic particle (ranging in size from a grain of sand to a boulder under $1\\text{ meter}$) traveling through interplanetary space.\n- **Meteor:** The incandescent, glowing streak of light produced in the night sky (popularly termed a **\"shooting star\"**) when a meteoroid enters Earth's upper atmosphere at extreme velocities ($11\\text{ to }72\\text{ km/s}$). Atmospheric compression and friction superheat the leading air column, vaporizing the meteoroid and ionizing surrounding atmospheric gas into a brief streak of light at altitudes of $80\\text{ to }110\\text{ km}$ (in the mesosphere).\n- **Meteorite:** Any surviving portion of a meteoroid that does not completely vaporize during atmospheric ablation and successfully **impacts the Earth's surface**. Meteorites provide vital chemical records of the primitive solar nebula. Classified into Stony (silicates), Iron (nickel-iron alloys), and Stony-Iron (pallasites).\n\n---\n\n### MODULE 2: Movements of the Earth and Moon: Day, Night, and Seasons\n\n#### 2.1 Earth Rotation: Diurnal Physics and Consequences\n1. **Definition of Rotation:** The spinning of the Earth on its imaginary internal geographic axis that passes through the North and South Poles.\n2. **Direction of Rotation:** The Earth rotates from **west to east** (counter-clockwise when viewed from above the geographic North Pole). This eastward spin causes the apparent westward motion of celestial bodies across the sky.\n3. **Period of Rotation:**\n   - **Sidereal Day:** The precise time required for the Earth to complete one full $360^\\circ$ rotation relative to the fixed distant stars. Duration: **$23\\text{ hours, } 56\\text{ minutes, } 4.09\\text{ seconds}$** ($23.934\\text{ hours}$).\n   - **Solar Day:** The time taken for the Earth to rotate until the Sun reappears on the exact same meridian of longitude. Because the Earth simultaneously advances approximately $1^\\circ$ along its orbit around the Sun each day, it must rotate an additional $360^\\circ / 365.25 \\approx 0.986^\\circ$ to realign with the Sun. This extra rotation takes approximately $4\\text{ minutes}$, defining the standard **$24\\text{ hours, } 00\\text{ minutes}$** solar day.\n4. **Axial Tilt (Obliquity):** Earth's geographic rotational axis is not perpendicular to its orbital plane (the plane of the ecliptic). It is inclined at a fixed angle of **$23.5^\\circ$** from the perpendicular to the orbital plane (or **$66.5^\\circ$** to the plane of the ecliptic).\n5. **Physical Consequences of Rotation:**\n   - **Alternation of Day and Night:** The spherical Earth is illuminated by the Sun from one direction. At any given moment, the half facing the Sun receives light and experiences day, while the opposite half is in shadow and experiences night. The boundary separating day and night is termed the **terminator line** (circle of illumination).\n   - **Apparent Diurnal Celestial Motion:** Because of Earth's eastward spin, the Sun, Moon, planets, and constellations appear to rise along the eastern horizon, transit the meridian at local noon, and set along the western horizon.\n   - **Coriolis Effect:** The rotational velocity varies with latitude (maximum at the Equator: $\\approx 1,670\\text{ km/h}$; decreasing to $0\\text{ km/h}$ at the poles). This latitude-dependent linear velocity deflects freely moving fluids (winds, hurricanes, and ocean currents) to the **right in the Northern Hemisphere** and to the **left in the Southern Hemisphere**.\n   - **Diurnal Fluctuation of Shadows:** Solar elevation angles change continuously from dawn to dusk, causing shadow lengths to be longest at sunrise and sunset (low solar elevation) and shortest at solar noon (maximum solar elevation).\n\n---\n\n#### 2.2 Earth Revolution: Orbital Physics and Seasonal Dynamics\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"360\" viewBox=\"0 0 800 360\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"360\" rx=\"10\" fill=\"#090d16\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    EARTH'S 23.5° AXIAL TILT, ORBITAL REVOLUTION &amp; THE FOUR SEASONAL NODES\n  </text>\n\n  <!-- Central Sun -->\n  <circle cx=\"400\" cy=\"180\" r=\"32\" fill=\"#facc15\" stroke=\"#f59e0b\" stroke-width=\"3\"/>\n  <text x=\"400\" y=\"185\" font-family=\"system-ui, sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">SUN</text>\n  \n  <!-- Elliptical Orbital Path -->\n  <ellipse cx=\"400\" cy=\"180\" rx=\"310\" ry=\"120\" fill=\"none\" stroke=\"#334155\" stroke-width=\"1.5\" stroke-dasharray=\"6,4\"/>\n\n  <!-- NODE 1: SUMMER SOLSTICE (JUNE 21) - LEFT -->\n  <g transform=\"translate(100, 180)\">\n    <!-- Tilted Axis -->\n    <line x1=\"-12\" y1=\"-45\" x2=\"12\" y2=\"45\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"22\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/>\n    <!-- Day/Night Terminator -->\n    <path d=\"M 0 -22 A 22 22 0 0 1 0 22 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <!-- Equator -->\n    <line x1=\"-20\" y1=\"8\" x2=\"20\" y2=\"-8\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/>\n    <text x=\"0\" y=\"-50\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#f87171\" text-anchor=\"middle\">JUNE 21: SUMMER SOLSTICE</text>\n    <text x=\"0\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#bae6fd\" text-anchor=\"middle\">Sun over Tropic of Cancer (23.5°N)</text>\n    <text x=\"0\" y=\"50\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\" text-anchor=\"middle\">Longest day in North; 24h light at Arctic</text>\n  </g>\n\n  <!-- NODE 2: WINTER SOLSTICE (DECEMBER 21) - RIGHT -->\n  <g transform=\"translate(700, 180)\">\n    <!-- Tilted Axis (Parallelism) -->\n    <line x1=\"-12\" y1=\"-45\" x2=\"12\" y2=\"45\" stroke=\"#ef4444\" stroke-width=\"2\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"22\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/>\n    <!-- Day/Night Terminator -->\n    <path d=\"M 0 -22 A 22 22 0 0 0 0 22 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <!-- Equator -->\n    <line x1=\"-20\" y1=\"8\" x2=\"20\" y2=\"-8\" stroke=\"#cbd5e1\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/>\n    <text x=\"0\" y=\"-50\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#60a5fa\" text-anchor=\"middle\">DEC 21: WINTER SOLSTICE</text>\n    <text x=\"0\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#bae6fd\" text-anchor=\"middle\">Sun over Tropic of Capricorn (23.5°S)</text>\n    <text x=\"0\" y=\"50\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#94a3b8\" text-anchor=\"middle\">Shortest day in North; 24h night at Arctic</text>\n  </g>\n\n  <!-- NODE 3: VERNAL EQUINOX (MARCH 21) - TOP -->\n  <g transform=\"translate(400, 60)\">\n    <line x1=\"-12\" y1=\"-30\" x2=\"12\" y2=\"30\" stroke=\"#ef4444\" stroke-width=\"1.8\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"18\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.2\"/>\n    <path d=\"M -18 0 A 18 18 0 0 1 18 0 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <text x=\"0\" y=\"-36\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#4ade80\" text-anchor=\"middle\">MARCH 21: VERNAL EQUINOX</text>\n    <text x=\"0\" y=\"28\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#86efac\" text-anchor=\"middle\">Sun overhead at Equator (0°)</text>\n    <text x=\"0\" y=\"38\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#cbd5e1\" text-anchor=\"middle\">Global Equal Day &amp; Night (12h / 12h)</text>\n  </g>\n\n  <!-- NODE 4: AUTUMNAL EQUINOX (SEPTEMBER 23) - BOTTOM -->\n  <g transform=\"translate(400, 300)\">\n    <line x1=\"-12\" y1=\"-30\" x2=\"12\" y2=\"30\" stroke=\"#ef4444\" stroke-width=\"1.8\"/>\n    <circle cx=\"0\" cy=\"0\" r=\"18\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.2\"/>\n    <path d=\"M -18 0 A 18 18 0 0 0 18 0 Z\" fill=\"#0f172a\" fill-opacity=\"0.6\"/>\n    <text x=\"0\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#fbbf24\" text-anchor=\"middle\">SEPT 23: AUTUMNAL EQUINOX</text>\n    <text x=\"0\" y=\"44\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fde68a\" text-anchor=\"middle\">Sun overhead at Equator (0°)</text>\n    <text x=\"0\" y=\"54\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#cbd5e1\" text-anchor=\"middle\">Global Equal Day &amp; Night (12h / 12h)</text>\n  </g>\n\n  <!-- Orbital Direction Arrows -->\n  <path d=\"M 230 90 Q 280 70 330 65\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"2\" marker-end=\"url(#arrowBlue)\"/>\n  <path d=\"M 570 270 Q 520 290 470 295\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n</svg>\n</div>\n\n1. **Definition of Revolution:** The orbital movement of the Earth around the Sun along a closed, slightly elliptical orbital path.\n2. **Period of Revolution:**\n   - **Tropical Year:** The time taken for the Earth to complete one full revolution relative to the vernal equinox. Duration: **$365.25\\text{ days}$** ($365\\text{ days, } 5\\text{ hours, } 48\\text{ minutes, } 46\\text{ seconds}$).\n   - **Leap Year Mechanics:** In the standard Gregorian calendar, an ordinary year is assigned exactly 365 days. The fractional surplus of approximately $0.25\\text{ days}$ ($6\\text{ hours}$) accumulates over four consecutive years to form one complete day ($0.25 \\times 4 = 1.0\\text{ day}$). This extra day is added to the calendar as **February 29th** every four years, producing a **Leap Year of 366 days** to prevent calendar drift against astronomical seasons.\n3. **The Physics of Seasons:**\n   - *Crucial Misconception Refuted:* Seasons are **NOT** caused by variations in the Earth's distance from the Sun! Earth's orbit has a very low eccentricity ($e = 0.0167$). Perihelion (closest approach, $\\approx 147.1\\text{ million km}$) occurs in early **January** during the Northern Hemisphere's winter, while Aphelion (farthest distance, $\\approx 152.1\\text{ million km}$) occurs in early **July** during the Northern Hemisphere's summer.\n   - *True Physical Cause:* The seasonal cycle is driven by the interaction of two immutable geometric facts:\n     1. The Earth's permanent **axial tilt of $23.5^\\circ$**.\n     2. **Parallelism of the Axis:** As the Earth revolves around the Sun, its rotational axis remains pointing in the same fixed direction in space (toward Polaris, the North Star).\n   - This geometric constancy causes the Northern and Southern Hemispheres to lean alternately toward or away from the Sun over the course of the 365.25-day orbit, varying the angle of solar incidence and daily sunshine duration (insolation).\n\n---\n\n#### 2.3 The Four Cardinal Solstice and Equinox Nodes\n\n| Astronomical Node | Approximate Date | Solar Declination (Subsolar Point) | Northern Hemisphere Condition | Southern Hemisphere Condition | Day / Night Length Distribution |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| **Summer Solstice** | **June 21** | Tropic of Cancer ($23.5^\\circ\\text{ N}$) | Summer begins; Sun reaches maximum northern altitude. | Winter begins; Sun reaches lowest northern altitude. | **Longest day / shortest night** in Northern Hemisphere. Perpetual daylight ($24\\text{h}$) within Arctic Circle ($66.5^\\circ\\text{ N}$). |\n| **Autumnal Equinox** | **September 23** | Equator ($0^\\circ$) | Autumn begins; solar radiation strikes perpendicularly. | Spring begins; solar radiation strikes perpendicularly. | **Equal day and night globally** ($12\\text{ hours}$ day, $12\\text{ hours}$ night at all latitudes). |\n| **Winter Solstice** | **December 21** | Tropic of Capricorn ($23.5^\\circ\\text{ S}$) | Winter begins; Northern Hemisphere tilted away from Sun. | Summer begins; Southern Hemisphere tilted toward Sun. | **Shortest day / longest night** in Northern Hemisphere. Perpetual darkness ($24\\text{h}$) within Arctic Circle; $24\\text{h}$ daylight at Antarctic. |\n| **Vernal (Spring) Equinox** | **March 21** | Equator ($0^\\circ$) | Spring begins; solar declination crosses into northern sky. | Autumn begins; solar declination crosses into southern sky. | **Equal day and night globally** ($12\\text{ hours}$ day, $12\\text{ hours}$ night across the entire globe). |\n\n---\n\n### MODULE 3: The Moon, Lunar Phases, and Tidal Dynamics\n\n#### 3.1 Physical Characteristics and Synchronous Rotation\n1. **Lunar Physical Properties:**\n   - *Dimensions:* Earth's only permanent natural satellite; diameter $\\approx 3,474\\text{ km}$ (about one-fourth the diameter of Earth).\n   - *Surface Environment:* Highly cratered, rocky, arid, and geologically dead world devoid of liquid surface water and any significant atmosphere.\n   - *Surface Gravity:* The Moon's surface gravitational acceleration is approximately **one-sixth ($1/6$)** of Earth's:\n     $$g_{\\text{moon}} \\approx 1.62\\text{ m/s}^2 \\quad \\left(\\approx 0.166 \\times g_{\\text{earth}}\\right)$$\n   - *Thermal Extremes:* Because it lacks an atmospheric thermal blanket, equatorial surface temperatures range from $+120^\\circ\\text{C}$ during lunar day to $-130^\\circ\\text{C}$ during lunar night (and down to $-240^\\circ\\text{C}$ in permanently shadowed polar craters).\n2. **Synchronous Rotation and Tidal Locking:**\n   - *Orbital Period (Sidereal Month):* The Moon takes **$27.3\\text{ days}$** ($27.32\\text{ days}$) to complete one full $360^\\circ$ revolution around the Earth.\n   - *Rotational Period:* The Moon takes exactly the same duration—**$27.3\\text{ days}$**—to complete one rotation on its geographic axis.\n   - *Physical Consequence:* Because its rotational period exactly equals its orbital period (a gravitational state known as **tidal locking**), the Moon always presents the **same face (the near side)** toward observers on Earth. The opposite hemisphere (**the far side**, often incorrectly termed the \"dark side\") never faces Earth directly and was first photographed by the Soviet spacecraft *Luna 3* in 1959.\n\n---\n\n#### 3.2 The Synodic Lunar Phase Cycle\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"380\" viewBox=\"0 0 800 380\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"380\" rx=\"10\" fill=\"#0b0f19\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    THE 8 PHASES OF THE MOON &amp; GRAVITATIONAL TIDAL SYZYGY\n  </text>\n\n  <!-- SUNLIGHT INCOMING FROM RIGHT -->\n  <g transform=\"translate(730, 60)\">\n    <text x=\"30\" y=\"100\" font-family=\"system-ui, sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#facc15\" text-anchor=\"middle\">SUNLIGHT</text>\n    <line x1=\"60\" y1=\"40\" x2=\"0\" y2=\"40\" stroke=\"#facc15\" stroke-width=\"2\"/>\n    <line x1=\"60\" y1=\"80\" x2=\"0\" y2=\"80\" stroke=\"#facc15\" stroke-width=\"2.5\"/>\n    <line x1=\"60\" y1=\"120\" x2=\"0\" y2=\"120\" stroke=\"#facc15\" stroke-width=\"2.5\"/>\n    <line x1=\"60\" y1=\"160\" x2=\"0\" y2=\"160\" stroke=\"#facc15\" stroke-width=\"2\"/>\n    <line x1=\"60\" y1=\"200\" x2=\"0\" y2=\"200\" stroke=\"#facc15\" stroke-width=\"2\"/>\n  </g>\n\n  <!-- CENTRAL EARTH -->\n  <g transform=\"translate(380, 160)\">\n    <circle cx=\"0\" cy=\"0\" r=\"28\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n    <!-- Terminator (Sun from right) -->\n    <path d=\"M 0 -28 A 28 28 0 0 0 0 28 Z\" fill=\"#0f172a\" fill-opacity=\"0.8\"/>\n    <text x=\"0\" y=\"4\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EARTH</text>\n  </g>\n\n  <!-- LUNAR ORBIT -->\n  <circle cx=\"380\" cy=\"160\" r=\"115\" fill=\"none\" stroke=\"#334155\" stroke-width=\"1.5\" stroke-dasharray=\"4,4\"/>\n\n  <!-- 8 PHASES -->\n  <!-- 1. NEW MOON (Right, closest to Sun) -->\n  <g transform=\"translate(495, 160)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"24\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">1. New Moon</text>\n    <text x=\"0\" y=\"34\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#94a3b8\" text-anchor=\"middle\">(Invisible)</text>\n  </g>\n\n  <!-- 2. WAXING CRESCENT (Top-Right) -->\n  <g transform=\"translate(461, 79)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"35\" y=\"-5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">2. Waxing</text>\n    <text x=\"35\" y=\"5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Crescent</text>\n  </g>\n\n  <!-- 3. FIRST QUARTER (Top) -->\n  <g transform=\"translate(380, 45)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"-18\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">3. First Quarter (Half)</text>\n  </g>\n\n  <!-- 4. WAXING GIBBOUS (Top-Left) -->\n  <g transform=\"translate(299, 79)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"-35\" y=\"-5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">4. Waxing</text>\n    <text x=\"-35\" y=\"5\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Gibbous</text>\n  </g>\n\n  <!-- 5. FULL MOON (Left, opposite Sun) -->\n  <g transform=\"translate(265, 160)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"24\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">5. Full Moon</text>\n    <text x=\"0\" y=\"34\" font-family=\"system-ui, sans-serif\" font-size=\"6.5\" fill=\"#facc15\" text-anchor=\"middle\">(Fully Lit)</text>\n  </g>\n\n  <!-- 6. WANING GIBBOUS (Bottom-Left) -->\n  <g transform=\"translate(299, 241)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"-35\" y=\"10\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">6. Waning</text>\n    <text x=\"-35\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Gibbous</text>\n  </g>\n\n  <!-- 7. THIRD QUARTER (Bottom) -->\n  <g transform=\"translate(380, 275)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"0\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">7. Third (Last) Quarter</text>\n  </g>\n\n  <!-- 8. WANING CRESCENT (Bottom-Right) -->\n  <g transform=\"translate(461, 241)\">\n    <circle cx=\"0\" cy=\"0\" r=\"14\" fill=\"#0f172a\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>\n    <path d=\"M 0 -14 A 14 14 0 0 1 0 14 Z\" fill=\"#facc15\"/>\n    <text x=\"35\" y=\"10\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">8. Waning</text>\n    <text x=\"35\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\">Crescent</text>\n  </g>\n\n  <!-- TIDAL DYNAMICS PANEL AT BOTTOM -->\n  <g transform=\"translate(30, 310)\">\n    <rect width=\"350\" height=\"55\" rx=\"5\" fill=\"#1e1b4b\" stroke=\"#4f46e5\"/>\n    <text x=\"175\" y=\"18\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#c7d2fe\" text-anchor=\"middle\">SPRING TIDES (Syzygy Alignment)</text>\n    <text x=\"175\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#e0e7ff\" text-anchor=\"middle\">Occurs at NEW &amp; FULL MOON (Sun + Moon align)</text>\n    <text x=\"175\" y=\"44\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#a5b4fc\" text-anchor=\"middle\">Maximum tidal bulge; highest high tides, lowest low tides</text>\n  </g>\n\n  <g transform=\"translate(420, 310)\">\n    <rect width=\"350\" height=\"55\" rx=\"5\" fill=\"#082f49\" stroke=\"#0284c7\"/>\n    <text x=\"175\" y=\"18\" font-family=\"system-ui, sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#7dd3fc\" text-anchor=\"middle\">NEAP TIDES (Quadrature 90° Pull)</text>\n    <text x=\"175\" y=\"32\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" fill=\"#e0f2fe\" text-anchor=\"middle\">Occurs at FIRST &amp; THIRD QUARTER (Right angle)</text>\n    <text x=\"175\" y=\"44\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#38bdf8\" text-anchor=\"middle\">Tidal forces partially cancel; moderate, minimal tidal range</text>\n  </g>\n</svg>\n</div>\n\n1. **Synodic Month vs. Sidereal Month:**\n   - While the Moon completes one physical orbit around Earth in $27.3\\text{ days}$ (sidereal period), the complete cycle of lunar phases from one New Moon to the next New Moon takes **$29.5\\text{ days}$** ($29.53\\text{ days}$), known as a **synodic month**.\n   - This $2.2\\text{-day}$ difference arises because, as the Moon orbits the Earth, the Earth-Moon system simultaneously travels along its orbit around the Sun. The Moon must therefore travel an additional $\\approx 27^\\circ$ along its orbit to re-establish the exact same alignment relative to the Sun.\n2. **Mechanism of Lunar Phases:**\n   - The Moon does not generate its own visible light; it shines entirely by **reflecting sunlight**.\n   - Exactly **half ($50\\%$)** of the spherical lunar surface is illuminated by direct sunlight at all times (except during lunar eclipses).\n   - The phases of the Moon are caused by the **changing relative geometry of the Sun, Earth, and Moon** as the Moon revolves around Earth, altering the proportion of the illuminated lunar hemisphere visible to an observer on Earth's surface.\n\n3. **Sequential Breakdown of the 8 Lunar Phases:**\n   1. **New Moon:** The Moon is situated between the Earth and the Sun. Its sunlit hemisphere faces directly away from Earth, while its shadowed hemisphere faces Earth. The Moon is invisible in the night sky and rises and sets roughly with the Sun.\n   2. **Waxing Crescent:** As the Moon moves east of the Sun in its orbit, a thin sliver of illuminated lunar surface becomes visible along its western limb in the early evening sky. \"Waxing\" denotes that the visible illuminated fraction is progressively growing nightly.\n   3. **First Quarter:** The Moon has traversed one-quarter ($90^\\circ$) of its orbit from New Moon. Exactly half ($50\\%$) of the visible lunar disk is illuminated on the right-hand side (as viewed from the Northern Hemisphere). The Earth-Moon radius is perpendicular to the Earth-Sun line. Rises at noon and sets at midnight.\n   4. **Waxing Gibbous:** More than half, but not yet all, of the visible lunar disk is illuminated. The illuminated fraction expands nightly toward full disk illumination.\n   5. **Full Moon:** The Earth is situated between the Sun and the Moon (at an angular elongation of $180^\\circ$). The Moon's entire sunlit hemisphere faces Earth directly. The Full Moon rises in the east at sunset, reaches its highest altitude at midnight, and sets in the west at sunrise.\n   6. **Waning Gibbous:** The Moon begins moving back toward the Sun. The illuminated fraction begins to decrease (\"waning\"), showing slightly less than a full disk with darkness creeping in from the right edge.\n   7. **Third (Last) Quarter:** The Moon has traversed three-quarters ($270^\\circ$) of its orbit. Exactly half of the visible disk is illuminated on the left-hand side (opposite to First Quarter). Rises at midnight and sets at noon.\n   8. **Waning Crescent:** A thin, diminishing crescent visible in the eastern sky just before dawn, preceding the next New Moon.\n\n---\n\n#### 3.3 Gravitational Tidal Dynamics: Spring vs. Neap Tides\nOcean tides are the periodic, rhythmic rise and fall of coastal sea levels caused by the **differential gravitational attractive forces** exerted on Earth's water bodies by the Moon and the Sun, combined with the centripetal acceleration of Earth's orbital rotation around the Earth-Moon barycenter.\n\n1. **Differential Tidal Force Physics:**\n   - The gravitational attraction between two bodies follows Newton's inverse-square law ($F \\propto 1/r^2$). However, because the Earth has a finite diameter ($d \\approx 12,742\\text{ km}$), the gravitational pull of the Moon is significantly stronger on the near side of the Earth facing the Moon than at the Earth's center, and weakest on the far side.\n   - This gravitational gradient across Earth's diameter generates a **differential tidal force** that scales inversely with the **cube of the distance** ($F_{\\text{tide}} \\propto M / r^3$).\n   - Consequently, water is pulled into two simultaneous tidal bulges: one on the side directly facing the Moon (direct tide) and an equal bulge on the side directly opposite the Moon (indirect/inertial tide).\n   - Although the Sun is $27\\text{ million times}$ more massive than the Moon, it is $390\\text{ times}$ farther away. Because tidal forces scale as $1/r^3$, the **Moon's tidal generating force is approximately $2.18\\text{ times}$ stronger than the Sun's** ($F_{\\text{tide, Moon}} \\approx 2.18 \\times F_{\\text{tide, Sun}}$).\n\n2. **Classification of Tides:**\n   - **Spring Tides (Maximum Tidal Range):**\n     - *Orbital Alignment:* Occurs during the **New Moon** and **Full Moon** phases, when the Sun, Earth, and Moon are aligned in a straight line—an astronomical configuration called **syzygy**.\n     - *Mechanics:* The gravitational tidal forces of the Moon and the Sun act in the exact same axis, reinforcing one another constructively.\n     - *Consequence:* Produces exceptionally high high tides and exceptionally low low tides, resulting in the **maximum tidal range**.\n   - **Neap Tides (Minimum Tidal Range):**\n     - *Orbital Alignment:* Occurs during the **First Quarter** and **Third (Last) Quarter** moon phases, when the gravitational pull of the Sun and Moon act at right angles ($90^\\circ$) to each other—a configuration termed **quadrature**.\n     - *Mechanics:* The solar tidal bulge acts against the lunar tidal bulge, partially cancelling out the gravitational influence.\n     - *Consequence:* Produces moderate high tides and unusually high low tides, resulting in the **minimum tidal range** (weakest tides).\n\n---\n\n### MODULE 4: Eclipses: Mechanics of Solar and Lunar Eclipses\n\n#### 4.1 Astronomical Shadow Components: Umbra vs. Penumbra\n\n<div class=\"my-4 flex justify-center overflow-x-auto\">\n<svg width=\"800\" height=\"380\" viewBox=\"0 0 800 380\" xmlns=\"http://www.w3.org/2000/svg\">\n  <rect width=\"800\" height=\"380\" rx=\"10\" fill=\"#080c14\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>\n  <text x=\"400\" y=\"26\" font-family=\"system-ui, sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#f8fafc\" text-anchor=\"middle\" letter-spacing=\"1\">\n    CELESTIAL ECLIPSE GEOMETRY: SOLAR (UMBRA/PENUMBRA) &amp; LUNAR (BLOOD MOON)\n  </text>\n\n  <!-- PANEL A: SOLAR ECLIPSE -->\n  <g transform=\"translate(30, 45)\">\n    <rect width=\"740\" height=\"150\" rx=\"6\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"15\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#f59e0b\">A. SOLAR ECLIPSE GEOMETRY (Alignment: Sun — Moon — Earth)</text>\n    \n    <!-- Sun -->\n    <circle cx=\"50\" cy=\"85\" r=\"35\" fill=\"#facc15\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <text x=\"50\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">SUN</text>\n\n    <!-- Moon -->\n    <circle cx=\"340\" cy=\"85\" r=\"12\" fill=\"#64748b\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>\n    <text x=\"340\" y=\"65\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#e2e8f0\" text-anchor=\"middle\">MOON</text>\n\n    <!-- Earth -->\n    <circle cx=\"580\" cy=\"85\" r=\"28\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"1.5\"/>\n    <text x=\"580\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EARTH</text>\n\n    <!-- Umbra Cone (Dark) -->\n    <polygon points=\"340,73 340,97 580,87 580,83\" fill=\"#000000\" fill-opacity=\"0.9\" stroke=\"#f43f5e\" stroke-width=\"0.8\"/>\n    \n    <!-- Penumbra Cone (Lighter) -->\n    <polygon points=\"50,50 340,97 580,135 580,35 340,73\" fill=\"#64748b\" fill-opacity=\"0.18\"/>\n\n    <!-- Labels -->\n    <text x=\"470\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#f43f5e\">Umbra (Total Eclipse)</text>\n    <text x=\"470\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#cbd5e1\">Penumbra (Partial Eclipse)</text>\n    <text x=\"640\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fef08a\">• Totality: Corona Visible</text>\n    <text x=\"640\" y=\"92\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fef08a\">• Annular: Ring of Fire</text>\n  </g>\n\n  <!-- PANEL B: LUNAR ECLIPSE -->\n  <g transform=\"translate(30, 210)\">\n    <rect width=\"740\" height=\"150\" rx=\"6\" fill=\"#0f172a\" stroke=\"#334155\"/>\n    <text x=\"15\" y=\"20\" font-family=\"system-ui, sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#ef4444\">B. LUNAR ECLIPSE GEOMETRY (Alignment: Sun — Earth — Moon)</text>\n\n    <!-- Sun -->\n    <circle cx=\"50\" cy=\"85\" r=\"35\" fill=\"#facc15\" stroke=\"#ea580c\" stroke-width=\"2\"/>\n    <text x=\"50\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#78350f\" text-anchor=\"middle\">SUN</text>\n\n    <!-- Earth -->\n    <circle cx=\"340\" cy=\"85\" r=\"26\" fill=\"#0284c7\" stroke=\"#38bdf8\" stroke-width=\"2\"/>\n    <text x=\"340\" y=\"90\" font-family=\"system-ui, sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">EARTH</text>\n\n    <!-- Moon in Earth Umbra -->\n    <circle cx=\"600\" cy=\"85\" r=\"12\" fill=\"#b91c1c\" stroke=\"#ef4444\" stroke-width=\"1.5\"/>\n    <text x=\"600\" y=\"65\" font-family=\"system-ui, sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#fca5a5\" text-anchor=\"middle\">MOON (Blood Moon)</text>\n\n    <!-- Earth Umbra -->\n    <polygon points=\"340,59 340,111 680,95 680,75\" fill=\"#450a0a\" fill-opacity=\"0.8\" stroke=\"#ef4444\" stroke-width=\"0.8\"/>\n    <!-- Earth Penumbra -->\n    <polygon points=\"50,50 340,111 680,145 680,25 340,59\" fill=\"#64748b\" fill-opacity=\"0.18\"/>\n\n    <!-- Labels -->\n    <text x=\"470\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#f87171\">Earth Umbra Shadow</text>\n    <text x=\"470\" y=\"125\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#cbd5e1\">Earth Penumbra Shadow</text>\n    <text x=\"640\" y=\"80\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fca5a5\">• Total Umbral Pass</text>\n    <text x=\"640\" y=\"92\" font-family=\"system-ui, sans-serif\" font-size=\"7\" fill=\"#fca5a5\">• Rayleigh Refraction</text>\n  </g>\n</svg>\n</div>\n\nAn eclipse occurs when one celestial body moves into the shadow cast by another, or has its light temporarily blocked by another celestial body passing directly along the observer's line of sight. Any opaque spherical body illuminated by an extended light source (like the Sun) casts a conical shadow structure with two distinct optical zones:\n1. **The Umbra:**\n   - The central, completely dark, conical core of the shadow where **all direct light from the Sun is entirely blocked**.\n   - An observer positioned within the umbra experiences a **Total Eclipse**, plunged into complete darkness where only indirect or scattered light can penetrate.\n2. **The Penumbra:**\n   - The lighter, outer, divergent conical fringe of the shadow where **only a portion of the solar disk is obscured**, while the remaining portion remains directly visible.\n   - An observer located within the penumbral zone experiences a **Partial Eclipse**.\n3. **The Antumbra:**\n   - The region of the shadow extending beyond the apex of the umbral cone. In this zone, the obscuring body appears completely within the disk of the light source, leaving a bright outer ring of unblocked light. An observer positioned in the antumbra observes an **Annular Eclipse**.\n\n---\n\n#### 4.2 Solar Eclipse Dynamics (Sun — Moon — Earth Alignment)\nA **Solar Eclipse** occurs when the Moon passes directly between the Sun and the Earth during the **New Moon phase**, casting its shadow onto the Earth's surface.\n\n1. **Cosmic Coincidence of Angular Diameters:**\n   - The Sun's physical diameter ($D_{\\odot} \\approx 1,392,700\\text{ km}$) is approximately **$400\\text{ times}$ larger** than the Moon's diameter ($D_{\\text{moon}} \\approx 3,474\\text{ km}$).\n   - However, the Sun is also approximately **$400\\text{ times}$ farther away** from Earth ($d_{\\odot} \\approx 149,600,000\\text{ km}$) than the Moon ($d_{\\text{moon}} \\approx 384,400\\text{ km}$).\n   - Consequently, both the Sun and the Moon possess almost identical **angular diameters in Earth's sky: approximately $0.5^\\circ$ ($31'\\text{ to }32'\\text{ of arc}$)**. This extraordinary geometric parity enables the tiny Moon to completely cover the solar disk during total eclipses.\n\n2. **Types of Solar Eclipses:**\n   - **Total Solar Eclipse:**\n     - Occurs when the Moon is sufficiently close to Earth along its elliptical orbit (at or near perigee), so that its umbral shadow cone extends all the way to reach Earth's surface.\n     - The dark tip of the umbra traces a narrow path (typically $100\\text{ to }250\\text{ km}$ wide) across the moving Earth, called the **path of totality**.\n     - Observers inside this narrow path witness the Moon completely block the bright photosphere, causing daytime sky darkness where stars appear and revealing the pearly white, gossamer **solar corona** (the Sun's million-degree ionized outer atmosphere).\n     - Maximum duration of totality at any single location cannot exceed $7\\text{ minutes, } 32\\text{ seconds}$.\n   - **Partial Solar Eclipse:**\n     - Observed from within the much broader penumbral shadow region flanking the path of totality. Observers see the Moon obscure a portion of the solar disk, looking like a \"bite\" taken out of the Sun.\n   - **Annular Solar Eclipse:**\n     - Occurs when the Moon is at or near **apogee** (its farthest orbital distance from Earth, $\\approx 406,000\\text{ km}$).\n     - Because of the increased distance, the Moon's angular diameter appears smaller than the Sun's angular diameter ($D_{\\text{angular, moon}} < D_{\\text{angular, sun}}$).\n     - The tip of the umbra terminates before reaching Earth, and the antumbra reaches the ground. The Moon cannot completely cover the Sun, leaving a brilliant, blazing outer circle of the solar photosphere exposed—creating the dramatic **\"Ring of Fire\" (annulus)**.\n   - **Hybrid Solar Eclipse:**\n     - A rare eclipse that shifts between annular and total along different points of its path, due to the curvature of the Earth bringing the surface into and out of the umbral cone apex.\n\n---\n\n#### 4.3 Lunar Eclipse Dynamics (Sun — Earth — Moon Alignment)\nA **Lunar Eclipse** occurs when the Earth passes directly between the Sun and the Moon during the **Full Moon phase**, casting Earth's massive shadow onto the Moon.\n\n1. **Characteristics of Lunar Eclipses:**\n   - Because the Earth is vastly larger than the Moon (Earth's diameter is $3.7\\text{ times}$ lunar diameter), Earth's umbral shadow cone at lunar distance is vast (spanning nearly $9,000\\text{ km}$ wide, almost three times the diameter of the Moon).\n   - Consequently, a lunar eclipse is **visible simultaneously from the entire night hemisphere of Earth** (any place where the Moon is above the horizon).\n   - Totality can endure for up to **$1\\text{ hour and }45\\text{ minutes}$**, and the entire eclipse event can span over five hours.\n\n2. **Types of Lunar Eclipses:**\n   - **Total Lunar Eclipse:** The entire Moon passes completely inside Earth's umbral shadow.\n   - **Partial Lunar Eclipse:** Only a portion of the lunar disk passes through Earth's umbra, while the rest remains in the penumbra.\n   - **Penumbral Lunar Eclipse:** The Moon passes exclusively through Earth's faint penumbral shadow. Because the penumbra only slightly dims the sunlight, the resulting subtle shading across the lunar surface is often difficult to detect with the naked eye.\n\n3. **Physics of the \"Blood Moon\": Rayleigh Scattering and Atmospheric Refraction:**\n   - During a Total Lunar Eclipse, the Moon does not become completely black and invisible. Instead, it glows with a striking **coppery-red or deep reddish-orange illumination**, colloquially called a **\"Blood Moon\"**.\n   - *Optical Mechanism:* The Earth's atmosphere acts as a spherical lens. As sunlight grazes the perimeter of Earth's atmospheric limb, short-wavelength blue and violet photons are intensely scattered away into space by nitrogen and oxygen gas molecules through **Rayleigh scattering** (the exact same physical mechanism that makes the daytime sky blue).\n   - However, the longer red, orange, and amber wavelengths pass through the dense atmospheric column with minimal scattering. These red rays are **refracted (bent) inward** by the atmosphere toward the central umbral shadow cone, projecting the combined red glow of all the sunrises and sunsets occurring around the Earth directly onto the surface of the eclipsed Moon!\n\n---\n\n#### 4.4 The 5° Orbital Inclination: Why Eclipses Do Not Occur Every Month\n- *The Fundamental Question:* Since the New Moon phase occurs every $29.5\\text{ days}$ (when the Moon passes between Earth and Sun) and the Full Moon phase occurs every $29.5\\text{ days}$ (when Earth is between Sun and Moon), why do we not observe a solar eclipse at every New Moon and a lunar eclipse at every Full Moon?\n- *The Astronomical Reason:* The Moon's orbital plane around the Earth is **inclined at an angle of approximately $5.14^\\circ$ ($5^\\circ$)** relative to the **ecliptic plane** (the Earth's orbital plane around the Sun).\n- *Consequences of the $5^\\circ$ Tilt:*\n  - During most New Moons, the tilted Moon passes either slightly **above (north of)** or slightly **below (south of)** the Sun in the sky, so its shadow misses the Earth and passes into empty space.\n  - During most Full Moons, the Moon passes either above or below the Earth's umbral shadow cone, avoiding an eclipse completely.\n- *Orbital Nodes and Eclipse Seasons:*\n  - The Moon's orbital plane intersects the Earth's ecliptic plane at two points called **nodes**:\n    - **Ascending Node:** Where the Moon crosses the ecliptic traveling northward.\n    - **Descending Node:** Where the Moon crosses the ecliptic traveling southward.\n  - An eclipse can occur **ONLY** when the Moon is situated at or very close to one of these **nodes at the exact time** of a New Moon or Full Moon.\n  - The line connecting the nodes (line of nodes) points toward the Sun approximately twice a year, creating two **eclipse seasons** (separated by approximately $173.3\\text{ days}$), during which at least two (and up to three) solar and lunar eclipses occur.\n\n---\n\n### MODULE 5: Quantitative Astronomical Worked Examples & Computational Case Studies\n\n---\n\n#### Worked Example 1: Earth Orbital Speed and Heliocentric Velocity\n**Concept:** Uniform Circular / Elliptical Planetary Orbital Dynamics ($v = \\frac{2\\pi r}{T}$)\n\n**Problem:**\nThe Earth orbits the Sun at an average distance (semi-major axis) of $r = 1.00\\text{ AU} = 1.496 \\times 10^8\\text{ km}$ ($1.496 \\times 10^{11}\\text{ m}$). The Earth completes one full orbit in one tropical year ($T = 365.25\\text{ days}$).\n(a) Convert the orbital period $T$ into seconds.\n(b) Assuming a circular orbit approximation, calculate the total orbital circumference traveled by the Earth in one year (in kilometers).\n(c) Determine the Earth's average orbital velocity in kilometers per second ($\\text{km/s}$) and in kilometers per hour ($\\text{km/h}$).\n(d) Explain how this orbital speed reconciles with Kepler's Second Law of Planetary Motion at perihelion versus aphelion.\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Conversion of Orbital Period $T$ into Seconds:**\n   $$\\begin{aligned}\n   T &= 365.25\\text{ days} \\times 24\\frac{\\text{hours}}{\\text{day}} \\times 60\\frac{\\text{minutes}}{\\text{hour}} \\times 60\\frac{\\text{seconds}}{\\text{minute}} \\\\\n   T &= 365.25 \\times 86,400\\text{ s} = 31,557,600\\text{ seconds} \\quad (3.156 \\times 10^7\\text{ s})\n   \\end{aligned}$$\n\n2. **Calculation of Orbital Circumference ($C$):**\n   $$\\begin{aligned}\n   C &= 2\\pi r \\\\\n   C &= 2 \\times 3.14159265 \\times 1.496 \\times 10^8\\text{ km} \\\\\n   C &\\approx 9.3996 \\times 10^8\\text{ km} \\approx 940,000,000\\text{ km}\n   \\end{aligned}$$\n   *The Earth travels approximately 940 million kilometers through space each year.*\n\n3. **Determination of Average Orbital Velocity ($v$):**\n   $$\\begin{aligned}\n   v &= \\frac{C}{T} = \\frac{2\\pi r}{T} \\\\\n   v &= \\frac{9.3996 \\times 10^8\\text{ km}}{3.15576 \\times 10^7\\text{ s}} \\approx 29.785\\text{ km/s} \\approx 29.8\\text{ km/s}\n   \\end{aligned}$$\n   *Converting to kilometers per hour:*\n   $$v = 29.785\\text{ km/s} \\times 3,600\\frac{\\text{s}}{\\text{h}} \\approx 107,226\\text{ km/h}$$\n\n4. **Keplerian Orbital Dynamic Reconciliation:**\n   - Because Earth's orbit is slightly elliptical ($e = 0.0167$), its speed is not strictly constant.\n   - In accordance with **Kepler's Second Law (Law of Equal Areas)**, a line segment joining a planet and the Sun sweeps out equal areas during equal intervals of time ($dA/dt = \\text{constant}$).\n   - Therefore, when Earth is at **perihelion** (closest approach in early January, $r \\approx 147.1 \\times 10^6\\text{ km}$), conservation of angular momentum accelerates the Earth to its maximum orbital speed of **$30.3\\text{ km/s}$**.\n   - Conversely, at **aphelion** (farthest distance in early July, $r \\approx 152.1 \\times 10^6\\text{ km}$), the orbital velocity decreases to its minimum of **$29.3\\text{ km/s}$**.\n\n*Pedagogical Takeaway:* Even while sitting motionless in a classroom, every human is hurtling through the solar system at an astonishing speed of approximately **$29.8\\text{ km/s}$** ($107,200\\text{ km/h}$), completing nearly a billion kilometers of orbital journey annually.\n\n---\n\n#### Worked Example 2: Mathematical Derivation of the Synodic Lunar Month\n**Concept:** Relative Angular Frequency and Orbital Period Coupling (Sidereal vs. Synodic Periods)\n\n**Problem:**\nThe Moon revolves around the Earth with a sidereal period of $T_{\\text{sid}} = 27.3217\\text{ days}$ relative to the distant stars. During this time, the Earth revolves around the Sun with an orbital period of $T_{\\text{earth}} = 365.2564\\text{ days}$.\n(a) Calculate the daily angular velocity of the Moon ($\\omega_{\\text{moon}}$ in degrees per day).\n(b) Calculate the daily angular velocity of the Earth ($\\omega_{\\text{earth}}$ in degrees per day).\n(c) Using the coupled angular frequency relation $\\frac{1}{T_{\\text{syn}}} = \\frac{1}{T_{\\text{sid}}} - \\frac{1}{T_{\\text{earth}}}$, derive the exact length of the synodic month ($T_{\\text{syn}}$) from New Moon to New Moon.\n(d) Explain physically why the synodic month is approximately 2.2 days longer than the sidereal month.\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Daily Angular Velocity of the Moon ($\\omega_{\\text{moon}}$):**\n   $$\\omega_{\\text{moon}} = \\frac{360^\\circ}{T_{\\text{sid}}} = \\frac{360^\\circ}{27.3217\\text{ days}} \\approx 13.1763^\\circ\\text{ per day}$$\n\n2. **Daily Angular Velocity of the Earth ($\\omega_{\\text{earth}}$):**\n   $$\\omega_{\\text{earth}} = \\frac{360^\\circ}{T_{\\text{earth}}} = \\frac{360^\\circ}{365.2564\\text{ days}} \\approx 0.9856^\\circ\\text{ per day}$$\n\n3. **Derivation of the Synodic Period ($T_{\\text{syn}}$):**\n   - For the Moon to return to the exact same phase (e.g., from one New Moon to the next), it must complete a full $360^\\circ$ relative to the moving Earth-Sun line.\n   - The relative angular rate of separation is:\n     $$\\omega_{\\text{rel}} = \\omega_{\\text{moon}} - \\omega_{\\text{earth}} = 13.1763^\\circ - 0.9856^\\circ = 12.1907^\\circ\\text{ per day}$$\n   - Setting the total relative rotation to $360^\\circ$:\n     $$T_{\\text{syn}} = \\frac{360^\\circ}{\\omega_{\\text{rel}}} = \\frac{360^\\circ}{12.1907^\\circ\\text{/day}} \\approx 29.5307\\text{ days}$$\n   - Alternatively, using the reciprocal period equation:\n     $$\\frac{1}{T_{\\text{syn}}} = \\frac{1}{T_{\\text{sid}}} - \\frac{1}{T_{\\text{earth}}}$$\n     $$\\frac{1}{T_{\\text{syn}}} = \\frac{1}{27.3217} - \\frac{1}{365.2564} = 0.036601 - 0.002738 = 0.033863\\text{ days}^{-1}$$\n     $$T_{\\text{syn}} = \\frac{1}{0.033863} \\approx 29.53\\text{ days}$$\n     $$T_{\\text{syn}} = 29\\text{ days, } 12\\text{ hours, } 44\\text{ minutes, } 3\\text{ seconds}$$\n\n4. **Physical Explanation for the 2.2-Day Discrepancy:**\n   - Over the $27.32\\text{ days}$ it takes the Moon to complete a true $360^\\circ$ physical revolution around Earth, the Earth has traveled forward along its heliocentric orbit by:\n     $$\\Delta \\theta_{\\text{earth}} = 27.3217\\text{ days} \\times 0.9856^\\circ\\text{/day} \\approx 26.93^\\circ$$\n   - Because the Earth has moved forward, the Sun is no longer in the same relative direction in space.\n   - The Moon must travel this additional $26.93^\\circ$ of orbital arc to catch up with the moving Sun-Earth alignment line:\n     $$\\Delta t = \\frac{26.93^\\circ}{12.1907^\\circ\\text{/day}} \\approx 2.21\\text{ days}$$\n   - Adding $27.32 + 2.21 = 29.53\\text{ days}$, precisely accounting for the full synodic phase cycle.\n\n---\n\n#### Worked Example 3: Gravitational Tidal Forces and Differential Ocean Acceleration\n**Concept:** Differential Gravitational Gradients ($F_{\\text{tide}} \\propto \\frac{M}{r^3}$) & Lunar-Solar Force Ratio\n\n**Problem:**\nThe magnitude of the differential tidal acceleration ($a_{\\text{tide}}$) exerted by a celestial body of mass $M$ at distance $r$ across a planet of radius $R$ is given by:\n$$a_{\\text{tide}} = \\frac{2 G M R}{r^3}$$\nGiven the following astronomical parameters:\n- Gravitational constant: $G = 6.674 \\times 10^{-11}\\text{ N}\\cdot\\text{m}^2/\\text{kg}^2$\n- Earth radius: $R_{\\oplus} = 6.371 \\times 10^6\\text{ m}$\n- Moon mass: $M_{\\text{moon}} = 7.348 \\times 10^{22}\\text{ kg}$\n- Earth-Moon distance: $r_{\\text{moon}} = 3.844 \\times 10^8\\text{ m}$\n- Sun mass: $M_{\\odot} = 1.989 \\times 10^{30}\\text{ kg}$\n- Earth-Sun distance: $r_{\\odot} = 1.496 \\times 10^{11}\\text{ m}$\n(a) Calculate the differential tidal acceleration produced by the Moon ($a_{\\text{tide, moon}}$).\n(b) Calculate the differential tidal acceleration produced by the Sun ($a_{\\text{tide, sun}}$).\n(c) Compute the ratio $\\frac{a_{\\text{tide, moon}}}{a_{\\text{tide, sun}}}$ and explain why the tiny Moon dominates Earth's tides over the massive Sun.\n(d) Calculate the ratio of tidal ranges between Spring Tides ($a_{\\text{spring}} = a_{\\text{moon}} + a_{\\text{sun}}$) and Neap Tides ($a_{\\text{neap}} = a_{\\text{moon}} - a_{\\text{sun}}$).\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Differential Tidal Acceleration of the Moon ($a_{\\text{tide, moon}}$):**\n   $$r_{\\text{moon}}^3 = (3.844 \\times 10^8\\text{ m})^3 = 5.6797 \\times 10^{25}\\text{ m}^3$$\n   $$\\begin{aligned}\n   a_{\\text{tide, moon}} &= \\frac{2 \\times (6.674 \\times 10^{-11}) \\times (7.348 \\times 10^{22}) \\times (6.371 \\times 10^6)}{5.6797 \\times 10^{25}} \\\\\n   &= \\frac{6.2494 \\times 10^{19}}{5.6797 \\times 10^{25}} \\approx 1.1003 \\times 10^{-6}\\text{ m/s}^2\n   \\end{aligned}$$\n\n2. **Differential Tidal Acceleration of the Sun ($a_{\\text{tide, sun}}$):**\n   $$r_{\\odot}^3 = (1.496 \\times 10^{11}\\text{ m})^3 = 3.3481 \\times 10^{33}\\text{ m}^3$$\n   $$\\begin{aligned}\n   a_{\\text{tide, sun}} &= \\frac{2 \\times (6.674 \\times 10^{-11}) \\times (1.989 \\times 10^{30}) \\times (6.371 \\times 10^6)}{3.3481 \\times 10^{33}} \\\\\n   &= \\frac{1.6914 \\times 10^{27}}{3.3481 \\times 10^{33}} \\approx 5.0519 \\times 10^{-7}\\text{ m/s}^2\n   \\end{aligned}$$\n\n3. **Ratio of Lunar to Solar Tidal Influence:**\n   $$\\text{Ratio} = \\frac{a_{\\text{tide, moon}}}{a_{\\text{tide, sun}}} = \\frac{1.1003 \\times 10^{-6}\\text{ m/s}^2}{5.0519 \\times 10^{-7}\\text{ m/s}^2} \\approx 2.178 \\approx 2.18$$\n   - *Physical Explanation:*\n     - The Sun is $\\approx 27,000,000\\text{ times}$ more massive than the Moon. If tides depended on direct gravitational force ($F \\propto M/r^2$), the Sun would overpower the Moon by a factor of 178!\n     - However, tidal forces represent a **spatial gradient** (the rate of change of gravity across distance), which is the derivative of Newton's law:\n       $$\\frac{d}{dr}\\left(\\frac{GM}{r^2}\\right) = -\\frac{2GM}{r^3}$$\n     - Because distance appears as a **cubic term ($r^3$)** in the denominator, the fact that the Sun is $389\\text{ times}$ farther away dilutes its tidal force by:\n       $$389^3 = 58,850,000\\text{ times!}$$\n     - Dividing $27,000,000 / 58,850,000 \\approx 0.46$, meaning the solar tidal force is only $46\\%$ of the lunar tidal force. Hence, the Moon's tidal force is $1 / 0.46 \\approx 2.18\\text{ times}$ stronger than the Sun's.\n\n4. **Spring Tide vs. Neap Tide Ratio:**\n   - At **Spring Tides** (Syzygy: New/Full Moon), forces reinforce:\n     $$a_{\\text{spring}} = a_{\\text{moon}} + a_{\\text{sun}} = 1.1003 \\times 10^{-6} + 0.5052 \\times 10^{-6} = 1.6055 \\times 10^{-6}\\text{ m/s}^2$$\n   - At **Neap Tides** (Quadrature: 1st/3rd Quarter), forces oppose:\n     $$a_{\\text{neap}} = a_{\\text{moon}} - a_{\\text{sun}} = 1.1003 \\times 10^{-6} - 0.5052 \\times 10^{-6} = 0.5951 \\times 10^{-6}\\text{ m/s}^2$$\n   - Relative Amplitude Ratio:\n     $$\\frac{a_{\\text{spring}}}{a_{\\text{neap}}} = \\frac{1.6055}{0.5951} \\approx 2.70$$\n   *Pedagogical Takeaway:* Spring tides exhibit tidal forces nearly **$2.7\\text{ times}$ greater** than neap tides, generating dramatically higher high-water levels and swifter coastal tidal currents.\n\n---\n\n#### Worked Example 4: Umbral Shadow Geometry & Total vs. Annular Eclipse Thresholds\n**Concept:** Similar Triangles, Angular Diameters, and Umbral Cone Length ($L = \\frac{D_{\\text{moon}} \\cdot d_{\\odot}}{D_{\\odot} - D_{\\text{moon}}}$)\n\n**Problem:**\nConsider the following celestial parameters:\n- Solar diameter: $D_{\\odot} = 1,392,700\\text{ km}$\n- Lunar diameter: $D_{\\text{moon}} = 3,474\\text{ km}$\n- Earth-Sun distance: $d_{\\odot} = 1.496 \\times 10^8\\text{ km}$\n- Moon perigee distance (closest to Earth): $d_{\\text{perigee}} = 363,300\\text{ km}$\n- Moon apogee distance (farthest from Earth): $d_{\\text{apogee}} = 405,500\\text{ km}$\n- Mean Moon distance: $d_{\\text{mean}} = 384,400\\text{ km}$\n(a) Using the geometric similarity of shadow cones, calculate the exact length of the Moon's umbral shadow cone ($L_{\\text{umbra}}$).\n(b) Compare $L_{\\text{umbra}}$ to $d_{\\text{perigee}}$ and $d_{\\text{apogee}}$. Explain mathematically whether a Total Solar Eclipse or an Annular Solar Eclipse occurs at perigee versus apogee.\n(c) Calculate the width ($W$) of the umbral shadow spot on Earth's surface during a perigee eclipse.\n(d) Calculate the angular diameter of the Sun and Moon (in arcminutes) at perigee and apogee to demonstrate the \"Ring of Fire\" phenomenon.\n\n**Comprehensive Step-by-Step Solution:**\n\n1. **Derivation and Calculation of Umbral Cone Length ($L_{\\text{umbra}}$):**\n   - By similar triangles formed by the solar tangent rays:\n     $$\\frac{D_{\\odot}}{d_{\\odot} + L} = \\frac{D_{\\text{moon}}}{L}$$\n     $$D_{\\odot} \\cdot L = D_{\\text{moon}} \\cdot d_{\\odot} + D_{\\text{moon}} \\cdot L$$\n     $$L \\left(D_{\\odot} - D_{\\text{moon}}\\right) = D_{\\text{moon}} \\cdot d_{\\odot}$$\n     $$L_{\\text{umbra}} = \\frac{D_{\\text{moon}} \\cdot d_{\\odot}}{D_{\\odot} - D_{\\text{moon}}}$$\n   - Substituting the values:\n     $$D_{\\odot} - D_{\\text{moon}} = 1,392,700 - 3,474 = 1,389,226\\text{ km}$$\n     $$L_{\\text{umbra}} = \\frac{3,474\\text{ km} \\times 1.496 \\times 10^8\\text{ km}}{1,389,226\\text{ km}} \\approx 374,093\\text{ km}$$\n   *The Moon's dark umbral shadow cone extends into space for approximately $374,100\\text{ km}$.*\n\n2. **Comparison with Perigee and Apogee Distances:**\n   - **Case A: At Perigee ($d_{\\text{perigee}} = 363,300\\text{ km}$):**\n     $$d_{\\text{perigee}} (363,300\\text{ km}) < L_{\\text{umbra}} (374,100\\text{ km})$$\n     - Because the Earth is closer than the tip of the umbral cone, the umbra reaches the Earth's surface with $10,800\\text{ km}$ to spare!\n     - *Result:* A **TOTAL SOLAR ECLIPSE** occurs. Observers within the umbral ground spot witness the complete obstruction of the Sun and see the solar corona.\n   - **Case B: At Apogee ($d_{\\text{apogee}} = 405,500\\text{ km}$):**\n     $$d_{\\text{apogee}} (405,500\\text{ km}) > L_{\\text{umbra}} (374,100\\text{ km})$$\n     - The umbral cone tapers to a point and ends $31,400\\text{ km}$ before reaching the Earth's surface.\n     - Beyond the cone tip, the shadow expands as the **antumbra**.\n     - *Result:* An **ANNULAR SOLAR ECLIPSE** occurs. The Moon is too small to cover the entire solar disk, leaving the exposed perimeter visible as the \"Ring of Fire\".\n\n3. **Width of the Umbral Spot on Earth at Perigee ($W$):**\n   - Remaining cone length reaching Earth: $\\Delta L = L_{\\text{umbra}} - d_{\\text{perigee}} = 374,093 - 363,300 = 10,793\\text{ km}$.\n   - By similar triangles:\n     $$\\frac{W}{\\Delta L} = \\frac{D_{\\text{moon}}}{L_{\\text{umbra}}}$$\n     $$W = D_{\\text{moon}} \\times \\frac{\\Delta L}{L_{\\text{umbra}}} = 3,474\\text{ km} \\times \\frac{10,793\\text{ km}}{374,093\\text{ km}} \\approx 100.2\\text{ km}$$\n   *The umbra casts a circular dark spot of approximately $100\\text{ km}$ diameter moving across Earth's surface.*\n\n4. **Angular Diameter Calculations ($\\theta = \\frac{D}{d} \\times \\frac{180}{\\pi} \\times 60\\text{ arcmin}$):**\n   - **Solar Angular Diameter:**\n     $$\\theta_{\\odot} = \\frac{1,392,700}{149,600,000} = 0.0093095\\text{ radians} \\times 3,437.75\\text{ arcmin/rad} \\approx 32.00'\\text{ (32 arcminutes)}$$\n   - **Moon Angular Diameter at Perigee:**\n     $$\\theta_{\\text{moon, perigee}} = \\frac{3,474}{363,300} = 0.0095623\\text{ radians} \\approx 32.87'\\text{ (32.9 arcminutes)}$$\n     - Here $\\theta_{\\text{moon}} > \\theta_{\\odot}$ (by $\\approx 0.9'$), allowing total coverage and a Total Eclipse.\n   - **Moon Angular Diameter at Apogee:**\n     $$\\theta_{\\text{moon, apogee}} = \\frac{3,474}{405,500} = 0.0085672\\text{ radians} \\approx 29.45'\\text{ (29.5 arcminutes)}$$\n     - Here $\\theta_{\\text{moon}} < \\theta_{\\odot}$ (by $\\approx 2.5'$), leaving an uncovered solar border of $1.25'$ width around the Moon, forming the brilliant Annular \"Ring of Fire\".\n\n*Pedagogical Conclusion:* The occurrence of a Total versus Annular Solar Eclipse is purely dictated by orbital mechanics and the Moon's varying distance along its Keplerian ellipse.\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b7_s19_1",
-        "questionPrompt": "A student places 100 grams of dry sandy soil and 100 grams of dry clay soil into two identical filter funnels plugged with cotton wool. Exactly 100 cm³ of water is poured into each funnel. After 30 minutes, 85 cm³ of water has filtered through the sand, while only 25 cm³ has filtered through the clay. Calculate the volume of water retained by each soil type and explain the difference.",
-        "stepByStepSolution": "Step 1: Calculate water retained by Sand: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 85 cm³ = 15 cm³.\nStep 2: Calculate water retained by Clay: Water retained = Initial Volume - Volume Filtered = 100 cm³ - 25 cm³ = 75 cm³.\nStep 3: Scientific explanation of the difference: Sandy soil consists of large particles with large non-capillary macropores that allow water to drain rapidly under gravity with minimal retention. Clay soil consists of microscopic colloidal particles packed tightly with immense total surface area and tiny micropores, generating powerful capillary forces that hold large volumes of water.",
-        "examinerTip": "Examiner Tip: State the calculation clearly: Volume retained = Initial water added - Volume collected in measuring cylinder."
+        "id": "WE_B7_SS_01",
+        "questionPrompt": "The Earth orbits the Sun at an average distance of r = 1.00 AU = 1.496 * 10^8 km in a tropical year of T = 365.25 days. (a) Convert T to seconds. (b) Calculate total orbital circumference C = 2πr. (c) Calculate Earth's average orbital velocity in km/s and km/h. (d) Reconcile with Kepler's Second Law at perihelion vs aphelion.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_SS_02",
+        "questionPrompt": "The Moon revolves around Earth with a sidereal period of T_sid = 27.3217 days relative to fixed stars, while Earth orbits the Sun with period T_earth = 365.2564 days. (a) Find daily angular rates of Moon and Earth. (b) Derive the synodic lunar month T_syn. (c) Explain physically why the synodic month is ~2.2 days longer than the sidereal month.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_SS_03",
+        "questionPrompt": "The differential tidal acceleration across Earth (radius R = 6.371 * 10^6 m) is a_tide = 2GMR / r^3. Given M_moon = 7.348 * 10^22 kg, r_moon = 3.844 * 10^8 m, M_sun = 1.989 * 10^30 kg, r_sun = 1.496 * 10^11 m: (a) Calculate lunar tidal acceleration. (b) Calculate solar tidal acceleration. (c) Find lunar/solar ratio. (d) Find Spring vs Neap tide force ratio.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
+      },
+      {
+        "id": "WE_B7_SS_04",
+        "questionPrompt": "Given D_sun = 1,392,700 km, D_moon = 3,474 km, d_sun = 1.496 * 10^8 km, Moon perigee d_per = 363,300 km, Moon apogee d_apo = 405,500 km: (a) Calculate length of Moon's umbra L. (b) Compare L to perigee and apogee to explain Total vs Annular eclipses. (c) Calculate width of umbral spot on Earth at perigee. (d) Calculate angular diameter of Sun and Moon at perigee/apogee.",
+        "stepByStepSolution": "",
+        "examinerTip": ""
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b7_s19_1",
+        "id": "B7_SS_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "The disintegration of rocks into smaller pieces without any change in their chemical composition is called:",
+        "prompt": "What is the solar system scientifically defined as?",
         "options": [
-          "Chemical weathering",
-          "Physical (mechanical) weathering",
-          "Biological oxidation",
-          "Erosion"
+          "A. A collection of distant galaxies outside the Milky Way",
+          "B. The gravitationally bound system comprising the Sun and all celestial bodies orbiting it",
+          "C. The layer of gases that surrounds the planet Earth",
+          "D. An asteroid belt located between the Earth and the Moon"
         ],
-        "correctAnswer": "Physical (mechanical) weathering",
-        "hint": "Temperature changes and frost wedging are typical examples.",
-        "workedSolution": "Physical (mechanical) weathering fractures rocks into smaller fragments through mechanical forces (temperature expansion, frost wedging, abrasion) without altering chemical mineral identity.",
+        "correctAnswer": "B. The gravitationally bound system comprising the Sun and all celestial bodies orbiting it",
+        "hint": "The solar system consists of the Sun at its gravitational center and all celestial objects orbiting it directly or indirectly.",
+        "workedSolution": "The solar system consists of the Sun at its gravitational center and all celestial objects orbiting it directly or indirectly.",
         "points": 1
       },
       {
-        "id": "q_b7_s19_2",
+        "id": "B7_SS_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What type of celestial body is the Sun situated at the center of the solar system?",
+        "options": [
+          "A. A rocky terrestrial planet",
+          "B. A dwarf planet",
+          "C. A star (yellow dwarf)",
+          "D. A luminous comet"
+        ],
+        "correctAnswer": "C. A star (yellow dwarf)",
+        "hint": "The Sun is an intermediate-sized main-sequence star (yellow dwarf) that generates heat and light by nuclear fusion.",
+        "workedSolution": "The Sun is an intermediate-sized main-sequence star (yellow dwarf) that generates heat and light by nuclear fusion.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many recognized major planets are there in our solar system?",
+        "options": [
+          "A. Seven",
+          "B. Eight",
+          "C. Nine",
+          "D. Twelve"
+        ],
+        "correctAnswer": "B. Eight",
+        "hint": "Following the 2006 IAU classification, there are eight major planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.",
+        "workedSolution": "Following the 2006 IAU classification, there are eight major planets: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is the planet located closest to the Sun?",
+        "options": [
+          "A. Venus",
+          "B. Mercury",
+          "C. Mars",
+          "D. Earth"
+        ],
+        "correctAnswer": "B. Mercury",
+        "hint": "Mercury is the innermost and smallest of the eight planets in our solar system.",
+        "workedSolution": "Mercury is the innermost and smallest of the eight planets in our solar system.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is commonly referred to as the 'Red Planet' due to iron oxide on its surface?",
+        "options": [
+          "A. Jupiter",
+          "B. Mars",
+          "C. Saturn",
+          "D. Mercury"
+        ],
+        "correctAnswer": "B. Mars",
+        "hint": "Mars appears reddish because of the abundance of iron(III) oxide (rust) covering its rocky surface.",
+        "workedSolution": "Mars appears reddish because of the abundance of iron(III) oxide (rust) covering its rocky surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which is the hottest planet in the solar system due to a dense carbon dioxide greenhouse atmosphere?",
+        "options": [
+          "A. Mercury",
+          "B. Venus",
+          "C. Mars",
+          "D. Jupiter"
+        ],
+        "correctAnswer": "B. Venus",
+        "hint": "Venus has a thick atmosphere rich in carbon dioxide, producing a runaway greenhouse effect that makes it hotter than Mercury.",
+        "workedSolution": "Venus has a thick atmosphere rich in carbon dioxide, producing a runaway greenhouse effect that makes it hotter than Mercury.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which is the largest planet in our solar system?",
+        "options": [
+          "A. Saturn",
+          "B. Neptune",
+          "C. Jupiter",
+          "D. Uranus"
+        ],
+        "correctAnswer": "C. Jupiter",
+        "hint": "Jupiter is the most massive and largest planet, containing more mass than all other planets combined.",
+        "workedSolution": "Jupiter is the most massive and largest planet, containing more mass than all other planets combined.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which planet is famous for having a large, prominent system of rings composed of ice and rock particles?",
+        "options": [
+          "A. Saturn",
+          "B. Mars",
+          "C. Venus",
+          "D. Mercury"
+        ],
+        "correctAnswer": "A. Saturn",
+        "hint": "Saturn is distinguished by its extensive, highly reflective ring system consisting of water ice and rocky debris.",
+        "workedSolution": "Saturn is distinguished by its extensive, highly reflective ring system consisting of water ice and rocky debris.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The four inner planets with solid rocky crusts and metallic cores are known as:",
+        "options": [
+          "A. Jovian planets",
+          "B. Terrestrial planets",
+          "C. Gas giants",
+          "D. Ice giants"
+        ],
+        "correctAnswer": "B. Terrestrial planets",
+        "hint": "Mercury, Venus, Earth, and Mars are designated as terrestrial (rocky) planets due to their dense, solid silicate compositions.",
+        "workedSolution": "Mercury, Venus, Earth, and Mars are designated as terrestrial (rocky) planets due to their dense, solid silicate compositions.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The main asteroid belt in our solar system is located between the orbits of which two planets?",
+        "options": [
+          "A. Earth and Mars",
+          "B. Mars and Jupiter",
+          "C. Jupiter and Saturn",
+          "D. Venus and Earth"
+        ],
+        "correctAnswer": "B. Mars and Jupiter",
+        "hint": "The asteroid belt orbits between Mars and Jupiter, separating the inner terrestrial planets from the outer gas giants.",
+        "workedSolution": "The asteroid belt orbits between Mars and Jupiter, separating the inner terrestrial planets from the outer gas giants.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why was Pluto reclassified as a 'dwarf planet' by the International Astronomical Union in 2006?",
+        "options": [
+          "A. It stopped revolving around the Sun",
+          "B. It has not cleared the neighborhood around its orbit",
+          "C. It lost all its natural moons",
+          "D. It turned into a comet"
+        ],
+        "correctAnswer": "B. It has not cleared the neighborhood around its orbit",
+        "hint": "Pluto shares its orbital zone in the Kuiper Belt with numerous other icy bodies and has not cleared its orbital neighborhood.",
+        "workedSolution": "Pluto shares its orbital zone in the Kuiper Belt with numerous other icy bodies and has not cleared its orbital neighborhood.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a comet primarily composed of?",
+        "options": [
+          "A. Molten iron and nickel",
+          "B. Frozen ices, rock dust, and organic compounds",
+          "C. Dense radioactive metals",
+          "D. Compressed liquid petroleum"
+        ],
+        "correctAnswer": "B. Frozen ices, rock dust, and organic compounds",
+        "hint": "Comets are often described as 'dirty snowballs' made of water ice, frozen gases, dust, and rocky materials.",
+        "workedSolution": "Comets are often described as 'dirty snowballs' made of water ice, frozen gases, dust, and rocky materials.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a 'shooting star' scientifically recognized as?",
+        "options": [
+          "A. A dying star collapsing in deep space",
+          "B. A meteor vaporizing due to friction in Earth's atmosphere",
+          "C. A piece of the Moon falling into the sea",
+          "D. An active nuclear explosion on Venus"
+        ],
+        "correctAnswer": "B. A meteor vaporizing due to friction in Earth's atmosphere",
+        "hint": "A meteor is the glowing streak of light produced when a meteoroid enters Earth's atmosphere and vaporizes through friction.",
+        "workedSolution": "A meteor is the glowing streak of light produced when a meteoroid enters Earth's atmosphere and vaporizes through friction.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A solid fragment of interplanetary rock that survives atmospheric entry and lands on Earth's surface is called a:",
+        "options": [
+          "A. Meteoroid",
+          "B. Meteor",
+          "C. Meteorite",
+          "D. Asteroid"
+        ],
+        "correctAnswer": "C. Meteorite",
+        "hint": "Surviving debris that impacts the ground is termed a meteorite.",
+        "workedSolution": "Surviving debris that impacts the ground is termed a meteorite.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is Earth's rotation?",
+        "options": [
+          "A. The movement of the Earth along its elliptical orbit around the Sun",
+          "B. The spinning of the Earth on its imaginary axis",
+          "C. The wobbling of the ocean floor",
+          "D. The movement of the Moon around the Earth"
+        ],
+        "correctAnswer": "B. The spinning of the Earth on its imaginary axis",
+        "hint": "Rotation refers to the daily spinning of Earth on its geographic axis.",
+        "workedSolution": "Rotation refers to the daily spinning of Earth on its geographic axis.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In which direction does the Earth rotate on its axis when viewed from above the North Pole?",
+        "options": [
+          "A. From east to west (clockwise)",
+          "B. From west to east (counter-clockwise)",
+          "C. From north to south",
+          "D. From south to north"
+        ],
+        "correctAnswer": "B. From west to east (counter-clockwise)",
+        "hint": "Earth rotates eastward (west to east), causing the Sun, Moon, and stars to appear to rise in the east and set in the west.",
+        "workedSolution": "Earth rotates eastward (west to east), causing the Sun, Moon, and stars to appear to rise in the east and set in the west.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How long does it take the Earth to complete one full rotation on its axis?",
+        "options": [
+          "A. 12 hours",
+          "B. Approximately 24 hours (1 day)",
+          "C. 30 days",
+          "D. 365.25 days"
+        ],
+        "correctAnswer": "B. Approximately 24 hours (1 day)",
+        "hint": "One solar day—the time for Earth to complete one full rotation relative to the Sun—is approximately 24 hours.",
+        "workedSolution": "One solar day—the time for Earth to complete one full rotation relative to the Sun—is approximately 24 hours.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What primary natural phenomenon is caused by the rotation of the Earth?",
+        "options": [
+          "A. Alternation of day and night",
+          "B. The four annual seasons",
+          "C. Total solar eclipses",
+          "D. Phases of the Moon"
+        ],
+        "correctAnswer": "A. Alternation of day and night",
+        "hint": "As the Earth spins, the half facing the Sun experiences daylight, while the half turned away experiences darkness (night).",
+        "workedSolution": "As the Earth spins, the half facing the Sun experiences daylight, while the half turned away experiences darkness (night).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "At what angle is the Earth's rotational axis tilted relative to the perpendicular of its orbital plane?",
+        "options": [
+          "A. 0°",
+          "B. 15.0°",
+          "C. 23.5°",
+          "D. 90.0°"
+        ],
+        "correctAnswer": "C. 23.5°",
+        "hint": "The Earth's rotational axis is tilted at an angle of 23.5° from the vertical (or 66.5° from the orbital plane).",
+        "workedSolution": "The Earth's rotational axis is tilted at an angle of 23.5° from the vertical (or 66.5° from the orbital plane).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the orbital movement of the Earth around the Sun called?",
+        "options": [
+          "A. Revolution",
+          "B. Rotation",
+          "C. Precession",
+          "D. Libration"
+        ],
+        "correctAnswer": "A. Revolution",
+        "hint": "The traveling of the Earth along its orbital path around the Sun is termed revolution.",
+        "workedSolution": "The traveling of the Earth along its orbital path around the Sun is termed revolution.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How long does the Earth take to complete one full revolution around the Sun?",
+        "options": [
+          "A. 24 hours",
+          "B. 29.5 days",
+          "C. Approximately 365.25 days (1 year)",
+          "D. Exactly 100 days"
+        ],
+        "correctAnswer": "C. Approximately 365.25 days (1 year)",
+        "hint": "Earth's orbital revolution takes approximately 365.25 days, which forms the basis of our calendar year.",
+        "workedSolution": "Earth's orbital revolution takes approximately 365.25 days, which forms the basis of our calendar year.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What astronomical cause accounts for the occurrence of a leap year every four years?",
+        "options": [
+          "A. Earth spins faster once every four years",
+          "B. Accumulation of the fractional 0.25 day (6 hours) per year into an extra 24-hour day",
+          "C. The Moon stops orbiting for 24 hours",
+          "D. The Sun expands slightly every four years"
+        ],
+        "correctAnswer": "B. Accumulation of the fractional 0.25 day (6 hours) per year into an extra 24-hour day",
+        "hint": "The 0.25 day from each year adds up to one full day (4 × 0.25 = 1 day) every four years, added to February as the 29th day.",
+        "workedSolution": "The 0.25 day from each year adds up to one full day (4 × 0.25 = 1 day) every four years, added to February as the 29th day.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The cycle of the seasons (Spring, Summer, Autumn, Winter) is caused by:",
+        "options": [
+          "A. Earth's changing distance from the Sun alone",
+          "B. The revolution of the Earth combined with its constant 23.5° axial tilt",
+          "C. The daily rotation of the Earth on its axis",
+          "D. Shadow cast by the Moon on the oceans"
+        ],
+        "correctAnswer": "B. The revolution of the Earth combined with its constant 23.5° axial tilt",
+        "hint": "The combination of the fixed 23.5° axial tilt and revolution causes different hemispheres to receive varying sunlight throughout the year.",
+        "workedSolution": "The combination of the fixed 23.5° axial tilt and revolution causes different hemispheres to receive varying sunlight throughout the year.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an equinox?",
+        "options": [
+          "A. A day when the Sun never sets at the equator",
+          "B. An astronomical date when day and night are of approximately equal length worldwide",
+          "C. The day when the Earth is closest to the Sun",
+          "D. The longest night of the year in the tropics"
+        ],
+        "correctAnswer": "B. An astronomical date when day and night are of approximately equal length worldwide",
+        "hint": "During an equinox (around March 21 and September 23), the Sun is directly over the equator, resulting in 12 hours of day and 12 hours of night globally.",
+        "workedSolution": "During an equinox (around March 21 and September 23), the Sun is directly over the equator, resulting in 12 hours of day and 12 hours of night globally.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The day of the year with the longest period of daylight in the Northern Hemisphere (around June 21) is called the:",
+        "options": [
+          "A. Summer solstice",
+          "B. Winter solstice",
+          "C. Vernal equinox",
+          "D. Autumnal equinox"
+        ],
+        "correctAnswer": "A. Summer solstice",
+        "hint": "The summer solstice occurs around June 21 when the Northern Hemisphere is tilted at its maximum toward the Sun.",
+        "workedSolution": "The summer solstice occurs around June 21 when the Northern Hemisphere is tilted at its maximum toward the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is Earth's only natural satellite?",
+        "options": [
+          "A. Titan",
+          "B. Ganymede",
+          "C. The Moon",
+          "D. Europa"
+        ],
+        "correctAnswer": "C. The Moon",
+        "hint": "The Moon is Earth's sole permanent natural satellite.",
+        "workedSolution": "The Moon is Earth's sole permanent natural satellite.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why does the Moon appear bright in the nighttime sky?",
+        "options": [
+          "A. It undergoes nuclear fusion like the Sun",
+          "B. It reflects sunlight directed at its surface",
+          "C. It contains glowing radioactive rocks",
+          "D. It generates bioluminescence"
+        ],
+        "correctAnswer": "B. It reflects sunlight directed at its surface",
+        "hint": "The Moon does not produce its own light; it reflects light emitted by the Sun.",
+        "workedSolution": "The Moon does not produce its own light; it reflects light emitted by the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do observers on Earth always see the same side of the Moon (synchronous rotation)?",
+        "options": [
+          "A. The Moon does not rotate on its axis at all",
+          "B. The Moon's rotational period matches its orbital period around Earth (27.3 days)",
+          "C. Earth does not rotate relative to the Moon",
+          "D. Clouds permanently obscure the far side"
+        ],
+        "correctAnswer": "B. The Moon's rotational period matches its orbital period around Earth (27.3 days)",
+        "hint": "Because the Moon's orbital period equals its rotational period, the same hemisphere constantly faces Earth.",
+        "workedSolution": "Because the Moon's orbital period equals its rotational period, the same hemisphere constantly faces Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How long is the complete cycle of lunar phases (synodic month, from New Moon to New Moon)?",
+        "options": [
+          "A. 24 hours",
+          "B. 14 days",
+          "C. Approximately 29.5 days",
+          "D. 365 days"
+        ],
+        "correctAnswer": "C. Approximately 29.5 days",
+        "hint": "The synodic month—the time from one New Moon to the next—takes approximately 29.5 days.",
+        "workedSolution": "The synodic month—the time from one New Moon to the next—takes approximately 29.5 days.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "During which lunar phase is the Moon positioned directly between the Earth and the Sun, making its near side dark and invisible?",
+        "options": [
+          "A. Full Moon",
+          "B. New Moon",
+          "C. First Quarter",
+          "D. Waxing Gibbous"
+        ],
+        "correctAnswer": "B. New Moon",
+        "hint": "At New Moon, the illuminated face of the Moon is directed away from Earth, rendering it invisible against the daylight sky.",
+        "workedSolution": "At New Moon, the illuminated face of the Moon is directed away from Earth, rendering it invisible against the daylight sky.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "During which lunar phase is the entire illuminated hemisphere of the Moon visible from Earth?",
+        "options": [
+          "A. New Moon",
+          "B. Full Moon",
+          "C. Third Quarter",
+          "D. Waxing Crescent"
+        ],
+        "correctAnswer": "B. Full Moon",
+        "hint": "At Full Moon, Earth is between the Sun and Moon, so the entire near side is illuminated by direct sunlight.",
+        "workedSolution": "At Full Moon, Earth is between the Sun and Moon, so the entire near side is illuminated by direct sunlight.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "The regular, periodic rise and fall of ocean surface levels is called:",
+        "options": [
+          "A. Tsunami",
+          "B. Tides",
+          "C. Rip currents",
+          "D. Whirlpools"
+        ],
+        "correctAnswer": "B. Tides",
+        "hint": "Tides are the periodic vertical movement of ocean waters caused by the gravitational forces of the Moon and Sun.",
+        "workedSolution": "Tides are the periodic vertical movement of ocean waters caused by the gravitational forces of the Moon and Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which celestial body exerts the greatest gravitational pull in causing ocean tides on Earth?",
+        "options": [
+          "A. The Sun",
+          "B. The Moon",
+          "C. Jupiter",
+          "D. Mars"
+        ],
+        "correctAnswer": "B. The Moon",
+        "hint": "Although much smaller than the Sun, the Moon is much closer to Earth, exerting roughly twice the tide-generating force of the Sun.",
+        "workedSolution": "Although much smaller than the Sun, the Moon is much closer to Earth, exerting roughly twice the tide-generating force of the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Tides with the greatest tidal range (exceptionally high high tides and low low tides) are known as:",
+        "options": [
+          "A. Neap tides",
+          "B. Spring tides",
+          "C. Ebb tides",
+          "D. Rip tides"
+        ],
+        "correctAnswer": "B. Spring tides",
+        "hint": "Spring tides occur during New Moon and Full Moon when the Sun, Earth, and Moon align, combining their gravitational pulls.",
+        "workedSolution": "Spring tides occur during New Moon and Full Moon when the Sun, Earth, and Moon align, combining their gravitational pulls.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "During which lunar phases do neap tides (tides with the lowest tidal range) occur?",
+        "options": [
+          "A. New Moon and Full Moon",
+          "B. First Quarter and Third Quarter moons",
+          "C. Waxing Crescent only",
+          "D. Waning Crescent only"
+        ],
+        "correctAnswer": "B. First Quarter and Third Quarter moons",
+        "hint": "Neap tides occur when the Sun and Moon are at right angles (90°) relative to Earth, partially canceling their gravitational forces.",
+        "workedSolution": "Neap tides occur when the Sun and Moon are at right angles (90°) relative to Earth, partially canceling their gravitational forces.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an astronomical eclipse?",
+        "options": [
+          "A. The explosion of a meteor in the atmosphere",
+          "B. The obscuring of light from one celestial body by the passage of another between it and the observer",
+          "C. The formation of northern lights in polar skies",
+          "D. The rapid freezing of ocean tides"
+        ],
+        "correctAnswer": "B. The obscuring of light from one celestial body by the passage of another between it and the observer",
+        "hint": "An eclipse occurs when a celestial body moves into the shadow of another body or passes directly between an observer and a light source.",
+        "workedSolution": "An eclipse occurs when a celestial body moves into the shadow of another body or passes directly between an observer and a light source.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the central, darkest, and fully obscured region of a shadow called?",
+        "options": [
+          "A. Penumbra",
+          "B. Umbra",
+          "C. Antumbra",
+          "D. Corona"
+        ],
+        "correctAnswer": "B. Umbra",
+        "hint": "The umbra is the inner cone of complete shadow where the light source is totally blocked.",
+        "workedSolution": "The umbra is the inner cone of complete shadow where the light source is totally blocked.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the lighter, outer portion of a shadow where only part of the light source is blocked?",
+        "options": [
+          "A. Umbra",
+          "B. Penumbra",
+          "C. Focus",
+          "D. Halo"
+        ],
+        "correctAnswer": "B. Penumbra",
+        "hint": "The penumbra is the outer fringe of a shadow where illumination is only partially obscured.",
+        "workedSolution": "The penumbra is the outer fringe of a shadow where illumination is only partially obscured.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what order are the Sun, Earth, and Moon aligned during a solar eclipse?",
+        "options": [
+          "A. Sun — Earth — Moon",
+          "B. Sun — Moon — Earth",
+          "C. Earth — Sun — Moon",
+          "D. Moon — Sun — Earth"
+        ],
+        "correctAnswer": "B. Sun — Moon — Earth",
+        "hint": "A solar eclipse occurs when the Moon passes between the Sun and Earth, casting its shadow on Earth.",
+        "workedSolution": "A solar eclipse occurs when the Moon passes between the Sun and Earth, casting its shadow on Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "During which lunar phase can a solar eclipse occur?",
+        "options": [
+          "A. Full Moon",
+          "B. New Moon",
+          "C. First Quarter",
+          "D. Waning Gibbous"
+        ],
+        "correctAnswer": "B. New Moon",
+        "hint": "A solar eclipse can only happen at New Moon when the Moon passes between Earth and the Sun.",
+        "workedSolution": "A solar eclipse can only happen at New Moon when the Moon passes between Earth and the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What type of solar eclipse occurs when the Moon completely blocks the bright disk of the Sun?",
+        "options": [
+          "A. Annular solar eclipse",
+          "B. Partial solar eclipse",
+          "C. Total solar eclipse",
+          "D. Penumbral solar eclipse"
+        ],
+        "correctAnswer": "C. Total solar eclipse",
+        "hint": "In a total solar eclipse, observers within the Moon's umbra see the solar disk completely covered.",
+        "workedSolution": "In a total solar eclipse, observers within the Moon's umbra see the solar disk completely covered.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A solar eclipse where a thin outer 'ring of fire' (annulus) of the Sun remains visible around the dark Moon is a/an:",
+        "options": [
+          "A. Total solar eclipse",
+          "B. Annular solar eclipse",
+          "C. Hybrid lunar eclipse",
+          "D. Total lunar eclipse"
+        ],
+        "correctAnswer": "B. Annular solar eclipse",
+        "hint": "An annular eclipse happens when the Moon is near apogee and its apparent size is too small to cover the entire solar disk.",
+        "workedSolution": "An annular eclipse happens when the Moon is near apogee and its apparent size is too small to cover the entire solar disk.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what order are the Sun, Earth, and Moon aligned during a lunar eclipse?",
+        "options": [
+          "A. Sun — Moon — Earth",
+          "B. Sun — Earth — Moon",
+          "C. Earth — Moon — Sun",
+          "D. Moon — Earth — Sun"
+        ],
+        "correctAnswer": "B. Sun — Earth — Moon",
+        "hint": "A lunar eclipse occurs when Earth passes directly between the Sun and Moon, casting its shadow onto the Moon.",
+        "workedSolution": "A lunar eclipse occurs when Earth passes directly between the Sun and Moon, casting its shadow onto the Moon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "During which lunar phase can a lunar eclipse occur?",
+        "options": [
+          "A. New Moon",
+          "B. First Quarter",
+          "C. Full Moon",
+          "D. Waning Crescent"
+        ],
+        "correctAnswer": "C. Full Moon",
+        "hint": "A lunar eclipse can only occur during the Full Moon phase when the Moon is opposite the Sun relative to Earth.",
+        "workedSolution": "A lunar eclipse can only occur during the Full Moon phase when the Moon is opposite the Sun relative to Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why does the Moon often take on a reddish or coppery color ('Blood Moon') during a total lunar eclipse?",
+        "options": [
+          "A. The Moon absorbs lava from active volcanoes",
+          "B. Earth's atmosphere bends and filters sunlight, scattering blue light and allowing refracted red light to reach the Moon",
+          "C. The Moon's surface catches fire",
+          "D. Carbon monoxide gas covers the lunar crust"
+        ],
+        "correctAnswer": "B. Earth's atmosphere bends and filters sunlight, scattering blue light and allowing refracted red light to reach the Moon",
+        "hint": "Rayleigh scattering in Earth's atmosphere filters out shorter blue wavelengths, while longer red wavelengths bend into the umbra.",
+        "workedSolution": "Rayleigh scattering in Earth's atmosphere filters out shorter blue wavelengths, while longer red wavelengths bend into the umbra.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do eclipses NOT occur every month at every New Moon and Full Moon?",
+        "options": [
+          "A. The Moon stops revolving during certain months",
+          "B. The Moon's orbital plane is tilted by approximately 5° relative to Earth's orbital plane (ecliptic)",
+          "C. The Sun changes its position in space monthly",
+          "D. The Earth's shadow vanishes during winter"
+        ],
+        "correctAnswer": "B. The Moon's orbital plane is tilted by approximately 5° relative to Earth's orbital plane (ecliptic)",
+        "hint": "Because the Moon's orbit is tilted 5°, the Moon usually passes slightly above or below the plane of Earth's orbit at syzygy.",
+        "workedSolution": "Because the Moon's orbit is tilted 5°, the Moon usually passes slightly above or below the plane of Earth's orbit at syzygy.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the faint, pearly white outer atmosphere of the Sun visible to the naked eye only during a total solar eclipse?",
+        "options": [
+          "A. Photosphere",
+          "B. Chromosphere",
+          "C. Corona",
+          "D. Core"
+        ],
+        "correctAnswer": "C. Corona",
+        "hint": "The solar corona is the outermost plasma atmosphere, visible only when the brilliant photosphere is occulted by the Moon.",
+        "workedSolution": "The solar corona is the outermost plasma atmosphere, visible only when the brilliant photosphere is occulted by the Moon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following planets rotates on its side with an extreme axial tilt of approximately 98°?",
+        "options": [
+          "A. Jupiter",
+          "B. Uranus",
+          "C. Mars",
+          "D. Saturn"
+        ],
+        "correctAnswer": "B. Uranus",
+        "hint": "Uranus has an unusual axial tilt of ~98°, causing it to rotate nearly on its side relative to its orbital plane.",
+        "workedSolution": "Uranus has an unusual axial tilt of ~98°, causing it to rotate nearly on its side relative to its orbital plane.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary factor that allows liquid water and biological life to exist on Earth?",
+        "options": [
+          "A. Earth's location in the habitable 'Goldilocks' zone at an ideal distance from the Sun",
+          "B. Earth has two large natural moons",
+          "C. Earth revolves in a perfect square orbit",
+          "D. Earth has no atmosphere"
+        ],
+        "correctAnswer": "A. Earth's location in the habitable 'Goldilocks' zone at an ideal distance from the Sun",
+        "hint": "Earth's orbit sits within the circumstellar habitable zone where temperatures allow water to remain liquid.",
+        "workedSolution": "Earth's orbit sits within the circumstellar habitable zone where temperatures allow water to remain liquid.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the name of the apparent boundary line dividing the daylight hemisphere from the dark hemisphere on Earth?",
+        "options": [
+          "A. Tropic of Cancer",
+          "B. Prime Meridian",
+          "C. Circle of illumination (terminator)",
+          "D. International Date Line"
+        ],
+        "correctAnswer": "C. Circle of illumination (terminator)",
+        "hint": "The circle of illumination (or terminator) is the moving boundary dividing the sunlit half of Earth from the nighttime half.",
+        "workedSolution": "The circle of illumination (or terminator) is the moving boundary dividing the sunlit half of Earth from the nighttime half.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which soil type possesses the highest water-holding capacity and highest capillarity, but drains the slowest?",
+        "prompt": "How does the composition of the Jovian outer gas giants differ fundamentally from the inner terrestrial planets?",
         "options": [
-          "Coarse sandy soil",
-          "Gravel",
-          "Clay soil",
-          "Pure silt"
+          "A. Jovian planets lack solid surfaces and are composed predominantly of light hydrogen and helium gases with low densities",
+          "B. Jovian planets are composed of solid granite rock",
+          "C. Terrestrial planets are hollow gas shells",
+          "D. Jovian planets have higher densities than terrestrial planets"
         ],
-        "correctAnswer": "Clay soil",
-        "hint": "Its microscopic particles create tiny capillary micropores.",
-        "workedSolution": "Clay particles are sub-microscopic with vast total surface area and tiny micropores, exerting high surface tension forces that retain large volumes of water and produce high capillary rise.",
+        "correctAnswer": "A. Jovian planets lack solid surfaces and are composed predominantly of light hydrogen and helium gases with low densities",
+        "hint": "The Jovian giants (Jupiter, Saturn) consist primarily of thick gaseous envelopes of hydrogen and helium, resulting in low mean densities.",
+        "workedSolution": "The Jovian giants (Jupiter, Saturn) consist primarily of thick gaseous envelopes of hydrogen and helium, resulting in low mean densities.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Venus experience surface temperatures (~465°C) higher than Mercury, despite being farther from the Sun?",
+        "options": [
+          "A. Venus has an extreme runaway greenhouse effect caused by a dense atmosphere of 96% carbon dioxide",
+          "B. Venus generates internal heat through active nuclear fission in its oceans",
+          "C. Mercury has an atmosphere composed of pure ice crystals",
+          "D. Venus has several active artificial heaters"
+        ],
+        "correctAnswer": "A. Venus has an extreme runaway greenhouse effect caused by a dense atmosphere of 96% carbon dioxide",
+        "hint": "The massive, high-pressure carbon dioxide atmosphere on Venus traps outgoing infrared radiation, driving surface temperatures higher than Mercury's.",
+        "workedSolution": "The massive, high-pressure carbon dioxide atmosphere on Venus traps outgoing infrared radiation, driving surface temperatures higher than Mercury's.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What physical mechanism creates the characteristic glowing coma and twin tails of a comet as it nears perihelion?",
+        "options": [
+          "A. Solar heat sublimates frozen volatile ices into gas, while solar wind and radiation pressure push ions and dust away from the Sun",
+          "B. Friction with interstellar gas burns the comet",
+          "C. The comet collides with asteroids in space",
+          "D. The comet's core undergoes volcanic combustion"
+        ],
+        "correctAnswer": "A. Solar heat sublimates frozen volatile ices into gas, while solar wind and radiation pressure push ions and dust away from the Sun",
+        "hint": "Solar radiant heating causes volatile ices to sublimate; radiation pressure and the solar wind then blow dust and ionized gas away from the Sun.",
+        "workedSolution": "Solar radiant heating causes volatile ices to sublimate; radiation pressure and the solar wind then blow dust and ionized gas away from the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do the ion tail and dust tail of a comet point in slightly different directions away from the Sun?",
+        "options": [
+          "A. Lightweight ions are accelerated directly anti-solar by the magnetic solar wind, while heavier dust grains lag along the orbital path",
+          "B. The ion tail is pulled by Earth's gravity",
+          "C. Dust grains are repelled by the Moon",
+          "D. Ions are attracted toward Jupiter"
+        ],
+        "correctAnswer": "A. Lightweight ions are accelerated directly anti-solar by the magnetic solar wind, while heavier dust grains lag along the orbital path",
+        "hint": "The ionized gas tail aligns strictly with the radial solar wind lines, whereas dust particles experience photon pressure and lag behind the comet's curved trajectory.",
+        "workedSolution": "The ionized gas tail aligns strictly with the radial solar wind lines, whereas dust particles experience photon pressure and lag behind the comet's curved trajectory.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the difference between a sidereal day and a solar day on Earth?",
+        "options": [
+          "A. A sidereal day (23 h 56 min) measures one rotation relative to distant stars, while a solar day (24 h) accounts for Earth's simultaneous orbital progress",
+          "B. A sidereal day is 48 hours long",
+          "C. A solar day is measured only during eclipses",
+          "D. A sidereal day occurs only during leap years"
+        ],
+        "correctAnswer": "A. A sidereal day (23 h 56 min) measures one rotation relative to distant stars, while a solar day (24 h) accounts for Earth's simultaneous orbital progress",
+        "hint": "Because Earth travels along its orbit while spinning, it must rotate roughly 1° extra (~4 minutes) to realign with the Sun, making a solar day 24 hours.",
+        "workedSolution": "Because Earth travels along its orbit while spinning, it must rotate roughly 1° extra (~4 minutes) to realign with the Sun, making a solar day 24 hours.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the Coriolis effect, caused by Earth's axial rotation, alter wind patterns in the Northern and Southern Hemispheres?",
+        "options": [
+          "A. It deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+          "B. It deflects winds to the left in the Northern Hemisphere and to the right in the Southern",
+          "C. It stops all horizontal wind motion at the equator",
+          "D. It blows all air directly toward the poles"
+        ],
+        "correctAnswer": "A. It deflects winds to the right in the Northern Hemisphere and to the left in the Southern Hemisphere",
+        "hint": "Due to Earth's counter-clockwise rotation, moving air parcels are deflected rightward in the Northern Hemisphere and leftward in the Southern Hemisphere.",
+        "workedSolution": "Due to Earth's counter-clockwise rotation, moving air parcels are deflected rightward in the Northern Hemisphere and leftward in the Southern Hemisphere.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is meant by the 'parallelism of the Earth's axis' during its annual revolution?",
+        "options": [
+          "A. Earth's axis remains pointing toward the same direction in space (toward Polaris) throughout its orbit",
+          "B. The axis flips upside down every six months",
+          "C. The axis rotates 360° horizontally each week",
+          "D. The axis aligns parallel to the equator"
+        ],
+        "correctAnswer": "A. Earth's axis remains pointing toward the same direction in space (toward Polaris) throughout its orbit",
+        "hint": "Parallelism of the axis means Earth's tilt maintains a fixed orientation in space as it orbits, altering hemispheric insolation.",
+        "workedSolution": "Parallelism of the axis means Earth's tilt maintains a fixed orientation in space as it orbits, altering hemispheric insolation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do equatorial regions like Ghana experience roughly equal 12-hour days and 12-hour nights year-round?",
+        "options": [
+          "A. The circle of illumination bisects the equator almost equally regardless of the seasonal tilt of the poles",
+          "B. Ghana is located on the North Pole",
+          "C. The Sun does not shine on the equator during winter",
+          "D. The atmosphere at the equator is three times thicker"
+        ],
+        "correctAnswer": "A. The circle of illumination bisects the equator almost equally regardless of the seasonal tilt of the poles",
+        "hint": "Because the equator is a great circle equidistant from both poles, the circle of illumination divides it in half in all seasons.",
+        "workedSolution": "Because the equator is a great circle equidistant from both poles, the circle of illumination divides it in half in all seasons.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What astronomical event occurs in the Southern Hemisphere on December 21 when the Tropic of Capricorn receives overhead noon sunlight?",
+        "options": [
+          "A. Summer solstice (longest daylight of the year)",
+          "B. Winter solstice (shortest daylight of the year)",
+          "C. Vernal equinox",
+          "D. Total solar eclipse"
+        ],
+        "correctAnswer": "A. Summer solstice (longest daylight of the year)",
+        "hint": "On December 21, the Southern Hemisphere is tilted maximally toward the Sun, experiencing its summer solstice and longest day.",
+        "workedSolution": "On December 21, the Southern Hemisphere is tilted maximally toward the Sun, experiencing its summer solstice and longest day.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does the Moon lack an atmosphere and liquid surface water?",
+        "options": [
+          "A. Its low mass and weak surface gravity (1/6 of Earth) cannot retain gaseous molecules against thermal escape and solar wind stripping",
+          "B. The Moon is too hot to hold any chemical elements",
+          "C. Earth's gravity pulled all the Moon's gases away",
+          "D. Nuclear reactions on the Moon destroyed all water"
+        ],
+        "correctAnswer": "A. Its low mass and weak surface gravity (1/6 of Earth) cannot retain gaseous molecules against thermal escape and solar wind stripping",
+        "hint": "Weak lunar gravity yields an escape velocity too low to retain gas molecules excited by intense daytime solar heating.",
+        "workedSolution": "Weak lunar gravity yields an escape velocity too low to retain gas molecules excited by intense daytime solar heating.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the apparent changing shapes of the Moon (phases) seen from Earth over a month?",
+        "options": [
+          "A. Earth's shadow falling on the Moon every night",
+          "B. The varying perspective from which observers on Earth view the Moon's sunlit hemisphere as it orbits Earth",
+          "C. Clouds covering different parts of the Moon",
+          "D. The Moon expanding and contracting physically"
+        ],
+        "correctAnswer": "B. The varying perspective from which observers on Earth view the Moon's sunlit hemisphere as it orbits Earth",
+        "hint": "Half of the Moon is always sunlit; as it orbits Earth, observers see varying fractions of that illuminated half.",
+        "workedSolution": "Half of the Moon is always sunlit; as it orbits Earth, observers see varying fractions of that illuminated half.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the sequence of lunar phases during the waxing portion of the cycle?",
+        "options": [
+          "A. New Moon → Waxing Crescent → First Quarter → Waxing Gibbous → Full Moon",
+          "B. Full Moon → Waning Gibbous → Third Quarter → New Moon",
+          "C. New Moon → Full Moon → Third Quarter → First Quarter",
+          "D. First Quarter → New Moon → Full Moon → Third Quarter"
+        ],
+        "correctAnswer": "A. New Moon → Waxing Crescent → First Quarter → Waxing Gibbous → Full Moon",
+        "hint": "'Waxing' denotes increasing illumination, progressing from New Moon through crescent, quarter, and gibbous to Full Moon.",
+        "workedSolution": "'Waxing' denotes increasing illumination, progressing from New Moon through crescent, quarter, and gibbous to Full Moon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the gravitational pull of the Moon produce two tidal bulges on opposite sides of the Earth simultaneously?",
+        "options": [
+          "A. It pulls ocean water toward it on the near side, and pulls the solid Earth away from water on the far side",
+          "B. The Moon pushes water away on both sides",
+          "C. The Sun creates both bulges alone",
+          "D. Earth's core pumps water outward"
+        ],
+        "correctAnswer": "A. It pulls ocean water toward it on the near side, and pulls the solid Earth away from water on the far side",
+        "hint": "Differential gravity attracts near-side ocean water strongly, while on the far side, Earth is pulled away from water, creating opposing bulges.",
+        "workedSolution": "Differential gravity attracts near-side ocean water strongly, while on the far side, Earth is pulled away from water, creating opposing bulges.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do spring tides occur specifically during New Moon and Full Moon alignments (syzygy)?",
+        "options": [
+          "A. The gravitational tidal forces of the Sun and Moon reinforce one another along the same axis",
+          "B. The Moon is closest to Jupiter",
+          "C. Earth's rotational speed doubles",
+          "D. The Sun blocks the Moon's gravity"
+        ],
+        "correctAnswer": "A. The gravitational tidal forces of the Sun and Moon reinforce one another along the same axis",
+        "hint": "When the Sun, Earth, and Moon align linearly, their tidal bulges superimpose, maximizing tidal amplitude.",
+        "workedSolution": "When the Sun, Earth, and Moon align linearly, their tidal bulges superimpose, maximizing tidal amplitude.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are total solar eclipses visible from only a very narrow geographic track on Earth's surface?",
+        "options": [
+          "A. The Moon's umbral shadow cone converges to a small tip (~100 to 250 km wide) by the time it reaches Earth",
+          "B. The Sun only shines on small countries",
+          "C. The Moon's shadow is absorbed by clouds",
+          "D. Earth's magnetic field bends the shadow away"
+        ],
+        "correctAnswer": "A. The Moon's umbral shadow cone converges to a small tip (~100 to 250 km wide) by the time it reaches Earth",
+        "hint": "Because the Moon is small and its distance places the apex of its umbra near Earth, the umbral footprint on Earth's surface is narrow.",
+        "workedSolution": "Because the Moon is small and its distance places the apex of its umbra near Earth, the umbral footprint on Earth's surface is narrow.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What optical circumstance causes an annular solar eclipse rather than a total solar eclipse?",
+        "options": [
+          "A. The Moon is near apogee (farthest from Earth), so its angular diameter is smaller than the Sun's",
+          "B. The Moon is near perigee (closest to Earth)",
+          "C. Earth is at its maximum distance from the Sun",
+          "D. Clouds blur the outer edges of the Sun"
+        ],
+        "correctAnswer": "A. The Moon is near apogee (farthest from Earth), so its angular diameter is smaller than the Sun's",
+        "hint": "When the Moon is at apogee, its apparent disk cannot fully cover the Sun, leaving a bright ring (annulus) visible.",
+        "workedSolution": "When the Moon is at apogee, its apparent disk cannot fully cover the Sun, leaving a bright ring (annulus) visible.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is a lunar eclipse safe to view with the naked eye, whereas a solar eclipse requires specialized protective filters?",
+        "options": [
+          "A. A lunar eclipse involves viewing reflected, filtered sunlight from the Moon, while a solar eclipse exposes retinas to intense direct solar radiation",
+          "B. The Moon emits cool ultraviolet rays",
+          "C. The Sun produces no light during eclipses",
+          "D. Lunar rock absorbs all thermal heat"
+        ],
+        "correctAnswer": "A. A lunar eclipse involves viewing reflected, filtered sunlight from the Moon, while a solar eclipse exposes retinas to intense direct solar radiation",
+        "hint": "Looking directly at the Sun concentrates intense rays that can permanently burn retinal tissue; the Moon merely reflects dim light.",
+        "workedSolution": "Looking directly at the Sun concentrates intense rays that can permanently burn retinal tissue; the Moon merely reflects dim light.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the term for the two intersection points where the Moon's tilted orbital plane crosses the ecliptic plane?",
+        "options": [
+          "A. Apogee and Perigee",
+          "B. Orbital nodes (ascending and descending nodes)",
+          "C. Solstices",
+          "D. Perihelion and Aphelion"
+        ],
+        "correctAnswer": "B. Orbital nodes (ascending and descending nodes)",
+        "hint": "Nodes are the two points where the Moon's 5°-tilted orbit intersects the plane of Earth's orbit around the Sun.",
+        "workedSolution": "Nodes are the two points where the Moon's 5°-tilted orbit intersects the plane of Earth's orbit around the Sun.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do lunar eclipses last significantly longer (often hours) than total solar eclipses (a few minutes)?",
+        "options": [
+          "A. Earth's umbral shadow is much larger than the Moon's umbra, so the Moon takes longer to transit across it",
+          "B. The Moon stops moving during lunar eclipses",
+          "C. Earth revolves faster during solar eclipses",
+          "D. The Sun shuts off light during lunar eclipses"
+        ],
+        "correctAnswer": "A. Earth's umbral shadow is much larger than the Moon's umbra, so the Moon takes longer to transit across it",
+        "hint": "Earth's shadow at the Moon's distance is roughly three times the Moon's diameter, requiring hours for the Moon to pass through.",
+        "workedSolution": "Earth's shadow at the Moon's distance is roughly three times the Moon's diameter, requiring hours for the Moon to pass through.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the apparent path of the Sun across the sky change between June and December in the Northern Hemisphere?",
+        "options": [
+          "A. The noon Sun reaches its highest altitude in June and its lowest altitude in December",
+          "B. The Sun rises in the west in June",
+          "C. The noon Sun is highest in December",
+          "D. The Sun never rises in December anywhere"
+        ],
+        "correctAnswer": "A. The noon Sun reaches its highest altitude in June and its lowest altitude in December",
+        "hint": "Due to northern tilt toward the Sun in June, the Sun tracks higher noon arcs; in December, it tracks lower across the southern sky.",
+        "workedSolution": "Due to northern tilt toward the Sun in June, the Sun tracks higher noon arcs; in December, it tracks lower across the southern sky.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What defines the astronomical point of 'perihelion' in Earth's orbit?",
+        "options": [
+          "A. The point where Earth is closest to the Sun in early January",
+          "B. The point where Earth is farthest from the Sun in July",
+          "C. The point where Earth crosses the equator",
+          "D. The moment an eclipse begins"
+        ],
+        "correctAnswer": "A. The point where Earth is closest to the Sun in early January",
+        "hint": "Perihelion is the orbital point closest to the Sun (~147 million km), occurring annually around January 3.",
+        "workedSolution": "Perihelion is the orbital point closest to the Sun (~147 million km), occurring annually around January 3.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the Kuiper Belt?",
+        "options": [
+          "A. A disk-shaped region of icy bodies and dwarf planets extending beyond the orbit of Neptune",
+          "B. The ring system orbiting Saturn",
+          "C. The dust cloud surrounding Mercury",
+          "D. An asteroid belt between Earth and Mars"
+        ],
+        "correctAnswer": "A. A disk-shaped region of icy bodies and dwarf planets extending beyond the orbit of Neptune",
+        "hint": "The Kuiper Belt is a circumstellar reservoir of icy planetesimals and dwarf planets located beyond Neptune (30–50 AU).",
+        "workedSolution": "The Kuiper Belt is a circumstellar reservoir of icy planetesimals and dwarf planets located beyond Neptune (30–50 AU).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the Galilean moon Europa considered a prime candidate in the search for extraterrestrial microbial life?",
+        "options": [
+          "A. It possesses a subsurface liquid water ocean beneath a cracked ice crust, heated by tidal flexing",
+          "B. It has dense oxygen forests",
+          "C. Its surface is covered in warm soil",
+          "D. It orbits very close to the Sun"
+        ],
+        "correctAnswer": "A. It possesses a subsurface liquid water ocean beneath a cracked ice crust, heated by tidal flexing",
+        "hint": "Jupiter's tidal pull warms Europa's interior, maintaining a deep global liquid water ocean beneath its outer ice shell.",
+        "workedSolution": "Jupiter's tidal pull warms Europa's interior, maintaining a deep global liquid water ocean beneath its outer ice shell.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor that prevents objects in the asteroid belt from coalescing into a single planet?",
+        "options": [
+          "A. The strong gravitational perturbations exerted by nearby massive Jupiter",
+          "B. Solar radiation melted all the rock",
+          "C. The asteroids travel too slowly to collide",
+          "D. Earth's magnetic field repels them"
+        ],
+        "correctAnswer": "A. The strong gravitational perturbations exerted by nearby massive Jupiter",
+        "hint": "Jupiter's massive gravitational resonance stirred asteroid orbits, increasing collision velocities and preventing accretion into a planet.",
+        "workedSolution": "Jupiter's massive gravitational resonance stirred asteroid orbits, increasing collision velocities and preventing accretion into a planet.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which layer of the Sun is the visible surface from which most light is emitted into space?",
+        "options": [
+          "A. Photosphere",
+          "B. Corona",
+          "C. Chromosphere",
+          "D. Core"
+        ],
+        "correctAnswer": "A. Photosphere",
+        "hint": "The photosphere (~5,500°C) is the luminous atmospheric layer that emits the visible light we observe from Earth.",
+        "workedSolution": "The photosphere (~5,500°C) is the luminous atmospheric layer that emits the visible light we observe from Earth.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the solar wind that flows continuously throughout the solar system?",
+        "options": [
+          "A. Plasma of high-energy protons and electrons escaping the Sun's hot corona",
+          "B. Steam boiling from comets",
+          "C. Air currents produced by rotating planets",
+          "D. Dust blown from Saturn's rings"
+        ],
+        "correctAnswer": "A. Plasma of high-energy protons and electrons escaping the Sun's hot corona",
+        "hint": "The solar wind is a stream of charged plasma particles ejected outward from the Sun's corona into interplanetary space.",
+        "workedSolution": "The solar wind is a stream of charged plasma particles ejected outward from the Sun's corona into interplanetary space.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does Earth's geomagnetic field protect the biosphere from the solar wind?",
+        "options": [
+          "A. It deflects charged solar plasma around the planet within the magnetosphere",
+          "B. It absorbs all sunlight before it reaches ground",
+          "C. It freezes the solar wind into water",
+          "D. It converts solar particles into oxygen"
+        ],
+        "correctAnswer": "A. It deflects charged solar plasma around the planet within the magnetosphere",
+        "hint": "Earth's magnetic field shields our atmosphere from erosion by deflecting harmful charged particles toward the magnetic poles.",
+        "workedSolution": "Earth's magnetic field shields our atmosphere from erosion by deflecting harmful charged particles toward the magnetic poles.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a solar eclipse not occur at every New Moon?",
+        "options": [
+          "A. The 5° inclination of the Moon's orbit means its shadow usually misses Earth above or below",
+          "B. The Moon moves too fast to cast a shadow",
+          "C. The Sun's rays bend around the Moon",
+          "D. New Moon only happens once a year"
+        ],
+        "correctAnswer": "A. The 5° inclination of the Moon's orbit means its shadow usually misses Earth above or below",
+        "hint": "Due to the 5° tilt of the lunar orbital plane, syzygy does not usually coincide with crossing the ecliptic nodes.",
+        "workedSolution": "Due to the 5° tilt of the lunar orbital plane, syzygy does not usually coincide with crossing the ecliptic nodes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is an annular eclipse an example of?",
+        "options": [
+          "A. A partial eclipse of the Moon",
+          "B. A central solar eclipse where the antumbra reaches Earth's surface",
+          "C. A total eclipse of the stars",
+          "D. An eclipse occurring at midnight"
+        ],
+        "correctAnswer": "B. A central solar eclipse where the antumbra reaches Earth's surface",
+        "hint": "In an annular eclipse, the Moon's umbra terminates before reaching Earth, and the antumbra extends to the surface.",
+        "workedSolution": "In an annular eclipse, the Moon's umbra terminates before reaching Earth, and the antumbra extends to the surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are lunar craters preserved for billions of years, unlike craters on Earth?",
+        "options": [
+          "A. The Moon lacks water, wind, and active plate tectonics to erode surface features",
+          "B. Lunar craters are made of diamond",
+          "C. New rock covers craters weekly",
+          "D. The Moon's gravity repairs craters"
+        ],
+        "correctAnswer": "A. The Moon lacks water, wind, and active plate tectonics to erode surface features",
+        "hint": "Without atmospheric weather, precipitation, or crustal recycling, impact structures on the Moon remain intact over geological time.",
+        "workedSolution": "Without atmospheric weather, precipitation, or crustal recycling, impact structures on the Moon remain intact over geological time.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary chemical element being fused inside the Sun's core to produce energy?",
+        "options": [
+          "A. Hydrogen into Helium",
+          "B. Carbon into Iron",
+          "C. Uranium into Lead",
+          "D. Oxygen into Water"
+        ],
+        "correctAnswer": "A. Hydrogen into Helium",
+        "hint": "Nuclear fusion in the solar core fuses four hydrogen nuclei (protons) into a single helium nucleus, releasing energy.",
+        "workedSolution": "Nuclear fusion in the solar core fuses four hydrogen nuclei (protons) into a single helium nucleus, releasing energy.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do the orbital speeds of inner planets compare to those of outer planets according to Kepler's laws?",
+        "options": [
+          "A. Inner planets travel much faster in their orbits than outer planets",
+          "B. All planets travel at identical orbital velocities",
+          "C. Outer planets move faster because they are larger",
+          "D. Planet speed depends on the number of moons"
+        ],
+        "correctAnswer": "A. Inner planets travel much faster in their orbits than outer planets",
+        "hint": "Gravitational pull decreases with distance; inner planets orbit much faster (e.g., Mercury ~47 km/s vs. Neptune ~5.4 km/s).",
+        "workedSolution": "Gravitational pull decreases with distance; inner planets orbit much faster (e.g., Mercury ~47 km/s vs. Neptune ~5.4 km/s).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which planet in the solar system has the shortest rotational period (day length)?",
+        "options": [
+          "A. Jupiter (~10 hours)",
+          "B. Venus (~243 days)",
+          "C. Earth (24 hours)",
+          "D. Mercury (~59 days)"
+        ],
+        "correctAnswer": "A. Jupiter (~10 hours)",
+        "hint": "Despite being the largest planet, Jupiter has the fastest axial spin, completing one rotation in approximately 9 hours and 55 minutes.",
+        "workedSolution": "Despite being the largest planet, Jupiter has the fastest axial spin, completing one rotation in approximately 9 hours and 55 minutes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the Great Red Spot on Jupiter?",
+        "options": [
+          "A. A massive, persistent high-pressure anticyclonic storm larger than Earth",
+          "B. An active volcanic caldera",
+          "C. A deep ocean of liquid water",
+          "D. A crater from an asteroid impact"
+        ],
+        "correctAnswer": "A. A massive, persistent high-pressure anticyclonic storm larger than Earth",
+        "hint": "The Great Red Spot is an enormous anticyclonic storm system that has persisted in Jupiter's atmosphere for centuries.",
+        "workedSolution": "The Great Red Spot is an enormous anticyclonic storm system that has persisted in Jupiter's atmosphere for centuries.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What gives Neptune its intense deep blue coloration?",
+        "options": [
+          "A. Absorption of red light by atmospheric methane",
+          "B. Liquid water oceans covering the entire globe",
+          "C. Solid nitrogen crystals reflecting sunlight",
+          "D. Chemical sulfur reactions in clouds"
+        ],
+        "correctAnswer": "A. Absorption of red light by atmospheric methane",
+        "hint": "Atmospheric methane absorbs red wavelengths of light while reflecting blue light back into space.",
+        "workedSolution": "Atmospheric methane absorbs red wavelengths of light while reflecting blue light back into space.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary difference between an asteroid and a meteoroid?",
+        "options": [
+          "A. Size: Asteroids are larger bodies (>1 meter up to hundreds of kilometers), while meteoroids are smaller fragments",
+          "B. Asteroids are made of ice, while meteoroids are gas",
+          "C. Asteroids never orbit the Sun",
+          "D. Meteoroids are always larger than planets"
+        ],
+        "correctAnswer": "A. Size: Asteroids are larger bodies (>1 meter up to hundreds of kilometers), while meteoroids are smaller fragments",
+        "hint": "Asteroids are larger rocky bodies, while meteoroids are smaller rocky fragments and debris in space.",
+        "workedSolution": "Asteroids are larger rocky bodies, while meteoroids are smaller rocky fragments and debris in space.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the Oort Cloud?",
+        "options": [
+          "A. A theoretical spherical shell of distant icy planetesimals surrounding the outer boundary of the solar system",
+          "B. The cloud layer on Venus",
+          "C. A dust storm on Mars",
+          "D. The ring system around Uranus"
+        ],
+        "correctAnswer": "A. A theoretical spherical shell of distant icy planetesimals surrounding the outer boundary of the solar system",
+        "hint": "The Oort Cloud is an immense spherical cloud of icy cometary bodies encompassing the solar system out to ~100,000 AU.",
+        "workedSolution": "The Oort Cloud is an immense spherical cloud of icy cometary bodies encompassing the solar system out to ~100,000 AU.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "During which phase does the Moon appear as a half-disk illuminated on the observer's left-hand side (in Northern Hemisphere)?",
+        "options": [
+          "A. Third (Last) Quarter",
+          "B. First Quarter",
+          "C. Full Moon",
+          "D. Waxing Crescent"
+        ],
+        "correctAnswer": "A. Third (Last) Quarter",
+        "hint": "At Third Quarter, the Moon is three-quarters through its orbit, displaying half illumination on the western (left) side.",
+        "workedSolution": "At Third Quarter, the Moon is three-quarters through its orbit, displaying half illumination on the western (left) side.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary reason why solar eclipses are shorter in duration than lunar eclipses?",
+        "options": [
+          "A. The Moon's shadow on Earth is very small, so the orbital motion sweeps it across the ground rapidly",
+          "B. Earth moves slower than the Moon",
+          "C. Sunlight travels faster during the day",
+          "D. The Sun shrinks during an eclipse"
+        ],
+        "correctAnswer": "A. The Moon's shadow on Earth is very small, so the orbital motion sweeps it across the ground rapidly",
+        "hint": "The Moon's small umbral shadow travels across Earth at over 1,700 km/h, limiting totality at any spot to under 7.5 minutes.",
+        "workedSolution": "The Moon's small umbral shadow travels across Earth at over 1,700 km/h, limiting totality at any spot to under 7.5 minutes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is an antumbra?",
+        "options": [
+          "A. The region beyond the umbra where the obscuring body appears completely within the light source, creating an annulus",
+          "B. The center of the Earth",
+          "C. The bright surface of the Sun",
+          "D. A crater on the Moon"
+        ],
+        "correctAnswer": "A. The region beyond the umbra where the obscuring body appears completely within the light source, creating an annulus",
+        "hint": "The antumbra is the extension of the shadow beyond the umbra's apex, where the blocking body appears rimmed by light.",
+        "workedSolution": "The antumbra is the extension of the shadow beyond the umbra's apex, where the blocking body appears rimmed by light.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which planet in our solar system has the highest density?",
+        "options": [
+          "A. Earth",
+          "B. Jupiter",
+          "C. Saturn",
+          "D. Mercury"
+        ],
+        "correctAnswer": "A. Earth",
+        "hint": "Earth is the densest planet in the solar system (~5.51 g/cm³) due to its metallic core and gravitational compression.",
+        "workedSolution": "Earth is the densest planet in the solar system (~5.51 g/cm³) due to its metallic core and gravitational compression.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which planet has a density so low that it would theoretically float in a sufficiently large body of water?",
+        "options": [
+          "A. Saturn (~0.69 g/cm³)",
+          "B. Earth (~5.51 g/cm³)",
+          "C. Mars (~3.93 g/cm³)",
+          "D. Venus (~5.24 g/cm³)"
+        ],
+        "correctAnswer": "A. Saturn (~0.69 g/cm³)",
+        "hint": "Saturn's mean density is less than that of water (1.0 g/cm³), making it the least dense planet.",
+        "workedSolution": "Saturn's mean density is less than that of water (1.0 g/cm³), making it the least dense planet.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does Mars have cold surface temperatures despite having a carbon dioxide atmosphere?",
+        "options": [
+          "A. Its atmosphere is extremely thin (<1% of Earth's pressure), retaining negligible heat",
+          "B. Its atmosphere is made of ice",
+          "C. Mars is too close to the Sun",
+          "D. Mars reflects 100% of solar light"
+        ],
+        "correctAnswer": "A. Its atmosphere is extremely thin (<1% of Earth's pressure), retaining negligible heat",
+        "hint": "Although Mars's atmosphere is mostly CO2, its low surface pressure (~6 mbar) is too sparse to provide significant greenhouse warming.",
+        "workedSolution": "Although Mars's atmosphere is mostly CO2, its low surface pressure (~6 mbar) is too sparse to provide significant greenhouse warming.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the term for a planetary day on Mars?",
+        "options": [
+          "A. Sol",
+          "B. Lunar day",
+          "C. Epoch",
+          "D. Light year"
+        ],
+        "correctAnswer": "A. Sol",
+        "hint": "A Martian solar day is termed a 'sol', lasting approximately 24 hours, 39 minutes, and 35 seconds.",
+        "workedSolution": "A Martian solar day is termed a 'sol', lasting approximately 24 hours, 39 minutes, and 35 seconds.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What creates the high-tide bulge on the side of Earth opposite to the Moon?",
+        "options": [
+          "A. The solid Earth is pulled toward the Moon more strongly than the water on the far side, leaving the water behind",
+          "B. Solar radiation pushes the water outward",
+          "C. The Moon's magnetic field repels the water",
+          "D. Earth's rotation creates a vacuum on that side"
+        ],
+        "correctAnswer": "A. The solid Earth is pulled toward the Moon more strongly than the water on the far side, leaving the water behind",
+        "hint": "Inertia and differential gravitational gradient leave water behind on the far side as Earth is pulled toward the Moon.",
+        "workedSolution": "Inertia and differential gravitational gradient leave water behind on the far side as Earth is pulled toward the Moon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does the Moon appear to rise approximately 50 minutes later each day?",
+        "options": [
+          "A. The Moon moves eastward in its orbit, so Earth must rotate further each day to bring the Moon into view",
+          "B. The Moon moves backward in space",
+          "C. Earth's rotation slows down each day",
+          "D. Earth's orbit tilts back and forth daily"
+        ],
+        "correctAnswer": "A. The Moon moves eastward in its orbit, so Earth must rotate further each day to bring the Moon into view",
+        "hint": "Because the Moon revolves eastward ~13° daily, Earth must rotate an extra ~50 minutes to realign with it.",
+        "workedSolution": "Because the Moon revolves eastward ~13° daily, Earth must rotate an extra ~50 minutes to realign with it.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What causes the phenomenon known as 'Baily's beads' during a total solar eclipse?",
+        "options": [
+          "A. Sunlight shining through valleys along the rugged topographical limb of the Moon",
+          "B. Asteroids colliding with the Sun",
+          "C. Water droplets in the upper atmosphere",
+          "D. Reflection off satellites in orbit"
+        ],
+        "correctAnswer": "A. Sunlight shining through valleys along the rugged topographical limb of the Moon",
+        "hint": "Right before and after totality, beads of sunlight shine through valleys between lunar mountains along the Moon's edge.",
+        "workedSolution": "Right before and after totality, beads of sunlight shine through valleys between lunar mountains along the Moon's edge.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the 'diamond ring effect' in a total solar eclipse?",
+        "options": [
+          "A. The single bright bead of sunlight remaining just before totality begins or ends, set against the corona",
+          "B. A ring of ice around the Moon",
+          "C. A halo caused by clouds on Earth",
+          "D. The reflection of Earth's oceans onto the Moon"
+        ],
+        "correctAnswer": "A. The single bright bead of sunlight remaining just before totality begins or ends, set against the corona",
+        "hint": "When only one point of sunlight shines through a lunar valley, it resembles a brilliant diamond on a ring formed by the corona.",
+        "workedSolution": "When only one point of sunlight shines through a lunar valley, it resembles a brilliant diamond on a ring formed by the corona.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is retrograde rotation unique among major planets in Venus and Uranus?",
+        "options": [
+          "A. They rotate clockwise (east to west), opposite to most planets in the solar system",
+          "B. They do not revolve around the Sun",
+          "C. They change direction every month",
+          "D. They spin faster than light"
+        ],
+        "correctAnswer": "A. They rotate clockwise (east to west), opposite to most planets in the solar system",
+        "hint": "Most planets spin counter-clockwise; Venus and Uranus exhibit retrograde (clockwise) axial rotation.",
+        "workedSolution": "Most planets spin counter-clockwise; Venus and Uranus exhibit retrograde (clockwise) axial rotation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor determining the orbital eccentricity of planetary paths in the solar system?",
+        "options": [
+          "A. Kepler's First Law: All planets orbit in ellipses with the Sun at one focus",
+          "B. The number of active volcanoes on the planet",
+          "C. The speed of light in a vacuum",
+          "D. The composition of the solar core"
+        ],
+        "correctAnswer": "A. Kepler's First Law: All planets orbit in ellipses with the Sun at one focus",
+        "hint": "Kepler's First Law states that planetary orbits are ellipses of varying eccentricity, with the Sun situated at one focus.",
+        "workedSolution": "Kepler's First Law states that planetary orbits are ellipses of varying eccentricity, with the Sun situated at one focus.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Earth's orbit has an eccentricity of 0.0167 with a semi-major axis of $1.496 \\times 10^8\\text{ km}$. If perihelion is $1.471 \\times 10^8\\text{ km}$, what is the aphelion distance?",
+        "options": [
+          "A. $1.496 \\times 10^8\\text{ km}$",
+          "B. $1.521 \\times 10^8\\text{ km}$",
+          "C. $1.550 \\times 10^8\\text{ km}$",
+          "D. $1.600 \\times 10^8\\text{ km}$"
+        ],
+        "correctAnswer": "B. $1.521 \\times 10^8\\text{ km}$",
+        "hint": "Aphelion $r_a = a(1 + e) = 1.496 \\times 10^8 \\times (1 + 0.0167) \\approx 1.521 \\times 10^8\\text{ km}$.",
+        "workedSolution": "Aphelion $r_a = a(1 + e) = 1.496 \\times 10^8 \\times (1 + 0.0167) \\approx 1.521 \\times 10^8\\text{ km}$.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "According to Kepler's Third Law ($T^2 \\propto r^3$), if an asteroid orbits at an average distance of 4 Astronomical Units (AU) from the Sun, what is its orbital period?",
+        "options": [
+          "A. 2 Earth years",
+          "B. 4 Earth years",
+          "C. 8 Earth years",
+          "D. 16 Earth years"
+        ],
+        "correctAnswer": "C. 8 Earth years",
+        "hint": "$T^2 = r^3 = 4^3 = 64$. Therefore, $T = \\sqrt{64} = 8\\text{ Earth years}$.",
+        "workedSolution": "$T^2 = r^3 = 4^3 = 64$. Therefore, $T = \\sqrt{64} = 8\\text{ Earth years}$.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the synodic month (29.5 days) take longer than the sidereal month (27.3 days) for the Moon?",
+        "options": [
+          "A. Earth moves along its orbit, so the Moon must travel an additional ~27° to re-align between Earth and Sun",
+          "B. The Moon expands in size during the month",
+          "C. Lunar gravity weakens at Full Moon",
+          "D. Earth's rotational speed drops by 10%"
+        ],
+        "correctAnswer": "A. Earth moves along its orbit, so the Moon must travel an additional ~27° to re-align between Earth and Sun",
+        "hint": "Because Earth travels along its orbit around the Sun, the Moon must revolve roughly 2.2 extra days to return to the same Sun-Earth geometry.",
+        "workedSolution": "Because Earth travels along its orbit around the Sun, the Moon must revolve roughly 2.2 extra days to return to the same Sun-Earth geometry.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the Saros cycle (~18 years, 11 days, 8 hours) in eclipse prediction?",
+        "options": [
+          "A. The period after which the relative orbital geometries of the Sun, Earth, and Moon repeat almost identically",
+          "B. The time for the Sun to complete one galactic orbit",
+          "C. The lifespan of a sunspot",
+          "D. The time between successive leap years"
+        ],
+        "correctAnswer": "A. The period after which the relative orbital geometries of the Sun, Earth, and Moon repeat almost identically",
+        "hint": "The Saros cycle harmonizes three lunar orbital periods (synodic, draconic, and anomalistic), repeating eclipse geometries every ~18.03 years.",
+        "workedSolution": "The Saros cycle harmonizes three lunar orbital periods (synodic, draconic, and anomalistic), repeating eclipse geometries every ~18.03 years.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the tidal force proportional to the inverse cube of the distance ($F_{\\text{tidal}} \\propto 1/d^3$), whereas gravitational attraction is proportional to the inverse square ($F_g \\propto 1/d^2$)?",
+        "options": [
+          "A. Tidal force measures the spatial gradient (differential change) of gravitational attraction across a planetary diameter",
+          "B. Tides are produced by magnetic resonance",
+          "C. Water has three physical states (ice, liquid, vapor)",
+          "D. Gravity drops to zero in space"
+        ],
+        "correctAnswer": "A. Tidal force measures the spatial gradient (differential change) of gravitational attraction across a planetary diameter",
+        "hint": "Tides arise from the difference in gravity across Earth's body: differentiating $1/d^2$ with respect to distance yields a $1/d^3$ gradient dependence.",
+        "workedSolution": "Tides arise from the difference in gravity across Earth's body: differentiating $1/d^2$ with respect to distance yields a $1/d^3$ gradient dependence.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Calculate the solar constant variation: If solar irradiance is $1,361\\text{ W/m}^2$ at 1 AU, what is the irradiance at Mars (1.524 AU) using the inverse-square law?",
+        "options": [
+          "A. $586\\text{ W/m}^2$",
+          "B. $893\\text{ W/m}^2$",
+          "C. $1,000\\text{ W/m}^2$",
+          "D. $1,361\\text{ W/m}^2$"
+        ],
+        "correctAnswer": "A. $586\\text{ W/m}^2$",
+        "hint": "$S_{\\text{Mars}} = S_{\\text{Earth}} / (r)^2 = 1,361 / (1.524)^2 = 1,361 / 2.3226 \\approx 586\\text{ W/m}^2$.",
+        "workedSolution": "$S_{\\text{Mars}} = S_{\\text{Earth}} / (r)^2 = 1,361 / (1.524)^2 = 1,361 / 2.3226 \\approx 586\\text{ W/m}^2$.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a penumbral lunar eclipse produce only a subtle darkening of the lunar surface rather than a dramatic eclipse?",
+        "options": [
+          "A. Observers on the Moon would still see a large portion of the solar disk unblocked by Earth, providing substantial direct illumination",
+          "B. Penumbral shadows do not exist in space",
+          "C. The Moon turns transparent during penumbra",
+          "D. Earth's atmosphere filters all shadow"
+        ],
+        "correctAnswer": "A. Observers on the Moon would still see a large portion of the solar disk unblocked by Earth, providing substantial direct illumination",
+        "hint": "In the penumbra, direct sunlight is only partially blocked; the remaining illumination keeps the lunar surface fairly bright.",
+        "workedSolution": "In the penumbra, direct sunlight is only partially blocked; the remaining illumination keeps the lunar surface fairly bright.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the conservation of angular momentum explain why the inner planets orbit faster than outer planets?",
+        "options": [
+          "A. In a central gravitational field, orbital velocity must increase as radius decreases ($v = \\sqrt{GM/r}$) to maintain stable equilibrium",
+          "B. Inner planets possess greater mass than outer planets",
+          "C. Solar wind pushes outer planets backward",
+          "D. Friction slows down planets near Neptune"
+        ],
+        "correctAnswer": "A. In a central gravitational field, orbital velocity must increase as radius decreases ($v = \\sqrt{GM/r}$) to maintain stable equilibrium",
+        "hint": "Equating gravitational force to centripetal acceleration ($GMm/r^2 = mv^2/r$) gives $v = \\sqrt{GM/r}$; smaller radii necessitate higher orbital speeds.",
+        "workedSolution": "Equating gravitational force to centripetal acceleration ($GMm/r^2 = mv^2/r$) gives $v = \\sqrt{GM/r}$; smaller radii necessitate higher orbital speeds.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the cause of the Milankovitch cycles that drive long-term Ice Ages on Earth?",
+        "options": [
+          "A. Periodic variations in Earth's orbital eccentricity, axial tilt (obliquity), and precession over tens of thousands of years",
+          "B. Fluctuations in the Sun's core nuclear fusion",
+          "C. Volcanic eruptions occurring every 10 years",
+          "D. Collisions between the Moon and asteroids"
+        ],
+        "correctAnswer": "A. Periodic variations in Earth's orbital eccentricity, axial tilt (obliquity), and precession over tens of thousands of years",
+        "hint": "Milankovitch cycles involve changes in eccentricity (~100k yr), tilt (~41k yr), and precession (~26k yr), altering seasonal insolation.",
+        "workedSolution": "Milankovitch cycles involve changes in eccentricity (~100k yr), tilt (~41k yr), and precession (~26k yr), altering seasonal insolation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Rayleigh scattering in Earth's atmosphere cause the Moon to look reddish during a total lunar eclipse?",
+        "options": [
+          "A. Short blue wavelengths are scattered away by atmospheric gas molecules, while longer red wavelengths refract into Earth's umbra",
+          "B. Red light is absorbed by the Moon's rocks",
+          "C. Earth's core shines red light into space",
+          "D. The Moon's atmosphere reflects infrared rays"
+        ],
+        "correctAnswer": "A. Short blue wavelengths are scattered away by atmospheric gas molecules, while longer red wavelengths refract into Earth's umbra",
+        "hint": "Shorter wavelengths scatter out of the beam; only refracted red light passes through the atmospheric perimeter into the umbra.",
+        "workedSolution": "Shorter wavelengths scatter out of the beam; only refracted red light passes through the atmospheric perimeter into the umbra.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the escape velocity from Earth's surface ($v_e = \\sqrt{2GM/R}$), given $G = 6.674 \\times 10^{-11}\\text{ m}^3/\\text{kg}\\cdot\\text{s}^2$, $M = 5.972 \\times 10^{24}\\text{ kg}$, and $R = 6.371 \\times 10^6\\text{ m}$?",
+        "options": [
+          "A. $7.9\\text{ km/s}$",
+          "B. $11.2\\text{ km/s}$",
+          "C. $25.0\\text{ km/s}$",
+          "D. $42.1\\text{ km/s}$"
+        ],
+        "correctAnswer": "B. $11.2\\text{ km/s}$",
+        "hint": "$v_e = \\sqrt{2 \\times 6.674 \\times 10^{-11} \\times 5.972 \\times 10^{24} / 6.371 \\times 10^6} = \\sqrt{1.2515 \\times 10^8} \\approx 11,187\\text{ m/s} \\approx 11.2\\text{ km/s}$.",
+        "workedSolution": "$v_e = \\sqrt{2 \\times 6.674 \\times 10^{-11} \\times 5.972 \\times 10^{24} / 6.371 \\times 10^6} = \\sqrt{1.2515 \\times 10^8} \\approx 11,187\\text{ m/s} \\approx 11.2\\text{ km/s}$.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mercury experience extreme diurnal temperature swings from -180°C at night to +430°C during the day?",
+        "options": [
+          "A. It lacks an insulating atmosphere and has a slow rotation period (~59 Earth days per rotation)",
+          "B. It has oceans that boil every morning",
+          "C. Its core shuts down at night",
+          "D. Its orbit takes it outside the solar system"
+        ],
+        "correctAnswer": "A. It lacks an insulating atmosphere and has a slow rotation period (~59 Earth days per rotation)",
+        "hint": "Without an atmosphere to trap heat or distribute temperatures, prolonged exposure to intense sunlight alternates with long radiative cooling nights.",
+        "workedSolution": "Without an atmosphere to trap heat or distribute temperatures, prolonged exposure to intense sunlight alternates with long radiative cooling nights.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the Roche limit in planetary astrophysics?",
+        "options": [
+          "A. The minimum distance to which a celestial body, held together only by gravity, can approach a planet without being torn apart by tidal forces",
+          "B. The distance at which planets stop orbiting the Sun",
+          "C. The edge of the observable universe",
+          "D. The temperature at which ice melts on comets"
+        ],
+        "correctAnswer": "A. The minimum distance to which a celestial body, held together only by gravity, can approach a planet without being torn apart by tidal forces",
+        "hint": "Inside the Roche limit, tidal differential forces exceed the satellite's self-gravitational cohesion, breaking it into rings.",
+        "workedSolution": "Inside the Roche limit, tidal differential forces exceed the satellite's self-gravitational cohesion, breaking it into rings.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are Saturn's rings composed primarily of water ice rather than heavy silicate minerals?",
+        "options": [
+          "A. They formed from the tidal disruption of an ancient icy moon or comet that crossed inside Saturn's Roche limit",
+          "B. Saturn's core emits cold ice water",
+          "C. Solar wind freezes hydrogen into ice",
+          "D. Comets carry only gold and iron"
+        ],
+        "correctAnswer": "A. They formed from the tidal disruption of an ancient icy moon or comet that crossed inside Saturn's Roche limit",
+        "hint": "Ring particles are clean water ice fragments generated by the tidal shredding of an icy satellite or comet outside the snow line.",
+        "workedSolution": "Ring particles are clean water ice fragments generated by the tidal shredding of an icy satellite or comet outside the snow line.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physical cause of planetary differentiation during the early formation of terrestrial planets?",
+        "options": [
+          "A. Dense metallic iron-nickel sank to form cores, while lighter silicate minerals floated to form crusts and mantles",
+          "B. Planets were formed from cold solid sheets",
+          "C. Solar wind separated elements by color",
+          "D. Centrifugal force pushed heavy elements into space"
+        ],
+        "correctAnswer": "A. Dense metallic iron-nickel sank to form cores, while lighter silicate minerals floated to form crusts and mantles",
+        "hint": "In molten proto-planets, gravitational separation caused heavy metals to sink inward, forming dense cores surrounded by silicate mantles.",
+        "workedSolution": "In molten proto-planets, gravitational separation caused heavy metals to sink inward, forming dense cores surrounded by silicate mantles.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Venus rotate retrograde (clockwise) unlike most planets in the solar system?",
+        "options": [
+          "A. A massive collision during early accretion likely inverted its spin, or core-mantle-atmospheric tidal friction flipped its axis",
+          "B. The Sun's magnetic field reversed its direction",
+          "C. It was captured from another star system",
+          "D. Solar wind pushed its mountains backward"
+        ],
+        "correctAnswer": "A. A massive collision during early accretion likely inverted its spin, or core-mantle-atmospheric tidal friction flipped its axis",
+        "hint": "Giant protoplanetary impacts or atmospheric thermal tidal torques are the leading scientific explanations for Venus's reversed spin.",
+        "workedSolution": "Giant protoplanetary impacts or atmospheric thermal tidal torques are the leading scientific explanations for Venus's reversed spin.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the 'ecliptic plane' in astronomical coordinates?",
+        "options": [
+          "A. The geometric plane defined by Earth's orbital path around the Sun",
+          "B. The plane of the Milky Way galaxy",
+          "C. The equator of the planet Mars",
+          "D. The boundary of the asteroid belt"
+        ],
+        "correctAnswer": "A. The geometric plane defined by Earth's orbital path around the Sun",
+        "hint": "The ecliptic is the reference plane containing Earth's orbit around the Sun, against which other orbital tilts are measured.",
+        "workedSolution": "The ecliptic is the reference plane containing Earth's orbit around the Sun, against which other orbital tilts are measured.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the Moon's 5° orbital inclination relative to the ecliptic create eclipse seasons?",
+        "options": [
+          "A. Syzygy must coincide with nodal alignment, which happens only twice a year roughly every 173.3 days",
+          "B. Eclipses can only occur during leap years",
+          "C. The Moon's tilt changes from 0° to 90° monthly",
+          "D. Earth's axis wobbles every week"
+        ],
+        "correctAnswer": "A. Syzygy must coincide with nodal alignment, which happens only twice a year roughly every 173.3 days",
+        "hint": "Eclipse seasons occur when the line of nodes points toward the Sun, allowing shadows to align at New and Full Moon.",
+        "workedSolution": "Eclipse seasons occur when the line of nodes points toward the Sun, allowing shadows to align at New and Full Moon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is tidal acceleration and its effect on the Earth-Moon system over geological time?",
+        "options": [
+          "A. Tidal friction transfers Earth's rotational momentum to the Moon, slowing Earth's spin and increasing lunar orbital radius (~3.8 cm/year)",
+          "B. The Moon is pulled closer to Earth each year",
+          "C. Earth spins faster by 1 hour per century",
+          "D. Ocean tides are disappearing completely"
+        ],
+        "correctAnswer": "A. Tidal friction transfers Earth's rotational momentum to the Moon, slowing Earth's spin and increasing lunar orbital radius (~3.8 cm/year)",
+        "hint": "Tidal bulges lead the Moon's position, exerting a gravitational torque that boosts the Moon into a higher orbit while braking Earth's rotation.",
+        "workedSolution": "Tidal bulges lead the Moon's position, exerting a gravitational torque that boosts the Moon into a higher orbit while braking Earth's rotation.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the solar chromosphere?",
+        "options": [
+          "A. A thin reddish layer of the Sun's atmosphere above the photosphere, characterized by hydrogen-alpha emissions",
+          "B. The dark core of the Sun",
+          "C. The outer boundary of the solar system",
+          "D. A layer of cold carbon on the Sun"
+        ],
+        "correctAnswer": "A. A thin reddish layer of the Sun's atmosphere above the photosphere, characterized by hydrogen-alpha emissions",
+        "hint": "The chromosphere is a gaseous layer (~2,000 km thick) glowing with reddish hydrogen-alpha emission, visible during total solar eclipses.",
+        "workedSolution": "The chromosphere is a gaseous layer (~2,000 km thick) glowing with reddish hydrogen-alpha emission, visible during total solar eclipses.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the Sun appear slightly flattened at sunrise and sunset?",
+        "options": [
+          "A. Atmospheric refraction bends light from the bottom limb more than the top limb across the vertical air density gradient",
+          "B. The Sun actually flattens due to heat loss",
+          "C. Earth's gravity pulls on the Sun's shape",
+          "D. The Moon casts an invisible shadow"
+        ],
+        "correctAnswer": "A. Atmospheric refraction bends light from the bottom limb more than the top limb across the vertical air density gradient",
+        "hint": "Greater refraction near the horizon lifts the lower limb more than the upper limb, vertically compressing the solar disk.",
+        "workedSolution": "Greater refraction near the horizon lifts the lower limb more than the upper limb, vertically compressing the solar disk.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the solar cycle of sunspots, solar flares, and coronal mass ejections occurring roughly every 11 years?",
+        "options": [
+          "A. Differential solar rotation winds up and distorts the Sun's internal magnetic field until it reverses polarity",
+          "B. The gravitational pull of Jupiter orbiting every 11 years",
+          "C. Periodic collisions with comets",
+          "D. Fuel shortages in the solar core"
+        ],
+        "correctAnswer": "A. Differential solar rotation winds up and distorts the Sun's internal magnetic field until it reverses polarity",
+        "hint": "The Sun's equatorial plasma rotates faster than its poles, twisting magnetic field lines into concentrated flux tubes that erupt as sunspots.",
+        "workedSolution": "The Sun's equatorial plasma rotates faster than its poles, twisting magnetic field lines into concentrated flux tubes that erupt as sunspots.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is an astronomical unit (AU) based on?",
+        "options": [
+          "A. The mean distance between the center of the Earth and the center of the Sun (~149.6 million km)",
+          "B. The diameter of the planet Jupiter",
+          "C. The distance from Earth to the Moon",
+          "D. The distance light travels in one hour"
+        ],
+        "correctAnswer": "A. The mean distance between the center of the Earth and the center of the Sun (~149.6 million km)",
+        "hint": "One AU is defined as exactly 149,597,870,700 meters (~149.6 million km), representing the mean Earth-Sun orbital radius.",
+        "workedSolution": "One AU is defined as exactly 149,597,870,700 meters (~149.6 million km), representing the mean Earth-Sun orbital radius.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the synodic rotation period of the Sun (~27 days at equator) different from its sidereal rotation period (~25 days)?",
+        "options": [
+          "A. Earth orbits the Sun in the same direction, requiring extra rotation for a surface feature to realign with Earth",
+          "B. The Sun's core does not spin",
+          "C. Sunspots move backward",
+          "D. Earth's orbit is perpendicular to the Sun"
+        ],
+        "correctAnswer": "A. Earth orbits the Sun in the same direction, requiring extra rotation for a surface feature to realign with Earth",
+        "hint": "Because Earth travels along its orbit while the Sun rotates, solar surface features require ~2 extra days to face Earth again.",
+        "workedSolution": "Because Earth travels along its orbit while the Sun rotates, solar surface features require ~2 extra days to face Earth again.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is hydrostatic equilibrium in planetary physics?",
+        "options": [
+          "A. The balance between inward gravitational collapse and outward internal pressure that gives large celestial bodies a rounded shape",
+          "B. The point where water boils in space",
+          "C. The state where ocean tides stop moving",
+          "D. The balance between orbital speed and light"
+        ],
+        "correctAnswer": "A. The balance between inward gravitational collapse and outward internal pressure that gives large celestial bodies a rounded shape",
+        "hint": "When an object has sufficient mass, self-gravity overcomes rigid body forces, pulling it into a spherical shape (hydrostatic equilibrium).",
+        "workedSolution": "When an object has sufficient mass, self-gravity overcomes rigid body forces, pulling it into a spherical shape (hydrostatic equilibrium).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do the Galilean satellites exhibit orbital resonance around Jupiter (1 Io : 2 Europa : 4 Ganymede)?",
+        "options": [
+          "A. Mutual gravitational interactions locked their orbital periods into exact small-integer Laplace ratios",
+          "B. They were created by an artificial satellite",
+          "C. Jupiter's magnetic field repels them equally",
+          "D. Solar wind forces them into alignment"
+        ],
+        "correctAnswer": "A. Mutual gravitational interactions locked their orbital periods into exact small-integer Laplace ratios",
+        "hint": "Gravitational tugs between Io, Europa, and Ganymede maintain stable 4:2:1 Laplace orbital resonance.",
+        "workedSolution": "Gravitational tugs between Io, Europa, and Ganymede maintain stable 4:2:1 Laplace orbital resonance.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What fuels the active cryovolcanism observed on Saturn's moon Enceladus?",
+        "options": [
+          "A. Tidal heating from orbital resonance with Dione flexes the icy crust, maintaining a warm subsurface liquid ocean",
+          "B. Nuclear fission of surface uranium",
+          "C. Solar rays melting the ice crust",
+          "D. Combustion of atmospheric methane"
+        ],
+        "correctAnswer": "A. Tidal heating from orbital resonance with Dione flexes the icy crust, maintaining a warm subsurface liquid ocean",
+        "hint": "Tidal kneading from Saturn and neighboring moons generates geothermal friction, venting water vapor plumes through 'tiger stripes'.",
+        "workedSolution": "Tidal kneading from Saturn and neighboring moons generates geothermal friction, venting water vapor plumes through 'tiger stripes'.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the atmosphere of Titan exhibit surface pressure (1.5 bar) higher than Earth's, despite Titan's smaller size?",
+        "options": [
+          "A. Its cold temperature (~94 K) reduces gas kinetic energy, while abundant dense nitrogen forms a thick, heavy column",
+          "B. Titan has stronger gravity than Earth",
+          "C. Titan is made entirely of compressed iron",
+          "D. Titan's atmosphere is trapped under glass"
+        ],
+        "correctAnswer": "A. Its cold temperature (~94 K) reduces gas kinetic energy, while abundant dense nitrogen forms a thick, heavy column",
+        "hint": "Extreme cold slows molecular thermal escape, enabling dense nitrogen to build substantial surface atmospheric pressure.",
+        "workedSolution": "Extreme cold slows molecular thermal escape, enabling dense nitrogen to build substantial surface atmospheric pressure.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary constituent of the ice giants Uranus and Neptune compared to the gas giants Jupiter and Saturn?",
+        "options": [
+          "A. Volatile 'ices' (water, ammonia, methane) forming a dense fluid mantle above a rocky core",
+          "B. Pure liquid metallic hydrogen only",
+          "C. Solid iron-nickel without atmospheres",
+          "D. Compressed liquid nitrogen"
+        ],
+        "correctAnswer": "A. Volatile 'ices' (water, ammonia, methane) forming a dense fluid mantle above a rocky core",
+        "hint": "Uranus and Neptune contain heavier volatile compounds ('ices': $H_2O, NH_3, CH_4$) rather than primarily hydrogen and helium.",
+        "workedSolution": "Uranus and Neptune contain heavier volatile compounds ('ices': $H_2O, NH_3, CH_4$) rather than primarily hydrogen and helium.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does Mercury have an iron core that accounts for roughly 70% of its total mass and 85% of its radius?",
+        "options": [
+          "A. A giant impact likely stripped away much of its original silicate mantle, or solar vaporization depleted outer silicates",
+          "B. Mercury accreted only from iron meteorites",
+          "C. The Sun's gravity converted rock into iron",
+          "D. It is a dead star core"
+        ],
+        "correctAnswer": "A. A giant impact likely stripped away much of its original silicate mantle, or solar vaporization depleted outer silicates",
+        "hint": "Collision models indicate an energetic proto-planetary impact stripped Mercury's outer mantle, leaving an oversized metallic core.",
+        "workedSolution": "Collision models indicate an energetic proto-planetary impact stripped Mercury's outer mantle, leaving an oversized metallic core.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What creates the Kirkwood gaps in the main asteroid belt?",
+        "options": [
+          "A. Orbital resonances with Jupiter that systematically clear out asteroids from specific semi-major axes",
+          "B. Space collisions with the Moon",
+          "C. The Sun's shadow freezing asteroids",
+          "D. Solar flares melting asteroids"
+        ],
+        "correctAnswer": "A. Orbital resonances with Jupiter that systematically clear out asteroids from specific semi-major axes",
+        "hint": "Asteroids orbiting at resonance ratios (e.g., 3:1, 2:1 with Jupiter) receive regular gravitational kicks that destabilize their orbits.",
+        "workedSolution": "Asteroids orbiting at resonance ratios (e.g., 3:1, 2:1 with Jupiter) receive regular gravitational kicks that destabilize their orbits.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary mechanism of solar energy transport through the radiative zone of the Sun?",
+        "options": [
+          "A. Photons undergo repeated absorption and re-emission by dense plasma in a 'random walk' lasting over 100,000 years",
+          "B. Boiling convection currents",
+          "C. Sound waves traveling through gas",
+          "D. Direct electrical conduction through wires"
+        ],
+        "correctAnswer": "A. Photons undergo repeated absorption and re-emission by dense plasma in a 'random walk' lasting over 100,000 years",
+        "hint": "In the radiative zone, gamma photons scatter repeatedly off electrons, taking tens of millennia to migrate outward.",
+        "workedSolution": "In the radiative zone, gamma photons scatter repeatedly off electrons, taking tens of millennia to migrate outward.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the solar corona (~1,000,000 K) significantly hotter than the underlying photosphere (~5,500 K)?",
+        "options": [
+          "A. Magnetic reconnection events and magnetohydrodynamic Alfvén waves dissipate intense energy into the upper plasma",
+          "B. The corona is closer to other stars",
+          "C. Nuclear fusion occurs in the corona",
+          "D. The corona absorbs light from Earth"
+        ],
+        "correctAnswer": "A. Magnetic reconnection events and magnetohydrodynamic Alfvén waves dissipate intense energy into the upper plasma",
+        "hint": "Magnetic energy dissipation and acoustic/Alfvén wave damping heat the corona to millions of degrees above the cooler surface.",
+        "workedSolution": "Magnetic energy dissipation and acoustic/Alfvén wave damping heat the corona to millions of degrees above the cooler surface.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the 'terminator' on a planetary body?",
+        "options": [
+          "A. The dividing boundary line between the illuminated day side and the dark night side",
+          "B. The highest mountain on the planet",
+          "C. An active impact crater",
+          "D. The magnetic south pole"
+        ],
+        "correctAnswer": "A. The dividing boundary line between the illuminated day side and the dark night side",
+        "hint": "The terminator is the locus of points experiencing sunrise or sunset, separating sunlit and shadowed hemispheres.",
+        "workedSolution": "The terminator is the locus of points experiencing sunrise or sunset, separating sunlit and shadowed hemispheres.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do shadows cast by objects on Earth appear longest at sunrise and sunset and shortest at solar noon?",
+        "options": [
+          "A. The Sun's angle of elevation (altitude) is lowest near the horizon and highest at meridian transit",
+          "B. Sunlight travels slower at noon",
+          "C. The Earth expands at noon",
+          "D. Air pressure compresses shadows"
+        ],
+        "correctAnswer": "A. The Sun's angle of elevation (altitude) is lowest near the horizon and highest at meridian transit",
+        "hint": "Low solar elevation angles project long geometric shadows; high noon angles project minimal horizontal shadows.",
+        "workedSolution": "Low solar elevation angles project long geometric shadows; high noon angles project minimal horizontal shadows.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the difference between an umbral and a penumbral lunar eclipse?",
+        "options": [
+          "A. In an umbral eclipse, the Moon enters Earth's dark inner shadow; in a penumbral eclipse, it passes only through the faint outer shadow",
+          "B. Umbral eclipses happen only during day",
+          "C. Penumbral eclipses make the Moon green",
+          "D. Umbral eclipses occur only at New Moon"
+        ],
+        "correctAnswer": "A. In an umbral eclipse, the Moon enters Earth's dark inner shadow; in a penumbral eclipse, it passes only through the faint outer shadow",
+        "hint": "An umbral eclipse involves passage into Earth's direct shadow cone; a penumbral eclipse involves subtle partial dimming.",
+        "workedSolution": "An umbral eclipse involves passage into Earth's direct shadow cone; a penumbral eclipse involves subtle partial dimming.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the Moon's orbital eccentricity ($e = 0.0549$) affect eclipse phenomena on Earth?",
+        "options": [
+          "A. It changes the Moon's apparent angular size, determining whether a central solar eclipse is total or annular",
+          "B. It causes the Moon to change chemical composition",
+          "C. It stops tides during apogee",
+          "D. It flips Earth's axis of rotation"
+        ],
+        "correctAnswer": "A. It changes the Moon's apparent angular size, determining whether a central solar eclipse is total or annular",
+        "hint": "Varying distance alters the lunar angular diameter ($29.3'$ at apogee to $33.5'$ at perigee), dictating total vs. annular solar eclipses.",
+        "workedSolution": "Varying distance alters the lunar angular diameter ($29.3'$ at apogee to $33.5'$ at perigee), dictating total vs. annular solar eclipses.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the Far Side of the Moon more heavily cratered than the Near Side?",
+        "options": [
+          "A. The near-side crust is thinner and was flooded by extensive volcanic basalt (maria), burying older craters",
+          "B. The far side attracted all asteroids",
+          "C. The near side is protected by clouds",
+          "D. Earth's oceans covered near-side craters"
+        ],
+        "correctAnswer": "A. The near-side crust is thinner and was flooded by extensive volcanic basalt (maria), burying older craters",
+        "hint": "Thinner near-side crust allowed volcanic lava flows to pool in basins, forming dark maria that erased early impact craters.",
+        "workedSolution": "Thinner near-side crust allowed volcanic lava flows to pool in basins, forming dark maria that erased early impact craters.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is a transit of Mercury or Venus?",
+        "options": [
+          "A. The planet passes directly between the Sun and Earth, appearing as a small dark silhouette crossing the solar disk",
+          "B. The planet collides with the Moon",
+          "C. The planet explodes inside the Sun",
+          "D. The planet reflects solar flares"
+        ],
+        "correctAnswer": "A. The planet passes directly between the Sun and Earth, appearing as a small dark silhouette crossing the solar disk",
+        "hint": "An inferior planet transiting the Sun occults a fraction of the solar disk, visible as a small moving black dot.",
+        "workedSolution": "An inferior planet transiting the Sun occults a fraction of the solar disk, visible as a small moving black dot.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary reason why solar eclipses occur during the day while lunar eclipses occur at night?",
+        "options": [
+          "A. Solar eclipses block the daytime Sun; lunar eclipses require viewing the Full Moon, which is opposite the Sun in the night sky",
+          "B. The Sun only exists during daytime",
+          "C. Lunar eclipses can only happen at noon",
+          "D. Solar eclipses reflect moonlight"
+        ],
+        "correctAnswer": "A. Solar eclipses block the daytime Sun; lunar eclipses require viewing the Full Moon, which is opposite the Sun in the night sky",
+        "hint": "Solar eclipses obscure daytime sunlight; lunar eclipses occur at Full Moon when the Moon is above the nighttime horizon.",
+        "workedSolution": "Solar eclipses obscure daytime sunlight; lunar eclipses occur at Full Moon when the Moon is above the nighttime horizon.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the cause of the libration of the Moon, allowing observers on Earth to see roughly 59% of the lunar surface over time?",
+        "options": [
+          "A. The Moon's elliptical orbit causes variable orbital speed while its rotational speed remains uniform",
+          "B. The Moon rolls like a ball",
+          "C. Earth tilts by 90° every month",
+          "D. The Moon's axis is broken"
+        ],
+        "correctAnswer": "A. The Moon's elliptical orbit causes variable orbital speed while its rotational speed remains uniform",
+        "hint": "Uniform rotation combined with variable orbital velocity (Kepler's Second Law) lets us peer slightly around lunar limbs (libration).",
+        "workedSolution": "Uniform rotation combined with variable orbital velocity (Kepler's Second Law) lets us peer slightly around lunar limbs (libration).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a total solar eclipse cause local temperature drops and changes in animal behavior on Earth?",
+        "options": [
+          "A. The Moon's shadow cuts off direct solar irradiance abruptly, causing surface cooling and false-twilight behavioral cues",
+          "B. The Moon emits cold radiation",
+          "C. Animals sense magnetic reversals",
+          "D. The atmosphere loses all oxygen"
+        ],
+        "correctAnswer": "A. The Moon's shadow cuts off direct solar irradiance abruptly, causing surface cooling and false-twilight behavioral cues",
+        "hint": "Blocking solar irradiance drops ambient temperature rapidly; the sudden darkness prompts nocturnal instincts in fauna.",
+        "workedSolution": "Blocking solar irradiance drops ambient temperature rapidly; the sudden darkness prompts nocturnal instincts in fauna.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the heliosphere?",
+        "options": [
+          "A. The vast bubble of space dominated by the Sun's magnetic field and solar wind, shielding the planets from galactic cosmic rays",
+          "B. The rocky core of Mars",
+          "C. A ring around Venus",
+          "D. The atmosphere of Mercury"
+        ],
+        "correctAnswer": "A. The vast bubble of space dominated by the Sun's magnetic field and solar wind, shielding the planets from galactic cosmic rays",
+        "hint": "The heliosphere is the protective cavity inflated by the solar wind into the interstellar medium, enclosing our planetary system.",
+        "workedSolution": "The heliosphere is the protective cavity inflated by the solar wind into the interstellar medium, enclosing our planetary system.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the obliquity (tilt) of Mars's axis (~25.2°) compare to Earth's (~23.5°)?",
+        "options": [
+          "A. It is very similar, so Mars experiences seasonal cycles analogous to Earth's, though each season is nearly twice as long",
+          "B. Mars has zero tilt and no seasons",
+          "C. Mars is tilted by 180°",
+          "D. Mars seasons last only 2 days"
+        ],
+        "correctAnswer": "A. It is very similar, so Mars experiences seasonal cycles analogous to Earth's, though each season is nearly twice as long",
+        "hint": "Mars's 25.2° tilt produces four distinct seasons, but because its orbital year is 687 days, each season lasts roughly twice as long as Earth's.",
+        "workedSolution": "Mars's 25.2° tilt produces four distinct seasons, but because its orbital year is 687 days, each season lasts roughly twice as long as Earth's.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the greenhouse effect on Earth vital for life, whereas on Venus it is destructive?",
+        "options": [
+          "A. Earth's moderate greenhouse keeps surface water liquid (~15°C mean); Venus's runaway CO2 greenhouse drives temperatures to ~465°C",
+          "B. Earth has no greenhouse gases",
+          "C. Venus has liquid water oceans",
+          "D. Greenhouse gases on Venus are frozen"
+        ],
+        "correctAnswer": "A. Earth's moderate greenhouse keeps surface water liquid (~15°C mean); Venus's runaway CO2 greenhouse drives temperatures to ~465°C",
+        "hint": "Earth's balanced greenhouse keeps temperatures temperate; Venus's dense CO2 atmosphere traps heat to sterilizing extremes.",
+        "workedSolution": "Earth's balanced greenhouse keeps temperatures temperate; Venus's dense CO2 atmosphere traps heat to sterilizing extremes.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the solar transition region?",
+        "options": [
+          "A. The narrow boundary layer between the chromosphere and corona where temperature surges from ~20,000 K to over 1,000,000 K",
+          "B. The center of Jupiter",
+          "C. The orbit of Earth",
+          "D. The surface of the Moon"
+        ],
+        "correctAnswer": "A. The narrow boundary layer between the chromosphere and corona where temperature surges from ~20,000 K to over 1,000,000 K",
+        "hint": "The transition region is an abrupt thermal boundary layer where solar plasma rapidly ionizes and heats into the coronal regime.",
+        "workedSolution": "The transition region is an abrupt thermal boundary layer where solar plasma rapidly ionizes and heats into the coronal regime.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are meteor showers associated with comets?",
+        "options": [
+          "A. Earth passes through debris trails of dust and grit shed by comets along their orbits",
+          "B. Comets explode when hitting Earth",
+          "C. Meteors pull comets toward the Sun",
+          "D. Comets reflect moonlight into clouds"
+        ],
+        "correctAnswer": "A. Earth passes through debris trails of dust and grit shed by comets along their orbits",
+        "hint": "Periodic meteor showers occur when Earth intersects cometary dust streams, vaporizing grains as atmospheric meteors.",
+        "workedSolution": "Periodic meteor showers occur when Earth intersects cometary dust streams, vaporizing grains as atmospheric meteors.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary factor distinguishing dwarf planet Ceres from neighboring asteroids in the main belt?",
+        "options": [
+          "A. Ceres has sufficient mass for its self-gravity to make it spherical (hydrostatic equilibrium)",
+          "B. Ceres is made entirely of gas",
+          "C. Ceres orbits the Moon",
+          "D. Ceres has planetary rings"
+        ],
+        "correctAnswer": "A. Ceres has sufficient mass for its self-gravity to make it spherical (hydrostatic equilibrium)",
+        "hint": "Ceres is massive enough to be rounded into hydrostatic equilibrium, classifying it as a dwarf planet rather than an irregular asteroid.",
+        "workedSolution": "Ceres is massive enough to be rounded into hydrostatic equilibrium, classifying it as a dwarf planet rather than an irregular asteroid.",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the alignment of the Earth, Moon, and Sun during a hybrid solar eclipse create different eclipse types along its path?",
+        "options": [
+          "A. Earth's curvature causes the eclipse to transition between annular and total along different points of the narrow shadow track",
+          "B. The Moon splits in half",
+          "C. The Sun changes temperature",
+          "D. The shadow bounces off the ocean"
+        ],
+        "correctAnswer": "A. Earth's curvature causes the eclipse to transition between annular and total along different points of the narrow shadow track",
+        "hint": "Along the curved path on Earth, the vertex of the Moon's umbra touches the surface in some places (total) and falls short in others (annular).",
+        "workedSolution": "Along the curved path on Earth, the vertex of the Moon's umbra touches the surface in some places (total) and falls short in others (annular).",
+        "points": 1
+      },
+      {
+        "id": "B7_SS_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ultimate fate of our Sun approximately 5 billion years from now?",
+        "options": [
+          "A. It will exhaust core hydrogen, expand into a Red Giant, shed outer layers as a planetary nebula, and leave a White Dwarf",
+          "B. It will explode as a supernova instantly tomorrow",
+          "C. It will turn into a terrestrial rocky planet",
+          "D. It will freeze into a giant comet"
+        ],
+        "correctAnswer": "A. It will exhaust core hydrogen, expand into a Red Giant, shed outer layers as a planetary nebula, and leave a White Dwarf",
+        "hint": "As a medium-mass star, the Sun will expand into a red giant, engulfing inner planets before shedding its envelope into a white dwarf.",
+        "workedSolution": "As a medium-mass star, the Sun will expand into a red giant, engulfing inner planets before shedding its envelope into a white dwarf.",
         "points": 1
       }
     ]
@@ -86111,7 +91033,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS8",
     "strandNumber": 5,
     "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
-    "subStrandTitle": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "subStrandTitle": "Our Solar System, Earth & Celestial Dynamics (Planetary Architecture, Orbital Motions, Lunar Phases & Eclipses)",
     "order": 56,
     "notes": {
       "summaryMarkdown": "### The Soil Profile: Master Horizons & Ghanaian Physical Landforms\n* **NaCCA Curriculum Code:** `B8.5.5.1`\n* **Core Competency:** Diagram and describe master soil horizons in a soil profile and identify geological formation processes of Ghanaian landforms.\n\n#### 1. The Soil Profile (Vertical Section of Soil)\nA vertical cross-section through the soil from the surface down to the underlying parent bedrock:\n* **O-Horizon (Organic Layer):** Surface layer composed of fresh and decomposing leaf litter, twigs, and organic debris.\n* **A-Horizon (Topsoil / Zone of Eluviation):** Dark, rich crumbly layer packed with decomposing organic **humus** and beneficial soil microbes (earthworms, bacteria). The primary biological root zone for arable crops. Minerals are leached downward by percolating water (eluviation).\n* **B-Horizon (Subsoil / Zone of Illuviation):** Denser, lighter-colored layer where leached clay particles, iron oxides, and minerals accumulate (illuviation). Contains few plant roots; poor aeration.\n* **C-Horizon (Parent Material / Regolith):** Partially weathered, fractured bedrock fragments undergoing initial weathering. Devoid of organic matter.\n* **R-Horizon (Bedrock):** Solid, unweathered continuous parent rock stratum (granite, basalt, sandstone, limestone).\n\n#### 2. Major Terrestrial Landforms in Ghana\n* **Coastal Plains:** Low-lying flat or undulating coastal plains (e.g., Accra Plains, Keta Lagoon basin).\n* **Plateaus & Escarpments:** Elevated flat-topped tablelands with steep cliff margins:\n  * *Kwahu Plateau & Mampong Scarp:* Steep sandstone escarpment creating significant orographic rainfall and microclimates.\n  * *Gambaga Escarpment:* High northern sandstone cliff bordering the White Volta basin.\n* **Inselbergs (Island Mountains):** Isolated steep-sided granite or gneiss hills rising abruptly from a flat surrounding plain, formed by differential erosion of surrounding weaker rocks (e.g., Shai Hills, Krobo Mountain).\n* **River Basins & Valleys:** Low-lying drainage catchment areas carved out by river erosion (e.g., Volta River Basin).",
@@ -86165,7 +91087,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "gradeLevel": "BS9",
     "strandNumber": 5,
     "strandTitle": "STRAND 5: HUMANS AND THE ENVIRONMENT",
-    "subStrandTitle": "Soil Science & Landforms (Landforms, Soil Physical Properties, Erosion & Soil Conservation)",
+    "subStrandTitle": "Our Solar System, Earth & Celestial Dynamics (Planetary Architecture, Orbital Motions, Lunar Phases & Eclipses)",
     "order": 57,
     "notes": {
       "summaryMarkdown": "### Soil Degradation: Erosion Dynamics & Soil Conservation Engineering\n* **NaCCA Curriculum Code:** `B9.5.5.1`\n* **Core Competency:** Classify types of soil erosion, analyze causes of soil degradation, and implement agricultural conservation methods.\n\n#### 1. Soil Erosion: Mechanisms & Types\nSoil erosion is the detachment, transport, and deposition of topsoil particles by wind or moving water:\n* **Water Erosion Progression:**\n  1. **Splash Erosion:** Kinetic impact of falling raindrops shatters soil aggregates, detaching particles and sealing surface pores.\n  2. **Sheet Erosion:** Overland runoff removes a uniform, thin layer of topsoil across an entire field; insidious because it occurs gradually without obvious channels.\n  3. **Rill Erosion:** Runoff concentrates into tiny, visible shallow channels (rills) that can still be smoothed over with normal plowing.\n  4. **Gully Erosion:** Uncontrolled runoff carves deep, wide chasms and canyons (gullies) that completely impassable for farm machinery and permanently destroy agricultural land.\n* **Wind Erosion:** Strong winds detach and carry away dry, bare, pulverized soil particles in arid areas.\n\n#### 2. Human Causes of Accelerated Soil Degradation\n* **Deforestation & Bush Burning:** Destroys vegetative cover and surface leaf litter, exposing bare topsoil to raindrop impact and wind.\n* **Overgrazing:** Excessive livestock stocking densities strip grass cover and compact soil with hooves, reducing infiltration.\n* **Plowing Up-and-Down Slopes:** Creates ready-made runoff channels that rapidly develop into destructive gullies.\n\n#### 3. Soil Conservation Engineering\n* **Contour Plowing & Ridging:** Plowing and constructing ridges across the slope along natural contour lines, creating small dams that slow surface runoff and encourage infiltration.\n* **Terracing:** Converting steep hillsides into a series of stepped, flat benches bordered by retaining dykes to eliminate steep slope runoff velocities.\n* **Strip Cropping & Vetiver Grass Barriers:** Alternating strips of erosion-susceptible row crops (maize) with dense, deep-rooted grass strips (Vetiver grass) that trap detached silt.\n* **Cover Cropping:** Planting dense sprawling legumes (e.g., *Mucuna*, cowpea) that shield the soil surface from direct raindrop impact.\n* **Windbreaks & Shelterbelts:** Planting rows of tall trees perpendicular to the prevailing wind direction to reduce surface wind velocities.",
