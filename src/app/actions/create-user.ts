@@ -119,6 +119,8 @@ export async function createNewUser(
             break;
     }
     
+    const cleanPhone = details?.phone?.trim() || '';
+
     const profileData: any = {
         uid: userRecord.uid,
         email,
@@ -130,17 +132,28 @@ export async function createNewUser(
         requirePasswordChange: true 
     };
 
+    if (cleanPhone) {
+        profileData.phone = cleanPhone;
+        profileData.phoneNumber = cleanPhone;
+    }
+
     if (targetSchoolId) profileData.schoolId = targetSchoolId;
 
     await firestore.collection(collectionName).doc(userRecord.uid).set(profileData, { merge: true });
     
     // 4. User Mapping
-    await firestore.collection('users').doc(userRecord.uid).set({
+    const userDocData: any = {
         role: role || 'Parent',
         schoolId: targetSchoolId,
         email,
         requirePasswordChange: true 
-    }, { merge: true });
+    };
+    if (cleanPhone) {
+        userDocData.phone = cleanPhone;
+        userDocData.phoneNumber = cleanPhone;
+    }
+
+    await firestore.collection('users').doc(userRecord.uid).set(userDocData, { merge: true });
     
     // 5. Send Credentials Email
     if (details?.firstName && targetSchoolId) {

@@ -5,18 +5,22 @@ import {
   Users, UserCheck, Clock, Award, TrendingUp, RefreshCw, 
   Search, ShieldCheck, Mail, Phone, Calendar, Briefcase, 
   CheckCircle2, AlertCircle, BarChart3, PieChart as PieChartIcon, 
-  Filter, ChevronRight, IdCard, Building2, GraduationCap
+  Filter, ChevronRight, IdCard, Building2, GraduationCap,
+  UserPlus, Save, Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore } from '@/firebase';
-import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, useAuth } from '@/firebase';
+import { collection, query, where, limit, getDocs, setDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { createNewUser } from '@/app/actions/create-user';
 import { format, startOfDay } from 'date-fns';
 import Link from 'next/link';
 
@@ -40,9 +44,101 @@ export function StaffDirectoryDashboardView({
   const { toast } = useToast();
   const [isSyncingStaff, setIsSyncingStaff] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const auth = useAuth();
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('all');
   const [selectedStaffProfile, setSelectedStaffProfile] = useState<any | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+
+  // Phone editing state for selected profile
+  const [phoneEditValue, setPhoneEditValue] = useState('');
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
+
+  // Add staff modal state
+  const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
+  const [isCreatingStaff, setIsCreatingStaff] = useState(false);
+  const [newStaffRole, setNewStaffRole] = useState('Teacher');
+
+  // Open profile handler syncing phone
+  const handleOpenStaffProfile = (staffMember: any) => {
+    setSelectedStaffProfile(staffMember);
+    setPhoneEditValue(staffMember.phone && staffMember.phone !== 'No Phone' ? staffMember.phone : '');
+  };
+
+  // Save phone number directly to Firestore
+  const handleSaveStaffPhone = async () => {
+    if (!firestore || !selectedStaffProfile?.id) return;
+    const cleanPhone = phoneEditValue.trim();
+    setIsSavingPhone(true);
+    try {
+      const staffRef = doc(firestore, 'staff', selectedStaffProfile.id);
+      const userRef = doc(firestore, 'users', selectedStaffProfile.id);
+
+      await updateDoc(staffRef, { phone: cleanPhone, phoneNumber: cleanPhone, updatedAt: serverTimestamp() });
+      try {
+        await updateDoc(userRef, { phone: cleanPhone, phoneNumber: cleanPhone });
+      } catch (e) {
+        console.warn('Could not update user doc phone:', e);
+      }
+
+      setSelectedStaffProfile((prev: any) => prev ? { ...prev, phone: cleanPhone || 'No Phone' } : null);
+
+      toast({
+        title: "Telephone Number Saved",
+        description: cleanPhone ? `Staff mobile set to ${cleanPhone}. SMS messaging is active.` : "Telephone number cleared."
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: err.message || "Failed to update telephone number."
+      });
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
+
+  // Create new staff member
+  const handleCreateStaff = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const sId = schoolData?.id || schoolData?.schoolId;
+    if (!firestore || !sId || isCreatingStaff) return;
+    setIsCreatingStaff(true);
+
+    const fd = new FormData(e.currentTarget);
+    const firstName = (fd.get('firstName') as string)?.trim();
+    const lastName = (fd.get('lastName') as string)?.trim();
+    const email = (fd.get('email') as string)?.trim();
+    const phone = (fd.get('phone') as string)?.trim() || '';
+
+    try {
+      const idToken = await auth?.currentUser?.getIdToken();
+      const res = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName, phone }, sId, idToken);
+      if ('error' in res) throw new Error(res.error);
+
+      if (res.uid && phone) {
+        try {
+          await updateDoc(doc(firestore, 'staff', res.uid), { phone, phoneNumber: phone });
+          await updateDoc(doc(firestore, 'users', res.uid), { phone, phoneNumber: phone });
+        } catch (pErr) {
+          console.warn('Direct phone write fallback:', pErr);
+        }
+      }
+
+      toast({
+        title: "Staff Account Created",
+        description: `${firstName} ${lastName} added with mobile ${phone || 'N/A'}.`
+      });
+      setIsAddStaffOpen(false);
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Failed to Add Staff",
+        description: err.message
+      });
+    } finally {
+      setIsCreatingStaff(false);
+    }
+  };
 
   // Sync Staff Analytics to Firestore dashboard_summaries
   const handleSyncStaffSummary = async () => {
@@ -250,6 +346,14 @@ export function StaffDirectoryDashboardView({
               className="pl-9 text-xs rounded-xl h-9 border-slate-200"
             />
           </div>
+
+          <Button
+            onClick={() => setIsAddStaffOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs transition-all hover:scale-[1.02]"
+          >
+            <UserPlus className="h-3.5 w-3.5" />
+            <span>Add Staff Member</span>
+          </Button>
 
           <Button
             onClick={handleSyncStaffSummary}
@@ -540,6 +644,7 @@ export function StaffDirectoryDashboardView({
                     <th className="pb-3">Staff Name</th>
                     <th className="pb-3">Role / Position</th>
                     <th className="pb-3">Email Address</th>
+                    <th className="pb-3">Telephone / SMS</th>
                     <th className="pb-3">Today's Clock-In</th>
                     <th className="pb-3">Status</th>
                     <th className="pb-3 text-right">Actions</th>
@@ -551,6 +656,18 @@ export function StaffDirectoryDashboardView({
                       <td className="py-3 text-slate-900 font-black">{s.name}</td>
                       <td className="py-3 text-slate-600">{s.role}</td>
                       <td className="py-3 text-slate-500">{s.email}</td>
+                      <td className="py-3">
+                        {s.phone && s.phone !== 'No Phone' ? (
+                          <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-700 font-bold">
+                            <Phone className="h-3 w-3 text-indigo-500 shrink-0" />
+                            <span>{s.phone}</span>
+                          </div>
+                        ) : (
+                          <Badge variant="outline" className="text-[9px] text-amber-600 bg-amber-50 border-amber-200">
+                            No Phone
+                          </Badge>
+                        )}
+                      </td>
                       <td className="py-3">
                         {s.isCheckedIn ? (
                           <Badge variant="outline" className={cn(
@@ -572,7 +689,7 @@ export function StaffDirectoryDashboardView({
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => setSelectedStaffProfile(s)}
+                          onClick={() => handleOpenStaffProfile(s)}
                           className="h-7 text-[10px] font-black text-indigo-600 hover:bg-indigo-50"
                         >
                           View Profile
@@ -597,6 +714,17 @@ export function StaffDirectoryDashboardView({
                     </Badge>
                   </div>
                   <div className="text-xs text-slate-500 truncate">{s.email}</div>
+                  <div className="flex items-center justify-between text-xs py-1">
+                    <span className="text-[10px] text-slate-400 font-bold uppercase">Telephone:</span>
+                    {s.phone && s.phone !== 'No Phone' ? (
+                      <span className="font-mono text-slate-700 font-bold text-[11px] flex items-center gap-1">
+                        <Phone className="h-3 w-3 text-indigo-500 shrink-0" />
+                        {s.phone}
+                      </span>
+                    ) : (
+                      <span className="text-[10px] text-amber-600 italic">No telephone</span>
+                    )}
+                  </div>
                   <div className="flex justify-between items-center pt-2 border-t border-slate-200/60">
                     <span className="text-[10px] text-slate-400 font-bold uppercase">
                       {s.isCheckedIn ? `Clock-in: ${s.clockInTime}` : 'Not Checked In'}
@@ -604,7 +732,7 @@ export function StaffDirectoryDashboardView({
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => setSelectedStaffProfile(s)}
+                      onClick={() => handleOpenStaffProfile(s)}
                       className="h-7 text-[10px] font-black text-indigo-600 hover:bg-indigo-50"
                     >
                       View Profile
@@ -627,12 +755,12 @@ export function StaffDirectoryDashboardView({
           <DialogHeader>
             <DialogTitle className="text-base font-black text-slate-900 uppercase">Staff Member Details</DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
-              Official employee record
+              Official employee record & communications
             </DialogDescription>
           </DialogHeader>
           {selectedStaffProfile && (
-            <div className="space-y-3 pt-2 text-xs font-bold text-slate-700">
-              <div className="p-4 bg-slate-50 border rounded-2xl space-y-2">
+            <div className="space-y-4 pt-2 text-xs font-bold text-slate-700">
+              <div className="p-4 bg-slate-50 border rounded-2xl space-y-3">
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-400 uppercase text-[10px]">Full Name:</span>
                   <span className="font-black text-slate-900">{selectedStaffProfile.name}</span>
@@ -643,8 +771,47 @@ export function StaffDirectoryDashboardView({
                 </div>
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-400 uppercase text-[10px]">Email Address:</span>
-                  <span>{selectedStaffProfile.email}</span>
+                  <span className="text-slate-600">{selectedStaffProfile.email}</span>
                 </div>
+                
+                {/* Telephone Number Display & Quick Update Field */}
+                <div className="border-b pb-3 space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-400 uppercase text-[10px] flex items-center gap-1 font-black">
+                      <Phone className="h-3 w-3 text-indigo-600" /> Telephone / Mobile (SMS):
+                    </span>
+                    {selectedStaffProfile.phone && selectedStaffProfile.phone !== 'No Phone' ? (
+                      <Badge variant="outline" className="bg-emerald-50 text-emerald-800 border-emerald-200 font-mono text-[10px] px-2 py-0.5 font-black">
+                        {selectedStaffProfile.phone}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-black">
+                        No Phone Set
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <Input
+                      placeholder="Enter mobile (e.g. 0244123456)..."
+                      value={phoneEditValue}
+                      onChange={(e) => setPhoneEditValue(e.target.value)}
+                      className="h-8 text-xs font-mono rounded-xl border-slate-200 bg-white"
+                    />
+                    <Button
+                      size="sm"
+                      disabled={isSavingPhone}
+                      onClick={handleSaveStaffPhone}
+                      className="h-8 px-3 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shrink-0 gap-1 shadow-xs"
+                    >
+                      {isSavingPhone ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                      <span>Save</span>
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium leading-tight">
+                    Entering a telephone number enables SMS broadcast notifications, attendance alerts, and emergency messages.
+                  </p>
+                </div>
+
                 <div className="flex justify-between border-b pb-2">
                   <span className="text-slate-400 uppercase text-[10px]">Today's Check-in:</span>
                   <span>{selectedStaffProfile.clockInTime}</span>
@@ -663,6 +830,70 @@ export function StaffDirectoryDashboardView({
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ─── ADD STAFF MODAL ─── */}
+      <Dialog open={isAddStaffOpen} onOpenChange={setIsAddStaffOpen}>
+        <DialogContent className="rounded-3xl max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base font-black text-slate-900 uppercase">Add New Staff Member</DialogTitle>
+            <DialogDescription className="text-xs text-slate-500">
+              Create a faculty or personnel record with mobile SMS access
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateStaff} className="space-y-4 pt-2">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-black text-slate-600 uppercase">First Name</Label>
+                <Input name="firstName" required placeholder="First Name" className="h-9 text-xs rounded-xl" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[11px] font-black text-slate-600 uppercase">Last Name</Label>
+                <Input name="lastName" required placeholder="Last Name" className="h-9 text-xs rounded-xl" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black text-slate-600 uppercase">Email Address</Label>
+              <Input name="email" type="email" required placeholder="staff@school.com" className="h-9 text-xs rounded-xl" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black text-slate-600 uppercase flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5 text-indigo-600" />
+                <span>Telephone / Mobile (SMS Alerts)</span>
+              </Label>
+              <Input name="phone" type="tel" placeholder="e.g. 0244123456 / +233244123456" className="h-9 text-xs rounded-xl" />
+              <p className="text-[10px] text-slate-400 font-medium">Enables SMS communications, reminders, and alerts.</p>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black text-slate-600 uppercase">Role / Position</Label>
+              <Select value={newStaffRole} onValueChange={setNewStaffRole}>
+                <SelectTrigger className="h-9 text-xs rounded-xl">
+                  <SelectValue placeholder="Select role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Teacher">Teacher</SelectItem>
+                  <SelectItem value="Administrator">Administrator</SelectItem>
+                  <SelectItem value="Director">Director</SelectItem>
+                  <SelectItem value="Accountant">Accountant</SelectItem>
+                  <SelectItem value="Security">Security</SelectItem>
+                  <SelectItem value="Driver">Driver</SelectItem>
+                  <SelectItem value="Cook">Cook</SelectItem>
+                  <SelectItem value="Nurse">Nurse</SelectItem>
+                  <SelectItem value="Staff">General Staff</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <DialogFooter className="pt-3 border-t">
+              <Button type="button" variant="outline" onClick={() => setIsAddStaffOpen(false)} className="rounded-xl text-xs font-bold">
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isCreatingStaff} className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black gap-1.5">
+                {isCreatingStaff ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+                <span>Create Staff Account</span>
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 

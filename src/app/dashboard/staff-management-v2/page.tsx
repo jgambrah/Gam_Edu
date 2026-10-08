@@ -38,6 +38,8 @@ type StaffMember = {
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
+  phoneNumber?: string;
   role: UserRole;
   schoolId?: string;
   publicPhotoUrl?: string;
@@ -114,10 +116,15 @@ export default function StaffManagementPage() {
           where('role', 'in', STAFF_ROLES)
         )
       );
-      const data = snap.docs.map(d => ({
-        id: d.id,
-        ...d.data(),
-      })) as StaffMember[];
+      const data = snap.docs.map(d => {
+        const item = d.data();
+        return {
+          id: d.id,
+          ...item,
+          phone: item.phone || item.phoneNumber || '',
+          phoneNumber: item.phoneNumber || item.phone || '',
+        };
+      }) as StaffMember[];
       setStaff(data);
     } catch (err: any) {
       console.error('Error loading staff:', err);
@@ -141,11 +148,21 @@ export default function StaffManagementPage() {
     const firstName = fd.get('firstName') as string;
     const lastName  = fd.get('lastName')  as string;
     const email     = fd.get('email')     as string;
+    const phone     = (fd.get('phone') as string)?.trim() || '';
 
     try {
       const idToken = await auth?.currentUser?.getIdToken();
-      const result = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName }, adminSchoolId, idToken);
+      const result = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName, phone }, adminSchoolId, idToken);
       if ('error' in result) throw new Error(result.error);
+
+      if (result.uid && phone) {
+        try {
+          await updateDoc(doc(firestore, 'staff', result.uid), { phone, phoneNumber: phone });
+          await updateDoc(doc(firestore, 'users', result.uid), { phone, phoneNumber: phone });
+        } catch (phoneErr) {
+          console.warn('Could not set phone directly on docs:', phoneErr);
+        }
+      }
 
       await logAuditEvent({
         firestore,
@@ -174,6 +191,7 @@ export default function StaffManagementPage() {
     const fd            = new FormData(e.currentTarget);
     const firstName     = fd.get('firstName')     as string;
     const lastName      = fd.get('lastName')      as string;
+    const phone         = (fd.get('phone') as string)?.trim() || '';
     const publicPhotoUrl = fd.get('publicPhotoUrl') as string;
     const publicBio     = fd.get('publicBio')     as string;
     const qualifications = fd.get('qualifications') as string;
@@ -181,10 +199,12 @@ export default function StaffManagementPage() {
 
     try {
       const staffRef = doc(firestore, 'staff', editingStaff.id);
-      const updateData = {
+      const updateData: any = {
         firstName,
         lastName,
         role: editRole,
+        phone,
+        phoneNumber: phone,
         showOnWebsite: editShowOnWebsite,
         publicPhotoUrl: publicPhotoUrl || '',
         publicBio:      publicBio      || '',
@@ -198,9 +218,9 @@ export default function StaffManagementPage() {
       const targetUid = editingStaff.uid || editingStaff.id;
       if (targetUid) {
         try {
-          await updateDoc(doc(firestore, 'users', targetUid), { role: editRole });
+          await updateDoc(doc(firestore, 'users', targetUid), { role: editRole, phone, phoneNumber: phone });
         } catch (userErr) {
-          console.warn('Could not sync role to users collection:', userErr);
+          console.warn('Could not sync role/phone to users collection:', userErr);
         }
       }
 
@@ -342,6 +362,7 @@ export default function StaffManagementPage() {
                     <TableHead className="font-bold text-slate-700 h-12">System Role</TableHead>
                     <TableHead className="font-bold text-slate-700 h-12">Expertise / Classes</TableHead>
                     <TableHead className="font-bold text-slate-700 h-12">Email</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12">Phone / SMS</TableHead>
                     <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -389,6 +410,18 @@ export default function StaffManagementPage() {
                                 )}
                             </TableCell>
                             <TableCell className="py-4 text-slate-600 text-sm font-medium">{member.email}</TableCell>
+                            <TableCell className="py-4">
+                                {member.phone || member.phoneNumber ? (
+                                    <div className="flex items-center gap-1.5 font-mono text-xs text-slate-700 font-bold">
+                                        <Phone className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
+                                        <span>{member.phone || member.phoneNumber}</span>
+                                    </div>
+                                ) : (
+                                    <Badge variant="outline" className="text-[10px] text-slate-400 bg-slate-50 border-slate-200">
+                                        No Phone
+                                    </Badge>
+                                )}
+                            </TableCell>
                             <TableCell className="text-right py-4 px-6">
                                 <div className="flex justify-end gap-1.5">
                                     <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
@@ -424,6 +457,14 @@ export default function StaffManagementPage() {
             <div className="space-y-2">
               <Label>Email Address</Label>
               <Input name="email" type="email" required placeholder="staff@school.com" />
+            </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1.5 font-bold text-slate-700">
+                <Phone className="h-3.5 w-3.5 text-indigo-600" />
+                <span>Telephone / Mobile (SMS Alerts)</span>
+              </Label>
+              <Input name="phone" type="tel" placeholder="e.g. 0244123456 / +233244123456" />
+              <p className="text-[11px] text-slate-400 font-normal">Used for staff SMS announcements, emergency broadcasts, and direct communications.</p>
             </div>
             <div className="space-y-2">
               <Label>Role Assignment</Label>
@@ -472,6 +513,14 @@ export default function StaffManagementPage() {
                   <div className="space-y-2">
                     <Label>Email</Label>
                     <Input value={editingStaff.email} disabled className="bg-slate-100 cursor-not-allowed" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1.5 font-bold text-slate-700">
+                      <Phone className="h-3.5 w-3.5 text-indigo-600" />
+                      <span>Telephone / Mobile (SMS Alerts)</span>
+                    </Label>
+                    <Input name="phone" type="tel" defaultValue={editingStaff.phone || editingStaff.phoneNumber || ''} placeholder="e.g. 0244123456" />
+                    <p className="text-[11px] text-slate-400 font-normal">Update the phone number for this staff member to enable SMS messaging.</p>
                   </div>
                   <div className="space-y-2">
                     <Label>System Role</Label>

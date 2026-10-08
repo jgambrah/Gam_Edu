@@ -26,6 +26,49 @@ export default function MyProfilePage() {
   const isStaff = role && role !== 'Student' && role !== 'Parent';
   const schoolName = profile?.schoolName || "Sunny Side Academy";
 
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [isSavingPhone, setIsSavingPhone] = useState(false);
+
+  useEffect(() => {
+    if (profile?.phone || profile?.phoneNumber) {
+      setPhoneNumber(profile.phone || profile.phoneNumber || '');
+    }
+  }, [profile]);
+
+  const handleSavePhone = async () => {
+    if (!firestore || !user?.uid) return;
+    setIsSavingPhone(true);
+    try {
+      const cleanPhone = phoneNumber.trim();
+      const userRef = doc(firestore, 'users', user.uid);
+      await updateDoc(userRef, { phone: cleanPhone, phoneNumber: cleanPhone });
+
+      if (isStaff) {
+        try {
+          const staffRef = doc(firestore, 'staff', user.uid);
+          await updateDoc(staffRef, { phone: cleanPhone, phoneNumber: cleanPhone });
+        } catch (sErr) {
+          console.warn('Could not update staff doc phone:', sErr);
+        }
+      }
+
+      toast({
+        title: "Telephone Saved",
+        description: cleanPhone ? `Your mobile number is set to ${cleanPhone}. SMS messaging active.` : "Telephone number cleared.",
+      });
+      setIsEditingPhone(false);
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Failed to update phone",
+        description: err.message,
+      });
+    } finally {
+      setIsSavingPhone(false);
+    }
+  };
+
   return (
     <div className="space-y-6 p-4 sm:p-6 max-w-5xl mx-auto pb-16 animate-in fade-in duration-500 font-sans">
       <SectionHeroBanner
@@ -99,6 +142,52 @@ export default function MyProfilePage() {
                     <div className="flex items-center gap-3 text-sm">
                         <div className="p-2 bg-green-100 rounded-lg"><ShieldCheck className="h-4 w-4 text-green-600" /></div>
                         <span className="text-slate-600 font-bold">Authenticated User</span>
+                    </div>
+
+                    {/* Telephone / Mobile (SMS Alerts) */}
+                    <div className="pt-3 border-t border-slate-100 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 text-sm">
+                                <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                                    <Phone className="h-4 w-4" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-slate-400 font-black uppercase tracking-wider">Mobile / SMS</p>
+                                    <p className="text-slate-800 font-black text-xs font-mono">
+                                        {phoneNumber || <span className="text-slate-400 italic font-medium">Not configured</span>}
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsEditingPhone(!isEditingPhone)}
+                                className="text-[11px] font-black text-indigo-600 hover:bg-indigo-50 h-7 px-2"
+                            >
+                                {isEditingPhone ? 'Cancel' : (phoneNumber ? 'Edit' : '+ Add Phone')}
+                            </Button>
+                        </div>
+
+                        {isEditingPhone && (
+                            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/60 space-y-2 mt-2">
+                                <Input
+                                    type="tel"
+                                    placeholder="e.g. 0244123456 / +233244123456"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    className="h-8 text-xs font-mono rounded-xl bg-white"
+                                />
+                                <Button
+                                    size="sm"
+                                    disabled={isSavingPhone}
+                                    onClick={handleSavePhone}
+                                    className="w-full h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+                                >
+                                    {isSavingPhone ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : null}
+                                    <span>Save Telephone Number</span>
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>
