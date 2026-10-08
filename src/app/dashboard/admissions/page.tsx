@@ -238,7 +238,8 @@ function AdminApplicationDashboard() {
 
     useEffect(() => {
         if (decision === 'Approve' && selectedApp && !studentEmail) {
-            const cleanName = selectedApp.student.fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const studentName = selectedApp.student?.fullName || selectedApp.fullName || 'student';
+            const cleanName = studentName.toLowerCase().replace(/[^a-z0-9]/g, '');
             const cleanSlug = schoolData?.slug || 'school';
             setStudentEmail(`${cleanName}@${cleanSlug}.gamedu.com`);
         } else if (!selectedApp) {
@@ -270,7 +271,23 @@ function AdminApplicationDashboard() {
         );
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const apps = snapshot.docs
-                .map(doc => ({ id: doc.id, ...doc.data() }))
+                .map(doc => {
+                    const data = doc.data() as any;
+                    const rawStudent = data.student || {};
+                    const student = {
+                        fullName: rawStudent.fullName || data.fullName || data.studentName || 'Unknown Applicant',
+                        dateOfBirth: rawStudent.dateOfBirth || data.dateOfBirth || null,
+                        desiredGrade: rawStudent.desiredGrade || data.desiredGrade || data.grade || 'N/A',
+                        gender: rawStudent.gender || data.gender || 'Other',
+                        address: rawStudent.address || data.address || '',
+                        previousSchool: rawStudent.previousSchool || data.previousSchool || '',
+                        medicalConditions: rawStudent.medicalConditions || data.medicalConditions || '',
+                        emergencyContact: rawStudent.emergencyContact || data.emergencyContact || '',
+                        relationship: rawStudent.relationship || data.relationship || '',
+                        ...rawStudent,
+                    };
+                    return { id: doc.id, ...data, student };
+                })
                 .filter((a: any) => a.isArchived !== true);
             apps.sort((a: any, b: any) => {
                 const timeA = a.submittedAt?.seconds || 0;
@@ -439,15 +456,18 @@ function AdminApplicationDashboard() {
             return;
         }
 
-        const dob = selectedApp.student.dateOfBirth?.toDate ? selectedApp.student.dateOfBirth.toDate() : new Date();
+        const student = selectedApp.student || selectedApp || {};
+        const dob = student.dateOfBirth?.toDate 
+            ? student.dateOfBirth.toDate() 
+            : (student.dateOfBirth && !isNaN(new Date(student.dateOfBirth).getTime()) ? new Date(student.dateOfBirth) : new Date());
         const age = differenceInYears(new Date(), dob);
 
         const aiResult = await recommendClassPlacementAction(
             {
-                name: selectedApp.student.fullName,
+                name: student.fullName || 'Unknown Applicant',
                 age: age,
-                gender: selectedApp.student.gender,
-                desiredGrade: selectedApp.student.desiredGrade
+                gender: student.gender || 'Other',
+                desiredGrade: student.desiredGrade || 'N/A'
             },
             availableClasses
         );
@@ -688,20 +708,28 @@ function AdminApplicationDashboard() {
 
     const getAiFlags = (app: any) => {
         const flags = [];
+        const student = app?.student || app || {};
 
-        const dob = app.student.dateOfBirth?.toDate ? app.student.dateOfBirth.toDate() : null;
-        if(dob) {
+        const dob = student.dateOfBirth?.toDate 
+            ? student.dateOfBirth.toDate() 
+            : (student.dateOfBirth && !isNaN(new Date(student.dateOfBirth).getTime()) ? new Date(student.dateOfBirth) : null);
+
+        if(dob && !isNaN(dob.getTime())) {
             const age = differenceInYears(new Date(), dob);
-            const gradeNum = parseInt(app.student.desiredGrade.replace(/\D/g, ''), 10);
+            const desiredGrade = student.desiredGrade || '';
+            const gradeNum = parseInt(desiredGrade.replace(/\D/g, ''), 10);
             
             if (gradeNum && (age < gradeNum + 4 || age > gradeNum + 7)) {
-                flags.push({type: 'warning', text: `AI Flag: Age Mismatch (Age ${age} for ${app.student.desiredGrade})`});
+                flags.push({type: 'warning', text: `AI Flag: Age Mismatch (Age ${age} for ${desiredGrade})`});
             }
         }
 
-        const targetClasses = availableClasses.filter(c => c.name.includes(app.student.desiredGrade));
-        if (targetClasses.length > 0 && targetClasses.every(c => c.currentStudents >= c.capacity)) {
-            flags.push({type: 'info', text: 'AI Flag: Waitlist Recommended (Class Full)'});
+        const desiredGrade = student.desiredGrade || '';
+        if (desiredGrade) {
+            const targetClasses = availableClasses.filter(c => c.name.includes(desiredGrade));
+            if (targetClasses.length > 0 && targetClasses.every(c => c.currentStudents >= c.capacity)) {
+                flags.push({type: 'info', text: 'AI Flag: Waitlist Recommended (Class Full)'});
+            }
         }
         
         return flags;
@@ -723,18 +751,21 @@ function AdminApplicationDashboard() {
         return (
             <div className="grid gap-4">
                 {list.map((app) => {
+                    const student = app.student || app || {};
+                    const fullName = student.fullName || app.fullName || 'Unknown Applicant';
+                    const desiredGrade = student.desiredGrade || app.desiredGrade || 'N/A';
                     const aiFlags = getAiFlags(app);
                     return (
                         <div key={app.id} className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-violet-200 transition-all duration-300">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="flex items-start gap-4">
                                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 font-bold text-lg border border-violet-100/50">
-                                        {app.student.fullName?.charAt(0) || '?'}
+                                        {fullName.charAt(0) || '?'}
                                     </div>
                                     <div>
                                         <div className="flex flex-wrap items-center gap-2">
                                             <h3 className="font-semibold text-slate-800 text-lg group-hover:text-violet-700 transition-colors">
-                                                {app.student.fullName}
+                                                {fullName}
                                             </h3>
                                             {aiFlags.map((flag, i) => (
                                                 <Badge key={i} variant={flag.type === 'warning' ? 'destructive' : 'secondary'} className={cn("text-xs font-semibold px-2 py-0.5", flag.type === 'warning' ? 'bg-rose-50 text-rose-600 hover:bg-rose-100/50 border-rose-100' : 'bg-amber-50 text-amber-700 hover:bg-amber-100/50 border-amber-100')}>
@@ -745,7 +776,7 @@ function AdminApplicationDashboard() {
                                         
                                         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
                                             <span className="flex items-center gap-1.5">
-                                                Desired: <Badge variant="outline" className="border-violet-100 bg-violet-50/50 text-violet-700 font-semibold px-2 py-0.5 rounded-md">{app.student.desiredGrade}</Badge>
+                                                Desired: <Badge variant="outline" className="border-violet-100 bg-violet-50/50 text-violet-700 font-semibold px-2 py-0.5 rounded-md">{desiredGrade}</Badge>
                                             </span>
                                             <span className="text-slate-300">•</span>
                                             <span>App ID: <code className="font-mono text-slate-600 bg-slate-50 px-1 py-0.5 rounded border border-slate-100">{app.applicationId}</code></span>
@@ -1543,7 +1574,16 @@ function ParentDashboard({ schoolId }: { schoolId: string }) {
         if (!user || !firestore || !schoolId) return;
         const q = query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), where('submittedByParentId', '==', user.uid), orderBy('submittedAt', 'desc'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            setMyApps(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            setMyApps(snapshot.docs.map(doc => {
+                const data = doc.data() as any;
+                const rawStudent = data.student || {};
+                const student = {
+                    fullName: rawStudent.fullName || data.fullName || 'Application',
+                    desiredGrade: rawStudent.desiredGrade || data.desiredGrade || 'N/A',
+                    ...rawStudent,
+                };
+                return { id: doc.id, ...data, student };
+            }));
             setLoading(false);
         });
         return () => unsubscribe();

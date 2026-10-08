@@ -6,15 +6,14 @@ import { useRole } from '@/context/role-context';
 import { collection, doc, query, where, addDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, UserCheck, BookOpen, Save, Layers, Microscope, Sparkles, AlertCircle } from 'lucide-react';
+import { Loader2, PlusCircle, BookCopy, Edit, Trash2, RefreshCw, UserCheck, BookOpen, Save, Layers, Microscope, Sparkles, AlertCircle, Check } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -163,30 +162,41 @@ function SubjectForm({
                 </div>
                 <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 bg-slate-50/50 rounded-2xl">
                     {allTeachers.map((teacher) => {
-                        const isChecked = field.value?.includes(teacher.uid);
+                        const currentValues = Array.isArray(field.value) ? field.value : [];
+                        const isChecked = currentValues.includes(teacher.uid);
                         return (
-                            <div 
+                            <button 
+                                type="button"
                                 key={teacher.uid}
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     if (isChecked) {
-                                        field.onChange(field.value.filter((v: string) => v !== teacher.uid));
+                                        field.onChange(currentValues.filter((v: string) => v !== teacher.uid));
                                     } else {
-                                        field.onChange([...(field.value || []), teacher.uid]);
+                                        field.onChange([...currentValues, teacher.uid]);
                                     }
                                 }}
                                 className={cn(
-                                    "flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer select-none transition-all duration-200 shadow-sm",
+                                    "flex items-center justify-between p-2.5 rounded-xl border-2 cursor-pointer select-none transition-all duration-200 shadow-sm text-left w-full",
                                     isChecked 
                                         ? "bg-indigo-50 border-indigo-500 text-indigo-900 ring-2 ring-indigo-500/10" 
                                         : "bg-white border-slate-200/60 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                                 )}
                             >
-                                <Checkbox checked={isChecked} className="sr-only" />
-                                <div className="h-6 w-6 rounded bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[8px] uppercase shrink-0">
-                                    {teacher.firstName[0]}{teacher.lastName[0]}
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <span className={cn(
+                                        "h-4 w-4 rounded flex items-center justify-center border transition-colors shrink-0",
+                                        isChecked ? "bg-indigo-600 border-indigo-600 text-white" : "border-slate-300 bg-white"
+                                    )}>
+                                        {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
+                                    </span>
+                                    <div className="h-6 w-6 rounded bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[8px] uppercase shrink-0">
+                                        {teacher.firstName?.[0] || 'T'}{teacher.lastName?.[0] || ''}
+                                    </div>
+                                    <span className="text-[11px] font-bold truncate">{teacher.firstName} {teacher.lastName}</span>
                                 </div>
-                                <span className="text-[11px] font-bold truncate">{teacher.firstName} {teacher.lastName}</span>
-                            </div>
+                            </button>
                         );
                     })}
                     {allTeachers.length === 0 && (
@@ -208,27 +218,38 @@ function SubjectForm({
                 </div>
                 <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 bg-slate-50/50 rounded-2xl">
                     {classes.map((cls) => {
-                        const isChecked = field.value?.includes(cls.id);
+                        const currentValues = Array.isArray(field.value) ? field.value : [];
+                        const isChecked = currentValues.includes(cls.id);
                         return (
-                            <div 
+                            <button 
+                                type="button"
                                 key={cls.id}
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     if (isChecked) {
-                                        field.onChange(field.value.filter((v: string) => v !== cls.id));
+                                        field.onChange(currentValues.filter((v: string) => v !== cls.id));
                                     } else {
-                                        field.onChange([...(field.value || []), cls.id]);
+                                        field.onChange([...currentValues, cls.id]);
                                     }
                                 }}
                                 className={cn(
-                                    "flex items-center gap-2 p-2.5 rounded-xl border-2 cursor-pointer select-none transition-all duration-200 shadow-sm",
+                                    "flex items-center justify-between p-2.5 rounded-xl border-2 cursor-pointer select-none transition-all duration-200 shadow-sm text-left w-full",
                                     isChecked 
                                         ? "bg-purple-50 border-purple-500 text-purple-900 ring-2 ring-purple-500/10" 
                                         : "bg-white border-slate-200/60 text-slate-600 hover:bg-slate-50 hover:border-slate-300"
                                 )}
                             >
-                                <Checkbox checked={isChecked} className="sr-only" />
-                                <span className="text-[11px] font-bold truncate">{cls.name}</span>
-                            </div>
+                                <div className="flex items-center gap-2 min-w-0">
+                                    <span className={cn(
+                                        "h-4 w-4 rounded flex items-center justify-center border transition-colors shrink-0",
+                                        isChecked ? "bg-purple-600 border-purple-600 text-white" : "border-slate-300 bg-white"
+                                    )}>
+                                        {isChecked && <Check className="h-3 w-3 stroke-[3]" />}
+                                    </span>
+                                    <span className="text-[11px] font-bold truncate">{cls.name}</span>
+                                </div>
+                            </button>
                         );
                     })}
                     {classes.length === 0 && (
@@ -568,6 +589,9 @@ export default function SubjectsPage() {
                 <BookOpen className="h-6 w-6 text-indigo-600" />
                 {editingSubject ? 'Modify Course details' : 'Register New Course'}
             </DialogTitle>
+            <DialogDescription className="text-xs text-slate-500 font-medium">
+              Configure course details, assign qualified faculty, and specify applicable student cohorts.
+            </DialogDescription>
           </DialogHeader>
           {schoolId && (
             <SubjectForm

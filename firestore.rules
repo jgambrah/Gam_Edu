@@ -76,7 +76,7 @@ service cloud.firestore {
         isSuperAdmin() ||
         request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" ||
         (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com") ||
-        getUserRole() in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin']
+        getUserRole() in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin', 'Principal', 'Headmaster', 'Headmistress', 'Head Teacher', 'Registrar', 'Admissions', 'Owner']
       );
     }
 
@@ -839,14 +839,17 @@ service cloud.firestore {
 
 
     match /admissionApplications/{applicationId} {
-      allow read, write, list: if isAdmin() || isSuperAdmin();
+      allow read, get, list: if isSignedIn();
       allow create: if true;
-      allow read: if isSignedIn() && resource.data.submittedByParentId == request.auth.uid;
+      allow update, write: if isSignedIn();
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /admissionEnquiries/{enquiryId} {
-      allow read, write, list: if isAdmin() || isSuperAdmin();
+      allow read, get, list: if isSignedIn();
       allow create: if true;
+      allow update, write: if isSignedIn();
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     // =========================================================
