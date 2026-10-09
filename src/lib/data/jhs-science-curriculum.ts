@@ -5350,7 +5350,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.239Z"
+    "updatedAt": "2026-10-09T18:18:17.361Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -10634,7 +10634,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.240Z"
+    "updatedAt": "2026-10-09T18:18:17.362Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -13668,7 +13668,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.240Z"
+    "updatedAt": "2026-10-09T18:18:17.362Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -18942,7 +18942,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.240Z"
+    "updatedAt": "2026-10-09T18:18:17.362Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -24221,7 +24221,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.240Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -29498,7 +29498,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -34778,7 +34778,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -40054,7 +40054,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -45322,7 +45322,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -50614,7 +50614,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -55942,7 +55942,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -61293,7 +61293,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -61306,10 +61306,12 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Engage with classical mechanics and fluid dynamics in interactive vector laboratory environments. Calculates net vectors, tests Newton's Three Laws of Motion, investigates magnetic field lines, and derives mechanical advantage, velocity ratio, and efficiency for simple and compound machines.",
-    "totalPracticeQuestions": 156,
+    "totalPracticeQuestions": 303,
     "version": 1,
     "aliases": [
-      "b9_strand4_force_motion"
+      "CARD_13_ENERGY_CONSERVATION_FORCE_MOTION_AND_MACHINES",
+      "b9_strand4_force_motion",
+      "b8_strand4_forces_mechanics"
     ],
     "levels": {
       "b7": {
@@ -63973,62 +63975,2658 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       },
       "b8": {
-        "levelTitle": "Basic 8 (JHS 2) • Simple Machines: Mechanical Advantage, Velocity Ratio & Efficiency",
-        "summary": "Derive Mechanical Advantage (MA), Velocity Ratio (VR), and Efficiency for levers, inclined planes, and pulley systems.",
-        "notes": "### Simple Machines: Mechanical Advantage, Velocity Ratio & Efficiency\n* **NaCCA Curriculum Code:** `B8.4.3.1`\n* **Core Competency:** Explain the operation of simple machines, derive Mechanical Advantage, Velocity Ratio, and calculate mechanical Efficiency.\n\n#### 1. Fundamental Principles of Simple Machines\nA machine is a mechanical device that enables work to be done more easily, rapidly, or safely by applying an Effort ($E$) to overcome a Load ($L$).\n* **Mechanical Advantage (MA):** Force multiplication factor:\n  $$\\text{MA} = \\frac{\\text{Load } (L)}{\\text{Effort } (E)}$$\n  ($\\text{MA} > 1$: force multiplier; $\\text{MA} < 1$: speed multiplier).\n* **Velocity Ratio (VR):** Distance movement ratio (independent of friction):\n  $$\\text{VR} = \\frac{\\text{Distance moved by Effort } (d_E)}{\\text{Distance moved by Load } (d_L)}$$\n* **Efficiency ($\\eta$):** Percentage of input work converted into useful output work:\n  $$\\eta = \\frac{\\text{Work Output}}{\\text{Work Input}} \\times 100\\% = \\frac{\\text{MA}}{\\text{VR}} \\times 100\\%$$\n* *Real Machine Limitation:* In real machines, efficiency is **always less than 100%** because part of the work input is dissipated overcoming friction between moving parts and lifting the machine's own weight.\n\n#### 2. Classes of Simple Machines\n* **Levers:** Rigid bar pivoting on a fixed fulcrum (pivot):\n  * **Class 1 (Fulcrum in middle):** Crowbar, scissors, claw hammer, see-saw ($L - F - E$).\n  * **Class 2 (Load in middle):** Wheelbarrow, nutcracker, bottle opener ($F - L - E$). $\\text{MA} > 1$ always.\n  * **Class 3 (Effort in middle):** Sugar tongs, human forearm, tweezers ($F - E - L$). $\\text{MA} < 1$ (speed/distance multiplier).\n* **Inclined Plane (Ramp):**\n  $$\\text{VR} = \\frac{\\text{Length of Slope } (l)}{\\text{Vertical Height } (h)} = \\frac{1}{\\sin \\theta}$$\n* **Pulley Systems:**\n  * Single Fixed Pulley: $\\text{VR} = 1$ (changes direction of effort only).\n  * Block and Tackle System: $\\text{VR} = \\text{total number of rope segments supporting the movable block}$.",
+        "levelTitle": "Basic 8 (JHS 2) • Energy Conservation, Magnetism, Newton's Laws & Simple/Complex Machines",
+        "summary": "Evaluate the 5 pillars of energy conservation and sustainability, demonstrate magnetization methods (electrical solenoid, stroking, induction), map magnetic field lines, apply Newton's Three Laws of Motion ($F = ma$, inertia, action-reaction), analyze the 6 categories of simple machines, calculate lever and pulley mechanics ($MA, VR, \\eta$), and deconstruct complex machines.",
+        "notes": "### Forces & Energy: Energy Conservation, Magnetism, Newton's Laws & Simple/Complex Machines\n* **NaCCA Curriculum Standards:** `B8.4.3.1`, `B8.4.4.1`, `B8.4.4.2`\n* **Key Learning Indicators:** `B8.4.3.1.1`, `B8.4.4.1.1`, `B8.4.4.2.1`\n* **Core Competencies:** Explain the principles and environmental impacts of energy conversion and conservation; evaluate the five pillars of energy sustainability; demonstrate simple methods of making magnets and map magnetic lines of force; analyze Newton's Three Laws of Motion with real-world qualitative and quantitative applications ($F = ma$); classify simple machines into their six primary categories; examine the mechanics of levers (Classes 1, 2, 3) and pulleys (fixed vs. movable); and deconstruct complex (compound) machines into their simple component mechanisms.\n\n---\n\n### Module 1: Energy Conversion, Conservation, and Environmental Sustainability\n\n#### 1. Foundational Concepts of Energy Conservation\nEnergy conservation is the deliberate, systematic practice of reducing energy consumption by eliminating waste, improving technological energy efficiency, and adopting responsible behavioral practices. While the **Principle of Conservation of Energy** dictates that energy cannot be created or destroyed, high-grade usable energy (such as chemical fuel or electricity) naturally degrades into low-grade unusable thermal energy (waste heat) whenever transformations occur.\n\n#### 2. The Five Pillars of Energy Conservation in Daily Life\n\n| Conservation Pillar | Practical Everyday Realization | Environmental & Socio-Economic Significance |\n| :--- | :--- | :--- |\n| **1. Sustainability** | Transitioning from finite fossil hydrocarbons to renewable energy flows (solar PV, wind, small hydro, sustainable biomass) and recycling materials. | Preserves finite non-renewable resource reserves (petroleum, coal, gas) for future generations and minimizes ecological destruction associated with resource extraction. |\n| **2. Cost Savings** | Installing high-efficiency LED luminaires, inverter-driven refrigerators and air conditioners, and applying reflective thermal roof insulation. | Drastically reduces monthly electricity tariffs and fuel expenditures for households, commercial enterprises, and public schools. |\n| **3. Reduced Carbon Footprint** | Utilizing public mass transit, cycling, adopting solar water heaters, and purchasing energy-rated home appliances. | Slashes industrial and tailpipe emissions of carbon dioxide ($CO_2$) and methane ($CH_4$), directly combating anthropogenic global warming and severe climate events. |\n| **4. Energy Security** | Diversifying domestic energy supply mixes by integrating rooftop solar systems and national renewable energy microgrids. | Reduces national economic vulnerability to global crude oil price shocks, foreign fuel embargoes, and localized power grid blackout disruptions. |\n| **5. Public Health** | Replacing smoky biomass wood/charcoal cookstoves with clean LPG or electric induction cookers and reducing diesel exhaust. | Purifies indoor and urban ambient air, drastically lowering the clinical incidence of acute respiratory infections, asthma, bronchitis, and cardiovascular diseases. |\n\n#### 3. Environmental Impacts of Sustainable Energy Conservation\n\n1. **Mitigation of Greenhouse Gas Concentrations:** Cutting energy consumption curbs the burning of coal, heavy fuel oil, and natural gas in thermal power stations, slowing atmospheric accumulation of $CO_2$ and stabilizing planetary climate patterns.\n2. **Preservation of Pristine Ecological Habitats:** Decreasing demand for fossil hydrocarbons slows strip-mining, mountaintop coal removal, offshore crude oil drilling, and oil pipeline construction that destroy fragile terrestrial and marine biomes.\n3. **Reduction of Acid Precipitation and Smog:** Eliminates toxic emissions of sulfur dioxide ($SO_2$) and nitrogen oxides ($NO_x$), halting the acidification of freshwater lakes, protecting agricultural soils, and eradicating suffocating photochemical smog.\n4. **Conservation of Water Resources:** Conventional steam thermal and nuclear stations withdraw billions of liters of cooling water; energy efficiency and solar PV adoption eliminate industrial water withdrawal and thermal pollution of rivers.\n5. **Curtailment of Toxic Solid Waste:** Reducing fossil combustion eliminates millions of tons of hazardous coal fly ash containing toxic heavy metals (arsenic, lead, mercury) that threaten groundwater aquifers.\n\n#### Visual Demonstration: Pillars of Energy Conservation and Environmental Impact\n<svg width=\"760\" height=\"160\" viewBox=\"0 0 760 160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PILLARS OF ENERGY CONSERVATION AND ENVIRONMENTAL IMPACT</text><g transform=\"translate(25, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. Sustainability</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Preserves resources</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Minimizes waste</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Protects habitats</text></g><g transform=\"translate(170, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">2. Cost Savings</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Efficient appliances</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Lower power bills</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Home insulation</text></g><g transform=\"translate(315, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. Low Carbon</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Cuts emissions</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Mitigates warming</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Solar &amp; wind use</text></g><g transform=\"translate(460, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#9333ea\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">4. Energy Security</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Diverse sources</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Cuts fuel imports</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Stable grid supply</text></g><g transform=\"translate(605, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">5. Public Health</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\">• Cleaner city air</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\">• Low respiratory risk</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\">• Preserves water</text></g></svg>\n\n---\n\n### Module 2: Magnetism: Magnetic Fields, Lines of Force, and Electromagnets\n\n#### 1. Magnetic Field Fundamentals\n* **Magnetic Field:** The spatial region or volume surrounding a magnet or current-carrying conductor where magnetic forces (attractive or repulsive) can be experienced by magnetic materials or other magnets.\n* **Magnetic Lines of Force (Flux Lines):** Continuous, imaginary, directed vector lines drawn to map the geometry and intensity of a magnetic field.\n* **Fundamental Properties of Magnetic Field Lines:**\n  1. They form continuous, unbroken closed loops.\n  2. Outside the magnet, they emerge from the **North (N) pole** and enter the **South (S) pole**. Inside the magnet, they continue from the South pole to the North pole.\n  3. Magnetic lines of force **never intersect or cross one another**. (If they did, a magnetic compass placed at the intersection point would point in two different directions simultaneously, which is physically impossible).\n  4. The density or closeness of the lines represents field strength: lines are most crowded near the poles where the magnetic field is strongest.\n* **Neutral Point ($X$):** A geographic point in space where the magnetic field of a magnet is exactly equal in magnitude and opposite in direction to the ambient horizontal component of the Earth's magnetic field. The resultant magnetic field at a neutral point is zero ($B_{\\text{net}} = 0$), so a magnetic compass needle will experience no net torque and point in any arbitrary direction.\n* **The Repulsion Criterion:**\n  > **Repulsion is the only sure and infallible test for a permanent magnet.** An unmagnetized magnetic material (such as a soft iron bar) is attracted by both the North pole and the South pole of a magnet via magnetic induction. Only two like poles of genuine permanent magnets (North to North, or South to South) experience mutual **repulsion**.\n\n#### 2. Methods of Making Magnets (Magnetization)\n\n| Method | Step-by-Step Procedure | Underlying Physical Mechanism | Pole Identification Rule |\n| :--- | :--- | :--- | :--- |\n| **1. Electrical Method (DC Solenoid)** | Insert a hard steel bar inside an insulated wire coil (solenoid) and pass a strong Direct Current (DC) through the winding for several seconds. | The steady electric current generates an intense, uniform internal magnetic field that forces all atomic magnetic domains (dipoles) in the steel to align in one direction. | **End Rule:** Looking directly at the end face of the coil: if current circulates in a **clockwise** direction, that end becomes a **South pole (S)**; if **counter-clockwise**, it becomes a **North pole (N)**. |\n| **2. Stroking Method (Single Touch)** | Stroke a steel needle or bar repeatedly from one end to the other in one direction using a single pole of a permanent bar magnet. Lift the magnet well clear of the bar on each return stroke. | The magnetic field of the moving pole drags opposing atomic domains along the bar, aligning them parallel to the axis. | The end where the stroking magnet leaves the bar always develops the **opposite pole** to the stroking pole. |\n| **3. Stroking Method (Divided Touch)** | Place two opposite poles of two bar magnets at the center of the steel bar and stroke simultaneously outward toward opposite ends, lifting clear after each stroke. | Simultaneously aligns domains symmetrically from the center outward. | Each end of the bar acquires the opposite polarity to the stroking magnet leaving that end; the center becomes a neutral region. |\n| **4. Magnetic Induction** | Bring a permanent magnet in close proximity to or in direct contact with an unmagnetized magnetic specimen (e.g., soft iron nail). | The external magnetic field temporarily rotates and aligns the domains of the soft iron without physical transfer of matter. | The near end acquires an **opposite pole**; the far end acquires a **similar pole**. Magnetism is temporary and lost when the magnet is removed. |\n| **5. Hammering in Earth's Field** | Align a steel rod parallel to the Earth's magnetic meridian (pointing North-South inclined at the angle of dip) and hammer its end firmly with a mallet. | Mechanical acoustic shock vibrations agitate the crystal lattice, freeing pinned magnetic domain boundaries to pivot and align with the Earth's geomagnetic field. | The end pointing North acquires a North pole; the end pointing South acquires a South pole. |\n\n#### 3. Electromagnets: Architecture, Operation, and Strength Factors\nAn **electromagnet** is a temporary magnet formed by winding an insulated wire coil around a high-permeability soft iron core. When an electric current circulates through the winding, a strong magnetic field is generated; when current is interrupted, magnetism immediately collapses.\n\n* **Factors Governing the Strength of an Electromagnet:**\n  1. **Core Material:** Utilizing a soft iron core provides high magnetic permeability and low retentivity, multiplying magnetic flux density thousands of times compared to an air core.\n  2. **Electric Current Magnitude ($I$):** Magnetic field strength is directly proportional to the current flowing through the coil ($B \\propto I$).\n  3. **Number of Turns of Wire ($N$):** Increasing the density of winding turns per unit length increases magnetomotive force ($B \\propto N$).\n* **Essential Everyday Applications of Electromagnets:**\n  * **Electric Door Bells & Buzzers:** Electromagnet attracts a soft iron armature carrying a striker to hit a gong, breaking contact to cycle the stroke.\n  * **Industrial Scrap Lifting Cranes:** Massive electromagnets energize to lift tons of scrap iron and de-energize to drop the load instantly.\n  * **Electric Motors and Alternators:** Produce high-intensity rotating magnetic fields that drive mechanical shaft torque.\n  * **Audio Transducers (Loudspeakers & Earpieces):** Varying audio currents interact with permanent magnetic fields to vibrate diaphragms and create sound waves.\n  * **Electromagnetic Relays:** Tiny control currents energize small coils to close heavy-duty, high-voltage electrical contacts safely.\n\n#### Visual Demonstration: Magnetic Field Patterns & Electrical Magnetization\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">MAGNETIC FIELD PATTERNS &amp; ELECTRICAL MAGNETIZATION (SOLENOID)</text><g transform=\"translate(35, 42)\"><rect width=\"325\" height=\"160\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"162\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">BAR MAGNET &amp; LINES OF FORCE</text><rect x=\"75\" y=\"72\" width=\"85\" height=\"26\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.2\"/><rect x=\"160\" y=\"72\" width=\"85\" height=\"26\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1.2\"/><text x=\"117\" y=\"89\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">NORTH (N)</text><text x=\"202\" y=\"89\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">SOUTH (S)</text><path d=\"M 90 72 C 90 32, 230 32, 230 72\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.4\"/><polygon points=\"165,42 157,38 157,46\" fill=\"#64748b\"/><path d=\"M 105 72 C 105 48, 215 48, 215 72\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.4\"/><polygon points=\"165,54 157,50 157,58\" fill=\"#64748b\"/><path d=\"M 90 98 C 90 138, 230 138, 230 98\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.4\"/><polygon points=\"165,128 157,124 157,132\" fill=\"#64748b\"/><text x=\"162\" y=\"150\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\" text-anchor=\"middle\">Lines run North to South externally; do not cross</text></g><g transform=\"translate(395, 42)\"><rect width=\"330\" height=\"160\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">ELECTRICAL MAGNETIZATION (SOLENOID)</text><rect x=\"45\" y=\"68\" width=\"240\" height=\"20\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"55\" y=\"82\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\">S-Pole</text><text x=\"255\" y=\"82\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">N-Pole</text><text x=\"165\" y=\"82\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Steel Bar inside Coil</text><path d=\"M 70 88 Q 78 50 85 88 Q 93 50 100 88 Q 108 50 115 88 Q 123 50 130 88 Q 138 50 145 88 Q 153 50 160 88 Q 168 50 175 88 Q 183 50 190 88 Q 198 50 205 88 Q 213 50 220 88 Q 228 50 235 88 Q 243 50 250 88\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"2\"/><line x1=\"70\" y1=\"88\" x2=\"70\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"250\" y1=\"88\" x2=\"250\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"70\" y1=\"130\" x2=\"140\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"190\" y1=\"130\" x2=\"250\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"140\" y1=\"120\" x2=\"140\" y2=\"140\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><line x1=\"150\" y1=\"124\" x2=\"150\" y2=\"136\" stroke=\"#0f172a\" stroke-width=\"2.5\"/><circle cx=\"170\" cy=\"130\" r=\"2.5\" fill=\"#0f172a\"/><circle cx=\"185\" cy=\"130\" r=\"2.5\" fill=\"#0f172a\"/><line x1=\"170\" y1=\"130\" x2=\"185\" y2=\"124\" stroke=\"#0284c7\" stroke-width=\"1.8\"/><text x=\"145\" y=\"150\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\">DC Battery &amp; Switch</text></g></svg>\n\n---\n\n### Module 3: Newton's Laws of Motion: Principles and Everyday Applications\n\n#### 1. Newton's Three Laws of Motion\nSir Isaac Newton formulated three foundational laws of classical mechanics governing the relationship between forces and the motion of material bodies:\n\n##### A. Newton's First Law of Motion (The Law of Inertia)\n> **Statement:** An object remains in its state of rest, or continues to move with constant velocity in a straight line, unless acted upon by an external net unbalanced force.\n* **Concept of Inertia:** **Inertia** is the inherent physical property of matter that resists any change in its existing state of rest or uniform motion. The inertia of a body is measured solely by its **mass ($m$)**; a heavier body possesses greater inertia and offers greater resistance to changes in its velocity.\n* **Everyday Realizations:**\n  * When a moving trotro or bus brakes suddenly, standing passengers involuntarily pitch forward because their bodies possess inertia and tend to maintain forward velocity.\n  * When a vehicle violently accelerates forward from rest, passengers feel pressed backward against their seats.\n  * Dusting a carpet: striking a rug with a stick rapidly moves the rug backward, while the dust particles remain stationary due to inertia and separate from the fabric.\n\n##### B. Newton's Second Law of Motion (The Law of Acceleration)\n> **Statement:** The rate of change of momentum of a body is directly proportional to the applied net force and occurs in the direction of the straight line in which the force acts. For a constant mass, acceleration is directly proportional to net force and inversely proportional to mass.\n* **Mathematical Equation:**\n  $$F = m \\times a \\implies a = \\frac{F}{m}$$\n  Where:\n  * $F$ = Net resultant external force applied (Newtons, $\\text{N} = \\text{kg}\\cdot\\text{m/s}^2$)\n  * $m$ = Mass of the object (kilograms, $\\text{kg}$)\n  * $a$ = Resultant acceleration produced ($\\text{m/s}^2$)\n* **Core Deductions:**\n  1. For a fixed mass ($m$), doubling the force doubles the acceleration ($a \\propto F$).\n  2. For a constant force ($F$), increasing the mass results in lower acceleration ($a \\propto \\frac{1}{m}$).\n\n##### C. Newton's Third Law of Motion (Action and Reaction)\n> **Statement:** For every action force, there is an equal and opposite reaction force.\n* **Pair Dynamics:** Action and reaction forces are equal in magnitude, opposite in direction, and act on **two different interacting bodies simultaneously**. Therefore, action-reaction pairs never cancel each other out on a single object.\n* **Everyday Realizations:**\n  * **Walking:** Your foot pushes backward on the ground (Action); the ground pushes forward on your foot with an equal frictional force (Reaction).\n  * **Swimming:** The swimmer's hands push water backward (Action); the displaced water pushes the swimmer forward (Reaction).\n  * **Rocket Propulsion:** Expanding hot combustion gases are expelled downward at high velocity through the exhaust nozzle (Action); the gas reaction exerts an equal upward thrust force on the rocket frame (Reaction).\n\n#### 2. Experimental Verification: Magnetic Acceleration vs. Mass\n* **Experiment Setup:** A calibrated permanent bar magnet is fixed on a smooth benchtop. Steel paperclips of varying masses (a single $1.0\\text{ g}$ paperclip vs. a bundle of ten paperclips totaling $10.0\\text{ g}$) are placed at identical separation distances ($5.0\\text{ cm}$).\n* **Observations:** When released, the single light paperclip accelerates rapidly toward the magnet. The bundled heavy paperclips accelerate sluggishly or require the magnet to be moved much closer.\n* **Scientific Conclusion:** Under identical magnetic pulling forces, acceleration is inversely proportional to mass ($a \\propto \\frac{1}{m}$), validating Newton's Second Law.\n\n#### Visual Demonstration: Newton's Second Law of Motion ($F = ma$)\n<svg width=\"760\" height=\"190\" viewBox=\"0 0 760 190\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"190\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">NEWTON'S SECOND LAW OF MOTION (F = ma) - INVERSE PROPORTIONALITY TO MASS</text><g transform=\"translate(50, 40)\"><rect width=\"310\" height=\"135\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"80\" r=\"42\" fill=\"#94a3b8\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"90\" y=\"82\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">400 kg</text><text x=\"90\" y=\"96\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e293b\" text-anchor=\"middle\">[Large Mass]</text><path d=\"M 240 80 L 145 80\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"3\"/><polygon points=\"145,80 157,74 157,86\" fill=\"#dc2626\"/><text x=\"200\" y=\"70\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#dc2626\">Large Force Required</text><text x=\"155\" y=\"125\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Acceleration is LOW for heavy mass ($a = F/m$)</text></g><g transform=\"translate(400, 40)\"><rect width=\"310\" height=\"135\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"80\" cy=\"80\" r=\"20\" fill=\"#94a3b8\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"80\" y=\"83\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">40 kg</text><text x=\"80\" y=\"94\" font-family=\"sans-serif\" font-size=\"6.5\" fill=\"#1e293b\" text-anchor=\"middle\">[Small Mass]</text><path d=\"M 200 80 L 110 80\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\"/><polygon points=\"110,80 120,75 120,85\" fill=\"#16a34a\"/><text x=\"165\" y=\"70\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\">Small Force Needed</text><text x=\"155\" y=\"125\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Acceleration is HIGH for light mass ($a = F/m$)</text></g></svg>\n\n---\n\n### Module 4: Simple Machines: Levers, Pulleys, and the Six Categories\n\n#### 1. Mechanical Foundations of Simple Machines\nA **simple machine** is a mechanical device that alters the magnitude, speed, or direction of an applied force to make physical work easier, functioning with minimal or no internal moving parts.\n\n* **Key Performance Equations in Mechanics:**\n  1. **Mechanical Advantage ($MA$):** The ratio of the load force overcome by the machine to the effort force applied:\n     $$MA = \\frac{\\text{Load (N)}}{\\text{Effort (N)}} = \\frac{L}{E}$$\n     *(A machine with $MA > 1$ acts as a force multiplier).*\n  2. **Velocity Ratio ($VR$):** The ratio of the distance moved by the effort to the distance moved by the load in the same time interval:\n     $$VR = \\frac{\\text{Distance moved by Effort}}{\\text{Distance moved by Load}} = \\frac{d_E}{d_L}$$\n  3. **Efficiency ($\\eta$):** The percentage of input work converted into useful output work:\n     $$\\eta = \\frac{\\text{Work Output}}{\\text{Work Input}} \\times 100\\% = \\frac{MA}{VR} \\times 100\\%$$\n     *(Real machines never achieve $100\\%$ efficiency because of internal friction and component weight).*\n\n#### 2. The Six Classical Categories of Simple Machines\n\n| Category | Structural Engineering Mechanism | Everyday Practical Examples |\n| :--- | :--- | :--- |\n| **1. Lever** | A rigid bar or rod free to pivot around a stationary fixed support axis called a **fulcrum (pivot)**. | Crowbars, scissors, seesaws, wheelbarrows, bottle openers, brooms, pliers, fishing rods. |\n| **2. Pulley** | A grooved wheel mounted on an axle carrying a flexible rope, belt, or steel cable. | Window blind cords, construction cranes, well-water pulleys, elevator hoisting cables. |\n| **3. Inclined Plane** | A rigid, flat surface tilted at an angle to the horizontal. Allows lifting heavy loads using smaller forces over extended distances. | Wheelchair access ramps, loading bay ramps, sloped highways, staircases. |\n| **4. Wedge** | A movable tool formed by joining two inclined planes back-to-back, converting a blunt axial driving force into lateral splitting forces. | Axes, wood-splitting chisels, knives, nail points, shovel blades, razor blades, doorstops. |\n| **5. Screw** | An inclined plane wrapped helically around a central cylindrical core or shaft. Converts rotational torque into axial linear thrust. | Wood screws, metal bolts, bottle caps, car screw jacks, drill bits, vise spindles. |\n| **6. Wheel and Axle** | A large-diameter wheel rigidly connected to a smaller-diameter concentric shaft (axle), rotating together. | Car steering wheels, screwdriver handles, door knobs, windlass water wells, bicycle pedals. |\n\n#### 3. Detailed Anatomy of the Three Classes of Levers\nLevers are classified into three distinct orders according to the relative spatial positions of the **Fulcrum ($F$)**, the **Load ($L$)**, and the **Effort ($E$)**:\n\n```\nCLASS 1 LEVER:      LOAD  <--------  FULCRUM  -------->  EFFORT      [Fulcrum in the Middle]\nCLASS 2 LEVER:   FULCRUM  <--------    LOAD   -------->  EFFORT      [Load in the Middle]\nCLASS 3 LEVER:   FULCRUM  <--------   EFFORT  -------->  LOAD        [Effort in the Middle]\n```\n\n1. **First-Class Levers (Fulcrum in the Middle):**\n   * **Spatial Arrangement:** The fulcrum lies between the load and the applied effort ($L - F - E$).\n   * **Mechanical Behavior:** Can act as a force multiplier ($MA > 1$), distance multiplier ($MA < 1$), or change force direction ($MA = 1$).\n   * **Examples:** Crowbars, scissors, seesaws, pliers, claw hammer extracting a nail, pincers.\n2. **Second-Class Levers (Load in the Middle):**\n   * **Spatial Arrangement:** The load lies between the fulcrum and the applied effort ($F - L - E$).\n   * **Mechanical Behavior:** Effort arm is always longer than the load arm; therefore, $MA > 1$ and $VR > 1$. Always acts as a **force multiplier**.\n   * **Examples:** Wheelbarrows, nutcrackers, bottle openers, paper guillotines, wheelbarrow wheel axles.\n3. **Third-Class Levers (Effort in the Middle):**\n   * **Spatial Arrangement:** The effort is applied between the fulcrum and the load ($F - E - L$).\n   * **Mechanical Behavior:** Load arm is always longer than the effort arm; therefore, $MA < 1$ and $VR < 1$. Acts as a **distance/speed multiplier** requiring more effort than load.\n   * **Examples:** Brooms, fishing rods, tweezers, human arm lifting a weight, coal tongs, table tennis bats.\n\n#### 4. Pulley Systems: Fixed vs. Movable\n* **Fixed Pulley:** The axle is anchored to a stationary beam or ceiling. Does not move with the load.\n  * **Characteristics:** Velocity Ratio $VR = 1$; Mechanical Advantage $MA \\approx 1$.\n  * **Function:** Changes the direction of the applied effort, allowing a worker to pull downward with the assistance of gravity to lift a load upward.\n* **Movable Pulley:** The pulley wheel is suspended directly from the rope loop and travels upward along with the load.\n  * **Characteristics:** Velocity Ratio $VR = 2$; Ideal Mechanical Advantage $MA = 2$.\n  * **Function:** Acts as a genuine force multiplier, halving the effort needed to hoist the load.\n\n#### Visual Demonstration: The Three Classes of Levers & Types of Pulleys\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE THREE CLASSES OF LEVERS &amp; TYPES OF PULLEYS</text><g transform=\"translate(25, 38)\"><rect width=\"225\" height=\"140\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"112\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">CLASS 1 LEVER (Fulcrum in Middle)</text><line x1=\"25\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#0f172a\" stroke-width=\"3.5\"/><polygon points=\"112,75 102,95 122,95\" fill=\"#16a34a\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"112\" y=\"110\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Fulcrum</text><rect x=\"25\" y=\"55\" width=\"25\" height=\"20\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"37\" y=\"68\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><path d=\"M 190 45 L 190 70\" stroke=\"#0284c7\" stroke-width=\"2.5\" fill=\"none\"/><polygon points=\"190,70 186,60 194,60\" fill=\"#0284c7\"/><text x=\"190\" y=\"38\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Effort</text><text x=\"112\" y=\"130\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\" text-anchor=\"middle\">Seesaw, Scissors, Crowbar</text></g><g transform=\"translate(265, 38)\"><rect width=\"225\" height=\"140\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"112\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">CLASS 2 LEVER (Load in Middle)</text><line x1=\"25\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#0f172a\" stroke-width=\"3.5\"/><polygon points=\"25,75 15,95 35,95\" fill=\"#16a34a\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"25\" y=\"110\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Fulcrum</text><rect x=\"100\" y=\"55\" width=\"25\" height=\"20\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"112\" y=\"68\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><path d=\"M 190 100 L 190 80\" stroke=\"#0284c7\" stroke-width=\"2.5\" fill=\"none\"/><polygon points=\"190,80 186,90 194,90\" fill=\"#0284c7\"/><text x=\"190\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Effort</text><text x=\"112\" y=\"130\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\" text-anchor=\"middle\">Wheelbarrow, Bottle Opener</text></g><g transform=\"translate(505, 38)\"><rect width=\"230\" height=\"140\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"115\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">CLASS 3 LEVER (Effort in Middle)</text><line x1=\"25\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#0f172a\" stroke-width=\"3.5\"/><polygon points=\"25,75 15,95 35,95\" fill=\"#16a34a\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"25\" y=\"110\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Fulcrum</text><path d=\"M 112 100 L 112 80\" stroke=\"#0284c7\" stroke-width=\"2.5\" fill=\"none\"/><polygon points=\"112,80 108,90 116,90\" fill=\"#0284c7\"/><text x=\"112\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Effort</text><rect x=\"180\" y=\"55\" width=\"25\" height=\"20\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"192\" y=\"68\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><text x=\"115\" y=\"130\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\" text-anchor=\"middle\">Fishing Rod, Broom, Tongs</text></g><g transform=\"translate(40, 190)\"><rect width=\"325\" height=\"135\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"162\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">FIXED PULLEY (Direction Change, MA = 1)</text><line x1=\"130\" y1=\"35\" x2=\"195\" y2=\"35\" stroke=\"#334155\" stroke-width=\"3\"/><line x1=\"162\" y1=\"35\" x2=\"162\" y2=\"55\" stroke=\"#475569\" stroke-width=\"2\"/><circle cx=\"162\" cy=\"65\" r=\"15\" fill=\"#cbd5e1\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"162\" cy=\"65\" r=\"3\" fill=\"#0f172a\"/><path d=\"M 147 65 L 147 100\" stroke=\"#0f172a\" stroke-width=\"1.8\" fill=\"none\"/><rect x=\"137\" y=\"100\" width=\"20\" height=\"16\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"147\" y=\"112\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><path d=\"M 177 65 L 177 100\" stroke=\"#0f172a\" stroke-width=\"1.8\" fill=\"none\"/><polygon points=\"177,105 173,95 181,95\" fill=\"#0284c7\"/><text x=\"197\" y=\"102\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Effort</text></g><g transform=\"translate(395, 190)\"><rect width=\"325\" height=\"135\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"162\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">MOVABLE PULLEY (Force Magnifier, MA = 2)</text><line x1=\"130\" y1=\"35\" x2=\"162\" y2=\"35\" stroke=\"#334155\" stroke-width=\"3\"/><circle cx=\"162\" cy=\"75\" r=\"15\" fill=\"#cbd5e1\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"162\" cy=\"75\" r=\"3\" fill=\"#0f172a\"/><path d=\"M 147 35 L 147 75 C 147 95, 177 95, 177 75 L 177 45\" stroke=\"#0f172a\" stroke-width=\"1.8\" fill=\"none\"/><polygon points=\"177,38 173,48 181,48\" fill=\"#0284c7\"/><text x=\"197\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Effort</text><line x1=\"162\" y1=\"75\" x2=\"162\" y2=\"100\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><rect x=\"152\" y=\"100\" width=\"20\" height=\"16\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"162\" y=\"112\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text></g></svg>\n\n---\n\n### Module 5: Complex (Compound) Machines: Architecture, Applications, and Quality of Life\n\n#### 1. Architectural Definition of a Complex Machine\nA **complex (compound) machine** is an integrated mechanical system engineered by combining two or more simple machines working in coordinated synchronization to execute sophisticated, heavy-duty mechanical tasks.\n\n#### 2. Constituent Simple Machine Breakdown of Everyday Complex Machines\n\n| Complex Machine | Integrated Simple Machine Components | Engineering Function of Each Component |\n| :--- | :--- | :--- |\n| **1. Road Bicycle** | • **Wheel and Axle:** Front and rear wheels on central hubs.<br>• **Levers:** Handlebars, hand brake levers, and pedal crank arms.<br>• **Pulleys & Gears:** Interlocking chainring sprockets, rear derailleur pulleys, and roller chain. | Converts leg muscle reciprocating thrust into continuous rotational motion, multiplies speed, and provides directional steering and braking control. |\n| **2. Motor Car** | • **Wheel and Axle:** Four road wheels, steering wheel, drivetrain shafts.<br>• **Levers:** Accelerator, brake, and clutch foot pedals; gear shift lever.<br>• **Screws & Bolts:** Fasten chassis, engine block, and cylinder heads.<br>• **Inclined Planes / Wedges:** Engine cam profiles, transmission bevel gears, wedge brake shoes. | Propels heavy payloads over highway distances at high speeds with passenger comfort and safety. |\n| **3. Farm Tractor** | • **Wheel and Axle:** Heavy-tread rear drive wheels and steering axles.<br>• **Levers:** Hydraulic lift linkages, power take-off (PTO) levers, clutch.<br>• **Wedges & Inclined Planes:** Hardened steel plow shares and disc harrow blades. | Delivers massive low-speed drawbar torque to rip, turn, and aerate compacted agricultural soils. |\n| **4. Knapsack Sprayer** | • **Levers:** Manual hand-pump rocker handle.<br>• **Wheel and Axle:** Fan rotor inside motorized mist blowers.<br>• **Wedges / Inclined Planes:** Internal check-valve seals and atomizing spray nozzle orifices. | Pressurizes liquid agrochemical solutions to atomize them into ultra-fine droplets across crops. |\n| **5. Lawn Mower** | • **Wheel and Axle:** Four rolling transport wheels and rotary cutter shaft.<br>• **Levers:** Throttle control handle, safety shutoff bail bar, height adjustment arms.<br>• **Wedges:** High-speed tempered steel cutting blades. | Delivers high-speed rotary blade action to shear grass blades cleanly. |\n| **6. Sewing Machine** | • **Wheel and Axle:** Hand wheel, drive pulley, and rotating bobbin hook.<br>• **Levers:** Foot treadle, needle bar oscillating arm, presser foot lever.<br>• **Screws & Wedges:** Sharp pointed needle eye wedge, thread tensioning thumbscrews. | Coordinates needle piercing and bobbin loop-catching to lock stitches into fabrics at hundreds of cycles per minute. |\n\n#### 3. The Mechanical Role of Interlocking Gears\n**Gears** are toothed wheels designed to mesh with other toothed wheels to transmit rotational mechanical power without slipping:\n1. **Speed Modulation (Velocity Ratio):** Connecting a large gear (more teeth) to a small gear (fewer teeth) multiplies rotational speed (gear overdrive).\n2. **Torque Multiplication:** Connecting a small driver gear to a larger driven gear multiplies output torque, enabling vehicles to climb steep inclines.\n3. **Directional Reversal:** Two meshing external spur gears rotate in **opposite directions**; adding an intermediate idler gear restores the original direction.\n4. **Motion Redirection:** Bevel gears with angled teeth redirect rotational power through $90^\\circ$ (e.g., automobile differential axles).\n\n#### 4. Macroeconomic & Quality-of-Life Contributions of Complex Machines\n* **Industrial Efficiency & Throughput:** Automates assembly line operations, manufacturing goods in seconds compared to days of manual human labor.\n* **Surgical Accuracy & Healthcare:** Robotics, automated ventilators, and computerized tomography scanners deliver sub-millimeter precision in life-saving surgeries.\n* **Worker Occupational Safety:** Heavy cranes, robotic welding arms, and toxic hazardous-material rovers eliminate direct human exposure to fatal falls, crushing hazards, and chemical toxicity.\n* **Mobility & Societal Accessibility:** Motorized wheelchairs, prosthetic bionic limbs, elevators, and electric commuter trains provide autonomy and inclusion to persons with disabilities.\n* **Agricultural Abundance:** Combine harvesters and multi-row planters allow a single farmer to cultivate hundreds of hectares, securing national food sovereignty.\n\n#### Visual Demonstration: Interlocking Gears and Compound Machine Mechanics\n<svg width=\"760\" height=\"180\" viewBox=\"0 0 760 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"180\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">INTERLOCKING GEAR TRAIN &amp; COMPOUND MACHINE MECHANICAL ADVANTAGE</text><g transform=\"translate(50, 35)\"><circle cx=\"75\" cy=\"75\" r=\"45\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/><circle cx=\"75\" cy=\"75\" r=\"25\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"75\" r=\"6\" fill=\"#0f172a\"/><path d=\"M 75 25 L 75 30 M 75 120 L 75 125 M 25 75 L 30 75 M 120 75 L 125 75 M 40 40 L 44 44 M 106 106 L 110 110 M 40 110 L 44 106 M 106 44 L 110 40\" stroke=\"#0f172a\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><text x=\"75\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Gear A (Driver)</text><circle cx=\"175\" cy=\"75\" r=\"55\" fill=\"#cbd5e1\" stroke=\"#334155\" stroke-width=\"2\"/><circle cx=\"175\" cy=\"75\" r=\"32\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"175\" cy=\"75\" r=\"6\" fill=\"#0f172a\"/><path d=\"M 175 15 L 175 20 M 175 130 L 175 135 M 115 75 L 120 75 M 230 75 L 235 75 M 132 32 L 136 36 M 214 114 L 218 118 M 132 118 L 136 114 M 214 36 L 218 32\" stroke=\"#0f172a\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><text x=\"175\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Gear B (Driven)</text><circle cx=\"275\" cy=\"75\" r=\"40\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/><circle cx=\"275\" cy=\"75\" r=\"20\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"275\" cy=\"75\" r=\"6\" fill=\"#0f172a\"/><text x=\"275\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Gear C</text></g><g transform=\"translate(400, 40)\"><rect width=\"310\" height=\"125\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"155\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">FUNCTIONS OF INTERLOCKING GEARS</text><text x=\"15\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\">1. Controls &amp; changes rotational speed (Velocity Ratio)</text><text x=\"15\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\">2. Reverses or redirects motion direction</text><text x=\"15\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\">3. Multiplies output torque in complex machines</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#1e40af\">Found in: Bicycles, Car transmissions, Tractors</text></g></svg>",
         "workedExamples": [
           {
             "id": "ex_b8_s13_1",
-            "title": "Worked Example: Calculating Efficiency of a Block and Tackle Pulley System",
-            "problem": "A block and tackle pulley system consisting of 4 pulleys is used to raise a load of 800 N through a vertical height of 2.5 m. An effort of 250 N is applied. Calculate: (a) Mechanical Advantage (MA), (b) Velocity Ratio (VR), (c) Efficiency of the pulley system.",
+            "title": "Worked Example 1: Quantitative Application of Newton's Second Law of Motion (F = ma) & Inertial Analysis",
+            "problem": "A laborer at a construction site in Kumasi uses an empty wheelbarrow of mass 15.0 kg and accelerates it horizontally across level concrete at 2.4 m/s².\n\n(a) Calculate the net horizontal force applied by the laborer to the empty wheelbarrow.\n(b) The wheelbarrow is subsequently loaded with 60.0 kg of wet mortar (total mass = 75.0 kg). Calculate the acceleration of the loaded wheelbarrow if the laborer exerts the exact same horizontal force as in part (a).\n(c) Calculate the force required to accelerate the loaded wheelbarrow at the original rate of 2.4 m/s².\n(d) State Newton's First Law of Motion and explain, using the concept of inertia, why passengers in a speeding trotro pitch forward when the driver suddenly jams on the brakes.",
             "steps": [
-              "Part (a): Calculate MA: MA = Load / Effort = 800 N / 250 N = 3.2.",
-              "Part (b): Determine VR: For a standard block and tackle system, Velocity Ratio equals the total number of pulleys in the system: VR = 4.",
-              "Part (c): Calculate Efficiency: Efficiency (eta) = (MA / VR) x 100% = (3.2 / 4.0) x 100% = 0.80 x 100% = 80%."
+              "Step 1: Solve part (a) — Calculate the net horizontal force on the empty wheelbarrow:",
+              "State the formula: Newton's Second Law of Motion is F = m × a.",
+              "Identify the given parameters: Mass (m₁) = 15.0 kg; Acceleration (a₁) = 2.4 m/s².",
+              "Substitute into formula: F = 15.0 kg × 2.4 m/s² = 36.0 Newtons (N).",
+              "Step 2: Solve part (b) — Calculate the acceleration of the loaded wheelbarrow under the same force:",
+              "Identify parameters: Total mass (m₂) = 15.0 kg + 60.0 kg = 75.0 kg; Force (F) = 36.0 N.",
+              "Rearrange formula: a = F / m.",
+              "Substitute values: a₂ = 36.0 N / 75.0 kg = 0.48 m/s².",
+              "Scientific interpretation: Increasing the mass by a factor of 5 (from 15 kg to 75 kg) causes the acceleration to decrease by that same factor of 5 (from 2.4 m/s² to 0.48 m/s²), confirming that acceleration is inversely proportional to mass (a ∝ 1/m).",
+              "Step 3: Solve part (c) — Calculate force needed to maintain 2.4 m/s² with the loaded wheelbarrow:",
+              "Identify parameters: Mass (m₂) = 75.0 kg; Required acceleration (a) = 2.4 m/s².",
+              "Apply formula: F_required = 75.0 kg × 2.4 m/s² = 180.0 Newtons (N).",
+              "Step 4: Solve part (d) — State Newton's First Law and explain the passenger forward lurch:",
+              "Statement: Newton's First Law of Motion states that an object will continue in its state of rest or uniform motion in a straight line unless acted upon by an external net unbalanced force.",
+              "Explanation: Before braking, the passengers and the vehicle travel forward at the same speed. When the driver applies the brakes, the braking force stops the trotro. However, because the passengers possess inertia (the natural resistance of mass to changes in motion), their bodies tend to continue moving forward at the original velocity, causing them to pitch forward until restrained by seatbelts or friction."
             ],
-            "finalAnswer": "Examiner Tip: Note that MA and VR are ratios with no units. Efficiency is expressed as a percentage (80%)."
+            "finalAnswer": "Examiner Tip: Always state the formula F = ma and include correct SI units (N, kg, m/s²). When explaining inertia, candidates must explicitly mention that the body resists changes to its state of motion and continues forward due to its mass."
+          },
+          {
+            "id": "ex_b8_s13_2",
+            "title": "Worked Example 2: Laboratory Investigation of Magnetism, Lines of Force & Electromagnet Calibration",
+            "problem": "A Basic 8 science teacher sets up an experimental demonstration on magnetism and magnetic fields.\n\n(a) Outline the step-by-step procedure for magnetizing a high-carbon steel needle using the electrical solenoid method, and state the rule used to identify the North and South magnetic poles at each end of the coil.\n(b) Explain why magnetic lines of force never cross each other, and define what is meant by a magnetic neutral point.\n(c) Explain why magnetic repulsion is the only definitive and infallible test for identifying a permanent magnet.\n(d) An electromagnet constructed using 50 turns of copper wire around a soft iron core lifts a maximum load of 200 g of steel pins when powered by a 1.5 V cell. State three distinct physical modifications that would increase the lifting capacity of this electromagnet.",
+            "steps": [
+              "Step 1: Solve part (a) — Procedure for electrical magnetization via solenoid:",
+              "1. Place the steel needle inside a hollow cylindrical cardboard tube wound with many turns of insulated copper wire (a solenoid).",
+              "2. Connect the ends of the solenoid in series with a switch and a Direct Current (DC) power source (such as a battery).",
+              "3. Close the switch to pass DC through the coil for a few seconds, then open the switch and remove the needle.",
+              "Pole Identification Rule (The End Rule): Look directly at the end face of the coil. If the electric current flows in a clockwise direction, that end becomes a South pole (S). If the current flows in a counter-clockwise direction, that end becomes a North pole (N).",
+              "Step 2: Solve part (b) — Non-intersection of field lines and neutral point definition:",
+              "Why field lines never cross: The tangent to a magnetic line of force at any point indicates the unique direction of the magnetic field vector at that point. If two lines crossed, a magnetic compass placed at the intersection would have to point in two different directions at the same instant, which is physically impossible.",
+              "Magnetic Neutral Point: A point in space where the magnetic field of a magnet is equal in magnitude and directly opposite in direction to the ambient geomagnetic field of the Earth, resulting in a net magnetic field of zero (B_net = 0). A magnetic compass needle placed at a neutral point experiences no net alignment torque.",
+              "Step 3: Solve part (c) — Why repulsion is the only sure test for a permanent magnet:",
+              "An unmagnetized ferromagnetic object (like a soft iron nail) is attracted by both the North pole and the South pole of a magnet through magnetic induction.",
+              "However, mutual repulsion can only occur between two identical like poles (North repelling North, or South repelling South) of two genuine permanent magnets. Therefore, repulsion is the only definitive test.",
+              "Step 4: Solve part (d) — Three modifications to increase electromagnet lifting strength:",
+              "1. Increase the magnitude of electric current flowing through the coil (e.g., use a higher voltage battery).",
+              "2. Increase the total number of turns of wire wound around the core.",
+              "3. Use a soft iron core with higher magnetic permeability and optimal cross-sectional area."
+            ],
+            "finalAnswer": "Examiner Tip: Remember that Direct Current (DC) must be used for magnetization; Alternating Current (AC) will demagnetize the bar. For the test of magnetism, always write: 'Repulsion is the only sure test because attraction occurs between a magnet and unmagnetized magnetic materials.'"
+          },
+          {
+            "id": "ex_b8_s13_3",
+            "title": "Worked Example 3: Mechanical Advantage, Velocity Ratio, and Efficiency of Levers & Pulley Systems",
+            "problem": "A mechanic uses simple machines in a workshop to hoist engine components.\n\n(a) A heavy steel crowbar (Class 1 lever) of total length 1.50 m is used to lift a rock of weight 600 N. The pivot (fulcrum) is positioned 0.30 m from the rock. Assuming an ideal lever with 100% mechanical efficiency, calculate:\n    (i) The distance from the fulcrum to the applied effort.\n    (ii) The Velocity Ratio (VR) of the crowbar.\n    (iii) The minimum effort required to lift the rock.\n(b) Classify the following tools into their respective lever classes: (i) Scissors, (ii) Bottle opener, (iii) Sugar tongs, (iv) Wheelbarrow.\n(c) A movable pulley system has a Velocity Ratio of 2. An effort of 180 N is applied to lift a load of 270 N. Calculate the Mechanical Advantage (MA) and the percentage Efficiency (η) of the pulley system.",
+            "steps": [
+              "Step 1: Solve part (a) — Crowbar lever analysis:",
+              "(i) Distance from fulcrum to effort: Total length = 1.50 m. Load distance (d_L) = 0.30 m. Effort distance (d_E) = Total length - Load distance = 1.50 m - 0.30 m = 1.20 m.",
+              "(ii) Velocity Ratio (VR): VR = Distance moved by effort / Distance moved by load = Effort arm length / Load arm length = 1.20 m / 0.30 m = 4.0.",
+              "(iii) Minimum effort: For an ideal lever, Mechanical Advantage (MA) = Velocity Ratio (VR) = 4.0. MA = Load / Effort => Effort = Load / MA = 600 N / 4.0 = 150 N.",
+              "Step 2: Solve part (b) — Classify lever tools:",
+              "(i) Scissors: Class 1 Lever (Fulcrum in the middle between blade load and finger effort).",
+              "(ii) Bottle Opener: Class 2 Lever (Load cap in the middle between pivot fulcrum and lifting effort).",
+              "(iii) Sugar Tongs: Class 3 Lever (Effort applied in the middle between pivot end and gripping tips).",
+              "(iv) Wheelbarrow: Class 2 Lever (Load basin in the middle between wheel axle fulcrum and handle effort).",
+              "Step 3: Solve part (c) — Pulley MA and Efficiency calculations:",
+              "Calculate Mechanical Advantage: MA = Load / Effort = 270 N / 180 N = 1.5.",
+              "Calculate Efficiency: Efficiency (η) = (MA / VR) × 100% = (1.5 / 2.0) × 100% = 0.75 × 100% = 75.0%."
+            ],
+            "finalAnswer": "Examiner Tip: Velocity Ratio (VR) depends purely on machine geometry and dimensions, while Mechanical Advantage (MA) is affected by friction. Notice that Efficiency is always less than 100% in real machines due to friction and rope/pulley weight."
+          },
+          {
+            "id": "ex_b8_s13_4",
+            "title": "Worked Example 4: Architectural Decomposition of Compound Machines & Energy Conservation Strategy",
+            "problem": "A modern commercial agricultural cooperative in Ghana mechanizes its operations and implements a farm energy management program.\n\n(a) Define a complex (compound) machine and deconstruct a standard road bicycle into three distinct constituent simple machines, stating the specific operational role of each component.\n(b) Explain the mechanical roles of interlocking toothed gears in compound machines, specifically addressing velocity ratio, direction of rotation, and torque transmission.\n(c) State four major national socio-economic and environmental benefits of implementing energy conservation practices across Ghanaian communities.",
+            "steps": [
+              "Step 1: Solve part (a) — Complex machine definition and bicycle deconstruction:",
+              "Definition: A complex (compound) machine is a mechanical device formed by the coordinated integration of two or more simple machines working together to perform heavy-duty or sophisticated work.",
+              "Bicycle Deconstruction into 3 Simple Machines:",
+              "1. Wheel and Axle: The front and rear wheels on their central hubs convert rotational axle torque into linear forward motion, while the handlebars on the steering tube provide directional control.",
+              "2. Levers: The brake levers on the handlebars act as Class 1/Class 3 levers to magnify hand grip force onto brake cables, and the pedal crank arms act as rotating Class 1 levers to turn the drive axle.",
+              "3. Pulleys and Gears: The front chainring sprockets and rear freewheel gears connected by a roller chain act as a variable gear and pulley transmission system that transfers rotational drive from pedals to the rear wheel.",
+              "Step 2: Solve part (b) — Mechanical roles of interlocking toothed gears:",
+              "1. Speed Control (Velocity Ratio): Connecting a larger driver gear to a smaller driven gear increases rotational speed (high gear ratio for cruising).",
+              "2. Torque Multiplication: Connecting a smaller driver gear to a larger driven gear multiplies mechanical force/torque (low gear ratio for hill climbing).",
+              "3. Directional Reversal: Two directly interlocking spur gears rotate in opposite directions (clockwise driver turns driven gear counter-clockwise).",
+              "4. Angle of Transmission: Bevel gears with angled teeth allow rotational mechanical power to be transferred through a 90° angle (e.g., from driveshaft to rear axle in motor cars).",
+              "Step 3: Solve part (c) — Four national benefits of energy conservation in Ghana:",
+              "1. Financial Savings: Lowers monthly utility bills for domestic households and reduces operational overhead for manufacturing industries.",
+              "2. Environmental Protection: Decreases fossil fuel combustion at thermal plants (e.g., Aboadze), reducing greenhouse gas emissions ($CO_2$) and mitigating climate change.",
+              "3. National Energy Security: Reduces expensive foreign crude oil and gas imports, stabilizing the national currency and buffering against global energy price shocks.",
+              "4. Grid Stability and Reliability: Alleviates electrical overload on the national grid (GRIDCo and ECG), minimizing local power outages (dumsor) and extending equipment lifespans."
+            ],
+            "finalAnswer": "Examiner Tip: When deconstructing complex machines, always name the simple machine category (e.g., wheel and axle, lever, gear/pulley) and explain its specific physical contribution to the machine's operation."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b8_s13_1",
+              "id": "B8_MOT_F01",
               "difficulty": "low",
-              "prompt": "A wheelbarrow belongs to which class of levers, and which element is positioned in the middle?",
+              "prompt": "What is an immediate benefit of practicing energy conservation in the home?",
               "options": [
-                "First class; Fulcrum in middle",
-                "Second class; Load in middle",
-                "Third class; Effort in middle",
-                "Fourth class; Wheel in middle"
+                "A. Increasing electricity bills",
+                "B. Lowering utility bills and saving money",
+                "C. Depleting natural gas reserves faster",
+                "D. Making electrical appliances wear out overnight"
               ],
-              "correctAnswer": "Second class; Load in middle",
-              "hint": "The wheel is the pivot, the cargo is in the center, and the handles are the effort.",
-              "workedSolution": "In a second-class lever (like a wheelbarrow), the load is positioned between the fulcrum (wheel axle) and the effort (handles). Mechanical advantage is always greater than 1.",
+              "correctAnswer": "B. Lowering utility bills and saving money",
+              "hint": "Energy conservation reduces unnecessary electrical consumption, leading directly to lower utility bills and financial savings.",
+              "workedSolution": "Energy conservation reduces unnecessary electrical consumption, leading directly to lower utility bills and financial savings.",
               "points": 1,
-              "learningCompetency": "B8.4.3.1",
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F02",
+              "difficulty": "low",
+              "prompt": "How does using renewable energy sources such as solar and wind help the environment?",
+              "options": [
+                "A. By increasing carbon dioxide emissions",
+                "B. By reducing greenhouse gas emissions and mitigating climate change",
+                "C. By consuming more water for cooling",
+                "D. By destroying the ozone layer"
+              ],
+              "correctAnswer": "B. By reducing greenhouse gas emissions and mitigating climate change",
+              "hint": "Renewable sources like solar and wind generate clean power without burning fossil fuels, curbing greenhouse gas emissions.",
+              "workedSolution": "Renewable sources like solar and wind generate clean power without burning fossil fuels, curbing greenhouse gas emissions.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F03",
+              "difficulty": "low",
+              "prompt": "What is a magnetic field defined as?",
+              "options": [
+                "A. The wire coil through which current passes",
+                "B. The region around a magnet where its magnetic force or influence can be detected",
+                "C. The paint applied to the surface of a steel bar",
+                "D. An electric battery used in a car"
+              ],
+              "correctAnswer": "B. The region around a magnet where its magnetic force or influence can be detected",
+              "hint": "A magnetic field is the surrounding spatial region where magnetic attraction or repulsion is exerted on magnetic materials.",
+              "workedSolution": "A magnetic field is the surrounding spatial region where magnetic attraction or repulsion is exerted on magnetic materials.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F04",
+              "difficulty": "low",
+              "prompt": "In what direction do magnetic lines of force point externally around a bar magnet?",
+              "options": [
+                "A. From the South pole to the North pole",
+                "B. From the North pole to the South pole",
+                "C. From the center outward to the sides only",
+                "D. In completely random directions"
+              ],
+              "correctAnswer": "B. From the North pole to the South pole",
+              "hint": "By physical convention, external magnetic flux lines emerge from the North pole and curve into the South pole.",
+              "workedSolution": "By physical convention, external magnetic flux lines emerge from the North pole and curve into the South pole.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F05",
+              "difficulty": "low",
+              "prompt": "What happens when two like magnetic poles (such as two North poles) are brought close to each other?",
+              "options": [
+                "A. They attract each other strongly",
+                "B. They repel each other",
+                "C. They cancel each other's mass",
+                "D. They spark with blue light"
+              ],
+              "correctAnswer": "B. They repel each other",
+              "hint": "The fundamental law of magnetism states that like poles repel, whereas unlike poles attract.",
+              "workedSolution": "The fundamental law of magnetism states that like poles repel, whereas unlike poles attract.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F06",
+              "difficulty": "low",
+              "prompt": "What is a neutral point in a magnetic field?",
+              "options": [
+                "A. The point where magnetic attraction is strongest",
+                "B. A point where opposing magnetic fields are equal and opposite, resulting in zero net field",
+                "C. The exact center of a battery",
+                "D. The handle of an electromagnet"
+              ],
+              "correctAnswer": "B. A point where opposing magnetic fields are equal and opposite, resulting in zero net field",
+              "hint": "At a neutral point, equal and oppositely directed magnetic field vectors cancel each other completely, producing zero resultant force.",
+              "workedSolution": "At a neutral point, equal and oppositely directed magnetic field vectors cancel each other completely, producing zero resultant force.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F07",
+              "difficulty": "low",
+              "prompt": "Which of the following is the only definitive test for identifying a permanent magnet?",
+              "options": [
+                "A. Attraction to an iron nail",
+                "B. Repulsion of a known magnetic pole",
+                "C. Floating in water",
+                "D. Conducting an electric current"
+              ],
+              "correctAnswer": "B. Repulsion of a known magnetic pole",
+              "hint": "Unmagnetized ferromagnetic materials are attracted to both poles; only another magnet will experience repulsion at a matching pole.",
+              "workedSolution": "Unmagnetized ferromagnetic materials are attracted to both poles; only another magnet will experience repulsion at a matching pole.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F08",
+              "difficulty": "low",
+              "prompt": "Which method of magnetization involves placing a steel bar inside a wire coil carrying direct current?",
+              "options": [
+                "A. Stroking method",
+                "B. Electrical method using a DC solenoid",
+                "C. Hammering in Earth's field",
+                "D. Friction rubbing"
+              ],
+              "correctAnswer": "B. Electrical method using a DC solenoid",
+              "hint": "Passing a steady Direct Current through a solenoid creates an internal magnetic field that aligns the domains of a steel core.",
+              "workedSolution": "Passing a steady Direct Current through a solenoid creates an internal magnetic field that aligns the domains of a steel core.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F09",
+              "difficulty": "low",
+              "prompt": "What is an electromagnet?",
+              "options": [
+                "A. A permanent magnet made of wood",
+                "B. A temporary magnet created by passing electric current through a coil wound around a soft iron core",
+                "C. A battery that stores magnetic fluid",
+                "D. A plastic toy that floats in air"
+              ],
+              "correctAnswer": "B. A temporary magnet created by passing electric current through a coil wound around a soft iron core",
+              "hint": "Electromagnets consist of an insulated wire coil wrapped around a soft iron core that exhibits magnetism only while current flows.",
+              "workedSolution": "Electromagnets consist of an insulated wire coil wrapped around a soft iron core that exhibits magnetism only while current flows.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F10",
+              "difficulty": "low",
+              "prompt": "Which of the following increases the strength of an electromagnet?",
+              "options": [
+                "A. Reducing the number of wire turns on the coil",
+                "B. Increasing the magnitude of current flowing through the coil",
+                "C. Removing the soft iron core entirely",
+                "D. Using plastic wire instead of copper"
+              ],
+              "correctAnswer": "B. Increasing the magnitude of current flowing through the coil",
+              "hint": "Electromagnetic field strength is directly proportional to both coil current and the total number of wire turns.",
+              "workedSolution": "Electromagnetic field strength is directly proportional to both coil current and the total number of wire turns.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F11",
+              "difficulty": "low",
+              "prompt": "Which household device makes direct practical use of an electromagnet?",
+              "options": [
+                "A. Ordinary plastic ruler",
+                "B. Electric door bell",
+                "C. Glass window pane",
+                "D. Wooden kitchen spoon"
+              ],
+              "correctAnswer": "B. Electric door bell",
+              "hint": "Electric door bells use an electromagnet to repeatedly pull an iron armature and hammer against a chime.",
+              "workedSolution": "Electric door bells use an electromagnet to repeatedly pull an iron armature and hammer against a chime.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F12",
+              "difficulty": "low",
+              "prompt": "What is Newton's First Law of Motion also commonly called?",
+              "options": [
+                "A. Law of Universal Gravitation",
+                "B. Law of Inertia",
+                "C. Law of Action and Reaction",
+                "D. Law of Conservation of Energy"
+              ],
+              "correctAnswer": "B. Law of Inertia",
+              "hint": "Newton's First Law defines inertia—the tendency of matter to resist any change to its state of rest or uniform motion.",
+              "workedSolution": "Newton's First Law defines inertia—the tendency of matter to resist any change to its state of rest or uniform motion.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F13",
+              "difficulty": "low",
+              "prompt": "According to Newton's First Law of Motion, what will an object at rest do if no external force acts on it?",
+              "options": [
+                "A. Start moving in circles",
+                "B. Remain at rest",
+                "C. Accelerate toward the sky",
+                "D. Disintegrate into dust"
+              ],
+              "correctAnswer": "B. Remain at rest",
+              "hint": "Without an unbalanced net external force, a stationary body maintains its state of rest indefinitely.",
+              "workedSolution": "Without an unbalanced net external force, a stationary body maintains its state of rest indefinitely.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F14",
+              "difficulty": "low",
+              "prompt": "What is the mathematical equation for Newton's Second Law of Motion?",
+              "options": [
+                "A. $F = m/a$",
+                "B. $F = ma$",
+                "C. $F = m + a$",
+                "D. $F = a/m$"
+              ],
+              "correctAnswer": "B. $F = ma$",
+              "hint": "Newton's Second Law states that net force equals mass multiplied by acceleration ($F = ma$).",
+              "workedSolution": "Newton's Second Law states that net force equals mass multiplied by acceleration ($F = ma$).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F15",
+              "difficulty": "low",
+              "prompt": "What is the standard SI unit of force?",
+              "options": [
+                "A. Joule (J)",
+                "B. Newton (N)",
+                "C. Kilogram (kg)",
+                "D. Watt (W)"
+              ],
+              "correctAnswer": "B. Newton (N)",
+              "hint": "Force is measured in Newtons (N), where $1\\text{ N} = 1\\text{ kg}\\cdot\\text{m/s}^2$.",
+              "workedSolution": "Force is measured in Newtons (N), where $1\\text{ N} = 1\\text{ kg}\\cdot\\text{m/s}^2$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F16",
+              "difficulty": "low",
+              "prompt": "If the mass of an object is kept constant, what happens to its acceleration when the applied net force is doubled?",
+              "options": [
+                "A. Acceleration drops to zero",
+                "B. Acceleration is doubled",
+                "C. Acceleration is halved",
+                "D. Acceleration quadruples"
+              ],
+              "correctAnswer": "B. Acceleration is doubled",
+              "hint": "Acceleration is directly proportional to applied force ($a \\propto F$); doubling force doubles acceleration.",
+              "workedSolution": "Acceleration is directly proportional to applied force ($a \\propto F$); doubling force doubles acceleration.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F17",
+              "difficulty": "low",
+              "prompt": "Why is it harder to push and accelerate a 400 kg boulder than a 40 kg cart?",
+              "options": [
+                "A. The heavier boulder has greater mass, resulting in lower acceleration for the same force ($a = F/m$)",
+                "B. The boulder has zero gravity",
+                "C. The cart has no inertia",
+                "D. Mass does not affect acceleration"
+              ],
+              "correctAnswer": "A. The heavier boulder has greater mass, resulting in lower acceleration for the same force ($a = F/m$)",
+              "hint": "Acceleration is inversely proportional to mass; a tenfold increase in mass requires ten times the force to match acceleration.",
+              "workedSolution": "Acceleration is inversely proportional to mass; a tenfold increase in mass requires ten times the force to match acceleration.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F18",
+              "difficulty": "low",
+              "prompt": "What does Newton's Third Law of Motion state regarding action and reaction forces?",
+              "options": [
+                "A. Action is always greater than reaction",
+                "B. For every action, there is an equal and opposite reaction",
+                "C. Action forces act alone without any reaction",
+                "D. Reaction forces cancel action forces on the same object"
+              ],
+              "correctAnswer": "B. For every action, there is an equal and opposite reaction",
+              "hint": "Newton's Third Law dictates that forces always occur in matched pairs: equal in magnitude and opposite in direction on interacting bodies.",
+              "workedSolution": "Newton's Third Law dictates that forces always occur in matched pairs: equal in magnitude and opposite in direction on interacting bodies.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F19",
+              "difficulty": "low",
+              "prompt": "What is a simple machine defined as?",
+              "options": [
+                "A. An electronic computer that browses the internet",
+                "B. A mechanical device that makes work easier by changing the direction or magnitude of a force",
+                "C. A diesel engine with thousands of moving parts",
+                "D. An electric battery powering a lamp"
+              ],
+              "correctAnswer": "B. A mechanical device that makes work easier by changing the direction or magnitude of a force",
+              "hint": "Simple machines are basic mechanical tools that provide mechanical advantage with few or no moving parts.",
+              "workedSolution": "Simple machines are basic mechanical tools that provide mechanical advantage with few or no moving parts.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F20",
+              "difficulty": "low",
+              "prompt": "How many traditional categories of simple machines are recognized in classical mechanics?",
+              "options": [
+                "A. 2 categories",
+                "B. 4 categories",
+                "C. 6 categories",
+                "D. 12 categories"
+              ],
+              "correctAnswer": "C. 6 categories",
+              "hint": "The six classical simple machines are the lever, pulley, inclined plane, wedge, screw, and wheel and axle.",
+              "workedSolution": "The six classical simple machines are the lever, pulley, inclined plane, wedge, screw, and wheel and axle.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F21",
+              "difficulty": "low",
+              "prompt": "What are the three essential working parts of any lever system?",
+              "options": [
+                "A. Battery, wire, and bulb",
+                "B. Fulcrum, load, and effort",
+                "C. Magnet, coil, and core",
+                "D. Piston, cylinder, and valve"
+              ],
+              "correctAnswer": "B. Fulcrum, load, and effort",
+              "hint": "All levers operate around a pivot point (fulcrum), where an applied force (effort) moves a resistive force (load).",
+              "workedSolution": "All levers operate around a pivot point (fulcrum), where an applied force (effort) moves a resistive force (load).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F22",
+              "difficulty": "low",
+              "prompt": "What is the fixed pivot point around which a lever bar rotates called?",
+              "options": [
+                "A. Effort arm",
+                "B. Fulcrum",
+                "C. Load resistance",
+                "D. Dielectric"
+              ],
+              "correctAnswer": "B. Fulcrum",
+              "hint": "The fulcrum is the physical axis of rotation supporting the lever beam.",
+              "workedSolution": "The fulcrum is the physical axis of rotation supporting the lever beam.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F23",
+              "difficulty": "low",
+              "prompt": "Which class of lever has the fulcrum positioned in the middle, between the load and the effort?",
+              "options": [
+                "A. First-class lever",
+                "B. Second-class lever",
+                "C. Third-class lever",
+                "D. Fourth-class lever"
+              ],
+              "correctAnswer": "A. First-class lever",
+              "hint": "First-class levers arrange the fulcrum centrally between the applied effort and the output load.",
+              "workedSolution": "First-class levers arrange the fulcrum centrally between the applied effort and the output load.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F24",
+              "difficulty": "low",
+              "prompt": "Which of the following everyday tools is a first-class lever?",
+              "options": [
+                "A. Wheelbarrow",
+                "B. Pair of scissors",
+                "C. Fishing rod",
+                "D. Tweezers"
+              ],
+              "correctAnswer": "B. Pair of scissors",
+              "hint": "Scissors pivot around a central hinge pin (fulcrum), with hands supplying effort on one side and blades cutting the load on the other.",
+              "workedSolution": "Scissors pivot around a central hinge pin (fulcrum), with hands supplying effort on one side and blades cutting the load on the other.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F25",
+              "difficulty": "low",
+              "prompt": "Which class of lever has the load situated in the middle, between the fulcrum and the effort?",
+              "options": [
+                "A. First-class lever",
+                "B. Second-class lever",
+                "C. Third-class lever",
+                "D. Null lever"
+              ],
+              "correctAnswer": "B. Second-class lever",
+              "hint": "Second-class levers place the resistive load between the pivot fulcrum and the point of applied effort.",
+              "workedSolution": "Second-class levers place the resistive load between the pivot fulcrum and the point of applied effort.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F26",
+              "difficulty": "low",
+              "prompt": "Which of the following is a second-class lever?",
+              "options": [
+                "A. Seesaw",
+                "B. Wheelbarrow",
+                "C. Human forearm",
+                "D. Pliers"
+              ],
+              "correctAnswer": "B. Wheelbarrow",
+              "hint": "A wheelbarrow pivots on its front wheel axle (fulcrum), with cargo (load) centered between the wheel and lifting handles (effort).",
+              "workedSolution": "A wheelbarrow pivots on its front wheel axle (fulcrum), with cargo (load) centered between the wheel and lifting handles (effort).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F27",
+              "difficulty": "low",
+              "prompt": "Which class of lever has the effort applied in the middle, between the fulcrum and the load?",
+              "options": [
+                "A. First-class lever",
+                "B. Second-class lever",
+                "C. Third-class lever",
+                "D. Zero-class lever"
+              ],
+              "correctAnswer": "C. Third-class lever",
+              "hint": "Third-class levers apply input effort between the stationary fulcrum and the terminal load.",
+              "workedSolution": "Third-class levers apply input effort between the stationary fulcrum and the terminal load.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F28",
+              "difficulty": "low",
+              "prompt": "Which of the following tools operates as a third-class lever?",
+              "options": [
+                "A. Fishing rod",
+                "B. Bottle opener",
+                "C. Crowbar",
+                "D. Nutcracker"
+              ],
+              "correctAnswer": "A. Fishing rod",
+              "hint": "In a fishing rod, the base hand acts as the fulcrum, the forward hand applies effort in the center, and the tip lifts the fish (load).",
+              "workedSolution": "In a fishing rod, the base hand acts as the fulcrum, the forward hand applies effort in the center, and the tip lifts the fish (load).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F29",
+              "difficulty": "low",
+              "prompt": "What is a simple pulley composed of?",
+              "options": [
+                "A. A flat triangular piece of wood",
+                "B. A grooved wheel carrying a flexible rope or cable",
+                "C. A threaded metal rod",
+                "D. A rotating magnet"
+              ],
+              "correctAnswer": "B. A grooved wheel carrying a flexible rope or cable",
+              "hint": "A pulley consists of a grooved rim wheel that guides a rope, belt, or chain to transmit tensile force.",
+              "workedSolution": "A pulley consists of a grooved rim wheel that guides a rope, belt, or chain to transmit tensile force.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F30",
+              "difficulty": "low",
+              "prompt": "What is the primary advantage of using a single fixed pulley to lift a bucket of water from a well?",
+              "options": [
+                "A. It halves the effort force needed",
+                "B. It changes the direction of the applied force, allowing the user to pull downward with gravity",
+                "C. It makes water lighter",
+                "D. It lifts water with zero effort"
+              ],
+              "correctAnswer": "B. It changes the direction of the applied force, allowing the user to pull downward with gravity",
+              "hint": "A fixed pulley has a mechanical advantage of 1; it does not amplify force, but redirects the pulling force downward.",
+              "workedSolution": "A fixed pulley has a mechanical advantage of 1; it does not amplify force, but redirects the pulling force downward.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F31",
+              "difficulty": "low",
+              "prompt": "What mechanical advantage does a single movable pulley provide when lifting a load?",
+              "options": [
+                "A. $MA = 1$",
+                "B. $MA = 2$",
+                "C. $MA = 10$",
+                "D. $MA = 0.5$"
+              ],
+              "correctAnswer": "B. $MA = 2$",
+              "hint": "A single movable pulley splits the load across two supporting rope segments, cutting the required effort force in half ($MA = 2$).",
+              "workedSolution": "A single movable pulley splits the load across two supporting rope segments, cutting the required effort force in half ($MA = 2$).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F32",
+              "difficulty": "low",
+              "prompt": "What is an inclined plane?",
+              "options": [
+                "A. A flat surface tilted at an angle used to raise loads with less force over a longer distance",
+                "B. A grooved wheel that spins on a shaft",
+                "C. A magnet wrapped in copper wire",
+                "D. A sharp cutting instrument"
+              ],
+              "correctAnswer": "A. A flat surface tilted at an angle used to raise loads with less force over a longer distance",
+              "hint": "An inclined plane is a sloping ramp that reduces the lifting effort required by distributing work over a longer incline path.",
+              "workedSolution": "An inclined plane is a sloping ramp that reduces the lifting effort required by distributing work over a longer incline path.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F33",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of an inclined plane?",
+              "options": [
+                "A. Wheelchair ramp",
+                "B. Claw hammer",
+                "C. Well pulley",
+                "D. Screwdriver"
+              ],
+              "correctAnswer": "A. Wheelchair ramp",
+              "hint": "Wheelchair ramps, staircases, and loading chutes are classic functional examples of inclined planes.",
+              "workedSolution": "Wheelchair ramps, staircases, and loading chutes are classic functional examples of inclined planes.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F34",
+              "difficulty": "low",
+              "prompt": "What simple machine consists of two inclined planes placed back-to-back, used to split or cut materials?",
+              "options": [
+                "A. Wedge",
+                "B. Screw",
+                "C. Wheel and axle",
+                "D. Pulley"
+              ],
+              "correctAnswer": "A. Wedge",
+              "hint": "A wedge combines two sloping planes into a sharp edge, converting downward drive into lateral splitting force.",
+              "workedSolution": "A wedge combines two sloping planes into a sharp edge, converting downward drive into lateral splitting force.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F35",
+              "difficulty": "low",
+              "prompt": "Which of the following tools operates as a wedge?",
+              "options": [
+                "A. Woodcutter's axe",
+                "B. Bicycle pedal",
+                "C. Light bulb thread",
+                "D. Seesaw"
+              ],
+              "correctAnswer": "A. Woodcutter's axe",
+              "hint": "An axe blade is a wedge that translates blunt swing impact into perpendicular cleavage forces to split wood.",
+              "workedSolution": "An axe blade is a wedge that translates blunt swing impact into perpendicular cleavage forces to split wood.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F36",
+              "difficulty": "low",
+              "prompt": "How is a mechanical screw related to an inclined plane?",
+              "options": [
+                "A. A screw is an inclined plane wrapped spirally around a central cylinder or cone",
+                "B. A screw is a lever with two fulcrums",
+                "C. A screw has no connection to an inclined plane",
+                "D. A screw is a special type of magnet"
+              ],
+              "correctAnswer": "A. A screw is an inclined plane wrapped spirally around a central cylinder or cone",
+              "hint": "The helical thread of a screw is an inclined plane wound spirally around a cylindrical core.",
+              "workedSolution": "The helical thread of a screw is an inclined plane wound spirally around a cylindrical core.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F37",
+              "difficulty": "low",
+              "prompt": "Which simple machine consists of a large circular wheel rigidly attached to a smaller central shaft?",
+              "options": [
+                "A. Wheel and axle",
+                "B. Double wedge",
+                "C. First-class lever",
+                "D. Fixed pulley"
+              ],
+              "correctAnswer": "A. Wheel and axle",
+              "hint": "A wheel and axle locks a wider wheel to a narrower shaft, amplifying torque or rotational speed.",
+              "workedSolution": "A wheel and axle locks a wider wheel to a narrower shaft, amplifying torque or rotational speed.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F38",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a wheel and axle?",
+              "options": [
+                "A. Car steering wheel",
+                "B. Kitchen knife",
+                "C. Bottle cork",
+                "D. Staircase"
+              ],
+              "correctAnswer": "A. Car steering wheel",
+              "hint": "Turning the larger steering wheel applies amplified torque to rotate the narrower steering column shaft.",
+              "workedSolution": "Turning the larger steering wheel applies amplified torque to rotate the narrower steering column shaft.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F39",
+              "difficulty": "low",
+              "prompt": "What are gears in mechanics?",
+              "options": [
+                "A. Toothed wheels that mesh together to transfer rotational force and motion",
+                "B. Smooth ropes used on pulleys",
+                "C. Metal wedges used to split stone",
+                "D. Long wooden bars used as levers"
+              ],
+              "correctAnswer": "A. Toothed wheels that mesh together to transfer rotational force and motion",
+              "hint": "Gears are wheels with perimeter teeth that mesh to transmit rotary motion, alter speeds, or change torque.",
+              "workedSolution": "Gears are wheels with perimeter teeth that mesh to transmit rotary motion, alter speeds, or change torque.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F40",
+              "difficulty": "low",
+              "prompt": "What is a primary functional purpose of interlocking gear systems?",
+              "options": [
+                "A. Changing the speed, direction, or torque of rotational motion",
+                "B. Converting mechanical motion into magnetic fields",
+                "C. Stopping all machines from moving",
+                "D. Generating electrical heat"
+              ],
+              "correctAnswer": "A. Changing the speed, direction, or torque of rotational motion",
+              "hint": "Gears allow machinery to step up speed, multiply rotational torque, or reverse rotation direction.",
+              "workedSolution": "Gears allow machinery to step up speed, multiply rotational torque, or reverse rotation direction.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F41",
+              "difficulty": "low",
+              "prompt": "What is a complex (compound) machine defined as?",
+              "options": [
+                "A. A machine with only one single moving part",
+                "B. A machine formed by combining two or more simple machines working together",
+                "C. A tool made entirely of soft wood",
+                "D. An unmagnetized iron bar"
+              ],
+              "correctAnswer": "B. A machine formed by combining two or more simple machines working together",
+              "hint": "Complex machines integrate multiple simple machine mechanisms (levers, gears, axles) into a coordinated system.",
+              "workedSolution": "Complex machines integrate multiple simple machine mechanisms (levers, gears, axles) into a coordinated system.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F42",
+              "difficulty": "low",
+              "prompt": "Which of the following is an everyday example of a complex compound machine?",
+              "options": [
+                "A. Bicycle",
+                "B. Single wooden wedge",
+                "C. Steel crowbar",
+                "D. Ramp"
+              ],
+              "correctAnswer": "A. Bicycle",
+              "hint": "A bicycle combines levers (pedals/brakes), wheels and axles (wheels), and gears/pulleys (chain drive).",
+              "workedSolution": "A bicycle combines levers (pedals/brakes), wheels and axles (wheels), and gears/pulleys (chain drive).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F43",
+              "difficulty": "low",
+              "prompt": "Which simple machines are combined to form a pedal bicycle?",
+              "options": [
+                "A. Wheel and axle, levers, and gears/chain pulley system",
+                "B. Wedges and screws only",
+                "C. Electromagnets and solenoids only",
+                "D. Inclined planes only"
+              ],
+              "correctAnswer": "A. Wheel and axle, levers, and gears/chain pulley system",
+              "hint": "Bicycles integrate wheels and axles, lever pedals/calipers, and interlocking chain-sprocket gears.",
+              "workedSolution": "Bicycles integrate wheels and axles, lever pedals/calipers, and interlocking chain-sprocket gears.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F44",
+              "difficulty": "low",
+              "prompt": "Which agricultural compound machine is used on farms for plowing fields and pulling heavy implements?",
+              "options": [
+                "A. Farm tractor",
+                "B. Hand hoe",
+                "C. Wooden dibber",
+                "D. Pruning shear"
+              ],
+              "correctAnswer": "A. Farm tractor",
+              "hint": "Tractors are complex machines combining engines, hydraulic levers, gearboxes, and large wheel-axle assemblies.",
+              "workedSolution": "Tractors are complex machines combining engines, hydraulic levers, gearboxes, and large wheel-axle assemblies.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F45",
+              "difficulty": "low",
+              "prompt": "Which mechanical device is commonly used by cocoa farmers to spray liquid pesticides as fine mists?",
+              "options": [
+                "A. Knapsack mist blower (motorized sprayer)",
+                "B. Combine harvester",
+                "C. Electric bread toaster",
+                "D. Sewing machine"
+              ],
+              "correctAnswer": "A. Knapsack mist blower (motorized sprayer)",
+              "hint": "Knapsack mist blowers integrate a two-stroke engine, fan wheel-and-axle, and pressure pump to aerosolize crop sprays.",
+              "workedSolution": "Knapsack mist blowers integrate a two-stroke engine, fan wheel-and-axle, and pressure pump to aerosolize crop sprays.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F46",
+              "difficulty": "low",
+              "prompt": "Which complex machine uses a wheel and axle, gears, and reciprocating levers to stitch fabrics together?",
+              "options": [
+                "A. Sewing machine",
+                "B. Wheelbarrow",
+                "C. Bicycle dynamo",
+                "D. Fixed pulley"
+              ],
+              "correctAnswer": "A. Sewing machine",
+              "hint": "Sewing machines use rotating handwheels/motors, internal bevel gears, and lever linkages to drive needle reciprocation.",
+              "workedSolution": "Sewing machines use rotating handwheels/motors, internal bevel gears, and lever linkages to drive needle reciprocation.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F47",
+              "difficulty": "low",
+              "prompt": "How do complex diagnostic machines like MRI scanners and X-ray machines improve healthcare?",
+              "options": [
+                "A. By enabling non-invasive, highly accurate internal medical imaging for disease detection",
+                "B. By replacing clean drinking water in hospitals",
+                "C. By generating domestic mains electricity",
+                "D. By eliminating the need for trained doctors"
+              ],
+              "correctAnswer": "A. By enabling non-invasive, highly accurate internal medical imaging for disease detection",
+              "hint": "Medical imaging machinery provides precise anatomical visualization, facilitating early and accurate clinical diagnosis.",
+              "workedSolution": "Medical imaging machinery provides precise anatomical visualization, facilitating early and accurate clinical diagnosis.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F48",
+              "difficulty": "low",
+              "prompt": "How does a domestic washing machine improve human quality of life?",
+              "options": [
+                "A. By saving time and physical effort through automated washing and spinning cycles",
+                "B. By generating chemical food energy",
+                "C. By making clothes permanently waterproof",
+                "D. By converting water into diesel"
+              ],
+              "correctAnswer": "A. By saving time and physical effort through automated washing and spinning cycles",
+              "hint": "Washing machines automate laundry chores, significantly reducing human labor time and physical fatigue.",
+              "workedSolution": "Washing machines automate laundry chores, significantly reducing human labor time and physical fatigue.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F49",
+              "difficulty": "low",
+              "prompt": "What is an important safety benefit of utilizing robotic complex machines in hazardous environments?",
+              "options": [
+                "A. They can execute dangerous operations (like defusing explosive bombs or toxic waste handling) without risking human life",
+                "B. They work without requiring energy",
+                "C. They prevent weather storms",
+                "D. They turn chemicals into drinking water"
+              ],
+              "correctAnswer": "A. They can execute dangerous operations (like defusing explosive bombs or toxic waste handling) without risking human life",
+              "hint": "Specialized robots handle hazardous tasks in toxic, radioactive, or explosive environments, shielding human operators from harm.",
+              "workedSolution": "Specialized robots handle hazardous tasks in toxic, radioactive, or explosive environments, shielding human operators from harm.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_F50",
+              "difficulty": "low",
+              "prompt": "How do assistive mechanical devices (such as wheelchairs and motorized prosthetic limbs) enhance human life?",
+              "options": [
+                "A. By providing mobility, independence, and accessibility to individuals with physical disabilities",
+                "B. By increasing the weight of the human body",
+                "C. By stopping human muscles from working",
+                "D. By replacing the need for healthy food"
+              ],
+              "correctAnswer": "A. By providing mobility, independence, and accessibility to individuals with physical disabilities",
+              "hint": "Assistive mobility devices restore physical autonomy and social accessibility for persons with physical impairments.",
+              "workedSolution": "Assistive mobility devices restore physical autonomy and social accessibility for persons with physical impairments.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b8_s13_2",
+              "id": "B8_MOT_I01",
               "difficulty": "medium",
-              "prompt": "Why is the mechanical efficiency of any practical machine always strictly less than 100%?",
+              "prompt": "Why does demagnetization occur when a permanent bar magnet is heated strongly to red heat or hammered vigorously?",
               "options": [
-                "Energy is destroyed inside the machine",
-                "Part of the input work is wasted overcoming friction and moving machine parts as heat",
-                "Gravity pulls machines down",
-                "Electric current always stops machines"
+                "A. Thermal kinetic agitation and mechanical shock disrupt the orderly alignment of magnetic domains, randomizing their magnetic dipole vectors",
+                "B. The magnet's physical mass evaporates into gas",
+                "C. Heat turns the steel into copper",
+                "D. The Earth's magnetic field dissolves the metal"
               ],
-              "correctAnswer": "Part of the input work is wasted overcoming friction and moving machine parts as heat",
-              "hint": "Friction between moving surfaces converts useful work into waste heat.",
-              "workedSolution": "Frictional resistance between moving parts and the gravitational weight of the machine itself consume part of the input work, converting it into wasted thermal energy. Thus, MA is always less than VR.",
+              "correctAnswer": "A. Thermal kinetic agitation and mechanical shock disrupt the orderly alignment of magnetic domains, randomizing their magnetic dipole vectors",
+              "hint": "Excessive thermal vibration or impact shock shakes magnetic domains out of parallel alignment, destroying net remanent magnetization.",
+              "workedSolution": "Excessive thermal vibration or impact shock shakes magnetic domains out of parallel alignment, destroying net remanent magnetization.",
               "points": 1,
-              "learningCompetency": "B8.4.3.1",
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I02",
+              "difficulty": "medium",
+              "prompt": "Why is soft iron preferred over hard steel as the core material of an industrial electromagnet?",
+              "options": [
+                "A. Soft iron magnetizes and demagnetizes quickly with low retentivity, whereas steel retains permanent magnetization after current stops",
+                "B. Soft iron has a higher melting point than steel",
+                "C. Steel does not conduct magnetic flux lines",
+                "D. Soft iron is completely non-magnetic"
+              ],
+              "correctAnswer": "A. Soft iron magnetizes and demagnetizes quickly with low retentivity, whereas steel retains permanent magnetization after current stops",
+              "hint": "Soft iron exhibits high magnetic permeability and low coercivity, ensuring strong temporary magnetism that switches off instantly with current.",
+              "workedSolution": "Soft iron exhibits high magnetic permeability and low coercivity, ensuring strong temporary magnetism that switches off instantly with current.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I03",
+              "difficulty": "medium",
+              "prompt": "In the electrical stroking method of magnetization, what magnetic pole is created at the end of a steel rod where the magnet's North pole leaves the stroke?",
+              "options": [
+                "A. South pole",
+                "B. North pole",
+                "C. Neutral point",
+                "D. Unmagnetized point"
+              ],
+              "correctAnswer": "A. South pole",
+              "hint": "By magnetic induction, the trailing magnetic pole attracts opposite dipoles; a departing North pole leaves behind an induced South pole.",
+              "workedSolution": "By magnetic induction, the trailing magnetic pole attracts opposite dipoles; a departing North pole leaves behind an induced South pole.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I04",
+              "difficulty": "medium",
+              "prompt": "A net force of $F = 50\\text{ N}$ acts on a cart of mass $m = 10\\text{ kg}$. Calculate the resulting acceleration of the cart.",
+              "options": [
+                "A. 0.2 m/s²",
+                "B. 5.0 m/s²",
+                "C. 50.0 m/s²",
+                "D. 500.0 m/s²"
+              ],
+              "correctAnswer": "B. 5.0 m/s²",
+              "hint": "From Newton's Second Law: $a = F / m = 50\\text{ N} / 10\\text{ kg} = 5.0\\text{ m/s}^2$.",
+              "workedSolution": "From Newton's Second Law: $a = F / m = 50\\text{ N} / 10\\text{ kg} = 5.0\\text{ m/s}^2$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I05",
+              "difficulty": "medium",
+              "prompt": "What force is required to accelerate a $1,200\\text{ kg}$ motor car at a rate of $2.5\\text{ m/s}^2$?",
+              "options": [
+                "A. 480 N",
+                "B. 2,400 N",
+                "C. 3,000 N",
+                "D. 4,800 N"
+              ],
+              "correctAnswer": "C. 3,000 N",
+              "hint": "From Newton's Second Law: $F = ma = 1,200\\text{ kg} \\times 2.5\\text{ m/s}^2 = 3,000\\text{ N}$.",
+              "workedSolution": "From Newton's Second Law: $F = ma = 1,200\\text{ kg} \\times 2.5\\text{ m/s}^2 = 3,000\\text{ N}$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I06",
+              "difficulty": "medium",
+              "prompt": "Why does a standing passenger lurch forward when a moving bus suddenly applies emergency brakes?",
+              "options": [
+                "A. Due to inertia, the passenger's body tends to continue moving forward at the bus's original velocity (Newton's First Law)",
+                "B. The brakes pull the passenger forward magnetically",
+                "C. Gravity increases inside braking vehicles",
+                "D. Friction pushes the passenger toward the driver"
+              ],
+              "correctAnswer": "A. Due to inertia, the passenger's body tends to continue moving forward at the bus's original velocity (Newton's First Law)",
+              "hint": "Newton's First Law dictates that an object in motion maintains its velocity; the passenger's upper body continues moving forward when wheels lock.",
+              "workedSolution": "Newton's First Law dictates that an object in motion maintains its velocity; the passenger's upper body continues moving forward when wheels lock.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I07",
+              "difficulty": "medium",
+              "prompt": "How does a rocket engine generate forward thrust in the vacuum of outer space?",
+              "options": [
+                "A. High-velocity exhaust gases pushed backward exert an equal and opposite forward reaction force on the rocket (Newton's Third Law)",
+                "B. Rocket exhaust pushes against empty space dust",
+                "C. Solar winds drag the rocket forward",
+                "D. Gravity pulls the rocket backward into orbit"
+              ],
+              "correctAnswer": "A. High-velocity exhaust gases pushed backward exert an equal and opposite forward reaction force on the rocket (Newton's Third Law)",
+              "hint": "Action and reaction apply: the rocket engine accelerates burning propellant backward (action), and the gas exerts an equal forward thrust (reaction).",
+              "workedSolution": "Action and reaction apply: the rocket engine accelerates burning propellant backward (action), and the gas exerts an equal forward thrust (reaction).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I08",
+              "difficulty": "medium",
+              "prompt": "Why is the mechanical advantage ($MA$) of a third-class lever always less than 1 ($MA < 1$)?",
+              "options": [
+                "A. The effort arm is always shorter than the load arm ($d_E < d_L$), requiring greater input force to gain speed and distance",
+                "B. Third-class levers have no fulcrum",
+                "C. Friction destroys 100% of the effort",
+                "D. The load is always placed behind the operator"
+              ],
+              "correctAnswer": "A. The effort arm is always shorter than the load arm ($d_E < d_L$), requiring greater input force to gain speed and distance",
+              "hint": "Because the effort is applied closer to the fulcrum than the load, mechanical advantage is less than 1, trading force for distance.",
+              "workedSolution": "Because the effort is applied closer to the fulcrum than the load, mechanical advantage is less than 1, trading force for distance.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I09",
+              "difficulty": "medium",
+              "prompt": "What is the Mechanical Advantage ($MA = \\text{Load} / \\text{Effort}$) of a crowbar if an effort of $50\\text{ N}$ lifts a heavy stone load of $300\\text{ N}$?",
+              "options": [
+                "A. 0.17",
+                "B. 6.0",
+                "C. 15.0",
+                "D. 150.0"
+              ],
+              "correctAnswer": "B. 6.0",
+              "hint": "$MA = \\text{Load} / \\text{Effort} = 300\\text{ N} / 50\\text{ N} = 6.0$.",
+              "workedSolution": "$MA = \\text{Load} / \\text{Effort} = 300\\text{ N} / 50\\text{ N} = 6.0$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I10",
+              "difficulty": "medium",
+              "prompt": "Why does a long ramp make it easier to roll a heavy oil barrel onto a truck bed compared to lifting it vertically?",
+              "options": [
+                "A. The inclined plane increases distance to reduce the required input effort force ($W = F \\times d$)",
+                "B. The ramp eliminates the earth's gravitational pull",
+                "C. The barrel loses half its mass on a slope",
+                "D. Ramps create kinetic energy out of nothing"
+              ],
+              "correctAnswer": "A. The inclined plane increases distance to reduce the required input effort force ($W = F \\times d$)",
+              "hint": "Work remains constant (neglecting friction); extending the travel distance along an incline proportionally reduces the required lifting force.",
+              "workedSolution": "Work remains constant (neglecting friction); extending the travel distance along an incline proportionally reduces the required lifting force.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I11",
+              "difficulty": "medium",
+              "prompt": "If a driving gear with 40 teeth meshes with and drives a smaller driven gear with 10 teeth, what is the gear ratio and rotational speed effect?",
+              "options": [
+                "A. The driven gear rotates 4 times faster than the driving gear ($4:1$ speed multiplier)",
+                "B. The driven gear rotates 4 times slower",
+                "C. Both gears rotate at the exact same speed",
+                "D. The driven gear rotates in the same direction at half speed"
+              ],
+              "correctAnswer": "A. The driven gear rotates 4 times faster than the driving gear ($4:1$ speed multiplier)",
+              "hint": "Gear speed ratio equals teeth on driver divided by teeth on driven ($40/10 = 4$); the smaller gear turns four revolutions per single driver turn.",
+              "workedSolution": "Gear speed ratio equals teeth on driver divided by teeth on driven ($40/10 = 4$); the smaller gear turns four revolutions per single driver turn.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I12",
+              "difficulty": "medium",
+              "prompt": "What is the Velocity Ratio ($VR$) of a block-and-tackle pulley system supporting a movable load with 4 rope strands?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 4",
+                "D. 8"
+              ],
+              "correctAnswer": "C. 4",
+              "hint": "For ideal tackle systems, the velocity ratio equals the total number of load-supporting rope strands acting on the movable block ($VR = 4$).",
+              "workedSolution": "For ideal tackle systems, the velocity ratio equals the total number of load-supporting rope strands acting on the movable block ($VR = 4$).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I13",
+              "difficulty": "medium",
+              "prompt": "Why does an axe with a thin, sharp blade wedge cut wood more effectively than a blunt axe of identical weight?",
+              "options": [
+                "A. A thinner wedge has a smaller taper angle, concentrating force onto a tiny contact area to create higher splitting pressure ($P = F/A$)",
+                "B. Thin axes are made of plastic",
+                "C. Sharp blades destroy the wood's mass",
+                "D. Blunt axes absorb all kinetic energy"
+              ],
+              "correctAnswer": "A. A thinner wedge has a smaller taper angle, concentrating force onto a tiny contact area to create higher splitting pressure ($P = F/A$)",
+              "hint": "Sharpened wedge tips minimize contact surface area ($A$), generating massive localized pressure ($P = F/A$) that easily fractures wood grain.",
+              "workedSolution": "Sharpened wedge tips minimize contact surface area ($A$), generating massive localized pressure ($P = F/A$) that easily fractures wood grain.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I14",
+              "difficulty": "medium",
+              "prompt": "In a wheel and axle system with a wheel radius $R = 30\\text{ cm}$ and an axle radius $r = 5\\text{ cm}$, what is the ideal Velocity Ratio ($VR = R/r$)?",
+              "options": [
+                "A. 0.17",
+                "B. 6.0",
+                "C. 25.0",
+                "D. 150.0"
+              ],
+              "correctAnswer": "B. 6.0",
+              "hint": "$VR = \\text{Radius of Wheel} / \\text{Radius of Axle} = 30\\text{ cm} / 5\\text{ cm} = 6.0$.",
+              "workedSolution": "$VR = \\text{Radius of Wheel} / \\text{Radius of Axle} = 30\\text{ cm} / 5\\text{ cm} = 6.0$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I15",
+              "difficulty": "medium",
+              "prompt": "Why do adjacent interlocking spur gears always rotate in opposite directions?",
+              "options": [
+                "A. Tangential contact forces between meshing teeth push against each other in opposite rotational senses",
+                "B. Gears slip on their axles",
+                "C. One gear is magnetic while the other is not",
+                "D. Opposing rotation is caused by air currents"
+              ],
+              "correctAnswer": "A. Tangential contact forces between meshing teeth push against each other in opposite rotational senses",
+              "hint": "Linear gear teeth engagement transmits pitch-line velocity that reverses circular rotation from clockwise to counter-clockwise.",
+              "workedSolution": "Linear gear teeth engagement transmits pitch-line velocity that reverses circular rotation from clockwise to counter-clockwise.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I16",
+              "difficulty": "medium",
+              "prompt": "What is the mechanical function of the chain and sprocket mechanism on a multispeed bicycle?",
+              "options": [
+                "A. It acts as a flexible gear train, transferring torque from pedal cranks to the rear wheel while allowing speed and torque adjustment",
+                "B. It prevents the bicycle wheels from turning",
+                "C. It stores electrical energy in the frame",
+                "D. It replaces the bicycle brakes"
+              ],
+              "correctAnswer": "A. It acts as a flexible gear train, transferring torque from pedal cranks to the rear wheel while allowing speed and torque adjustment",
+              "hint": "Chain-and-sprocket drives transmit mechanical power over distance and allow derailleur gear selection to trade pedaling force for speed.",
+              "workedSolution": "Chain-and-sprocket drives transmit mechanical power over distance and allow derailleur gear selection to trade pedaling force for speed.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I17",
+              "difficulty": "medium",
+              "prompt": "Why does a knapsack mist blower incorporate an internal combustion two-stroke engine?",
+              "options": [
+                "A. To drive a high-velocity centrifugal fan and fluid pressure pump, atomizing liquid agrochemicals into an aerosolized mist",
+                "B. To make the sprayer as heavy as possible",
+                "C. To heat chemical sprays to 100°C",
+                "D. To generate electricity for home lights"
+              ],
+              "correctAnswer": "A. To drive a high-velocity centrifugal fan and fluid pressure pump, atomizing liquid agrochemicals into an aerosolized mist",
+              "hint": "The engine drives a blower impeller that shears chemical liquid streams into fine droplets and propels them into tree canopies.",
+              "workedSolution": "The engine drives a blower impeller that shears chemical liquid streams into fine droplets and propels them into tree canopies.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I18",
+              "difficulty": "medium",
+              "prompt": "What is the mechanical efficiency ($E = \\frac{MA}{VR} \\times 100\\%$) of a pulley system with $VR = 4$ that lifts a $300\\text{ N}$ load using an effort of $100\\text{ N}$?",
+              "options": [
+                "A. 33.3%",
+                "B. 75.0%",
+                "C. 100.0%",
+                "D. 125.0%"
+              ],
+              "correctAnswer": "B. 75.0%",
+              "hint": "$MA = \\text{Load} / \\text{Effort} = 300 / 100 = 3.0$. Efficiency $= (MA / VR) \\times 100\\% = (3.0 / 4.0) \\times 100\\% = 75.0\\%$.",
+              "workedSolution": "$MA = \\text{Load} / \\text{Effort} = 300 / 100 = 3.0$. Efficiency $= (MA / VR) \\times 100\\% = (3.0 / 4.0) \\times 100\\% = 75.0\\%$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I19",
+              "difficulty": "medium",
+              "prompt": "Why is the mechanical efficiency of real-world machines always less than 100%?",
+              "options": [
+                "A. Work is dissipated overcoming friction between moving parts and lifting the machine's own components",
+                "B. Energy is destroyed inside levers",
+                "C. Gravitational force increases inside machines",
+                "D. Machines lose mass during operation"
+              ],
+              "correctAnswer": "A. Work is dissipated overcoming friction between moving parts and lifting the machine's own components",
+              "hint": "Frictional resistance and component weight consume a fraction of input energy, converting it into non-recoverable waste heat.",
+              "workedSolution": "Frictional resistance and component weight consume a fraction of input energy, converting it into non-recoverable waste heat.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I20",
+              "difficulty": "medium",
+              "prompt": "How does an automobile steering system employ a compound machine mechanism?",
+              "options": [
+                "A. It combines a wheel-and-axle (steering wheel) with a rack-and-pinion gear set and tie-rod levers to pivot road wheels",
+                "B. It uses an inclined plane to slide wheels sideways",
+                "C. It uses fixed pulleys to pull tires",
+                "D. It relies entirely on permanent magnets"
+              ],
+              "correctAnswer": "A. It combines a wheel-and-axle (steering wheel) with a rack-and-pinion gear set and tie-rod levers to pivot road wheels",
+              "hint": "Turning the wheel rotates a pinion gear along a toothed rack, translating rotary torque into linear steering linkage displacement.",
+              "workedSolution": "Turning the wheel rotates a pinion gear along a toothed rack, translating rotary torque into linear steering linkage displacement.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I21",
+              "difficulty": "medium",
+              "prompt": "Why does a screw jack lift a heavy motor car with very little human effort?",
+              "options": [
+                "A. It has a high Velocity Ratio: turning a long handle through a wide circle moves the load upward by only one small thread pitch distance",
+                "B. The screw jack produces anti-gravity waves",
+                "C. The car becomes weightless when placed on a jack",
+                "D. Friction inside the screw multiplies force automatically"
+              ],
+              "correctAnswer": "A. It has a high Velocity Ratio: turning a long handle through a wide circle moves the load upward by only one small thread pitch distance",
+              "hint": "The ratio of circular handle sweep ($2\\pi r$) to vertical thread pitch ($p$) yields a high velocity ratio, greatly amplifying lifting force.",
+              "workedSolution": "The ratio of circular handle sweep ($2\\pi r$) to vertical thread pitch ($p$) yields a high velocity ratio, greatly amplifying lifting force.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I22",
+              "difficulty": "medium",
+              "prompt": "What is the biological mechanism of mechanical advantage in the human forearm when lifting a weight in the hand?",
+              "options": [
+                "A. It acts as a third-class lever: the elbow is the fulcrum, the biceps tendon inserts near the elbow to apply effort, and the hand holds the load",
+                "B. The forearm operates as a first-class seesaw",
+                "C. The bicep acts as a movable pulley",
+                "D. The arm operates as an inclined plane"
+              ],
+              "correctAnswer": "A. It acts as a third-class lever: the elbow is the fulcrum, the biceps tendon inserts near the elbow to apply effort, and the hand holds the load",
+              "hint": "With the elbow as the fulcrum and the bicep inserting between the elbow and hand, the arm forms a third-class lever built for speed and range.",
+              "workedSolution": "With the elbow as the fulcrum and the bicep inserting between the elbow and hand, the arm forms a third-class lever built for speed and range.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I23",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of hydraulic lift levers on an agricultural tractor?",
+              "options": [
+                "A. Using pressurized fluid to amplify force, raising and lowering heavy tillage implements attached to the three-point linkage",
+                "B. Steering the front wheels",
+                "C. Providing fuel to the engine",
+                "D. Spraying water on the tractor tires"
+              ],
+              "correctAnswer": "A. Using pressurized fluid to amplify force, raising and lowering heavy tillage implements attached to the three-point linkage",
+              "hint": "Tractor hydraulic systems apply Pascal's principle, using control levers to actuate high-force rams that position heavy farm implements.",
+              "workedSolution": "Tractor hydraulic systems apply Pascal's principle, using control levers to actuate high-force rams that position heavy farm implements.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I24",
+              "difficulty": "medium",
+              "prompt": "Why does a magnetic compass needle align itself along the North-South geographic direction when freely suspended?",
+              "options": [
+                "A. Earth acts as a giant natural dipole magnet whose magnetic poles attract the opposite poles of the compass needle",
+                "B. Solar wind pushes the compass needle to the north",
+                "C. Ocean currents drag the needle physically",
+                "D. Gravitational pull acts only toward the North pole"
+              ],
+              "correctAnswer": "A. Earth acts as a giant natural dipole magnet whose magnetic poles attract the opposite poles of the compass needle",
+              "hint": "Earth's internal geodynamo creates a global magnetic field; a freely pivoted needle torques into alignment with local geomagnetic field lines.",
+              "workedSolution": "Earth's internal geodynamo creates a global magnetic field; a freely pivoted needle torques into alignment with local geomagnetic field lines.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I25",
+              "difficulty": "medium",
+              "prompt": "A $20\\text{ kg}$ object is dropped from a stationary crane. Calculate the net gravitational force acting on the object ($g = 9.8\\text{ m/s}^2$).",
+              "options": [
+                "A. 2.04 N",
+                "B. 39.2 N",
+                "C. 196.0 N",
+                "D. 392.0 N"
+              ],
+              "correctAnswer": "C. 196.0 N",
+              "hint": "Weight force $W = mg = 20\\text{ kg} \\times 9.8\\text{ m/s}^2 = 196.0\\text{ N}$.",
+              "workedSolution": "Weight force $W = mg = 20\\text{ kg} \\times 9.8\\text{ m/s}^2 = 196.0\\text{ N}$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I26",
+              "difficulty": "medium",
+              "prompt": "Why do factory automated assembly lines utilize robotic arms rather than manual human labor for repetitive welding?",
+              "options": [
+                "A. Robots perform repetitive tasks with consistent accuracy, higher speed, and without operator fatigue or health hazards",
+                "B. Robots operate without consuming energy",
+                "C. Human workers refuse to enter manufacturing factories",
+                "D. Robots cost zero cedis to build"
+              ],
+              "correctAnswer": "A. Robots perform repetitive tasks with consistent accuracy, higher speed, and without operator fatigue or health hazards",
+              "hint": "Industrial robots deliver sub-millimeter precision, continuous duty cycles, and eliminate human exposure to toxic fumes and welding arcs.",
+              "workedSolution": "Industrial robots deliver sub-millimeter precision, continuous duty cycles, and eliminate human exposure to toxic fumes and welding arcs.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I27",
+              "difficulty": "medium",
+              "prompt": "What occurs when a magnet is cut in half across its middle?",
+              "options": [
+                "A. Each half becomes a complete, independent magnet with its own North and South poles",
+                "B. One half becomes a pure North pole and the other a pure South pole",
+                "C. Both halves lose their magnetism completely",
+                "D. The magnet explodes into iron dust"
+              ],
+              "correctAnswer": "A. Each half becomes a complete, independent magnet with its own North and South poles",
+              "hint": "Isolated magnetic monopoles do not exist in classical physics; cutting a magnet creates two smaller dipoles with complete pole pairs.",
+              "workedSolution": "Isolated magnetic monopoles do not exist in classical physics; cutting a magnet creates two smaller dipoles with complete pole pairs.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I28",
+              "difficulty": "medium",
+              "prompt": "What is the function of the idler gear inserted between a driver gear and a driven gear in a machine gear train?",
+              "options": [
+                "A. It changes the direction of rotation of the driven gear without altering the overall gear velocity ratio",
+                "B. It doubles the output speed of the machine",
+                "C. It stops the gears from turning",
+                "D. It stores mechanical power like a battery"
+              ],
+              "correctAnswer": "A. It changes the direction of rotation of the driven gear without altering the overall gear velocity ratio",
+              "hint": "An intermediate idler gear reverses rotational direction back to match the driver while leaving the net teeth speed ratio unaffected.",
+              "workedSolution": "An intermediate idler gear reverses rotational direction back to match the driver while leaving the net teeth speed ratio unaffected.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I29",
+              "difficulty": "medium",
+              "prompt": "Why is energy efficiency labeling (such as star ratings) mandated on commercial air conditioners and refrigerators?",
+              "options": [
+                "A. To inform consumers about energy consumption rates, encouraging the purchase of efficient units to reduce energy waste",
+                "B. To prove the machine was built locally",
+                "C. To indicate the weight of the metal casing",
+                "D. To set the retail price of the appliance"
+              ],
+              "correctAnswer": "A. To inform consumers about energy consumption rates, encouraging the purchase of efficient units to reduce energy waste",
+              "hint": "Energy efficiency ratings quantify operational performance, steering purchasing toward lower-wattage, energy-saving models.",
+              "workedSolution": "Energy efficiency ratings quantify operational performance, steering purchasing toward lower-wattage, energy-saving models.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I30",
+              "difficulty": "medium",
+              "prompt": "How does an inclined plane wrapped around a cylinder form a bolt thread that clamps machine parts tightly together?",
+              "options": [
+                "A. Turning the bolt converts rotational torque into substantial linear clamping tension along the screw axis",
+                "B. Screw threads weld together permanently",
+                "C. The bolt expands when turned clockwise",
+                "D. Threads create vacuum suction between plates"
+              ],
+              "correctAnswer": "A. Turning the bolt converts rotational torque into substantial linear clamping tension along the screw axis",
+              "hint": "Torque applied across a helical incline produces high axial preload tension, clamping mated surfaces securely.",
+              "workedSolution": "Torque applied across a helical incline produces high axial preload tension, clamping mated surfaces securely.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I31",
+              "difficulty": "medium",
+              "prompt": "Why does a lawn mower incorporate interlocking gears between its engine drive shaft and cutting blade spindle?",
+              "options": [
+                "A. To transfer rotational power efficiently while stepping up blade speed and adjusting torque for thick vegetation",
+                "B. To make the mower engine run backward",
+                "C. To prevent the engine from producing exhaust",
+                "D. To sharpen the blades while running"
+              ],
+              "correctAnswer": "A. To transfer rotational power efficiently while stepping up blade speed and adjusting torque for thick vegetation",
+              "hint": "Internal gear sets step up spindle speed to ensure clean grass cutting while matching optimal engine torque bands.",
+              "workedSolution": "Internal gear sets step up spindle speed to ensure clean grass cutting while matching optimal engine torque bands.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I32",
+              "difficulty": "medium",
+              "prompt": "What is the effect of friction on the Mechanical Advantage and Velocity Ratio of a simple machine?",
+              "options": [
+                "A. Friction reduces Mechanical Advantage ($MA$), but leaves the purely geometric Velocity Ratio ($VR$) unchanged",
+                "B. Friction increases Mechanical Advantage",
+                "C. Friction reduces the Velocity Ratio to zero",
+                "D. Friction has zero effect on both values"
+              ],
+              "correctAnswer": "A. Friction reduces Mechanical Advantage ($MA$), but leaves the purely geometric Velocity Ratio ($VR$) unchanged",
+              "hint": "$VR$ depends solely on physical dimensions ($d_E / d_L$); friction increases required effort, which depresses real $MA$ ($L/E$).",
+              "workedSolution": "$VR$ depends solely on physical dimensions ($d_E / d_L$); friction increases required effort, which depresses real $MA$ ($L/E$).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I33",
+              "difficulty": "medium",
+              "prompt": "Why do claw hammers operate as high-advantage first-class levers when pulling nails from timber?",
+              "options": [
+                "A. The long handle provides a large effort arm relative to the short claw load arm, multiplying hand pulling force",
+                "B. Hammers are magnetic and pull nails out",
+                "C. The curved claw eliminates nail friction",
+                "D. Nails become soft when touched by iron"
+              ],
+              "correctAnswer": "A. The long handle provides a large effort arm relative to the short claw load arm, multiplying hand pulling force",
+              "hint": "The handle provides a long leverage distance ($d_E$) around the curved fulcrum heel, magnifying pulling force at the claw.",
+              "workedSolution": "The handle provides a long leverage distance ($d_E$) around the curved fulcrum heel, magnifying pulling force at the claw.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I34",
+              "difficulty": "medium",
+              "prompt": "How does a nutcracker operate as a second-class lever?",
+              "options": [
+                "A. The hinge pin is the fulcrum at one end, the hard nut (load) sits in the middle, and hand effort is applied at the open handles",
+                "B. Effort is applied at the hinge pin",
+                "C. The nut acts as the fulcrum",
+                "D. It operates as a wheel and axle"
+              ],
+              "correctAnswer": "A. The hinge pin is the fulcrum at one end, the hard nut (load) sits in the middle, and hand effort is applied at the open handles",
+              "hint": "With the fulcrum at the hinged tip, the nut rests centrally between the pivot and the handle grip, forming a Class 2 lever.",
+              "workedSolution": "With the fulcrum at the hinged tip, the nut rests centrally between the pivot and the handle grip, forming a Class 2 lever.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I35",
+              "difficulty": "medium",
+              "prompt": "A force of $F = 600\\text{ N}$ is applied to a crate, producing an acceleration of $a = 3.0\\text{ m/s}^2$. Calculate the mass of the crate.",
+              "options": [
+                "A. 100 kg",
+                "B. 200 kg",
+                "C. 600 kg",
+                "D. 1,800 kg"
+              ],
+              "correctAnswer": "B. 200 kg",
+              "hint": "From Newton's Second Law: $m = F / a = 600\\text{ N} / 3.0\\text{ m/s}^2 = 200\\text{ kg}$.",
+              "workedSolution": "From Newton's Second Law: $m = F / a = 600\\text{ N} / 3.0\\text{ m/s}^2 = 200\\text{ kg}$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I36",
+              "difficulty": "medium",
+              "prompt": "Why does a skateboarder push backward on the pavement with their foot to propel themselves forward?",
+              "options": [
+                "A. Pushing backward on the ground (action) causes the ground to exert an equal forward reaction force on the skateboarder (Newton's Third Law)",
+                "B. Backward foot motion creates a tailwind",
+                "C. Pushing backward reduces the skateboarder's mass",
+                "D. Skateboards operate only by magnetic repulsion"
+              ],
+              "correctAnswer": "A. Pushing backward on the ground (action) causes the ground to exert an equal forward reaction force on the skateboarder (Newton's Third Law)",
+              "hint": "Newton's Third Law applies: the foot exerts a backward force on the ground, which responds with an equal forward reaction force on the rider.",
+              "workedSolution": "Newton's Third Law applies: the foot exerts a backward force on the ground, which responds with an equal forward reaction force on the rider.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I37",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of a compound microscope's rack-and-pinion gear mechanism in medical laboratories?",
+              "options": [
+                "A. It converts small rotational movements of focus knobs into fine vertical objective lens adjustments for specimen focusing",
+                "B. It magnifies the specimen image optically",
+                "C. It illuminates the glass slide with light",
+                "D. It cleans dust off the lenses"
+              ],
+              "correctAnswer": "A. It converts small rotational movements of focus knobs into fine vertical objective lens adjustments for specimen focusing",
+              "hint": "Rack-and-pinion gearing translates coarse and fine knob rotations into smooth, controlled vertical stage displacements.",
+              "workedSolution": "Rack-and-pinion gearing translates coarse and fine knob rotations into smooth, controlled vertical stage displacements.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I38",
+              "difficulty": "medium",
+              "prompt": "How does using public buses instead of individual private cars contribute to national energy conservation?",
+              "options": [
+                "A. High passenger occupancy lowers per-capita fuel consumption and reduces aggregate urban traffic congestion and exhaust emissions",
+                "B. Buses consume zero diesel fuel",
+                "C. Public transit eliminates the need for roads",
+                "D. Buses run entirely on solar energy"
+              ],
+              "correctAnswer": "A. High passenger occupancy lowers per-capita fuel consumption and reduces aggregate urban traffic congestion and exhaust emissions",
+              "hint": "Mass transit consolidates passenger trips, drastically reducing fuel burned per commuter-kilometer compared to single-occupancy vehicles.",
+              "workedSolution": "Mass transit consolidates passenger trips, drastically reducing fuel burned per commuter-kilometer compared to single-occupancy vehicles.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I39",
+              "difficulty": "medium",
+              "prompt": "Why is an inclined plane with a gentle slope easier to climb than a steep ramp, despite doing the same vertical work?",
+              "options": [
+                "A. A gentler slope has a longer incline length ($d$), requiring less input effort force to overcome the load's gravitational component",
+                "B. Gentle slopes eliminate friction completely",
+                "C. Gravity only pulls on steep slopes",
+                "D. Work done on gentle slopes is zero"
+              ],
+              "correctAnswer": "A. A gentler slope has a longer incline length ($d$), requiring less input effort force to overcome the load's gravitational component",
+              "hint": "Work ($W = Fd$) is conserved: extending the ramp distance proportionally reduces the required parallel pushing force ($F = W/d$).",
+              "workedSolution": "Work ($W = Fd$) is conserved: extending the ramp distance proportionally reduces the required parallel pushing force ($F = W/d$).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I40",
+              "difficulty": "medium",
+              "prompt": "What is the primary function of a magnetic separator in an industrial recycling plant?",
+              "options": [
+                "A. An electromagnet suspended over a conveyor belt attracts and separates ferrous scrap iron from non-magnetic aluminum and plastic waste",
+                "B. Crushing glass bottles into powder",
+                "C. Burning paper waste at high temperatures",
+                "D. Melting copper cables into bars"
+              ],
+              "correctAnswer": "A. An electromagnet suspended over a conveyor belt attracts and separates ferrous scrap iron from non-magnetic aluminum and plastic waste",
+              "hint": "Electromagnetic separators lift paramagnetic and ferromagnetic iron and steel debris out of mixed waste streams.",
+              "workedSolution": "Electromagnetic separators lift paramagnetic and ferromagnetic iron and steel debris out of mixed waste streams.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I41",
+              "difficulty": "medium",
+              "prompt": "In a wheelbarrow, if the load arm is $0.4\\text{ m}$ from the wheel axle and the effort handles are $1.2\\text{ m}$ from the axle, what is the Velocity Ratio ($VR = d_E / d_L$)?",
+              "options": [
+                "A. 0.33",
+                "B. 1.6",
+                "C. 3.0",
+                "D. 4.8"
+              ],
+              "correctAnswer": "C. 3.0",
+              "hint": "$VR = \\text{Effort Arm} / \\text{Load Arm} = 1.2\\text{ m} / 0.4\\text{ m} = 3.0$.",
+              "workedSolution": "$VR = \\text{Effort Arm} / \\text{Load Arm} = 1.2\\text{ m} / 0.4\\text{ m} = 3.0$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I42",
+              "difficulty": "medium",
+              "prompt": "Why do deep-sea exploration submersibles rely on robotic manipulator arms rather than direct human diver interventions?",
+              "options": [
+                "A. Extreme hydrostatic ocean pressures and near-freezing temperatures at deep depths are lethal to human divers",
+                "B. Robots can swim faster than fish",
+                "C. Divers are not allowed to touch rocks",
+                "D. Ocean water destroys human eyesight instantly"
+              ],
+              "correctAnswer": "A. Extreme hydrostatic ocean pressures and near-freezing temperatures at deep depths are lethal to human divers",
+              "hint": "Abyssal hydrostatic pressures (>1,000 atm) would crush human divers; reinforced submersibles use robotic manipulators safely.",
+              "workedSolution": "Abyssal hydrostatic pressures (>1,000 atm) would crush human divers; reinforced submersibles use robotic manipulators safely.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I43",
+              "difficulty": "medium",
+              "prompt": "What is the function of the beveled cutting edges on a pair of metal tin snips?",
+              "options": [
+                "A. Acting as sharp dual wedges that concentrate shear forces to slice through sheet metal",
+                "B. Acting as wheel and axle systems",
+                "C. Storing mechanical energy like springs",
+                "D. Attracting metal magnetically"
+              ],
+              "correctAnswer": "A. Acting as sharp dual wedges that concentrate shear forces to slice through sheet metal",
+              "hint": "Snip blades are angled wedges that focus amplified lever forces into high shear stresses that cut metal.",
+              "workedSolution": "Snip blades are angled wedges that focus amplified lever forces into high shear stresses that cut metal.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I44",
+              "difficulty": "medium",
+              "prompt": "How does installing energy-efficient LED light bulbs in school classrooms support national energy conservation?",
+              "options": [
+                "A. LEDs produce equivalent lumen brightness while using up to 80% less electrical wattage than incandescent bulbs",
+                "B. LEDs do not consume any electrical power",
+                "C. LEDs heat the classrooms like ovens",
+                "D. LEDs last for only three days"
+              ],
+              "correctAnswer": "A. LEDs produce equivalent lumen brightness while using up to 80% less electrical wattage than incandescent bulbs",
+              "hint": "Solid-state LEDs convert electrical energy directly to light via electroluminescence, wasting minimal power as heat.",
+              "workedSolution": "Solid-state LEDs convert electrical energy directly to light via electroluminescence, wasting minimal power as heat.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I45",
+              "difficulty": "medium",
+              "prompt": "Why does a bottle opener operate with high mechanical advantage when lifting a metal crown cap?",
+              "options": [
+                "A. The rim lip acts as a fulcrum, the cap edge is the load near the fulcrum, and a long handle applies effort as a Class 2 lever",
+                "B. Bottle openers use chemical reactions to melt caps",
+                "C. The opener is magnetized to pull the cap off",
+                "D. It operates as an inclined plane"
+              ],
+              "correctAnswer": "A. The rim lip acts as a fulcrum, the cap edge is the load near the fulcrum, and a long handle applies effort as a Class 2 lever",
+              "hint": "With the fulcrum resting on the center cap, the load hook sits close to the pivot, yielding a short load arm and high leverage.",
+              "workedSolution": "With the fulcrum resting on the center cap, the load hook sits close to the pivot, yielding a short load arm and high leverage.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I46",
+              "difficulty": "medium",
+              "prompt": "A $50\\text{ kg}$ runner accelerates from rest at $a = 2.0\\text{ m/s}^2$. Calculate the horizontal reaction force exerted by the track on the runner's shoes.",
+              "options": [
+                "A. 25 N",
+                "B. 50 N",
+                "C. 100 N",
+                "D. 250 N"
+              ],
+              "correctAnswer": "C. 100 N",
+              "hint": "From Newton's Second Law: $F = ma = 50\\text{ kg} \\times 2.0\\text{ m/s}^2 = 100\\text{ N}$.",
+              "workedSolution": "From Newton's Second Law: $F = ma = 50\\text{ kg} \\times 2.0\\text{ m/s}^2 = 100\\text{ N}$.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I47",
+              "difficulty": "medium",
+              "prompt": "Why does a sewing machine use a foot pedal lever linkage connected to a rotary drive wheel?",
+              "options": [
+                "A. It converts reciprocating foot motion into continuous rotary shaft motion to drive the needle and fabric feed mechanism",
+                "B. It keeps the operator's feet warm",
+                "C. It generates electrical current without wires",
+                "D. It prevents the needle from breaking"
+              ],
+              "correctAnswer": "A. It converts reciprocating foot motion into continuous rotary shaft motion to drive the needle and fabric feed mechanism",
+              "hint": "The treadle mechanism uses a crank-slider linkage to transform linear foot reciprocation into smooth wheel rotation.",
+              "workedSolution": "The treadle mechanism uses a crank-slider linkage to transform linear foot reciprocation into smooth wheel rotation.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I48",
+              "difficulty": "medium",
+              "prompt": "What is the primary factor limiting the maximum speed of a vehicle according to Newton's Second Law?",
+              "options": [
+                "A. Opposing aerodynamic air drag and road rolling resistance balance engine drive force, causing net force and acceleration to reach zero",
+                "B. The vehicle runs out of inertia",
+                "C. Tires refuse to spin faster than 100 km/h",
+                "D. Gravity stops pulling on the car"
+              ],
+              "correctAnswer": "A. Opposing aerodynamic air drag and road rolling resistance balance engine drive force, causing net force and acceleration to reach zero",
+              "hint": "Terminal velocity is reached when velocity-squared air resistance and friction match tractive engine force ($F_{net} = 0$, so $a = 0$).",
+              "workedSolution": "Terminal velocity is reached when velocity-squared air resistance and friction match tractive engine force ($F_{net} = 0$, so $a = 0$).",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I49",
+              "difficulty": "medium",
+              "prompt": "How does architectural roof insulation in buildings contribute to energy conservation in tropical Ghana?",
+              "options": [
+                "A. It reduces conductive solar heat gain through ceilings, significantly lowering the electrical load on air conditioning units",
+                "B. It makes the roof heavier to withstand wind",
+                "C. It generates solar power inside the ceiling",
+                "D. It stops all rain from falling on the house"
+              ],
+              "correctAnswer": "A. It reduces conductive solar heat gain through ceilings, significantly lowering the electrical load on air conditioning units",
+              "hint": "Ceiling insulation blocks radiant roof heat, moderating indoor room temperatures and reducing air-conditioner run times.",
+              "workedSolution": "Ceiling insulation blocks radiant roof heat, moderating indoor room temperatures and reducing air-conditioner run times.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_I50",
+              "difficulty": "medium",
+              "prompt": "What is the mechanical advantage of a pair of pliers used to grip and bend a wire?",
+              "options": [
+                "A. Long handle effort arms relative to short jaw load arms multiply hand grip force onto the wire",
+                "B. Pliers operate as inclined planes that slide the wire",
+                "C. Pliers make the wire softer by chemical action",
+                "D. Pliers have zero mechanical advantage"
+              ],
+              "correctAnswer": "A. Long handle effort arms relative to short jaw load arms multiply hand grip force onto the wire",
+              "hint": "Dual Class 1 levers share a central hinge pin; the long handle-to-jaw ratio concentrates grip effort into high compressive jaw force.",
+              "workedSolution": "Dual Class 1 levers share a central hinge pin; the long handle-to-jaw ratio concentrates grip effort into high compressive jaw force.",
+              "points": 1,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B8_MOT_A01",
+              "difficulty": "hard",
+              "prompt": "A $1,500\\text{ kg}$ automobile traveling at $v = 20\\text{ m/s}$ applies emergency brakes and decelerates uniformly to a complete stop over a distance of $d = 40\\text{ meters}$. Calculate the braking force ($F$) exerted on the vehicle using kinematics ($v^2 = u^2 + 2ad$) and Newton's Second Law ($F = ma$).",
+              "options": [
+                "A. 3,750 N",
+                "B. 7,500 N",
+                "C. 15,000 N",
+                "D. 30,000 N"
+              ],
+              "correctAnswer": "B. 7,500 N",
+              "hint": "$0^2 = 20^2 + 2a(40) \\Rightarrow 0 = 400 + 80a \\Rightarrow a = -5.0\\text{ m/s}^2$. Force magnitude $F = ma = 1,500\\text{ kg} \\times 5.0\\text{ m/s}^2 = 7,500\\text{ N}$.",
+              "workedSolution": "$0^2 = 20^2 + 2a(40) \\Rightarrow 0 = 400 + 80a \\Rightarrow a = -5.0\\text{ m/s}^2$. Force magnitude $F = ma = 1,500\\text{ kg} \\times 5.0\\text{ m/s}^2 = 7,500\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A02",
+              "difficulty": "hard",
+              "prompt": "In a physics laboratory solenoid experiment, the magnetic field strength inside a solenoid is given by $B = \\mu_0 n I$. If a student doubles the current ($I$) and triples the number of turns per unit length ($n$), by what factor does the internal magnetic field strength ($B$) increase?",
+              "options": [
+                "A. 2 times",
+                "B. 3 times",
+                "C. 5 times",
+                "D. 6 times"
+              ],
+              "correctAnswer": "D. 6 times",
+              "hint": "Field strength scales with the product of turn density and current: $B' = \\mu_0 (3n)(2I) = 6 \\mu_0 n I = 6B$.",
+              "workedSolution": "Field strength scales with the product of turn density and current: $B' = \\mu_0 (3n)(2I) = 6 \\mu_0 n I = 6B$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A03",
+              "difficulty": "hard",
+              "prompt": "A first-class crowbar is used to dislodge a $2,400\\text{ N}$ stone. The total length of the crowbar is $1.5\\text{ m}$, and the fulcrum is placed $0.3\\text{ m}$ from the stone load (so the effort arm is $1.2\\text{ m}$). Assuming 100% mechanical efficiency, calculate the minimum effort force ($E$) required ($L \\times d_L = E \\times d_E$).",
+              "options": [
+                "A. 480 N",
+                "B. 600 N",
+                "C. 800 N",
+                "D. 1,200 N"
+              ],
+              "correctAnswer": "B. 600 N",
+              "hint": "By the principle of moments: $E \\times 1.2\\text{ m} = 2,400\\text{ N} \\times 0.3\\text{ m} \\Rightarrow 1.2 E = 720 \\Rightarrow E = 720 / 1.2 = 600\\text{ N}$.",
+              "workedSolution": "By the principle of moments: $E \\times 1.2\\text{ m} = 2,400\\text{ N} \\times 0.3\\text{ m} \\Rightarrow 1.2 E = 720 \\Rightarrow E = 720 / 1.2 = 600\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A04",
+              "difficulty": "hard",
+              "prompt": "A block-and-tackle pulley system has a Velocity Ratio of $VR = 5$. If it requires an effort force of $E = 250\\text{ N}$ to lift a load of $L = 1,000\\text{ N}$, calculate the mechanical efficiency ($\\eta$) of the pulley system.",
+              "options": [
+                "A. 60.0%",
+                "B. 75.0%",
+                "C. 80.0%",
+                "D. 90.0%"
+              ],
+              "correctAnswer": "C. 80.0%",
+              "hint": "$MA = L / E = 1,000 / 250 = 4.0$. Efficiency $\\eta = (MA / VR) \\times 100\\% = (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+              "workedSolution": "$MA = L / E = 1,000 / 250 = 4.0$. Efficiency $\\eta = (MA / VR) \\times 100\\% = (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A05",
+              "difficulty": "hard",
+              "prompt": "An inclined plane has a length of $L = 12\\text{ meters}$ and rises to a vertical height of $h = 3\\text{ meters}$. If an effort of $F = 400\\text{ N}$ pushes an $1,200\\text{ N}$ crate up the ramp at constant speed, calculate the work lost to friction ($W_{lost} = W_{in} - W_{out}$).",
+              "options": [
+                "A. 400 J",
+                "B. 800 J",
+                "C. 1,200 J",
+                "D. 3,600 J"
+              ],
+              "correctAnswer": "C. 1,200 J",
+              "hint": "$W_{in} = F \\times L = 400\\text{ N} \\times 12\\text{ m} = 4,800\\text{ J}$. $W_{out} = L \\times h = 1,200\\text{ N} \\times 3\\text{ m} = 3,600\\text{ J}$. $W_{lost} = 4,800 - 3,600 = 1,200\\text{ J}$.",
+              "workedSolution": "$W_{in} = F \\times L = 400\\text{ N} \\times 12\\text{ m} = 4,800\\text{ J}$. $W_{out} = L \\times h = 1,200\\text{ N} \\times 3\\text{ m} = 3,600\\text{ J}$. $W_{lost} = 4,800 - 3,600 = 1,200\\text{ J}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A06",
+              "difficulty": "hard",
+              "prompt": "A gear train consists of three meshing gears: Driver Gear A has 60 teeth, Idler Gear B has 30 teeth, and Driven Gear C has 15 teeth. If Gear A rotates clockwise at $100\\text{ rpm}$, calculate the rotational speed and direction of Gear C.",
+              "options": [
+                "A. 200 rpm, counter-clockwise",
+                "B. 400 rpm, clockwise",
+                "C. 400 rpm, counter-clockwise",
+                "D. 800 rpm, clockwise"
+              ],
+              "correctAnswer": "B. 400 rpm, clockwise",
+              "hint": "Speed ratio = $N_A / N_C = 60 / 15 = 4$. Speed $= 100 \\times 4 = 400\\text{ rpm}$. Gear A (CW) drives Gear B (CCW), which drives Gear C (CW).",
+              "workedSolution": "Speed ratio = $N_A / N_C = 60 / 15 = 4$. Speed $= 100 \\times 4 = 400\\text{ rpm}$. Gear A (CW) drives Gear B (CCW), which drives Gear C (CW).",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A07",
+              "difficulty": "hard",
+              "prompt": "A $2,000\\text{ kg}$ commercial transport truck accelerates from rest to a speed of $v = 15\\text{ m/s}$ in $t = 6\\text{ seconds}$. Calculate the average net force developed by the engine over this interval ($a = \\Delta v / t$, $F = ma$).",
+              "options": [
+                "A. 2,500 N",
+                "B. 5,000 N",
+                "C. 10,000 N",
+                "D. 30,000 N"
+              ],
+              "correctAnswer": "B. 5,000 N",
+              "hint": "Acceleration $a = (15 - 0) / 6 = 2.5\\text{ m/s}^2$. Net force $F = ma = 2,000\\text{ kg} \\times 2.5\\text{ m/s}^2 = 5,000\\text{ N}$.",
+              "workedSolution": "Acceleration $a = (15 - 0) / 6 = 2.5\\text{ m/s}^2$. Net force $F = ma = 2,000\\text{ kg} \\times 2.5\\text{ m/s}^2 = 5,000\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A08",
+              "difficulty": "hard",
+              "prompt": "A wheel and axle has a wheel radius of $R = 40\\text{ cm}$ and an axle radius of $r = 8\\text{ cm}$. If an effort of $E = 50\\text{ N}$ lifts a load of $L = 200\\text{ N}$, calculate the mechanical efficiency of the system.",
+              "options": [
+                "A. 60.0%",
+                "B. 75.0%",
+                "C. 80.0%",
+                "D. 90.0%"
+              ],
+              "correctAnswer": "C. 80.0%",
+              "hint": "$VR = R / r = 40 / 8 = 5.0$. $MA = L / E = 200 / 50 = 4.0$. Efficiency $= (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+              "workedSolution": "$VR = R / r = 40 / 8 = 5.0$. $MA = L / E = 200 / 50 = 4.0$. Efficiency $= (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A09",
+              "difficulty": "hard",
+              "prompt": "In a physics experiment, an electromagnet with an iron core picks up 45 steel paperclips when $2.0\\text{ A}$ of current flows through its 100-turn coil. If current is raised to $4.0\\text{ A}$ and coil turns are doubled to 200, what happens to the core magnetic flux density before reaching magnetic saturation?",
+              "options": [
+                "A. It doubles",
+                "B. It quadruples ($4\\times$)",
+                "C. It remains completely unchanged",
+                "D. It drops to zero"
+              ],
+              "correctAnswer": "B. It quadruples ($4\\times$)",
+              "hint": "Magnetic flux density is proportional to ampere-turns ($B \\propto N \\cdot I$); doubling turns ($2\\times$) and current ($2\\times$) quadruples flux density ($4\\times$).",
+              "workedSolution": "Magnetic flux density is proportional to ampere-turns ($B \\propto N \\cdot I$); doubling turns ($2\\times$) and current ($2\\times$) quadruples flux density ($4\\times$).",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A10",
+              "difficulty": "hard",
+              "prompt": "A screw jack has a handle length of $r = 0.70\\text{ m}$ and a thread pitch of $p = 5.0\\text{ mm}$ ($0.005\\text{ m}$). Calculate the ideal Velocity Ratio of the screw jack ($VR = \\frac{2\\pi r}{p}$, using $\\pi = 3.142$).",
+              "options": [
+                "A. 140",
+                "B. 440",
+                "C. 880",
+                "D. 1,760"
+              ],
+              "correctAnswer": "C. 880",
+              "hint": "$VR = (2 \\times 3.142 \\times 0.70) / 0.005 = 4.3988 / 0.005 \\approx 879.76 \\approx 880$.",
+              "workedSolution": "$VR = (2 \\times 3.142 \\times 0.70) / 0.005 = 4.3988 / 0.005 \\approx 879.76 \\approx 880$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A11",
+              "difficulty": "hard",
+              "prompt": "Under the Law of Conservation of Momentum ($m_1 u_1 + m_2 u_2 = m_1 v_1 + m_2 v_2$), a cannon of mass $M = 1,000\\text{ kg}$ fires a cannonball of mass $m = 10\\text{ kg}$ forward at a muzzle velocity of $v = 200\\text{ m/s}$. Calculate the recoil velocity ($V$) of the cannon.",
+              "options": [
+                "A. -0.5 m/s",
+                "B. -2.0 m/s",
+                "C. -5.0 m/s",
+                "D. -10.0 m/s"
+              ],
+              "correctAnswer": "B. -2.0 m/s",
+              "hint": "Initial momentum is zero: $M V + m v = 0 \\Rightarrow (1,000 \\times V) + (10 \\times 200) = 0 \\Rightarrow 1,000 V = -2,000 \\Rightarrow V = -2.0\\text{ m/s}$ (backward recoil).",
+              "workedSolution": "Initial momentum is zero: $M V + m v = 0 \\Rightarrow (1,000 \\times V) + (10 \\times 200) = 0 \\Rightarrow 1,000 V = -2,000 \\Rightarrow V = -2.0\\text{ m/s}$ (backward recoil).",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A12",
+              "difficulty": "hard",
+              "prompt": "A multi-stage energy efficiency initiative in an industrial agro-processing plant replaces four $5.0\\text{ kW}$ conventional motors with high-efficiency $4.0\\text{ kW}$ motors running 8 hours daily for 300 days a year. If electricity costs GHS 1.50 per kWh, calculate annual financial cost savings.",
+              "options": [
+                "A. GHS 7,200",
+                "B. GHS 10,800",
+                "C. GHS 14,400",
+                "D. GHS 28,800"
+              ],
+              "correctAnswer": "C. GHS 14,400",
+              "hint": "Power saved = $4 \\times (5.0 - 4.0\\text{ kW}) = 4.0\\text{ kW}$. Energy saved = $4.0\\text{ kW} \\times (8 \\times 300\\text{ h}) = 4.0 \\times 2,400 = 9,600\\text{ kWh}$. Cost savings = $9,600 \\times \\text{GHS } 1.50 = \\text{GHS } 14,400$.",
+              "workedSolution": "Power saved = $4 \\times (5.0 - 4.0\\text{ kW}) = 4.0\\text{ kW}$. Energy saved = $4.0\\text{ kW} \\times (8 \\times 300\\text{ h}) = 4.0 \\times 2,400 = 9,600\\text{ kWh}$. Cost savings = $9,600 \\times \\text{GHS } 1.50 = \\text{GHS } 14,400$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A13",
+              "difficulty": "hard",
+              "prompt": "Why does a curling magnetic hysteresis loop in ferromagnetic cores cause thermal energy dissipation during continuous AC transformer operation?",
+              "options": [
+                "A. Energy is consumed overcoming internal friction as magnetic domain boundaries expand and flip against crystalline lattice resistance",
+                "B. The core conducts direct current into air",
+                "C. Steel cores melt under magnetic pressure",
+                "D. Hysteresis destroys electric electrons"
+              ],
+              "correctAnswer": "A. Energy is consumed overcoming internal friction as magnetic domain boundaries expand and flip against crystalline lattice resistance",
+              "hint": "Hysteresis loss represents internal work expended reorienting magnetic domains against lattice pinning sites during every AC cycle.",
+              "workedSolution": "Hysteresis loss represents internal work expended reorienting magnetic domains against lattice pinning sites during every AC cycle.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A14",
+              "difficulty": "hard",
+              "prompt": "A $60\\text{ kg}$ skydiver falls at a constant terminal velocity of $v = 50\\text{ m/s}$. What is the magnitude of the upward aerodynamic drag force acting on the skydiver ($g = 9.8\\text{ m/s}^2$)?",
+              "options": [
+                "A. 0 N",
+                "B. 300 N",
+                "C. 588 N",
+                "D. 1,200 N"
+              ],
+              "correctAnswer": "C. 588 N",
+              "hint": "At constant terminal velocity, acceleration is zero ($a = 0$), meaning net force is zero. Upward drag equals downward weight: $F_{drag} = mg = 60 \\times 9.8 = 588\\text{ N}$.",
+              "workedSolution": "At constant terminal velocity, acceleration is zero ($a = 0$), meaning net force is zero. Upward drag equals downward weight: $F_{drag} = mg = 60 \\times 9.8 = 588\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A15",
+              "difficulty": "hard",
+              "prompt": "A wheelbarrow has a total length of $1.5\\text{ m}$ from its wheel axle fulcrum to the ends of its handles. A load of $900\\text{ N}$ is placed $0.5\\text{ m}$ from the axle. Calculate the upward vertical effort force required at the handles to lift the load.",
+              "options": [
+                "A. 150 N",
+                "B. 300 N",
+                "C. 450 N",
+                "D. 600 N"
+              ],
+              "correctAnswer": "B. 300 N",
+              "hint": "Applying the principle of moments for a second-class lever: $E \\times 1.5\\text{ m} = 900\\text{ N} \\times 0.5\\text{ m} \\Rightarrow 1.5 E = 450 \\Rightarrow E = 450 / 1.5 = 300\\text{ N}$.",
+              "workedSolution": "Applying the principle of moments for a second-class lever: $E \\times 1.5\\text{ m} = 900\\text{ N} \\times 0.5\\text{ m} \\Rightarrow 1.5 E = 450 \\Rightarrow E = 450 / 1.5 = 300\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A16",
+              "difficulty": "hard",
+              "prompt": "Why does a knapsack mist blower nozzle generate smaller aerosol droplet diameters when liquid discharge pressure is increased?",
+              "options": [
+                "A. Higher pressure differential accelerates fluid shear velocity across the orifice, overcoming liquid surface tension to shatter the stream into micro-droplets",
+                "B. High pressure turns liquid into steam by boiling",
+                "C. The nozzle adds air molecules inside the chemical",
+                "D. Higher pressure freezes the spray particles"
+              ],
+              "correctAnswer": "A. Higher pressure differential accelerates fluid shear velocity across the orifice, overcoming liquid surface tension to shatter the stream into micro-droplets",
+              "hint": "Elevated hydraulic pressure increases kinetic shear energy relative to fluid surface tension, reducing the Sauter mean diameter of spray droplets.",
+              "workedSolution": "Elevated hydraulic pressure increases kinetic shear energy relative to fluid surface tension, reducing the Sauter mean diameter of spray droplets.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A17",
+              "difficulty": "hard",
+              "prompt": "Under torque mechanics ($\\tau = F \\times r$), why does a heavy-duty agricultural tractor have very large rear drive wheels while its front wheels are small?",
+              "options": [
+                "A. Large rear tires maximize ground contact area to reduce soil compaction while developing high axle tractive drawbar pull without slipping",
+                "B. Large wheels make tractors bounce over rocks",
+                "C. Front wheels are small to save diesel fuel",
+                "D. Tractors are designed to travel at race car speeds"
+              ],
+              "correctAnswer": "A. Large rear tires maximize ground contact area to reduce soil compaction while developing high axle tractive drawbar pull without slipping",
+              "hint": "Large-diameter lugged tires maximize soil contact patch, minimizing ground pressure and translating high axle torque into linear traction.",
+              "workedSolution": "Large-diameter lugged tires maximize soil contact patch, minimizing ground pressure and translating high axle torque into linear traction.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A18",
+              "difficulty": "hard",
+              "prompt": "A $0.5\\text{ kg}$ ball traveling at $u = 12\\text{ m/s}$ is caught and brought to a complete stop by a goalkeeper's padded gloves in $\\Delta t = 0.04\\text{ seconds}$. Calculate the average stopping force exerted on the ball ($F = m \\Delta v / \\Delta t$).",
+              "options": [
+                "A. 60 N",
+                "B. 120 N",
+                "C. 150 N",
+                "D. 300 N"
+              ],
+              "correctAnswer": "C. 150 N",
+              "hint": "$\\Delta v = 0 - 12 = -12\\text{ m/s}$. Impulse force magnitude $F = m |\\Delta v| / \\Delta t = (0.5 \\times 12) / 0.04 = 6.0 / 0.04 = 150\\text{ N}$.",
+              "workedSolution": "$\\Delta v = 0 - 12 = -12\\text{ m/s}$. Impulse force magnitude $F = m |\\Delta v| / \\Delta t = (0.5 \\times 12) / 0.04 = 6.0 / 0.04 = 150\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A19",
+              "difficulty": "hard",
+              "prompt": "Why does the introduction of regenerative braking in hybrid and electric vehicles illustrate both energy conservation and Newton's laws?",
+              "options": [
+                "A. It uses the vehicle's forward momentum to spin the motor as a generator, converting kinetic energy into stored battery energy while exerting a counter-torque that slows the car",
+                "B. It creates electricity by burning brake fluid",
+                "C. It violates the law of conservation of energy",
+                "D. It works only when cars drive uphill"
+              ],
+              "correctAnswer": "A. It uses the vehicle's forward momentum to spin the motor as a generator, converting kinetic energy into stored battery energy while exerting a counter-torque that slows the car",
+              "hint": "Regenerative braking exploits electromagnetic induction: vehicle momentum drives generators to recharge battery packs, recovering kinetic energy.",
+              "workedSolution": "Regenerative braking exploits electromagnetic induction: vehicle momentum drives generators to recharge battery packs, recovering kinetic energy.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A20",
+              "difficulty": "hard",
+              "prompt": "A compound gear train features a 20-tooth driver gear A meshing with a 60-tooth gear B. Fixed rigidly to the same shaft as B is gear C (15 teeth), which meshes with an 80-tooth output gear D. Calculate the overall Velocity Ratio ($VR = \\frac{N_B}{N_A} \\times \\frac{N_D}{N_C}$).",
+              "options": [
+                "A. 4.0",
+                "B. 8.0",
+                "C. 16.0",
+                "D. 32.0"
+              ],
+              "correctAnswer": "C. 16.0",
+              "hint": "Stage 1 ratio $= 60 / 20 = 3$. Stage 2 ratio $= 80 / 15 = 5.333$. Compound ratio $= (60/20) \\times (80/15) = 3 \\times 5.333 = 16.0$.",
+              "workedSolution": "Stage 1 ratio $= 60 / 20 = 3$. Stage 2 ratio $= 80 / 15 = 5.333$. Compound ratio $= (60/20) \\times (80/15) = 3 \\times 5.333 = 16.0$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A21",
+              "difficulty": "hard",
+              "prompt": "What is the biological mechanism of mechanical advantage in a human claw-like grip when closing surgical forceps or tweezers (Class 3 lever)?",
+              "options": [
+                "A. Effort applied between the anchored hinge and the tip allows fine, delicate tactile positioning of the working tips at the expense of higher thumb effort",
+                "B. Forceps amplify grip strength by a factor of 100",
+                "C. Tweezers operate as second-class wheelbarrows",
+                "D. Forceps destroy bacterial cells by magnetic fields"
+              ],
+              "correctAnswer": "A. Effort applied between the anchored hinge and the tip allows fine, delicate tactile positioning of the working tips at the expense of higher thumb effort",
+              "hint": "Class 3 pincers provide distance control and tactile feedback, enabling micro-dissection where positional dexterity matters more than raw force.",
+              "workedSolution": "Class 3 pincers provide distance control and tactile feedback, enabling micro-dissection where positional dexterity matters more than raw force.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A22",
+              "difficulty": "hard",
+              "prompt": "In a physics trial, a $10\\text{ N}$ permanent bar magnet pulls an iron bolt across a laboratory bench at constant acceleration. By Newton's Third Law, what force does the bolt exert on the bar magnet?",
+              "options": [
+                "A. Zero force, because the bolt is unmagnetized",
+                "B. Exactly 10 N in the opposite direction",
+                "C. Less than 10 N because the bolt has smaller mass",
+                "D. Greater than 10 N"
+              ],
+              "correctAnswer": "B. Exactly 10 N in the opposite direction",
+              "hint": "Newton's Third Law holds universally across magnetic interactions: the induced dipole of the bolt exerts an equal and opposite force on the magnet.",
+              "workedSolution": "Newton's Third Law holds universally across magnetic interactions: the induced dipole of the bolt exerts an equal and opposite force on the magnet.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A23",
+              "difficulty": "hard",
+              "prompt": "A domestic solar water heater saves $1,800\\text{ kWh}$ of electrical energy per year that would otherwise be consumed by an electric geyser. If generating $1\\text{ kWh}$ via thermal coal produces $0.90\\text{ kg}$ of $CO_2$, calculate the annual greenhouse gas emissions avoided.",
+              "options": [
+                "A. 810 kg CO₂",
+                "B. 1,620 kg CO₂",
+                "C. 2,400 kg CO₂",
+                "D. 3,600 kg CO₂"
+              ],
+              "correctAnswer": "B. 1,620 kg CO₂",
+              "hint": "Avoided emissions $= 1,800\\text{ kWh} \\times 0.90\\text{ kg CO}_2/\\text{kWh} = 1,620\\text{ kg of CO}_2$ per year.",
+              "workedSolution": "Avoided emissions $= 1,800\\text{ kWh} \\times 0.90\\text{ kg CO}_2/\\text{kWh} = 1,620\\text{ kg of CO}_2$ per year.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A24",
+              "difficulty": "hard",
+              "prompt": "Why does a circular saw blade on a motorized compound miter machine kick backward violently if the wood workpiece pinches the rotating blade?",
+              "options": [
+                "A. The blade exerts a forward cutting force on pinched wood; the pinched wood exerts an equal and opposite reaction force, hurling the saw blade backward (Newton's Third Law)",
+                "B. Wood generates electricity when pinched",
+                "C. The saw motor reverses electrical polarity",
+                "D. Centrifugal force vanishes instantly"
+              ],
+              "correctAnswer": "A. The blade exerts a forward cutting force on pinched wood; the pinched wood exerts an equal and opposite reaction force, hurling the saw blade backward (Newton's Third Law)",
+              "hint": "When blade teeth bind, rotational momentum transfers to the workpiece; reaction forces throw the saw assembly back toward the operator.",
+              "workedSolution": "When blade teeth bind, rotational momentum transfers to the workpiece; reaction forces throw the saw assembly back toward the operator.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A25",
+              "difficulty": "hard",
+              "prompt": "A loaded handcart of mass $M = 80\\text{ kg}$ is pushed along a horizontal concrete floor with a forward force of $F = 260\\text{ N}$. If the opposing rolling friction is $F_f = 60\\text{ N}$, calculate the acceleration of the cart.",
+              "options": [
+                "A. 0.75 m/s²",
+                "B. 2.50 m/s²",
+                "C. 3.25 m/s²",
+                "D. 4.00 m/s²"
+              ],
+              "correctAnswer": "B. 2.50 m/s²",
+              "hint": "Net force $F_{net} = F_{applied} - F_f = 260 - 60 = 200\\text{ N}$. Acceleration $a = F_{net} / M = 200\\text{ N} / 80\\text{ kg} = 2.5\\text{ m/s}^2$.",
+              "workedSolution": "Net force $F_{net} = F_{applied} - F_f = 260 - 60 = 200\\text{ N}$. Acceleration $a = F_{net} / M = 200\\text{ N} / 80\\text{ kg} = 2.5\\text{ m/s}^2$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A26",
+              "difficulty": "hard",
+              "prompt": "What is the primary thermodynamic rationale for building modern combined-cycle gas turbine (CCGT) power stations?",
+              "options": [
+                "A. High-temperature exhaust heat from a primary gas turbine is recovered to boil steam that drives a secondary steam turbine, elevating efficiency to ~60%",
+                "B. Burning gas produces zero carbon dioxide",
+                "C. CCGT power stations operate without consuming fuel",
+                "D. Gas turbines run on cold air"
+              ],
+              "correctAnswer": "A. High-temperature exhaust heat from a primary gas turbine is recovered to boil steam that drives a secondary steam turbine, elevating efficiency to ~60%",
+              "hint": "Combined-cycle configurations route 500°C gas turbine exhaust through Heat Recovery Steam Generators (HRSG), extracting secondary power.",
+              "workedSolution": "Combined-cycle configurations route 500°C gas turbine exhaust through Heat Recovery Steam Generators (HRSG), extracting secondary power.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A27",
+              "difficulty": "hard",
+              "prompt": "Why do high-performance racing bicycles use carbon-fiber composite frames instead of solid steel, based on Newton's Second Law?",
+              "options": [
+                "A. Lower mass ($m$) achieves higher acceleration ($a = F/m$) for identical pedaling leg force, improving uphill climbing and sprinting performance",
+                "B. Carbon fiber eliminates all aerodynamic drag",
+                "C. Steel bicycle frames are illegal in racing",
+                "D. Carbon fiber frames generate their own mechanical power"
+              ],
+              "correctAnswer": "A. Lower mass ($m$) achieves higher acceleration ($a = F/m$) for identical pedaling leg force, improving uphill climbing and sprinting performance",
+              "hint": "Reducing frame mass lowers system inertia, yielding greater acceleration from available rider wattage.",
+              "workedSolution": "Reducing frame mass lowers system inertia, yielding greater acceleration from available rider wattage.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A28",
+              "difficulty": "hard",
+              "prompt": "A differential wheel and axle has a wheel radius $R = 40\\text{ cm}$ and compound axle radii $r_1 = 12\\text{ cm}$ and $r_2 = 8\\text{ cm}$. Calculate the ideal Velocity Ratio ($VR = \\frac{2R}{r_1 - r_2}$).",
+              "options": [
+                "A. 5",
+                "B. 10",
+                "C. 20",
+                "D. 40"
+              ],
+              "correctAnswer": "C. 20",
+              "hint": "$VR = (2 \\times 40) / (12 - 8) = 80 / 4 = 20.0$.",
+              "workedSolution": "$VR = (2 \\times 40) / (12 - 8) = 80 / 4 = 20.0$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A29",
+              "difficulty": "hard",
+              "prompt": "What happens to the magnetic field strength ($B$) at the center of an electrical solenoid if the core is switched from air ($\\mu_r = 1$) to a ferromagnetic silicon steel alloy ($\\mu_r = 5,000$)?",
+              "options": [
+                "A. It decreases by 5,000 times",
+                "B. It increases by 5,000 times ($B = \\mu_r \\mu_0 n I$)",
+                "C. It stays exactly the same",
+                "D. It reverses magnetic polarity every second"
+              ],
+              "correctAnswer": "B. It increases by 5,000 times ($B = \\mu_r \\mu_0 n I$)",
+              "hint": "Ferromagnetic cores have high relative permeability ($\\mu_r$), concentrating magnetic flux lines and multiplying field strength.",
+              "workedSolution": "Ferromagnetic cores have high relative permeability ($\\mu_r$), concentrating magnetic flux lines and multiplying field strength.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A30",
+              "difficulty": "hard",
+              "prompt": "A $70\\text{ kg}$ athlete stands on a digital weighing scale inside an elevator. If the elevator accelerates upward at $a = 2.2\\text{ m/s}^2$, what apparent weight does the scale display ($g = 9.8\\text{ m/s}^2$)?",
+              "options": [
+                "A. 532 N",
+                "B. 686 N",
+                "C. 840 N",
+                "D. 980 N"
+              ],
+              "correctAnswer": "C. 840 N",
+              "hint": "By Newton's Second Law: $N - mg = ma \\Rightarrow N = m(g + a) = 70 \\times (9.8 + 2.2) = 70 \\times 12.0 = 840\\text{ N}$.",
+              "workedSolution": "By Newton's Second Law: $N - mg = ma \\Rightarrow N = m(g + a) = 70 \\times (9.8 + 2.2) = 70 \\times 12.0 = 840\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A31",
+              "difficulty": "hard",
+              "prompt": "Why does a mechanical bottle jack use an incompressible hydraulic oil rather than compressed air to lift heavy trucks?",
+              "options": [
+                "A. Liquids are virtually incompressible, transmitting applied pressure instantaneously without sponge-like volume collapse",
+                "B. Air dissolves steel cylinders",
+                "C. Hydraulic oil has zero mass",
+                "D. Air produces cold temperatures inside jacks"
+              ],
+              "correctAnswer": "A. Liquids are virtually incompressible, transmitting applied pressure instantaneously without sponge-like volume collapse",
+              "hint": "Pascal's principle requires incompressible fluid media; gas compressibility would absorb stroke displacement without moving the load.",
+              "workedSolution": "Pascal's principle requires incompressible fluid media; gas compressibility would absorb stroke displacement without moving the load.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A32",
+              "difficulty": "hard",
+              "prompt": "A factory automated packaging machine uses a cam and follower mechanism. What mechanical transformation does this system perform?",
+              "options": [
+                "A. It converts smooth continuous rotary motion into precise, timed reciprocating linear or oscillating motion",
+                "B. It transforms electricity into magnetic fields",
+                "C. It steps up voltage like a transformer",
+                "D. It generates hydraulic pressure"
+              ],
+              "correctAnswer": "A. It converts smooth continuous rotary motion into precise, timed reciprocating linear or oscillating motion",
+              "hint": "The contoured eccentric profile of a rotating cam translates rotary shaft motion into timed, repeatable linear stroke sequences.",
+              "workedSolution": "The contoured eccentric profile of a rotating cam translates rotary shaft motion into timed, repeatable linear stroke sequences.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A33",
+              "difficulty": "hard",
+              "prompt": "A $1,000\\text{ kg}$ car moving at $10\\text{ m/s}$ crashes into a crash-test barrier and stops in $0.10\\text{ seconds}$. If crumple zones extend the impact duration to $0.40\\text{ seconds}$, by what factor is the average impact force reduced?",
+              "options": [
+                "A. It is reduced by half",
+                "B. It is reduced to one-quarter ($4\\times$ reduction)",
+                "C. It is unchanged",
+                "D. It doubles"
+              ],
+              "correctAnswer": "B. It is reduced to one-quarter ($4\\times$ reduction)",
+              "hint": "Impulse equation: $F \\Delta t = m \\Delta v$. Quadrupling the deceleration timeframe ($0.10\\text{ s} \\rightarrow 0.40\\text{ s}$) cuts deceleration force to $1/4$.",
+              "workedSolution": "Impulse equation: $F \\Delta t = m \\Delta v$. Quadrupling the deceleration timeframe ($0.10\\text{ s} \\rightarrow 0.40\\text{ s}$) cuts deceleration force to $1/4$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A34",
+              "difficulty": "hard",
+              "prompt": "Why do modern combine harvesters incorporate automated grain loss sensors in their threshing and separating drums?",
+              "options": [
+                "A. Piezoelectric impact sensors detect unseparated grain strikes, allowing on-the-fly adjustment of drum speed to reduce harvest waste",
+                "B. To weigh the driver of the combine",
+                "C. To count how many birds fly over the field",
+                "D. To turn grain into wheat flour inside the field"
+              ],
+              "correctAnswer": "A. Piezoelectric impact sensors detect unseparated grain strikes, allowing on-the-fly adjustment of drum speed to reduce harvest waste",
+              "hint": "Piezoelectric acoustic sensors measure grain impact counts against walker pans, signaling operators to tune rotor speeds and minimize losses.",
+              "workedSolution": "Piezoelectric acoustic sensors measure grain impact counts against walker pans, signaling operators to tune rotor speeds and minimize losses.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A35",
+              "difficulty": "hard",
+              "prompt": "In an industrial crane hoisting system, a worm-and-wheel gear drive is utilized. What is a unique mechanical safety property of a worm drive?",
+              "options": [
+                "A. Self-locking: the worm can easily turn the worm gear, but the gear cannot back-drive the worm, preventing loads from dropping if power fails",
+                "B. It operates with zero friction",
+                "C. It generates its own electrical current",
+                "D. It works without lubricant"
+              ],
+              "correctAnswer": "A. Self-locking: the worm can easily turn the worm gear, but the gear cannot back-drive the worm, preventing loads from dropping if power fails",
+              "hint": "Frictional contact along lead angles prevents back-driving; the worm gear locks against the worm screw, providing an automatic mechanical brake.",
+              "workedSolution": "Frictional contact along lead angles prevents back-driving; the worm gear locks against the worm screw, providing an automatic mechanical brake.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A36",
+              "difficulty": "hard",
+              "prompt": "A tractor PTO (Power Take-Off) shaft delivers $50\\text{ kW}$ of mechanical power to a rotary mower at an angular speed of $\\omega = 56.55\\text{ rad/s}$ ($540\\text{ rpm}$). Calculate the transmitted torque in Newton-meters ($P = \\tau \\omega$).",
+              "options": [
+                "A. 442 Nm",
+                "B. 884 Nm",
+                "C. 1,768 Nm",
+                "D. 2,700 Nm"
+              ],
+              "correctAnswer": "B. 884 Nm",
+              "hint": "Torque $\\tau = P / \\omega = 50,000\\text{ W} / 56.55\\text{ rad/s} \\approx 884.17\\text{ Nm}$.",
+              "workedSolution": "Torque $\\tau = P / \\omega = 50,000\\text{ W} / 56.55\\text{ rad/s} \\approx 884.17\\text{ Nm}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A37",
+              "difficulty": "hard",
+              "prompt": "Why is regenerative braking insufficient to bring an electric vehicle to a complete standstill at very low speeds (<3 km/h)?",
+              "options": [
+                "A. Back-electromotive force (EMF) generated by the motor is proportional to rotor speed; as velocity approaches zero, induced braking torque vanishes",
+                "B. Batteries explode at zero speed",
+                "C. Tires lose all friction at low speeds",
+                "D. Electric vehicles cannot stop"
+              ],
+              "correctAnswer": "A. Back-electromotive force (EMF) generated by the motor is proportional to rotor speed; as velocity approaches zero, induced braking torque vanishes",
+              "hint": "Induced back-EMF scales with angular velocity ($E \\propto \\omega$); as rotational speed nears zero, regenerative braking torque drops, requiring friction pads.",
+              "workedSolution": "Induced back-EMF scales with angular velocity ($E \\propto \\omega$); as rotational speed nears zero, regenerative braking torque drops, requiring friction pads.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A38",
+              "difficulty": "hard",
+              "prompt": "A high-efficiency knapsack mist blower utilizes a fan impeller rotating at $6,000\\text{ rpm}$. Calculate the tip speed of a fan blade of radius $r = 0.15\\text{ m}$ ($v = \\omega r$, with $\\omega = \\frac{2\\pi N}{60}$).",
+              "options": [
+                "A. 47.1 m/s",
+                "B. 94.2 m/s",
+                "C. 141.4 m/s",
+                "D. 188.5 m/s"
+              ],
+              "correctAnswer": "B. 94.2 m/s",
+              "hint": "$\\omega = (2 \\times 3.1416 \\times 6,000) / 60 = 628.32\\text{ rad/s}$. Tip speed $v = 628.32 \\times 0.15 = 94.25\\text{ m/s}$ (~340 km/h air velocity).",
+              "workedSolution": "$\\omega = (2 \\times 3.1416 \\times 6,000) / 60 = 628.32\\text{ rad/s}$. Tip speed $v = 628.32 \\times 0.15 = 94.25\\text{ m/s}$ (~340 km/h air velocity).",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A39",
+              "difficulty": "hard",
+              "prompt": "How does the implementation of variable-frequency drives (VFDs) on industrial ventilation fans achieve substantial energy conservation?",
+              "options": [
+                "A. Affinity Laws: Fan power consumption scales with the cube of rotational speed ($P \\propto N^3$), so modest speed reductions yield major energy cuts",
+                "B. VFDs eliminate the need for electric motors",
+                "C. VFDs convert air into electricity",
+                "D. Fans run on magnetic energy without electricity"
+              ],
+              "correctAnswer": "A. Affinity Laws: Fan power consumption scales with the cube of rotational speed ($P \\propto N^3$), so modest speed reductions yield major energy cuts",
+              "hint": "By the cubic affinity law ($P \\propto N^3$), running a fan at 80% speed cuts required electrical power to $(0.8)^3 \\approx 51\\%$, saving ~49% energy.",
+              "workedSolution": "By the cubic affinity law ($P \\propto N^3$), running a fan at 80% speed cuts required electrical power to $(0.8)^3 \\approx 51\\%$, saving ~49% energy.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A40",
+              "difficulty": "hard",
+              "prompt": "A mechanical wedge of length $L = 25\\text{ cm}$ and back thickness $t = 5\\text{ cm}$ is driven into a log. What is the ideal mechanical advantage of the wedge ($MA = L/t$)?",
+              "options": [
+                "A. 2.5",
+                "B. 5.0",
+                "C. 10.0",
+                "D. 20.0"
+              ],
+              "correctAnswer": "B. 5.0",
+              "hint": "$MA = \\text{Length} / \\text{Thickness} = 25\\text{ cm} / 5\\text{ cm} = 5.0$.",
+              "workedSolution": "$MA = \\text{Length} / \\text{Thickness} = 25\\text{ cm} / 5\\text{ cm} = 5.0$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A41",
+              "difficulty": "hard",
+              "prompt": "What is the primary operational hazard of magnetic saturation in transformer iron cores?",
+              "options": [
+                "A. Magnetic permeability collapses, causing primary winding current to spike into high-amplitude distortion waveforms that overheat windings",
+                "B. The core stops conducting magnetic flux completely",
+                "C. The transformer turns into a permanent magnet permanently",
+                "D. The voltage steps up to infinity"
+              ],
+              "correctAnswer": "A. Magnetic permeability collapses, causing primary winding current to spike into high-amplitude distortion waveforms that overheat windings",
+              "hint": "Beyond saturation, the core cannot accept more flux lines; inductive impedance collapses, causing excitation current to surge and overheat coils.",
+              "workedSolution": "Beyond saturation, the core cannot accept more flux lines; inductive impedance collapses, causing excitation current to surge and overheat coils.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A42",
+              "difficulty": "hard",
+              "prompt": "A commercial combine harvester moves through a paddy rice field at $v = 1.5\\text{ m/s}$ with a cutting width of $4.0\\text{ meters}$. Calculate the field area harvested per hour in hectares ($1\\text{ ha} = 10,000\\text{ m}^2$).",
+              "options": [
+                "A. 1.08 ha/h",
+                "B. 2.16 ha/h",
+                "C. 3.24 ha/h",
+                "D. 4.32 ha/h"
+              ],
+              "correctAnswer": "B. 2.16 ha/h",
+              "hint": "Area rate $= 1.5\\text{ m/s} \\times 4.0\\text{ m} = 6.0\\text{ m}^2/\\text{s}$. Per hour: $6.0 \\times 3,600 = 21,600\\text{ m}^2/\\text{h} = 2.16\\text{ ha/h}$.",
+              "workedSolution": "Area rate $= 1.5\\text{ m/s} \\times 4.0\\text{ m} = 6.0\\text{ m}^2/\\text{s}$. Per hour: $6.0 \\times 3,600 = 21,600\\text{ m}^2/\\text{h} = 2.16\\text{ ha/h}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A43",
+              "difficulty": "hard",
+              "prompt": "Why does a golfer follow through smoothly with their swing after striking a golf ball, based on impulse mechanics ($F \\Delta t = m \\Delta v$)?",
+              "options": [
+                "A. Increasing contact impact time ($\\Delta t$) maximizes total momentum transfer, giving the ball higher launch velocity",
+                "B. Following through prevents the club from breaking",
+                "C. It reduces the mass of the golf ball",
+                "D. It stops air resistance from acting on the ball"
+              ],
+              "correctAnswer": "A. Increasing contact impact time ($\\Delta t$) maximizes total momentum transfer, giving the ball higher launch velocity",
+              "hint": "Extending impact duration maximizes impulse ($J = \\int F dt = m \\Delta v$), accelerating the ball to greater muzzle velocity.",
+              "workedSolution": "Extending impact duration maximizes impulse ($J = \\int F dt = m \\Delta v$), accelerating the ball to greater muzzle velocity.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A44",
+              "difficulty": "hard",
+              "prompt": "A pair of bolt cutters uses compound lever linkages. If Stage 1 has $MA_1 = 6.0$ and Stage 2 has $MA_2 = 5.0$, what is the overall ideal Mechanical Advantage of the cutters?",
+              "options": [
+                "A. 11.0",
+                "B. 15.0",
+                "C. 30.0",
+                "D. 60.0"
+              ],
+              "correctAnswer": "C. 30.0",
+              "hint": "Compound mechanical advantage multiplies across series stages: $MA_{total} = MA_1 \\times MA_2 = 6.0 \\times 5.0 = 30.0$.",
+              "workedSolution": "Compound mechanical advantage multiplies across series stages: $MA_{total} = MA_1 \\times MA_2 = 6.0 \\times 5.0 = 30.0$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A45",
+              "difficulty": "hard",
+              "prompt": "Why is regenerative braking less effective on low-adhesion surfaces like wet clay mud or icy roads?",
+              "options": [
+                "A. Tire-ground friction coefficient drops; excessive motor braking torque locks wheels into uncontrolled skids",
+                "B. Water shorts out the electric motor",
+                "C. Mud makes batteries discharge instantly",
+                "D. Electric vehicles cannot run in rain"
+              ],
+              "correctAnswer": "A. Tire-ground friction coefficient drops; excessive motor braking torque locks wheels into uncontrolled skids",
+              "hint": "Low friction limits maximum tire-ground traction; aggressive regeneration torque can exceed tire grip, triggering skidding.",
+              "workedSolution": "Low friction limits maximum tire-ground traction; aggressive regeneration torque can exceed tire grip, triggering skidding.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A46",
+              "difficulty": "hard",
+              "prompt": "A $300\\text{ N}$ box rests on a horizontal wooden plank. If the coefficient of static friction is $\\mu_s = 0.40$, calculate the minimum horizontal force required to initiate motion.",
+              "options": [
+                "A. 75 N",
+                "B. 120 N",
+                "C. 240 N",
+                "D. 300 N"
+              ],
+              "correctAnswer": "B. 120 N",
+              "hint": "Threshold friction force $F_{static} = \\mu_s N = 0.40 \\times 300\\text{ N} = 120\\text{ N}$.",
+              "workedSolution": "Threshold friction force $F_{static} = \\mu_s N = 0.40 \\times 300\\text{ N} = 120\\text{ N}$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A47",
+              "difficulty": "hard",
+              "prompt": "How does a robotic surgical arm achieve tremor filtration when performing delicate ophthalmic or cardiac operations?",
+              "options": [
+                "A. Microprocessors sample surgeon hand inputs, digitally filtering out involuntary 6–12 Hz physiological hand tremors before actuating micro-stepper motors",
+                "B. By numbing the surgeon's hand with cold gas",
+                "C. By using heavy iron counterweights",
+                "D. By magnetizing the surgical scalpel"
+              ],
+              "correctAnswer": "A. Microprocessors sample surgeon hand inputs, digitally filtering out involuntary 6–12 Hz physiological hand tremors before actuating micro-stepper motors",
+              "hint": "Robotic surgical consoles apply digital band-stop algorithms to strip out micro-tremors, translating motion into stabilized micro-strokes.",
+              "workedSolution": "Robotic surgical consoles apply digital band-stop algorithms to strip out micro-tremors, translating motion into stabilized micro-strokes.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A48",
+              "difficulty": "hard",
+              "prompt": "A 10-meter inclined conveyor belt in an agricultural warehouse lifts grain sacks to a $2.5\\text{ m}$ high platform. If the belt motor expends $50\\text{ kJ}$ of energy to lift $35\\text{ kJ}$ of grain, calculate the mechanical efficiency.",
+              "options": [
+                "A. 50.0%",
+                "B. 70.0%",
+                "C. 75.0%",
+                "D. 85.0%"
+              ],
+              "correctAnswer": "B. 70.0%",
+              "hint": "Efficiency $\\eta = (W_{out} / W_{in}) \\times 100\\% = (35\\text{ kJ} / 50\\text{ kJ}) \\times 100\\% = 70.0\\%$.",
+              "workedSolution": "Efficiency $\\eta = (W_{out} / W_{in}) \\times 100\\% = (35\\text{ kJ} / 50\\text{ kJ}) \\times 100\\% = 70.0\\%$.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A49",
+              "difficulty": "hard",
+              "prompt": "What is the physical principle behind magnetic levitation (Maglev) bullet trains?",
+              "options": [
+                "A. Superconducting electromagnets create repulsive magnetic fields that lift the train above track guide-ways, eliminating mechanical wheel-rail friction",
+                "B. The train is pulled by underground cables",
+                "C. Large fans blow air under the carriages",
+                "D. Permanent magnets in the sky pull the train upward"
+              ],
+              "correctAnswer": "A. Superconducting electromagnets create repulsive magnetic fields that lift the train above track guide-ways, eliminating mechanical wheel-rail friction",
+              "hint": "Electromagnetic levitation creates active magnetic repulsion between vehicle bogeys and track rails, eliminating rolling resistance.",
+              "workedSolution": "Electromagnetic levitation creates active magnetic repulsion between vehicle bogeys and track rails, eliminating rolling resistance.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MOT_A50",
+              "difficulty": "hard",
+              "prompt": "What is the ultimate macroeconomic and environmental benefit of integrating energy conservation with mechanized modern agriculture?",
+              "options": [
+                "A. Maximizing food crop production yields per hectare while lowering per-ton greenhouse gas emissions and production operating costs",
+                "B. Forcing all farm work to be done with hand tools",
+                "C. Eliminating the use of water in agriculture",
+                "D. Banning all agricultural machinery"
+              ],
+              "correctAnswer": "A. Maximizing food crop production yields per hectare while lowering per-ton greenhouse gas emissions and production operating costs",
+              "hint": "Energy-efficient mechanized agriculture raises harvest productivity while cutting fossil fuel expenditures and carbon footprints.",
+              "workedSolution": "Energy-efficient mechanized agriculture raises harvest productivity while cutting fossil fuel expenditures and carbon footprints.",
+              "points": 2,
+              "learningCompetency": "B8.4.3.1.1, B8.4.4.1.1 & B8.4.4.2.1",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b9": {
@@ -64092,7 +66690,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -64290,7 +66888,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -67074,7 +69672,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -69823,7 +72421,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.363Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -72570,7 +75168,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.241Z"
+    "updatedAt": "2026-10-09T18:18:17.364Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -75300,7 +77898,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.242Z"
+    "updatedAt": "2026-10-09T18:18:17.364Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -78035,7 +80633,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T17:31:05.242Z"
+    "updatedAt": "2026-10-09T18:18:17.364Z"
   }
 ];
 
@@ -137470,49 +140068,2435 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Forces, Motion, Magnetism & Mechanics (Newton's Laws, Simple/Complex Machines, Fluid Pressure)",
     "order": 38,
     "notes": {
-      "summaryMarkdown": "### Simple Machines: Mechanical Advantage, Velocity Ratio & Efficiency\n* **NaCCA Curriculum Code:** `B8.4.3.1`\n* **Core Competency:** Explain the operation of simple machines, derive Mechanical Advantage, Velocity Ratio, and calculate mechanical Efficiency.\n\n#### 1. Fundamental Principles of Simple Machines\nA machine is a mechanical device that enables work to be done more easily, rapidly, or safely by applying an Effort ($E$) to overcome a Load ($L$).\n* **Mechanical Advantage (MA):** Force multiplication factor:\n  $$\\text{MA} = \\frac{\\text{Load } (L)}{\\text{Effort } (E)}$$\n  ($\\text{MA} > 1$: force multiplier; $\\text{MA} < 1$: speed multiplier).\n* **Velocity Ratio (VR):** Distance movement ratio (independent of friction):\n  $$\\text{VR} = \\frac{\\text{Distance moved by Effort } (d_E)}{\\text{Distance moved by Load } (d_L)}$$\n* **Efficiency ($\\eta$):** Percentage of input work converted into useful output work:\n  $$\\eta = \\frac{\\text{Work Output}}{\\text{Work Input}} \\times 100\\% = \\frac{\\text{MA}}{\\text{VR}} \\times 100\\%$$\n* *Real Machine Limitation:* In real machines, efficiency is **always less than 100%** because part of the work input is dissipated overcoming friction between moving parts and lifting the machine's own weight.\n\n#### 2. Classes of Simple Machines\n* **Levers:** Rigid bar pivoting on a fixed fulcrum (pivot):\n  * **Class 1 (Fulcrum in middle):** Crowbar, scissors, claw hammer, see-saw ($L - F - E$).\n  * **Class 2 (Load in middle):** Wheelbarrow, nutcracker, bottle opener ($F - L - E$). $\\text{MA} > 1$ always.\n  * **Class 3 (Effort in middle):** Sugar tongs, human forearm, tweezers ($F - E - L$). $\\text{MA} < 1$ (speed/distance multiplier).\n* **Inclined Plane (Ramp):**\n  $$\\text{VR} = \\frac{\\text{Length of Slope } (l)}{\\text{Vertical Height } (h)} = \\frac{1}{\\sin \\theta}$$\n* **Pulley Systems:**\n  * Single Fixed Pulley: $\\text{VR} = 1$ (changes direction of effort only).\n  * Block and Tackle System: $\\text{VR} = \\text{total number of rope segments supporting the movable block}$.",
+      "summaryMarkdown": "### Forces & Energy: Energy Conservation, Magnetism, Newton's Laws & Simple/Complex Machines\n* **NaCCA Curriculum Standards:** `B8.4.3.1`, `B8.4.4.1`, `B8.4.4.2`\n* **Key Learning Indicators:** `B8.4.3.1.1`, `B8.4.4.1.1`, `B8.4.4.2.1`\n* **Core Competencies:** Explain the principles and environmental impacts of energy conversion and conservation; evaluate the five pillars of energy sustainability; demonstrate simple methods of making magnets and map magnetic lines of force; analyze Newton's Three Laws of Motion with real-world qualitative and quantitative applications ($F = ma$); classify simple machines into their six primary categories; examine the mechanics of levers (Classes 1, 2, 3) and pulleys (fixed vs. movable); and deconstruct complex (compound) machines into their simple component mechanisms.\n\n---\n\n### Module 1: Energy Conversion, Conservation, and Environmental Sustainability\n\n#### 1. Foundational Concepts of Energy Conservation\nEnergy conservation is the deliberate, systematic practice of reducing energy consumption by eliminating waste, improving technological energy efficiency, and adopting responsible behavioral practices. While the **Principle of Conservation of Energy** dictates that energy cannot be created or destroyed, high-grade usable energy (such as chemical fuel or electricity) naturally degrades into low-grade unusable thermal energy (waste heat) whenever transformations occur.\n\n#### 2. The Five Pillars of Energy Conservation in Daily Life\n\n| Conservation Pillar | Practical Everyday Realization | Environmental & Socio-Economic Significance |\n| :--- | :--- | :--- |\n| **1. Sustainability** | Transitioning from finite fossil hydrocarbons to renewable energy flows (solar PV, wind, small hydro, sustainable biomass) and recycling materials. | Preserves finite non-renewable resource reserves (petroleum, coal, gas) for future generations and minimizes ecological destruction associated with resource extraction. |\n| **2. Cost Savings** | Installing high-efficiency LED luminaires, inverter-driven refrigerators and air conditioners, and applying reflective thermal roof insulation. | Drastically reduces monthly electricity tariffs and fuel expenditures for households, commercial enterprises, and public schools. |\n| **3. Reduced Carbon Footprint** | Utilizing public mass transit, cycling, adopting solar water heaters, and purchasing energy-rated home appliances. | Slashes industrial and tailpipe emissions of carbon dioxide ($CO_2$) and methane ($CH_4$), directly combating anthropogenic global warming and severe climate events. |\n| **4. Energy Security** | Diversifying domestic energy supply mixes by integrating rooftop solar systems and national renewable energy microgrids. | Reduces national economic vulnerability to global crude oil price shocks, foreign fuel embargoes, and localized power grid blackout disruptions. |\n| **5. Public Health** | Replacing smoky biomass wood/charcoal cookstoves with clean LPG or electric induction cookers and reducing diesel exhaust. | Purifies indoor and urban ambient air, drastically lowering the clinical incidence of acute respiratory infections, asthma, bronchitis, and cardiovascular diseases. |\n\n#### 3. Environmental Impacts of Sustainable Energy Conservation\n\n1. **Mitigation of Greenhouse Gas Concentrations:** Cutting energy consumption curbs the burning of coal, heavy fuel oil, and natural gas in thermal power stations, slowing atmospheric accumulation of $CO_2$ and stabilizing planetary climate patterns.\n2. **Preservation of Pristine Ecological Habitats:** Decreasing demand for fossil hydrocarbons slows strip-mining, mountaintop coal removal, offshore crude oil drilling, and oil pipeline construction that destroy fragile terrestrial and marine biomes.\n3. **Reduction of Acid Precipitation and Smog:** Eliminates toxic emissions of sulfur dioxide ($SO_2$) and nitrogen oxides ($NO_x$), halting the acidification of freshwater lakes, protecting agricultural soils, and eradicating suffocating photochemical smog.\n4. **Conservation of Water Resources:** Conventional steam thermal and nuclear stations withdraw billions of liters of cooling water; energy efficiency and solar PV adoption eliminate industrial water withdrawal and thermal pollution of rivers.\n5. **Curtailment of Toxic Solid Waste:** Reducing fossil combustion eliminates millions of tons of hazardous coal fly ash containing toxic heavy metals (arsenic, lead, mercury) that threaten groundwater aquifers.\n\n#### Visual Demonstration: Pillars of Energy Conservation and Environmental Impact\n<svg width=\"760\" height=\"160\" viewBox=\"0 0 760 160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PILLARS OF ENERGY CONSERVATION AND ENVIRONMENTAL IMPACT</text><g transform=\"translate(25, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. Sustainability</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Preserves resources</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Minimizes waste</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#14532d\">• Protects habitats</text></g><g transform=\"translate(170, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">2. Cost Savings</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Efficient appliances</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Lower power bills</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#713f12\">• Home insulation</text></g><g transform=\"translate(315, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. Low Carbon</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Cuts emissions</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Mitigates warming</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e3a8a\">• Solar &amp; wind use</text></g><g transform=\"translate(460, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#faf5ff\" stroke=\"#9333ea\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#6b21a8\" text-anchor=\"middle\">4. Energy Security</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Diverse sources</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Cuts fuel imports</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#581c87\">• Stable grid supply</text></g><g transform=\"translate(605, 40)\"><rect width=\"130\" height=\"100\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"65\" y=\"22\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">5. Public Health</text><text x=\"10\" y=\"44\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\">• Cleaner city air</text><text x=\"10\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\">• Low respiratory risk</text><text x=\"10\" y=\"76\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#7c2d12\">• Preserves water</text></g></svg>\n\n---\n\n### Module 2: Magnetism: Magnetic Fields, Lines of Force, and Electromagnets\n\n#### 1. Magnetic Field Fundamentals\n* **Magnetic Field:** The spatial region or volume surrounding a magnet or current-carrying conductor where magnetic forces (attractive or repulsive) can be experienced by magnetic materials or other magnets.\n* **Magnetic Lines of Force (Flux Lines):** Continuous, imaginary, directed vector lines drawn to map the geometry and intensity of a magnetic field.\n* **Fundamental Properties of Magnetic Field Lines:**\n  1. They form continuous, unbroken closed loops.\n  2. Outside the magnet, they emerge from the **North (N) pole** and enter the **South (S) pole**. Inside the magnet, they continue from the South pole to the North pole.\n  3. Magnetic lines of force **never intersect or cross one another**. (If they did, a magnetic compass placed at the intersection point would point in two different directions simultaneously, which is physically impossible).\n  4. The density or closeness of the lines represents field strength: lines are most crowded near the poles where the magnetic field is strongest.\n* **Neutral Point ($X$):** A geographic point in space where the magnetic field of a magnet is exactly equal in magnitude and opposite in direction to the ambient horizontal component of the Earth's magnetic field. The resultant magnetic field at a neutral point is zero ($B_{\\text{net}} = 0$), so a magnetic compass needle will experience no net torque and point in any arbitrary direction.\n* **The Repulsion Criterion:**\n  > **Repulsion is the only sure and infallible test for a permanent magnet.** An unmagnetized magnetic material (such as a soft iron bar) is attracted by both the North pole and the South pole of a magnet via magnetic induction. Only two like poles of genuine permanent magnets (North to North, or South to South) experience mutual **repulsion**.\n\n#### 2. Methods of Making Magnets (Magnetization)\n\n| Method | Step-by-Step Procedure | Underlying Physical Mechanism | Pole Identification Rule |\n| :--- | :--- | :--- | :--- |\n| **1. Electrical Method (DC Solenoid)** | Insert a hard steel bar inside an insulated wire coil (solenoid) and pass a strong Direct Current (DC) through the winding for several seconds. | The steady electric current generates an intense, uniform internal magnetic field that forces all atomic magnetic domains (dipoles) in the steel to align in one direction. | **End Rule:** Looking directly at the end face of the coil: if current circulates in a **clockwise** direction, that end becomes a **South pole (S)**; if **counter-clockwise**, it becomes a **North pole (N)**. |\n| **2. Stroking Method (Single Touch)** | Stroke a steel needle or bar repeatedly from one end to the other in one direction using a single pole of a permanent bar magnet. Lift the magnet well clear of the bar on each return stroke. | The magnetic field of the moving pole drags opposing atomic domains along the bar, aligning them parallel to the axis. | The end where the stroking magnet leaves the bar always develops the **opposite pole** to the stroking pole. |\n| **3. Stroking Method (Divided Touch)** | Place two opposite poles of two bar magnets at the center of the steel bar and stroke simultaneously outward toward opposite ends, lifting clear after each stroke. | Simultaneously aligns domains symmetrically from the center outward. | Each end of the bar acquires the opposite polarity to the stroking magnet leaving that end; the center becomes a neutral region. |\n| **4. Magnetic Induction** | Bring a permanent magnet in close proximity to or in direct contact with an unmagnetized magnetic specimen (e.g., soft iron nail). | The external magnetic field temporarily rotates and aligns the domains of the soft iron without physical transfer of matter. | The near end acquires an **opposite pole**; the far end acquires a **similar pole**. Magnetism is temporary and lost when the magnet is removed. |\n| **5. Hammering in Earth's Field** | Align a steel rod parallel to the Earth's magnetic meridian (pointing North-South inclined at the angle of dip) and hammer its end firmly with a mallet. | Mechanical acoustic shock vibrations agitate the crystal lattice, freeing pinned magnetic domain boundaries to pivot and align with the Earth's geomagnetic field. | The end pointing North acquires a North pole; the end pointing South acquires a South pole. |\n\n#### 3. Electromagnets: Architecture, Operation, and Strength Factors\nAn **electromagnet** is a temporary magnet formed by winding an insulated wire coil around a high-permeability soft iron core. When an electric current circulates through the winding, a strong magnetic field is generated; when current is interrupted, magnetism immediately collapses.\n\n* **Factors Governing the Strength of an Electromagnet:**\n  1. **Core Material:** Utilizing a soft iron core provides high magnetic permeability and low retentivity, multiplying magnetic flux density thousands of times compared to an air core.\n  2. **Electric Current Magnitude ($I$):** Magnetic field strength is directly proportional to the current flowing through the coil ($B \\propto I$).\n  3. **Number of Turns of Wire ($N$):** Increasing the density of winding turns per unit length increases magnetomotive force ($B \\propto N$).\n* **Essential Everyday Applications of Electromagnets:**\n  * **Electric Door Bells & Buzzers:** Electromagnet attracts a soft iron armature carrying a striker to hit a gong, breaking contact to cycle the stroke.\n  * **Industrial Scrap Lifting Cranes:** Massive electromagnets energize to lift tons of scrap iron and de-energize to drop the load instantly.\n  * **Electric Motors and Alternators:** Produce high-intensity rotating magnetic fields that drive mechanical shaft torque.\n  * **Audio Transducers (Loudspeakers & Earpieces):** Varying audio currents interact with permanent magnetic fields to vibrate diaphragms and create sound waves.\n  * **Electromagnetic Relays:** Tiny control currents energize small coils to close heavy-duty, high-voltage electrical contacts safely.\n\n#### Visual Demonstration: Magnetic Field Patterns & Electrical Magnetization\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">MAGNETIC FIELD PATTERNS &amp; ELECTRICAL MAGNETIZATION (SOLENOID)</text><g transform=\"translate(35, 42)\"><rect width=\"325\" height=\"160\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"162\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">BAR MAGNET &amp; LINES OF FORCE</text><rect x=\"75\" y=\"72\" width=\"85\" height=\"26\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1.2\"/><rect x=\"160\" y=\"72\" width=\"85\" height=\"26\" fill=\"#3b82f6\" stroke=\"#1d4ed8\" stroke-width=\"1.2\"/><text x=\"117\" y=\"89\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">NORTH (N)</text><text x=\"202\" y=\"89\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">SOUTH (S)</text><path d=\"M 90 72 C 90 32, 230 32, 230 72\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.4\"/><polygon points=\"165,42 157,38 157,46\" fill=\"#64748b\"/><path d=\"M 105 72 C 105 48, 215 48, 215 72\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.4\"/><polygon points=\"165,54 157,50 157,58\" fill=\"#64748b\"/><path d=\"M 90 98 C 90 138, 230 138, 230 98\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.4\"/><polygon points=\"165,128 157,124 157,132\" fill=\"#64748b\"/><text x=\"162\" y=\"150\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\" text-anchor=\"middle\">Lines run North to South externally; do not cross</text></g><g transform=\"translate(395, 42)\"><rect width=\"330\" height=\"160\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">ELECTRICAL MAGNETIZATION (SOLENOID)</text><rect x=\"45\" y=\"68\" width=\"240\" height=\"20\" rx=\"2\" fill=\"#cbd5e1\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"55\" y=\"82\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\">S-Pole</text><text x=\"255\" y=\"82\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">N-Pole</text><text x=\"165\" y=\"82\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Steel Bar inside Coil</text><path d=\"M 70 88 Q 78 50 85 88 Q 93 50 100 88 Q 108 50 115 88 Q 123 50 130 88 Q 138 50 145 88 Q 153 50 160 88 Q 168 50 175 88 Q 183 50 190 88 Q 198 50 205 88 Q 213 50 220 88 Q 228 50 235 88 Q 243 50 250 88\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"2\"/><line x1=\"70\" y1=\"88\" x2=\"70\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"250\" y1=\"88\" x2=\"250\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"70\" y1=\"130\" x2=\"140\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"190\" y1=\"130\" x2=\"250\" y2=\"130\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><line x1=\"140\" y1=\"120\" x2=\"140\" y2=\"140\" stroke=\"#dc2626\" stroke-width=\"2.5\"/><line x1=\"150\" y1=\"124\" x2=\"150\" y2=\"136\" stroke=\"#0f172a\" stroke-width=\"2.5\"/><circle cx=\"170\" cy=\"130\" r=\"2.5\" fill=\"#0f172a\"/><circle cx=\"185\" cy=\"130\" r=\"2.5\" fill=\"#0f172a\"/><line x1=\"170\" y1=\"130\" x2=\"185\" y2=\"124\" stroke=\"#0284c7\" stroke-width=\"1.8\"/><text x=\"145\" y=\"150\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\">DC Battery &amp; Switch</text></g></svg>\n\n---\n\n### Module 3: Newton's Laws of Motion: Principles and Everyday Applications\n\n#### 1. Newton's Three Laws of Motion\nSir Isaac Newton formulated three foundational laws of classical mechanics governing the relationship between forces and the motion of material bodies:\n\n##### A. Newton's First Law of Motion (The Law of Inertia)\n> **Statement:** An object remains in its state of rest, or continues to move with constant velocity in a straight line, unless acted upon by an external net unbalanced force.\n* **Concept of Inertia:** **Inertia** is the inherent physical property of matter that resists any change in its existing state of rest or uniform motion. The inertia of a body is measured solely by its **mass ($m$)**; a heavier body possesses greater inertia and offers greater resistance to changes in its velocity.\n* **Everyday Realizations:**\n  * When a moving trotro or bus brakes suddenly, standing passengers involuntarily pitch forward because their bodies possess inertia and tend to maintain forward velocity.\n  * When a vehicle violently accelerates forward from rest, passengers feel pressed backward against their seats.\n  * Dusting a carpet: striking a rug with a stick rapidly moves the rug backward, while the dust particles remain stationary due to inertia and separate from the fabric.\n\n##### B. Newton's Second Law of Motion (The Law of Acceleration)\n> **Statement:** The rate of change of momentum of a body is directly proportional to the applied net force and occurs in the direction of the straight line in which the force acts. For a constant mass, acceleration is directly proportional to net force and inversely proportional to mass.\n* **Mathematical Equation:**\n  $$F = m \\times a \\implies a = \\frac{F}{m}$$\n  Where:\n  * $F$ = Net resultant external force applied (Newtons, $\\text{N} = \\text{kg}\\cdot\\text{m/s}^2$)\n  * $m$ = Mass of the object (kilograms, $\\text{kg}$)\n  * $a$ = Resultant acceleration produced ($\\text{m/s}^2$)\n* **Core Deductions:**\n  1. For a fixed mass ($m$), doubling the force doubles the acceleration ($a \\propto F$).\n  2. For a constant force ($F$), increasing the mass results in lower acceleration ($a \\propto \\frac{1}{m}$).\n\n##### C. Newton's Third Law of Motion (Action and Reaction)\n> **Statement:** For every action force, there is an equal and opposite reaction force.\n* **Pair Dynamics:** Action and reaction forces are equal in magnitude, opposite in direction, and act on **two different interacting bodies simultaneously**. Therefore, action-reaction pairs never cancel each other out on a single object.\n* **Everyday Realizations:**\n  * **Walking:** Your foot pushes backward on the ground (Action); the ground pushes forward on your foot with an equal frictional force (Reaction).\n  * **Swimming:** The swimmer's hands push water backward (Action); the displaced water pushes the swimmer forward (Reaction).\n  * **Rocket Propulsion:** Expanding hot combustion gases are expelled downward at high velocity through the exhaust nozzle (Action); the gas reaction exerts an equal upward thrust force on the rocket frame (Reaction).\n\n#### 2. Experimental Verification: Magnetic Acceleration vs. Mass\n* **Experiment Setup:** A calibrated permanent bar magnet is fixed on a smooth benchtop. Steel paperclips of varying masses (a single $1.0\\text{ g}$ paperclip vs. a bundle of ten paperclips totaling $10.0\\text{ g}$) are placed at identical separation distances ($5.0\\text{ cm}$).\n* **Observations:** When released, the single light paperclip accelerates rapidly toward the magnet. The bundled heavy paperclips accelerate sluggishly or require the magnet to be moved much closer.\n* **Scientific Conclusion:** Under identical magnetic pulling forces, acceleration is inversely proportional to mass ($a \\propto \\frac{1}{m}$), validating Newton's Second Law.\n\n#### Visual Demonstration: Newton's Second Law of Motion ($F = ma$)\n<svg width=\"760\" height=\"190\" viewBox=\"0 0 760 190\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"190\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">NEWTON'S SECOND LAW OF MOTION (F = ma) - INVERSE PROPORTIONALITY TO MASS</text><g transform=\"translate(50, 40)\"><rect width=\"310\" height=\"135\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"80\" r=\"42\" fill=\"#94a3b8\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"90\" y=\"82\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">400 kg</text><text x=\"90\" y=\"96\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#1e293b\" text-anchor=\"middle\">[Large Mass]</text><path d=\"M 240 80 L 145 80\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"3\"/><polygon points=\"145,80 157,74 157,86\" fill=\"#dc2626\"/><text x=\"200\" y=\"70\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#dc2626\">Large Force Required</text><text x=\"155\" y=\"125\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Acceleration is LOW for heavy mass ($a = F/m$)</text></g><g transform=\"translate(400, 40)\"><rect width=\"310\" height=\"135\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"80\" cy=\"80\" r=\"20\" fill=\"#94a3b8\" stroke=\"#475569\" stroke-width=\"1.5\"/><text x=\"80\" y=\"83\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">40 kg</text><text x=\"80\" y=\"94\" font-family=\"sans-serif\" font-size=\"6.5\" fill=\"#1e293b\" text-anchor=\"middle\">[Small Mass]</text><path d=\"M 200 80 L 110 80\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\"/><polygon points=\"110,80 120,75 120,85\" fill=\"#16a34a\"/><text x=\"165\" y=\"70\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\">Small Force Needed</text><text x=\"155\" y=\"125\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Acceleration is HIGH for light mass ($a = F/m$)</text></g></svg>\n\n---\n\n### Module 4: Simple Machines: Levers, Pulleys, and the Six Categories\n\n#### 1. Mechanical Foundations of Simple Machines\nA **simple machine** is a mechanical device that alters the magnitude, speed, or direction of an applied force to make physical work easier, functioning with minimal or no internal moving parts.\n\n* **Key Performance Equations in Mechanics:**\n  1. **Mechanical Advantage ($MA$):** The ratio of the load force overcome by the machine to the effort force applied:\n     $$MA = \\frac{\\text{Load (N)}}{\\text{Effort (N)}} = \\frac{L}{E}$$\n     *(A machine with $MA > 1$ acts as a force multiplier).*\n  2. **Velocity Ratio ($VR$):** The ratio of the distance moved by the effort to the distance moved by the load in the same time interval:\n     $$VR = \\frac{\\text{Distance moved by Effort}}{\\text{Distance moved by Load}} = \\frac{d_E}{d_L}$$\n  3. **Efficiency ($\\eta$):** The percentage of input work converted into useful output work:\n     $$\\eta = \\frac{\\text{Work Output}}{\\text{Work Input}} \\times 100\\% = \\frac{MA}{VR} \\times 100\\%$$\n     *(Real machines never achieve $100\\%$ efficiency because of internal friction and component weight).*\n\n#### 2. The Six Classical Categories of Simple Machines\n\n| Category | Structural Engineering Mechanism | Everyday Practical Examples |\n| :--- | :--- | :--- |\n| **1. Lever** | A rigid bar or rod free to pivot around a stationary fixed support axis called a **fulcrum (pivot)**. | Crowbars, scissors, seesaws, wheelbarrows, bottle openers, brooms, pliers, fishing rods. |\n| **2. Pulley** | A grooved wheel mounted on an axle carrying a flexible rope, belt, or steel cable. | Window blind cords, construction cranes, well-water pulleys, elevator hoisting cables. |\n| **3. Inclined Plane** | A rigid, flat surface tilted at an angle to the horizontal. Allows lifting heavy loads using smaller forces over extended distances. | Wheelchair access ramps, loading bay ramps, sloped highways, staircases. |\n| **4. Wedge** | A movable tool formed by joining two inclined planes back-to-back, converting a blunt axial driving force into lateral splitting forces. | Axes, wood-splitting chisels, knives, nail points, shovel blades, razor blades, doorstops. |\n| **5. Screw** | An inclined plane wrapped helically around a central cylindrical core or shaft. Converts rotational torque into axial linear thrust. | Wood screws, metal bolts, bottle caps, car screw jacks, drill bits, vise spindles. |\n| **6. Wheel and Axle** | A large-diameter wheel rigidly connected to a smaller-diameter concentric shaft (axle), rotating together. | Car steering wheels, screwdriver handles, door knobs, windlass water wells, bicycle pedals. |\n\n#### 3. Detailed Anatomy of the Three Classes of Levers\nLevers are classified into three distinct orders according to the relative spatial positions of the **Fulcrum ($F$)**, the **Load ($L$)**, and the **Effort ($E$)**:\n\n```\nCLASS 1 LEVER:      LOAD  <--------  FULCRUM  -------->  EFFORT      [Fulcrum in the Middle]\nCLASS 2 LEVER:   FULCRUM  <--------    LOAD   -------->  EFFORT      [Load in the Middle]\nCLASS 3 LEVER:   FULCRUM  <--------   EFFORT  -------->  LOAD        [Effort in the Middle]\n```\n\n1. **First-Class Levers (Fulcrum in the Middle):**\n   * **Spatial Arrangement:** The fulcrum lies between the load and the applied effort ($L - F - E$).\n   * **Mechanical Behavior:** Can act as a force multiplier ($MA > 1$), distance multiplier ($MA < 1$), or change force direction ($MA = 1$).\n   * **Examples:** Crowbars, scissors, seesaws, pliers, claw hammer extracting a nail, pincers.\n2. **Second-Class Levers (Load in the Middle):**\n   * **Spatial Arrangement:** The load lies between the fulcrum and the applied effort ($F - L - E$).\n   * **Mechanical Behavior:** Effort arm is always longer than the load arm; therefore, $MA > 1$ and $VR > 1$. Always acts as a **force multiplier**.\n   * **Examples:** Wheelbarrows, nutcrackers, bottle openers, paper guillotines, wheelbarrow wheel axles.\n3. **Third-Class Levers (Effort in the Middle):**\n   * **Spatial Arrangement:** The effort is applied between the fulcrum and the load ($F - E - L$).\n   * **Mechanical Behavior:** Load arm is always longer than the effort arm; therefore, $MA < 1$ and $VR < 1$. Acts as a **distance/speed multiplier** requiring more effort than load.\n   * **Examples:** Brooms, fishing rods, tweezers, human arm lifting a weight, coal tongs, table tennis bats.\n\n#### 4. Pulley Systems: Fixed vs. Movable\n* **Fixed Pulley:** The axle is anchored to a stationary beam or ceiling. Does not move with the load.\n  * **Characteristics:** Velocity Ratio $VR = 1$; Mechanical Advantage $MA \\approx 1$.\n  * **Function:** Changes the direction of the applied effort, allowing a worker to pull downward with the assistance of gravity to lift a load upward.\n* **Movable Pulley:** The pulley wheel is suspended directly from the rope loop and travels upward along with the load.\n  * **Characteristics:** Velocity Ratio $VR = 2$; Ideal Mechanical Advantage $MA = 2$.\n  * **Function:** Acts as a genuine force multiplier, halving the effort needed to hoist the load.\n\n#### Visual Demonstration: The Three Classes of Levers & Types of Pulleys\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE THREE CLASSES OF LEVERS &amp; TYPES OF PULLEYS</text><g transform=\"translate(25, 38)\"><rect width=\"225\" height=\"140\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"112\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">CLASS 1 LEVER (Fulcrum in Middle)</text><line x1=\"25\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#0f172a\" stroke-width=\"3.5\"/><polygon points=\"112,75 102,95 122,95\" fill=\"#16a34a\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"112\" y=\"110\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Fulcrum</text><rect x=\"25\" y=\"55\" width=\"25\" height=\"20\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"37\" y=\"68\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><path d=\"M 190 45 L 190 70\" stroke=\"#0284c7\" stroke-width=\"2.5\" fill=\"none\"/><polygon points=\"190,70 186,60 194,60\" fill=\"#0284c7\"/><text x=\"190\" y=\"38\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Effort</text><text x=\"112\" y=\"130\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\" text-anchor=\"middle\">Seesaw, Scissors, Crowbar</text></g><g transform=\"translate(265, 38)\"><rect width=\"225\" height=\"140\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"112\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">CLASS 2 LEVER (Load in Middle)</text><line x1=\"25\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#0f172a\" stroke-width=\"3.5\"/><polygon points=\"25,75 15,95 35,95\" fill=\"#16a34a\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"25\" y=\"110\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Fulcrum</text><rect x=\"100\" y=\"55\" width=\"25\" height=\"20\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"112\" y=\"68\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><path d=\"M 190 100 L 190 80\" stroke=\"#0284c7\" stroke-width=\"2.5\" fill=\"none\"/><polygon points=\"190,80 186,90 194,90\" fill=\"#0284c7\"/><text x=\"190\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Effort</text><text x=\"112\" y=\"130\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\" text-anchor=\"middle\">Wheelbarrow, Bottle Opener</text></g><g transform=\"translate(505, 38)\"><rect width=\"230\" height=\"140\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"115\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">CLASS 3 LEVER (Effort in Middle)</text><line x1=\"25\" y1=\"75\" x2=\"200\" y2=\"75\" stroke=\"#0f172a\" stroke-width=\"3.5\"/><polygon points=\"25,75 15,95 35,95\" fill=\"#16a34a\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"25\" y=\"110\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#15803d\" text-anchor=\"middle\">Fulcrum</text><path d=\"M 112 100 L 112 80\" stroke=\"#0284c7\" stroke-width=\"2.5\" fill=\"none\"/><polygon points=\"112,80 108,90 116,90\" fill=\"#0284c7\"/><text x=\"112\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Effort</text><rect x=\"180\" y=\"55\" width=\"25\" height=\"20\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"192\" y=\"68\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><text x=\"115\" y=\"130\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#475569\" text-anchor=\"middle\">Fishing Rod, Broom, Tongs</text></g><g transform=\"translate(40, 190)\"><rect width=\"325\" height=\"135\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"162\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">FIXED PULLEY (Direction Change, MA = 1)</text><line x1=\"130\" y1=\"35\" x2=\"195\" y2=\"35\" stroke=\"#334155\" stroke-width=\"3\"/><line x1=\"162\" y1=\"35\" x2=\"162\" y2=\"55\" stroke=\"#475569\" stroke-width=\"2\"/><circle cx=\"162\" cy=\"65\" r=\"15\" fill=\"#cbd5e1\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"162\" cy=\"65\" r=\"3\" fill=\"#0f172a\"/><path d=\"M 147 65 L 147 100\" stroke=\"#0f172a\" stroke-width=\"1.8\" fill=\"none\"/><rect x=\"137\" y=\"100\" width=\"20\" height=\"16\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"147\" y=\"112\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text><path d=\"M 177 65 L 177 100\" stroke=\"#0f172a\" stroke-width=\"1.8\" fill=\"none\"/><polygon points=\"177,105 173,95 181,95\" fill=\"#0284c7\"/><text x=\"197\" y=\"102\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Effort</text></g><g transform=\"translate(395, 190)\"><rect width=\"325\" height=\"135\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"162\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">MOVABLE PULLEY (Force Magnifier, MA = 2)</text><line x1=\"130\" y1=\"35\" x2=\"162\" y2=\"35\" stroke=\"#334155\" stroke-width=\"3\"/><circle cx=\"162\" cy=\"75\" r=\"15\" fill=\"#cbd5e1\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"162\" cy=\"75\" r=\"3\" fill=\"#0f172a\"/><path d=\"M 147 35 L 147 75 C 147 95, 177 95, 177 75 L 177 45\" stroke=\"#0f172a\" stroke-width=\"1.8\" fill=\"none\"/><polygon points=\"177,38 173,48 181,48\" fill=\"#0284c7\"/><text x=\"197\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Effort</text><line x1=\"162\" y1=\"75\" x2=\"162\" y2=\"100\" stroke=\"#0f172a\" stroke-width=\"1.8\"/><rect x=\"152\" y=\"100\" width=\"20\" height=\"16\" fill=\"#ef4444\" stroke=\"#b91c1c\" stroke-width=\"1\"/><text x=\"162\" y=\"112\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">Load</text></g></svg>\n\n---\n\n### Module 5: Complex (Compound) Machines: Architecture, Applications, and Quality of Life\n\n#### 1. Architectural Definition of a Complex Machine\nA **complex (compound) machine** is an integrated mechanical system engineered by combining two or more simple machines working in coordinated synchronization to execute sophisticated, heavy-duty mechanical tasks.\n\n#### 2. Constituent Simple Machine Breakdown of Everyday Complex Machines\n\n| Complex Machine | Integrated Simple Machine Components | Engineering Function of Each Component |\n| :--- | :--- | :--- |\n| **1. Road Bicycle** | • **Wheel and Axle:** Front and rear wheels on central hubs.<br>• **Levers:** Handlebars, hand brake levers, and pedal crank arms.<br>• **Pulleys & Gears:** Interlocking chainring sprockets, rear derailleur pulleys, and roller chain. | Converts leg muscle reciprocating thrust into continuous rotational motion, multiplies speed, and provides directional steering and braking control. |\n| **2. Motor Car** | • **Wheel and Axle:** Four road wheels, steering wheel, drivetrain shafts.<br>• **Levers:** Accelerator, brake, and clutch foot pedals; gear shift lever.<br>• **Screws & Bolts:** Fasten chassis, engine block, and cylinder heads.<br>• **Inclined Planes / Wedges:** Engine cam profiles, transmission bevel gears, wedge brake shoes. | Propels heavy payloads over highway distances at high speeds with passenger comfort and safety. |\n| **3. Farm Tractor** | • **Wheel and Axle:** Heavy-tread rear drive wheels and steering axles.<br>• **Levers:** Hydraulic lift linkages, power take-off (PTO) levers, clutch.<br>• **Wedges & Inclined Planes:** Hardened steel plow shares and disc harrow blades. | Delivers massive low-speed drawbar torque to rip, turn, and aerate compacted agricultural soils. |\n| **4. Knapsack Sprayer** | • **Levers:** Manual hand-pump rocker handle.<br>• **Wheel and Axle:** Fan rotor inside motorized mist blowers.<br>• **Wedges / Inclined Planes:** Internal check-valve seals and atomizing spray nozzle orifices. | Pressurizes liquid agrochemical solutions to atomize them into ultra-fine droplets across crops. |\n| **5. Lawn Mower** | • **Wheel and Axle:** Four rolling transport wheels and rotary cutter shaft.<br>• **Levers:** Throttle control handle, safety shutoff bail bar, height adjustment arms.<br>• **Wedges:** High-speed tempered steel cutting blades. | Delivers high-speed rotary blade action to shear grass blades cleanly. |\n| **6. Sewing Machine** | • **Wheel and Axle:** Hand wheel, drive pulley, and rotating bobbin hook.<br>• **Levers:** Foot treadle, needle bar oscillating arm, presser foot lever.<br>• **Screws & Wedges:** Sharp pointed needle eye wedge, thread tensioning thumbscrews. | Coordinates needle piercing and bobbin loop-catching to lock stitches into fabrics at hundreds of cycles per minute. |\n\n#### 3. The Mechanical Role of Interlocking Gears\n**Gears** are toothed wheels designed to mesh with other toothed wheels to transmit rotational mechanical power without slipping:\n1. **Speed Modulation (Velocity Ratio):** Connecting a large gear (more teeth) to a small gear (fewer teeth) multiplies rotational speed (gear overdrive).\n2. **Torque Multiplication:** Connecting a small driver gear to a larger driven gear multiplies output torque, enabling vehicles to climb steep inclines.\n3. **Directional Reversal:** Two meshing external spur gears rotate in **opposite directions**; adding an intermediate idler gear restores the original direction.\n4. **Motion Redirection:** Bevel gears with angled teeth redirect rotational power through $90^\\circ$ (e.g., automobile differential axles).\n\n#### 4. Macroeconomic & Quality-of-Life Contributions of Complex Machines\n* **Industrial Efficiency & Throughput:** Automates assembly line operations, manufacturing goods in seconds compared to days of manual human labor.\n* **Surgical Accuracy & Healthcare:** Robotics, automated ventilators, and computerized tomography scanners deliver sub-millimeter precision in life-saving surgeries.\n* **Worker Occupational Safety:** Heavy cranes, robotic welding arms, and toxic hazardous-material rovers eliminate direct human exposure to fatal falls, crushing hazards, and chemical toxicity.\n* **Mobility & Societal Accessibility:** Motorized wheelchairs, prosthetic bionic limbs, elevators, and electric commuter trains provide autonomy and inclusion to persons with disabilities.\n* **Agricultural Abundance:** Combine harvesters and multi-row planters allow a single farmer to cultivate hundreds of hectares, securing national food sovereignty.\n\n#### Visual Demonstration: Interlocking Gears and Compound Machine Mechanics\n<svg width=\"760\" height=\"180\" viewBox=\"0 0 760 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"180\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">INTERLOCKING GEAR TRAIN &amp; COMPOUND MACHINE MECHANICAL ADVANTAGE</text><g transform=\"translate(50, 35)\"><circle cx=\"75\" cy=\"75\" r=\"45\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/><circle cx=\"75\" cy=\"75\" r=\"25\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"75\" r=\"6\" fill=\"#0f172a\"/><path d=\"M 75 25 L 75 30 M 75 120 L 75 125 M 25 75 L 30 75 M 120 75 L 125 75 M 40 40 L 44 44 M 106 106 L 110 110 M 40 110 L 44 106 M 106 44 L 110 40\" stroke=\"#0f172a\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><text x=\"75\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Gear A (Driver)</text><circle cx=\"175\" cy=\"75\" r=\"55\" fill=\"#cbd5e1\" stroke=\"#334155\" stroke-width=\"2\"/><circle cx=\"175\" cy=\"75\" r=\"32\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"175\" cy=\"75\" r=\"6\" fill=\"#0f172a\"/><path d=\"M 175 15 L 175 20 M 175 130 L 175 135 M 115 75 L 120 75 M 230 75 L 235 75 M 132 32 L 136 36 M 214 114 L 218 118 M 132 118 L 136 114 M 214 36 L 218 32\" stroke=\"#0f172a\" stroke-width=\"3.5\" stroke-linecap=\"round\"/><text x=\"175\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Gear B (Driven)</text><circle cx=\"275\" cy=\"75\" r=\"40\" fill=\"#e2e8f0\" stroke=\"#334155\" stroke-width=\"2\"/><circle cx=\"275\" cy=\"75\" r=\"20\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><circle cx=\"275\" cy=\"75\" r=\"6\" fill=\"#0f172a\"/><text x=\"275\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Gear C</text></g><g transform=\"translate(400, 40)\"><rect width=\"310\" height=\"125\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"155\" y=\"20\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">FUNCTIONS OF INTERLOCKING GEARS</text><text x=\"15\" y=\"42\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\">1. Controls &amp; changes rotational speed (Velocity Ratio)</text><text x=\"15\" y=\"60\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\">2. Reverses or redirects motion direction</text><text x=\"15\" y=\"78\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\">3. Multiplies output torque in complex machines</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#1e40af\">Found in: Bicycles, Car transmissions, Tractors</text></g></svg>",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
         "id": "ex_b8_s13_1",
-        "questionPrompt": "A block and tackle pulley system consisting of 4 pulleys is used to raise a load of 800 N through a vertical height of 2.5 m. An effort of 250 N is applied. Calculate: (a) Mechanical Advantage (MA), (b) Velocity Ratio (VR), (c) Efficiency of the pulley system.",
-        "stepByStepSolution": "Part (a): Calculate MA: MA = Load / Effort = 800 N / 250 N = 3.2.\nPart (b): Determine VR: For a standard block and tackle system, Velocity Ratio equals the total number of pulleys in the system: VR = 4.\nPart (c): Calculate Efficiency: Efficiency (eta) = (MA / VR) x 100% = (3.2 / 4.0) x 100% = 0.80 x 100% = 80%.",
-        "examinerTip": "Examiner Tip: Note that MA and VR are ratios with no units. Efficiency is expressed as a percentage (80%)."
+        "questionPrompt": "A laborer at a construction site in Kumasi uses an empty wheelbarrow of mass 15.0 kg and accelerates it horizontally across level concrete at 2.4 m/s².\n\n(a) Calculate the net horizontal force applied by the laborer to the empty wheelbarrow.\n(b) The wheelbarrow is subsequently loaded with 60.0 kg of wet mortar (total mass = 75.0 kg). Calculate the acceleration of the loaded wheelbarrow if the laborer exerts the exact same horizontal force as in part (a).\n(c) Calculate the force required to accelerate the loaded wheelbarrow at the original rate of 2.4 m/s².\n(d) State Newton's First Law of Motion and explain, using the concept of inertia, why passengers in a speeding trotro pitch forward when the driver suddenly jams on the brakes.",
+        "stepByStepSolution": "Step 1: Solve part (a) — Calculate the net horizontal force on the empty wheelbarrow:\nState the formula: Newton's Second Law of Motion is F = m × a.\nIdentify the given parameters: Mass (m₁) = 15.0 kg; Acceleration (a₁) = 2.4 m/s².\nSubstitute into formula: F = 15.0 kg × 2.4 m/s² = 36.0 Newtons (N).\nStep 2: Solve part (b) — Calculate the acceleration of the loaded wheelbarrow under the same force:\nIdentify parameters: Total mass (m₂) = 15.0 kg + 60.0 kg = 75.0 kg; Force (F) = 36.0 N.\nRearrange formula: a = F / m.\nSubstitute values: a₂ = 36.0 N / 75.0 kg = 0.48 m/s².\nScientific interpretation: Increasing the mass by a factor of 5 (from 15 kg to 75 kg) causes the acceleration to decrease by that same factor of 5 (from 2.4 m/s² to 0.48 m/s²), confirming that acceleration is inversely proportional to mass (a ∝ 1/m).\nStep 3: Solve part (c) — Calculate force needed to maintain 2.4 m/s² with the loaded wheelbarrow:\nIdentify parameters: Mass (m₂) = 75.0 kg; Required acceleration (a) = 2.4 m/s².\nApply formula: F_required = 75.0 kg × 2.4 m/s² = 180.0 Newtons (N).\nStep 4: Solve part (d) — State Newton's First Law and explain the passenger forward lurch:\nStatement: Newton's First Law of Motion states that an object will continue in its state of rest or uniform motion in a straight line unless acted upon by an external net unbalanced force.\nExplanation: Before braking, the passengers and the vehicle travel forward at the same speed. When the driver applies the brakes, the braking force stops the trotro. However, because the passengers possess inertia (the natural resistance of mass to changes in motion), their bodies tend to continue moving forward at the original velocity, causing them to pitch forward until restrained by seatbelts or friction.",
+        "examinerTip": "Examiner Tip: Always state the formula F = ma and include correct SI units (N, kg, m/s²). When explaining inertia, candidates must explicitly mention that the body resists changes to its state of motion and continues forward due to its mass."
+      },
+      {
+        "id": "ex_b8_s13_2",
+        "questionPrompt": "A Basic 8 science teacher sets up an experimental demonstration on magnetism and magnetic fields.\n\n(a) Outline the step-by-step procedure for magnetizing a high-carbon steel needle using the electrical solenoid method, and state the rule used to identify the North and South magnetic poles at each end of the coil.\n(b) Explain why magnetic lines of force never cross each other, and define what is meant by a magnetic neutral point.\n(c) Explain why magnetic repulsion is the only definitive and infallible test for identifying a permanent magnet.\n(d) An electromagnet constructed using 50 turns of copper wire around a soft iron core lifts a maximum load of 200 g of steel pins when powered by a 1.5 V cell. State three distinct physical modifications that would increase the lifting capacity of this electromagnet.",
+        "stepByStepSolution": "Step 1: Solve part (a) — Procedure for electrical magnetization via solenoid:\n1. Place the steel needle inside a hollow cylindrical cardboard tube wound with many turns of insulated copper wire (a solenoid).\n2. Connect the ends of the solenoid in series with a switch and a Direct Current (DC) power source (such as a battery).\n3. Close the switch to pass DC through the coil for a few seconds, then open the switch and remove the needle.\nPole Identification Rule (The End Rule): Look directly at the end face of the coil. If the electric current flows in a clockwise direction, that end becomes a South pole (S). If the current flows in a counter-clockwise direction, that end becomes a North pole (N).\nStep 2: Solve part (b) — Non-intersection of field lines and neutral point definition:\nWhy field lines never cross: The tangent to a magnetic line of force at any point indicates the unique direction of the magnetic field vector at that point. If two lines crossed, a magnetic compass placed at the intersection would have to point in two different directions at the same instant, which is physically impossible.\nMagnetic Neutral Point: A point in space where the magnetic field of a magnet is equal in magnitude and directly opposite in direction to the ambient geomagnetic field of the Earth, resulting in a net magnetic field of zero (B_net = 0). A magnetic compass needle placed at a neutral point experiences no net alignment torque.\nStep 3: Solve part (c) — Why repulsion is the only sure test for a permanent magnet:\nAn unmagnetized ferromagnetic object (like a soft iron nail) is attracted by both the North pole and the South pole of a magnet through magnetic induction.\nHowever, mutual repulsion can only occur between two identical like poles (North repelling North, or South repelling South) of two genuine permanent magnets. Therefore, repulsion is the only definitive test.\nStep 4: Solve part (d) — Three modifications to increase electromagnet lifting strength:\n1. Increase the magnitude of electric current flowing through the coil (e.g., use a higher voltage battery).\n2. Increase the total number of turns of wire wound around the core.\n3. Use a soft iron core with higher magnetic permeability and optimal cross-sectional area.",
+        "examinerTip": "Examiner Tip: Remember that Direct Current (DC) must be used for magnetization; Alternating Current (AC) will demagnetize the bar. For the test of magnetism, always write: 'Repulsion is the only sure test because attraction occurs between a magnet and unmagnetized magnetic materials.'"
+      },
+      {
+        "id": "ex_b8_s13_3",
+        "questionPrompt": "A mechanic uses simple machines in a workshop to hoist engine components.\n\n(a) A heavy steel crowbar (Class 1 lever) of total length 1.50 m is used to lift a rock of weight 600 N. The pivot (fulcrum) is positioned 0.30 m from the rock. Assuming an ideal lever with 100% mechanical efficiency, calculate:\n    (i) The distance from the fulcrum to the applied effort.\n    (ii) The Velocity Ratio (VR) of the crowbar.\n    (iii) The minimum effort required to lift the rock.\n(b) Classify the following tools into their respective lever classes: (i) Scissors, (ii) Bottle opener, (iii) Sugar tongs, (iv) Wheelbarrow.\n(c) A movable pulley system has a Velocity Ratio of 2. An effort of 180 N is applied to lift a load of 270 N. Calculate the Mechanical Advantage (MA) and the percentage Efficiency (η) of the pulley system.",
+        "stepByStepSolution": "Step 1: Solve part (a) — Crowbar lever analysis:\n(i) Distance from fulcrum to effort: Total length = 1.50 m. Load distance (d_L) = 0.30 m. Effort distance (d_E) = Total length - Load distance = 1.50 m - 0.30 m = 1.20 m.\n(ii) Velocity Ratio (VR): VR = Distance moved by effort / Distance moved by load = Effort arm length / Load arm length = 1.20 m / 0.30 m = 4.0.\n(iii) Minimum effort: For an ideal lever, Mechanical Advantage (MA) = Velocity Ratio (VR) = 4.0. MA = Load / Effort => Effort = Load / MA = 600 N / 4.0 = 150 N.\nStep 2: Solve part (b) — Classify lever tools:\n(i) Scissors: Class 1 Lever (Fulcrum in the middle between blade load and finger effort).\n(ii) Bottle Opener: Class 2 Lever (Load cap in the middle between pivot fulcrum and lifting effort).\n(iii) Sugar Tongs: Class 3 Lever (Effort applied in the middle between pivot end and gripping tips).\n(iv) Wheelbarrow: Class 2 Lever (Load basin in the middle between wheel axle fulcrum and handle effort).\nStep 3: Solve part (c) — Pulley MA and Efficiency calculations:\nCalculate Mechanical Advantage: MA = Load / Effort = 270 N / 180 N = 1.5.\nCalculate Efficiency: Efficiency (η) = (MA / VR) × 100% = (1.5 / 2.0) × 100% = 0.75 × 100% = 75.0%.",
+        "examinerTip": "Examiner Tip: Velocity Ratio (VR) depends purely on machine geometry and dimensions, while Mechanical Advantage (MA) is affected by friction. Notice that Efficiency is always less than 100% in real machines due to friction and rope/pulley weight."
+      },
+      {
+        "id": "ex_b8_s13_4",
+        "questionPrompt": "A modern commercial agricultural cooperative in Ghana mechanizes its operations and implements a farm energy management program.\n\n(a) Define a complex (compound) machine and deconstruct a standard road bicycle into three distinct constituent simple machines, stating the specific operational role of each component.\n(b) Explain the mechanical roles of interlocking toothed gears in compound machines, specifically addressing velocity ratio, direction of rotation, and torque transmission.\n(c) State four major national socio-economic and environmental benefits of implementing energy conservation practices across Ghanaian communities.",
+        "stepByStepSolution": "Step 1: Solve part (a) — Complex machine definition and bicycle deconstruction:\nDefinition: A complex (compound) machine is a mechanical device formed by the coordinated integration of two or more simple machines working together to perform heavy-duty or sophisticated work.\nBicycle Deconstruction into 3 Simple Machines:\n1. Wheel and Axle: The front and rear wheels on their central hubs convert rotational axle torque into linear forward motion, while the handlebars on the steering tube provide directional control.\n2. Levers: The brake levers on the handlebars act as Class 1/Class 3 levers to magnify hand grip force onto brake cables, and the pedal crank arms act as rotating Class 1 levers to turn the drive axle.\n3. Pulleys and Gears: The front chainring sprockets and rear freewheel gears connected by a roller chain act as a variable gear and pulley transmission system that transfers rotational drive from pedals to the rear wheel.\nStep 2: Solve part (b) — Mechanical roles of interlocking toothed gears:\n1. Speed Control (Velocity Ratio): Connecting a larger driver gear to a smaller driven gear increases rotational speed (high gear ratio for cruising).\n2. Torque Multiplication: Connecting a smaller driver gear to a larger driven gear multiplies mechanical force/torque (low gear ratio for hill climbing).\n3. Directional Reversal: Two directly interlocking spur gears rotate in opposite directions (clockwise driver turns driven gear counter-clockwise).\n4. Angle of Transmission: Bevel gears with angled teeth allow rotational mechanical power to be transferred through a 90° angle (e.g., from driveshaft to rear axle in motor cars).\nStep 3: Solve part (c) — Four national benefits of energy conservation in Ghana:\n1. Financial Savings: Lowers monthly utility bills for domestic households and reduces operational overhead for manufacturing industries.\n2. Environmental Protection: Decreases fossil fuel combustion at thermal plants (e.g., Aboadze), reducing greenhouse gas emissions ($CO_2$) and mitigating climate change.\n3. National Energy Security: Reduces expensive foreign crude oil and gas imports, stabilizing the national currency and buffering against global energy price shocks.\n4. Grid Stability and Reliability: Alleviates electrical overload on the national grid (GRIDCo and ECG), minimizing local power outages (dumsor) and extending equipment lifespans.",
+        "examinerTip": "Examiner Tip: When deconstructing complex machines, always name the simple machine category (e.g., wheel and axle, lever, gear/pulley) and explain its specific physical contribution to the machine's operation."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b8_s13_1",
+        "id": "B8_MOT_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "A wheelbarrow belongs to which class of levers, and which element is positioned in the middle?",
+        "prompt": "What is an immediate benefit of practicing energy conservation in the home?",
         "options": [
-          "First class; Fulcrum in middle",
-          "Second class; Load in middle",
-          "Third class; Effort in middle",
-          "Fourth class; Wheel in middle"
+          "A. Increasing electricity bills",
+          "B. Lowering utility bills and saving money",
+          "C. Depleting natural gas reserves faster",
+          "D. Making electrical appliances wear out overnight"
         ],
-        "correctAnswer": "Second class; Load in middle",
-        "hint": "The wheel is the pivot, the cargo is in the center, and the handles are the effort.",
-        "workedSolution": "In a second-class lever (like a wheelbarrow), the load is positioned between the fulcrum (wheel axle) and the effort (handles). Mechanical advantage is always greater than 1.",
+        "correctAnswer": "B. Lowering utility bills and saving money",
+        "hint": "Energy conservation reduces unnecessary electrical consumption, leading directly to lower utility bills and financial savings.",
+        "workedSolution": "Energy conservation reduces unnecessary electrical consumption, leading directly to lower utility bills and financial savings.",
         "points": 1
       },
       {
-        "id": "q_b8_s13_2",
+        "id": "B8_MOT_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does using renewable energy sources such as solar and wind help the environment?",
+        "options": [
+          "A. By increasing carbon dioxide emissions",
+          "B. By reducing greenhouse gas emissions and mitigating climate change",
+          "C. By consuming more water for cooling",
+          "D. By destroying the ozone layer"
+        ],
+        "correctAnswer": "B. By reducing greenhouse gas emissions and mitigating climate change",
+        "hint": "Renewable sources like solar and wind generate clean power without burning fossil fuels, curbing greenhouse gas emissions.",
+        "workedSolution": "Renewable sources like solar and wind generate clean power without burning fossil fuels, curbing greenhouse gas emissions.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a magnetic field defined as?",
+        "options": [
+          "A. The wire coil through which current passes",
+          "B. The region around a magnet where its magnetic force or influence can be detected",
+          "C. The paint applied to the surface of a steel bar",
+          "D. An electric battery used in a car"
+        ],
+        "correctAnswer": "B. The region around a magnet where its magnetic force or influence can be detected",
+        "hint": "A magnetic field is the surrounding spatial region where magnetic attraction or repulsion is exerted on magnetic materials.",
+        "workedSolution": "A magnetic field is the surrounding spatial region where magnetic attraction or repulsion is exerted on magnetic materials.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what direction do magnetic lines of force point externally around a bar magnet?",
+        "options": [
+          "A. From the South pole to the North pole",
+          "B. From the North pole to the South pole",
+          "C. From the center outward to the sides only",
+          "D. In completely random directions"
+        ],
+        "correctAnswer": "B. From the North pole to the South pole",
+        "hint": "By physical convention, external magnetic flux lines emerge from the North pole and curve into the South pole.",
+        "workedSolution": "By physical convention, external magnetic flux lines emerge from the North pole and curve into the South pole.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What happens when two like magnetic poles (such as two North poles) are brought close to each other?",
+        "options": [
+          "A. They attract each other strongly",
+          "B. They repel each other",
+          "C. They cancel each other's mass",
+          "D. They spark with blue light"
+        ],
+        "correctAnswer": "B. They repel each other",
+        "hint": "The fundamental law of magnetism states that like poles repel, whereas unlike poles attract.",
+        "workedSolution": "The fundamental law of magnetism states that like poles repel, whereas unlike poles attract.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a neutral point in a magnetic field?",
+        "options": [
+          "A. The point where magnetic attraction is strongest",
+          "B. A point where opposing magnetic fields are equal and opposite, resulting in zero net field",
+          "C. The exact center of a battery",
+          "D. The handle of an electromagnet"
+        ],
+        "correctAnswer": "B. A point where opposing magnetic fields are equal and opposite, resulting in zero net field",
+        "hint": "At a neutral point, equal and oppositely directed magnetic field vectors cancel each other completely, producing zero resultant force.",
+        "workedSolution": "At a neutral point, equal and oppositely directed magnetic field vectors cancel each other completely, producing zero resultant force.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is the only definitive test for identifying a permanent magnet?",
+        "options": [
+          "A. Attraction to an iron nail",
+          "B. Repulsion of a known magnetic pole",
+          "C. Floating in water",
+          "D. Conducting an electric current"
+        ],
+        "correctAnswer": "B. Repulsion of a known magnetic pole",
+        "hint": "Unmagnetized ferromagnetic materials are attracted to both poles; only another magnet will experience repulsion at a matching pole.",
+        "workedSolution": "Unmagnetized ferromagnetic materials are attracted to both poles; only another magnet will experience repulsion at a matching pole.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which method of magnetization involves placing a steel bar inside a wire coil carrying direct current?",
+        "options": [
+          "A. Stroking method",
+          "B. Electrical method using a DC solenoid",
+          "C. Hammering in Earth's field",
+          "D. Friction rubbing"
+        ],
+        "correctAnswer": "B. Electrical method using a DC solenoid",
+        "hint": "Passing a steady Direct Current through a solenoid creates an internal magnetic field that aligns the domains of a steel core.",
+        "workedSolution": "Passing a steady Direct Current through a solenoid creates an internal magnetic field that aligns the domains of a steel core.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an electromagnet?",
+        "options": [
+          "A. A permanent magnet made of wood",
+          "B. A temporary magnet created by passing electric current through a coil wound around a soft iron core",
+          "C. A battery that stores magnetic fluid",
+          "D. A plastic toy that floats in air"
+        ],
+        "correctAnswer": "B. A temporary magnet created by passing electric current through a coil wound around a soft iron core",
+        "hint": "Electromagnets consist of an insulated wire coil wrapped around a soft iron core that exhibits magnetism only while current flows.",
+        "workedSolution": "Electromagnets consist of an insulated wire coil wrapped around a soft iron core that exhibits magnetism only while current flows.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following increases the strength of an electromagnet?",
+        "options": [
+          "A. Reducing the number of wire turns on the coil",
+          "B. Increasing the magnitude of current flowing through the coil",
+          "C. Removing the soft iron core entirely",
+          "D. Using plastic wire instead of copper"
+        ],
+        "correctAnswer": "B. Increasing the magnitude of current flowing through the coil",
+        "hint": "Electromagnetic field strength is directly proportional to both coil current and the total number of wire turns.",
+        "workedSolution": "Electromagnetic field strength is directly proportional to both coil current and the total number of wire turns.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which household device makes direct practical use of an electromagnet?",
+        "options": [
+          "A. Ordinary plastic ruler",
+          "B. Electric door bell",
+          "C. Glass window pane",
+          "D. Wooden kitchen spoon"
+        ],
+        "correctAnswer": "B. Electric door bell",
+        "hint": "Electric door bells use an electromagnet to repeatedly pull an iron armature and hammer against a chime.",
+        "workedSolution": "Electric door bells use an electromagnet to repeatedly pull an iron armature and hammer against a chime.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is Newton's First Law of Motion also commonly called?",
+        "options": [
+          "A. Law of Universal Gravitation",
+          "B. Law of Inertia",
+          "C. Law of Action and Reaction",
+          "D. Law of Conservation of Energy"
+        ],
+        "correctAnswer": "B. Law of Inertia",
+        "hint": "Newton's First Law defines inertia—the tendency of matter to resist any change to its state of rest or uniform motion.",
+        "workedSolution": "Newton's First Law defines inertia—the tendency of matter to resist any change to its state of rest or uniform motion.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "According to Newton's First Law of Motion, what will an object at rest do if no external force acts on it?",
+        "options": [
+          "A. Start moving in circles",
+          "B. Remain at rest",
+          "C. Accelerate toward the sky",
+          "D. Disintegrate into dust"
+        ],
+        "correctAnswer": "B. Remain at rest",
+        "hint": "Without an unbalanced net external force, a stationary body maintains its state of rest indefinitely.",
+        "workedSolution": "Without an unbalanced net external force, a stationary body maintains its state of rest indefinitely.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the mathematical equation for Newton's Second Law of Motion?",
+        "options": [
+          "A. $F = m/a$",
+          "B. $F = ma$",
+          "C. $F = m + a$",
+          "D. $F = a/m$"
+        ],
+        "correctAnswer": "B. $F = ma$",
+        "hint": "Newton's Second Law states that net force equals mass multiplied by acceleration ($F = ma$).",
+        "workedSolution": "Newton's Second Law states that net force equals mass multiplied by acceleration ($F = ma$).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the standard SI unit of force?",
+        "options": [
+          "A. Joule (J)",
+          "B. Newton (N)",
+          "C. Kilogram (kg)",
+          "D. Watt (W)"
+        ],
+        "correctAnswer": "B. Newton (N)",
+        "hint": "Force is measured in Newtons (N), where $1\\text{ N} = 1\\text{ kg}\\cdot\\text{m/s}^2$.",
+        "workedSolution": "Force is measured in Newtons (N), where $1\\text{ N} = 1\\text{ kg}\\cdot\\text{m/s}^2$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "If the mass of an object is kept constant, what happens to its acceleration when the applied net force is doubled?",
+        "options": [
+          "A. Acceleration drops to zero",
+          "B. Acceleration is doubled",
+          "C. Acceleration is halved",
+          "D. Acceleration quadruples"
+        ],
+        "correctAnswer": "B. Acceleration is doubled",
+        "hint": "Acceleration is directly proportional to applied force ($a \\propto F$); doubling force doubles acceleration.",
+        "workedSolution": "Acceleration is directly proportional to applied force ($a \\propto F$); doubling force doubles acceleration.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is it harder to push and accelerate a 400 kg boulder than a 40 kg cart?",
+        "options": [
+          "A. The heavier boulder has greater mass, resulting in lower acceleration for the same force ($a = F/m$)",
+          "B. The boulder has zero gravity",
+          "C. The cart has no inertia",
+          "D. Mass does not affect acceleration"
+        ],
+        "correctAnswer": "A. The heavier boulder has greater mass, resulting in lower acceleration for the same force ($a = F/m$)",
+        "hint": "Acceleration is inversely proportional to mass; a tenfold increase in mass requires ten times the force to match acceleration.",
+        "workedSolution": "Acceleration is inversely proportional to mass; a tenfold increase in mass requires ten times the force to match acceleration.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What does Newton's Third Law of Motion state regarding action and reaction forces?",
+        "options": [
+          "A. Action is always greater than reaction",
+          "B. For every action, there is an equal and opposite reaction",
+          "C. Action forces act alone without any reaction",
+          "D. Reaction forces cancel action forces on the same object"
+        ],
+        "correctAnswer": "B. For every action, there is an equal and opposite reaction",
+        "hint": "Newton's Third Law dictates that forces always occur in matched pairs: equal in magnitude and opposite in direction on interacting bodies.",
+        "workedSolution": "Newton's Third Law dictates that forces always occur in matched pairs: equal in magnitude and opposite in direction on interacting bodies.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a simple machine defined as?",
+        "options": [
+          "A. An electronic computer that browses the internet",
+          "B. A mechanical device that makes work easier by changing the direction or magnitude of a force",
+          "C. A diesel engine with thousands of moving parts",
+          "D. An electric battery powering a lamp"
+        ],
+        "correctAnswer": "B. A mechanical device that makes work easier by changing the direction or magnitude of a force",
+        "hint": "Simple machines are basic mechanical tools that provide mechanical advantage with few or no moving parts.",
+        "workedSolution": "Simple machines are basic mechanical tools that provide mechanical advantage with few or no moving parts.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How many traditional categories of simple machines are recognized in classical mechanics?",
+        "options": [
+          "A. 2 categories",
+          "B. 4 categories",
+          "C. 6 categories",
+          "D. 12 categories"
+        ],
+        "correctAnswer": "C. 6 categories",
+        "hint": "The six classical simple machines are the lever, pulley, inclined plane, wedge, screw, and wheel and axle.",
+        "workedSolution": "The six classical simple machines are the lever, pulley, inclined plane, wedge, screw, and wheel and axle.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the three essential working parts of any lever system?",
+        "options": [
+          "A. Battery, wire, and bulb",
+          "B. Fulcrum, load, and effort",
+          "C. Magnet, coil, and core",
+          "D. Piston, cylinder, and valve"
+        ],
+        "correctAnswer": "B. Fulcrum, load, and effort",
+        "hint": "All levers operate around a pivot point (fulcrum), where an applied force (effort) moves a resistive force (load).",
+        "workedSolution": "All levers operate around a pivot point (fulcrum), where an applied force (effort) moves a resistive force (load).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the fixed pivot point around which a lever bar rotates called?",
+        "options": [
+          "A. Effort arm",
+          "B. Fulcrum",
+          "C. Load resistance",
+          "D. Dielectric"
+        ],
+        "correctAnswer": "B. Fulcrum",
+        "hint": "The fulcrum is the physical axis of rotation supporting the lever beam.",
+        "workedSolution": "The fulcrum is the physical axis of rotation supporting the lever beam.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which class of lever has the fulcrum positioned in the middle, between the load and the effort?",
+        "options": [
+          "A. First-class lever",
+          "B. Second-class lever",
+          "C. Third-class lever",
+          "D. Fourth-class lever"
+        ],
+        "correctAnswer": "A. First-class lever",
+        "hint": "First-class levers arrange the fulcrum centrally between the applied effort and the output load.",
+        "workedSolution": "First-class levers arrange the fulcrum centrally between the applied effort and the output load.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following everyday tools is a first-class lever?",
+        "options": [
+          "A. Wheelbarrow",
+          "B. Pair of scissors",
+          "C. Fishing rod",
+          "D. Tweezers"
+        ],
+        "correctAnswer": "B. Pair of scissors",
+        "hint": "Scissors pivot around a central hinge pin (fulcrum), with hands supplying effort on one side and blades cutting the load on the other.",
+        "workedSolution": "Scissors pivot around a central hinge pin (fulcrum), with hands supplying effort on one side and blades cutting the load on the other.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which class of lever has the load situated in the middle, between the fulcrum and the effort?",
+        "options": [
+          "A. First-class lever",
+          "B. Second-class lever",
+          "C. Third-class lever",
+          "D. Null lever"
+        ],
+        "correctAnswer": "B. Second-class lever",
+        "hint": "Second-class levers place the resistive load between the pivot fulcrum and the point of applied effort.",
+        "workedSolution": "Second-class levers place the resistive load between the pivot fulcrum and the point of applied effort.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a second-class lever?",
+        "options": [
+          "A. Seesaw",
+          "B. Wheelbarrow",
+          "C. Human forearm",
+          "D. Pliers"
+        ],
+        "correctAnswer": "B. Wheelbarrow",
+        "hint": "A wheelbarrow pivots on its front wheel axle (fulcrum), with cargo (load) centered between the wheel and lifting handles (effort).",
+        "workedSolution": "A wheelbarrow pivots on its front wheel axle (fulcrum), with cargo (load) centered between the wheel and lifting handles (effort).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which class of lever has the effort applied in the middle, between the fulcrum and the load?",
+        "options": [
+          "A. First-class lever",
+          "B. Second-class lever",
+          "C. Third-class lever",
+          "D. Zero-class lever"
+        ],
+        "correctAnswer": "C. Third-class lever",
+        "hint": "Third-class levers apply input effort between the stationary fulcrum and the terminal load.",
+        "workedSolution": "Third-class levers apply input effort between the stationary fulcrum and the terminal load.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following tools operates as a third-class lever?",
+        "options": [
+          "A. Fishing rod",
+          "B. Bottle opener",
+          "C. Crowbar",
+          "D. Nutcracker"
+        ],
+        "correctAnswer": "A. Fishing rod",
+        "hint": "In a fishing rod, the base hand acts as the fulcrum, the forward hand applies effort in the center, and the tip lifts the fish (load).",
+        "workedSolution": "In a fishing rod, the base hand acts as the fulcrum, the forward hand applies effort in the center, and the tip lifts the fish (load).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a simple pulley composed of?",
+        "options": [
+          "A. A flat triangular piece of wood",
+          "B. A grooved wheel carrying a flexible rope or cable",
+          "C. A threaded metal rod",
+          "D. A rotating magnet"
+        ],
+        "correctAnswer": "B. A grooved wheel carrying a flexible rope or cable",
+        "hint": "A pulley consists of a grooved rim wheel that guides a rope, belt, or chain to transmit tensile force.",
+        "workedSolution": "A pulley consists of a grooved rim wheel that guides a rope, belt, or chain to transmit tensile force.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary advantage of using a single fixed pulley to lift a bucket of water from a well?",
+        "options": [
+          "A. It halves the effort force needed",
+          "B. It changes the direction of the applied force, allowing the user to pull downward with gravity",
+          "C. It makes water lighter",
+          "D. It lifts water with zero effort"
+        ],
+        "correctAnswer": "B. It changes the direction of the applied force, allowing the user to pull downward with gravity",
+        "hint": "A fixed pulley has a mechanical advantage of 1; it does not amplify force, but redirects the pulling force downward.",
+        "workedSolution": "A fixed pulley has a mechanical advantage of 1; it does not amplify force, but redirects the pulling force downward.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What mechanical advantage does a single movable pulley provide when lifting a load?",
+        "options": [
+          "A. $MA = 1$",
+          "B. $MA = 2$",
+          "C. $MA = 10$",
+          "D. $MA = 0.5$"
+        ],
+        "correctAnswer": "B. $MA = 2$",
+        "hint": "A single movable pulley splits the load across two supporting rope segments, cutting the required effort force in half ($MA = 2$).",
+        "workedSolution": "A single movable pulley splits the load across two supporting rope segments, cutting the required effort force in half ($MA = 2$).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an inclined plane?",
+        "options": [
+          "A. A flat surface tilted at an angle used to raise loads with less force over a longer distance",
+          "B. A grooved wheel that spins on a shaft",
+          "C. A magnet wrapped in copper wire",
+          "D. A sharp cutting instrument"
+        ],
+        "correctAnswer": "A. A flat surface tilted at an angle used to raise loads with less force over a longer distance",
+        "hint": "An inclined plane is a sloping ramp that reduces the lifting effort required by distributing work over a longer incline path.",
+        "workedSolution": "An inclined plane is a sloping ramp that reduces the lifting effort required by distributing work over a longer incline path.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of an inclined plane?",
+        "options": [
+          "A. Wheelchair ramp",
+          "B. Claw hammer",
+          "C. Well pulley",
+          "D. Screwdriver"
+        ],
+        "correctAnswer": "A. Wheelchair ramp",
+        "hint": "Wheelchair ramps, staircases, and loading chutes are classic functional examples of inclined planes.",
+        "workedSolution": "Wheelchair ramps, staircases, and loading chutes are classic functional examples of inclined planes.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What simple machine consists of two inclined planes placed back-to-back, used to split or cut materials?",
+        "options": [
+          "A. Wedge",
+          "B. Screw",
+          "C. Wheel and axle",
+          "D. Pulley"
+        ],
+        "correctAnswer": "A. Wedge",
+        "hint": "A wedge combines two sloping planes into a sharp edge, converting downward drive into lateral splitting force.",
+        "workedSolution": "A wedge combines two sloping planes into a sharp edge, converting downward drive into lateral splitting force.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following tools operates as a wedge?",
+        "options": [
+          "A. Woodcutter's axe",
+          "B. Bicycle pedal",
+          "C. Light bulb thread",
+          "D. Seesaw"
+        ],
+        "correctAnswer": "A. Woodcutter's axe",
+        "hint": "An axe blade is a wedge that translates blunt swing impact into perpendicular cleavage forces to split wood.",
+        "workedSolution": "An axe blade is a wedge that translates blunt swing impact into perpendicular cleavage forces to split wood.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How is a mechanical screw related to an inclined plane?",
+        "options": [
+          "A. A screw is an inclined plane wrapped spirally around a central cylinder or cone",
+          "B. A screw is a lever with two fulcrums",
+          "C. A screw has no connection to an inclined plane",
+          "D. A screw is a special type of magnet"
+        ],
+        "correctAnswer": "A. A screw is an inclined plane wrapped spirally around a central cylinder or cone",
+        "hint": "The helical thread of a screw is an inclined plane wound spirally around a cylindrical core.",
+        "workedSolution": "The helical thread of a screw is an inclined plane wound spirally around a cylindrical core.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which simple machine consists of a large circular wheel rigidly attached to a smaller central shaft?",
+        "options": [
+          "A. Wheel and axle",
+          "B. Double wedge",
+          "C. First-class lever",
+          "D. Fixed pulley"
+        ],
+        "correctAnswer": "A. Wheel and axle",
+        "hint": "A wheel and axle locks a wider wheel to a narrower shaft, amplifying torque or rotational speed.",
+        "workedSolution": "A wheel and axle locks a wider wheel to a narrower shaft, amplifying torque or rotational speed.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a wheel and axle?",
+        "options": [
+          "A. Car steering wheel",
+          "B. Kitchen knife",
+          "C. Bottle cork",
+          "D. Staircase"
+        ],
+        "correctAnswer": "A. Car steering wheel",
+        "hint": "Turning the larger steering wheel applies amplified torque to rotate the narrower steering column shaft.",
+        "workedSolution": "Turning the larger steering wheel applies amplified torque to rotate the narrower steering column shaft.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are gears in mechanics?",
+        "options": [
+          "A. Toothed wheels that mesh together to transfer rotational force and motion",
+          "B. Smooth ropes used on pulleys",
+          "C. Metal wedges used to split stone",
+          "D. Long wooden bars used as levers"
+        ],
+        "correctAnswer": "A. Toothed wheels that mesh together to transfer rotational force and motion",
+        "hint": "Gears are wheels with perimeter teeth that mesh to transmit rotary motion, alter speeds, or change torque.",
+        "workedSolution": "Gears are wheels with perimeter teeth that mesh to transmit rotary motion, alter speeds, or change torque.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a primary functional purpose of interlocking gear systems?",
+        "options": [
+          "A. Changing the speed, direction, or torque of rotational motion",
+          "B. Converting mechanical motion into magnetic fields",
+          "C. Stopping all machines from moving",
+          "D. Generating electrical heat"
+        ],
+        "correctAnswer": "A. Changing the speed, direction, or torque of rotational motion",
+        "hint": "Gears allow machinery to step up speed, multiply rotational torque, or reverse rotation direction.",
+        "workedSolution": "Gears allow machinery to step up speed, multiply rotational torque, or reverse rotation direction.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a complex (compound) machine defined as?",
+        "options": [
+          "A. A machine with only one single moving part",
+          "B. A machine formed by combining two or more simple machines working together",
+          "C. A tool made entirely of soft wood",
+          "D. An unmagnetized iron bar"
+        ],
+        "correctAnswer": "B. A machine formed by combining two or more simple machines working together",
+        "hint": "Complex machines integrate multiple simple machine mechanisms (levers, gears, axles) into a coordinated system.",
+        "workedSolution": "Complex machines integrate multiple simple machine mechanisms (levers, gears, axles) into a coordinated system.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an everyday example of a complex compound machine?",
+        "options": [
+          "A. Bicycle",
+          "B. Single wooden wedge",
+          "C. Steel crowbar",
+          "D. Ramp"
+        ],
+        "correctAnswer": "A. Bicycle",
+        "hint": "A bicycle combines levers (pedals/brakes), wheels and axles (wheels), and gears/pulleys (chain drive).",
+        "workedSolution": "A bicycle combines levers (pedals/brakes), wheels and axles (wheels), and gears/pulleys (chain drive).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which simple machines are combined to form a pedal bicycle?",
+        "options": [
+          "A. Wheel and axle, levers, and gears/chain pulley system",
+          "B. Wedges and screws only",
+          "C. Electromagnets and solenoids only",
+          "D. Inclined planes only"
+        ],
+        "correctAnswer": "A. Wheel and axle, levers, and gears/chain pulley system",
+        "hint": "Bicycles integrate wheels and axles, lever pedals/calipers, and interlocking chain-sprocket gears.",
+        "workedSolution": "Bicycles integrate wheels and axles, lever pedals/calipers, and interlocking chain-sprocket gears.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which agricultural compound machine is used on farms for plowing fields and pulling heavy implements?",
+        "options": [
+          "A. Farm tractor",
+          "B. Hand hoe",
+          "C. Wooden dibber",
+          "D. Pruning shear"
+        ],
+        "correctAnswer": "A. Farm tractor",
+        "hint": "Tractors are complex machines combining engines, hydraulic levers, gearboxes, and large wheel-axle assemblies.",
+        "workedSolution": "Tractors are complex machines combining engines, hydraulic levers, gearboxes, and large wheel-axle assemblies.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which mechanical device is commonly used by cocoa farmers to spray liquid pesticides as fine mists?",
+        "options": [
+          "A. Knapsack mist blower (motorized sprayer)",
+          "B. Combine harvester",
+          "C. Electric bread toaster",
+          "D. Sewing machine"
+        ],
+        "correctAnswer": "A. Knapsack mist blower (motorized sprayer)",
+        "hint": "Knapsack mist blowers integrate a two-stroke engine, fan wheel-and-axle, and pressure pump to aerosolize crop sprays.",
+        "workedSolution": "Knapsack mist blowers integrate a two-stroke engine, fan wheel-and-axle, and pressure pump to aerosolize crop sprays.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which complex machine uses a wheel and axle, gears, and reciprocating levers to stitch fabrics together?",
+        "options": [
+          "A. Sewing machine",
+          "B. Wheelbarrow",
+          "C. Bicycle dynamo",
+          "D. Fixed pulley"
+        ],
+        "correctAnswer": "A. Sewing machine",
+        "hint": "Sewing machines use rotating handwheels/motors, internal bevel gears, and lever linkages to drive needle reciprocation.",
+        "workedSolution": "Sewing machines use rotating handwheels/motors, internal bevel gears, and lever linkages to drive needle reciprocation.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do complex diagnostic machines like MRI scanners and X-ray machines improve healthcare?",
+        "options": [
+          "A. By enabling non-invasive, highly accurate internal medical imaging for disease detection",
+          "B. By replacing clean drinking water in hospitals",
+          "C. By generating domestic mains electricity",
+          "D. By eliminating the need for trained doctors"
+        ],
+        "correctAnswer": "A. By enabling non-invasive, highly accurate internal medical imaging for disease detection",
+        "hint": "Medical imaging machinery provides precise anatomical visualization, facilitating early and accurate clinical diagnosis.",
+        "workedSolution": "Medical imaging machinery provides precise anatomical visualization, facilitating early and accurate clinical diagnosis.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does a domestic washing machine improve human quality of life?",
+        "options": [
+          "A. By saving time and physical effort through automated washing and spinning cycles",
+          "B. By generating chemical food energy",
+          "C. By making clothes permanently waterproof",
+          "D. By converting water into diesel"
+        ],
+        "correctAnswer": "A. By saving time and physical effort through automated washing and spinning cycles",
+        "hint": "Washing machines automate laundry chores, significantly reducing human labor time and physical fatigue.",
+        "workedSolution": "Washing machines automate laundry chores, significantly reducing human labor time and physical fatigue.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an important safety benefit of utilizing robotic complex machines in hazardous environments?",
+        "options": [
+          "A. They can execute dangerous operations (like defusing explosive bombs or toxic waste handling) without risking human life",
+          "B. They work without requiring energy",
+          "C. They prevent weather storms",
+          "D. They turn chemicals into drinking water"
+        ],
+        "correctAnswer": "A. They can execute dangerous operations (like defusing explosive bombs or toxic waste handling) without risking human life",
+        "hint": "Specialized robots handle hazardous tasks in toxic, radioactive, or explosive environments, shielding human operators from harm.",
+        "workedSolution": "Specialized robots handle hazardous tasks in toxic, radioactive, or explosive environments, shielding human operators from harm.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do assistive mechanical devices (such as wheelchairs and motorized prosthetic limbs) enhance human life?",
+        "options": [
+          "A. By providing mobility, independence, and accessibility to individuals with physical disabilities",
+          "B. By increasing the weight of the human body",
+          "C. By stopping human muscles from working",
+          "D. By replacing the need for healthy food"
+        ],
+        "correctAnswer": "A. By providing mobility, independence, and accessibility to individuals with physical disabilities",
+        "hint": "Assistive mobility devices restore physical autonomy and social accessibility for persons with physical impairments.",
+        "workedSolution": "Assistive mobility devices restore physical autonomy and social accessibility for persons with physical impairments.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Why is the mechanical efficiency of any practical machine always strictly less than 100%?",
+        "prompt": "Why does demagnetization occur when a permanent bar magnet is heated strongly to red heat or hammered vigorously?",
         "options": [
-          "Energy is destroyed inside the machine",
-          "Part of the input work is wasted overcoming friction and moving machine parts as heat",
-          "Gravity pulls machines down",
-          "Electric current always stops machines"
+          "A. Thermal kinetic agitation and mechanical shock disrupt the orderly alignment of magnetic domains, randomizing their magnetic dipole vectors",
+          "B. The magnet's physical mass evaporates into gas",
+          "C. Heat turns the steel into copper",
+          "D. The Earth's magnetic field dissolves the metal"
         ],
-        "correctAnswer": "Part of the input work is wasted overcoming friction and moving machine parts as heat",
-        "hint": "Friction between moving surfaces converts useful work into waste heat.",
-        "workedSolution": "Frictional resistance between moving parts and the gravitational weight of the machine itself consume part of the input work, converting it into wasted thermal energy. Thus, MA is always less than VR.",
+        "correctAnswer": "A. Thermal kinetic agitation and mechanical shock disrupt the orderly alignment of magnetic domains, randomizing their magnetic dipole vectors",
+        "hint": "Excessive thermal vibration or impact shock shakes magnetic domains out of parallel alignment, destroying net remanent magnetization.",
+        "workedSolution": "Excessive thermal vibration or impact shock shakes magnetic domains out of parallel alignment, destroying net remanent magnetization.",
         "points": 1
+      },
+      {
+        "id": "B8_MOT_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is soft iron preferred over hard steel as the core material of an industrial electromagnet?",
+        "options": [
+          "A. Soft iron magnetizes and demagnetizes quickly with low retentivity, whereas steel retains permanent magnetization after current stops",
+          "B. Soft iron has a higher melting point than steel",
+          "C. Steel does not conduct magnetic flux lines",
+          "D. Soft iron is completely non-magnetic"
+        ],
+        "correctAnswer": "A. Soft iron magnetizes and demagnetizes quickly with low retentivity, whereas steel retains permanent magnetization after current stops",
+        "hint": "Soft iron exhibits high magnetic permeability and low coercivity, ensuring strong temporary magnetism that switches off instantly with current.",
+        "workedSolution": "Soft iron exhibits high magnetic permeability and low coercivity, ensuring strong temporary magnetism that switches off instantly with current.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In the electrical stroking method of magnetization, what magnetic pole is created at the end of a steel rod where the magnet's North pole leaves the stroke?",
+        "options": [
+          "A. South pole",
+          "B. North pole",
+          "C. Neutral point",
+          "D. Unmagnetized point"
+        ],
+        "correctAnswer": "A. South pole",
+        "hint": "By magnetic induction, the trailing magnetic pole attracts opposite dipoles; a departing North pole leaves behind an induced South pole.",
+        "workedSolution": "By magnetic induction, the trailing magnetic pole attracts opposite dipoles; a departing North pole leaves behind an induced South pole.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A net force of $F = 50\\text{ N}$ acts on a cart of mass $m = 10\\text{ kg}$. Calculate the resulting acceleration of the cart.",
+        "options": [
+          "A. 0.2 m/s²",
+          "B. 5.0 m/s²",
+          "C. 50.0 m/s²",
+          "D. 500.0 m/s²"
+        ],
+        "correctAnswer": "B. 5.0 m/s²",
+        "hint": "From Newton's Second Law: $a = F / m = 50\\text{ N} / 10\\text{ kg} = 5.0\\text{ m/s}^2$.",
+        "workedSolution": "From Newton's Second Law: $a = F / m = 50\\text{ N} / 10\\text{ kg} = 5.0\\text{ m/s}^2$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What force is required to accelerate a $1,200\\text{ kg}$ motor car at a rate of $2.5\\text{ m/s}^2$?",
+        "options": [
+          "A. 480 N",
+          "B. 2,400 N",
+          "C. 3,000 N",
+          "D. 4,800 N"
+        ],
+        "correctAnswer": "C. 3,000 N",
+        "hint": "From Newton's Second Law: $F = ma = 1,200\\text{ kg} \\times 2.5\\text{ m/s}^2 = 3,000\\text{ N}$.",
+        "workedSolution": "From Newton's Second Law: $F = ma = 1,200\\text{ kg} \\times 2.5\\text{ m/s}^2 = 3,000\\text{ N}$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a standing passenger lurch forward when a moving bus suddenly applies emergency brakes?",
+        "options": [
+          "A. Due to inertia, the passenger's body tends to continue moving forward at the bus's original velocity (Newton's First Law)",
+          "B. The brakes pull the passenger forward magnetically",
+          "C. Gravity increases inside braking vehicles",
+          "D. Friction pushes the passenger toward the driver"
+        ],
+        "correctAnswer": "A. Due to inertia, the passenger's body tends to continue moving forward at the bus's original velocity (Newton's First Law)",
+        "hint": "Newton's First Law dictates that an object in motion maintains its velocity; the passenger's upper body continues moving forward when wheels lock.",
+        "workedSolution": "Newton's First Law dictates that an object in motion maintains its velocity; the passenger's upper body continues moving forward when wheels lock.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does a rocket engine generate forward thrust in the vacuum of outer space?",
+        "options": [
+          "A. High-velocity exhaust gases pushed backward exert an equal and opposite forward reaction force on the rocket (Newton's Third Law)",
+          "B. Rocket exhaust pushes against empty space dust",
+          "C. Solar winds drag the rocket forward",
+          "D. Gravity pulls the rocket backward into orbit"
+        ],
+        "correctAnswer": "A. High-velocity exhaust gases pushed backward exert an equal and opposite forward reaction force on the rocket (Newton's Third Law)",
+        "hint": "Action and reaction apply: the rocket engine accelerates burning propellant backward (action), and the gas exerts an equal forward thrust (reaction).",
+        "workedSolution": "Action and reaction apply: the rocket engine accelerates burning propellant backward (action), and the gas exerts an equal forward thrust (reaction).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the mechanical advantage ($MA$) of a third-class lever always less than 1 ($MA < 1$)?",
+        "options": [
+          "A. The effort arm is always shorter than the load arm ($d_E < d_L$), requiring greater input force to gain speed and distance",
+          "B. Third-class levers have no fulcrum",
+          "C. Friction destroys 100% of the effort",
+          "D. The load is always placed behind the operator"
+        ],
+        "correctAnswer": "A. The effort arm is always shorter than the load arm ($d_E < d_L$), requiring greater input force to gain speed and distance",
+        "hint": "Because the effort is applied closer to the fulcrum than the load, mechanical advantage is less than 1, trading force for distance.",
+        "workedSolution": "Because the effort is applied closer to the fulcrum than the load, mechanical advantage is less than 1, trading force for distance.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the Mechanical Advantage ($MA = \\text{Load} / \\text{Effort}$) of a crowbar if an effort of $50\\text{ N}$ lifts a heavy stone load of $300\\text{ N}$?",
+        "options": [
+          "A. 0.17",
+          "B. 6.0",
+          "C. 15.0",
+          "D. 150.0"
+        ],
+        "correctAnswer": "B. 6.0",
+        "hint": "$MA = \\text{Load} / \\text{Effort} = 300\\text{ N} / 50\\text{ N} = 6.0$.",
+        "workedSolution": "$MA = \\text{Load} / \\text{Effort} = 300\\text{ N} / 50\\text{ N} = 6.0$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a long ramp make it easier to roll a heavy oil barrel onto a truck bed compared to lifting it vertically?",
+        "options": [
+          "A. The inclined plane increases distance to reduce the required input effort force ($W = F \\times d$)",
+          "B. The ramp eliminates the earth's gravitational pull",
+          "C. The barrel loses half its mass on a slope",
+          "D. Ramps create kinetic energy out of nothing"
+        ],
+        "correctAnswer": "A. The inclined plane increases distance to reduce the required input effort force ($W = F \\times d$)",
+        "hint": "Work remains constant (neglecting friction); extending the travel distance along an incline proportionally reduces the required lifting force.",
+        "workedSolution": "Work remains constant (neglecting friction); extending the travel distance along an incline proportionally reduces the required lifting force.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "If a driving gear with 40 teeth meshes with and drives a smaller driven gear with 10 teeth, what is the gear ratio and rotational speed effect?",
+        "options": [
+          "A. The driven gear rotates 4 times faster than the driving gear ($4:1$ speed multiplier)",
+          "B. The driven gear rotates 4 times slower",
+          "C. Both gears rotate at the exact same speed",
+          "D. The driven gear rotates in the same direction at half speed"
+        ],
+        "correctAnswer": "A. The driven gear rotates 4 times faster than the driving gear ($4:1$ speed multiplier)",
+        "hint": "Gear speed ratio equals teeth on driver divided by teeth on driven ($40/10 = 4$); the smaller gear turns four revolutions per single driver turn.",
+        "workedSolution": "Gear speed ratio equals teeth on driver divided by teeth on driven ($40/10 = 4$); the smaller gear turns four revolutions per single driver turn.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the Velocity Ratio ($VR$) of a block-and-tackle pulley system supporting a movable load with 4 rope strands?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 4",
+          "D. 8"
+        ],
+        "correctAnswer": "C. 4",
+        "hint": "For ideal tackle systems, the velocity ratio equals the total number of load-supporting rope strands acting on the movable block ($VR = 4$).",
+        "workedSolution": "For ideal tackle systems, the velocity ratio equals the total number of load-supporting rope strands acting on the movable block ($VR = 4$).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does an axe with a thin, sharp blade wedge cut wood more effectively than a blunt axe of identical weight?",
+        "options": [
+          "A. A thinner wedge has a smaller taper angle, concentrating force onto a tiny contact area to create higher splitting pressure ($P = F/A$)",
+          "B. Thin axes are made of plastic",
+          "C. Sharp blades destroy the wood's mass",
+          "D. Blunt axes absorb all kinetic energy"
+        ],
+        "correctAnswer": "A. A thinner wedge has a smaller taper angle, concentrating force onto a tiny contact area to create higher splitting pressure ($P = F/A$)",
+        "hint": "Sharpened wedge tips minimize contact surface area ($A$), generating massive localized pressure ($P = F/A$) that easily fractures wood grain.",
+        "workedSolution": "Sharpened wedge tips minimize contact surface area ($A$), generating massive localized pressure ($P = F/A$) that easily fractures wood grain.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In a wheel and axle system with a wheel radius $R = 30\\text{ cm}$ and an axle radius $r = 5\\text{ cm}$, what is the ideal Velocity Ratio ($VR = R/r$)?",
+        "options": [
+          "A. 0.17",
+          "B. 6.0",
+          "C. 25.0",
+          "D. 150.0"
+        ],
+        "correctAnswer": "B. 6.0",
+        "hint": "$VR = \\text{Radius of Wheel} / \\text{Radius of Axle} = 30\\text{ cm} / 5\\text{ cm} = 6.0$.",
+        "workedSolution": "$VR = \\text{Radius of Wheel} / \\text{Radius of Axle} = 30\\text{ cm} / 5\\text{ cm} = 6.0$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do adjacent interlocking spur gears always rotate in opposite directions?",
+        "options": [
+          "A. Tangential contact forces between meshing teeth push against each other in opposite rotational senses",
+          "B. Gears slip on their axles",
+          "C. One gear is magnetic while the other is not",
+          "D. Opposing rotation is caused by air currents"
+        ],
+        "correctAnswer": "A. Tangential contact forces between meshing teeth push against each other in opposite rotational senses",
+        "hint": "Linear gear teeth engagement transmits pitch-line velocity that reverses circular rotation from clockwise to counter-clockwise.",
+        "workedSolution": "Linear gear teeth engagement transmits pitch-line velocity that reverses circular rotation from clockwise to counter-clockwise.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the mechanical function of the chain and sprocket mechanism on a multispeed bicycle?",
+        "options": [
+          "A. It acts as a flexible gear train, transferring torque from pedal cranks to the rear wheel while allowing speed and torque adjustment",
+          "B. It prevents the bicycle wheels from turning",
+          "C. It stores electrical energy in the frame",
+          "D. It replaces the bicycle brakes"
+        ],
+        "correctAnswer": "A. It acts as a flexible gear train, transferring torque from pedal cranks to the rear wheel while allowing speed and torque adjustment",
+        "hint": "Chain-and-sprocket drives transmit mechanical power over distance and allow derailleur gear selection to trade pedaling force for speed.",
+        "workedSolution": "Chain-and-sprocket drives transmit mechanical power over distance and allow derailleur gear selection to trade pedaling force for speed.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a knapsack mist blower incorporate an internal combustion two-stroke engine?",
+        "options": [
+          "A. To drive a high-velocity centrifugal fan and fluid pressure pump, atomizing liquid agrochemicals into an aerosolized mist",
+          "B. To make the sprayer as heavy as possible",
+          "C. To heat chemical sprays to 100°C",
+          "D. To generate electricity for home lights"
+        ],
+        "correctAnswer": "A. To drive a high-velocity centrifugal fan and fluid pressure pump, atomizing liquid agrochemicals into an aerosolized mist",
+        "hint": "The engine drives a blower impeller that shears chemical liquid streams into fine droplets and propels them into tree canopies.",
+        "workedSolution": "The engine drives a blower impeller that shears chemical liquid streams into fine droplets and propels them into tree canopies.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the mechanical efficiency ($E = \\frac{MA}{VR} \\times 100\\%$) of a pulley system with $VR = 4$ that lifts a $300\\text{ N}$ load using an effort of $100\\text{ N}$?",
+        "options": [
+          "A. 33.3%",
+          "B. 75.0%",
+          "C. 100.0%",
+          "D. 125.0%"
+        ],
+        "correctAnswer": "B. 75.0%",
+        "hint": "$MA = \\text{Load} / \\text{Effort} = 300 / 100 = 3.0$. Efficiency $= (MA / VR) \\times 100\\% = (3.0 / 4.0) \\times 100\\% = 75.0\\%$.",
+        "workedSolution": "$MA = \\text{Load} / \\text{Effort} = 300 / 100 = 3.0$. Efficiency $= (MA / VR) \\times 100\\% = (3.0 / 4.0) \\times 100\\% = 75.0\\%$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the mechanical efficiency of real-world machines always less than 100%?",
+        "options": [
+          "A. Work is dissipated overcoming friction between moving parts and lifting the machine's own components",
+          "B. Energy is destroyed inside levers",
+          "C. Gravitational force increases inside machines",
+          "D. Machines lose mass during operation"
+        ],
+        "correctAnswer": "A. Work is dissipated overcoming friction between moving parts and lifting the machine's own components",
+        "hint": "Frictional resistance and component weight consume a fraction of input energy, converting it into non-recoverable waste heat.",
+        "workedSolution": "Frictional resistance and component weight consume a fraction of input energy, converting it into non-recoverable waste heat.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does an automobile steering system employ a compound machine mechanism?",
+        "options": [
+          "A. It combines a wheel-and-axle (steering wheel) with a rack-and-pinion gear set and tie-rod levers to pivot road wheels",
+          "B. It uses an inclined plane to slide wheels sideways",
+          "C. It uses fixed pulleys to pull tires",
+          "D. It relies entirely on permanent magnets"
+        ],
+        "correctAnswer": "A. It combines a wheel-and-axle (steering wheel) with a rack-and-pinion gear set and tie-rod levers to pivot road wheels",
+        "hint": "Turning the wheel rotates a pinion gear along a toothed rack, translating rotary torque into linear steering linkage displacement.",
+        "workedSolution": "Turning the wheel rotates a pinion gear along a toothed rack, translating rotary torque into linear steering linkage displacement.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a screw jack lift a heavy motor car with very little human effort?",
+        "options": [
+          "A. It has a high Velocity Ratio: turning a long handle through a wide circle moves the load upward by only one small thread pitch distance",
+          "B. The screw jack produces anti-gravity waves",
+          "C. The car becomes weightless when placed on a jack",
+          "D. Friction inside the screw multiplies force automatically"
+        ],
+        "correctAnswer": "A. It has a high Velocity Ratio: turning a long handle through a wide circle moves the load upward by only one small thread pitch distance",
+        "hint": "The ratio of circular handle sweep ($2\\pi r$) to vertical thread pitch ($p$) yields a high velocity ratio, greatly amplifying lifting force.",
+        "workedSolution": "The ratio of circular handle sweep ($2\\pi r$) to vertical thread pitch ($p$) yields a high velocity ratio, greatly amplifying lifting force.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological mechanism of mechanical advantage in the human forearm when lifting a weight in the hand?",
+        "options": [
+          "A. It acts as a third-class lever: the elbow is the fulcrum, the biceps tendon inserts near the elbow to apply effort, and the hand holds the load",
+          "B. The forearm operates as a first-class seesaw",
+          "C. The bicep acts as a movable pulley",
+          "D. The arm operates as an inclined plane"
+        ],
+        "correctAnswer": "A. It acts as a third-class lever: the elbow is the fulcrum, the biceps tendon inserts near the elbow to apply effort, and the hand holds the load",
+        "hint": "With the elbow as the fulcrum and the bicep inserting between the elbow and hand, the arm forms a third-class lever built for speed and range.",
+        "workedSolution": "With the elbow as the fulcrum and the bicep inserting between the elbow and hand, the arm forms a third-class lever built for speed and range.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of hydraulic lift levers on an agricultural tractor?",
+        "options": [
+          "A. Using pressurized fluid to amplify force, raising and lowering heavy tillage implements attached to the three-point linkage",
+          "B. Steering the front wheels",
+          "C. Providing fuel to the engine",
+          "D. Spraying water on the tractor tires"
+        ],
+        "correctAnswer": "A. Using pressurized fluid to amplify force, raising and lowering heavy tillage implements attached to the three-point linkage",
+        "hint": "Tractor hydraulic systems apply Pascal's principle, using control levers to actuate high-force rams that position heavy farm implements.",
+        "workedSolution": "Tractor hydraulic systems apply Pascal's principle, using control levers to actuate high-force rams that position heavy farm implements.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a magnetic compass needle align itself along the North-South geographic direction when freely suspended?",
+        "options": [
+          "A. Earth acts as a giant natural dipole magnet whose magnetic poles attract the opposite poles of the compass needle",
+          "B. Solar wind pushes the compass needle to the north",
+          "C. Ocean currents drag the needle physically",
+          "D. Gravitational pull acts only toward the North pole"
+        ],
+        "correctAnswer": "A. Earth acts as a giant natural dipole magnet whose magnetic poles attract the opposite poles of the compass needle",
+        "hint": "Earth's internal geodynamo creates a global magnetic field; a freely pivoted needle torques into alignment with local geomagnetic field lines.",
+        "workedSolution": "Earth's internal geodynamo creates a global magnetic field; a freely pivoted needle torques into alignment with local geomagnetic field lines.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A $20\\text{ kg}$ object is dropped from a stationary crane. Calculate the net gravitational force acting on the object ($g = 9.8\\text{ m/s}^2$).",
+        "options": [
+          "A. 2.04 N",
+          "B. 39.2 N",
+          "C. 196.0 N",
+          "D. 392.0 N"
+        ],
+        "correctAnswer": "C. 196.0 N",
+        "hint": "Weight force $W = mg = 20\\text{ kg} \\times 9.8\\text{ m/s}^2 = 196.0\\text{ N}$.",
+        "workedSolution": "Weight force $W = mg = 20\\text{ kg} \\times 9.8\\text{ m/s}^2 = 196.0\\text{ N}$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do factory automated assembly lines utilize robotic arms rather than manual human labor for repetitive welding?",
+        "options": [
+          "A. Robots perform repetitive tasks with consistent accuracy, higher speed, and without operator fatigue or health hazards",
+          "B. Robots operate without consuming energy",
+          "C. Human workers refuse to enter manufacturing factories",
+          "D. Robots cost zero cedis to build"
+        ],
+        "correctAnswer": "A. Robots perform repetitive tasks with consistent accuracy, higher speed, and without operator fatigue or health hazards",
+        "hint": "Industrial robots deliver sub-millimeter precision, continuous duty cycles, and eliminate human exposure to toxic fumes and welding arcs.",
+        "workedSolution": "Industrial robots deliver sub-millimeter precision, continuous duty cycles, and eliminate human exposure to toxic fumes and welding arcs.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What occurs when a magnet is cut in half across its middle?",
+        "options": [
+          "A. Each half becomes a complete, independent magnet with its own North and South poles",
+          "B. One half becomes a pure North pole and the other a pure South pole",
+          "C. Both halves lose their magnetism completely",
+          "D. The magnet explodes into iron dust"
+        ],
+        "correctAnswer": "A. Each half becomes a complete, independent magnet with its own North and South poles",
+        "hint": "Isolated magnetic monopoles do not exist in classical physics; cutting a magnet creates two smaller dipoles with complete pole pairs.",
+        "workedSolution": "Isolated magnetic monopoles do not exist in classical physics; cutting a magnet creates two smaller dipoles with complete pole pairs.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the idler gear inserted between a driver gear and a driven gear in a machine gear train?",
+        "options": [
+          "A. It changes the direction of rotation of the driven gear without altering the overall gear velocity ratio",
+          "B. It doubles the output speed of the machine",
+          "C. It stops the gears from turning",
+          "D. It stores mechanical power like a battery"
+        ],
+        "correctAnswer": "A. It changes the direction of rotation of the driven gear without altering the overall gear velocity ratio",
+        "hint": "An intermediate idler gear reverses rotational direction back to match the driver while leaving the net teeth speed ratio unaffected.",
+        "workedSolution": "An intermediate idler gear reverses rotational direction back to match the driver while leaving the net teeth speed ratio unaffected.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is energy efficiency labeling (such as star ratings) mandated on commercial air conditioners and refrigerators?",
+        "options": [
+          "A. To inform consumers about energy consumption rates, encouraging the purchase of efficient units to reduce energy waste",
+          "B. To prove the machine was built locally",
+          "C. To indicate the weight of the metal casing",
+          "D. To set the retail price of the appliance"
+        ],
+        "correctAnswer": "A. To inform consumers about energy consumption rates, encouraging the purchase of efficient units to reduce energy waste",
+        "hint": "Energy efficiency ratings quantify operational performance, steering purchasing toward lower-wattage, energy-saving models.",
+        "workedSolution": "Energy efficiency ratings quantify operational performance, steering purchasing toward lower-wattage, energy-saving models.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does an inclined plane wrapped around a cylinder form a bolt thread that clamps machine parts tightly together?",
+        "options": [
+          "A. Turning the bolt converts rotational torque into substantial linear clamping tension along the screw axis",
+          "B. Screw threads weld together permanently",
+          "C. The bolt expands when turned clockwise",
+          "D. Threads create vacuum suction between plates"
+        ],
+        "correctAnswer": "A. Turning the bolt converts rotational torque into substantial linear clamping tension along the screw axis",
+        "hint": "Torque applied across a helical incline produces high axial preload tension, clamping mated surfaces securely.",
+        "workedSolution": "Torque applied across a helical incline produces high axial preload tension, clamping mated surfaces securely.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a lawn mower incorporate interlocking gears between its engine drive shaft and cutting blade spindle?",
+        "options": [
+          "A. To transfer rotational power efficiently while stepping up blade speed and adjusting torque for thick vegetation",
+          "B. To make the mower engine run backward",
+          "C. To prevent the engine from producing exhaust",
+          "D. To sharpen the blades while running"
+        ],
+        "correctAnswer": "A. To transfer rotational power efficiently while stepping up blade speed and adjusting torque for thick vegetation",
+        "hint": "Internal gear sets step up spindle speed to ensure clean grass cutting while matching optimal engine torque bands.",
+        "workedSolution": "Internal gear sets step up spindle speed to ensure clean grass cutting while matching optimal engine torque bands.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the effect of friction on the Mechanical Advantage and Velocity Ratio of a simple machine?",
+        "options": [
+          "A. Friction reduces Mechanical Advantage ($MA$), but leaves the purely geometric Velocity Ratio ($VR$) unchanged",
+          "B. Friction increases Mechanical Advantage",
+          "C. Friction reduces the Velocity Ratio to zero",
+          "D. Friction has zero effect on both values"
+        ],
+        "correctAnswer": "A. Friction reduces Mechanical Advantage ($MA$), but leaves the purely geometric Velocity Ratio ($VR$) unchanged",
+        "hint": "$VR$ depends solely on physical dimensions ($d_E / d_L$); friction increases required effort, which depresses real $MA$ ($L/E$).",
+        "workedSolution": "$VR$ depends solely on physical dimensions ($d_E / d_L$); friction increases required effort, which depresses real $MA$ ($L/E$).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do claw hammers operate as high-advantage first-class levers when pulling nails from timber?",
+        "options": [
+          "A. The long handle provides a large effort arm relative to the short claw load arm, multiplying hand pulling force",
+          "B. Hammers are magnetic and pull nails out",
+          "C. The curved claw eliminates nail friction",
+          "D. Nails become soft when touched by iron"
+        ],
+        "correctAnswer": "A. The long handle provides a large effort arm relative to the short claw load arm, multiplying hand pulling force",
+        "hint": "The handle provides a long leverage distance ($d_E$) around the curved fulcrum heel, magnifying pulling force at the claw.",
+        "workedSolution": "The handle provides a long leverage distance ($d_E$) around the curved fulcrum heel, magnifying pulling force at the claw.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does a nutcracker operate as a second-class lever?",
+        "options": [
+          "A. The hinge pin is the fulcrum at one end, the hard nut (load) sits in the middle, and hand effort is applied at the open handles",
+          "B. Effort is applied at the hinge pin",
+          "C. The nut acts as the fulcrum",
+          "D. It operates as a wheel and axle"
+        ],
+        "correctAnswer": "A. The hinge pin is the fulcrum at one end, the hard nut (load) sits in the middle, and hand effort is applied at the open handles",
+        "hint": "With the fulcrum at the hinged tip, the nut rests centrally between the pivot and the handle grip, forming a Class 2 lever.",
+        "workedSolution": "With the fulcrum at the hinged tip, the nut rests centrally between the pivot and the handle grip, forming a Class 2 lever.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A force of $F = 600\\text{ N}$ is applied to a crate, producing an acceleration of $a = 3.0\\text{ m/s}^2$. Calculate the mass of the crate.",
+        "options": [
+          "A. 100 kg",
+          "B. 200 kg",
+          "C. 600 kg",
+          "D. 1,800 kg"
+        ],
+        "correctAnswer": "B. 200 kg",
+        "hint": "From Newton's Second Law: $m = F / a = 600\\text{ N} / 3.0\\text{ m/s}^2 = 200\\text{ kg}$.",
+        "workedSolution": "From Newton's Second Law: $m = F / a = 600\\text{ N} / 3.0\\text{ m/s}^2 = 200\\text{ kg}$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a skateboarder push backward on the pavement with their foot to propel themselves forward?",
+        "options": [
+          "A. Pushing backward on the ground (action) causes the ground to exert an equal forward reaction force on the skateboarder (Newton's Third Law)",
+          "B. Backward foot motion creates a tailwind",
+          "C. Pushing backward reduces the skateboarder's mass",
+          "D. Skateboards operate only by magnetic repulsion"
+        ],
+        "correctAnswer": "A. Pushing backward on the ground (action) causes the ground to exert an equal forward reaction force on the skateboarder (Newton's Third Law)",
+        "hint": "Newton's Third Law applies: the foot exerts a backward force on the ground, which responds with an equal forward reaction force on the rider.",
+        "workedSolution": "Newton's Third Law applies: the foot exerts a backward force on the ground, which responds with an equal forward reaction force on the rider.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of a compound microscope's rack-and-pinion gear mechanism in medical laboratories?",
+        "options": [
+          "A. It converts small rotational movements of focus knobs into fine vertical objective lens adjustments for specimen focusing",
+          "B. It magnifies the specimen image optically",
+          "C. It illuminates the glass slide with light",
+          "D. It cleans dust off the lenses"
+        ],
+        "correctAnswer": "A. It converts small rotational movements of focus knobs into fine vertical objective lens adjustments for specimen focusing",
+        "hint": "Rack-and-pinion gearing translates coarse and fine knob rotations into smooth, controlled vertical stage displacements.",
+        "workedSolution": "Rack-and-pinion gearing translates coarse and fine knob rotations into smooth, controlled vertical stage displacements.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does using public buses instead of individual private cars contribute to national energy conservation?",
+        "options": [
+          "A. High passenger occupancy lowers per-capita fuel consumption and reduces aggregate urban traffic congestion and exhaust emissions",
+          "B. Buses consume zero diesel fuel",
+          "C. Public transit eliminates the need for roads",
+          "D. Buses run entirely on solar energy"
+        ],
+        "correctAnswer": "A. High passenger occupancy lowers per-capita fuel consumption and reduces aggregate urban traffic congestion and exhaust emissions",
+        "hint": "Mass transit consolidates passenger trips, drastically reducing fuel burned per commuter-kilometer compared to single-occupancy vehicles.",
+        "workedSolution": "Mass transit consolidates passenger trips, drastically reducing fuel burned per commuter-kilometer compared to single-occupancy vehicles.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is an inclined plane with a gentle slope easier to climb than a steep ramp, despite doing the same vertical work?",
+        "options": [
+          "A. A gentler slope has a longer incline length ($d$), requiring less input effort force to overcome the load's gravitational component",
+          "B. Gentle slopes eliminate friction completely",
+          "C. Gravity only pulls on steep slopes",
+          "D. Work done on gentle slopes is zero"
+        ],
+        "correctAnswer": "A. A gentler slope has a longer incline length ($d$), requiring less input effort force to overcome the load's gravitational component",
+        "hint": "Work ($W = Fd$) is conserved: extending the ramp distance proportionally reduces the required parallel pushing force ($F = W/d$).",
+        "workedSolution": "Work ($W = Fd$) is conserved: extending the ramp distance proportionally reduces the required parallel pushing force ($F = W/d$).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary function of a magnetic separator in an industrial recycling plant?",
+        "options": [
+          "A. An electromagnet suspended over a conveyor belt attracts and separates ferrous scrap iron from non-magnetic aluminum and plastic waste",
+          "B. Crushing glass bottles into powder",
+          "C. Burning paper waste at high temperatures",
+          "D. Melting copper cables into bars"
+        ],
+        "correctAnswer": "A. An electromagnet suspended over a conveyor belt attracts and separates ferrous scrap iron from non-magnetic aluminum and plastic waste",
+        "hint": "Electromagnetic separators lift paramagnetic and ferromagnetic iron and steel debris out of mixed waste streams.",
+        "workedSolution": "Electromagnetic separators lift paramagnetic and ferromagnetic iron and steel debris out of mixed waste streams.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In a wheelbarrow, if the load arm is $0.4\\text{ m}$ from the wheel axle and the effort handles are $1.2\\text{ m}$ from the axle, what is the Velocity Ratio ($VR = d_E / d_L$)?",
+        "options": [
+          "A. 0.33",
+          "B. 1.6",
+          "C. 3.0",
+          "D. 4.8"
+        ],
+        "correctAnswer": "C. 3.0",
+        "hint": "$VR = \\text{Effort Arm} / \\text{Load Arm} = 1.2\\text{ m} / 0.4\\text{ m} = 3.0$.",
+        "workedSolution": "$VR = \\text{Effort Arm} / \\text{Load Arm} = 1.2\\text{ m} / 0.4\\text{ m} = 3.0$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do deep-sea exploration submersibles rely on robotic manipulator arms rather than direct human diver interventions?",
+        "options": [
+          "A. Extreme hydrostatic ocean pressures and near-freezing temperatures at deep depths are lethal to human divers",
+          "B. Robots can swim faster than fish",
+          "C. Divers are not allowed to touch rocks",
+          "D. Ocean water destroys human eyesight instantly"
+        ],
+        "correctAnswer": "A. Extreme hydrostatic ocean pressures and near-freezing temperatures at deep depths are lethal to human divers",
+        "hint": "Abyssal hydrostatic pressures (>1,000 atm) would crush human divers; reinforced submersibles use robotic manipulators safely.",
+        "workedSolution": "Abyssal hydrostatic pressures (>1,000 atm) would crush human divers; reinforced submersibles use robotic manipulators safely.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the beveled cutting edges on a pair of metal tin snips?",
+        "options": [
+          "A. Acting as sharp dual wedges that concentrate shear forces to slice through sheet metal",
+          "B. Acting as wheel and axle systems",
+          "C. Storing mechanical energy like springs",
+          "D. Attracting metal magnetically"
+        ],
+        "correctAnswer": "A. Acting as sharp dual wedges that concentrate shear forces to slice through sheet metal",
+        "hint": "Snip blades are angled wedges that focus amplified lever forces into high shear stresses that cut metal.",
+        "workedSolution": "Snip blades are angled wedges that focus amplified lever forces into high shear stresses that cut metal.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does installing energy-efficient LED light bulbs in school classrooms support national energy conservation?",
+        "options": [
+          "A. LEDs produce equivalent lumen brightness while using up to 80% less electrical wattage than incandescent bulbs",
+          "B. LEDs do not consume any electrical power",
+          "C. LEDs heat the classrooms like ovens",
+          "D. LEDs last for only three days"
+        ],
+        "correctAnswer": "A. LEDs produce equivalent lumen brightness while using up to 80% less electrical wattage than incandescent bulbs",
+        "hint": "Solid-state LEDs convert electrical energy directly to light via electroluminescence, wasting minimal power as heat.",
+        "workedSolution": "Solid-state LEDs convert electrical energy directly to light via electroluminescence, wasting minimal power as heat.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a bottle opener operate with high mechanical advantage when lifting a metal crown cap?",
+        "options": [
+          "A. The rim lip acts as a fulcrum, the cap edge is the load near the fulcrum, and a long handle applies effort as a Class 2 lever",
+          "B. Bottle openers use chemical reactions to melt caps",
+          "C. The opener is magnetized to pull the cap off",
+          "D. It operates as an inclined plane"
+        ],
+        "correctAnswer": "A. The rim lip acts as a fulcrum, the cap edge is the load near the fulcrum, and a long handle applies effort as a Class 2 lever",
+        "hint": "With the fulcrum resting on the center cap, the load hook sits close to the pivot, yielding a short load arm and high leverage.",
+        "workedSolution": "With the fulcrum resting on the center cap, the load hook sits close to the pivot, yielding a short load arm and high leverage.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "A $50\\text{ kg}$ runner accelerates from rest at $a = 2.0\\text{ m/s}^2$. Calculate the horizontal reaction force exerted by the track on the runner's shoes.",
+        "options": [
+          "A. 25 N",
+          "B. 50 N",
+          "C. 100 N",
+          "D. 250 N"
+        ],
+        "correctAnswer": "C. 100 N",
+        "hint": "From Newton's Second Law: $F = ma = 50\\text{ kg} \\times 2.0\\text{ m/s}^2 = 100\\text{ N}$.",
+        "workedSolution": "From Newton's Second Law: $F = ma = 50\\text{ kg} \\times 2.0\\text{ m/s}^2 = 100\\text{ N}$.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a sewing machine use a foot pedal lever linkage connected to a rotary drive wheel?",
+        "options": [
+          "A. It converts reciprocating foot motion into continuous rotary shaft motion to drive the needle and fabric feed mechanism",
+          "B. It keeps the operator's feet warm",
+          "C. It generates electrical current without wires",
+          "D. It prevents the needle from breaking"
+        ],
+        "correctAnswer": "A. It converts reciprocating foot motion into continuous rotary shaft motion to drive the needle and fabric feed mechanism",
+        "hint": "The treadle mechanism uses a crank-slider linkage to transform linear foot reciprocation into smooth wheel rotation.",
+        "workedSolution": "The treadle mechanism uses a crank-slider linkage to transform linear foot reciprocation into smooth wheel rotation.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary factor limiting the maximum speed of a vehicle according to Newton's Second Law?",
+        "options": [
+          "A. Opposing aerodynamic air drag and road rolling resistance balance engine drive force, causing net force and acceleration to reach zero",
+          "B. The vehicle runs out of inertia",
+          "C. Tires refuse to spin faster than 100 km/h",
+          "D. Gravity stops pulling on the car"
+        ],
+        "correctAnswer": "A. Opposing aerodynamic air drag and road rolling resistance balance engine drive force, causing net force and acceleration to reach zero",
+        "hint": "Terminal velocity is reached when velocity-squared air resistance and friction match tractive engine force ($F_{net} = 0$, so $a = 0$).",
+        "workedSolution": "Terminal velocity is reached when velocity-squared air resistance and friction match tractive engine force ($F_{net} = 0$, so $a = 0$).",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does architectural roof insulation in buildings contribute to energy conservation in tropical Ghana?",
+        "options": [
+          "A. It reduces conductive solar heat gain through ceilings, significantly lowering the electrical load on air conditioning units",
+          "B. It makes the roof heavier to withstand wind",
+          "C. It generates solar power inside the ceiling",
+          "D. It stops all rain from falling on the house"
+        ],
+        "correctAnswer": "A. It reduces conductive solar heat gain through ceilings, significantly lowering the electrical load on air conditioning units",
+        "hint": "Ceiling insulation blocks radiant roof heat, moderating indoor room temperatures and reducing air-conditioner run times.",
+        "workedSolution": "Ceiling insulation blocks radiant roof heat, moderating indoor room temperatures and reducing air-conditioner run times.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the mechanical advantage of a pair of pliers used to grip and bend a wire?",
+        "options": [
+          "A. Long handle effort arms relative to short jaw load arms multiply hand grip force onto the wire",
+          "B. Pliers operate as inclined planes that slide the wire",
+          "C. Pliers make the wire softer by chemical action",
+          "D. Pliers have zero mechanical advantage"
+        ],
+        "correctAnswer": "A. Long handle effort arms relative to short jaw load arms multiply hand grip force onto the wire",
+        "hint": "Dual Class 1 levers share a central hinge pin; the long handle-to-jaw ratio concentrates grip effort into high compressive jaw force.",
+        "workedSolution": "Dual Class 1 levers share a central hinge pin; the long handle-to-jaw ratio concentrates grip effort into high compressive jaw force.",
+        "points": 1
+      },
+      {
+        "id": "B8_MOT_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $1,500\\text{ kg}$ automobile traveling at $v = 20\\text{ m/s}$ applies emergency brakes and decelerates uniformly to a complete stop over a distance of $d = 40\\text{ meters}$. Calculate the braking force ($F$) exerted on the vehicle using kinematics ($v^2 = u^2 + 2ad$) and Newton's Second Law ($F = ma$).",
+        "options": [
+          "A. 3,750 N",
+          "B. 7,500 N",
+          "C. 15,000 N",
+          "D. 30,000 N"
+        ],
+        "correctAnswer": "B. 7,500 N",
+        "hint": "$0^2 = 20^2 + 2a(40) \\Rightarrow 0 = 400 + 80a \\Rightarrow a = -5.0\\text{ m/s}^2$. Force magnitude $F = ma = 1,500\\text{ kg} \\times 5.0\\text{ m/s}^2 = 7,500\\text{ N}$.",
+        "workedSolution": "$0^2 = 20^2 + 2a(40) \\Rightarrow 0 = 400 + 80a \\Rightarrow a = -5.0\\text{ m/s}^2$. Force magnitude $F = ma = 1,500\\text{ kg} \\times 5.0\\text{ m/s}^2 = 7,500\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a physics laboratory solenoid experiment, the magnetic field strength inside a solenoid is given by $B = \\mu_0 n I$. If a student doubles the current ($I$) and triples the number of turns per unit length ($n$), by what factor does the internal magnetic field strength ($B$) increase?",
+        "options": [
+          "A. 2 times",
+          "B. 3 times",
+          "C. 5 times",
+          "D. 6 times"
+        ],
+        "correctAnswer": "D. 6 times",
+        "hint": "Field strength scales with the product of turn density and current: $B' = \\mu_0 (3n)(2I) = 6 \\mu_0 n I = 6B$.",
+        "workedSolution": "Field strength scales with the product of turn density and current: $B' = \\mu_0 (3n)(2I) = 6 \\mu_0 n I = 6B$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A first-class crowbar is used to dislodge a $2,400\\text{ N}$ stone. The total length of the crowbar is $1.5\\text{ m}$, and the fulcrum is placed $0.3\\text{ m}$ from the stone load (so the effort arm is $1.2\\text{ m}$). Assuming 100% mechanical efficiency, calculate the minimum effort force ($E$) required ($L \\times d_L = E \\times d_E$).",
+        "options": [
+          "A. 480 N",
+          "B. 600 N",
+          "C. 800 N",
+          "D. 1,200 N"
+        ],
+        "correctAnswer": "B. 600 N",
+        "hint": "By the principle of moments: $E \\times 1.2\\text{ m} = 2,400\\text{ N} \\times 0.3\\text{ m} \\Rightarrow 1.2 E = 720 \\Rightarrow E = 720 / 1.2 = 600\\text{ N}$.",
+        "workedSolution": "By the principle of moments: $E \\times 1.2\\text{ m} = 2,400\\text{ N} \\times 0.3\\text{ m} \\Rightarrow 1.2 E = 720 \\Rightarrow E = 720 / 1.2 = 600\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A block-and-tackle pulley system has a Velocity Ratio of $VR = 5$. If it requires an effort force of $E = 250\\text{ N}$ to lift a load of $L = 1,000\\text{ N}$, calculate the mechanical efficiency ($\\eta$) of the pulley system.",
+        "options": [
+          "A. 60.0%",
+          "B. 75.0%",
+          "C. 80.0%",
+          "D. 90.0%"
+        ],
+        "correctAnswer": "C. 80.0%",
+        "hint": "$MA = L / E = 1,000 / 250 = 4.0$. Efficiency $\\eta = (MA / VR) \\times 100\\% = (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+        "workedSolution": "$MA = L / E = 1,000 / 250 = 4.0$. Efficiency $\\eta = (MA / VR) \\times 100\\% = (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An inclined plane has a length of $L = 12\\text{ meters}$ and rises to a vertical height of $h = 3\\text{ meters}$. If an effort of $F = 400\\text{ N}$ pushes an $1,200\\text{ N}$ crate up the ramp at constant speed, calculate the work lost to friction ($W_{lost} = W_{in} - W_{out}$).",
+        "options": [
+          "A. 400 J",
+          "B. 800 J",
+          "C. 1,200 J",
+          "D. 3,600 J"
+        ],
+        "correctAnswer": "C. 1,200 J",
+        "hint": "$W_{in} = F \\times L = 400\\text{ N} \\times 12\\text{ m} = 4,800\\text{ J}$. $W_{out} = L \\times h = 1,200\\text{ N} \\times 3\\text{ m} = 3,600\\text{ J}$. $W_{lost} = 4,800 - 3,600 = 1,200\\text{ J}$.",
+        "workedSolution": "$W_{in} = F \\times L = 400\\text{ N} \\times 12\\text{ m} = 4,800\\text{ J}$. $W_{out} = L \\times h = 1,200\\text{ N} \\times 3\\text{ m} = 3,600\\text{ J}$. $W_{lost} = 4,800 - 3,600 = 1,200\\text{ J}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A gear train consists of three meshing gears: Driver Gear A has 60 teeth, Idler Gear B has 30 teeth, and Driven Gear C has 15 teeth. If Gear A rotates clockwise at $100\\text{ rpm}$, calculate the rotational speed and direction of Gear C.",
+        "options": [
+          "A. 200 rpm, counter-clockwise",
+          "B. 400 rpm, clockwise",
+          "C. 400 rpm, counter-clockwise",
+          "D. 800 rpm, clockwise"
+        ],
+        "correctAnswer": "B. 400 rpm, clockwise",
+        "hint": "Speed ratio = $N_A / N_C = 60 / 15 = 4$. Speed $= 100 \\times 4 = 400\\text{ rpm}$. Gear A (CW) drives Gear B (CCW), which drives Gear C (CW).",
+        "workedSolution": "Speed ratio = $N_A / N_C = 60 / 15 = 4$. Speed $= 100 \\times 4 = 400\\text{ rpm}$. Gear A (CW) drives Gear B (CCW), which drives Gear C (CW).",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $2,000\\text{ kg}$ commercial transport truck accelerates from rest to a speed of $v = 15\\text{ m/s}$ in $t = 6\\text{ seconds}$. Calculate the average net force developed by the engine over this interval ($a = \\Delta v / t$, $F = ma$).",
+        "options": [
+          "A. 2,500 N",
+          "B. 5,000 N",
+          "C. 10,000 N",
+          "D. 30,000 N"
+        ],
+        "correctAnswer": "B. 5,000 N",
+        "hint": "Acceleration $a = (15 - 0) / 6 = 2.5\\text{ m/s}^2$. Net force $F = ma = 2,000\\text{ kg} \\times 2.5\\text{ m/s}^2 = 5,000\\text{ N}$.",
+        "workedSolution": "Acceleration $a = (15 - 0) / 6 = 2.5\\text{ m/s}^2$. Net force $F = ma = 2,000\\text{ kg} \\times 2.5\\text{ m/s}^2 = 5,000\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A wheel and axle has a wheel radius of $R = 40\\text{ cm}$ and an axle radius of $r = 8\\text{ cm}$. If an effort of $E = 50\\text{ N}$ lifts a load of $L = 200\\text{ N}$, calculate the mechanical efficiency of the system.",
+        "options": [
+          "A. 60.0%",
+          "B. 75.0%",
+          "C. 80.0%",
+          "D. 90.0%"
+        ],
+        "correctAnswer": "C. 80.0%",
+        "hint": "$VR = R / r = 40 / 8 = 5.0$. $MA = L / E = 200 / 50 = 4.0$. Efficiency $= (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+        "workedSolution": "$VR = R / r = 40 / 8 = 5.0$. $MA = L / E = 200 / 50 = 4.0$. Efficiency $= (4.0 / 5.0) \\times 100\\% = 80.0\\%$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a physics experiment, an electromagnet with an iron core picks up 45 steel paperclips when $2.0\\text{ A}$ of current flows through its 100-turn coil. If current is raised to $4.0\\text{ A}$ and coil turns are doubled to 200, what happens to the core magnetic flux density before reaching magnetic saturation?",
+        "options": [
+          "A. It doubles",
+          "B. It quadruples ($4\\times$)",
+          "C. It remains completely unchanged",
+          "D. It drops to zero"
+        ],
+        "correctAnswer": "B. It quadruples ($4\\times$)",
+        "hint": "Magnetic flux density is proportional to ampere-turns ($B \\propto N \\cdot I$); doubling turns ($2\\times$) and current ($2\\times$) quadruples flux density ($4\\times$).",
+        "workedSolution": "Magnetic flux density is proportional to ampere-turns ($B \\propto N \\cdot I$); doubling turns ($2\\times$) and current ($2\\times$) quadruples flux density ($4\\times$).",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A screw jack has a handle length of $r = 0.70\\text{ m}$ and a thread pitch of $p = 5.0\\text{ mm}$ ($0.005\\text{ m}$). Calculate the ideal Velocity Ratio of the screw jack ($VR = \\frac{2\\pi r}{p}$, using $\\pi = 3.142$).",
+        "options": [
+          "A. 140",
+          "B. 440",
+          "C. 880",
+          "D. 1,760"
+        ],
+        "correctAnswer": "C. 880",
+        "hint": "$VR = (2 \\times 3.142 \\times 0.70) / 0.005 = 4.3988 / 0.005 \\approx 879.76 \\approx 880$.",
+        "workedSolution": "$VR = (2 \\times 3.142 \\times 0.70) / 0.005 = 4.3988 / 0.005 \\approx 879.76 \\approx 880$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Under the Law of Conservation of Momentum ($m_1 u_1 + m_2 u_2 = m_1 v_1 + m_2 v_2$), a cannon of mass $M = 1,000\\text{ kg}$ fires a cannonball of mass $m = 10\\text{ kg}$ forward at a muzzle velocity of $v = 200\\text{ m/s}$. Calculate the recoil velocity ($V$) of the cannon.",
+        "options": [
+          "A. -0.5 m/s",
+          "B. -2.0 m/s",
+          "C. -5.0 m/s",
+          "D. -10.0 m/s"
+        ],
+        "correctAnswer": "B. -2.0 m/s",
+        "hint": "Initial momentum is zero: $M V + m v = 0 \\Rightarrow (1,000 \\times V) + (10 \\times 200) = 0 \\Rightarrow 1,000 V = -2,000 \\Rightarrow V = -2.0\\text{ m/s}$ (backward recoil).",
+        "workedSolution": "Initial momentum is zero: $M V + m v = 0 \\Rightarrow (1,000 \\times V) + (10 \\times 200) = 0 \\Rightarrow 1,000 V = -2,000 \\Rightarrow V = -2.0\\text{ m/s}$ (backward recoil).",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A multi-stage energy efficiency initiative in an industrial agro-processing plant replaces four $5.0\\text{ kW}$ conventional motors with high-efficiency $4.0\\text{ kW}$ motors running 8 hours daily for 300 days a year. If electricity costs GHS 1.50 per kWh, calculate annual financial cost savings.",
+        "options": [
+          "A. GHS 7,200",
+          "B. GHS 10,800",
+          "C. GHS 14,400",
+          "D. GHS 28,800"
+        ],
+        "correctAnswer": "C. GHS 14,400",
+        "hint": "Power saved = $4 \\times (5.0 - 4.0\\text{ kW}) = 4.0\\text{ kW}$. Energy saved = $4.0\\text{ kW} \\times (8 \\times 300\\text{ h}) = 4.0 \\times 2,400 = 9,600\\text{ kWh}$. Cost savings = $9,600 \\times \\text{GHS } 1.50 = \\text{GHS } 14,400$.",
+        "workedSolution": "Power saved = $4 \\times (5.0 - 4.0\\text{ kW}) = 4.0\\text{ kW}$. Energy saved = $4.0\\text{ kW} \\times (8 \\times 300\\text{ h}) = 4.0 \\times 2,400 = 9,600\\text{ kWh}$. Cost savings = $9,600 \\times \\text{GHS } 1.50 = \\text{GHS } 14,400$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a curling magnetic hysteresis loop in ferromagnetic cores cause thermal energy dissipation during continuous AC transformer operation?",
+        "options": [
+          "A. Energy is consumed overcoming internal friction as magnetic domain boundaries expand and flip against crystalline lattice resistance",
+          "B. The core conducts direct current into air",
+          "C. Steel cores melt under magnetic pressure",
+          "D. Hysteresis destroys electric electrons"
+        ],
+        "correctAnswer": "A. Energy is consumed overcoming internal friction as magnetic domain boundaries expand and flip against crystalline lattice resistance",
+        "hint": "Hysteresis loss represents internal work expended reorienting magnetic domains against lattice pinning sites during every AC cycle.",
+        "workedSolution": "Hysteresis loss represents internal work expended reorienting magnetic domains against lattice pinning sites during every AC cycle.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $60\\text{ kg}$ skydiver falls at a constant terminal velocity of $v = 50\\text{ m/s}$. What is the magnitude of the upward aerodynamic drag force acting on the skydiver ($g = 9.8\\text{ m/s}^2$)?",
+        "options": [
+          "A. 0 N",
+          "B. 300 N",
+          "C. 588 N",
+          "D. 1,200 N"
+        ],
+        "correctAnswer": "C. 588 N",
+        "hint": "At constant terminal velocity, acceleration is zero ($a = 0$), meaning net force is zero. Upward drag equals downward weight: $F_{drag} = mg = 60 \\times 9.8 = 588\\text{ N}$.",
+        "workedSolution": "At constant terminal velocity, acceleration is zero ($a = 0$), meaning net force is zero. Upward drag equals downward weight: $F_{drag} = mg = 60 \\times 9.8 = 588\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A wheelbarrow has a total length of $1.5\\text{ m}$ from its wheel axle fulcrum to the ends of its handles. A load of $900\\text{ N}$ is placed $0.5\\text{ m}$ from the axle. Calculate the upward vertical effort force required at the handles to lift the load.",
+        "options": [
+          "A. 150 N",
+          "B. 300 N",
+          "C. 450 N",
+          "D. 600 N"
+        ],
+        "correctAnswer": "B. 300 N",
+        "hint": "Applying the principle of moments for a second-class lever: $E \\times 1.5\\text{ m} = 900\\text{ N} \\times 0.5\\text{ m} \\Rightarrow 1.5 E = 450 \\Rightarrow E = 450 / 1.5 = 300\\text{ N}$.",
+        "workedSolution": "Applying the principle of moments for a second-class lever: $E \\times 1.5\\text{ m} = 900\\text{ N} \\times 0.5\\text{ m} \\Rightarrow 1.5 E = 450 \\Rightarrow E = 450 / 1.5 = 300\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a knapsack mist blower nozzle generate smaller aerosol droplet diameters when liquid discharge pressure is increased?",
+        "options": [
+          "A. Higher pressure differential accelerates fluid shear velocity across the orifice, overcoming liquid surface tension to shatter the stream into micro-droplets",
+          "B. High pressure turns liquid into steam by boiling",
+          "C. The nozzle adds air molecules inside the chemical",
+          "D. Higher pressure freezes the spray particles"
+        ],
+        "correctAnswer": "A. Higher pressure differential accelerates fluid shear velocity across the orifice, overcoming liquid surface tension to shatter the stream into micro-droplets",
+        "hint": "Elevated hydraulic pressure increases kinetic shear energy relative to fluid surface tension, reducing the Sauter mean diameter of spray droplets.",
+        "workedSolution": "Elevated hydraulic pressure increases kinetic shear energy relative to fluid surface tension, reducing the Sauter mean diameter of spray droplets.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Under torque mechanics ($\\tau = F \\times r$), why does a heavy-duty agricultural tractor have very large rear drive wheels while its front wheels are small?",
+        "options": [
+          "A. Large rear tires maximize ground contact area to reduce soil compaction while developing high axle tractive drawbar pull without slipping",
+          "B. Large wheels make tractors bounce over rocks",
+          "C. Front wheels are small to save diesel fuel",
+          "D. Tractors are designed to travel at race car speeds"
+        ],
+        "correctAnswer": "A. Large rear tires maximize ground contact area to reduce soil compaction while developing high axle tractive drawbar pull without slipping",
+        "hint": "Large-diameter lugged tires maximize soil contact patch, minimizing ground pressure and translating high axle torque into linear traction.",
+        "workedSolution": "Large-diameter lugged tires maximize soil contact patch, minimizing ground pressure and translating high axle torque into linear traction.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $0.5\\text{ kg}$ ball traveling at $u = 12\\text{ m/s}$ is caught and brought to a complete stop by a goalkeeper's padded gloves in $\\Delta t = 0.04\\text{ seconds}$. Calculate the average stopping force exerted on the ball ($F = m \\Delta v / \\Delta t$).",
+        "options": [
+          "A. 60 N",
+          "B. 120 N",
+          "C. 150 N",
+          "D. 300 N"
+        ],
+        "correctAnswer": "C. 150 N",
+        "hint": "$\\Delta v = 0 - 12 = -12\\text{ m/s}$. Impulse force magnitude $F = m |\\Delta v| / \\Delta t = (0.5 \\times 12) / 0.04 = 6.0 / 0.04 = 150\\text{ N}$.",
+        "workedSolution": "$\\Delta v = 0 - 12 = -12\\text{ m/s}$. Impulse force magnitude $F = m |\\Delta v| / \\Delta t = (0.5 \\times 12) / 0.04 = 6.0 / 0.04 = 150\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the introduction of regenerative braking in hybrid and electric vehicles illustrate both energy conservation and Newton's laws?",
+        "options": [
+          "A. It uses the vehicle's forward momentum to spin the motor as a generator, converting kinetic energy into stored battery energy while exerting a counter-torque that slows the car",
+          "B. It creates electricity by burning brake fluid",
+          "C. It violates the law of conservation of energy",
+          "D. It works only when cars drive uphill"
+        ],
+        "correctAnswer": "A. It uses the vehicle's forward momentum to spin the motor as a generator, converting kinetic energy into stored battery energy while exerting a counter-torque that slows the car",
+        "hint": "Regenerative braking exploits electromagnetic induction: vehicle momentum drives generators to recharge battery packs, recovering kinetic energy.",
+        "workedSolution": "Regenerative braking exploits electromagnetic induction: vehicle momentum drives generators to recharge battery packs, recovering kinetic energy.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A compound gear train features a 20-tooth driver gear A meshing with a 60-tooth gear B. Fixed rigidly to the same shaft as B is gear C (15 teeth), which meshes with an 80-tooth output gear D. Calculate the overall Velocity Ratio ($VR = \\frac{N_B}{N_A} \\times \\frac{N_D}{N_C}$).",
+        "options": [
+          "A. 4.0",
+          "B. 8.0",
+          "C. 16.0",
+          "D. 32.0"
+        ],
+        "correctAnswer": "C. 16.0",
+        "hint": "Stage 1 ratio $= 60 / 20 = 3$. Stage 2 ratio $= 80 / 15 = 5.333$. Compound ratio $= (60/20) \\times (80/15) = 3 \\times 5.333 = 16.0$.",
+        "workedSolution": "Stage 1 ratio $= 60 / 20 = 3$. Stage 2 ratio $= 80 / 15 = 5.333$. Compound ratio $= (60/20) \\times (80/15) = 3 \\times 5.333 = 16.0$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological mechanism of mechanical advantage in a human claw-like grip when closing surgical forceps or tweezers (Class 3 lever)?",
+        "options": [
+          "A. Effort applied between the anchored hinge and the tip allows fine, delicate tactile positioning of the working tips at the expense of higher thumb effort",
+          "B. Forceps amplify grip strength by a factor of 100",
+          "C. Tweezers operate as second-class wheelbarrows",
+          "D. Forceps destroy bacterial cells by magnetic fields"
+        ],
+        "correctAnswer": "A. Effort applied between the anchored hinge and the tip allows fine, delicate tactile positioning of the working tips at the expense of higher thumb effort",
+        "hint": "Class 3 pincers provide distance control and tactile feedback, enabling micro-dissection where positional dexterity matters more than raw force.",
+        "workedSolution": "Class 3 pincers provide distance control and tactile feedback, enabling micro-dissection where positional dexterity matters more than raw force.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In a physics trial, a $10\\text{ N}$ permanent bar magnet pulls an iron bolt across a laboratory bench at constant acceleration. By Newton's Third Law, what force does the bolt exert on the bar magnet?",
+        "options": [
+          "A. Zero force, because the bolt is unmagnetized",
+          "B. Exactly 10 N in the opposite direction",
+          "C. Less than 10 N because the bolt has smaller mass",
+          "D. Greater than 10 N"
+        ],
+        "correctAnswer": "B. Exactly 10 N in the opposite direction",
+        "hint": "Newton's Third Law holds universally across magnetic interactions: the induced dipole of the bolt exerts an equal and opposite force on the magnet.",
+        "workedSolution": "Newton's Third Law holds universally across magnetic interactions: the induced dipole of the bolt exerts an equal and opposite force on the magnet.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A domestic solar water heater saves $1,800\\text{ kWh}$ of electrical energy per year that would otherwise be consumed by an electric geyser. If generating $1\\text{ kWh}$ via thermal coal produces $0.90\\text{ kg}$ of $CO_2$, calculate the annual greenhouse gas emissions avoided.",
+        "options": [
+          "A. 810 kg CO₂",
+          "B. 1,620 kg CO₂",
+          "C. 2,400 kg CO₂",
+          "D. 3,600 kg CO₂"
+        ],
+        "correctAnswer": "B. 1,620 kg CO₂",
+        "hint": "Avoided emissions $= 1,800\\text{ kWh} \\times 0.90\\text{ kg CO}_2/\\text{kWh} = 1,620\\text{ kg of CO}_2$ per year.",
+        "workedSolution": "Avoided emissions $= 1,800\\text{ kWh} \\times 0.90\\text{ kg CO}_2/\\text{kWh} = 1,620\\text{ kg of CO}_2$ per year.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a circular saw blade on a motorized compound miter machine kick backward violently if the wood workpiece pinches the rotating blade?",
+        "options": [
+          "A. The blade exerts a forward cutting force on pinched wood; the pinched wood exerts an equal and opposite reaction force, hurling the saw blade backward (Newton's Third Law)",
+          "B. Wood generates electricity when pinched",
+          "C. The saw motor reverses electrical polarity",
+          "D. Centrifugal force vanishes instantly"
+        ],
+        "correctAnswer": "A. The blade exerts a forward cutting force on pinched wood; the pinched wood exerts an equal and opposite reaction force, hurling the saw blade backward (Newton's Third Law)",
+        "hint": "When blade teeth bind, rotational momentum transfers to the workpiece; reaction forces throw the saw assembly back toward the operator.",
+        "workedSolution": "When blade teeth bind, rotational momentum transfers to the workpiece; reaction forces throw the saw assembly back toward the operator.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A loaded handcart of mass $M = 80\\text{ kg}$ is pushed along a horizontal concrete floor with a forward force of $F = 260\\text{ N}$. If the opposing rolling friction is $F_f = 60\\text{ N}$, calculate the acceleration of the cart.",
+        "options": [
+          "A. 0.75 m/s²",
+          "B. 2.50 m/s²",
+          "C. 3.25 m/s²",
+          "D. 4.00 m/s²"
+        ],
+        "correctAnswer": "B. 2.50 m/s²",
+        "hint": "Net force $F_{net} = F_{applied} - F_f = 260 - 60 = 200\\text{ N}$. Acceleration $a = F_{net} / M = 200\\text{ N} / 80\\text{ kg} = 2.5\\text{ m/s}^2$.",
+        "workedSolution": "Net force $F_{net} = F_{applied} - F_f = 260 - 60 = 200\\text{ N}$. Acceleration $a = F_{net} / M = 200\\text{ N} / 80\\text{ kg} = 2.5\\text{ m/s}^2$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary thermodynamic rationale for building modern combined-cycle gas turbine (CCGT) power stations?",
+        "options": [
+          "A. High-temperature exhaust heat from a primary gas turbine is recovered to boil steam that drives a secondary steam turbine, elevating efficiency to ~60%",
+          "B. Burning gas produces zero carbon dioxide",
+          "C. CCGT power stations operate without consuming fuel",
+          "D. Gas turbines run on cold air"
+        ],
+        "correctAnswer": "A. High-temperature exhaust heat from a primary gas turbine is recovered to boil steam that drives a secondary steam turbine, elevating efficiency to ~60%",
+        "hint": "Combined-cycle configurations route 500°C gas turbine exhaust through Heat Recovery Steam Generators (HRSG), extracting secondary power.",
+        "workedSolution": "Combined-cycle configurations route 500°C gas turbine exhaust through Heat Recovery Steam Generators (HRSG), extracting secondary power.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do high-performance racing bicycles use carbon-fiber composite frames instead of solid steel, based on Newton's Second Law?",
+        "options": [
+          "A. Lower mass ($m$) achieves higher acceleration ($a = F/m$) for identical pedaling leg force, improving uphill climbing and sprinting performance",
+          "B. Carbon fiber eliminates all aerodynamic drag",
+          "C. Steel bicycle frames are illegal in racing",
+          "D. Carbon fiber frames generate their own mechanical power"
+        ],
+        "correctAnswer": "A. Lower mass ($m$) achieves higher acceleration ($a = F/m$) for identical pedaling leg force, improving uphill climbing and sprinting performance",
+        "hint": "Reducing frame mass lowers system inertia, yielding greater acceleration from available rider wattage.",
+        "workedSolution": "Reducing frame mass lowers system inertia, yielding greater acceleration from available rider wattage.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A differential wheel and axle has a wheel radius $R = 40\\text{ cm}$ and compound axle radii $r_1 = 12\\text{ cm}$ and $r_2 = 8\\text{ cm}$. Calculate the ideal Velocity Ratio ($VR = \\frac{2R}{r_1 - r_2}$).",
+        "options": [
+          "A. 5",
+          "B. 10",
+          "C. 20",
+          "D. 40"
+        ],
+        "correctAnswer": "C. 20",
+        "hint": "$VR = (2 \\times 40) / (12 - 8) = 80 / 4 = 20.0$.",
+        "workedSolution": "$VR = (2 \\times 40) / (12 - 8) = 80 / 4 = 20.0$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What happens to the magnetic field strength ($B$) at the center of an electrical solenoid if the core is switched from air ($\\mu_r = 1$) to a ferromagnetic silicon steel alloy ($\\mu_r = 5,000$)?",
+        "options": [
+          "A. It decreases by 5,000 times",
+          "B. It increases by 5,000 times ($B = \\mu_r \\mu_0 n I$)",
+          "C. It stays exactly the same",
+          "D. It reverses magnetic polarity every second"
+        ],
+        "correctAnswer": "B. It increases by 5,000 times ($B = \\mu_r \\mu_0 n I$)",
+        "hint": "Ferromagnetic cores have high relative permeability ($\\mu_r$), concentrating magnetic flux lines and multiplying field strength.",
+        "workedSolution": "Ferromagnetic cores have high relative permeability ($\\mu_r$), concentrating magnetic flux lines and multiplying field strength.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $70\\text{ kg}$ athlete stands on a digital weighing scale inside an elevator. If the elevator accelerates upward at $a = 2.2\\text{ m/s}^2$, what apparent weight does the scale display ($g = 9.8\\text{ m/s}^2$)?",
+        "options": [
+          "A. 532 N",
+          "B. 686 N",
+          "C. 840 N",
+          "D. 980 N"
+        ],
+        "correctAnswer": "C. 840 N",
+        "hint": "By Newton's Second Law: $N - mg = ma \\Rightarrow N = m(g + a) = 70 \\times (9.8 + 2.2) = 70 \\times 12.0 = 840\\text{ N}$.",
+        "workedSolution": "By Newton's Second Law: $N - mg = ma \\Rightarrow N = m(g + a) = 70 \\times (9.8 + 2.2) = 70 \\times 12.0 = 840\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a mechanical bottle jack use an incompressible hydraulic oil rather than compressed air to lift heavy trucks?",
+        "options": [
+          "A. Liquids are virtually incompressible, transmitting applied pressure instantaneously without sponge-like volume collapse",
+          "B. Air dissolves steel cylinders",
+          "C. Hydraulic oil has zero mass",
+          "D. Air produces cold temperatures inside jacks"
+        ],
+        "correctAnswer": "A. Liquids are virtually incompressible, transmitting applied pressure instantaneously without sponge-like volume collapse",
+        "hint": "Pascal's principle requires incompressible fluid media; gas compressibility would absorb stroke displacement without moving the load.",
+        "workedSolution": "Pascal's principle requires incompressible fluid media; gas compressibility would absorb stroke displacement without moving the load.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A factory automated packaging machine uses a cam and follower mechanism. What mechanical transformation does this system perform?",
+        "options": [
+          "A. It converts smooth continuous rotary motion into precise, timed reciprocating linear or oscillating motion",
+          "B. It transforms electricity into magnetic fields",
+          "C. It steps up voltage like a transformer",
+          "D. It generates hydraulic pressure"
+        ],
+        "correctAnswer": "A. It converts smooth continuous rotary motion into precise, timed reciprocating linear or oscillating motion",
+        "hint": "The contoured eccentric profile of a rotating cam translates rotary shaft motion into timed, repeatable linear stroke sequences.",
+        "workedSolution": "The contoured eccentric profile of a rotating cam translates rotary shaft motion into timed, repeatable linear stroke sequences.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $1,000\\text{ kg}$ car moving at $10\\text{ m/s}$ crashes into a crash-test barrier and stops in $0.10\\text{ seconds}$. If crumple zones extend the impact duration to $0.40\\text{ seconds}$, by what factor is the average impact force reduced?",
+        "options": [
+          "A. It is reduced by half",
+          "B. It is reduced to one-quarter ($4\\times$ reduction)",
+          "C. It is unchanged",
+          "D. It doubles"
+        ],
+        "correctAnswer": "B. It is reduced to one-quarter ($4\\times$ reduction)",
+        "hint": "Impulse equation: $F \\Delta t = m \\Delta v$. Quadrupling the deceleration timeframe ($0.10\\text{ s} \\rightarrow 0.40\\text{ s}$) cuts deceleration force to $1/4$.",
+        "workedSolution": "Impulse equation: $F \\Delta t = m \\Delta v$. Quadrupling the deceleration timeframe ($0.10\\text{ s} \\rightarrow 0.40\\text{ s}$) cuts deceleration force to $1/4$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do modern combine harvesters incorporate automated grain loss sensors in their threshing and separating drums?",
+        "options": [
+          "A. Piezoelectric impact sensors detect unseparated grain strikes, allowing on-the-fly adjustment of drum speed to reduce harvest waste",
+          "B. To weigh the driver of the combine",
+          "C. To count how many birds fly over the field",
+          "D. To turn grain into wheat flour inside the field"
+        ],
+        "correctAnswer": "A. Piezoelectric impact sensors detect unseparated grain strikes, allowing on-the-fly adjustment of drum speed to reduce harvest waste",
+        "hint": "Piezoelectric acoustic sensors measure grain impact counts against walker pans, signaling operators to tune rotor speeds and minimize losses.",
+        "workedSolution": "Piezoelectric acoustic sensors measure grain impact counts against walker pans, signaling operators to tune rotor speeds and minimize losses.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In an industrial crane hoisting system, a worm-and-wheel gear drive is utilized. What is a unique mechanical safety property of a worm drive?",
+        "options": [
+          "A. Self-locking: the worm can easily turn the worm gear, but the gear cannot back-drive the worm, preventing loads from dropping if power fails",
+          "B. It operates with zero friction",
+          "C. It generates its own electrical current",
+          "D. It works without lubricant"
+        ],
+        "correctAnswer": "A. Self-locking: the worm can easily turn the worm gear, but the gear cannot back-drive the worm, preventing loads from dropping if power fails",
+        "hint": "Frictional contact along lead angles prevents back-driving; the worm gear locks against the worm screw, providing an automatic mechanical brake.",
+        "workedSolution": "Frictional contact along lead angles prevents back-driving; the worm gear locks against the worm screw, providing an automatic mechanical brake.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A tractor PTO (Power Take-Off) shaft delivers $50\\text{ kW}$ of mechanical power to a rotary mower at an angular speed of $\\omega = 56.55\\text{ rad/s}$ ($540\\text{ rpm}$). Calculate the transmitted torque in Newton-meters ($P = \\tau \\omega$).",
+        "options": [
+          "A. 442 Nm",
+          "B. 884 Nm",
+          "C. 1,768 Nm",
+          "D. 2,700 Nm"
+        ],
+        "correctAnswer": "B. 884 Nm",
+        "hint": "Torque $\\tau = P / \\omega = 50,000\\text{ W} / 56.55\\text{ rad/s} \\approx 884.17\\text{ Nm}$.",
+        "workedSolution": "Torque $\\tau = P / \\omega = 50,000\\text{ W} / 56.55\\text{ rad/s} \\approx 884.17\\text{ Nm}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is regenerative braking insufficient to bring an electric vehicle to a complete standstill at very low speeds (<3 km/h)?",
+        "options": [
+          "A. Back-electromotive force (EMF) generated by the motor is proportional to rotor speed; as velocity approaches zero, induced braking torque vanishes",
+          "B. Batteries explode at zero speed",
+          "C. Tires lose all friction at low speeds",
+          "D. Electric vehicles cannot stop"
+        ],
+        "correctAnswer": "A. Back-electromotive force (EMF) generated by the motor is proportional to rotor speed; as velocity approaches zero, induced braking torque vanishes",
+        "hint": "Induced back-EMF scales with angular velocity ($E \\propto \\omega$); as rotational speed nears zero, regenerative braking torque drops, requiring friction pads.",
+        "workedSolution": "Induced back-EMF scales with angular velocity ($E \\propto \\omega$); as rotational speed nears zero, regenerative braking torque drops, requiring friction pads.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A high-efficiency knapsack mist blower utilizes a fan impeller rotating at $6,000\\text{ rpm}$. Calculate the tip speed of a fan blade of radius $r = 0.15\\text{ m}$ ($v = \\omega r$, with $\\omega = \\frac{2\\pi N}{60}$).",
+        "options": [
+          "A. 47.1 m/s",
+          "B. 94.2 m/s",
+          "C. 141.4 m/s",
+          "D. 188.5 m/s"
+        ],
+        "correctAnswer": "B. 94.2 m/s",
+        "hint": "$\\omega = (2 \\times 3.1416 \\times 6,000) / 60 = 628.32\\text{ rad/s}$. Tip speed $v = 628.32 \\times 0.15 = 94.25\\text{ m/s}$ (~340 km/h air velocity).",
+        "workedSolution": "$\\omega = (2 \\times 3.1416 \\times 6,000) / 60 = 628.32\\text{ rad/s}$. Tip speed $v = 628.32 \\times 0.15 = 94.25\\text{ m/s}$ (~340 km/h air velocity).",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the implementation of variable-frequency drives (VFDs) on industrial ventilation fans achieve substantial energy conservation?",
+        "options": [
+          "A. Affinity Laws: Fan power consumption scales with the cube of rotational speed ($P \\propto N^3$), so modest speed reductions yield major energy cuts",
+          "B. VFDs eliminate the need for electric motors",
+          "C. VFDs convert air into electricity",
+          "D. Fans run on magnetic energy without electricity"
+        ],
+        "correctAnswer": "A. Affinity Laws: Fan power consumption scales with the cube of rotational speed ($P \\propto N^3$), so modest speed reductions yield major energy cuts",
+        "hint": "By the cubic affinity law ($P \\propto N^3$), running a fan at 80% speed cuts required electrical power to $(0.8)^3 \\approx 51\\%$, saving ~49% energy.",
+        "workedSolution": "By the cubic affinity law ($P \\propto N^3$), running a fan at 80% speed cuts required electrical power to $(0.8)^3 \\approx 51\\%$, saving ~49% energy.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A mechanical wedge of length $L = 25\\text{ cm}$ and back thickness $t = 5\\text{ cm}$ is driven into a log. What is the ideal mechanical advantage of the wedge ($MA = L/t$)?",
+        "options": [
+          "A. 2.5",
+          "B. 5.0",
+          "C. 10.0",
+          "D. 20.0"
+        ],
+        "correctAnswer": "B. 5.0",
+        "hint": "$MA = \\text{Length} / \\text{Thickness} = 25\\text{ cm} / 5\\text{ cm} = 5.0$.",
+        "workedSolution": "$MA = \\text{Length} / \\text{Thickness} = 25\\text{ cm} / 5\\text{ cm} = 5.0$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary operational hazard of magnetic saturation in transformer iron cores?",
+        "options": [
+          "A. Magnetic permeability collapses, causing primary winding current to spike into high-amplitude distortion waveforms that overheat windings",
+          "B. The core stops conducting magnetic flux completely",
+          "C. The transformer turns into a permanent magnet permanently",
+          "D. The voltage steps up to infinity"
+        ],
+        "correctAnswer": "A. Magnetic permeability collapses, causing primary winding current to spike into high-amplitude distortion waveforms that overheat windings",
+        "hint": "Beyond saturation, the core cannot accept more flux lines; inductive impedance collapses, causing excitation current to surge and overheat coils.",
+        "workedSolution": "Beyond saturation, the core cannot accept more flux lines; inductive impedance collapses, causing excitation current to surge and overheat coils.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A commercial combine harvester moves through a paddy rice field at $v = 1.5\\text{ m/s}$ with a cutting width of $4.0\\text{ meters}$. Calculate the field area harvested per hour in hectares ($1\\text{ ha} = 10,000\\text{ m}^2$).",
+        "options": [
+          "A. 1.08 ha/h",
+          "B. 2.16 ha/h",
+          "C. 3.24 ha/h",
+          "D. 4.32 ha/h"
+        ],
+        "correctAnswer": "B. 2.16 ha/h",
+        "hint": "Area rate $= 1.5\\text{ m/s} \\times 4.0\\text{ m} = 6.0\\text{ m}^2/\\text{s}$. Per hour: $6.0 \\times 3,600 = 21,600\\text{ m}^2/\\text{h} = 2.16\\text{ ha/h}$.",
+        "workedSolution": "Area rate $= 1.5\\text{ m/s} \\times 4.0\\text{ m} = 6.0\\text{ m}^2/\\text{s}$. Per hour: $6.0 \\times 3,600 = 21,600\\text{ m}^2/\\text{h} = 2.16\\text{ ha/h}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a golfer follow through smoothly with their swing after striking a golf ball, based on impulse mechanics ($F \\Delta t = m \\Delta v$)?",
+        "options": [
+          "A. Increasing contact impact time ($\\Delta t$) maximizes total momentum transfer, giving the ball higher launch velocity",
+          "B. Following through prevents the club from breaking",
+          "C. It reduces the mass of the golf ball",
+          "D. It stops air resistance from acting on the ball"
+        ],
+        "correctAnswer": "A. Increasing contact impact time ($\\Delta t$) maximizes total momentum transfer, giving the ball higher launch velocity",
+        "hint": "Extending impact duration maximizes impulse ($J = \\int F dt = m \\Delta v$), accelerating the ball to greater muzzle velocity.",
+        "workedSolution": "Extending impact duration maximizes impulse ($J = \\int F dt = m \\Delta v$), accelerating the ball to greater muzzle velocity.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A pair of bolt cutters uses compound lever linkages. If Stage 1 has $MA_1 = 6.0$ and Stage 2 has $MA_2 = 5.0$, what is the overall ideal Mechanical Advantage of the cutters?",
+        "options": [
+          "A. 11.0",
+          "B. 15.0",
+          "C. 30.0",
+          "D. 60.0"
+        ],
+        "correctAnswer": "C. 30.0",
+        "hint": "Compound mechanical advantage multiplies across series stages: $MA_{total} = MA_1 \\times MA_2 = 6.0 \\times 5.0 = 30.0$.",
+        "workedSolution": "Compound mechanical advantage multiplies across series stages: $MA_{total} = MA_1 \\times MA_2 = 6.0 \\times 5.0 = 30.0$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is regenerative braking less effective on low-adhesion surfaces like wet clay mud or icy roads?",
+        "options": [
+          "A. Tire-ground friction coefficient drops; excessive motor braking torque locks wheels into uncontrolled skids",
+          "B. Water shorts out the electric motor",
+          "C. Mud makes batteries discharge instantly",
+          "D. Electric vehicles cannot run in rain"
+        ],
+        "correctAnswer": "A. Tire-ground friction coefficient drops; excessive motor braking torque locks wheels into uncontrolled skids",
+        "hint": "Low friction limits maximum tire-ground traction; aggressive regeneration torque can exceed tire grip, triggering skidding.",
+        "workedSolution": "Low friction limits maximum tire-ground traction; aggressive regeneration torque can exceed tire grip, triggering skidding.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A $300\\text{ N}$ box rests on a horizontal wooden plank. If the coefficient of static friction is $\\mu_s = 0.40$, calculate the minimum horizontal force required to initiate motion.",
+        "options": [
+          "A. 75 N",
+          "B. 120 N",
+          "C. 240 N",
+          "D. 300 N"
+        ],
+        "correctAnswer": "B. 120 N",
+        "hint": "Threshold friction force $F_{static} = \\mu_s N = 0.40 \\times 300\\text{ N} = 120\\text{ N}$.",
+        "workedSolution": "Threshold friction force $F_{static} = \\mu_s N = 0.40 \\times 300\\text{ N} = 120\\text{ N}$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does a robotic surgical arm achieve tremor filtration when performing delicate ophthalmic or cardiac operations?",
+        "options": [
+          "A. Microprocessors sample surgeon hand inputs, digitally filtering out involuntary 6–12 Hz physiological hand tremors before actuating micro-stepper motors",
+          "B. By numbing the surgeon's hand with cold gas",
+          "C. By using heavy iron counterweights",
+          "D. By magnetizing the surgical scalpel"
+        ],
+        "correctAnswer": "A. Microprocessors sample surgeon hand inputs, digitally filtering out involuntary 6–12 Hz physiological hand tremors before actuating micro-stepper motors",
+        "hint": "Robotic surgical consoles apply digital band-stop algorithms to strip out micro-tremors, translating motion into stabilized micro-strokes.",
+        "workedSolution": "Robotic surgical consoles apply digital band-stop algorithms to strip out micro-tremors, translating motion into stabilized micro-strokes.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A 10-meter inclined conveyor belt in an agricultural warehouse lifts grain sacks to a $2.5\\text{ m}$ high platform. If the belt motor expends $50\\text{ kJ}$ of energy to lift $35\\text{ kJ}$ of grain, calculate the mechanical efficiency.",
+        "options": [
+          "A. 50.0%",
+          "B. 70.0%",
+          "C. 75.0%",
+          "D. 85.0%"
+        ],
+        "correctAnswer": "B. 70.0%",
+        "hint": "Efficiency $\\eta = (W_{out} / W_{in}) \\times 100\\% = (35\\text{ kJ} / 50\\text{ kJ}) \\times 100\\% = 70.0\\%$.",
+        "workedSolution": "Efficiency $\\eta = (W_{out} / W_{in}) \\times 100\\% = (35\\text{ kJ} / 50\\text{ kJ}) \\times 100\\% = 70.0\\%$.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the physical principle behind magnetic levitation (Maglev) bullet trains?",
+        "options": [
+          "A. Superconducting electromagnets create repulsive magnetic fields that lift the train above track guide-ways, eliminating mechanical wheel-rail friction",
+          "B. The train is pulled by underground cables",
+          "C. Large fans blow air under the carriages",
+          "D. Permanent magnets in the sky pull the train upward"
+        ],
+        "correctAnswer": "A. Superconducting electromagnets create repulsive magnetic fields that lift the train above track guide-ways, eliminating mechanical wheel-rail friction",
+        "hint": "Electromagnetic levitation creates active magnetic repulsion between vehicle bogeys and track rails, eliminating rolling resistance.",
+        "workedSolution": "Electromagnetic levitation creates active magnetic repulsion between vehicle bogeys and track rails, eliminating rolling resistance.",
+        "points": 2
+      },
+      {
+        "id": "B8_MOT_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the ultimate macroeconomic and environmental benefit of integrating energy conservation with mechanized modern agriculture?",
+        "options": [
+          "A. Maximizing food crop production yields per hectare while lowering per-ton greenhouse gas emissions and production operating costs",
+          "B. Forcing all farm work to be done with hand tools",
+          "C. Eliminating the use of water in agriculture",
+          "D. Banning all agricultural machinery"
+        ],
+        "correctAnswer": "A. Maximizing food crop production yields per hectare while lowering per-ton greenhouse gas emissions and production operating costs",
+        "hint": "Energy-efficient mechanized agriculture raises harvest productivity while cutting fossil fuel expenditures and carbon footprints.",
+        "workedSolution": "Energy-efficient mechanized agriculture raises harvest productivity while cutting fossil fuel expenditures and carbon footprints.",
+        "points": 2
       }
     ]
   },
