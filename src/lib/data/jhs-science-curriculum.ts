@@ -55,7 +55,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Explore the particulate nature of matter, physical properties of solids, liquids, and gases, everyday importance of essential substances, chemical symbols, subatomic particles, electron configuration, and the Periodic Table.",
-    "totalPracticeQuestions": 156,
+    "totalPracticeQuestions": 303,
     "version": 1,
     "aliases": [
       "b7_strand1_materials",
@@ -2655,7 +2655,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
       "b8": {
         "levelTitle": "Basic 8 (JHS 2) • Materials, Mixtures, Separation Techniques & Atomic Structure",
         "summary": "Master types of mixtures, solutions, colloids, suspensions, separation techniques (filtration, decantation, separating funnel, evaporation, sublimation, distillation, chromatography), subatomic particles (protons, neutrons, electrons), atomic number, mass number, nuclide notation, electron configuration for the first 20 elements, and ion formation (cations and anions).",
-        "notes": "### STRAND 1: DIVERSITY OF MATTER\n### SUB-STRAND 1: MATERIALS AND ATOMIC STRUCTURE\n### BASIC 8 (JHS 2) • TYPES OF MIXTURES, SEPARATION TECHNIQUES & ATOMIC ARCHITECTURE\n* **Content Standard B8.1.1.1:** Demonstrate knowledge of types of mixtures and their separation techniques\n* **Content Standard B8.1.2.2:** Describe atoms as composed of subatomic particles and explain the arrangement of elements in terms of atomic number\n* **Indicator B8.1.1.1.1:** Identify types of mixtures by name and characteristics\n* **Indicator B8.1.1.1.2:** Design and perform processes for separating various kinds of mixtures\n* **Indicator B8.1.2.2.1:** Describe atoms as composed of subatomic particles\n* **Indicator B8.1.2.2.2:** Explain the arrangement of elements in terms of the number of protons in the nuclei of atoms of each element\n\n---\n\n### MODULE 1: Forms of Matter and Types of Physical Mixtures\n\n#### 1. States of Matter\n* **Common States of Matter:** Matter commonly exists around us in three basic forms: **solids**, **liquids**, and **gases**.\n* **The Fourth State of Matter (Plasma):** Science also recognizes a fourth state known as **plasma**, which is super-heated gas containing charged particles (ionized gas) found naturally in lightning bolts, the Sun, and distant stars.\n\n#### 2. Scientific Definition of a Mixture\nA **mixture** is formed when two or more different substances are combined physically without any chemical bonding.\n\n**Key Physical Properties of Mixtures:**\n1. **Physical Combination:** The constituent substances are mixed physically and can be separated by physical means without chemical reactions.\n2. **No New Chemical Substance:** No new chemical compound or bond is formed during the mixing process.\n3. **Retention of Individual Properties:** The components keep their original individual chemical and physical properties (e.g., iron filings retain magnetism; salt retains salinity).\n4. **Variable Proportions:** The substances can be mixed together in any proportion or ratio (a mixture has no fixed chemical formula or stoichiometry).\n\n#### 3. Two Main Classes of Mixtures\nMixtures are classified based on the uniformity of particle distribution and visible phase boundaries:\n\n1. **Homogeneous Mixture (Uniform Mixture):**\n   * *Explanation:* A mixture where the components mix completely and evenly throughout into a single visible phase. You cannot see the separate constituent parts with your naked eyes or an optical microscope.\n   * *Everyday Examples:*\n     * Salt dissolved in water (saline solution)\n     * Sugar dissolved in water (syrup)\n     * Clean atmospheric air (uniform mixture of nitrogen, oxygen, argon, and carbon dioxide gases)\n     * Brass (copper + zinc) and Bronze (copper + tin) (solid metal alloys)\n     * Ethanol dissolved in water\n\n2. **Heterogeneous Mixture (Non-Uniform Mixture):**\n   * *Explanation:* A mixture where the substances do not mix evenly. Two or more distinct parts, phases, or layers are easily visible.\n   * *Everyday Examples:*\n     * Sand stirred in water\n     * Mixture of palm oil and water\n     * Chalk powder stirred in water\n     * Iron filings mixed with sulfur powder\n     * Smoke and dusty air (solid particles suspended in gas)\n\n#### 4. Functional Combinations of Matter\nSubstances combine physically in different physical states:\n* **Solid - Liquid Mixture:** A solid combined with a liquid. The solid may dissolve completely (like salt in water) or remain undissolved as a suspension (like gari or sand in water).\n* **Solid - Gas Mixture:** Solid particulate matter suspended in air, such as soot in chimney smoke or dust floating in the atmosphere during the Harmattan season.\n* **Solid - Solid Mixture (Alloys & Aggregates):** Metals melted and blended together to form stronger materials, such as bronze (copper + tin) and brass (copper + zinc), or dry solid aggregates like gravel mixed with cement.\n* **Gas - Liquid Mixture:** Gaseous air carrying tiny liquid droplets, such as morning fog, mist, or natural rain clouds.\n* **Gas - Gas Mixture:** Two or more gases combined physically, with the most common example being clean atmospheric air.\n* **Liquid - Liquid Mixture:** Liquids that blend completely into one layer (miscible liquids like water and alcohol) or liquids that form separate distinct layers (immiscible liquids like palm oil and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORGANIZATION OF MIXTURES (BASIC 8)</text><g transform=\"translate(25, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">HOMOGENEOUS (UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Components blend evenly into one single phase</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Individual particles cannot be seen by naked eyes</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• True Solutions: Salt solution, sugar solution</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Gaseous Mixtures: Clean atmospheric air</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Metal Alloys: Bronze (Cu + Sn), Brass (Cu + Zn)</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Miscible Liquids: Ethanol mixed in water</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">Appearance: Clear, transparent, single layer</text></g><g transform=\"translate(395, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">HETEROGENEOUS (NON-UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Components do not blend completely</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Shows two or more visible parts or layers</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Suspensions: Sand in water, chalk in water</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Immiscible Liquids: Palm oil and water, kerosene and water</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Solid: Iron filings mixed with sulfur powder</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Gas: Dusty air, wood smoke particles</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">Appearance: Cloudy or distinct separate boundaries</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.1: Classification of Matter into Homogeneous (Uniform) and Heterogeneous (Non-Uniform) Mixtures</p>\n</div>\n\n---\n\n### MODULE 2: Solutions, Colloids, Suspensions, and Liquid Behavior\n\n#### 1. Components of a True Solution\nA **solution** is a homogeneous mixture formed when one substance dissolves completely inside another liquid:\n* **Solute:** The substance that dissolves. It usually represents the smaller quantity in the mixture (e.g., table salt crystals, sugar, copper sulfate).\n* **Solvent:** The liquid substance that dissolves the solute. It usually has the larger volume in the mixture. Water is universally known as the **universal solvent** because it dissolves a wider variety of substances than any other liquid.\n\n#### 2. Categories of Solutions\n* **Aqueous Solution:** Any solution where water serves as the dissolving liquid (solvent).\n* **Unsaturated Solution:** A solution that can still dissolve more solute at a given room temperature.\n* **Saturated Solution:** A solution that contains the maximum amount of solute it can hold at that specific temperature; any extra solute added will settle at the bottom undissolved.\n* **Standard Solution:** A solution whose exact strength, concentration, or molarity is accurately known for laboratory titration.\n\n#### 3. Particle Size Comparison in Liquid Mixtures\nLiquid mixtures behave differently depending on the microscopic diameter of their dispersed particles:\n\n| Property | True Solution | Colloid | Suspension |\n| :--- | :--- | :--- | :--- |\n| **Dispersed Particle Size** | Extremely tiny (< 1 nanometer / < 1 nm) | Medium-sized (1 nm to 1,000 nm) | Large particles (> 1,000 nm) |\n| **Visual Appearance** | Completely clear and transparent | Translucent or cloudy | Opaque and turbid |\n| **Sedimentation (Settling)** | Particles never settle down | Particles stay permanently dispersed | Particles settle down as sediment when left undisturbed |\n| **Filtration Behavior** | Passes completely through filter paper without residue | Passes through ordinary filter paper | Trapped on filter paper as solid residue |\n| **Light Scattering (Tyndall Effect)** | Does not scatter light (beam invisible) | Scatters a light beam making path visible | Blocks or reflects light irregularly |\n| **Common Examples** | Salt water, sugar solution, copper(II) sulfate solution | Milk, blood, cooked liquid starch, natural fog, gelatin, mayonnaise | Muddy river water, chalk powder in water, sand in water, antacid milk of magnesia |\n\n#### 4. Liquid-Liquid Mixing Properties\n* **Miscible Liquids:** Two or more liquids that dissolve completely in each other in all proportions to form a uniform, single-phase solution (e.g., pure water and ethanol/alcohol).\n* **Immiscible Liquids:** Liquids that refuse to blend together and separate into distinct layers based on density when left undisturbed (e.g., palm oil and water, kerosene and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PARTICLE SIZES: SOLUTION vs. COLLOID vs. SUSPENSION</text><g transform=\"translate(30, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. True Solution</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Particle size: &lt; 1 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Completely homogeneous</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Transparent to light</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Does not settle over time</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">e.g., Dissolved salt or sugar</text></g><g transform=\"translate(275, 42)\"><rect width=\"210\" height=\"140\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"105\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">2. Colloid</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Particle size: 1 nm to 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Intermediate dispersion</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Scatters light beams</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Stays permanently mixed</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">e.g., Milk, blood, cooked starch</text></g><g transform=\"translate(525, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. Suspension</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particle size: &gt; 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Heterogeneous mixture</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Cloudy and opaque</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particles settle as sediment</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">e.g., Sand in water, chalk water</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.2: Comparative Particle Dimensions across True Solutions, Colloids, and Suspensions</p>\n</div>\n\n---\n\n### MODULE 3: Separation Techniques for Insoluble Solids, Magnetic Materials, and Immiscible Liquids\n\n#### 1. Fundamental Principle of Separation\nBecause mixtures are formed purely by physical combinations without chemical bonding, they can be separated back into their pure individual components by exploiting differences in their **physical properties**, such as:\n* Particle size and porosity\n* Density\n* Solubility in specific solvents\n* Magnetic attraction\n* Melting and sublimation points\n* Boiling points\n\n#### 2. Physical Separation Methods\n\n##### Method 1: Decantation\n* **Purpose:** Separating a heavy insoluble solid from a liquid after the solid settles.\n* **Procedure:** \n  1. Allow the heavy insoluble solid (e.g., coarse sand or powdered chalk) to settle at the bottom of the beaker as sediment.\n  2. Gently tip the beaker and pour out the clear supernatant liquid layer into a second container.\n  3. A glass stirring rod is placed across the lip of the beaker to guide the liquid stream smoothly without splashing.\n* **Limitation:** Decantation achieves only an incomplete separation because fine, lightweight particles remain suspended in the poured liquid.\n\n##### Method 2: Filtration\n* **Purpose:** Completely separating an insoluble solid from a liquid or gas using a porous barrier.\n* **Key Terminology:**\n  * **Residue:** The solid particles trapped and left behind on the surface of the filter paper (e.g., sand grains, chalk powder).\n  * **Filtrate:** The clear liquid that passes through the microscopic pores of the filter paper into the receiving beaker.\n* **Emergency/Indigenous Substitutes:** Clean white cotton cloth, fine sponge foam, unglazed earthenware pots, or absorbent cotton wool.\n\n##### Method 3: Magnetic Separation\n* **Purpose:** Separating magnetic materials from non-magnetic substances in a dry mixture.\n* **Procedure:** Spread the dry mixture (e.g., iron filings mixed with sulfur powder or dry sand) thinly on a sheet of paper and pass a strong bar or horseshoe magnet over it. The iron filings are attracted to the magnet, leaving non-magnetic particles behind.\n\n##### Method 4: Use of a Separating Funnel\n* **Purpose:** Separating two immiscible liquids that possess different densities.\n* **Procedure:** Pour the immiscible mixture (e.g., palm oil and water, or kerosene and water) into the glass separating funnel. Support the funnel on a retort stand and let it stand. The denser liquid (water, density $\\approx 1.0\\text{ g/cm}^3$) sinks to the bottom, while the less dense liquid (oil/kerosene, density $\\approx 0.8\\text{ g/cm}^3$) floats on top. Open the tap (stopcock) slowly to drain the water layer into a beaker, closing it immediately when the oil reaches the tap.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">LABORATORY SEPARATION SETUPS</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">FILTRATION SETUP</text><path d=\"M 120 40 L 210 40 L 175 90 L 175 125 L 155 125 L 155 90 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"128,43 202,43 165,85\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><path d=\"M 140 120 L 190 120 L 205 170 L 125 170 Z\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"55\" x2=\"150\" y2=\"55\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Residue (Chalk/Sand)</text><line x1=\"250\" y1=\"70\" x2=\"185\" y2=\"70\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"73\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0369a1\">Filter Funnel &amp; Paper</text><line x1=\"250\" y1=\"155\" x2=\"195\" y2=\"155\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"158\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Filtrate (Clear Water)</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SEPARATING FUNNEL SETUP</text><path d=\"M 140 40 Q 165 35 190 40 Q 205 75 180 105 L 172 135 L 158 135 L 150 105 Q 125 75 140 40 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M 140 40 Q 165 35 190 40 Q 200 65 185 75 L 145 75 Q 130 65 140 40 Z\" fill=\"#fef08a\"/><line x1=\"80\" y1=\"60\" x2=\"150\" y2=\"60\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"63\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Kerosene / Oil (Top Layer)</text><line x1=\"80\" y1=\"95\" x2=\"155\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"end\">Water (Denser Bottom Layer)</text><rect x=\"153\" y=\"128\" width=\"24\" height=\"10\" rx=\"2\" fill=\"#334155\"/><line x1=\"250\" y1=\"133\" x2=\"180\" y2=\"133\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0f172a\">Stopcock (Tap)</text><rect x=\"145\" y=\"155\" width=\"40\" height=\"22\" fill=\"#e0f2fe\" stroke=\"#475569\" stroke-width=\"1.2\"/><text x=\"165\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Beaker</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.3: Experimental Setups for Gravity Filtration and Liquid-Liquid Separating Funnel</p>\n</div>\n\n---\n\n### MODULE 4: Thermal and Chromatographic Separation Techniques\n\n#### 1. Thermal Separation Methods\n\n##### Method 1: Evaporation to Dryness\n* **Principle:** Exploits the difference in volatility between a non-volatile solid solute and a volatile liquid solvent.\n* **Process:** Heat the solution (e.g., sodium chloride salt dissolved in water) in a porcelain evaporating dish over a Bunsen flame. Water boils at $100^\\circ\\text{C}$ and escapes as steam, leaving dry solid salt crystals behind in the dish.\n\n##### Method 2: Sublimation\n* **Principle:** Exploits the property of substances that change directly from solid to gas when heated, without becoming a liquid first.\n* **Common Subliming Substances:** Ammonium chloride ($\\text{NH}_4\\text{Cl}$), Iodine crystals ($\\text{I}_2$), Naphthalene (camphor balls).\n* **Process:** Place the dry mixture in an evaporating dish covered with an inverted glass funnel plugged with cotton wool. On heating, the subliming substance turns into vapor and cools back into solid crystals along the cold interior walls of the funnel.\n\n##### Method 3: Simple Distillation\n* **Principle:** Recovers pure liquid solvent from a solution containing a dissolved solute, or separates liquids with widely different boiling points ($> 25^\\circ\\text{C}$).\n* **Process:** The solution is boiled in a distillation flask. The vapor rises and passes through a water-cooled **Liebig condenser**, condensing back into pure liquid (the **distillate**) collected in a receiving flask. Both solute and solvent are preserved.\n\n##### Method 4: Fractional Distillation\n* **Principle:** Separates two or more miscible liquids that have close boiling points ($< 25^\\circ\\text{C}$).\n* **Process:** A fractionating column packed with glass beads is fitted on top of the boiling flask. The liquid with the lower boiling point (e.g., ethanol at $78^\\circ\\text{C}$) distills over first, while the liquid with the higher boiling point (water at $100^\\circ\\text{C}$) condenses and drips back until all the ethanol has distilled over.\n* **Applications:** Petroleum refining, distilling local gin (*akpeteshie*) from fermented palm wine, liquefaction and distillation of air.\n\n##### Method 5: Paper Chromatography\n* **Principle:** Separates soluble colored pigments, food dyes, or ink pigments based on their different speeds of travel through a stationary paper medium propelled by a mobile solvent.\n* **Process:** A spot of ink or dye is placed on chromatography paper dipped into a solvent. More soluble and less adsorbed dyes travel faster and higher up the paper.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THERMAL SEPARATION: SUBLIMATION &amp; DISTILLATION</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SUBLIMATION APPARATUS</text><ellipse cx=\"165\" cy=\"145\" rx=\"55\" ry=\"10\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M 160 55 L 170 55 L 170 85 L 215 140 L 115 140 L 160 85 Z\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><rect x=\"158\" y=\"46\" width=\"14\" height=\"9\" rx=\"2\" fill=\"#94a3b8\"/><line x1=\"240\" y1=\"50\" x2=\"175\" y2=\"50\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"53\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Cotton Plug</text><line x1=\"240\" y1=\"95\" x2=\"185\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Solidified Crystals (Funnel Wall)</text><line x1=\"75\" y1=\"145\" x2=\"130\" y2=\"145\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"70\" y=\"148\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\" text-anchor=\"end\">China Dish &amp; Mixture</text><polygon points=\"160,175 170,175 165,158\" fill=\"#f97316\"/><text x=\"165\" y=\"182\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Burner Flame</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SIMPLE DISTILLATION ASSEMBLY</text><circle cx=\"90\" cy=\"125\" r=\"28\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"86\" y=\"80\" width=\"8\" height=\"25\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"90\" y1=\"65\" x2=\"90\" y2=\"95\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><text x=\"90\" y=\"60\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#dc2626\" text-anchor=\"middle\">Thermometer</text><path d=\"M 94 95 L 210 135\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"115\" y=\"100\" width=\"80\" height=\"28\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1\" opacity=\"0.8\" transform=\"rotate(19, 155, 114)\"/><text x=\"155\" y=\"102\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Liebig Condenser (Cool Water)</text><path d=\"M 225 145 L 245 145 L 255 175 L 215 175 Z\" fill=\"#f1f5f9\" stroke=\"#334155\" stroke-width=\"1.3\"/><text x=\"235\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Distillate</text><polygon points=\"85,172 95,172 90,157\" fill=\"#f97316\"/><text x=\"90\" y=\"180\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Heat</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4: Thermal Separation Assemblies: Inverted Funnel Sublimation and Liebig Condenser Simple Distillation</p>\n</div>\n\n---\n\n### MODULE 5: Subatomic Particles and the Architecture of the Atom\n\n#### 1. Fundamental Chemical Definitions\n* **Atom:** The smallest indivisible particle of a chemical element that can take part in a chemical reaction. Examples include Hydrogen ($\\text{H}$), Carbon ($\\text{C}$), and Sodium ($\\text{Na}$).\n* **Molecule:** A group of two or more atoms chemically combined together that can exist independently (e.g., $\\text{H}_2$, $\\text{O}_2$, $\\text{CO}_2$, $\\text{H}_2\\text{O}$).\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### 2. Microscopic Architecture of the Atom\nEvery atom consists of two distinct physical zones:\n1. **The Nucleus:** The dense, heavy core located right at the geometric center of the atom. It contains almost all the mass of the atom and houses two subatomic particles: **protons** and **neutrons**.\n2. **Electron Shells (Energy Levels):** Concentric circular pathways or orbital clouds surrounding the nucleus where **electrons** revolve at high velocities.\n\n#### 3. Summary of the Three Subatomic Particles\n\n| Particle | Electrical Charge | Relative Mass | Location in Atom | Mobility |\n| :--- | :---: | :---: | :--- | :--- |\n| **Proton ($p^+$)** | Positive ($+1$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Neutron ($n^0$)** | Neutral / Zero ($0$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Electron ($e^-$)** | Negative ($-1$) | Negligible ($\\approx 1/1840\\text{ a.m.u.}$) | Revolves in outer shells | Highly mobile |\n\n#### 4. Key Contrasts: Protons vs. Electrons\n* **Charge:** Protons carry a unit positive charge ($+1$), while electrons carry a unit negative charge ($-1$).\n* **Location:** Protons are locked in the central nucleus; electrons orbit in the peripheral electron shells.\n* **Mass:** Protons possess substantial mass ($1\\text{ a.m.u.}$); electrons have negligible mass ($\\approx 1/1840\\text{ a.m.u.}$).\n* **Mobility:** Protons are tightly bound and immobile; electrons are mobile and participate in chemical bonding and electrical conduction.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE STRUCTURE OF AN ATOM</text><g transform=\"translate(180, 40)\"><circle cx=\"140\" cy=\"110\" r=\"90\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"55\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"26\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1.5\"/><circle cx=\"134\" cy=\"105\" r=\"8\" fill=\"#ef4444\"/><text x=\"134\" y=\"108\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">p⁺</text><circle cx=\"146\" cy=\"115\" r=\"8\" fill=\"#3b82f6\"/><text x=\"146\" y=\"118\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">n⁰</text><circle cx=\"140\" cy=\"55\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"58\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"140\" cy=\"165\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"50\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"50\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"230\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"230\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text></g><g transform=\"translate(500, 60)\"><rect width=\"220\" height=\"170\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Key Components</text><circle cx=\"25\" cy=\"50\" r=\"6\" fill=\"#ef4444\"/><text x=\"40\" y=\"53\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Proton (p⁺): Positive charge</text><circle cx=\"25\" cy=\"80\" r=\"6\" fill=\"#3b82f6\"/><text x=\"40\" y=\"83\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Neutron (n⁰): No charge</text><circle cx=\"25\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"40\" y=\"113\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Electron (e⁻): Negative charge</text><path d=\"M 20 135 L 30 135\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"40\" y=\"139\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e293b\">Central Nucleus: (p⁺ + n⁰)</text><path d=\"M 15 155 L 35 155\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"2,2\"/><text x=\"40\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#64748b\">Orbits / Shells: Host electrons</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.5: Detailed Subatomic Anatomy of the Atom showing Nucleus (Protons/Neutrons) and Electron Shells</p>\n</div>\n\n---\n\n### MODULE 6: Atomic Number, Mass Number, and Nuclide Notation\n\n#### 1. Core Concepts\n* **Atomic Number ($Z$):** The total number of protons found in the nucleus of an atom. The atomic number gives an element its unique chemical identity and defines its position on the Periodic Table. In a neutral (uncharged) atom, the number of protons equals the number of electrons:\n  $$\\text{Number of Protons } (p^+) = \\text{Number of Electrons } (e^-) = Z$$\n* **Mass Number ($A$):** The combined total count of protons and neutrons packed inside the nucleus of an atom (also called the nucleon number):\n  $$A = Z + n$$\n* **Calculating Neutron Count ($n$):** To find the number of neutrons present in an atom, subtract the atomic number ($Z$) from the mass number ($A$):\n  $$n = A - Z$$\n* **Nuclide:** A specific species of an atom characterized by a defined atomic number ($Z$) and mass number ($A$).\n\n#### 2. Standard Nuclide Notation\nIn international chemical shorthand, a nuclide is written as:\n$$^A_Z\\text{X}$$\n* $\\text{X}$ = The chemical symbol of the element (e.g., $\\text{Na}$, $\\text{Cl}$, $\\text{C}$, $\\text{K}$).\n* $A$ (superscript) = **Mass Number** (total nucleons: protons + neutrons).\n* $Z$ (subscript) = **Atomic Number** (total number of positive protons).\n\n#### 3. Step-by-Step Computational Examples\n* **Example 1: Potassium ($^{39}_{19}\\text{K}$):**\n  * Protons = Atomic Number ($Z$) = $19$\n  * Electrons = Protons (neutral atom) = $19$\n  * Neutrons = $A - Z = 39 - 19 = 20$ neutrons\n* **Example 2: Carbon-13 ($^{13}_6\\text{C}$):**\n  * Protons = Atomic Number ($Z$) = $6$\n  * Electrons = Protons (neutral atom) = $6$\n  * Neutrons = $A - Z = 13 - 6 = 7$ neutrons\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"180\" viewBox=\"0 0 760 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"180\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">HOW TO READ NUCLIDE NOTATION</text><g transform=\"translate(150, 45)\"><rect width=\"180\" height=\"110\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"95\" y=\"72\" font-family=\"sans-serif\" font-size=\"42\" font-weight=\"bold\" fill=\"#1e40af\">X</text><text x=\"35\" y=\"48\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#dc2626\">A</text><text x=\"35\" y=\"92\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#16a34a\">Z</text></g><g transform=\"translate(360, 45)\"><rect width=\"280\" height=\"110\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"15\" y=\"32\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">A = Mass Number (Protons + Neutrons)</text><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\">X = Chemical Symbol of Element</text><text x=\"15\" y=\"84\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#16a34a\">Z = Atomic Number (Proton Count)</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\">Rule: Neutrons (n) = A - Z</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.6: Standard Nuclide Representation and Structural Arithmetic Rules</p>\n</div>\n\n---\n\n### MODULE 7: Electron Configuration: Shells and Rules of Arrangement\n\n#### 1. Principles of Electron Shell Arrangement\nElectrons are arranged around the nucleus in specific circular concentric orbits called **energy levels** or **electron shells**. The systematic distribution of electrons across these concentric shells is termed the **electron configuration**.\n\n#### 2. Shell Naming and Capacity Rules\n* **Shell Designations:**\n  * $1^{\\text{st}}$ shell closest to the nucleus = **K-shell** ($n = 1$)\n  * $2^{\\text{nd}}$ shell = **L-shell** ($n = 2$)\n  * $3^{\\text{rd}}$ shell = **M-shell** ($n = 3$)\n  * $4^{\\text{th}}$ shell = **N-shell** ($n = 4$)\n* **The $2n^2$ Maximum Capacity Law:**\n  The maximum number of electrons that any shell can accommodate is determined by:\n  $$\\text{Capacity} = 2n^2$$\n  * K-shell ($n=1$): $2(1)^2 = 2$ electrons maximum\n  * L-shell ($n=2$): $2(2)^2 = 8$ electrons maximum\n  * M-shell ($n=3$): $2(3)^2 = 18$ electrons maximum (holds up to 8 in JHS 2 first 20 elements)\n  * N-shell ($n=4$): $2(4)^2 = 32$ electrons maximum\n* **The JHS 2 Filling Pattern for the First 20 Elements:**\n  The shells fill systematically in the orderly pattern: **2, 8, 8, 2** (2 in the 1st shell, up to 8 in the 2nd, up to 8 in the 3rd, and up to 2 in the 4th).\n\n#### 3. Canonical Electron Configurations of the First Twenty Elements\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Valency | Chemical Classification |\n| :---: | :--- | :---: | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | $1$ | $1$ | $1$ | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | $2$ | $2$ (Duplet) | $0$ | Noble Gas (Inert) |\n| **3** | Lithium | $\\text{Li}$ | $2, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **4** | Beryllium | $\\text{Be}$ | $2, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **5** | Boron | $\\text{B}$ | $2, 3$ | $3$ | $3$ | Metalloid (Semi-metal) |\n| **6** | Carbon | $\\text{C}$ | $2, 4$ | $4$ | $4$ | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | $2, 5$ | $5$ | $3$ | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | $2, 6$ | $6$ | $2$ | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | $2, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **10** | Neon | $\\text{Ne}$ | $2, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **11** | Sodium | $\\text{Na}$ | $2, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **12** | Magnesium | $\\text{Mg}$ | $2, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **13** | Aluminium | $\\text{Al}$ | $2, 8, 3$ | $3$ | $3$ | Metal (Group 13) |\n| **14** | Silicon | $\\text{Si}$ | $2, 8, 4$ | $4$ | $4$ | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | $2, 8, 5$ | $5$ | $3, 5$ | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | $2, 8, 6$ | $6$ | $2$ | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | $2, 8, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **18** | Argon | $\\text{Ar}$ | $2, 8, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **19** | Potassium | $\\text{K}$ | $2, 8, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **20** | Calcium | $\\text{Ca}$ | $2, 8, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ELECTRON CONFIGURATION OF SODIUM AND CHLORINE ATOMS</text><g transform=\"translate(130, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Na (11p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"4.5\" fill=\"#ea580c\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Sodium Atom (2, 8, 1)</text></g><g transform=\"translate(440, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Cl (17p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"90\" cy=\"150\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"160\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"30\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"140\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Chlorine Atom (2, 8, 7)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.7: Concentric Bohr Electron Shell Configurations for Sodium (2, 8, 1) and Chlorine (2, 8, 7)</p>\n</div>\n\n---\n\n### MODULE 8: Ion Formation: How Neutral Atoms Become Charged Particles\n\n#### 1. What is an Ion?\nAn **ion** is an electrically charged atom (or group of atoms) formed when a neutral atom either **loses** or **gains** one or more valence electrons.\n\n* **Why Do Atoms Form Ions?** Atoms gain or lose electrons to attain a stable, completely filled outermost energy shell (a stable duplet of 2 electrons for Helium, or a stable octet of 8 electrons like Neon and Argon).\n* **Electrical Neutrality of Free Atoms:** In an isolated neutral atom, the number of positive protons exactly equals the number of negative electrons ($\text{Net charge} = 0$).\n\n#### 2. The Two Classes of Ions\n\n##### 1. Cations (Positively Charged Ions):\n* **Formation:** Formed when a metal atom **loses** one, two, or three valence electrons.\n* **Mechanism:** Because electrons are lost while the nuclear proton count remains unchanged, the number of positive protons becomes greater than the number of negative electrons ($p^+ > e^-$).\n* **Symbol Notation:** Written with a positive superscript sign ($+$), e.g., $\\text{Na}^+$, $\\text{K}^+$, $\\text{Mg}^{2+}$, $\\text{Ca}^{2+}$, $\\text{Al}^{3+}$.\n* **Case Study — Sodium Ion ($\\text{Na}^+$):**\n  * Neutral Sodium atom ($_{11}\\text{Na}$): Configuration = $2, 8, 1$ ($11p^+, 11e^-$). Net charge = $0$.\n  * Sodium loses its $1$ valence electron: $\\text{Na} \\rightarrow \\text{Na}^+ + e^-$.\n  * Sodium cation ($\\text{Na}^+$): Configuration = $2, 8$ ($11p^+, 10e^-$). Net charge = $+1$.\n\n##### 2. Anions (Negatively Charged Ions):\n* **Formation:** Formed when a non-metal atom **gains** one, two, or three electrons into its valence shell.\n* **Mechanism:** The atom acquires extra negative electrons while the proton count stays constant, resulting in more electrons than protons ($e^- > p^+$).\n* **Symbol Notation:** Written with a negative superscript sign ($-$), e.g., $\\text{Cl}^-$, $\\text{O}^{2-}$, $\\text{N}^{3-}$.\n* **Case Study — Chloride Ion ($\\text{Cl}^-$):**\n  * Neutral Chlorine atom ($_{17}\\text{Cl}$): Configuration = $2, 8, 7$ ($17p^+, 17e^-$). Net charge = $0$.\n  * Chlorine gains $1$ electron: $\\text{Cl} + e^- \\rightarrow \\text{Cl}^-$.\n  * Chloride anion ($\\text{Cl}^-$): Configuration = $2, 8, 8$ ($17p^+, 18e^-$). Net charge = $-1$.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ION FORMATION: TRANSFER OF AN ELECTRON</text><g transform=\"translate(50, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Neutral Sodium (Na)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Configuration: 2, 8, 1</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Electrons = 11 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Net Charge = 0 (Neutral)</text></g><g transform=\"translate(235, 95)\"><path d=\"M 10 15 L 60 15\" stroke=\"#ea580c\" stroke-width=\"2\"/><polygon points=\"58,10 68,15 58,20\" fill=\"#ea580c\"/><text x=\"38\" y=\"8\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Loses 1 e⁻</text></g><g transform=\"translate(320, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Sodium Cation (Na⁺)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Configuration: 2, 8</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Electrons = 10 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\" text-anchor=\"middle\">Net Charge = +1 (Cation)</text></g><g transform=\"translate(510, 45)\"><rect width=\"200\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"100\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Chloride Anion (Cl⁻)</text><text x=\"100\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Configuration: 2, 8, 8</text><text x=\"100\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Protons = 17 (+)</text><text x=\"100\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Electrons = 18 (-)</text><text x=\"100\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"middle\">Net Charge = -1 (Anion)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.8: Ion Formation Mechanics: Electron Transfer from Sodium (Cation) to Chlorine (Anion)</p>\n</div>\n",
+        "notes": "### STRAND 1: DIVERSITY OF MATTER\n### SUB-STRAND 1: MATERIALS AND ATOMIC STRUCTURE\n### BASIC 8 (JHS 2) • TYPES OF MIXTURES, SEPARATION TECHNIQUES & ATOMIC ARCHITECTURE\n* **Content Standard B8.1.1.1:** Demonstrate knowledge of types of mixtures and their separation techniques\n* **Content Standard B8.1.2.2:** Describe atoms as composed of subatomic particles and explain the arrangement of elements in terms of atomic number\n* **Indicator B8.1.1.1.1:** Identify types of mixtures by name and characteristics\n* **Indicator B8.1.1.1.2:** Design and perform processes for separating various kinds of mixtures\n* **Indicator B8.1.2.2.1:** Describe atoms as composed of subatomic particles\n* **Indicator B8.1.2.2.2:** Explain the arrangement of elements in terms of the number of protons in the nuclei of atoms of each element\n\n---\n\n### MODULE 1: Forms of Matter and Types of Physical Mixtures\n\n#### 1. States of Matter\n* **Common States of Matter:** Matter commonly exists around us in three basic forms: **solids**, **liquids**, and **gases**.\n* **The Fourth State of Matter (Plasma):** Science also recognizes a fourth state known as **plasma**, which is super-heated gas containing charged particles (ionized gas) found naturally in lightning bolts, the Sun, and distant stars.\n\n#### 2. Scientific Definition of a Mixture\nA **mixture** is formed when two or more different substances are combined physically without any chemical bonding.\n\n**Key Physical Properties of Mixtures:**\n1. **Physical Combination:** The constituent substances are mixed physically and can be separated by physical means without chemical reactions.\n2. **No New Chemical Substance:** No new chemical compound or bond is formed during the mixing process.\n3. **Retention of Individual Properties:** The components keep their original individual chemical and physical properties (e.g., iron filings retain magnetism; salt retains salinity).\n4. **Variable Proportions:** The substances can be mixed together in any proportion or ratio (a mixture has no fixed chemical formula or stoichiometry).\n\n#### 3. Two Main Classes of Mixtures\nMixtures are classified based on the uniformity of particle distribution and visible phase boundaries:\n\n1. **Homogeneous Mixture (Uniform Mixture):**\n   * *Explanation:* A mixture where the components mix completely and evenly throughout into a single visible phase. You cannot see the separate constituent parts with your naked eyes or an optical microscope.\n   * *Everyday Examples:*\n     * Salt dissolved in water (saline solution)\n     * Sugar dissolved in water (syrup)\n     * Clean atmospheric air (uniform mixture of nitrogen, oxygen, argon, and carbon dioxide gases)\n     * Brass (copper + zinc) and Bronze (copper + tin) (solid metal alloys)\n     * Ethanol dissolved in water\n\n2. **Heterogeneous Mixture (Non-Uniform Mixture):**\n   * *Explanation:* A mixture where the substances do not mix evenly. Two or more distinct parts, phases, or layers are easily visible.\n   * *Everyday Examples:*\n     * Sand stirred in water\n     * Mixture of palm oil and water\n     * Chalk powder stirred in water\n     * Iron filings mixed with sulfur powder\n     * Smoke and dusty air (solid particles suspended in gas)\n\n#### 4. Functional Combinations of Matter\nSubstances combine physically in different physical states:\n* **Solid - Liquid Mixture:** A solid combined with a liquid. The solid may dissolve completely (like salt in water) or remain undissolved as a suspension (like gari or sand in water).\n* **Solid - Gas Mixture:** Solid particulate matter suspended in air, such as soot in chimney smoke or dust floating in the atmosphere during the Harmattan season.\n* **Solid - Solid Mixture (Alloys & Aggregates):** Metals melted and blended together to form stronger materials, such as bronze (copper + tin) and brass (copper + zinc), or dry solid aggregates like gravel mixed with cement.\n* **Gas - Liquid Mixture:** Gaseous air carrying tiny liquid droplets, such as morning fog, mist, or natural rain clouds.\n* **Gas - Gas Mixture:** Two or more gases combined physically, with the most common example being clean atmospheric air.\n* **Liquid - Liquid Mixture:** Liquids that blend completely into one layer (miscible liquids like water and alcohol) or liquids that form separate distinct layers (immiscible liquids like palm oil and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORGANIZATION OF MIXTURES (BASIC 8)</text><g transform=\"translate(25, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">HOMOGENEOUS (UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Components blend evenly into one single phase</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Individual particles cannot be seen by naked eyes</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• True Solutions: Salt solution, sugar solution</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Gaseous Mixtures: Clean atmospheric air</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Metal Alloys: Bronze (Cu + Sn), Brass (Cu + Zn)</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Miscible Liquids: Ethanol mixed in water</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">Appearance: Clear, transparent, single layer</text></g><g transform=\"translate(395, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">HETEROGENEOUS (NON-UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Components do not blend completely</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Shows two or more visible parts or layers</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Suspensions: Sand in water, chalk in water</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Immiscible Liquids: Palm oil and water, kerosene and water</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Solid: Iron filings mixed with sulfur powder</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Gas: Dusty air, wood smoke particles</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">Appearance: Cloudy or distinct separate boundaries</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.1: Classification of Matter into Homogeneous (Uniform) and Heterogeneous (Non-Uniform) Mixtures</p>\n</div>\n\n---\n\n### MODULE 2: Solutions, Colloids, Suspensions, and Liquid Behavior\n\n#### 1. Components of a True Solution\nA **solution** is a homogeneous mixture formed when one substance dissolves completely inside another liquid:\n* **Solute:** The substance that dissolves. It usually represents the smaller quantity in the mixture (e.g., table salt crystals, sugar, copper sulfate).\n* **Solvent:** The liquid substance that dissolves the solute. It usually has the larger volume in the mixture. Water is universally known as the **universal solvent** because it dissolves a wider variety of substances than any other liquid.\n\n#### 2. Categories of Solutions\n* **Aqueous Solution:** Any solution where water serves as the dissolving liquid (solvent).\n* **Unsaturated Solution:** A solution that can still dissolve more solute at a given room temperature.\n* **Saturated Solution:** A solution that contains the maximum amount of solute it can hold at that specific temperature; any extra solute added will settle at the bottom undissolved.\n* **Standard Solution:** A solution whose exact strength, concentration, or molarity is accurately known for laboratory titration.\n\n#### 3. Particle Size Comparison in Liquid Mixtures\nLiquid mixtures behave differently depending on the microscopic diameter of their dispersed particles:\n\n| Property | True Solution | Colloid | Suspension |\n| :--- | :--- | :--- | :--- |\n| **Dispersed Particle Size** | Extremely tiny (< 1 nanometer / < 1 nm) | Medium-sized (1 nm to 1,000 nm) | Large particles (> 1,000 nm) |\n| **Visual Appearance** | Completely clear and transparent | Translucent or cloudy | Opaque and turbid |\n| **Sedimentation (Settling)** | Particles never settle down | Particles stay permanently dispersed | Particles settle down as sediment when left undisturbed |\n| **Filtration Behavior** | Passes completely through filter paper without residue | Passes through ordinary filter paper | Trapped on filter paper as solid residue |\n| **Light Scattering (Tyndall Effect)** | Does not scatter light (beam invisible) | Scatters a light beam making path visible | Blocks or reflects light irregularly |\n| **Common Examples** | Salt water, sugar solution, copper(II) sulfate solution | Milk, blood, cooked liquid starch, natural fog, gelatin, mayonnaise | Muddy river water, chalk powder in water, sand in water, antacid milk of magnesia |\n\n#### 4. Liquid-Liquid Mixing Properties\n* **Miscible Liquids:** Two or more liquids that dissolve completely in each other in all proportions to form a uniform, single-phase solution (e.g., pure water and ethanol/alcohol).\n* **Immiscible Liquids:** Liquids that refuse to blend together and separate into distinct layers based on density when left undisturbed (e.g., palm oil and water, kerosene and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PARTICLE SIZES: SOLUTION vs. COLLOID vs. SUSPENSION</text><g transform=\"translate(30, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. True Solution</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Particle size: &lt; 1 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Completely homogeneous</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Transparent to light</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Does not settle over time</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">e.g., Dissolved salt or sugar</text></g><g transform=\"translate(275, 42)\"><rect width=\"210\" height=\"140\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"105\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">2. Colloid</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Particle size: 1 nm to 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Intermediate dispersion</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Scatters light beams</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Stays permanently mixed</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">e.g., Milk, blood, cooked starch</text></g><g transform=\"translate(525, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. Suspension</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particle size: &gt; 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Heterogeneous mixture</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Cloudy and opaque</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particles settle as sediment</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">e.g., Sand in water, chalk water</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.2: Comparative Particle Dimensions across True Solutions, Colloids, and Suspensions</p>\n</div>\n\n---\n\n### MODULE 3: Separation Techniques for Insoluble Solids, Magnetic Materials, and Immiscible Liquids\n\n#### 1. Fundamental Principle of Separation\nBecause mixtures are formed purely by physical combinations without chemical bonding, they can be separated back into their pure individual components by exploiting differences in their **physical properties**, such as:\n* Particle size and porosity\n* Density\n* Solubility in specific solvents\n* Magnetic attraction\n* Melting and sublimation points\n* Boiling points\n\n#### 2. Physical Separation Methods\n\n##### Method 1: Decantation\n* **Purpose:** Separating a heavy insoluble solid from a liquid after the solid settles.\n* **Procedure:** \n  1. Allow the heavy insoluble solid (e.g., coarse sand or powdered chalk) to settle at the bottom of the beaker as sediment.\n  2. Gently tip the beaker and pour out the clear supernatant liquid layer into a second container.\n  3. A glass stirring rod is placed across the lip of the beaker to guide the liquid stream smoothly without splashing.\n* **Limitation:** Decantation achieves only an incomplete separation because fine, lightweight particles remain suspended in the poured liquid.\n\n##### Method 2: Filtration\n* **Purpose:** Completely separating an insoluble solid from a liquid or gas using a porous barrier.\n* **Key Terminology:**\n  * **Residue:** The solid particles trapped and left behind on the surface of the filter paper (e.g., sand grains, chalk powder).\n  * **Filtrate:** The clear liquid that passes through the microscopic pores of the filter paper into the receiving beaker.\n* **Emergency/Indigenous Substitutes:** Clean white cotton cloth, fine sponge foam, unglazed earthenware pots, or absorbent cotton wool.\n\n##### Method 3: Magnetic Separation\n* **Purpose:** Separating magnetic materials from non-magnetic substances in a dry mixture.\n* **Procedure:** Spread the dry mixture (e.g., iron filings mixed with sulfur powder or dry sand) thinly on a sheet of paper and pass a strong bar or horseshoe magnet over it. The iron filings are attracted to the magnet, leaving non-magnetic particles behind.\n\n##### Method 4: Use of a Separating Funnel\n* **Purpose:** Separating two immiscible liquids that possess different densities.\n* **Procedure:** Pour the immiscible mixture (e.g., palm oil and water, or kerosene and water) into the glass separating funnel. Support the funnel on a retort stand and let it stand. The denser liquid (water, density $\\approx 1.0\\text{ g/cm}^3$) sinks to the bottom, while the less dense liquid (oil/kerosene, density $\\approx 0.8\\text{ g/cm}^3$) floats on top. Open the tap (stopcock) slowly to drain the water layer into a beaker, closing it immediately when the oil reaches the tap.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">LABORATORY SEPARATION SETUPS</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">FILTRATION SETUP</text><path d=\"M 120 40 L 210 40 L 175 90 L 175 125 L 155 125 L 155 90 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"128,43 202,43 165,85\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><path d=\"M 140 120 L 190 120 L 205 170 L 125 170 Z\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"55\" x2=\"150\" y2=\"55\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Residue (Chalk/Sand)</text><line x1=\"250\" y1=\"70\" x2=\"185\" y2=\"70\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"73\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0369a1\">Filter Funnel &amp; Paper</text><line x1=\"250\" y1=\"155\" x2=\"195\" y2=\"155\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"158\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Filtrate (Clear Water)</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SEPARATING FUNNEL SETUP</text><path d=\"M 140 40 Q 165 35 190 40 Q 205 75 180 105 L 172 135 L 158 135 L 150 105 Q 125 75 140 40 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M 140 40 Q 165 35 190 40 Q 200 65 185 75 L 145 75 Q 130 65 140 40 Z\" fill=\"#fef08a\"/><line x1=\"80\" y1=\"60\" x2=\"150\" y2=\"60\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"63\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Kerosene / Oil (Top Layer)</text><line x1=\"80\" y1=\"95\" x2=\"155\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"end\">Water (Denser Bottom Layer)</text><rect x=\"153\" y=\"128\" width=\"24\" height=\"10\" rx=\"2\" fill=\"#334155\"/><line x1=\"250\" y1=\"133\" x2=\"180\" y2=\"133\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0f172a\">Stopcock (Tap)</text><rect x=\"145\" y=\"155\" width=\"40\" height=\"22\" fill=\"#e0f2fe\" stroke=\"#475569\" stroke-width=\"1.2\"/><text x=\"165\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Beaker</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.3: Experimental Setups for Gravity Filtration and Liquid-Liquid Separating Funnel</p>\n</div>\n\n---\n\n### MODULE 4: Thermal and Chromatographic Separation Techniques\n\n#### 1. Thermal Separation Methods\n\n##### Method 1: Evaporation to Dryness\n* **Principle:** Exploits the difference in volatility between a non-volatile solid solute and a volatile liquid solvent.\n* **Process:** Heat the solution (e.g., sodium chloride salt dissolved in water) in a porcelain evaporating dish over a Bunsen flame. Water boils at $100^\\circ\\text{C}$ and escapes as steam, leaving dry solid salt crystals behind in the dish.\n\n##### Method 2: Sublimation\n* **Principle:** Exploits the property of substances that change directly from solid to gas when heated, without becoming a liquid first.\n* **Common Subliming Substances:** Ammonium chloride ($\\text{NH}_4\\text{Cl}$), Iodine crystals ($\\text{I}_2$), Naphthalene (camphor balls).\n* **Process:** Place the dry mixture in an evaporating dish covered with an inverted glass funnel plugged with cotton wool. On heating, the subliming substance turns into vapor and cools back into solid crystals along the cold interior walls of the funnel.\n\n##### Method 3: Simple Distillation\n* **Principle:** Recovers pure liquid solvent from a solution containing a dissolved solute, or separates liquids with widely different boiling points ($> 25^\\circ\\text{C}$).\n* **Process:** The solution is boiled in a distillation flask. The vapor rises and passes through a water-cooled **Liebig condenser**, condensing back into pure liquid (the **distillate**) collected in a receiving flask. Both solute and solvent are preserved.\n\n##### Method 4: Fractional Distillation\n* **Principle:** Separates two or more miscible liquids that have close boiling points ($< 25^\\circ\\text{C}$).\n* **Process:** A fractionating column packed with glass beads is fitted on top of the boiling flask. The liquid with the lower boiling point (e.g., ethanol at $78^\\circ\\text{C}$) distills over first, while the liquid with the higher boiling point (water at $100^\\circ\\text{C}$) condenses and drips back until all the ethanol has distilled over.\n* **Applications:** Petroleum refining, distilling local gin (*akpeteshie*) from fermented palm wine, liquefaction and distillation of air.\n\n##### Method 5: Paper Chromatography\n* **Principle:** Separates soluble colored pigments, food dyes, or ink pigments based on their different speeds of travel through a stationary paper medium propelled by a mobile solvent.\n* **Process:** A spot of ink or dye is placed on chromatography paper dipped into a solvent. More soluble and less adsorbed dyes travel faster and higher up the paper.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THERMAL SEPARATION: SUBLIMATION &amp; DISTILLATION</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SUBLIMATION APPARATUS</text><ellipse cx=\"165\" cy=\"145\" rx=\"55\" ry=\"10\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M 160 55 L 170 55 L 170 85 L 215 140 L 115 140 L 160 85 Z\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><rect x=\"158\" y=\"46\" width=\"14\" height=\"9\" rx=\"2\" fill=\"#94a3b8\"/><line x1=\"240\" y1=\"50\" x2=\"175\" y2=\"50\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"53\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Cotton Plug</text><line x1=\"240\" y1=\"95\" x2=\"185\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Solidified Crystals (Funnel Wall)</text><line x1=\"75\" y1=\"145\" x2=\"130\" y2=\"145\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"70\" y=\"148\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\" text-anchor=\"end\">China Dish &amp; Mixture</text><polygon points=\"160,175 170,175 165,158\" fill=\"#f97316\"/><text x=\"165\" y=\"182\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Burner Flame</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SIMPLE DISTILLATION ASSEMBLY</text><circle cx=\"90\" cy=\"125\" r=\"28\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"86\" y=\"80\" width=\"8\" height=\"25\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"90\" y1=\"65\" x2=\"90\" y2=\"95\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><text x=\"90\" y=\"60\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#dc2626\" text-anchor=\"middle\">Thermometer</text><path d=\"M 94 95 L 210 135\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"115\" y=\"100\" width=\"80\" height=\"28\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1\" opacity=\"0.8\" transform=\"rotate(19, 155, 114)\"/><text x=\"155\" y=\"102\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Liebig Condenser (Cool Water)</text><path d=\"M 225 145 L 245 145 L 255 175 L 215 175 Z\" fill=\"#f1f5f9\" stroke=\"#334155\" stroke-width=\"1.3\"/><text x=\"235\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Distillate</text><polygon points=\"85,172 95,172 90,157\" fill=\"#f97316\"/><text x=\"90\" y=\"180\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Heat</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4: Thermal Separation Assemblies: Inverted Funnel Sublimation and Liebig Condenser Simple Distillation</p>\n</div>\n\n#### Examination Drawing Guide: Fully Annotated Separation Assemblies\nStudents must be able to recognize, label, and sketch the four primary separation assemblies tested in Ghanaian examinations:\n1. **Filtration:** Retort stand, conical flask, filter funnel, filter paper, residue, and filtrate.\n2. **Separating Funnel:** Clamped funnel, denser liquid (bottom layer), less dense liquid (top layer), and stopcock tap.\n3. **Sublimation:** Tripod stand, wire gauze, china dish, inverted glass funnel, cotton wool plug, and crystalline sublimate.\n4. **Simple Distillation:** Distillation flask, thermometer, Liebig condenser with countercurrent cooling water (inlet at lower end, outlet at upper end), and receiving flask collecting pure distillate.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"820\" height=\"620\" viewBox=\"0 0 820 620\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"820\" height=\"620\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"410\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STANDARD LABORATORY SEPARATION APPARATUS (EXAM REFERENCE)</text><g transform=\"translate(25, 45)\"><rect width=\"370\" height=\"265\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">1. FILTRATION ASSEMBLY</text><line x1=\"50\" y1=\"35\" x2=\"50\" y2=\"245\" stroke=\"#334155\" stroke-width=\"4\"/><line x1=\"25\" y1=\"245\" x2=\"100\" y2=\"245\" stroke=\"#334155\" stroke-width=\"5\"/><line x1=\"50\" y1=\"100\" x2=\"130\" y2=\"100\" stroke=\"#475569\" stroke-width=\"3\"/><rect x=\"125\" y=\"94\" width=\"14\" height=\"12\" rx=\"2\" fill=\"#64748b\"/><path d=\"M 105 50 L 175 50 L 148 95 L 148 135 L 132 135 L 132 95 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"112,53 168,53 140,90\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><path d=\"M 115 130 L 165 130 L 180 205 L 100 205 Z\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><path d=\"M 104 180 L 176 180 L 179 203 L 101 203 Z\" fill=\"#bae6fd\"/><line x1=\"205\" y1=\"45\" x2=\"145\" y2=\"65\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><polygon points=\"145,65 152,60 150,67\" fill=\"#ef4444\"/><text x=\"210\" y=\"48\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#b91c1c\">Residue (e.g. Chalk / Sand)</text><line x1=\"205\" y1=\"80\" x2=\"162\" y2=\"75\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"162,75 168,71 169,78\" fill=\"#0284c7\"/><text x=\"210\" y=\"83\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0369a1\">Filter Paper inside Funnel</text><line x1=\"205\" y1=\"115\" x2=\"150\" y2=\"115\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"150,115 156,111 156,119\" fill=\"#0284c7\"/><text x=\"210\" y=\"118\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0369a1\">Stem of Funnel</text><line x1=\"205\" y1=\"170\" x2=\"155\" y2=\"170\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"155,170 161,166 161,174\" fill=\"#475569\"/><text x=\"210\" y=\"173\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">Conical Flask</text><line x1=\"205\" y1=\"195\" x2=\"150\" y2=\"195\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"150,195 156,191 156,199\" fill=\"#0284c7\"/><text x=\"210\" y=\"198\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Filtrate (Clear Water)</text></g><g transform=\"translate(425, 45)\"><rect width=\"370\" height=\"265\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">2. SEPARATING FUNNEL ASSEMBLY</text><line x1=\"50\" y1=\"35\" x2=\"50\" y2=\"245\" stroke=\"#334155\" stroke-width=\"4\"/><line x1=\"25\" y1=\"245\" x2=\"100\" y2=\"245\" stroke=\"#334155\" stroke-width=\"5\"/><line x1=\"50\" y1=\"85\" x2=\"110\" y2=\"85\" stroke=\"#475569\" stroke-width=\"3\"/><rect x=\"105\" y=\"79\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#64748b\"/><path d=\"M 115 50 Q 140 45 165 50 Q 185 85 155 125 L 147 150 L 133 150 L 125 125 Q 95 85 115 50 Z\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M 115 50 Q 140 45 165 50 Q 178 72 160 85 L 120 85 Q 102 72 115 50 Z\" fill=\"#fef08a\"/><rect x=\"130\" y=\"145\" width=\"20\" height=\"10\" rx=\"2\" fill=\"#334155\"/><line x1=\"140\" y1=\"155\" x2=\"140\" y2=\"180\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"115\" y=\"190\" width=\"50\" height=\"40\" rx=\"2\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"116\" y=\"205\" width=\"48\" height=\"24\" fill=\"#bae6fd\"/><line x1=\"210\" y1=\"65\" x2=\"150\" y2=\"65\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><polygon points=\"150,65 156,61 156,69\" fill=\"#ca8a04\"/><text x=\"215\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#854d0e\">Kerosene / Oil (Less dense)</text><line x1=\"210\" y1=\"105\" x2=\"145\" y2=\"105\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"145,105 151,101 151,109\" fill=\"#0284c7\"/><text x=\"215\" y=\"108\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Water (Denser bottom layer)</text><line x1=\"210\" y1=\"150\" x2=\"155\" y2=\"150\" stroke=\"#334155\" stroke-width=\"1.2\"/><polygon points=\"155,150 161,146 161,154\" fill=\"#334155\"/><text x=\"215\" y=\"153\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0f172a\">Stopcock (Tap)</text><line x1=\"210\" y1=\"210\" x2=\"170\" y2=\"210\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"170,210 176,206 176,214\" fill=\"#475569\"/><text x=\"215\" y=\"213\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">Beaker (Receives water)</text></g><g transform=\"translate(25, 325)\"><rect width=\"370\" height=\"275\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">3. SUBLIMATION ASSEMBLY</text><line x1=\"90\" y1=\"185\" x2=\"120\" y2=\"235\" stroke=\"#334155\" stroke-width=\"3\"/><line x1=\"200\" y1=\"185\" x2=\"170\" y2=\"235\" stroke=\"#334155\" stroke-width=\"3\"/><line x1=\"145\" y1=\"185\" x2=\"145\" y2=\"235\" stroke=\"#334155\" stroke-width=\"2.5\"/><line x1=\"80\" y1=\"185\" x2=\"210\" y2=\"185\" stroke=\"#334155\" stroke-width=\"3\"/><ellipse cx=\"145\" cy=\"180\" rx=\"55\" ry=\"8\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M 141 80 L 149 80 L 149 110 L 195 175 L 95 175 L 141 110 Z\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><rect x=\"139\" y=\"72\" width=\"12\" height=\"9\" rx=\"2\" fill=\"#94a3b8\"/><line x1=\"105\" y1=\"155\" x2=\"115\" y2=\"140\" stroke=\"#7c3aed\" stroke-width=\"2\"/><line x1=\"185\" y1=\"155\" x2=\"175\" y2=\"140\" stroke=\"#7c3aed\" stroke-width=\"2\"/><rect x=\"135\" y=\"230\" width=\"20\" height=\"22\" fill=\"#475569\"/><polygon points=\"138,230 152,230 145,200\" fill=\"#f97316\"/><line x1=\"230\" y1=\"76\" x2=\"155\" y2=\"76\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"155,76 161,72 161,80\" fill=\"#475569\"/><text x=\"235\" y=\"79\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">Cotton Plug (Traps vapor)</text><line x1=\"230\" y1=\"125\" x2=\"170\" y2=\"135\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><polygon points=\"170,135 177,131 175,138\" fill=\"#2563eb\"/><text x=\"235\" y=\"128\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\">Inverted Funnel</text><line x1=\"230\" y1=\"150\" x2=\"180\" y2=\"150\" stroke=\"#7c3aed\" stroke-width=\"1.2\"/><polygon points=\"180,150 186,146 186,154\" fill=\"#7c3aed\"/><text x=\"235\" y=\"153\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#6d28d9\">Sublimed Solid (Crystals)</text><line x1=\"230\" y1=\"180\" x2=\"195\" y2=\"180\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"195,180 201,176 201,184\" fill=\"#475569\"/><text x=\"235\" y=\"183\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">China Dish (Holds mixture)</text><line x1=\"230\" y1=\"215\" x2=\"155\" y2=\"215\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><polygon points=\"155,215 161,211 161,219\" fill=\"#ea580c\"/><text x=\"235\" y=\"218\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#c2410c\">Bunsen Burner Flame</text></g><g transform=\"translate(425, 325)\"><rect width=\"370\" height=\"275\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">4. SIMPLE DISTILLATION ASSEMBLY</text><circle cx=\"75\" cy=\"150\" r=\"26\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"71\" y=\"110\" width=\"8\" height=\"20\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"75\" y1=\"90\" x2=\"75\" y2=\"130\" stroke=\"#dc2626\" stroke-width=\"1.8\"/><rect x=\"71\" y=\"85\" width=\"8\" height=\"6\" fill=\"#334155\"/><path d=\"M 79 125 L 210 170\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"105\" y=\"130\" width=\"85\" height=\"30\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1.2\" opacity=\"0.8\" transform=\"rotate(19, 147, 145)\"/><path d=\"M 160 115 L 160 100\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"160\" y=\"95\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Water Out</text><path d=\"M 135 175 L 135 190\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"135\" y=\"198\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Cold Water In</text><path d=\"M 225 180 L 245 180 L 255 220 L 215 220 Z\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.4\"/><rect x=\"220\" y=\"208\" width=\"30\" height=\"10\" fill=\"#bae6fd\"/><polygon points=\"70,205 80,205 75,185\" fill=\"#f97316\"/><line x1=\"15\" y1=\"90\" x2=\"70\" y2=\"90\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><polygon points=\"70,90 64,86 64,94\" fill=\"#dc2626\"/><text x=\"10\" y=\"93\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#b91c1c\">Thermometer</text><line x1=\"15\" y1=\"150\" x2=\"45\" y2=\"150\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"45,150 39,146 39,154\" fill=\"#0284c7\"/><text x=\"10\" y=\"153\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0369a1\">Distillation Flask</text><line x1=\"230\" y1=\"135\" x2=\"185\" y2=\"135\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"185,135 191,131 191,139\" fill=\"#0284c7\"/><text x=\"235\" y=\"138\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Liebig Condenser</text><line x1=\"280\" y1=\"215\" x2=\"258\" y2=\"215\" stroke=\"#334155\" stroke-width=\"1.2\"/><polygon points=\"258,215 264,211 264,219\" fill=\"#334155\"/><text x=\"285\" y=\"218\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">Distillate (Pure liquid)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4b: Comprehensive Laboratory Separation Setups — Fully Annotated Examination Drawing Guide</p>\n</div>\n\n---\n\n### MODULE 5: Subatomic Particles and the Architecture of the Atom\n\n#### 1. Fundamental Chemical Definitions\n* **Atom:** The smallest indivisible particle of a chemical element that can take part in a chemical reaction. Examples include Hydrogen ($\\text{H}$), Carbon ($\\text{C}$), and Sodium ($\\text{Na}$).\n* **Molecule:** A group of two or more atoms chemically combined together that can exist independently (e.g., $\\text{H}_2$, $\\text{O}_2$, $\\text{CO}_2$, $\\text{H}_2\\text{O}$).\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### 2. Microscopic Architecture of the Atom\nEvery atom consists of two distinct physical zones:\n1. **The Nucleus:** The dense, heavy core located right at the geometric center of the atom. It contains almost all the mass of the atom and houses two subatomic particles: **protons** and **neutrons**.\n2. **Electron Shells (Energy Levels):** Concentric circular pathways or orbital clouds surrounding the nucleus where **electrons** revolve at high velocities.\n\n#### 3. Summary of the Three Subatomic Particles\n\n| Particle | Electrical Charge | Relative Mass | Location in Atom | Mobility |\n| :--- | :---: | :---: | :--- | :--- |\n| **Proton ($p^+$)** | Positive ($+1$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Neutron ($n^0$)** | Neutral / Zero ($0$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Electron ($e^-$)** | Negative ($-1$) | Negligible ($\\approx 1/1840\\text{ a.m.u.}$) | Revolves in outer shells | Highly mobile |\n\n#### 4. Key Contrasts: Protons vs. Electrons\n* **Charge:** Protons carry a unit positive charge ($+1$), while electrons carry a unit negative charge ($-1$).\n* **Location:** Protons are locked in the central nucleus; electrons orbit in the peripheral electron shells.\n* **Mass:** Protons possess substantial mass ($1\\text{ a.m.u.}$); electrons have negligible mass ($\\approx 1/1840\\text{ a.m.u.}$).\n* **Mobility:** Protons are tightly bound and immobile; electrons are mobile and participate in chemical bonding and electrical conduction.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE STRUCTURE OF AN ATOM</text><g transform=\"translate(180, 40)\"><circle cx=\"140\" cy=\"110\" r=\"90\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"55\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"26\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1.5\"/><circle cx=\"134\" cy=\"105\" r=\"8\" fill=\"#ef4444\"/><text x=\"134\" y=\"108\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">p⁺</text><circle cx=\"146\" cy=\"115\" r=\"8\" fill=\"#3b82f6\"/><text x=\"146\" y=\"118\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">n⁰</text><circle cx=\"140\" cy=\"55\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"58\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"140\" cy=\"165\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"50\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"50\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"230\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"230\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text></g><g transform=\"translate(500, 60)\"><rect width=\"220\" height=\"170\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Key Components</text><circle cx=\"25\" cy=\"50\" r=\"6\" fill=\"#ef4444\"/><text x=\"40\" y=\"53\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Proton (p⁺): Positive charge</text><circle cx=\"25\" cy=\"80\" r=\"6\" fill=\"#3b82f6\"/><text x=\"40\" y=\"83\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Neutron (n⁰): No charge</text><circle cx=\"25\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"40\" y=\"113\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Electron (e⁻): Negative charge</text><path d=\"M 20 135 L 30 135\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"40\" y=\"139\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e293b\">Central Nucleus: (p⁺ + n⁰)</text><path d=\"M 15 155 L 35 155\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"2,2\"/><text x=\"40\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#64748b\">Orbits / Shells: Host electrons</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.5: Detailed Subatomic Anatomy of the Atom showing Nucleus (Protons/Neutrons) and Electron Shells</p>\n</div>\n\n---\n\n### MODULE 6: Atomic Number, Mass Number, and Nuclide Notation\n\n#### 1. Core Concepts\n* **Atomic Number ($Z$):** The total number of protons found in the nucleus of an atom. The atomic number gives an element its unique chemical identity and defines its position on the Periodic Table. In a neutral (uncharged) atom, the number of protons equals the number of electrons:\n  $$\\text{Number of Protons } (p^+) = \\text{Number of Electrons } (e^-) = Z$$\n* **Mass Number ($A$):** The combined total count of protons and neutrons packed inside the nucleus of an atom (also called the nucleon number):\n  $$A = Z + n$$\n* **Calculating Neutron Count ($n$):** To find the number of neutrons present in an atom, subtract the atomic number ($Z$) from the mass number ($A$):\n  $$n = A - Z$$\n* **Nuclide:** A specific species of an atom characterized by a defined atomic number ($Z$) and mass number ($A$).\n\n#### 2. Standard Nuclide Notation\nIn international chemical shorthand, a nuclide is written as:\n$$^A_Z\\text{X}$$\n* $\\text{X}$ = The chemical symbol of the element (e.g., $\\text{Na}$, $\\text{Cl}$, $\\text{C}$, $\\text{K}$).\n* $A$ (superscript) = **Mass Number** (total nucleons: protons + neutrons).\n* $Z$ (subscript) = **Atomic Number** (total number of positive protons).\n\n#### 3. Step-by-Step Computational Examples\n* **Example 1: Potassium ($^{39}_{19}\\text{K}$):**\n  * Protons = Atomic Number ($Z$) = $19$\n  * Electrons = Protons (neutral atom) = $19$\n  * Neutrons = $A - Z = 39 - 19 = 20$ neutrons\n* **Example 2: Carbon-13 ($^{13}_6\\text{C}$):**\n  * Protons = Atomic Number ($Z$) = $6$\n  * Electrons = Protons (neutral atom) = $6$\n  * Neutrons = $A - Z = 13 - 6 = 7$ neutrons\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"180\" viewBox=\"0 0 760 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"180\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">HOW TO READ NUCLIDE NOTATION</text><g transform=\"translate(150, 45)\"><rect width=\"180\" height=\"110\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"95\" y=\"72\" font-family=\"sans-serif\" font-size=\"42\" font-weight=\"bold\" fill=\"#1e40af\">X</text><text x=\"35\" y=\"48\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#dc2626\">A</text><text x=\"35\" y=\"92\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#16a34a\">Z</text></g><g transform=\"translate(360, 45)\"><rect width=\"280\" height=\"110\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"15\" y=\"32\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">A = Mass Number (Protons + Neutrons)</text><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\">X = Chemical Symbol of Element</text><text x=\"15\" y=\"84\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#16a34a\">Z = Atomic Number (Proton Count)</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\">Rule: Neutrons (n) = A - Z</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.6: Standard Nuclide Representation and Structural Arithmetic Rules</p>\n</div>\n\n---\n\n### MODULE 7: Electron Configuration: Shells and Rules of Arrangement\n\n#### 1. Principles of Electron Shell Arrangement\nElectrons are arranged around the nucleus in specific circular concentric orbits called **energy levels** or **electron shells**. The systematic distribution of electrons across these concentric shells is termed the **electron configuration**.\n\n#### 2. Shell Naming and Capacity Rules\n* **Shell Designations:**\n  * $1^{\\text{st}}$ shell closest to the nucleus = **K-shell** ($n = 1$)\n  * $2^{\\text{nd}}$ shell = **L-shell** ($n = 2$)\n  * $3^{\\text{rd}}$ shell = **M-shell** ($n = 3$)\n  * $4^{\\text{th}}$ shell = **N-shell** ($n = 4$)\n* **The $2n^2$ Maximum Capacity Law:**\n  The maximum number of electrons that any shell can accommodate is determined by:\n  $$\\text{Capacity} = 2n^2$$\n  * K-shell ($n=1$): $2(1)^2 = 2$ electrons maximum\n  * L-shell ($n=2$): $2(2)^2 = 8$ electrons maximum\n  * M-shell ($n=3$): $2(3)^2 = 18$ electrons maximum (holds up to 8 in JHS 2 first 20 elements)\n  * N-shell ($n=4$): $2(4)^2 = 32$ electrons maximum\n* **The JHS 2 Filling Pattern for the First 20 Elements:**\n  The shells fill systematically in the orderly pattern: **2, 8, 8, 2** (2 in the 1st shell, up to 8 in the 2nd, up to 8 in the 3rd, and up to 2 in the 4th).\n\n#### 3. Canonical Electron Configurations of the First Twenty Elements\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Valency | Chemical Classification |\n| :---: | :--- | :---: | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | $1$ | $1$ | $1$ | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | $2$ | $2$ (Duplet) | $0$ | Noble Gas (Inert) |\n| **3** | Lithium | $\\text{Li}$ | $2, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **4** | Beryllium | $\\text{Be}$ | $2, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **5** | Boron | $\\text{B}$ | $2, 3$ | $3$ | $3$ | Metalloid (Semi-metal) |\n| **6** | Carbon | $\\text{C}$ | $2, 4$ | $4$ | $4$ | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | $2, 5$ | $5$ | $3$ | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | $2, 6$ | $6$ | $2$ | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | $2, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **10** | Neon | $\\text{Ne}$ | $2, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **11** | Sodium | $\\text{Na}$ | $2, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **12** | Magnesium | $\\text{Mg}$ | $2, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **13** | Aluminium | $\\text{Al}$ | $2, 8, 3$ | $3$ | $3$ | Metal (Group 13) |\n| **14** | Silicon | $\\text{Si}$ | $2, 8, 4$ | $4$ | $4$ | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | $2, 8, 5$ | $5$ | $3, 5$ | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | $2, 8, 6$ | $6$ | $2$ | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | $2, 8, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **18** | Argon | $\\text{Ar}$ | $2, 8, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **19** | Potassium | $\\text{K}$ | $2, 8, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **20** | Calcium | $\\text{Ca}$ | $2, 8, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n\n#### Master Examination Reference: The First 20 Elements (Bohr Electron Shell Models)\nBelow is the complete structural architecture of the first 20 elements on the Periodic Table. In Basic 8 exams, students are frequently asked to draw the electron configuration for any of these 20 elements:\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"820\" height=\"700\" viewBox=\"0 0 820 700\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"820\" height=\"700\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"410\" y=\"28\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ATOMIC ARCHITECTURE: THE FIRST 20 ELEMENTS (BOHR SHELL MODELS)</text><g transform=\"translate(25, 45)\"><rect width=\"88\" height=\"95\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"42\" r=\"26\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"42\" r=\"12\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">1p</text><circle cx=\"44\" cy=\"16\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">1. Hydrogen (H)</text><text x=\"44\" y=\"90\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 1</text></g><g transform=\"translate(705, 45)\"><rect width=\"88\" height=\"95\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"42\" r=\"26\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"42\" r=\"12\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">2p</text><circle cx=\"44\" cy=\"16\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"68\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">2. Helium (He)</text><text x=\"44\" y=\"90\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2</text></g><g transform=\"translate(25, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">3p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">3. Lithium (Li)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 1</text></g><g transform=\"translate(122, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">4p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">4. Beryllium (Be)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 2</text></g><g transform=\"translate(219, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#ca8a04\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">5. Boron (B)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ca8a04\" text-anchor=\"middle\">Config: 2, 3</text></g><g transform=\"translate(316, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">6p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#475569\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#475569\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#475569\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#475569\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">6. Carbon (C)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#475569\" text-anchor=\"middle\">Config: 2, 4</text></g><g transform=\"translate(413, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">7p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">7. Nitrogen (N)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 5</text></g><g transform=\"translate(510, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">8p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"20\" cy=\"69\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">8. Oxygen (O)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 6</text></g><g transform=\"translate(607, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">9p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"20\" cy=\"69\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"20\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">9. Fluorine (F)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 7</text></g><g transform=\"translate(705, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">10p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"69\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"21\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"68\" cy=\"69\" r=\"3\" fill=\"#16a34a\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">10. Neon (Ne)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#16a34a\" text-anchor=\"middle\">Config: 2, 8</text></g><g transform=\"translate(25, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">11p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">11. Sodium (Na)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 1</text></g><g transform=\"translate(122, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">12p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">12. Magnesium (Mg)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 2</text></g><g transform=\"translate(219, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">13p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">13. Aluminium (Al)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 3</text></g><g transform=\"translate(316, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">14p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#ca8a04\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">14. Silicon (Si)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ca8a04\" text-anchor=\"middle\">Config: 2, 8, 4</text></g><g transform=\"translate(413, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">15p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">15. Phosphorus (P)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 8, 5</text></g><g transform=\"translate(510, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">16p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"16\" cy=\"76\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">16. Sulfur (S)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 8, 6</text></g><g transform=\"translate(607, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">17p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"16\" cy=\"76\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"16\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">17. Chlorine (Cl)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 8, 7</text></g><g transform=\"translate(705, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">18p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"16\" cy=\"76\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"16\" cy=\"20\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"72\" cy=\"76\" r=\"3\" fill=\"#16a34a\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">18. Argon (Ar)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#16a34a\" text-anchor=\"middle\">Config: 2, 8, 8</text></g><g transform=\"translate(25, 415)\"><rect width=\"88\" height=\"135\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"52\" r=\"46\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"52\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"22\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"12\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"7\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"54\" font-family=\"sans-serif\" font-size=\"5.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">19p</text><circle cx=\"44\" cy=\"6\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">19. Potassium (K)</text><text x=\"44\" y=\"124\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 8, 1</text></g><g transform=\"translate(122, 415)\"><rect width=\"88\" height=\"135\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"52\" r=\"46\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"52\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"22\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"12\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"7\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"54\" font-family=\"sans-serif\" font-size=\"5.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">20p</text><circle cx=\"44\" cy=\"6\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"44\" cy=\"98\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">20. Calcium (Ca)</text><text x=\"44\" y=\"124\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 8, 2</text></g><g transform=\"translate(25, 560)\"><rect width=\"768\" height=\"125\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"384\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SUMMARY OF ELECTRON FILLING RULES FOR BASIC 8 LEARNERS</text><text x=\"20\" y=\"46\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• The 1st shell (K-shell) holds a maximum of 2 electrons [Duplet rule].</text><text x=\"20\" y=\"66\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• The 2nd shell (L-shell) holds a maximum of 8 electrons [Octet rule].</text><text x=\"20\" y=\"86\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• The 3rd shell (M-shell) stabilizes at 8 electrons before the 4th shell starts filling (Elements 1 to 20).</text><text x=\"20\" y=\"106\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• Shell capacity formula = 2n² (where n is the shell number 1, 2, 3, or 4).</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.7b: Complete Periodic Table Grid of the First 20 Elements with Bohr Electron Shell Diagrams and Configurations</p>\n</div>\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ELECTRON CONFIGURATION OF SODIUM AND CHLORINE ATOMS</text><g transform=\"translate(130, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Na (11p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"4.5\" fill=\"#ea580c\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Sodium Atom (2, 8, 1)</text></g><g transform=\"translate(440, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Cl (17p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"90\" cy=\"150\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"160\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"30\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"140\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Chlorine Atom (2, 8, 7)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.7: Concentric Bohr Electron Shell Configurations for Sodium (2, 8, 1) and Chlorine (2, 8, 7)</p>\n</div>\n\n---\n\n### MODULE 8: Ion Formation: How Neutral Atoms Become Charged Particles\n\n#### 1. What is an Ion?\nAn **ion** is an electrically charged atom (or group of atoms) formed when a neutral atom either **loses** or **gains** one or more valence electrons.\n\n* **Why Do Atoms Form Ions?** Atoms gain or lose electrons to attain a stable, completely filled outermost energy shell (a stable duplet of 2 electrons for Helium, or a stable octet of 8 electrons like Neon and Argon).\n* **Electrical Neutrality of Free Atoms:** In an isolated neutral atom, the number of positive protons exactly equals the number of negative electrons ($\text{Net charge} = 0$).\n\n#### 2. The Two Classes of Ions\n\n##### 1. Cations (Positively Charged Ions):\n* **Formation:** Formed when a metal atom **loses** one, two, or three valence electrons.\n* **Mechanism:** Because electrons are lost while the nuclear proton count remains unchanged, the number of positive protons becomes greater than the number of negative electrons ($p^+ > e^-$).\n* **Symbol Notation:** Written with a positive superscript sign ($+$), e.g., $\\text{Na}^+$, $\\text{K}^+$, $\\text{Mg}^{2+}$, $\\text{Ca}^{2+}$, $\\text{Al}^{3+}$.\n* **Case Study — Sodium Ion ($\\text{Na}^+$):**\n  * Neutral Sodium atom ($_{11}\\text{Na}$): Configuration = $2, 8, 1$ ($11p^+, 11e^-$). Net charge = $0$.\n  * Sodium loses its $1$ valence electron: $\\text{Na} \\rightarrow \\text{Na}^+ + e^-$.\n  * Sodium cation ($\\text{Na}^+$): Configuration = $2, 8$ ($11p^+, 10e^-$). Net charge = $+1$.\n\n##### 2. Anions (Negatively Charged Ions):\n* **Formation:** Formed when a non-metal atom **gains** one, two, or three electrons into its valence shell.\n* **Mechanism:** The atom acquires extra negative electrons while the proton count stays constant, resulting in more electrons than protons ($e^- > p^+$).\n* **Symbol Notation:** Written with a negative superscript sign ($-$), e.g., $\\text{Cl}^-$, $\\text{O}^{2-}$, $\\text{N}^{3-}$.\n* **Case Study — Chloride Ion ($\\text{Cl}^-$):**\n  * Neutral Chlorine atom ($_{17}\\text{Cl}$): Configuration = $2, 8, 7$ ($17p^+, 17e^-$). Net charge = $0$.\n  * Chlorine gains $1$ electron: $\\text{Cl} + e^- \\rightarrow \\text{Cl}^-$.\n  * Chloride anion ($\\text{Cl}^-$): Configuration = $2, 8, 8$ ($17p^+, 18e^-$). Net charge = $-1$.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ION FORMATION: TRANSFER OF AN ELECTRON</text><g transform=\"translate(50, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Neutral Sodium (Na)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Configuration: 2, 8, 1</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Electrons = 11 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Net Charge = 0 (Neutral)</text></g><g transform=\"translate(235, 95)\"><path d=\"M 10 15 L 60 15\" stroke=\"#ea580c\" stroke-width=\"2\"/><polygon points=\"58,10 68,15 58,20\" fill=\"#ea580c\"/><text x=\"38\" y=\"8\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Loses 1 e⁻</text></g><g transform=\"translate(320, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Sodium Cation (Na⁺)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Configuration: 2, 8</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Electrons = 10 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\" text-anchor=\"middle\">Net Charge = +1 (Cation)</text></g><g transform=\"translate(510, 45)\"><rect width=\"200\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"100\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Chloride Anion (Cl⁻)</text><text x=\"100\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Configuration: 2, 8, 8</text><text x=\"100\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Protons = 17 (+)</text><text x=\"100\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Electrons = 18 (-)</text><text x=\"100\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"middle\">Net Charge = -1 (Anion)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.8: Ion Formation Mechanics: Electron Transfer from Sodium (Cation) to Chlorine (Anion)</p>\n</div>\n",
         "workedExamples": [
           {
             "id": "WE_B8_MAT_01",
@@ -2733,18 +2733,851 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         "practicePool": {
           "low": [
             {
-              "id": "q_b8_s1_1",
+              "id": "B8_MAT_F01",
               "difficulty": "low",
-              "prompt": "What is the electron configuration of an atom of Phosphorus with atomic number Z = 15?",
+              "prompt": "Which state of matter is described as super-heated matter or ionized gas?",
               "options": [
-                "2, 8, 5",
-                "2, 8, 3",
-                "2, 5, 8",
-                "2, 8, 7"
+                "A. Solid",
+                "B. Liquid",
+                "C. Gas",
+                "D. Plasma"
               ],
-              "correctAnswer": "2, 8, 5",
-              "hint": "The K-shell takes 2, L-shell takes 8, and the remainder goes to the M-shell.",
-              "workedSolution": "For atomic number 15: K-shell = 2, L-shell = 8, M-shell = 15 - 10 = 5. Hence, electron configuration is 2, 8, 5.",
+              "correctAnswer": "D. Plasma",
+              "hint": "Apart from solids, liquids, and gases, plasma exists as a fourth state of matter consisting of super-heated ionized gas.",
+              "workedSolution": "Apart from solids, liquids, and gases, plasma exists as a fourth state of matter consisting of super-heated ionized gas.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F02",
+              "difficulty": "low",
+              "prompt": "What is a mixture scientifically defined as?",
+              "options": [
+                "A. A substance formed by the physical combination of two or more substances",
+                "B. A pure substance that cannot be broken down by chemical means",
+                "C. A group of atoms joined permanently by chemical bonds",
+                "D. A compound with a fixed chemical formula"
+              ],
+              "correctAnswer": "A. A substance formed by the physical combination of two or more substances",
+              "hint": "A mixture is formed by physically combining two or more different substances without chemical bonding.",
+              "workedSolution": "A mixture is formed by physically combining two or more different substances without chemical bonding.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F03",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a solid-solid mixture (alloy)?",
+              "options": [
+                "A. Sugar dissolved in water",
+                "B. Bronze (copper and tin)",
+                "C. Muddy water",
+                "D. Air"
+              ],
+              "correctAnswer": "B. Bronze (copper and tin)",
+              "hint": "Bronze is an alloy formed by the physical mixing of solid copper and tin.",
+              "workedSolution": "Bronze is an alloy formed by the physical mixing of solid copper and tin.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F04",
+              "difficulty": "low",
+              "prompt": "A mixture of tiny solid soot particles suspended in air, such as smoke, is categorized as a:",
+              "options": [
+                "A. Solid - liquid mixture",
+                "B. Solid - gas mixture",
+                "C. Gas - liquid mixture",
+                "D. Liquid - liquid mixture"
+              ],
+              "correctAnswer": "B. Solid - gas mixture",
+              "hint": "Smoke consists of solid unburned particles dispersed in air, making it a solid-gas mixture.",
+              "workedSolution": "Smoke consists of solid unburned particles dispersed in air, making it a solid-gas mixture.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F05",
+              "difficulty": "low",
+              "prompt": "Clean atmospheric air is an example of what type of mixture?",
+              "options": [
+                "A. Gas - gas mixture",
+                "B. Liquid - gas mixture",
+                "C. Solid - liquid mixture",
+                "D. Solid - solid mixture"
+              ],
+              "correctAnswer": "A. Gas - gas mixture",
+              "hint": "Air is a homogeneous mixture formed from the physical combination of gases like nitrogen and oxygen.",
+              "workedSolution": "Air is a homogeneous mixture formed from the physical combination of gases like nitrogen and oxygen.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F06",
+              "difficulty": "low",
+              "prompt": "What is a homogeneous mixture?",
+              "options": [
+                "A. A mixture where the components separate into visible layers",
+                "B. A mixture where the components mix completely and have a uniform composition throughout",
+                "C. A mixture containing only magnetic solids",
+                "D. A mixture whose parts can easily be distinguished with the naked eye"
+              ],
+              "correctAnswer": "B. A mixture where the components mix completely and have a uniform composition throughout",
+              "hint": "In a homogeneous mixture, the substances mix completely so that the composition is uniform throughout.",
+              "workedSolution": "In a homogeneous mixture, the substances mix completely so that the composition is uniform throughout.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F07",
+              "difficulty": "low",
+              "prompt": "Which of the following is a heterogeneous mixture?",
+              "options": [
+                "A. Salt solution",
+                "B. Clean air",
+                "C. Sand and water",
+                "D. Diluted alcohol"
+              ],
+              "correctAnswer": "C. Sand and water",
+              "hint": "Sand does not dissolve in water; the components form separate visible phases, making it heterogeneous.",
+              "workedSolution": "Sand does not dissolve in water; the components form separate visible phases, making it heterogeneous.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F08",
+              "difficulty": "low",
+              "prompt": "In a salt solution, what is the salt referred to as?",
+              "options": [
+                "A. Solvent",
+                "B. Solute",
+                "C. Filtrate",
+                "D. Distillate"
+              ],
+              "correctAnswer": "B. Solute",
+              "hint": "The solute is the substance that dissolves in the solvent.",
+              "workedSolution": "The solute is the substance that dissolves in the solvent.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F09",
+              "difficulty": "low",
+              "prompt": "In a sugar solution, what role does water play?",
+              "options": [
+                "A. Solute",
+                "B. Solvent",
+                "C. Residue",
+                "D. Precipitate"
+              ],
+              "correctAnswer": "B. Solvent",
+              "hint": "Water is the dissolving medium (usually present in larger volume), which is the solvent.",
+              "workedSolution": "Water is the dissolving medium (usually present in larger volume), which is the solvent.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F10",
+              "difficulty": "low",
+              "prompt": "A solution in which water is the solvent is called a/an:",
+              "options": [
+                "A. Saturated solution",
+                "B. Aqueous solution",
+                "C. Standard solution",
+                "D. Immiscible solution"
+              ],
+              "correctAnswer": "B. Aqueous solution",
+              "hint": "An aqueous solution is any solution whose solvent is water.",
+              "workedSolution": "An aqueous solution is any solution whose solvent is water.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F11",
+              "difficulty": "low",
+              "prompt": "A solution that can no longer dissolve any more solute at a given temperature in the presence of excess solute is:",
+              "options": [
+                "A. Unsaturated",
+                "B. Dilute",
+                "C. Saturated",
+                "D. Standard"
+              ],
+              "correctAnswer": "C. Saturated",
+              "hint": "A saturated solution contains the maximum amount of dissolved solute at that specific temperature.",
+              "workedSolution": "A saturated solution contains the maximum amount of dissolved solute at that specific temperature.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F12",
+              "difficulty": "low",
+              "prompt": "What is an unsaturated solution?",
+              "options": [
+                "A. A solution that cannot dissolve any more solute",
+                "B. A solution in which the solvent can still dissolve more solute at a given temperature",
+                "C. A solution whose concentration is precisely known",
+                "D. A mixture of two immiscible liquids"
+              ],
+              "correctAnswer": "B. A solution in which the solvent can still dissolve more solute at a given temperature",
+              "hint": "An unsaturated solution has the capacity to dissolve additional solute at that temperature.",
+              "workedSolution": "An unsaturated solution has the capacity to dissolve additional solute at that temperature.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F13",
+              "difficulty": "low",
+              "prompt": "What is a solution whose concentration is accurately known called?",
+              "options": [
+                "A. Standard solution",
+                "B. Saturated solution",
+                "C. Aqueous solution",
+                "D. Colloidal solution"
+              ],
+              "correctAnswer": "A. Standard solution",
+              "hint": "A standard solution is one whose chemical concentration has been precisely determined.",
+              "workedSolution": "A standard solution is one whose chemical concentration has been precisely determined.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F14",
+              "difficulty": "low",
+              "prompt": "A heterogeneous mixture in which solid particles do not dissolve and are large enough to be seen with the naked eye is a:",
+              "options": [
+                "A. True solution",
+                "B. Colloid",
+                "C. Suspension",
+                "D. Alloy"
+              ],
+              "correctAnswer": "C. Suspension",
+              "hint": "In a suspension, solid particles remain undissolved and are visible to the naked eye.",
+              "workedSolution": "In a suspension, solid particles remain undissolved and are visible to the naked eye.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F15",
+              "difficulty": "low",
+              "prompt": "What is the particle size in a true solution?",
+              "options": [
+                "A. Less than 1 nm",
+                "B. Between 1 nm and 1000 nm",
+                "C. Greater than 1000 nm",
+                "D. Exactly 10 cm"
+              ],
+              "correctAnswer": "A. Less than 1 nm",
+              "hint": "True solutions contain individual ions or molecules with particle sizes less than 1 nanometer (< 1 nm).",
+              "workedSolution": "True solutions contain individual ions or molecules with particle sizes less than 1 nanometer (< 1 nm).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F16",
+              "difficulty": "low",
+              "prompt": "What is the particle size range in a colloidal mixture?",
+              "options": [
+                "A. < 0.1 nm",
+                "B. 1 nm to 1000 nm",
+                "C. > 1000 nm",
+                "D. > 10,000 nm"
+              ],
+              "correctAnswer": "B. 1 nm to 1000 nm",
+              "hint": "Colloidal particles range in size between 1 nm and 1000 nm.",
+              "workedSolution": "Colloidal particles range in size between 1 nm and 1000 nm.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F17",
+              "difficulty": "low",
+              "prompt": "Which of the following is an example of a colloid?",
+              "options": [
+                "A. Filtered tap water",
+                "B. Milk",
+                "C. Sand in water",
+                "D. Brass"
+              ],
+              "correctAnswer": "B. Milk",
+              "hint": "Milk, blood, fog, and glue are examples of colloids whose particles remain permanently suspended.",
+              "workedSolution": "Milk, blood, fog, and glue are examples of colloids whose particles remain permanently suspended.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F18",
+              "difficulty": "low",
+              "prompt": "Liquids that mix completely together in all proportions to form a uniform single layer are described as:",
+              "options": [
+                "A. Immiscible liquids",
+                "B. Miscible liquids",
+                "C. Saturated liquids",
+                "D. Suspensions"
+              ],
+              "correctAnswer": "B. Miscible liquids",
+              "hint": "Miscible liquids (e.g., water and ethanol) dissolve mutually to form a homogeneous solution.",
+              "workedSolution": "Miscible liquids (e.g., water and ethanol) dissolve mutually to form a homogeneous solution.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F19",
+              "difficulty": "low",
+              "prompt": "Liquids that do not mix and instead form separate distinct layers are termed:",
+              "options": [
+                "A. Miscible",
+                "B. Aqueous",
+                "C. Immiscible",
+                "D. Colloidal"
+              ],
+              "correctAnswer": "C. Immiscible",
+              "hint": "Immiscible liquids (e.g., oil and water) cannot mix homogeneously and separate by density.",
+              "workedSolution": "Immiscible liquids (e.g., oil and water) cannot mix homogeneously and separate by density.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F20",
+              "difficulty": "low",
+              "prompt": "Which method is used to pour off a clear liquid after an insoluble solid settles at the bottom?",
+              "options": [
+                "A. Decantation",
+                "B. Sublimation",
+                "C. Chromatography",
+                "D. Evaporation"
+              ],
+              "correctAnswer": "A. Decantation",
+              "hint": "Decantation involves carefully pouring off the top liquid layer leaving the heavy sediment behind.",
+              "workedSolution": "Decantation involves carefully pouring off the top liquid layer leaving the heavy sediment behind.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F21",
+              "difficulty": "low",
+              "prompt": "Which separation method relies on a magnetic field to separate magnetic solids from non-magnetic solids?",
+              "options": [
+                "A. Filtration",
+                "B. Magnetic separation",
+                "C. Distillation",
+                "D. Crystallization"
+              ],
+              "correctAnswer": "B. Magnetic separation",
+              "hint": "Magnetic separation uses a magnet to attract magnetic materials (like iron filings) away from non-magnetic solids.",
+              "workedSolution": "Magnetic separation uses a magnet to attract magnetic materials (like iron filings) away from non-magnetic solids.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F22",
+              "difficulty": "low",
+              "prompt": "In a filtration experiment, what is the solid left behind on the filter paper called?",
+              "options": [
+                "A. Filtrate",
+                "B. Distillate",
+                "C. Residue",
+                "D. Solute"
+              ],
+              "correctAnswer": "C. Residue",
+              "hint": "The trapped solid remaining on the filter paper is called the residue.",
+              "workedSolution": "The trapped solid remaining on the filter paper is called the residue.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F23",
+              "difficulty": "low",
+              "prompt": "What is the clear liquid that passes through the filter paper during filtration called?",
+              "options": [
+                "A. Residue",
+                "B. Filtrate",
+                "C. Precipitate",
+                "D. Slag"
+              ],
+              "correctAnswer": "B. Filtrate",
+              "hint": "The liquid passing through the pores of the filter is known as the filtrate.",
+              "workedSolution": "The liquid passing through the pores of the filter is known as the filtrate.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F24",
+              "difficulty": "low",
+              "prompt": "Which laboratory method is best suited to recover solid salt from a salt solution when the liquid water is not needed?",
+              "options": [
+                "A. Evaporation",
+                "B. Decantation",
+                "C. Magnetic separation",
+                "D. Filtration"
+              ],
+              "correctAnswer": "A. Evaporation",
+              "hint": "Evaporating the solution drives off the water vapor, leaving dry salt crystals behind.",
+              "workedSolution": "Evaporating the solution drives off the water vapor, leaving dry salt crystals behind.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F25",
+              "difficulty": "low",
+              "prompt": "What is sublimation?",
+              "options": [
+                "A. The process of converting liquid to gas by boiling",
+                "B. The direct change of a solid into gas without passing through the liquid state",
+                "C. The settling of solid particles at the bottom of a liquid",
+                "D. The separation of colored dyes by porous paper"
+              ],
+              "correctAnswer": "B. The direct change of a solid into gas without passing through the liquid state",
+              "hint": "Sublimation is the phase transition directly from solid to vapor upon heating.",
+              "workedSolution": "Sublimation is the phase transition directly from solid to vapor upon heating.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F26",
+              "difficulty": "low",
+              "prompt": "Which of the following substances can sublime when heated?",
+              "options": [
+                "A. Sodium chloride",
+                "B. Ammonium chloride",
+                "C. Sand",
+                "D. Copper filings"
+              ],
+              "correctAnswer": "B. Ammonium chloride",
+              "hint": "Ammonium chloride, iodine crystals, and naphthalene sublime when heated.",
+              "workedSolution": "Ammonium chloride, iodine crystals, and naphthalene sublime when heated.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F27",
+              "difficulty": "low",
+              "prompt": "Which apparatus is used to separate two immiscible liquids like kerosene and water?",
+              "options": [
+                "A. Filter funnel",
+                "B. Separating funnel",
+                "C. Liebig condenser",
+                "D. Fractionating column"
+              ],
+              "correctAnswer": "B. Separating funnel",
+              "hint": "A separating funnel allows two immiscible liquids to separate into distinct density layers.",
+              "workedSolution": "A separating funnel allows two immiscible liquids to separate into distinct density layers.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F28",
+              "difficulty": "low",
+              "prompt": "Which method is used to separate the different colored dyes in black ink?",
+              "options": [
+                "A. Paper chromatography",
+                "B. Sublimation",
+                "C. Decantation",
+                "D. Magnetic separation"
+              ],
+              "correctAnswer": "A. Paper chromatography",
+              "hint": "Paper chromatography separates solutes based on their differing speeds of travel across a porous medium.",
+              "workedSolution": "Paper chromatography separates solutes based on their differing speeds of travel across a porous medium.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F29",
+              "difficulty": "low",
+              "prompt": "Which separation method is used to separate miscible liquids with close boiling points, such as crude oil or alcohol and water?",
+              "options": [
+                "A. Simple distillation",
+                "B. Fractional distillation",
+                "C. Filtration",
+                "D. Evaporation"
+              ],
+              "correctAnswer": "B. Fractional distillation",
+              "hint": "Fractional distillation separates liquids with close boiling points using a fractionating column.",
+              "workedSolution": "Fractional distillation separates liquids with close boiling points using a fractionating column.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F30",
+              "difficulty": "low",
+              "prompt": "What is the smallest particle of an element that can take part in a chemical reaction?",
+              "options": [
+                "A. Atom",
+                "B. Molecule",
+                "C. Colloid",
+                "D. Mixture"
+              ],
+              "correctAnswer": "A. Atom",
+              "hint": "An atom is the fundamental building unit of an element that takes part in reactions.",
+              "workedSolution": "An atom is the fundamental building unit of an element that takes part in reactions.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F31",
+              "difficulty": "low",
+              "prompt": "A substance composed of only one type of atom that cannot be split into simpler substances by chemical means is an:",
+              "options": [
+                "A. Element",
+                "B. Alloy",
+                "C. Solution",
+                "D. Ion"
+              ],
+              "correctAnswer": "A. Element",
+              "hint": "An element consists of identical atoms and cannot be simplified chemically.",
+              "workedSolution": "An element consists of identical atoms and cannot be simplified chemically.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F32",
+              "difficulty": "low",
+              "prompt": "What are the three fundamental subatomic particles that make up an atom?",
+              "options": [
+                "A. Cells, tissues, and organs",
+                "B. Protons, neutrons, and electrons",
+                "C. Solutes, solvents, and solutions",
+                "D. Solids, liquids, and gases"
+              ],
+              "correctAnswer": "B. Protons, neutrons, and electrons",
+              "hint": "Atoms are composed of subatomic protons, neutrons, and electrons.",
+              "workedSolution": "Atoms are composed of subatomic protons, neutrons, and electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F33",
+              "difficulty": "low",
+              "prompt": "What electrical charge is carried by a proton?",
+              "options": [
+                "A. Positive (+)",
+                "B. Negative (-)",
+                "C. Neutral (0)",
+                "D. Variable"
+              ],
+              "correctAnswer": "A. Positive (+)",
+              "hint": "Protons have a positive electrical charge of +1.",
+              "workedSolution": "Protons have a positive electrical charge of +1.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F34",
+              "difficulty": "low",
+              "prompt": "What is the electrical charge of an electron?",
+              "options": [
+                "A. Positive (+)",
+                "B. Negative (-)",
+                "C. Neutral (0)",
+                "D. Super-heated"
+              ],
+              "correctAnswer": "B. Negative (-)",
+              "hint": "Electrons carry a unit negative electrical charge (-1).",
+              "workedSolution": "Electrons carry a unit negative electrical charge (-1).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F35",
+              "difficulty": "low",
+              "prompt": "Which subatomic particle has no electrical charge (is neutral)?",
+              "options": [
+                "A. Proton",
+                "B. Neutron",
+                "C. Electron",
+                "D. Positron"
+              ],
+              "correctAnswer": "B. Neutron",
+              "hint": "Neutrons have zero electrical charge.",
+              "workedSolution": "Neutrons have zero electrical charge.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F36",
+              "difficulty": "low",
+              "prompt": "Where in the atom are protons and neutrons located?",
+              "options": [
+                "A. In the outer electron shells",
+                "B. Inside the central nucleus",
+                "C. Free floating outside the atom",
+                "D. In the cell wall"
+              ],
+              "correctAnswer": "B. Inside the central nucleus",
+              "hint": "Protons and neutrons are tightly bound within the central nucleus.",
+              "workedSolution": "Protons and neutrons are tightly bound within the central nucleus.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F37",
+              "difficulty": "low",
+              "prompt": "What is the relative mass of a proton in atomic mass units (a.m.u.)?",
+              "options": [
+                "A. 0 a.m.u.",
+                "B. 1 a.m.u.",
+                "C. 10 a.m.u.",
+                "D. 1840 a.m.u."
+              ],
+              "correctAnswer": "B. 1 a.m.u.",
+              "hint": "A proton has a relative atomic mass of approximately 1 a.m.u..",
+              "workedSolution": "A proton has a relative atomic mass of approximately 1 a.m.u..",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F38",
+              "difficulty": "low",
+              "prompt": "Which subatomic particle has a negligible (almost zero) mass?",
+              "options": [
+                "A. Proton",
+                "B. Neutron",
+                "C. Electron",
+                "D. Nucleus"
+              ],
+              "correctAnswer": "C. Electron",
+              "hint": "Electrons have negligible mass compared to nucleons (about 1/1840 a.m.u.).",
+              "workedSolution": "Electrons have negligible mass compared to nucleons (about 1/1840 a.m.u.).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F39",
+              "difficulty": "low",
+              "prompt": "What does the atomic number (Z) of an element represent?",
+              "options": [
+                "A. Total number of neutrons",
+                "B. Total number of protons in the nucleus",
+                "C. Number of shells in the atom",
+                "D. Sum of protons and electrons"
+              ],
+              "correctAnswer": "B. Total number of protons in the nucleus",
+              "hint": "Atomic number (Z) is defined as the number of protons in an atom's nucleus.",
+              "workedSolution": "Atomic number (Z) is defined as the number of protons in an atom's nucleus.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F40",
+              "difficulty": "low",
+              "prompt": "In a neutral atom, the number of protons is always equal to the number of:",
+              "options": [
+                "A. Neutrons",
+                "B. Electrons",
+                "C. Nuclei",
+                "D. Shells"
+              ],
+              "correctAnswer": "B. Electrons",
+              "hint": "To remain electrically neutral, positive protons must equal negative electrons.",
+              "workedSolution": "To remain electrically neutral, positive protons must equal negative electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F41",
+              "difficulty": "low",
+              "prompt": "What does the mass number (A) of an atom represent?",
+              "options": [
+                "A. The number of electrons only",
+                "B. The total number of protons and neutrons in the nucleus",
+                "C. The number of electron shells",
+                "D. The volume of the atom"
+              ],
+              "correctAnswer": "B. The total number of protons and neutrons in the nucleus",
+              "hint": "Mass number (A) equals the sum of protons (Z) and neutrons (n).",
+              "workedSolution": "Mass number (A) equals the sum of protons (Z) and neutrons (n).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F42",
+              "difficulty": "low",
+              "prompt": "How do you calculate the number of neutrons in an atom?",
+              "options": [
+                "A. Neutrons = Mass number + Atomic number",
+                "B. Neutrons = Mass number - Atomic number (n = A - Z)",
+                "C. Neutrons = Atomic number × 2",
+                "D. Neutrons = Electrons ÷ 2"
+              ],
+              "correctAnswer": "B. Neutrons = Mass number - Atomic number (n = A - Z)",
+              "hint": "Since A = Z + n, rearranging gives n = A - Z.",
+              "workedSolution": "Since A = Z + n, rearranging gives n = A - Z.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F43",
+              "difficulty": "low",
+              "prompt": "What is the name of the first electron shell closest to the nucleus?",
+              "options": [
+                "A. K-shell",
+                "B. L-shell",
+                "C. M-shell",
+                "D. N-shell"
+              ],
+              "correctAnswer": "A. K-shell",
+              "hint": "The 1st shell is designated the K-shell.",
+              "workedSolution": "The 1st shell is designated the K-shell.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F44",
+              "difficulty": "low",
+              "prompt": "What is the maximum number of electrons that the first (K) shell can hold?",
+              "options": [
+                "A. 2 electrons",
+                "B. 8 electrons",
+                "C. 18 electrons",
+                "D. 32 electrons"
+              ],
+              "correctAnswer": "A. 2 electrons",
+              "hint": "Using 2n^2 with n = 1, the K-shell accommodates a maximum of 2 electrons.",
+              "workedSolution": "Using 2n^2 with n = 1, the K-shell accommodates a maximum of 2 electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F45",
+              "difficulty": "low",
+              "prompt": "What is the maximum number of electrons the second (L) shell can hold?",
+              "options": [
+                "A. 2",
+                "B. 8",
+                "C. 10",
+                "D. 18"
+              ],
+              "correctAnswer": "B. 8",
+              "hint": "The L-shell (n = 2) can hold up to 8 electrons.",
+              "workedSolution": "The L-shell (n = 2) can hold up to 8 electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F46",
+              "difficulty": "low",
+              "prompt": "What is the electron configuration of a Sodium atom with atomic number 11?",
+              "options": [
+                "A. 2, 8, 1",
+                "B. 2, 9",
+                "C. 1, 8, 2",
+                "D. 2, 8, 8"
+              ],
+              "correctAnswer": "A. 2, 8, 1",
+              "hint": "11 electrons fill shells as 2 in K, 8 in L, and 1 in M (2, 8, 1).",
+              "workedSolution": "11 electrons fill shells as 2 in K, 8 in L, and 1 in M (2, 8, 1).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F47",
+              "difficulty": "low",
+              "prompt": "What is an ion?",
+              "options": [
+                "A. A neutral atom with equal charges",
+                "B. An electrically charged atom formed by losing or gaining electrons",
+                "C. A solid mixed with a liquid",
+                "D. An uncharged neutron"
+              ],
+              "correctAnswer": "B. An electrically charged atom formed by losing or gaining electrons",
+              "hint": "An ion is formed when an atom gains or loses electrons, acquiring a net electrical charge.",
+              "workedSolution": "An ion is formed when an atom gains or loses electrons, acquiring a net electrical charge.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F48",
+              "difficulty": "low",
+              "prompt": "A positively charged ion formed when a neutral atom loses electrons is called a/an:",
+              "options": [
+                "A. Anion",
+                "B. Cation",
+                "C. Isotope",
+                "D. Molecule"
+              ],
+              "correctAnswer": "B. Cation",
+              "hint": "Loss of negative electrons leaves an excess of positive protons, forming a cation.",
+              "workedSolution": "Loss of negative electrons leaves an excess of positive protons, forming a cation.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F49",
+              "difficulty": "low",
+              "prompt": "A negatively charged ion formed when a neutral atom gains electrons is called a/an:",
+              "options": [
+                "A. Cation",
+                "B. Anion",
+                "C. Nuclide",
+                "D. Nucleus"
+              ],
+              "correctAnswer": "B. Anion",
+              "hint": "Gaining electrons creates an excess of negative charge, producing an anion.",
+              "workedSolution": "Gaining electrons creates an excess of negative charge, producing an anion.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_F50",
+              "difficulty": "low",
+              "prompt": "What is the chemical symbol for the element Potassium?",
+              "options": [
+                "A. P",
+                "B. Po",
+                "C. K",
+                "D. Pt"
+              ],
+              "correctAnswer": "C. K",
+              "hint": "Potassium is represented by the chemical symbol K.",
+              "workedSolution": "Potassium is represented by the chemical symbol K.",
               "points": 1,
               "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
               "type": "objective"
@@ -2752,24 +3585,1708 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
           ],
           "medium": [
             {
-              "id": "q_b8_s1_2",
+              "id": "B8_MAT_I01",
               "difficulty": "medium",
-              "prompt": "Which pair of elements will combine predominantly by covalent bonding?",
+              "prompt": "Why is brass (copper and zinc) classified as a mixture rather than a compound?",
               "options": [
-                "Sodium and Chlorine",
-                "Carbon and Oxygen",
-                "Magnesium and Oxygen",
-                "Calcium and Fluorine"
+                "A. Its constituent metals are chemically bonded in fixed proportions",
+                "B. Its constituents retain their individual properties and can be mixed in variable proportions without a chemical reaction",
+                "C. It melts at a single fixed temperature",
+                "D. It cannot conduct heat or electricity"
               ],
-              "correctAnswer": "Carbon and Oxygen",
-              "hint": "Covalent bonds occur between non-metals sharing electron pairs.",
-              "workedSolution": "Carbon and Oxygen are both non-metals. Neither loses electrons readily; instead, they share electron pairs to form covalent carbon dioxide (CO2). Metal + non-metal pairs form ionic bonds.",
+              "correctAnswer": "B. Its constituents retain their individual properties and can be mixed in variable proportions without a chemical reaction",
+              "hint": "Alloys are physical mixtures: components are not chemically bonded and retain their individual physical traits.",
+              "workedSolution": "Alloys are physical mixtures: components are not chemically bonded and retain their individual physical traits.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I02",
+              "difficulty": "medium",
+              "prompt": "Why does a beam of light become visible when passing through a colloid (Tyndall effect) but remains invisible in a true solution?",
+              "options": [
+                "A. Colloidal particles (1-1000 nm) are large enough to scatter light, whereas true solution particles (<1 nm) are too small",
+                "B. True solutions absorb 100% of light energy",
+                "C. Colloidal particles emit their own light",
+                "D. True solutions are always opaque"
+              ],
+              "correctAnswer": "A. Colloidal particles (1-1000 nm) are large enough to scatter light, whereas true solution particles (<1 nm) are too small",
+              "hint": "Particles between 1 nm and 1000 nm scatter visible light rays; true solution particles are too small to scatter light.",
+              "workedSolution": "Particles between 1 nm and 1000 nm scatter visible light rays; true solution particles are too small to scatter light.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I03",
+              "difficulty": "medium",
+              "prompt": "Why does a suspension settle into layers when left undisturbed while a colloid remains uniformly dispersed?",
+              "options": [
+                "A. Suspensions contain larger particles (>1000 nm) that gravity pulls down; colloidal particles are small enough to remain suspended",
+                "B. Colloids are boiling liquids",
+                "C. Suspensions are pure substances",
+                "D. Colloidal particles are magnetic"
+              ],
+              "correctAnswer": "A. Suspensions contain larger particles (>1000 nm) that gravity pulls down; colloidal particles are small enough to remain suspended",
+              "hint": "Particles greater than 1000 nm in suspensions are overcome by gravity and settle as sediment.",
+              "workedSolution": "Particles greater than 1000 nm in suspensions are overcome by gravity and settle as sediment.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I04",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of cold water circulating through the jacket of a Liebig condenser during distillation?",
+              "options": [
+                "A. To cool hot vapor back into liquid distillate",
+                "B. To react chemically with the hot vapor",
+                "C. To heat up the receiving flask",
+                "D. To filter out insoluble dirt"
+              ],
+              "correctAnswer": "A. To cool hot vapor back into liquid distillate",
+              "hint": "Cold water running through the outer jacket removes heat from the inner vapor tube, condensing vapor to liquid.",
+              "workedSolution": "Cold water running through the outer jacket removes heat from the inner vapor tube, condensing vapor to liquid.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I05",
+              "difficulty": "medium",
+              "prompt": "How does the fractionating column enable the separation of ethanol (boiling point 78°C) from water (boiling point 100°C)?",
+              "options": [
+                "A. It provides surfaces for repeated condensation and vaporization, allowing the more volatile ethanol to rise to the top first",
+                "B. It freezes water into ice inside the column",
+                "C. It uses a magnet to pull ethanol upward",
+                "D. It decomposes water into oxygen and hydrogen"
+              ],
+              "correctAnswer": "A. It provides surfaces for repeated condensation and vaporization, allowing the more volatile ethanol to rise to the top first",
+              "hint": "Repeated vaporization and condensation cycles along the column concentrate the lower-boiling-point vapor at the top.",
+              "workedSolution": "Repeated vaporization and condensation cycles along the column concentrate the lower-boiling-point vapor at the top.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I06",
+              "difficulty": "medium",
+              "prompt": "When separating a mixture of sand and sodium chloride (table salt), which sequence of separation methods is correct?",
+              "options": [
+                "A. Sublimation → Condensation",
+                "B. Dissolution in water → Filtration → Evaporation to dryness",
+                "C. Magnetic separation → Decantation",
+                "D. Chromatography → Distillation"
+              ],
+              "correctAnswer": "B. Dissolution in water → Filtration → Evaporation to dryness",
+              "hint": "Add water to dissolve salt, filter to collect sand as residue, and evaporate the filtrate to obtain dry salt crystals.",
+              "workedSolution": "Add water to dissolve salt, filter to collect sand as residue, and evaporate the filtrate to obtain dry salt crystals.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I07",
+              "difficulty": "medium",
+              "prompt": "In a sublimation apparatus, what is the purpose of placing a cotton plug in the top stem of the inverted funnel?",
+              "options": [
+                "A. To prevent sublimed vapor from escaping into the atmosphere so it condenses on the cold funnel walls",
+                "B. To catch liquid water droplets",
+                "C. To ignite the flame inside the funnel",
+                "D. To filter out non-subliming solids"
+              ],
+              "correctAnswer": "A. To prevent sublimed vapor from escaping into the atmosphere so it condenses on the cold funnel walls",
+              "hint": "The cotton plug closes the funnel stem, trapping vapor inside to deposit as crystals on the glass.",
+              "workedSolution": "The cotton plug closes the funnel stem, trapping vapor inside to deposit as crystals on the glass.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I08",
+              "difficulty": "medium",
+              "prompt": "Why is paper chromatography effective at separating different dyes in an ink sample?",
+              "options": [
+                "A. Each dye has a different solubility in the solvent and moves at a different rate through the paper",
+                "B. The dyes react chemically with the paper fibers",
+                "C. All dyes travel at identical speeds",
+                "D. The paper melts the dyes with heat"
+              ],
+              "correctAnswer": "A. Each dye has a different solubility in the solvent and moves at a different rate through the paper",
+              "hint": "Components travel at different velocities based on their solubility in the mobile phase and attraction to paper fibers.",
+              "workedSolution": "Components travel at different velocities based on their solubility in the mobile phase and attraction to paper fibers.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I09",
+              "difficulty": "medium",
+              "prompt": "Why can decantation NOT fully replace filtration when separating chalk powder from water?",
+              "options": [
+                "A. Decantation cannot remove fine particles that remain suspended in the liquid",
+                "B. Decantation dissolves chalk chemically",
+                "C. Chalk is a magnetic substance",
+                "D. Decantation only works for gases"
+              ],
+              "correctAnswer": "A. Decantation cannot remove fine particles that remain suspended in the liquid",
+              "hint": "Fine particles remain suspended and pour over with the liquid, unlike filtration which traps all solids on paper.",
+              "workedSolution": "Fine particles remain suspended and pour over with the liquid, unlike filtration which traps all solids on paper.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I10",
+              "difficulty": "medium",
+              "prompt": "An atom has 17 protons, 18 neutrons, and 17 electrons. What is its mass number?",
+              "options": [
+                "A. 17",
+                "B. 18",
+                "C. 34",
+                "D. 35"
+              ],
+              "correctAnswer": "D. 35",
+              "hint": "Mass number A = protons + neutrons = 17 + 18 = 35.",
+              "workedSolution": "Mass number A = protons + neutrons = 17 + 18 = 35.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I11",
+              "difficulty": "medium",
+              "prompt": "An atom has an atomic number of 12 and a mass number of 24. How many neutrons does it contain?",
+              "options": [
+                "A. 6",
+                "B. 12",
+                "C. 24",
+                "D. 36"
+              ],
+              "correctAnswer": "B. 12",
+              "hint": "Neutrons n = A - Z = 24 - 12 = 12 neutrons.",
+              "workedSolution": "Neutrons n = A - Z = 24 - 12 = 12 neutrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I12",
+              "difficulty": "medium",
+              "prompt": "Why is an uncharged atom electrically neutral?",
+              "options": [
+                "A. The number of positively charged protons equals the number of negatively charged electrons",
+                "B. Neutrons cancel out the mass of electrons",
+                "C. Protons have no charge inside the nucleus",
+                "D. Electrons carry a positive charge in the shells"
+              ],
+              "correctAnswer": "A. The number of positively charged protons equals the number of negatively charged electrons",
+              "hint": "Equal numbers of positive protons and negative electrons cancel out net electrical charge.",
+              "workedSolution": "Equal numbers of positive protons and negative electrons cancel out net electrical charge.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I13",
+              "difficulty": "medium",
+              "prompt": "What is the electron configuration of a Chlorine atom (atomic number 17)?",
+              "options": [
+                "A. 2, 7, 8",
+                "B. 2, 8, 7",
+                "C. 2, 8, 8, 1",
+                "D. 17"
+              ],
+              "correctAnswer": "B. 2, 8, 7",
+              "hint": "17 electrons fill as 2 in the 1st shell, 8 in the 2nd shell, and 7 in the 3rd shell (2, 8, 7).",
+              "workedSolution": "17 electrons fill as 2 in the 1st shell, 8 in the 2nd shell, and 7 in the 3rd shell (2, 8, 7).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I14",
+              "difficulty": "medium",
+              "prompt": "What is the electron configuration of Calcium (atomic number 20)?",
+              "options": [
+                "A. 2, 8, 8, 2",
+                "B. 2, 8, 10",
+                "C. 2, 18",
+                "D. 2, 8, 9, 1"
+              ],
+              "correctAnswer": "A. 2, 8, 8, 2",
+              "hint": "Following the 2, 8, 8, 2 filling rule for the first 20 elements, Calcium is 2, 8, 8, 2.",
+              "workedSolution": "Following the 2, 8, 8, 2 filling rule for the first 20 elements, Calcium is 2, 8, 8, 2.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I15",
+              "difficulty": "medium",
+              "prompt": "Why do atoms of elements lose or gain electrons during chemical reactions?",
+              "options": [
+                "A. To achieve a stable, full outer electron shell like noble gases",
+                "B. To destroy their nucleus",
+                "C. To increase their mass number",
+                "D. To turn into neutrons"
+              ],
+              "correctAnswer": "A. To achieve a stable, full outer electron shell like noble gases",
+              "hint": "Atoms transfer electrons to attain a full, stable outer shell configuration (octet/duplet rule).",
+              "workedSolution": "Atoms transfer electrons to attain a full, stable outer shell configuration (octet/duplet rule).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I16",
+              "difficulty": "medium",
+              "prompt": "When a neutral Sodium atom (2, 8, 1) forms a sodium ion (Na⁺), what happens?",
+              "options": [
+                "A. It loses its 1 outer electron, leaving 11 protons and 10 electrons",
+                "B. It gains 7 electrons to fill the shell",
+                "C. It gains 1 proton in its nucleus",
+                "D. Its mass number doubles"
+              ],
+              "correctAnswer": "A. It loses its 1 outer electron, leaving 11 protons and 10 electrons",
+              "hint": "Sodium loses 1 valence electron; with 11 protons and 10 electrons, it carries a +1 charge.",
+              "workedSolution": "Sodium loses 1 valence electron; with 11 protons and 10 electrons, it carries a +1 charge.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I17",
+              "difficulty": "medium",
+              "prompt": "When a neutral Chlorine atom (2, 8, 7) forms a chloride ion (Cl⁻), what occurs?",
+              "options": [
+                "A. It gains 1 electron, leaving 17 protons and 18 electrons",
+                "B. It loses all 7 valence electrons",
+                "C. It loses 1 proton from the nucleus",
+                "D. It becomes a cation"
+              ],
+              "correctAnswer": "A. It gains 1 electron, leaving 17 protons and 18 electrons",
+              "hint": "Chlorine gains 1 electron to achieve 2, 8, 8; with 17 protons and 18 electrons, its net charge is -1.",
+              "workedSolution": "Chlorine gains 1 electron to achieve 2, 8, 8; with 17 protons and 18 electrons, its net charge is -1.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I18",
+              "difficulty": "medium",
+              "prompt": "Which of the following represents a group of cations?",
+              "options": [
+                "A. Cl⁻, O²⁻, N³⁻",
+                "B. Na⁺, K⁺, Mg²⁺, Ca²⁺",
+                "C. H₂O, CO₂, CH₄",
+                "D. He, Ne, Ar"
+              ],
+              "correctAnswer": "B. Na⁺, K⁺, Mg²⁺, Ca²⁺",
+              "hint": "Na⁺, K⁺, Mg²⁺, and Ca²⁺ are positively charged metal ions (cations).",
+              "workedSolution": "Na⁺, K⁺, Mg²⁺, and Ca²⁺ are positively charged metal ions (cations).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I19",
+              "difficulty": "medium",
+              "prompt": "Which of the following represents anions?",
+              "options": [
+                "A. Na⁺, Al³⁺",
+                "B. Cl⁻, O²⁻",
+                "C. Fe, Cu",
+                "D. K⁺, Ca²⁺"
+              ],
+              "correctAnswer": "B. Cl⁻, O²⁻",
+              "hint": "Chloride (Cl⁻) and oxide (O²⁻) are negatively charged non-metal ions (anions).",
+              "workedSolution": "Chloride (Cl⁻) and oxide (O²⁻) are negatively charged non-metal ions (anions).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I20",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for the element Iron?",
+              "options": [
+                "A. Ir",
+                "B. In",
+                "C. Fe",
+                "D. I"
+              ],
+              "correctAnswer": "C. Fe",
+              "hint": "Iron derives its chemical symbol Fe from its Latin name Ferrum.",
+              "workedSolution": "Iron derives its chemical symbol Fe from its Latin name Ferrum.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I21",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for Lead?",
+              "options": [
+                "A. Ld",
+                "B. Pb",
+                "C. Le",
+                "D. Sn"
+              ],
+              "correctAnswer": "B. Pb",
+              "hint": "Lead has the chemical symbol Pb from Plumbum.",
+              "workedSolution": "Lead has the chemical symbol Pb from Plumbum.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I22",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for Silver?",
+              "options": [
+                "A. Si",
+                "B. Ag",
+                "C. Au",
+                "D. Sl"
+              ],
+              "correctAnswer": "B. Ag",
+              "hint": "Silver has the symbol Ag from Argentum.",
+              "workedSolution": "Silver has the symbol Ag from Argentum.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I23",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for Gold?",
+              "options": [
+                "A. Gd",
+                "B. Go",
+                "C. Au",
+                "D. Ag"
+              ],
+              "correctAnswer": "C. Au",
+              "hint": "Gold has the symbol Au from Aurum.",
+              "workedSolution": "Gold has the symbol Au from Aurum.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I24",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for Copper?",
+              "options": [
+                "A. Co",
+                "B. Cp",
+                "C. Cu",
+                "D. Cr"
+              ],
+              "correctAnswer": "C. Cu",
+              "hint": "Copper is represented by the symbol Cu.",
+              "workedSolution": "Copper is represented by the symbol Cu.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I25",
+              "difficulty": "medium",
+              "prompt": "Which element has the symbol Sn?",
+              "options": [
+                "A. Sodium",
+                "B. Tin",
+                "C. Sulfur",
+                "D. Silicon"
+              ],
+              "correctAnswer": "B. Tin",
+              "hint": "Sn is the symbol for Tin (from Stannum).",
+              "workedSolution": "Sn is the symbol for Tin (from Stannum).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I26",
+              "difficulty": "medium",
+              "prompt": "Which element has the symbol Hg?",
+              "options": [
+                "A. Hydrogen",
+                "B. Helium",
+                "C. Mercury",
+                "D. Magnesium"
+              ],
+              "correctAnswer": "C. Mercury",
+              "hint": "Mercury is represented by the symbol Hg (from Hydrargyrum).",
+              "workedSolution": "Mercury is represented by the symbol Hg (from Hydrargyrum).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I27",
+              "difficulty": "medium",
+              "prompt": "Why is air considered a mixture rather than a chemical compound?",
+              "options": [
+                "A. Its constituent gases can be separated by physical means and vary in proportion from place to place",
+                "B. It has a single fixed chemical formula",
+                "C. Heat is always produced when gases combine to form air",
+                "D. It cannot be liquefied"
+              ],
+              "correctAnswer": "A. Its constituent gases can be separated by physical means and vary in proportion from place to place",
+              "hint": "Air has no fixed chemical formula, its components retain their properties, and it can be separated physically.",
+              "workedSolution": "Air has no fixed chemical formula, its components retain their properties, and it can be separated physically.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I28",
+              "difficulty": "medium",
+              "prompt": "Which of the following mixtures can be separated using a separating funnel?",
+              "options": [
+                "A. Alcohol and water",
+                "B. Palm oil and water",
+                "C. Salt and water",
+                "D. Sugar and water"
+              ],
+              "correctAnswer": "B. Palm oil and water",
+              "hint": "Palm oil and water are immiscible liquids of different densities, easily separated by a separating funnel.",
+              "workedSolution": "Palm oil and water are immiscible liquids of different densities, easily separated by a separating funnel.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I29",
+              "difficulty": "medium",
+              "prompt": "In a separating funnel containing kerosene and water, which liquid forms the bottom layer?",
+              "options": [
+                "A. Kerosene, because it has lower density",
+                "B. Water, because it has higher density than kerosene",
+                "C. Both mix together into one layer",
+                "D. The liquid with the lower boiling point"
+              ],
+              "correctAnswer": "B. Water, because it has higher density than kerosene",
+              "hint": "Water is denser than kerosene and sinks to the bottom of the funnel.",
+              "workedSolution": "Water is denser than kerosene and sinks to the bottom of the funnel.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I30",
+              "difficulty": "medium",
+              "prompt": "Why does simple distillation recover both the solute and solvent, whereas evaporation loses the solvent?",
+              "options": [
+                "A. Distillation condenses the evaporated solvent vapor using a cooling condenser, whereas evaporation allows vapor to escape",
+                "B. Distillation uses filter paper to trap the liquid",
+                "C. Evaporation destroys the solute chemically",
+                "D. Distillation does not require heat"
+              ],
+              "correctAnswer": "A. Distillation condenses the evaporated solvent vapor using a cooling condenser, whereas evaporation allows vapor to escape",
+              "hint": "In simple distillation, evaporated solvent vapor is cooled in a condenser and collected, saving both parts.",
+              "workedSolution": "In simple distillation, evaporated solvent vapor is cooled in a condenser and collected, saving both parts.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I31",
+              "difficulty": "medium",
+              "prompt": "What is the electron configuration of an Aluminium atom (atomic number 13)?",
+              "options": [
+                "A. 2, 8, 3",
+                "B. 2, 3, 8",
+                "C. 3, 8, 2",
+                "D. 2, 8, 2, 1"
+              ],
+              "correctAnswer": "A. 2, 8, 3",
+              "hint": "Aluminium's 13 electrons fill as 2 in K, 8 in L, and 3 in M (2, 8, 3).",
+              "workedSolution": "Aluminium's 13 electrons fill as 2 in K, 8 in L, and 3 in M (2, 8, 3).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I32",
+              "difficulty": "medium",
+              "prompt": "How many valence electrons are present in an Oxygen atom (atomic number 8)?",
+              "options": [
+                "A. 2",
+                "B. 6",
+                "C. 8",
+                "D. 4"
+              ],
+              "correctAnswer": "B. 6",
+              "hint": "Oxygen has electron configuration 2, 6; the outermost shell contains 6 valence electrons.",
+              "workedSolution": "Oxygen has electron configuration 2, 6; the outermost shell contains 6 valence electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I33",
+              "difficulty": "medium",
+              "prompt": "How many electrons does an atom of Oxygen need to gain to achieve a stable octet structure?",
+              "options": [
+                "A. 1 electron",
+                "B. 2 electrons",
+                "C. 6 electrons",
+                "D. 8 electrons"
+              ],
+              "correctAnswer": "B. 2 electrons",
+              "hint": "Oxygen (2, 6) needs 2 electrons to complete its valence shell to 8, forming O²⁻.",
+              "workedSolution": "Oxygen (2, 6) needs 2 electrons to complete its valence shell to 8, forming O²⁻.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I34",
+              "difficulty": "medium",
+              "prompt": "What is the charge on an Aluminium ion formed from an Al atom (2, 8, 3)?",
+              "options": [
+                "A. +1",
+                "B. +2",
+                "C. +3",
+                "D. -3"
+              ],
+              "correctAnswer": "C. +3",
+              "hint": "Aluminium loses its 3 valence electrons to form Al³⁺.",
+              "workedSolution": "Aluminium loses its 3 valence electrons to form Al³⁺.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I35",
+              "difficulty": "medium",
+              "prompt": "An atom has 8 protons and 9 neutrons. What is its standard nuclide representation?",
+              "options": [
+                "A. ¹⁷₈O",
+                "B. ⁹₈O",
+                "C. ⁸₁₇O",
+                "D. ¹₇₉O"
+              ],
+              "correctAnswer": "A. ¹⁷₈O",
+              "hint": "Z = 8 (subscript), A = 8 + 9 = 17 (superscript); the nuclide is ¹⁷₈O.",
+              "workedSolution": "Z = 8 (subscript), A = 8 + 9 = 17 (superscript); the nuclide is ¹⁷₈O.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I36",
+              "difficulty": "medium",
+              "prompt": "In the nuclide notation ²³₁₁Na, what do the numbers 23 and 11 represent?",
+              "options": [
+                "A. 23 is atomic number; 11 is mass number",
+                "B. 23 is mass number; 11 is atomic number",
+                "C. 23 is electrons; 11 is neutrons",
+                "D. 23 is neutrons; 11 is protons"
+              ],
+              "correctAnswer": "B. 23 is mass number; 11 is atomic number",
+              "hint": "The top number (23) is the mass number A; the bottom number (11) is the atomic number Z.",
+              "workedSolution": "The top number (23) is the mass number A; the bottom number (11) is the atomic number Z.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I37",
+              "difficulty": "medium",
+              "prompt": "How many neutrons are in the nuclide ³⁹₁₉K?",
+              "options": [
+                "A. 19",
+                "B. 20",
+                "C. 39",
+                "D. 58"
+              ],
+              "correctAnswer": "B. 20",
+              "hint": "Neutrons n = A - Z = 39 - 19 = 20 neutrons.",
+              "workedSolution": "Neutrons n = A - Z = 39 - 19 = 20 neutrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I38",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements has a stable duplet outer shell configuration in its neutral atom?",
+              "options": [
+                "A. Hydrogen",
+                "B. Helium",
+                "C. Neon",
+                "D. Argon"
+              ],
+              "correctAnswer": "B. Helium",
+              "hint": "Helium has atomic number 2 with a fully occupied first shell (duplet).",
+              "workedSolution": "Helium has atomic number 2 with a fully occupied first shell (duplet).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I39",
+              "difficulty": "medium",
+              "prompt": "Which of the following elements has a complete octet (8 electrons) in its outer shell as a neutral atom?",
+              "options": [
+                "A. Carbon",
+                "B. Nitrogen",
+                "C. Neon",
+                "D. Sodium"
+              ],
+              "correctAnswer": "C. Neon",
+              "hint": "Neon (atomic number 10) has electron configuration 2, 8, with an octet outer shell.",
+              "workedSolution": "Neon (atomic number 10) has electron configuration 2, 8, with an octet outer shell.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I40",
+              "difficulty": "medium",
+              "prompt": "Why do Magnesium (2, 8, 2) and Calcium (2, 8, 8, 2) exhibit similar chemical properties?",
+              "options": [
+                "A. They have the same number of valence electrons (2)",
+                "B. They have the same atomic number",
+                "C. They have identical mass numbers",
+                "D. They have the same number of shells"
+              ],
+              "correctAnswer": "A. They have the same number of valence electrons (2)",
+              "hint": "Elements with the same number of valence electrons exhibit similar chemical reactivities.",
+              "workedSolution": "Elements with the same number of valence electrons exhibit similar chemical reactivities.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I41",
+              "difficulty": "medium",
+              "prompt": "What is the electron configuration of a Magnesium ion (Mg²⁺)?",
+              "options": [
+                "A. 2, 8, 2",
+                "B. 2, 8",
+                "C. 2, 8, 8",
+                "D. 2, 8, 4"
+              ],
+              "correctAnswer": "B. 2, 8",
+              "hint": "Neutral Mg (2, 8, 2) loses its 2 valence electrons, leaving the configuration 2, 8.",
+              "workedSolution": "Neutral Mg (2, 8, 2) loses its 2 valence electrons, leaving the configuration 2, 8.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I42",
+              "difficulty": "medium",
+              "prompt": "What is the electron configuration of an Oxide ion (O²⁻)?",
+              "options": [
+                "A. 2, 6",
+                "B. 2, 8",
+                "C. 2, 4",
+                "D. 2, 8, 2"
+              ],
+              "correctAnswer": "B. 2, 8",
+              "hint": "Neutral Oxygen (2, 6) gains 2 electrons to form O²⁻ with configuration 2, 8.",
+              "workedSolution": "Neutral Oxygen (2, 6) gains 2 electrons to form O²⁻ with configuration 2, 8.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I43",
+              "difficulty": "medium",
+              "prompt": "Which separation method is used industrially to extract local gin (akpeteshie) from fermented palm wine?",
+              "options": [
+                "A. Distillation",
+                "B. Sublimation",
+                "C. Magnetic separation",
+                "D. Decantation"
+              ],
+              "correctAnswer": "A. Distillation",
+              "hint": "Akpeteshie is distilled from fermented palm wine based on differences in boiling points.",
+              "workedSolution": "Akpeteshie is distilled from fermented palm wine based on differences in boiling points.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I44",
+              "difficulty": "medium",
+              "prompt": "Which of the following products is obtained from the fractional distillation of crude oil?",
+              "options": [
+                "A. Bronze",
+                "B. Bitumen and diesel",
+                "C. Sodium chloride",
+                "D. Starch"
+              ],
+              "correctAnswer": "B. Bitumen and diesel",
+              "hint": "Crude oil yields gas oil, bitumen, diesel, and lubricating oils upon fractional distillation.",
+              "workedSolution": "Crude oil yields gas oil, bitumen, diesel, and lubricating oils upon fractional distillation.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I45",
+              "difficulty": "medium",
+              "prompt": "Why does heating a saturated solution allow more solute to dissolve?",
+              "options": [
+                "A. Increasing temperature increases the kinetic motion of solvent molecules, expanding solubility",
+                "B. Heat destroys the solute particles",
+                "C. The solution turns into a suspension",
+                "D. Heat makes the solution immiscible"
+              ],
+              "correctAnswer": "A. Increasing temperature increases the kinetic motion of solvent molecules, expanding solubility",
+              "hint": "Solubility of most solid solutes increases with rising temperature.",
+              "workedSolution": "Solubility of most solid solutes increases with rising temperature.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I46",
+              "difficulty": "medium",
+              "prompt": "Which non-metal is represented by the chemical symbol P?",
+              "options": [
+                "A. Potassium",
+                "B. Phosphorus",
+                "C. Lead",
+                "D. Platinum"
+              ],
+              "correctAnswer": "B. Phosphorus",
+              "hint": "P is the chemical symbol for Phosphorus (atomic number 15).",
+              "workedSolution": "P is the chemical symbol for Phosphorus (atomic number 15).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I47",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for Manganese?",
+              "options": [
+                "A. Mg",
+                "B. Mn",
+                "C. Ma",
+                "D. Me"
+              ],
+              "correctAnswer": "B. Mn",
+              "hint": "Manganese is represented by Mn; Mg is Magnesium.",
+              "workedSolution": "Manganese is represented by Mn; Mg is Magnesium.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I48",
+              "difficulty": "medium",
+              "prompt": "What is the chemical symbol for Zinc?",
+              "options": [
+                "A. Z",
+                "B. Zi",
+                "C. Zn",
+                "D. Zc"
+              ],
+              "correctAnswer": "C. Zn",
+              "hint": "Zinc has the chemical symbol Zn.",
+              "workedSolution": "Zinc has the chemical symbol Zn.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I49",
+              "difficulty": "medium",
+              "prompt": "How many electron shells are occupied in a Potassium atom (atomic number 19)?",
+              "options": [
+                "A. 2 shells",
+                "B. 3 shells",
+                "C. 4 shells",
+                "D. 5 shells"
+              ],
+              "correctAnswer": "C. 4 shells",
+              "hint": "Potassium's configuration (2, 8, 8, 1) occupies four shells (K, L, M, N).",
+              "workedSolution": "Potassium's configuration (2, 8, 8, 1) occupies four shells (K, L, M, N).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_I50",
+              "difficulty": "medium",
+              "prompt": "Which subatomic particle was discovered to move in designated orbitals around the nucleus?",
+              "options": [
+                "A. Proton",
+                "B. Neutron",
+                "C. Electron",
+                "D. Alpha particle"
+              ],
+              "correctAnswer": "C. Electron",
+              "hint": "Electrons orbit the central nucleus within defined energy levels or shells.",
+              "workedSolution": "Electrons orbit the central nucleus within defined energy levels or shells.",
               "points": 1,
               "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B8_MAT_A01",
+              "difficulty": "hard",
+              "prompt": "An element X has mass number 31 and contains 16 neutrons. Determine its atomic number, its electron configuration, and its valency.",
+              "options": [
+                "A. Atomic number = 15; Configuration = 2, 8, 5; Valency = 3",
+                "B. Atomic number = 16; Configuration = 2, 8, 6; Valency = 2",
+                "C. Atomic number = 15; Configuration = 2, 8, 5; Valency = 5",
+                "D. Atomic number = 47; Configuration = 2, 8, 8; Valency = 1"
+              ],
+              "correctAnswer": "A. Atomic number = 15; Configuration = 2, 8, 5; Valency = 3",
+              "hint": "Z = A - n = 31 - 16 = 15 (Phosphorus). Configuration is 2, 8, 5. To complete an octet it needs 3 electrons, so its combining capacity (valency) is 3.",
+              "workedSolution": "Z = A - n = 31 - 16 = 15 (Phosphorus). Configuration is 2, 8, 5. To complete an octet it needs 3 electrons, so its combining capacity (valency) is 3.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A02",
+              "difficulty": "hard",
+              "prompt": "Calculate the maximum theoretical number of electrons that can occupy the 4th electron shell (N-shell) using the formula 2n².",
+              "options": [
+                "A. 8 electrons",
+                "B. 16 electrons",
+                "C. 32 electrons",
+                "D. 64 electrons"
+              ],
+              "correctAnswer": "C. 32 electrons",
+              "hint": "Using 2n² with n = 4: 2 × (4)² = 2 × 16 = 32 electrons.",
+              "workedSolution": "Using 2n² with n = 4: 2 × (4)² = 2 × 16 = 32 electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A03",
+              "difficulty": "hard",
+              "prompt": "A sample containing 5.0 g of salt and 15.0 g of fine sand is stirred into 100 mL of water and filtered. The residue on the filter paper is dried. What is the expected mass of the dry residue?",
+              "options": [
+                "A. 5.0 g",
+                "B. 15.0 g",
+                "C. 20.0 g",
+                "D. 0.0 g"
+              ],
+              "correctAnswer": "B. 15.0 g",
+              "hint": "Sand is insoluble and remains on the filter paper as residue (15.0 g); the salt dissolves and passes into the filtrate.",
+              "workedSolution": "Sand is insoluble and remains on the filter paper as residue (15.0 g); the salt dissolves and passes into the filtrate.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A04",
+              "difficulty": "hard",
+              "prompt": "If 20 g of salt is dissolved in 80 g of water to make a saline solution, what is the percentage by mass (% w/w) of the solute in the solution?",
+              "options": [
+                "A. 20%",
+                "B. 25%",
+                "C. 80%",
+                "D. 16%"
+              ],
+              "correctAnswer": "A. 20%",
+              "hint": "Total mass of solution = solute + solvent = 20 g + 80 g = 100 g. % concentration = (20 / 100) × 100% = 20%.",
+              "workedSolution": "Total mass of solution = solute + solvent = 20 g + 80 g = 100 g. % concentration = (20 / 100) × 100% = 20%.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A05",
+              "difficulty": "hard",
+              "prompt": "A student separates a mixture of ammonium chloride, iron filings, and sand. Which order of operations successfully isolates all three components?",
+              "options": [
+                "A. Magnet → Heat (Sublimation) → Add water, filter, and dry",
+                "B. Add water → Evaporate → Filter → Magnet",
+                "C. Distillation → Decantation → Chromatography",
+                "D. Filter → Magnet → Condense"
+              ],
+              "correctAnswer": "A. Magnet → Heat (Sublimation) → Add water, filter, and dry",
+              "hint": "Use a magnet to extract iron filings, heat to sublime ammonium chloride, and sand remains as the final residue.",
+              "workedSolution": "Use a magnet to extract iron filings, heat to sublime ammonium chloride, and sand remains as the final residue.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A06",
+              "difficulty": "hard",
+              "prompt": "An unknown ion Y²⁺ has an electron configuration of 2, 8 and contains 12 neutrons. What is the mass number of element Y?",
+              "options": [
+                "A. 10",
+                "B. 22",
+                "C. 24",
+                "D. 26"
+              ],
+              "correctAnswer": "C. 24",
+              "hint": "Y²⁺ lost 2 electrons to have 10 electrons, so neutral Y has 12 electrons (Z = 12, Magnesium). Mass number A = Z + n = 12 + 12 = 24.",
+              "workedSolution": "Y²⁺ lost 2 electrons to have 10 electrons, so neutral Y has 12 electrons (Z = 12, Magnesium). Mass number A = Z + n = 12 + 12 = 24.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A07",
+              "difficulty": "hard",
+              "prompt": "An anion Z³⁻ has 18 electrons and a mass number of 31. How many neutrons are present in its nucleus?",
+              "options": [
+                "A. 15",
+                "B. 16",
+                "C. 18",
+                "D. 31"
+              ],
+              "correctAnswer": "B. 16",
+              "hint": "Z gained 3 electrons to have 18 electrons, so neutral Z has 15 protons (Z = 15). Neutrons n = A - Z = 31 - 15 = 16 neutrons.",
+              "workedSolution": "Z gained 3 electrons to have 18 electrons, so neutral Z has 15 protons (Z = 15). Neutrons n = A - Z = 31 - 15 = 16 neutrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A08",
+              "difficulty": "hard",
+              "prompt": "Why does ink chromatography show multiple spots at varying heights on the paper strip?",
+              "options": [
+                "A. Dyes with higher solubility in the mobile solvent and lower attraction to the stationary paper travel farther",
+                "B. Some dyes evaporate into the air before others",
+                "C. Heavier dyes are pulled faster by gravity",
+                "D. The paper destroys insoluble dyes"
+              ],
+              "correctAnswer": "A. Dyes with higher solubility in the mobile solvent and lower attraction to the stationary paper travel farther",
+              "hint": "Separation depends on the partition between mobile solvent solubility and stationary paper adsorption.",
+              "workedSolution": "Separation depends on the partition between mobile solvent solubility and stationary paper adsorption.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A09",
+              "difficulty": "hard",
+              "prompt": "Why does a mixture of iodine crystals and charcoal powder separate upon gentle heating under an inverted funnel?",
+              "options": [
+                "A. Iodine sublimes directly to violet vapor and solidifies on the cool glass, while non-volatile charcoal remains in the dish",
+                "B. Charcoal evaporates before iodine",
+                "C. Iodine reacts with charcoal to form gas",
+                "D. Charcoal dissolves in the dish"
+              ],
+              "correctAnswer": "A. Iodine sublimes directly to violet vapor and solidifies on the cool glass, while non-volatile charcoal remains in the dish",
+              "hint": "Iodine sublimes into vapor and deposits as crystals on the cold funnel, leaving non-subliming charcoal behind.",
+              "workedSolution": "Iodine sublimes into vapor and deposits as crystals on the cold funnel, leaving non-subliming charcoal behind.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A10",
+              "difficulty": "hard",
+              "prompt": "Two elements are represented as ³⁵₁₇Cl and ³⁷₁₇Cl. What is the relationship between these two nuclides?",
+              "options": [
+                "A. They are allotropes",
+                "B. They are isotopes with the same atomic number but different mass numbers due to differing neutron counts",
+                "C. They are completely different chemical elements",
+                "D. They are cations"
+              ],
+              "correctAnswer": "B. They are isotopes with the same atomic number but different mass numbers due to differing neutron counts",
+              "hint": "Atoms of the same element (Z = 17) with different mass numbers (35 and 37) due to different neutron counts are isotopes.",
+              "workedSolution": "Atoms of the same element (Z = 17) with different mass numbers (35 and 37) due to different neutron counts are isotopes.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A11",
+              "difficulty": "hard",
+              "prompt": "What is the net electrical charge of an atomic nucleus containing 13 protons and 14 neutrons?",
+              "options": [
+                "A. Zero",
+                "B. +13",
+                "C. -13",
+                "D. +27"
+              ],
+              "correctAnswer": "B. +13",
+              "hint": "Neutrons have zero charge, so nuclear charge is solely determined by protons (+13).",
+              "workedSolution": "Neutrons have zero charge, so nuclear charge is solely determined by protons (+13).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A12",
+              "difficulty": "hard",
+              "prompt": "How many total subatomic particles (protons + neutrons + electrons) are in a neutral atom of Calcium (⁴⁰₂₀Ca)?",
+              "options": [
+                "A. 40",
+                "B. 20",
+                "C. 60",
+                "D. 80"
+              ],
+              "correctAnswer": "C. 60",
+              "hint": "Protons = 20, Electrons = 20, Neutrons = 40 - 20 = 20. Total particles = 20 + 20 + 20 = 60.",
+              "workedSolution": "Protons = 20, Electrons = 20, Neutrons = 40 - 20 = 20. Total particles = 20 + 20 + 20 = 60.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A13",
+              "difficulty": "hard",
+              "prompt": "During the ionic reaction between Sodium and Chlorine, what electron transfer occurs?",
+              "options": [
+                "A. Sodium transfers 1 electron to Chlorine, forming Na⁺ and Cl⁻",
+                "B. Chlorine transfers 1 electron to Sodium",
+                "C. Sodium shares 2 electrons with Chlorine",
+                "D. Both atoms lose all their valence electrons"
+              ],
+              "correctAnswer": "A. Sodium transfers 1 electron to Chlorine, forming Na⁺ and Cl⁻",
+              "hint": "Sodium (2, 8, 1) donates 1 electron to Chlorine (2, 8, 7), producing stable Na⁺ (2, 8) and Cl⁻ (2, 8, 8).",
+              "workedSolution": "Sodium (2, 8, 1) donates 1 electron to Chlorine (2, 8, 7), producing stable Na⁺ (2, 8) and Cl⁻ (2, 8, 8).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A14",
+              "difficulty": "hard",
+              "prompt": "Why is pure liquid water classified as a compound, whereas muddy river water is classified as a suspension?",
+              "options": [
+                "A. Pure water consists of hydrogen and oxygen chemically bonded in a fixed 2:1 ratio, while muddy water is a physical, non-uniform mixture of soil and water",
+                "B. Water can be separated by a magnet",
+                "C. Muddy water contains no solvent",
+                "D. Pure water is an element"
+              ],
+              "correctAnswer": "A. Pure water consists of hydrogen and oxygen chemically bonded in a fixed 2:1 ratio, while muddy water is a physical, non-uniform mixture of soil and water",
+              "hint": "Water is a chemical compound ($H_2O$); muddy water is a physical heterogeneous suspension that settles.",
+              "workedSolution": "Water is a chemical compound ($H_2O$); muddy water is a physical heterogeneous suspension that settles.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A15",
+              "difficulty": "hard",
+              "prompt": "An element M has atomic number 12. Write the formula of the compound formed when element M combines with Chlorine (atomic number 17).",
+              "options": [
+                "A. MCl",
+                "B. MCl₂",
+                "C. M₂Cl",
+                "D. M₂Cl₃"
+              ],
+              "correctAnswer": "B. MCl₂",
+              "hint": "M (2, 8, 2) forms M²⁺. Chlorine (2, 8, 7) forms Cl⁻. Two Cl⁻ balance one M²⁺, giving MCl₂ (Magnesium chloride).",
+              "workedSolution": "M (2, 8, 2) forms M²⁺. Chlorine (2, 8, 7) forms Cl⁻. Two Cl⁻ balance one M²⁺, giving MCl₂ (Magnesium chloride).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A16",
+              "difficulty": "hard",
+              "prompt": "Why does a mixture of ethanol and water require fractional distillation rather than simple distillation?",
+              "options": [
+                "A. Their boiling points (78°C and 100°C) are too close for a single simple boiling step to yield complete separation",
+                "B. Ethanol does not vaporize",
+                "C. Water boils before ethanol",
+                "D. Simple distillation decomposes ethanol"
+              ],
+              "correctAnswer": "A. Their boiling points (78°C and 100°C) are too close for a single simple boiling step to yield complete separation",
+              "hint": "Simple distillation requires large boiling point differences (>40-50°C); close boiling points require a fractionating column.",
+              "workedSolution": "Simple distillation requires large boiling point differences (>40-50°C); close boiling points require a fractionating column.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A17",
+              "difficulty": "hard",
+              "prompt": "Which of the following elements has the greatest number of valence electrons in its neutral atom?",
+              "options": [
+                "A. Carbon (Z = 6)",
+                "B. Nitrogen (Z = 7)",
+                "C. Phosphorus (Z = 15)",
+                "D. Argon (Z = 18)"
+              ],
+              "correctAnswer": "D. Argon (Z = 18)",
+              "hint": "Argon (2, 8, 8) has 8 valence electrons, while C has 4, and N and P have 5.",
+              "workedSolution": "Argon (2, 8, 8) has 8 valence electrons, while C has 4, and N and P have 5.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A18",
+              "difficulty": "hard",
+              "prompt": "Why does an atom's mass reside almost entirely inside its central nucleus?",
+              "options": [
+                "A. Protons and neutrons each have a mass of 1 a.m.u. in the nucleus, whereas orbiting electrons have negligible mass",
+                "B. Electrons are packed into the center of the nucleus",
+                "C. The nucleus is hollow and attracts external mass",
+                "D. Neutrons have negative mass"
+              ],
+              "correctAnswer": "A. Protons and neutrons each have a mass of 1 a.m.u. in the nucleus, whereas orbiting electrons have negligible mass",
+              "hint": "Nucleons (protons and neutrons) possess virtually all of an atom's mass; electrons contribute less than 0.05%.",
+              "workedSolution": "Nucleons (protons and neutrons) possess virtually all of an atom's mass; electrons contribute less than 0.05%.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A19",
+              "difficulty": "hard",
+              "prompt": "An element Q has an atomic number of 8. What is the valency and ion symbol of element Q?",
+              "options": [
+                "A. Valency = 2, Ion = Q²⁻",
+                "B. Valency = 6, Ion = Q⁶⁺",
+                "C. Valency = 1, Ion = Q⁻",
+                "D. Valency = 8, Ion = Q⁸⁻"
+              ],
+              "correctAnswer": "A. Valency = 2, Ion = Q²⁻",
+              "hint": "Q has configuration 2, 6. It gains 2 electrons to form Q²⁻ with a combining power (valency) of 2.",
+              "workedSolution": "Q has configuration 2, 6. It gains 2 electrons to form Q²⁻ with a combining power (valency) of 2.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A20",
+              "difficulty": "hard",
+              "prompt": "Why does a separating funnel work for oil and water, but fails completely for a mixture of ethanol and water?",
+              "options": [
+                "A. Ethanol and water are completely miscible and form a single phase, while oil and water are immiscible and separate by density",
+                "B. Ethanol is too dense to enter the funnel",
+                "C. Oil and water dissolve each other",
+                "D. The tap of the funnel reacts with ethanol"
+              ],
+              "correctAnswer": "A. Ethanol and water are completely miscible and form a single phase, while oil and water are immiscible and separate by density",
+              "hint": "A separating funnel requires two distinct immiscible layers; miscible ethanol-water forms a single phase.",
+              "workedSolution": "A separating funnel requires two distinct immiscible layers; miscible ethanol-water forms a single phase.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A21",
+              "difficulty": "hard",
+              "prompt": "A mystery element has electron configuration 2, 8, 8, 2. Identify the element and state the formula of its oxide.",
+              "options": [
+                "A. Potassium (K), KO",
+                "B. Calcium (Ca), CaO",
+                "C. Magnesium (Mg), MgO",
+                "D. Argon (Ar), ArO"
+              ],
+              "correctAnswer": "B. Calcium (Ca), CaO",
+              "hint": "Total electrons = 20 (Calcium, Ca). Ca forms Ca²⁺; Oxygen forms O²⁻. The formula is CaO.",
+              "workedSolution": "Total electrons = 20 (Calcium, Ca). Ca forms Ca²⁺; Oxygen forms O²⁻. The formula is CaO.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A22",
+              "difficulty": "hard",
+              "prompt": "If an atom has 19 protons and 20 neutrons, what is its electron configuration and identity?",
+              "options": [
+                "A. 2, 8, 8, 1; Potassium (K)",
+                "B. 2, 8, 9; Calcium (Ca)",
+                "C. 2, 8, 8, 2; Argon (Ar)",
+                "D. 2, 17; Chlorine (Cl)"
+              ],
+              "correctAnswer": "A. 2, 8, 8, 1; Potassium (K)",
+              "hint": "19 protons = 19 electrons. Configuration is 2, 8, 8, 1, which is Potassium (K).",
+              "workedSolution": "19 protons = 19 electrons. Configuration is 2, 8, 8, 1, which is Potassium (K).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A23",
+              "difficulty": "hard",
+              "prompt": "Why does the temperature of a boiling mixture of miscible liquids change continuously during simple distillation without a fractionating column?",
+              "options": [
+                "A. Both liquid components evaporate simultaneously in varying proportions as the composition of the boiling liquid shifts",
+                "B. Distillation destroys the liquid molecules",
+                "C. The thermometer absorbs the heat completely",
+                "D. The condenser stops working at high temperatures"
+              ],
+              "correctAnswer": "A. Both liquid components evaporate simultaneously in varying proportions as the composition of the boiling liquid shifts",
+              "hint": "Vapor above a miscible mixture contains both components, changing the boiling point continuously unless fractionated.",
+              "workedSolution": "Vapor above a miscible mixture contains both components, changing the boiling point continuously unless fractionated.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A24",
+              "difficulty": "hard",
+              "prompt": "What is the key difference in particle size and filterability between a true solution and a suspension?",
+              "options": [
+                "A. Solution particles (<1 nm) pass through filter paper; suspension particles (>1000 nm) are trapped on the paper as residue",
+                "B. Solution particles settle into layers; suspension particles never settle",
+                "C. Solution particles scatter light; suspensions are completely transparent",
+                "D. Both pass freely through filter paper"
+              ],
+              "correctAnswer": "A. Solution particles (<1 nm) pass through filter paper; suspension particles (>1000 nm) are trapped on the paper as residue",
+              "hint": "Dissolved ions (<1 nm) pass through filter pores; large suspension aggregates (>1000 nm) are retained as residue.",
+              "workedSolution": "Dissolved ions (<1 nm) pass through filter pores; large suspension aggregates (>1000 nm) are retained as residue.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A25",
+              "difficulty": "hard",
+              "prompt": "How many electrons are in the outermost valence shell of a neutral Boron atom (atomic number 5)?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 3",
+                "D. 5"
+              ],
+              "correctAnswer": "C. 3",
+              "hint": "Boron has atomic number 5 with configuration 2, 3; its valence shell contains 3 electrons.",
+              "workedSolution": "Boron has atomic number 5 with configuration 2, 3; its valence shell contains 3 electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A26",
+              "difficulty": "hard",
+              "prompt": "Which of the following ions has the same electron configuration as Neon (2, 8)?",
+              "options": [
+                "A. Na⁺",
+                "B. K⁺",
+                "C. Cl⁻",
+                "D. Ca²⁺"
+              ],
+              "correctAnswer": "A. Na⁺",
+              "hint": "Na⁺ (Z = 11, lost 1 e⁻) has 10 electrons (2, 8), isoelectronic with Neon.",
+              "workedSolution": "Na⁺ (Z = 11, lost 1 e⁻) has 10 electrons (2, 8), isoelectronic with Neon.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A27",
+              "difficulty": "hard",
+              "prompt": "Which of the following ions has the same electron configuration as Argon (2, 8, 8)?",
+              "options": [
+                "A. O²⁻",
+                "B. Mg²⁺",
+                "C. Cl⁻",
+                "D. Na⁺"
+              ],
+              "correctAnswer": "C. Cl⁻",
+              "hint": "Chloride ion (Cl⁻, Z = 17, gained 1 e⁻) has 18 electrons (2, 8, 8), matching Argon.",
+              "workedSolution": "Chloride ion (Cl⁻, Z = 17, gained 1 e⁻) has 18 electrons (2, 8, 8), matching Argon.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A28",
+              "difficulty": "hard",
+              "prompt": "What happens to the mass number of an atom when it loses two electrons to become a cation?",
+              "options": [
+                "A. It decreases by 2",
+                "B. It increases by 2",
+                "C. It remains unchanged because mass number depends only on protons and neutrons in the nucleus",
+                "D. It becomes zero"
+              ],
+              "correctAnswer": "C. It remains unchanged because mass number depends only on protons and neutrons in the nucleus",
+              "hint": "Electrons have negligible mass; mass number A = protons + neutrons, which remain unchanged during ionization.",
+              "workedSolution": "Electrons have negligible mass; mass number A = protons + neutrons, which remain unchanged during ionization.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A29",
+              "difficulty": "hard",
+              "prompt": "Why is the relative atomic mass of chlorine approximately 35.5 rather than a whole integer?",
+              "options": [
+                "A. It exists naturally as a mixture of two isotopes (³⁵Cl and ³⁷Cl) in approximate 3:1 relative abundance",
+                "B. Protons in chlorine weigh 1.5 a.m.u.",
+                "C. Electrons have high mass in chlorine",
+                "D. Chlorine atoms are split in half in nature"
+              ],
+              "correctAnswer": "A. It exists naturally as a mixture of two isotopes (³⁵Cl and ³⁷Cl) in approximate 3:1 relative abundance",
+              "hint": "Relative atomic mass reflects the weighted average of natural isotopes: (35 × 0.75) + (37 × 0.25) = 35.5.",
+              "workedSolution": "Relative atomic mass reflects the weighted average of natural isotopes: (35 × 0.75) + (37 × 0.25) = 35.5.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A30",
+              "difficulty": "hard",
+              "prompt": "An element R forms an ion R²⁻ with 10 electrons. What is element R and what is its atomic number?",
+              "options": [
+                "A. Magnesium (Z = 12)",
+                "B. Oxygen (Z = 8)",
+                "C. Neon (Z = 10)",
+                "D. Carbon (Z = 6)"
+              ],
+              "correctAnswer": "B. Oxygen (Z = 8)",
+              "hint": "R²⁻ gained 2 electrons to reach 10, meaning neutral R had 8 electrons and 8 protons (Oxygen, Z = 8).",
+              "workedSolution": "R²⁻ gained 2 electrons to reach 10, meaning neutral R had 8 electrons and 8 protons (Oxygen, Z = 8).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A31",
+              "difficulty": "hard",
+              "prompt": "Why is the use of a condenser necessary in simple distillation but not in evaporation?",
+              "options": [
+                "A. Distillation aims to collect the vapor as a pure liquid, while evaporation intentionally allows the vapor to escape into the atmosphere",
+                "B. Evaporation cannot boil liquids",
+                "C. Condensers only work with solid mixtures",
+                "D. Distillation does not produce vapors"
+              ],
+              "correctAnswer": "A. Distillation aims to collect the vapor as a pure liquid, while evaporation intentionally allows the vapor to escape into the atmosphere",
+              "hint": "A condenser cools and collects the vapor as liquid distillate; evaporation vents the vapor.",
+              "workedSolution": "A condenser cools and collects the vapor as liquid distillate; evaporation vents the vapor.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A32",
+              "difficulty": "hard",
+              "prompt": "How many protons, neutrons, and electrons are in the phosphide ion (³¹₁₅P³⁻)?",
+              "options": [
+                "A. 15 protons, 16 neutrons, 18 electrons",
+                "B. 15 protons, 15 neutrons, 15 electrons",
+                "C. 16 protons, 15 neutrons, 12 electrons",
+                "D. 31 protons, 15 neutrons, 18 electrons"
+              ],
+              "correctAnswer": "A. 15 protons, 16 neutrons, 18 electrons",
+              "hint": "Z = 15 protons; neutrons = 31 - 15 = 16; P³⁻ gained 3 electrons = 15 + 3 = 18 electrons.",
+              "workedSolution": "Z = 15 protons; neutrons = 31 - 15 = 16; P³⁻ gained 3 electrons = 15 + 3 = 18 electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A33",
+              "difficulty": "hard",
+              "prompt": "A liquid mixture containing crude oil is separated into fractions. Which fraction condenses at the lowest part of the fractionating column due to its high boiling point?",
+              "options": [
+                "A. Petroleum gas",
+                "B. Petrol",
+                "C. Kerosene",
+                "D. Bitumen"
+              ],
+              "correctAnswer": "D. Bitumen",
+              "hint": "Bitumen has the highest boiling point and remains at the bottom of the column as residue.",
+              "workedSolution": "Bitumen has the highest boiling point and remains at the bottom of the column as residue.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A34",
+              "difficulty": "hard",
+              "prompt": "What is the electronic configuration of a neutral Silicon atom (atomic number 14)?",
+              "options": [
+                "A. 2, 8, 4",
+                "B. 2, 4, 8",
+                "C. 4, 8, 2",
+                "D. 2, 8, 2, 2"
+              ],
+              "correctAnswer": "A. 2, 8, 4",
+              "hint": "14 electrons distribute as 2 in K, 8 in L, and 4 in M (2, 8, 4).",
+              "workedSolution": "14 electrons distribute as 2 in K, 8 in L, and 4 in M (2, 8, 4).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A35",
+              "difficulty": "hard",
+              "prompt": "Which of the following particles is deflected toward the positive plate in an electric field?",
+              "options": [
+                "A. Proton",
+                "B. Neutron",
+                "C. Electron",
+                "D. Cation"
+              ],
+              "correctAnswer": "C. Electron",
+              "hint": "Electrons carry a negative charge and are attracted toward the positive electrode.",
+              "workedSolution": "Electrons carry a negative charge and are attracted toward the positive electrode.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A36",
+              "difficulty": "hard",
+              "prompt": "Which subatomic particle passes straight through an electric field without any deflection?",
+              "options": [
+                "A. Proton",
+                "B. Neutron",
+                "C. Electron",
+                "D. Cation"
+              ],
+              "correctAnswer": "B. Neutron",
+              "hint": "Neutrons have zero electrical charge and do not interact with electric fields.",
+              "workedSolution": "Neutrons have zero electrical charge and do not interact with electric fields.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A37",
+              "difficulty": "hard",
+              "prompt": "What is the valency of the element Nitrogen (atomic number 7)?",
+              "options": [
+                "A. 1",
+                "B. 2",
+                "C. 3",
+                "D. 5"
+              ],
+              "correctAnswer": "C. 3",
+              "hint": "Nitrogen (2, 5) needs 3 electrons to complete its valence shell, giving it a combining valency of 3.",
+              "workedSolution": "Nitrogen (2, 5) needs 3 electrons to complete its valence shell, giving it a combining valency of 3.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A38",
+              "difficulty": "hard",
+              "prompt": "What is the valency of the element Carbon (atomic number 6)?",
+              "options": [
+                "A. 2",
+                "B. 3",
+                "C. 4",
+                "D. 6"
+              ],
+              "correctAnswer": "C. 4",
+              "hint": "Carbon (2, 4) has 4 valence electrons and forms 4 covalent bonds (tetravalent).",
+              "workedSolution": "Carbon (2, 4) has 4 valence electrons and forms 4 covalent bonds (tetravalent).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A39",
+              "difficulty": "hard",
+              "prompt": "Which two elements combine in a 1:1 ratio to form table salt via ionic electron transfer?",
+              "options": [
+                "A. Potassium and Sulfur",
+                "B. Sodium and Chlorine",
+                "C. Magnesium and Oxygen",
+                "D. Calcium and Fluorine"
+              ],
+              "correctAnswer": "B. Sodium and Chlorine",
+              "hint": "Na⁺ (+1) and Cl⁻ (-1) combine in a 1:1 ratio to form NaCl.",
+              "workedSolution": "Na⁺ (+1) and Cl⁻ (-1) combine in a 1:1 ratio to form NaCl.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A40",
+              "difficulty": "hard",
+              "prompt": "Why is a mixture of oil and alcohol miscible, while oil and water are immiscible?",
+              "options": [
+                "A. Non-polar oil molecules dissolve in moderately non-polar organic alcohol, but cannot overcome polar hydrogen bonds in water",
+                "B. Oil is an element and alcohol is a mixture",
+                "C. Water freezes oil instantly",
+                "D. Alcohol is a solid at room temperature"
+              ],
+              "correctAnswer": "A. Non-polar oil molecules dissolve in moderately non-polar organic alcohol, but cannot overcome polar hydrogen bonds in water",
+              "hint": "Like dissolves like: oil dissolves in organic solvents (alcohol) but does not mix with polar water.",
+              "workedSolution": "Like dissolves like: oil dissolves in organic solvents (alcohol) but does not mix with polar water.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A41",
+              "difficulty": "hard",
+              "prompt": "An atom has 1 proton and 0 neutrons in its nucleus. What is its mass number and identity?",
+              "options": [
+                "A. Mass number = 1; Hydrogen (¹₁H)",
+                "B. Mass number = 2; Helium (²₂He)",
+                "C. Mass number = 0; Neutron",
+                "D. Mass number = 1; Deuterium"
+              ],
+              "correctAnswer": "A. Mass number = 1; Hydrogen (¹₁H)",
+              "hint": "Ordinary hydrogen (protium) contains 1 proton and 0 neutrons; A = 1 + 0 = 1.",
+              "workedSolution": "Ordinary hydrogen (protium) contains 1 proton and 0 neutrons; A = 1 + 0 = 1.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A42",
+              "difficulty": "hard",
+              "prompt": "How many electrons are in the outer shell of an atom of Fluorine (atomic number 9)?",
+              "options": [
+                "A. 2",
+                "B. 7",
+                "C. 8",
+                "D. 9"
+              ],
+              "correctAnswer": "B. 7",
+              "hint": "Fluorine (2, 7) has 7 valence electrons in its outer L-shell.",
+              "workedSolution": "Fluorine (2, 7) has 7 valence electrons in its outer L-shell.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A43",
+              "difficulty": "hard",
+              "prompt": "What is the formula of the fluoride ion formed from a Fluorine atom?",
+              "options": [
+                "A. F⁺",
+                "B. F²⁺",
+                "C. F⁻",
+                "D. F²⁻"
+              ],
+              "correctAnswer": "C. F⁻",
+              "hint": "Fluorine (2, 7) gains 1 electron to form the fluoride anion F⁻.",
+              "workedSolution": "Fluorine (2, 7) gains 1 electron to form the fluoride anion F⁻.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A44",
+              "difficulty": "hard",
+              "prompt": "What is the total number of occupied electron shells in Calcium (atomic number 20) compared to Magnesium (atomic number 12)?",
+              "options": [
+                "A. Calcium has 4 shells; Magnesium has 3 shells",
+                "B. Both have 3 shells",
+                "C. Calcium has 3 shells; Magnesium has 4 shells",
+                "D. Both have 2 shells"
+              ],
+              "correctAnswer": "A. Calcium has 4 shells; Magnesium has 3 shells",
+              "hint": "Calcium is 2, 8, 8, 2 (4 shells); Magnesium is 2, 8, 2 (3 shells).",
+              "workedSolution": "Calcium is 2, 8, 8, 2 (4 shells); Magnesium is 2, 8, 2 (3 shells).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A45",
+              "difficulty": "hard",
+              "prompt": "Why does an atom's atomic number (Z) never change during ordinary chemical reactions?",
+              "options": [
+                "A. Chemical reactions involve only the sharing, loss, or gain of valence electrons; nuclear protons remain untouched",
+                "B. Protons have zero mass",
+                "C. Nuclei do not exist in chemical reactions",
+                "D. Atoms destroy their protons during bonding"
+              ],
+              "correctAnswer": "A. Chemical reactions involve only the sharing, loss, or gain of valence electrons; nuclear protons remain untouched",
+              "hint": "Chemical reactions occur via electron exchanges in outer shells; the nucleus remains unaltered.",
+              "workedSolution": "Chemical reactions occur via electron exchanges in outer shells; the nucleus remains unaltered.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A46",
+              "difficulty": "hard",
+              "prompt": "What is the maximum number of electrons that can be held in the 3rd shell (M-shell) according to 2n²?",
+              "options": [
+                "A. 8 electrons",
+                "B. 18 electrons",
+                "C. 32 electrons",
+                "D. 2 electrons"
+              ],
+              "correctAnswer": "B. 18 electrons",
+              "hint": "Using 2n² with n = 3: 2 × (3)² = 2 × 9 = 18 electrons.",
+              "workedSolution": "Using 2n² with n = 3: 2 × (3)² = 2 × 9 = 18 electrons.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A47",
+              "difficulty": "hard",
+              "prompt": "Why does potassium (Z = 19) place its 19th electron in the 4th shell (N-shell) as 2, 8, 8, 1 rather than 2, 8, 9?",
+              "options": [
+                "A. The 3rd shell becomes temporarily stable with an octet of 8 electrons before the 4th shell begins filling",
+                "B. The 3rd shell can hold only 8 electrons maximum",
+                "C. Potassium loses a proton",
+                "D. The 4th shell is closer to the nucleus"
+              ],
+              "correctAnswer": "A. The 3rd shell becomes temporarily stable with an octet of 8 electrons before the 4th shell begins filling",
+              "hint": "An outer octet represents a stable configuration, prompting the 19th and 20th electrons to enter the 4s shell (2, 8, 8, 1 and 2, 8, 8, 2).",
+              "workedSolution": "An outer octet represents a stable configuration, prompting the 19th and 20th electrons to enter the 4s shell (2, 8, 8, 1 and 2, 8, 8, 2).",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A48",
+              "difficulty": "hard",
+              "prompt": "A student accidentally mixed copper filings, salt, and ammonium chloride. Which separation sequence correctly isolates all three?",
+              "options": [
+                "A. Heat to sublime ammonium chloride → Add water to dissolve salt → Filter copper filings → Evaporate filtrate for salt",
+                "B. Magnet → Filter → Evaporate",
+                "C. Distillation → Decantation → Chromatography",
+                "D. Sieve → Centrifuge → Freeze"
+              ],
+              "correctAnswer": "A. Heat to sublime ammonium chloride → Add water to dissolve salt → Filter copper filings → Evaporate filtrate for salt",
+              "hint": "Heating sublimes ammonium chloride; adding water dissolves salt, allowing filtration of insoluble copper and evaporation of salt.",
+              "workedSolution": "Heating sublimes ammonium chloride; adding water dissolves salt, allowing filtration of insoluble copper and evaporation of salt.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A49",
+              "difficulty": "hard",
+              "prompt": "What is the chemical name and formula of the compound formed between Aluminium (Al) and Oxygen (O)?",
+              "options": [
+                "A. Aluminium oxide, Al₂O₃",
+                "B. Aluminium oxide, AlO",
+                "C. Aluminium dioxide, AlO₂",
+                "D. Dialuminium oxide, Al₃O₂"
+              ],
+              "correctAnswer": "A. Aluminium oxide, Al₂O₃",
+              "hint": "Al forms Al³⁺; Oxygen forms O²⁻. Balancing charges requires two Al³⁺ and three O²⁻, yielding Al₂O₃.",
+              "workedSolution": "Al forms Al³⁺; Oxygen forms O²⁻. Balancing charges requires two Al³⁺ and three O²⁻, yielding Al₂O₃.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_MAT_A50",
+              "difficulty": "hard",
+              "prompt": "Why do noble gases like Helium, Neon, and Argon not readily form chemical bonds or ions?",
+              "options": [
+                "A. They already possess completely filled outer valence shells (duplet/octet), making them chemically stable",
+                "B. They contain no electrons",
+                "C. Their nuclei contain only neutrons",
+                "D. They are liquids at room temperature"
+              ],
+              "correctAnswer": "A. They already possess completely filled outer valence shells (duplet/octet), making them chemically stable",
+              "hint": "Noble gases have fully saturated valence shells (He has 2; Ne and Ar have 8), preventing spontaneous electron gain, loss, or sharing.",
+              "workedSolution": "Noble gases have fully saturated valence shells (He has 2; Ne and Ar have 8), preventing spontaneous electron gain, loss, or sharing.",
+              "points": 1,
+              "learningCompetency": "B8.1.1.1.1, B8.1.1.1.2, B8.1.2.2.1, B8.1.2.2.2",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b9": {
@@ -2833,7 +5350,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.637Z"
+    "updatedAt": "2026-10-09T13:42:19.815Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5563,7 +8080,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.638Z"
+    "updatedAt": "2026-10-09T13:42:19.816Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -6043,7 +8560,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.638Z"
+    "updatedAt": "2026-10-09T13:42:19.816Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -8768,7 +11285,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.638Z"
+    "updatedAt": "2026-10-09T13:42:19.816Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -11493,7 +14010,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.638Z"
+    "updatedAt": "2026-10-09T13:42:19.816Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -14217,7 +16734,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.638Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -16943,7 +19460,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -19668,7 +22185,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -22384,7 +24901,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -25124,7 +27641,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -27900,7 +30417,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -30663,7 +33180,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.817Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -33462,7 +35979,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -33660,7 +36177,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -36444,7 +38961,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -39193,7 +41710,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -41940,7 +44457,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.639Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -44670,7 +47187,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.640Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -47405,7 +49922,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T13:23:55.640Z"
+    "updatedAt": "2026-10-09T13:42:19.818Z"
   }
 ];
 
@@ -49846,7 +52363,7 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Materials & Atomic Architecture (States of Matter, Elements, Periodic Table & Atomic Structure)",
     "order": 2,
     "notes": {
-      "summaryMarkdown": "### STRAND 1: DIVERSITY OF MATTER\n### SUB-STRAND 1: MATERIALS AND ATOMIC STRUCTURE\n### BASIC 8 (JHS 2) • TYPES OF MIXTURES, SEPARATION TECHNIQUES & ATOMIC ARCHITECTURE\n* **Content Standard B8.1.1.1:** Demonstrate knowledge of types of mixtures and their separation techniques\n* **Content Standard B8.1.2.2:** Describe atoms as composed of subatomic particles and explain the arrangement of elements in terms of atomic number\n* **Indicator B8.1.1.1.1:** Identify types of mixtures by name and characteristics\n* **Indicator B8.1.1.1.2:** Design and perform processes for separating various kinds of mixtures\n* **Indicator B8.1.2.2.1:** Describe atoms as composed of subatomic particles\n* **Indicator B8.1.2.2.2:** Explain the arrangement of elements in terms of the number of protons in the nuclei of atoms of each element\n\n---\n\n### MODULE 1: Forms of Matter and Types of Physical Mixtures\n\n#### 1. States of Matter\n* **Common States of Matter:** Matter commonly exists around us in three basic forms: **solids**, **liquids**, and **gases**.\n* **The Fourth State of Matter (Plasma):** Science also recognizes a fourth state known as **plasma**, which is super-heated gas containing charged particles (ionized gas) found naturally in lightning bolts, the Sun, and distant stars.\n\n#### 2. Scientific Definition of a Mixture\nA **mixture** is formed when two or more different substances are combined physically without any chemical bonding.\n\n**Key Physical Properties of Mixtures:**\n1. **Physical Combination:** The constituent substances are mixed physically and can be separated by physical means without chemical reactions.\n2. **No New Chemical Substance:** No new chemical compound or bond is formed during the mixing process.\n3. **Retention of Individual Properties:** The components keep their original individual chemical and physical properties (e.g., iron filings retain magnetism; salt retains salinity).\n4. **Variable Proportions:** The substances can be mixed together in any proportion or ratio (a mixture has no fixed chemical formula or stoichiometry).\n\n#### 3. Two Main Classes of Mixtures\nMixtures are classified based on the uniformity of particle distribution and visible phase boundaries:\n\n1. **Homogeneous Mixture (Uniform Mixture):**\n   * *Explanation:* A mixture where the components mix completely and evenly throughout into a single visible phase. You cannot see the separate constituent parts with your naked eyes or an optical microscope.\n   * *Everyday Examples:*\n     * Salt dissolved in water (saline solution)\n     * Sugar dissolved in water (syrup)\n     * Clean atmospheric air (uniform mixture of nitrogen, oxygen, argon, and carbon dioxide gases)\n     * Brass (copper + zinc) and Bronze (copper + tin) (solid metal alloys)\n     * Ethanol dissolved in water\n\n2. **Heterogeneous Mixture (Non-Uniform Mixture):**\n   * *Explanation:* A mixture where the substances do not mix evenly. Two or more distinct parts, phases, or layers are easily visible.\n   * *Everyday Examples:*\n     * Sand stirred in water\n     * Mixture of palm oil and water\n     * Chalk powder stirred in water\n     * Iron filings mixed with sulfur powder\n     * Smoke and dusty air (solid particles suspended in gas)\n\n#### 4. Functional Combinations of Matter\nSubstances combine physically in different physical states:\n* **Solid - Liquid Mixture:** A solid combined with a liquid. The solid may dissolve completely (like salt in water) or remain undissolved as a suspension (like gari or sand in water).\n* **Solid - Gas Mixture:** Solid particulate matter suspended in air, such as soot in chimney smoke or dust floating in the atmosphere during the Harmattan season.\n* **Solid - Solid Mixture (Alloys & Aggregates):** Metals melted and blended together to form stronger materials, such as bronze (copper + tin) and brass (copper + zinc), or dry solid aggregates like gravel mixed with cement.\n* **Gas - Liquid Mixture:** Gaseous air carrying tiny liquid droplets, such as morning fog, mist, or natural rain clouds.\n* **Gas - Gas Mixture:** Two or more gases combined physically, with the most common example being clean atmospheric air.\n* **Liquid - Liquid Mixture:** Liquids that blend completely into one layer (miscible liquids like water and alcohol) or liquids that form separate distinct layers (immiscible liquids like palm oil and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORGANIZATION OF MIXTURES (BASIC 8)</text><g transform=\"translate(25, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">HOMOGENEOUS (UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Components blend evenly into one single phase</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Individual particles cannot be seen by naked eyes</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• True Solutions: Salt solution, sugar solution</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Gaseous Mixtures: Clean atmospheric air</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Metal Alloys: Bronze (Cu + Sn), Brass (Cu + Zn)</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Miscible Liquids: Ethanol mixed in water</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">Appearance: Clear, transparent, single layer</text></g><g transform=\"translate(395, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">HETEROGENEOUS (NON-UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Components do not blend completely</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Shows two or more visible parts or layers</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Suspensions: Sand in water, chalk in water</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Immiscible Liquids: Palm oil and water, kerosene and water</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Solid: Iron filings mixed with sulfur powder</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Gas: Dusty air, wood smoke particles</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">Appearance: Cloudy or distinct separate boundaries</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.1: Classification of Matter into Homogeneous (Uniform) and Heterogeneous (Non-Uniform) Mixtures</p>\n</div>\n\n---\n\n### MODULE 2: Solutions, Colloids, Suspensions, and Liquid Behavior\n\n#### 1. Components of a True Solution\nA **solution** is a homogeneous mixture formed when one substance dissolves completely inside another liquid:\n* **Solute:** The substance that dissolves. It usually represents the smaller quantity in the mixture (e.g., table salt crystals, sugar, copper sulfate).\n* **Solvent:** The liquid substance that dissolves the solute. It usually has the larger volume in the mixture. Water is universally known as the **universal solvent** because it dissolves a wider variety of substances than any other liquid.\n\n#### 2. Categories of Solutions\n* **Aqueous Solution:** Any solution where water serves as the dissolving liquid (solvent).\n* **Unsaturated Solution:** A solution that can still dissolve more solute at a given room temperature.\n* **Saturated Solution:** A solution that contains the maximum amount of solute it can hold at that specific temperature; any extra solute added will settle at the bottom undissolved.\n* **Standard Solution:** A solution whose exact strength, concentration, or molarity is accurately known for laboratory titration.\n\n#### 3. Particle Size Comparison in Liquid Mixtures\nLiquid mixtures behave differently depending on the microscopic diameter of their dispersed particles:\n\n| Property | True Solution | Colloid | Suspension |\n| :--- | :--- | :--- | :--- |\n| **Dispersed Particle Size** | Extremely tiny (< 1 nanometer / < 1 nm) | Medium-sized (1 nm to 1,000 nm) | Large particles (> 1,000 nm) |\n| **Visual Appearance** | Completely clear and transparent | Translucent or cloudy | Opaque and turbid |\n| **Sedimentation (Settling)** | Particles never settle down | Particles stay permanently dispersed | Particles settle down as sediment when left undisturbed |\n| **Filtration Behavior** | Passes completely through filter paper without residue | Passes through ordinary filter paper | Trapped on filter paper as solid residue |\n| **Light Scattering (Tyndall Effect)** | Does not scatter light (beam invisible) | Scatters a light beam making path visible | Blocks or reflects light irregularly |\n| **Common Examples** | Salt water, sugar solution, copper(II) sulfate solution | Milk, blood, cooked liquid starch, natural fog, gelatin, mayonnaise | Muddy river water, chalk powder in water, sand in water, antacid milk of magnesia |\n\n#### 4. Liquid-Liquid Mixing Properties\n* **Miscible Liquids:** Two or more liquids that dissolve completely in each other in all proportions to form a uniform, single-phase solution (e.g., pure water and ethanol/alcohol).\n* **Immiscible Liquids:** Liquids that refuse to blend together and separate into distinct layers based on density when left undisturbed (e.g., palm oil and water, kerosene and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PARTICLE SIZES: SOLUTION vs. COLLOID vs. SUSPENSION</text><g transform=\"translate(30, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. True Solution</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Particle size: &lt; 1 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Completely homogeneous</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Transparent to light</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Does not settle over time</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">e.g., Dissolved salt or sugar</text></g><g transform=\"translate(275, 42)\"><rect width=\"210\" height=\"140\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"105\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">2. Colloid</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Particle size: 1 nm to 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Intermediate dispersion</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Scatters light beams</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Stays permanently mixed</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">e.g., Milk, blood, cooked starch</text></g><g transform=\"translate(525, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. Suspension</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particle size: &gt; 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Heterogeneous mixture</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Cloudy and opaque</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particles settle as sediment</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">e.g., Sand in water, chalk water</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.2: Comparative Particle Dimensions across True Solutions, Colloids, and Suspensions</p>\n</div>\n\n---\n\n### MODULE 3: Separation Techniques for Insoluble Solids, Magnetic Materials, and Immiscible Liquids\n\n#### 1. Fundamental Principle of Separation\nBecause mixtures are formed purely by physical combinations without chemical bonding, they can be separated back into their pure individual components by exploiting differences in their **physical properties**, such as:\n* Particle size and porosity\n* Density\n* Solubility in specific solvents\n* Magnetic attraction\n* Melting and sublimation points\n* Boiling points\n\n#### 2. Physical Separation Methods\n\n##### Method 1: Decantation\n* **Purpose:** Separating a heavy insoluble solid from a liquid after the solid settles.\n* **Procedure:** \n  1. Allow the heavy insoluble solid (e.g., coarse sand or powdered chalk) to settle at the bottom of the beaker as sediment.\n  2. Gently tip the beaker and pour out the clear supernatant liquid layer into a second container.\n  3. A glass stirring rod is placed across the lip of the beaker to guide the liquid stream smoothly without splashing.\n* **Limitation:** Decantation achieves only an incomplete separation because fine, lightweight particles remain suspended in the poured liquid.\n\n##### Method 2: Filtration\n* **Purpose:** Completely separating an insoluble solid from a liquid or gas using a porous barrier.\n* **Key Terminology:**\n  * **Residue:** The solid particles trapped and left behind on the surface of the filter paper (e.g., sand grains, chalk powder).\n  * **Filtrate:** The clear liquid that passes through the microscopic pores of the filter paper into the receiving beaker.\n* **Emergency/Indigenous Substitutes:** Clean white cotton cloth, fine sponge foam, unglazed earthenware pots, or absorbent cotton wool.\n\n##### Method 3: Magnetic Separation\n* **Purpose:** Separating magnetic materials from non-magnetic substances in a dry mixture.\n* **Procedure:** Spread the dry mixture (e.g., iron filings mixed with sulfur powder or dry sand) thinly on a sheet of paper and pass a strong bar or horseshoe magnet over it. The iron filings are attracted to the magnet, leaving non-magnetic particles behind.\n\n##### Method 4: Use of a Separating Funnel\n* **Purpose:** Separating two immiscible liquids that possess different densities.\n* **Procedure:** Pour the immiscible mixture (e.g., palm oil and water, or kerosene and water) into the glass separating funnel. Support the funnel on a retort stand and let it stand. The denser liquid (water, density $\\approx 1.0\\text{ g/cm}^3$) sinks to the bottom, while the less dense liquid (oil/kerosene, density $\\approx 0.8\\text{ g/cm}^3$) floats on top. Open the tap (stopcock) slowly to drain the water layer into a beaker, closing it immediately when the oil reaches the tap.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">LABORATORY SEPARATION SETUPS</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">FILTRATION SETUP</text><path d=\"M 120 40 L 210 40 L 175 90 L 175 125 L 155 125 L 155 90 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"128,43 202,43 165,85\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><path d=\"M 140 120 L 190 120 L 205 170 L 125 170 Z\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"55\" x2=\"150\" y2=\"55\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Residue (Chalk/Sand)</text><line x1=\"250\" y1=\"70\" x2=\"185\" y2=\"70\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"73\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0369a1\">Filter Funnel &amp; Paper</text><line x1=\"250\" y1=\"155\" x2=\"195\" y2=\"155\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"158\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Filtrate (Clear Water)</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SEPARATING FUNNEL SETUP</text><path d=\"M 140 40 Q 165 35 190 40 Q 205 75 180 105 L 172 135 L 158 135 L 150 105 Q 125 75 140 40 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M 140 40 Q 165 35 190 40 Q 200 65 185 75 L 145 75 Q 130 65 140 40 Z\" fill=\"#fef08a\"/><line x1=\"80\" y1=\"60\" x2=\"150\" y2=\"60\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"63\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Kerosene / Oil (Top Layer)</text><line x1=\"80\" y1=\"95\" x2=\"155\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"end\">Water (Denser Bottom Layer)</text><rect x=\"153\" y=\"128\" width=\"24\" height=\"10\" rx=\"2\" fill=\"#334155\"/><line x1=\"250\" y1=\"133\" x2=\"180\" y2=\"133\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0f172a\">Stopcock (Tap)</text><rect x=\"145\" y=\"155\" width=\"40\" height=\"22\" fill=\"#e0f2fe\" stroke=\"#475569\" stroke-width=\"1.2\"/><text x=\"165\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Beaker</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.3: Experimental Setups for Gravity Filtration and Liquid-Liquid Separating Funnel</p>\n</div>\n\n---\n\n### MODULE 4: Thermal and Chromatographic Separation Techniques\n\n#### 1. Thermal Separation Methods\n\n##### Method 1: Evaporation to Dryness\n* **Principle:** Exploits the difference in volatility between a non-volatile solid solute and a volatile liquid solvent.\n* **Process:** Heat the solution (e.g., sodium chloride salt dissolved in water) in a porcelain evaporating dish over a Bunsen flame. Water boils at $100^\\circ\\text{C}$ and escapes as steam, leaving dry solid salt crystals behind in the dish.\n\n##### Method 2: Sublimation\n* **Principle:** Exploits the property of substances that change directly from solid to gas when heated, without becoming a liquid first.\n* **Common Subliming Substances:** Ammonium chloride ($\\text{NH}_4\\text{Cl}$), Iodine crystals ($\\text{I}_2$), Naphthalene (camphor balls).\n* **Process:** Place the dry mixture in an evaporating dish covered with an inverted glass funnel plugged with cotton wool. On heating, the subliming substance turns into vapor and cools back into solid crystals along the cold interior walls of the funnel.\n\n##### Method 3: Simple Distillation\n* **Principle:** Recovers pure liquid solvent from a solution containing a dissolved solute, or separates liquids with widely different boiling points ($> 25^\\circ\\text{C}$).\n* **Process:** The solution is boiled in a distillation flask. The vapor rises and passes through a water-cooled **Liebig condenser**, condensing back into pure liquid (the **distillate**) collected in a receiving flask. Both solute and solvent are preserved.\n\n##### Method 4: Fractional Distillation\n* **Principle:** Separates two or more miscible liquids that have close boiling points ($< 25^\\circ\\text{C}$).\n* **Process:** A fractionating column packed with glass beads is fitted on top of the boiling flask. The liquid with the lower boiling point (e.g., ethanol at $78^\\circ\\text{C}$) distills over first, while the liquid with the higher boiling point (water at $100^\\circ\\text{C}$) condenses and drips back until all the ethanol has distilled over.\n* **Applications:** Petroleum refining, distilling local gin (*akpeteshie*) from fermented palm wine, liquefaction and distillation of air.\n\n##### Method 5: Paper Chromatography\n* **Principle:** Separates soluble colored pigments, food dyes, or ink pigments based on their different speeds of travel through a stationary paper medium propelled by a mobile solvent.\n* **Process:** A spot of ink or dye is placed on chromatography paper dipped into a solvent. More soluble and less adsorbed dyes travel faster and higher up the paper.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THERMAL SEPARATION: SUBLIMATION &amp; DISTILLATION</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SUBLIMATION APPARATUS</text><ellipse cx=\"165\" cy=\"145\" rx=\"55\" ry=\"10\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M 160 55 L 170 55 L 170 85 L 215 140 L 115 140 L 160 85 Z\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><rect x=\"158\" y=\"46\" width=\"14\" height=\"9\" rx=\"2\" fill=\"#94a3b8\"/><line x1=\"240\" y1=\"50\" x2=\"175\" y2=\"50\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"53\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Cotton Plug</text><line x1=\"240\" y1=\"95\" x2=\"185\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Solidified Crystals (Funnel Wall)</text><line x1=\"75\" y1=\"145\" x2=\"130\" y2=\"145\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"70\" y=\"148\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\" text-anchor=\"end\">China Dish &amp; Mixture</text><polygon points=\"160,175 170,175 165,158\" fill=\"#f97316\"/><text x=\"165\" y=\"182\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Burner Flame</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SIMPLE DISTILLATION ASSEMBLY</text><circle cx=\"90\" cy=\"125\" r=\"28\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"86\" y=\"80\" width=\"8\" height=\"25\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"90\" y1=\"65\" x2=\"90\" y2=\"95\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><text x=\"90\" y=\"60\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#dc2626\" text-anchor=\"middle\">Thermometer</text><path d=\"M 94 95 L 210 135\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"115\" y=\"100\" width=\"80\" height=\"28\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1\" opacity=\"0.8\" transform=\"rotate(19, 155, 114)\"/><text x=\"155\" y=\"102\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Liebig Condenser (Cool Water)</text><path d=\"M 225 145 L 245 145 L 255 175 L 215 175 Z\" fill=\"#f1f5f9\" stroke=\"#334155\" stroke-width=\"1.3\"/><text x=\"235\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Distillate</text><polygon points=\"85,172 95,172 90,157\" fill=\"#f97316\"/><text x=\"90\" y=\"180\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Heat</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4: Thermal Separation Assemblies: Inverted Funnel Sublimation and Liebig Condenser Simple Distillation</p>\n</div>\n\n---\n\n### MODULE 5: Subatomic Particles and the Architecture of the Atom\n\n#### 1. Fundamental Chemical Definitions\n* **Atom:** The smallest indivisible particle of a chemical element that can take part in a chemical reaction. Examples include Hydrogen ($\\text{H}$), Carbon ($\\text{C}$), and Sodium ($\\text{Na}$).\n* **Molecule:** A group of two or more atoms chemically combined together that can exist independently (e.g., $\\text{H}_2$, $\\text{O}_2$, $\\text{CO}_2$, $\\text{H}_2\\text{O}$).\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### 2. Microscopic Architecture of the Atom\nEvery atom consists of two distinct physical zones:\n1. **The Nucleus:** The dense, heavy core located right at the geometric center of the atom. It contains almost all the mass of the atom and houses two subatomic particles: **protons** and **neutrons**.\n2. **Electron Shells (Energy Levels):** Concentric circular pathways or orbital clouds surrounding the nucleus where **electrons** revolve at high velocities.\n\n#### 3. Summary of the Three Subatomic Particles\n\n| Particle | Electrical Charge | Relative Mass | Location in Atom | Mobility |\n| :--- | :---: | :---: | :--- | :--- |\n| **Proton ($p^+$)** | Positive ($+1$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Neutron ($n^0$)** | Neutral / Zero ($0$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Electron ($e^-$)** | Negative ($-1$) | Negligible ($\\approx 1/1840\\text{ a.m.u.}$) | Revolves in outer shells | Highly mobile |\n\n#### 4. Key Contrasts: Protons vs. Electrons\n* **Charge:** Protons carry a unit positive charge ($+1$), while electrons carry a unit negative charge ($-1$).\n* **Location:** Protons are locked in the central nucleus; electrons orbit in the peripheral electron shells.\n* **Mass:** Protons possess substantial mass ($1\\text{ a.m.u.}$); electrons have negligible mass ($\\approx 1/1840\\text{ a.m.u.}$).\n* **Mobility:** Protons are tightly bound and immobile; electrons are mobile and participate in chemical bonding and electrical conduction.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE STRUCTURE OF AN ATOM</text><g transform=\"translate(180, 40)\"><circle cx=\"140\" cy=\"110\" r=\"90\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"55\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"26\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1.5\"/><circle cx=\"134\" cy=\"105\" r=\"8\" fill=\"#ef4444\"/><text x=\"134\" y=\"108\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">p⁺</text><circle cx=\"146\" cy=\"115\" r=\"8\" fill=\"#3b82f6\"/><text x=\"146\" y=\"118\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">n⁰</text><circle cx=\"140\" cy=\"55\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"58\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"140\" cy=\"165\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"50\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"50\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"230\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"230\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text></g><g transform=\"translate(500, 60)\"><rect width=\"220\" height=\"170\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Key Components</text><circle cx=\"25\" cy=\"50\" r=\"6\" fill=\"#ef4444\"/><text x=\"40\" y=\"53\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Proton (p⁺): Positive charge</text><circle cx=\"25\" cy=\"80\" r=\"6\" fill=\"#3b82f6\"/><text x=\"40\" y=\"83\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Neutron (n⁰): No charge</text><circle cx=\"25\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"40\" y=\"113\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Electron (e⁻): Negative charge</text><path d=\"M 20 135 L 30 135\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"40\" y=\"139\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e293b\">Central Nucleus: (p⁺ + n⁰)</text><path d=\"M 15 155 L 35 155\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"2,2\"/><text x=\"40\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#64748b\">Orbits / Shells: Host electrons</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.5: Detailed Subatomic Anatomy of the Atom showing Nucleus (Protons/Neutrons) and Electron Shells</p>\n</div>\n\n---\n\n### MODULE 6: Atomic Number, Mass Number, and Nuclide Notation\n\n#### 1. Core Concepts\n* **Atomic Number ($Z$):** The total number of protons found in the nucleus of an atom. The atomic number gives an element its unique chemical identity and defines its position on the Periodic Table. In a neutral (uncharged) atom, the number of protons equals the number of electrons:\n  $$\\text{Number of Protons } (p^+) = \\text{Number of Electrons } (e^-) = Z$$\n* **Mass Number ($A$):** The combined total count of protons and neutrons packed inside the nucleus of an atom (also called the nucleon number):\n  $$A = Z + n$$\n* **Calculating Neutron Count ($n$):** To find the number of neutrons present in an atom, subtract the atomic number ($Z$) from the mass number ($A$):\n  $$n = A - Z$$\n* **Nuclide:** A specific species of an atom characterized by a defined atomic number ($Z$) and mass number ($A$).\n\n#### 2. Standard Nuclide Notation\nIn international chemical shorthand, a nuclide is written as:\n$$^A_Z\\text{X}$$\n* $\\text{X}$ = The chemical symbol of the element (e.g., $\\text{Na}$, $\\text{Cl}$, $\\text{C}$, $\\text{K}$).\n* $A$ (superscript) = **Mass Number** (total nucleons: protons + neutrons).\n* $Z$ (subscript) = **Atomic Number** (total number of positive protons).\n\n#### 3. Step-by-Step Computational Examples\n* **Example 1: Potassium ($^{39}_{19}\\text{K}$):**\n  * Protons = Atomic Number ($Z$) = $19$\n  * Electrons = Protons (neutral atom) = $19$\n  * Neutrons = $A - Z = 39 - 19 = 20$ neutrons\n* **Example 2: Carbon-13 ($^{13}_6\\text{C}$):**\n  * Protons = Atomic Number ($Z$) = $6$\n  * Electrons = Protons (neutral atom) = $6$\n  * Neutrons = $A - Z = 13 - 6 = 7$ neutrons\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"180\" viewBox=\"0 0 760 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"180\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">HOW TO READ NUCLIDE NOTATION</text><g transform=\"translate(150, 45)\"><rect width=\"180\" height=\"110\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"95\" y=\"72\" font-family=\"sans-serif\" font-size=\"42\" font-weight=\"bold\" fill=\"#1e40af\">X</text><text x=\"35\" y=\"48\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#dc2626\">A</text><text x=\"35\" y=\"92\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#16a34a\">Z</text></g><g transform=\"translate(360, 45)\"><rect width=\"280\" height=\"110\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"15\" y=\"32\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">A = Mass Number (Protons + Neutrons)</text><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\">X = Chemical Symbol of Element</text><text x=\"15\" y=\"84\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#16a34a\">Z = Atomic Number (Proton Count)</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\">Rule: Neutrons (n) = A - Z</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.6: Standard Nuclide Representation and Structural Arithmetic Rules</p>\n</div>\n\n---\n\n### MODULE 7: Electron Configuration: Shells and Rules of Arrangement\n\n#### 1. Principles of Electron Shell Arrangement\nElectrons are arranged around the nucleus in specific circular concentric orbits called **energy levels** or **electron shells**. The systematic distribution of electrons across these concentric shells is termed the **electron configuration**.\n\n#### 2. Shell Naming and Capacity Rules\n* **Shell Designations:**\n  * $1^{\\text{st}}$ shell closest to the nucleus = **K-shell** ($n = 1$)\n  * $2^{\\text{nd}}$ shell = **L-shell** ($n = 2$)\n  * $3^{\\text{rd}}$ shell = **M-shell** ($n = 3$)\n  * $4^{\\text{th}}$ shell = **N-shell** ($n = 4$)\n* **The $2n^2$ Maximum Capacity Law:**\n  The maximum number of electrons that any shell can accommodate is determined by:\n  $$\\text{Capacity} = 2n^2$$\n  * K-shell ($n=1$): $2(1)^2 = 2$ electrons maximum\n  * L-shell ($n=2$): $2(2)^2 = 8$ electrons maximum\n  * M-shell ($n=3$): $2(3)^2 = 18$ electrons maximum (holds up to 8 in JHS 2 first 20 elements)\n  * N-shell ($n=4$): $2(4)^2 = 32$ electrons maximum\n* **The JHS 2 Filling Pattern for the First 20 Elements:**\n  The shells fill systematically in the orderly pattern: **2, 8, 8, 2** (2 in the 1st shell, up to 8 in the 2nd, up to 8 in the 3rd, and up to 2 in the 4th).\n\n#### 3. Canonical Electron Configurations of the First Twenty Elements\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Valency | Chemical Classification |\n| :---: | :--- | :---: | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | $1$ | $1$ | $1$ | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | $2$ | $2$ (Duplet) | $0$ | Noble Gas (Inert) |\n| **3** | Lithium | $\\text{Li}$ | $2, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **4** | Beryllium | $\\text{Be}$ | $2, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **5** | Boron | $\\text{B}$ | $2, 3$ | $3$ | $3$ | Metalloid (Semi-metal) |\n| **6** | Carbon | $\\text{C}$ | $2, 4$ | $4$ | $4$ | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | $2, 5$ | $5$ | $3$ | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | $2, 6$ | $6$ | $2$ | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | $2, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **10** | Neon | $\\text{Ne}$ | $2, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **11** | Sodium | $\\text{Na}$ | $2, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **12** | Magnesium | $\\text{Mg}$ | $2, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **13** | Aluminium | $\\text{Al}$ | $2, 8, 3$ | $3$ | $3$ | Metal (Group 13) |\n| **14** | Silicon | $\\text{Si}$ | $2, 8, 4$ | $4$ | $4$ | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | $2, 8, 5$ | $5$ | $3, 5$ | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | $2, 8, 6$ | $6$ | $2$ | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | $2, 8, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **18** | Argon | $\\text{Ar}$ | $2, 8, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **19** | Potassium | $\\text{K}$ | $2, 8, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **20** | Calcium | $\\text{Ca}$ | $2, 8, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ELECTRON CONFIGURATION OF SODIUM AND CHLORINE ATOMS</text><g transform=\"translate(130, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Na (11p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"4.5\" fill=\"#ea580c\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Sodium Atom (2, 8, 1)</text></g><g transform=\"translate(440, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Cl (17p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"90\" cy=\"150\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"160\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"30\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"140\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Chlorine Atom (2, 8, 7)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.7: Concentric Bohr Electron Shell Configurations for Sodium (2, 8, 1) and Chlorine (2, 8, 7)</p>\n</div>\n\n---\n\n### MODULE 8: Ion Formation: How Neutral Atoms Become Charged Particles\n\n#### 1. What is an Ion?\nAn **ion** is an electrically charged atom (or group of atoms) formed when a neutral atom either **loses** or **gains** one or more valence electrons.\n\n* **Why Do Atoms Form Ions?** Atoms gain or lose electrons to attain a stable, completely filled outermost energy shell (a stable duplet of 2 electrons for Helium, or a stable octet of 8 electrons like Neon and Argon).\n* **Electrical Neutrality of Free Atoms:** In an isolated neutral atom, the number of positive protons exactly equals the number of negative electrons ($\text{Net charge} = 0$).\n\n#### 2. The Two Classes of Ions\n\n##### 1. Cations (Positively Charged Ions):\n* **Formation:** Formed when a metal atom **loses** one, two, or three valence electrons.\n* **Mechanism:** Because electrons are lost while the nuclear proton count remains unchanged, the number of positive protons becomes greater than the number of negative electrons ($p^+ > e^-$).\n* **Symbol Notation:** Written with a positive superscript sign ($+$), e.g., $\\text{Na}^+$, $\\text{K}^+$, $\\text{Mg}^{2+}$, $\\text{Ca}^{2+}$, $\\text{Al}^{3+}$.\n* **Case Study — Sodium Ion ($\\text{Na}^+$):**\n  * Neutral Sodium atom ($_{11}\\text{Na}$): Configuration = $2, 8, 1$ ($11p^+, 11e^-$). Net charge = $0$.\n  * Sodium loses its $1$ valence electron: $\\text{Na} \\rightarrow \\text{Na}^+ + e^-$.\n  * Sodium cation ($\\text{Na}^+$): Configuration = $2, 8$ ($11p^+, 10e^-$). Net charge = $+1$.\n\n##### 2. Anions (Negatively Charged Ions):\n* **Formation:** Formed when a non-metal atom **gains** one, two, or three electrons into its valence shell.\n* **Mechanism:** The atom acquires extra negative electrons while the proton count stays constant, resulting in more electrons than protons ($e^- > p^+$).\n* **Symbol Notation:** Written with a negative superscript sign ($-$), e.g., $\\text{Cl}^-$, $\\text{O}^{2-}$, $\\text{N}^{3-}$.\n* **Case Study — Chloride Ion ($\\text{Cl}^-$):**\n  * Neutral Chlorine atom ($_{17}\\text{Cl}$): Configuration = $2, 8, 7$ ($17p^+, 17e^-$). Net charge = $0$.\n  * Chlorine gains $1$ electron: $\\text{Cl} + e^- \\rightarrow \\text{Cl}^-$.\n  * Chloride anion ($\\text{Cl}^-$): Configuration = $2, 8, 8$ ($17p^+, 18e^-$). Net charge = $-1$.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ION FORMATION: TRANSFER OF AN ELECTRON</text><g transform=\"translate(50, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Neutral Sodium (Na)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Configuration: 2, 8, 1</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Electrons = 11 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Net Charge = 0 (Neutral)</text></g><g transform=\"translate(235, 95)\"><path d=\"M 10 15 L 60 15\" stroke=\"#ea580c\" stroke-width=\"2\"/><polygon points=\"58,10 68,15 58,20\" fill=\"#ea580c\"/><text x=\"38\" y=\"8\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Loses 1 e⁻</text></g><g transform=\"translate(320, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Sodium Cation (Na⁺)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Configuration: 2, 8</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Electrons = 10 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\" text-anchor=\"middle\">Net Charge = +1 (Cation)</text></g><g transform=\"translate(510, 45)\"><rect width=\"200\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"100\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Chloride Anion (Cl⁻)</text><text x=\"100\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Configuration: 2, 8, 8</text><text x=\"100\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Protons = 17 (+)</text><text x=\"100\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Electrons = 18 (-)</text><text x=\"100\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"middle\">Net Charge = -1 (Anion)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.8: Ion Formation Mechanics: Electron Transfer from Sodium (Cation) to Chlorine (Anion)</p>\n</div>\n",
+      "summaryMarkdown": "### STRAND 1: DIVERSITY OF MATTER\n### SUB-STRAND 1: MATERIALS AND ATOMIC STRUCTURE\n### BASIC 8 (JHS 2) • TYPES OF MIXTURES, SEPARATION TECHNIQUES & ATOMIC ARCHITECTURE\n* **Content Standard B8.1.1.1:** Demonstrate knowledge of types of mixtures and their separation techniques\n* **Content Standard B8.1.2.2:** Describe atoms as composed of subatomic particles and explain the arrangement of elements in terms of atomic number\n* **Indicator B8.1.1.1.1:** Identify types of mixtures by name and characteristics\n* **Indicator B8.1.1.1.2:** Design and perform processes for separating various kinds of mixtures\n* **Indicator B8.1.2.2.1:** Describe atoms as composed of subatomic particles\n* **Indicator B8.1.2.2.2:** Explain the arrangement of elements in terms of the number of protons in the nuclei of atoms of each element\n\n---\n\n### MODULE 1: Forms of Matter and Types of Physical Mixtures\n\n#### 1. States of Matter\n* **Common States of Matter:** Matter commonly exists around us in three basic forms: **solids**, **liquids**, and **gases**.\n* **The Fourth State of Matter (Plasma):** Science also recognizes a fourth state known as **plasma**, which is super-heated gas containing charged particles (ionized gas) found naturally in lightning bolts, the Sun, and distant stars.\n\n#### 2. Scientific Definition of a Mixture\nA **mixture** is formed when two or more different substances are combined physically without any chemical bonding.\n\n**Key Physical Properties of Mixtures:**\n1. **Physical Combination:** The constituent substances are mixed physically and can be separated by physical means without chemical reactions.\n2. **No New Chemical Substance:** No new chemical compound or bond is formed during the mixing process.\n3. **Retention of Individual Properties:** The components keep their original individual chemical and physical properties (e.g., iron filings retain magnetism; salt retains salinity).\n4. **Variable Proportions:** The substances can be mixed together in any proportion or ratio (a mixture has no fixed chemical formula or stoichiometry).\n\n#### 3. Two Main Classes of Mixtures\nMixtures are classified based on the uniformity of particle distribution and visible phase boundaries:\n\n1. **Homogeneous Mixture (Uniform Mixture):**\n   * *Explanation:* A mixture where the components mix completely and evenly throughout into a single visible phase. You cannot see the separate constituent parts with your naked eyes or an optical microscope.\n   * *Everyday Examples:*\n     * Salt dissolved in water (saline solution)\n     * Sugar dissolved in water (syrup)\n     * Clean atmospheric air (uniform mixture of nitrogen, oxygen, argon, and carbon dioxide gases)\n     * Brass (copper + zinc) and Bronze (copper + tin) (solid metal alloys)\n     * Ethanol dissolved in water\n\n2. **Heterogeneous Mixture (Non-Uniform Mixture):**\n   * *Explanation:* A mixture where the substances do not mix evenly. Two or more distinct parts, phases, or layers are easily visible.\n   * *Everyday Examples:*\n     * Sand stirred in water\n     * Mixture of palm oil and water\n     * Chalk powder stirred in water\n     * Iron filings mixed with sulfur powder\n     * Smoke and dusty air (solid particles suspended in gas)\n\n#### 4. Functional Combinations of Matter\nSubstances combine physically in different physical states:\n* **Solid - Liquid Mixture:** A solid combined with a liquid. The solid may dissolve completely (like salt in water) or remain undissolved as a suspension (like gari or sand in water).\n* **Solid - Gas Mixture:** Solid particulate matter suspended in air, such as soot in chimney smoke or dust floating in the atmosphere during the Harmattan season.\n* **Solid - Solid Mixture (Alloys & Aggregates):** Metals melted and blended together to form stronger materials, such as bronze (copper + tin) and brass (copper + zinc), or dry solid aggregates like gravel mixed with cement.\n* **Gas - Liquid Mixture:** Gaseous air carrying tiny liquid droplets, such as morning fog, mist, or natural rain clouds.\n* **Gas - Gas Mixture:** Two or more gases combined physically, with the most common example being clean atmospheric air.\n* **Liquid - Liquid Mixture:** Liquids that blend completely into one layer (miscible liquids like water and alcohol) or liquids that form separate distinct layers (immiscible liquids like palm oil and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ORGANIZATION OF MIXTURES (BASIC 8)</text><g transform=\"translate(25, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">HOMOGENEOUS (UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Components blend evenly into one single phase</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Individual particles cannot be seen by naked eyes</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• True Solutions: Salt solution, sugar solution</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Gaseous Mixtures: Clean atmospheric air</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Metal Alloys: Bronze (Cu + Sn), Brass (Cu + Zn)</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Miscible Liquids: Ethanol mixed in water</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">Appearance: Clear, transparent, single layer</text></g><g transform=\"translate(395, 45)\"><rect width=\"340\" height=\"215\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><text x=\"170\" y=\"24\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">HETEROGENEOUS (NON-UNIFORM)</text><line x1=\"15\" y1=\"35\" x2=\"325\" y2=\"35\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Components do not blend completely</text><text x=\"15\" y=\"80\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Shows two or more visible parts or layers</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Suspensions: Sand in water, chalk in water</text><text x=\"15\" y=\"124\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Immiscible Liquids: Palm oil and water, kerosene and water</text><text x=\"15\" y=\"146\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Solid: Iron filings mixed with sulfur powder</text><text x=\"15\" y=\"168\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Solid-Gas: Dusty air, wood smoke particles</text><text x=\"15\" y=\"195\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">Appearance: Cloudy or distinct separate boundaries</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.1: Classification of Matter into Homogeneous (Uniform) and Heterogeneous (Non-Uniform) Mixtures</p>\n</div>\n\n---\n\n### MODULE 2: Solutions, Colloids, Suspensions, and Liquid Behavior\n\n#### 1. Components of a True Solution\nA **solution** is a homogeneous mixture formed when one substance dissolves completely inside another liquid:\n* **Solute:** The substance that dissolves. It usually represents the smaller quantity in the mixture (e.g., table salt crystals, sugar, copper sulfate).\n* **Solvent:** The liquid substance that dissolves the solute. It usually has the larger volume in the mixture. Water is universally known as the **universal solvent** because it dissolves a wider variety of substances than any other liquid.\n\n#### 2. Categories of Solutions\n* **Aqueous Solution:** Any solution where water serves as the dissolving liquid (solvent).\n* **Unsaturated Solution:** A solution that can still dissolve more solute at a given room temperature.\n* **Saturated Solution:** A solution that contains the maximum amount of solute it can hold at that specific temperature; any extra solute added will settle at the bottom undissolved.\n* **Standard Solution:** A solution whose exact strength, concentration, or molarity is accurately known for laboratory titration.\n\n#### 3. Particle Size Comparison in Liquid Mixtures\nLiquid mixtures behave differently depending on the microscopic diameter of their dispersed particles:\n\n| Property | True Solution | Colloid | Suspension |\n| :--- | :--- | :--- | :--- |\n| **Dispersed Particle Size** | Extremely tiny (< 1 nanometer / < 1 nm) | Medium-sized (1 nm to 1,000 nm) | Large particles (> 1,000 nm) |\n| **Visual Appearance** | Completely clear and transparent | Translucent or cloudy | Opaque and turbid |\n| **Sedimentation (Settling)** | Particles never settle down | Particles stay permanently dispersed | Particles settle down as sediment when left undisturbed |\n| **Filtration Behavior** | Passes completely through filter paper without residue | Passes through ordinary filter paper | Trapped on filter paper as solid residue |\n| **Light Scattering (Tyndall Effect)** | Does not scatter light (beam invisible) | Scatters a light beam making path visible | Blocks or reflects light irregularly |\n| **Common Examples** | Salt water, sugar solution, copper(II) sulfate solution | Milk, blood, cooked liquid starch, natural fog, gelatin, mayonnaise | Muddy river water, chalk powder in water, sand in water, antacid milk of magnesia |\n\n#### 4. Liquid-Liquid Mixing Properties\n* **Miscible Liquids:** Two or more liquids that dissolve completely in each other in all proportions to form a uniform, single-phase solution (e.g., pure water and ethanol/alcohol).\n* **Immiscible Liquids:** Liquids that refuse to blend together and separate into distinct layers based on density when left undisturbed (e.g., palm oil and water, kerosene and water).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">PARTICLE SIZES: SOLUTION vs. COLLOID vs. SUSPENSION</text><g transform=\"translate(30, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">1. True Solution</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Particle size: &lt; 1 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Completely homogeneous</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Transparent to light</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Does not settle over time</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">e.g., Dissolved salt or sugar</text></g><g transform=\"translate(275, 42)\"><rect width=\"210\" height=\"140\" rx=\"6\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><text x=\"105\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"middle\">2. Colloid</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Particle size: 1 nm to 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Intermediate dispersion</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Scatters light beams</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#713f12\">• Stays permanently mixed</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\">e.g., Milk, blood, cooked starch</text></g><g transform=\"translate(525, 42)\"><rect width=\"205\" height=\"140\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"102\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. Suspension</text><text x=\"12\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particle size: &gt; 1000 nm</text><text x=\"12\" y=\"60\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Heterogeneous mixture</text><text x=\"12\" y=\"78\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Cloudy and opaque</text><text x=\"12\" y=\"96\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\">• Particles settle as sediment</text><text x=\"12\" y=\"120\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">e.g., Sand in water, chalk water</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.2: Comparative Particle Dimensions across True Solutions, Colloids, and Suspensions</p>\n</div>\n\n---\n\n### MODULE 3: Separation Techniques for Insoluble Solids, Magnetic Materials, and Immiscible Liquids\n\n#### 1. Fundamental Principle of Separation\nBecause mixtures are formed purely by physical combinations without chemical bonding, they can be separated back into their pure individual components by exploiting differences in their **physical properties**, such as:\n* Particle size and porosity\n* Density\n* Solubility in specific solvents\n* Magnetic attraction\n* Melting and sublimation points\n* Boiling points\n\n#### 2. Physical Separation Methods\n\n##### Method 1: Decantation\n* **Purpose:** Separating a heavy insoluble solid from a liquid after the solid settles.\n* **Procedure:** \n  1. Allow the heavy insoluble solid (e.g., coarse sand or powdered chalk) to settle at the bottom of the beaker as sediment.\n  2. Gently tip the beaker and pour out the clear supernatant liquid layer into a second container.\n  3. A glass stirring rod is placed across the lip of the beaker to guide the liquid stream smoothly without splashing.\n* **Limitation:** Decantation achieves only an incomplete separation because fine, lightweight particles remain suspended in the poured liquid.\n\n##### Method 2: Filtration\n* **Purpose:** Completely separating an insoluble solid from a liquid or gas using a porous barrier.\n* **Key Terminology:**\n  * **Residue:** The solid particles trapped and left behind on the surface of the filter paper (e.g., sand grains, chalk powder).\n  * **Filtrate:** The clear liquid that passes through the microscopic pores of the filter paper into the receiving beaker.\n* **Emergency/Indigenous Substitutes:** Clean white cotton cloth, fine sponge foam, unglazed earthenware pots, or absorbent cotton wool.\n\n##### Method 3: Magnetic Separation\n* **Purpose:** Separating magnetic materials from non-magnetic substances in a dry mixture.\n* **Procedure:** Spread the dry mixture (e.g., iron filings mixed with sulfur powder or dry sand) thinly on a sheet of paper and pass a strong bar or horseshoe magnet over it. The iron filings are attracted to the magnet, leaving non-magnetic particles behind.\n\n##### Method 4: Use of a Separating Funnel\n* **Purpose:** Separating two immiscible liquids that possess different densities.\n* **Procedure:** Pour the immiscible mixture (e.g., palm oil and water, or kerosene and water) into the glass separating funnel. Support the funnel on a retort stand and let it stand. The denser liquid (water, density $\\approx 1.0\\text{ g/cm}^3$) sinks to the bottom, while the less dense liquid (oil/kerosene, density $\\approx 0.8\\text{ g/cm}^3$) floats on top. Open the tap (stopcock) slowly to drain the water layer into a beaker, closing it immediately when the oil reaches the tap.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">LABORATORY SEPARATION SETUPS</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">FILTRATION SETUP</text><path d=\"M 120 40 L 210 40 L 175 90 L 175 125 L 155 125 L 155 90 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"128,43 202,43 165,85\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><path d=\"M 140 120 L 190 120 L 205 170 L 125 170 Z\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1.5\"/><line x1=\"80\" y1=\"55\" x2=\"150\" y2=\"55\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"58\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Residue (Chalk/Sand)</text><line x1=\"250\" y1=\"70\" x2=\"185\" y2=\"70\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"73\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0369a1\">Filter Funnel &amp; Paper</text><line x1=\"250\" y1=\"155\" x2=\"195\" y2=\"155\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"158\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\">Filtrate (Clear Water)</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SEPARATING FUNNEL SETUP</text><path d=\"M 140 40 Q 165 35 190 40 Q 205 75 180 105 L 172 135 L 158 135 L 150 105 Q 125 75 140 40 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M 140 40 Q 165 35 190 40 Q 200 65 185 75 L 145 75 Q 130 65 140 40 Z\" fill=\"#fef08a\"/><line x1=\"80\" y1=\"60\" x2=\"150\" y2=\"60\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"63\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Kerosene / Oil (Top Layer)</text><line x1=\"80\" y1=\"95\" x2=\"155\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"75\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"end\">Water (Denser Bottom Layer)</text><rect x=\"153\" y=\"128\" width=\"24\" height=\"10\" rx=\"2\" fill=\"#334155\"/><line x1=\"250\" y1=\"133\" x2=\"180\" y2=\"133\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"255\" y=\"136\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#0f172a\">Stopcock (Tap)</text><rect x=\"145\" y=\"155\" width=\"40\" height=\"22\" fill=\"#e0f2fe\" stroke=\"#475569\" stroke-width=\"1.2\"/><text x=\"165\" y=\"170\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Beaker</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.3: Experimental Setups for Gravity Filtration and Liquid-Liquid Separating Funnel</p>\n</div>\n\n---\n\n### MODULE 4: Thermal and Chromatographic Separation Techniques\n\n#### 1. Thermal Separation Methods\n\n##### Method 1: Evaporation to Dryness\n* **Principle:** Exploits the difference in volatility between a non-volatile solid solute and a volatile liquid solvent.\n* **Process:** Heat the solution (e.g., sodium chloride salt dissolved in water) in a porcelain evaporating dish over a Bunsen flame. Water boils at $100^\\circ\\text{C}$ and escapes as steam, leaving dry solid salt crystals behind in the dish.\n\n##### Method 2: Sublimation\n* **Principle:** Exploits the property of substances that change directly from solid to gas when heated, without becoming a liquid first.\n* **Common Subliming Substances:** Ammonium chloride ($\\text{NH}_4\\text{Cl}$), Iodine crystals ($\\text{I}_2$), Naphthalene (camphor balls).\n* **Process:** Place the dry mixture in an evaporating dish covered with an inverted glass funnel plugged with cotton wool. On heating, the subliming substance turns into vapor and cools back into solid crystals along the cold interior walls of the funnel.\n\n##### Method 3: Simple Distillation\n* **Principle:** Recovers pure liquid solvent from a solution containing a dissolved solute, or separates liquids with widely different boiling points ($> 25^\\circ\\text{C}$).\n* **Process:** The solution is boiled in a distillation flask. The vapor rises and passes through a water-cooled **Liebig condenser**, condensing back into pure liquid (the **distillate**) collected in a receiving flask. Both solute and solvent are preserved.\n\n##### Method 4: Fractional Distillation\n* **Principle:** Separates two or more miscible liquids that have close boiling points ($< 25^\\circ\\text{C}$).\n* **Process:** A fractionating column packed with glass beads is fitted on top of the boiling flask. The liquid with the lower boiling point (e.g., ethanol at $78^\\circ\\text{C}$) distills over first, while the liquid with the higher boiling point (water at $100^\\circ\\text{C}$) condenses and drips back until all the ethanol has distilled over.\n* **Applications:** Petroleum refining, distilling local gin (*akpeteshie*) from fermented palm wine, liquefaction and distillation of air.\n\n##### Method 5: Paper Chromatography\n* **Principle:** Separates soluble colored pigments, food dyes, or ink pigments based on their different speeds of travel through a stationary paper medium propelled by a mobile solvent.\n* **Process:** A spot of ink or dye is placed on chromatography paper dipped into a solvent. More soluble and less adsorbed dyes travel faster and higher up the paper.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"240\" viewBox=\"0 0 760 240\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"240\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THERMAL SEPARATION: SUBLIMATION &amp; DISTILLATION</text><g transform=\"translate(30, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SUBLIMATION APPARATUS</text><ellipse cx=\"165\" cy=\"145\" rx=\"55\" ry=\"10\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M 160 55 L 170 55 L 170 85 L 215 140 L 115 140 L 160 85 Z\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><rect x=\"158\" y=\"46\" width=\"14\" height=\"9\" rx=\"2\" fill=\"#94a3b8\"/><line x1=\"240\" y1=\"50\" x2=\"175\" y2=\"50\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"53\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#475569\">Cotton Plug</text><line x1=\"240\" y1=\"95\" x2=\"185\" y2=\"95\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"245\" y=\"98\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#1e40af\">Solidified Crystals (Funnel Wall)</text><line x1=\"75\" y1=\"145\" x2=\"130\" y2=\"145\" stroke=\"#64748b\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><text x=\"70\" y=\"148\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#334155\" text-anchor=\"end\">China Dish &amp; Mixture</text><polygon points=\"160,175 170,175 165,158\" fill=\"#f97316\"/><text x=\"165\" y=\"182\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Burner Flame</text></g><g transform=\"translate(400, 38)\"><rect width=\"330\" height=\"185\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"20\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SIMPLE DISTILLATION ASSEMBLY</text><circle cx=\"90\" cy=\"125\" r=\"28\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"86\" y=\"80\" width=\"8\" height=\"25\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"90\" y1=\"65\" x2=\"90\" y2=\"95\" stroke=\"#dc2626\" stroke-width=\"1.5\"/><text x=\"90\" y=\"60\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#dc2626\" text-anchor=\"middle\">Thermometer</text><path d=\"M 94 95 L 210 135\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"115\" y=\"100\" width=\"80\" height=\"28\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1\" opacity=\"0.8\" transform=\"rotate(19, 155, 114)\"/><text x=\"155\" y=\"102\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Liebig Condenser (Cool Water)</text><path d=\"M 225 145 L 245 145 L 255 175 L 215 175 Z\" fill=\"#f1f5f9\" stroke=\"#334155\" stroke-width=\"1.3\"/><text x=\"235\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#0284c7\" text-anchor=\"middle\">Distillate</text><polygon points=\"85,172 95,172 90,157\" fill=\"#f97316\"/><text x=\"90\" y=\"180\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#ea580c\" text-anchor=\"middle\">Heat</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4: Thermal Separation Assemblies: Inverted Funnel Sublimation and Liebig Condenser Simple Distillation</p>\n</div>\n\n#### Examination Drawing Guide: Fully Annotated Separation Assemblies\nStudents must be able to recognize, label, and sketch the four primary separation assemblies tested in Ghanaian examinations:\n1. **Filtration:** Retort stand, conical flask, filter funnel, filter paper, residue, and filtrate.\n2. **Separating Funnel:** Clamped funnel, denser liquid (bottom layer), less dense liquid (top layer), and stopcock tap.\n3. **Sublimation:** Tripod stand, wire gauze, china dish, inverted glass funnel, cotton wool plug, and crystalline sublimate.\n4. **Simple Distillation:** Distillation flask, thermometer, Liebig condenser with countercurrent cooling water (inlet at lower end, outlet at upper end), and receiving flask collecting pure distillate.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"820\" height=\"620\" viewBox=\"0 0 820 620\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"820\" height=\"620\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"410\" y=\"26\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">STANDARD LABORATORY SEPARATION APPARATUS (EXAM REFERENCE)</text><g transform=\"translate(25, 45)\"><rect width=\"370\" height=\"265\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">1. FILTRATION ASSEMBLY</text><line x1=\"50\" y1=\"35\" x2=\"50\" y2=\"245\" stroke=\"#334155\" stroke-width=\"4\"/><line x1=\"25\" y1=\"245\" x2=\"100\" y2=\"245\" stroke=\"#334155\" stroke-width=\"5\"/><line x1=\"50\" y1=\"100\" x2=\"130\" y2=\"100\" stroke=\"#475569\" stroke-width=\"3\"/><rect x=\"125\" y=\"94\" width=\"14\" height=\"12\" rx=\"2\" fill=\"#64748b\"/><path d=\"M 105 50 L 175 50 L 148 95 L 148 135 L 132 135 L 132 95 Z\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><polygon points=\"112,53 168,53 140,90\" fill=\"#fef08a\" stroke=\"#ca8a04\" stroke-width=\"1\"/><path d=\"M 115 130 L 165 130 L 180 205 L 100 205 Z\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.5\"/><path d=\"M 104 180 L 176 180 L 179 203 L 101 203 Z\" fill=\"#bae6fd\"/><line x1=\"205\" y1=\"45\" x2=\"145\" y2=\"65\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><polygon points=\"145,65 152,60 150,67\" fill=\"#ef4444\"/><text x=\"210\" y=\"48\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#b91c1c\">Residue (e.g. Chalk / Sand)</text><line x1=\"205\" y1=\"80\" x2=\"162\" y2=\"75\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"162,75 168,71 169,78\" fill=\"#0284c7\"/><text x=\"210\" y=\"83\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0369a1\">Filter Paper inside Funnel</text><line x1=\"205\" y1=\"115\" x2=\"150\" y2=\"115\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"150,115 156,111 156,119\" fill=\"#0284c7\"/><text x=\"210\" y=\"118\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0369a1\">Stem of Funnel</text><line x1=\"205\" y1=\"170\" x2=\"155\" y2=\"170\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"155,170 161,166 161,174\" fill=\"#475569\"/><text x=\"210\" y=\"173\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">Conical Flask</text><line x1=\"205\" y1=\"195\" x2=\"150\" y2=\"195\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"150,195 156,191 156,199\" fill=\"#0284c7\"/><text x=\"210\" y=\"198\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Filtrate (Clear Water)</text></g><g transform=\"translate(425, 45)\"><rect width=\"370\" height=\"265\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">2. SEPARATING FUNNEL ASSEMBLY</text><line x1=\"50\" y1=\"35\" x2=\"50\" y2=\"245\" stroke=\"#334155\" stroke-width=\"4\"/><line x1=\"25\" y1=\"245\" x2=\"100\" y2=\"245\" stroke=\"#334155\" stroke-width=\"5\"/><line x1=\"50\" y1=\"85\" x2=\"110\" y2=\"85\" stroke=\"#475569\" stroke-width=\"3\"/><rect x=\"105\" y=\"79\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#64748b\"/><path d=\"M 115 50 Q 140 45 165 50 Q 185 85 155 125 L 147 150 L 133 150 L 125 125 Q 95 85 115 50 Z\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><path d=\"M 115 50 Q 140 45 165 50 Q 178 72 160 85 L 120 85 Q 102 72 115 50 Z\" fill=\"#fef08a\"/><rect x=\"130\" y=\"145\" width=\"20\" height=\"10\" rx=\"2\" fill=\"#334155\"/><line x1=\"140\" y1=\"155\" x2=\"140\" y2=\"180\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"115\" y=\"190\" width=\"50\" height=\"40\" rx=\"2\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1.5\"/><rect x=\"116\" y=\"205\" width=\"48\" height=\"24\" fill=\"#bae6fd\"/><line x1=\"210\" y1=\"65\" x2=\"150\" y2=\"65\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><polygon points=\"150,65 156,61 156,69\" fill=\"#ca8a04\"/><text x=\"215\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#854d0e\">Kerosene / Oil (Less dense)</text><line x1=\"210\" y1=\"105\" x2=\"145\" y2=\"105\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"145,105 151,101 151,109\" fill=\"#0284c7\"/><text x=\"215\" y=\"108\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Water (Denser bottom layer)</text><line x1=\"210\" y1=\"150\" x2=\"155\" y2=\"150\" stroke=\"#334155\" stroke-width=\"1.2\"/><polygon points=\"155,150 161,146 161,154\" fill=\"#334155\"/><text x=\"215\" y=\"153\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0f172a\">Stopcock (Tap)</text><line x1=\"210\" y1=\"210\" x2=\"170\" y2=\"210\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"170,210 176,206 176,214\" fill=\"#475569\"/><text x=\"215\" y=\"213\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">Beaker (Receives water)</text></g><g transform=\"translate(25, 325)\"><rect width=\"370\" height=\"275\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">3. SUBLIMATION ASSEMBLY</text><line x1=\"90\" y1=\"185\" x2=\"120\" y2=\"235\" stroke=\"#334155\" stroke-width=\"3\"/><line x1=\"200\" y1=\"185\" x2=\"170\" y2=\"235\" stroke=\"#334155\" stroke-width=\"3\"/><line x1=\"145\" y1=\"185\" x2=\"145\" y2=\"235\" stroke=\"#334155\" stroke-width=\"2.5\"/><line x1=\"80\" y1=\"185\" x2=\"210\" y2=\"185\" stroke=\"#334155\" stroke-width=\"3\"/><ellipse cx=\"145\" cy=\"180\" rx=\"55\" ry=\"8\" fill=\"#e2e8f0\" stroke=\"#475569\" stroke-width=\"1.5\"/><path d=\"M 141 80 L 149 80 L 149 110 L 195 175 L 95 175 L 141 110 Z\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><rect x=\"139\" y=\"72\" width=\"12\" height=\"9\" rx=\"2\" fill=\"#94a3b8\"/><line x1=\"105\" y1=\"155\" x2=\"115\" y2=\"140\" stroke=\"#7c3aed\" stroke-width=\"2\"/><line x1=\"185\" y1=\"155\" x2=\"175\" y2=\"140\" stroke=\"#7c3aed\" stroke-width=\"2\"/><rect x=\"135\" y=\"230\" width=\"20\" height=\"22\" fill=\"#475569\"/><polygon points=\"138,230 152,230 145,200\" fill=\"#f97316\"/><line x1=\"230\" y1=\"76\" x2=\"155\" y2=\"76\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"155,76 161,72 161,80\" fill=\"#475569\"/><text x=\"235\" y=\"79\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">Cotton Plug (Traps vapor)</text><line x1=\"230\" y1=\"125\" x2=\"170\" y2=\"135\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><polygon points=\"170,135 177,131 175,138\" fill=\"#2563eb\"/><text x=\"235\" y=\"128\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e40af\">Inverted Funnel</text><line x1=\"230\" y1=\"150\" x2=\"180\" y2=\"150\" stroke=\"#7c3aed\" stroke-width=\"1.2\"/><polygon points=\"180,150 186,146 186,154\" fill=\"#7c3aed\"/><text x=\"235\" y=\"153\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#6d28d9\">Sublimed Solid (Crystals)</text><line x1=\"230\" y1=\"180\" x2=\"195\" y2=\"180\" stroke=\"#475569\" stroke-width=\"1.2\"/><polygon points=\"195,180 201,176 201,184\" fill=\"#475569\"/><text x=\"235\" y=\"183\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e293b\">China Dish (Holds mixture)</text><line x1=\"230\" y1=\"215\" x2=\"155\" y2=\"215\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><polygon points=\"155,215 161,211 161,219\" fill=\"#ea580c\"/><text x=\"235\" y=\"218\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#c2410c\">Bunsen Burner Flame</text></g><g transform=\"translate(425, 325)\"><rect width=\"370\" height=\"275\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"185\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">4. SIMPLE DISTILLATION ASSEMBLY</text><circle cx=\"75\" cy=\"150\" r=\"26\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><rect x=\"71\" y=\"110\" width=\"8\" height=\"20\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><line x1=\"75\" y1=\"90\" x2=\"75\" y2=\"130\" stroke=\"#dc2626\" stroke-width=\"1.8\"/><rect x=\"71\" y=\"85\" width=\"8\" height=\"6\" fill=\"#334155\"/><path d=\"M 79 125 L 210 170\" stroke=\"#0284c7\" stroke-width=\"3\"/><rect x=\"105\" y=\"130\" width=\"85\" height=\"30\" rx=\"4\" fill=\"#bae6fd\" stroke=\"#0284c7\" stroke-width=\"1.2\" opacity=\"0.8\" transform=\"rotate(19, 147, 145)\"/><path d=\"M 160 115 L 160 100\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"160\" y=\"95\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Water Out</text><path d=\"M 135 175 L 135 190\" stroke=\"#0284c7\" stroke-width=\"2\"/><text x=\"135\" y=\"198\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#0284c7\" text-anchor=\"middle\">Cold Water In</text><path d=\"M 225 180 L 245 180 L 255 220 L 215 220 Z\" fill=\"#f8fafc\" stroke=\"#334155\" stroke-width=\"1.4\"/><rect x=\"220\" y=\"208\" width=\"30\" height=\"10\" fill=\"#bae6fd\"/><polygon points=\"70,205 80,205 75,185\" fill=\"#f97316\"/><line x1=\"15\" y1=\"90\" x2=\"70\" y2=\"90\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><polygon points=\"70,90 64,86 64,94\" fill=\"#dc2626\"/><text x=\"10\" y=\"93\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#b91c1c\">Thermometer</text><line x1=\"15\" y1=\"150\" x2=\"45\" y2=\"150\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"45,150 39,146 39,154\" fill=\"#0284c7\"/><text x=\"10\" y=\"153\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0369a1\">Distillation Flask</text><line x1=\"230\" y1=\"135\" x2=\"185\" y2=\"135\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><polygon points=\"185,135 191,131 191,139\" fill=\"#0284c7\"/><text x=\"235\" y=\"138\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0284c7\">Liebig Condenser</text><line x1=\"280\" y1=\"215\" x2=\"258\" y2=\"215\" stroke=\"#334155\" stroke-width=\"1.2\"/><polygon points=\"258,215 264,211 264,219\" fill=\"#334155\"/><text x=\"285\" y=\"218\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\">Distillate (Pure liquid)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.4b: Comprehensive Laboratory Separation Setups — Fully Annotated Examination Drawing Guide</p>\n</div>\n\n---\n\n### MODULE 5: Subatomic Particles and the Architecture of the Atom\n\n#### 1. Fundamental Chemical Definitions\n* **Atom:** The smallest indivisible particle of a chemical element that can take part in a chemical reaction. Examples include Hydrogen ($\\text{H}$), Carbon ($\\text{C}$), and Sodium ($\\text{Na}$).\n* **Molecule:** A group of two or more atoms chemically combined together that can exist independently (e.g., $\\text{H}_2$, $\\text{O}_2$, $\\text{CO}_2$, $\\text{H}_2\\text{O}$).\n* **Element:** A pure chemical substance composed of only one type of atom that cannot be split into simpler substances by ordinary chemical reactions.\n\n#### 2. Microscopic Architecture of the Atom\nEvery atom consists of two distinct physical zones:\n1. **The Nucleus:** The dense, heavy core located right at the geometric center of the atom. It contains almost all the mass of the atom and houses two subatomic particles: **protons** and **neutrons**.\n2. **Electron Shells (Energy Levels):** Concentric circular pathways or orbital clouds surrounding the nucleus where **electrons** revolve at high velocities.\n\n#### 3. Summary of the Three Subatomic Particles\n\n| Particle | Electrical Charge | Relative Mass | Location in Atom | Mobility |\n| :--- | :---: | :---: | :--- | :--- |\n| **Proton ($p^+$)** | Positive ($+1$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Neutron ($n^0$)** | Neutral / Zero ($0$) | $1\\text{ a.m.u.}$ | Locked inside central nucleus | Fixed and stationary |\n| **Electron ($e^-$)** | Negative ($-1$) | Negligible ($\\approx 1/1840\\text{ a.m.u.}$) | Revolves in outer shells | Highly mobile |\n\n#### 4. Key Contrasts: Protons vs. Electrons\n* **Charge:** Protons carry a unit positive charge ($+1$), while electrons carry a unit negative charge ($-1$).\n* **Location:** Protons are locked in the central nucleus; electrons orbit in the peripheral electron shells.\n* **Mass:** Protons possess substantial mass ($1\\text{ a.m.u.}$); electrons have negligible mass ($\\approx 1/1840\\text{ a.m.u.}$).\n* **Mobility:** Protons are tightly bound and immobile; electrons are mobile and participate in chemical bonding and electrical conduction.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"280\" viewBox=\"0 0 760 280\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"280\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE STRUCTURE OF AN ATOM</text><g transform=\"translate(180, 40)\"><circle cx=\"140\" cy=\"110\" r=\"90\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"55\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1.2\" stroke-dasharray=\"4,4\"/><circle cx=\"140\" cy=\"110\" r=\"26\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1.5\"/><circle cx=\"134\" cy=\"105\" r=\"8\" fill=\"#ef4444\"/><text x=\"134\" y=\"108\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">p⁺</text><circle cx=\"146\" cy=\"115\" r=\"8\" fill=\"#3b82f6\"/><text x=\"146\" y=\"118\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">n⁰</text><circle cx=\"140\" cy=\"55\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"58\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"140\" cy=\"165\" r=\"6\" fill=\"#10b981\"/><text x=\"140\" y=\"168\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"50\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"50\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text><circle cx=\"230\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"230\" y=\"113\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#ffffff\" text-anchor=\"middle\">e⁻</text></g><g transform=\"translate(500, 60)\"><rect width=\"220\" height=\"170\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">Key Components</text><circle cx=\"25\" cy=\"50\" r=\"6\" fill=\"#ef4444\"/><text x=\"40\" y=\"53\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Proton (p⁺): Positive charge</text><circle cx=\"25\" cy=\"80\" r=\"6\" fill=\"#3b82f6\"/><text x=\"40\" y=\"83\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Neutron (n⁰): No charge</text><circle cx=\"25\" cy=\"110\" r=\"6\" fill=\"#10b981\"/><text x=\"40\" y=\"113\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">Electron (e⁻): Negative charge</text><path d=\"M 20 135 L 30 135\" stroke=\"#475569\" stroke-width=\"2\"/><text x=\"40\" y=\"139\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e293b\">Central Nucleus: (p⁺ + n⁰)</text><path d=\"M 15 155 L 35 155\" stroke=\"#94a3b8\" stroke-width=\"1.5\" stroke-dasharray=\"2,2\"/><text x=\"40\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#64748b\">Orbits / Shells: Host electrons</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.5: Detailed Subatomic Anatomy of the Atom showing Nucleus (Protons/Neutrons) and Electron Shells</p>\n</div>\n\n---\n\n### MODULE 6: Atomic Number, Mass Number, and Nuclide Notation\n\n#### 1. Core Concepts\n* **Atomic Number ($Z$):** The total number of protons found in the nucleus of an atom. The atomic number gives an element its unique chemical identity and defines its position on the Periodic Table. In a neutral (uncharged) atom, the number of protons equals the number of electrons:\n  $$\\text{Number of Protons } (p^+) = \\text{Number of Electrons } (e^-) = Z$$\n* **Mass Number ($A$):** The combined total count of protons and neutrons packed inside the nucleus of an atom (also called the nucleon number):\n  $$A = Z + n$$\n* **Calculating Neutron Count ($n$):** To find the number of neutrons present in an atom, subtract the atomic number ($Z$) from the mass number ($A$):\n  $$n = A - Z$$\n* **Nuclide:** A specific species of an atom characterized by a defined atomic number ($Z$) and mass number ($A$).\n\n#### 2. Standard Nuclide Notation\nIn international chemical shorthand, a nuclide is written as:\n$$^A_Z\\text{X}$$\n* $\\text{X}$ = The chemical symbol of the element (e.g., $\\text{Na}$, $\\text{Cl}$, $\\text{C}$, $\\text{K}$).\n* $A$ (superscript) = **Mass Number** (total nucleons: protons + neutrons).\n* $Z$ (subscript) = **Atomic Number** (total number of positive protons).\n\n#### 3. Step-by-Step Computational Examples\n* **Example 1: Potassium ($^{39}_{19}\\text{K}$):**\n  * Protons = Atomic Number ($Z$) = $19$\n  * Electrons = Protons (neutral atom) = $19$\n  * Neutrons = $A - Z = 39 - 19 = 20$ neutrons\n* **Example 2: Carbon-13 ($^{13}_6\\text{C}$):**\n  * Protons = Atomic Number ($Z$) = $6$\n  * Electrons = Protons (neutral atom) = $6$\n  * Neutrons = $A - Z = 13 - 6 = 7$ neutrons\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"180\" viewBox=\"0 0 760 180\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"180\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">HOW TO READ NUCLIDE NOTATION</text><g transform=\"translate(150, 45)\"><rect width=\"180\" height=\"110\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.5\"/><text x=\"95\" y=\"72\" font-family=\"sans-serif\" font-size=\"42\" font-weight=\"bold\" fill=\"#1e40af\">X</text><text x=\"35\" y=\"48\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#dc2626\">A</text><text x=\"35\" y=\"92\" font-family=\"sans-serif\" font-size=\"24\" font-weight=\"bold\" fill=\"#16a34a\">Z</text></g><g transform=\"translate(360, 45)\"><rect width=\"280\" height=\"110\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"15\" y=\"32\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#dc2626\">A = Mass Number (Protons + Neutrons)</text><text x=\"15\" y=\"58\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\">X = Chemical Symbol of Element</text><text x=\"15\" y=\"84\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#16a34a\">Z = Atomic Number (Proton Count)</text><text x=\"15\" y=\"102\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#64748b\">Rule: Neutrons (n) = A - Z</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.6: Standard Nuclide Representation and Structural Arithmetic Rules</p>\n</div>\n\n---\n\n### MODULE 7: Electron Configuration: Shells and Rules of Arrangement\n\n#### 1. Principles of Electron Shell Arrangement\nElectrons are arranged around the nucleus in specific circular concentric orbits called **energy levels** or **electron shells**. The systematic distribution of electrons across these concentric shells is termed the **electron configuration**.\n\n#### 2. Shell Naming and Capacity Rules\n* **Shell Designations:**\n  * $1^{\\text{st}}$ shell closest to the nucleus = **K-shell** ($n = 1$)\n  * $2^{\\text{nd}}$ shell = **L-shell** ($n = 2$)\n  * $3^{\\text{rd}}$ shell = **M-shell** ($n = 3$)\n  * $4^{\\text{th}}$ shell = **N-shell** ($n = 4$)\n* **The $2n^2$ Maximum Capacity Law:**\n  The maximum number of electrons that any shell can accommodate is determined by:\n  $$\\text{Capacity} = 2n^2$$\n  * K-shell ($n=1$): $2(1)^2 = 2$ electrons maximum\n  * L-shell ($n=2$): $2(2)^2 = 8$ electrons maximum\n  * M-shell ($n=3$): $2(3)^2 = 18$ electrons maximum (holds up to 8 in JHS 2 first 20 elements)\n  * N-shell ($n=4$): $2(4)^2 = 32$ electrons maximum\n* **The JHS 2 Filling Pattern for the First 20 Elements:**\n  The shells fill systematically in the orderly pattern: **2, 8, 8, 2** (2 in the 1st shell, up to 8 in the 2nd, up to 8 in the 3rd, and up to 2 in the 4th).\n\n#### 3. Canonical Electron Configurations of the First Twenty Elements\n\n| Atomic No. ($Z$) | Element Name | Symbol | Electron Configuration | Valence Electrons | Valency | Chemical Classification |\n| :---: | :--- | :---: | :---: | :---: | :---: | :--- |\n| **1** | Hydrogen | $\\text{H}$ | $1$ | $1$ | $1$ | Reactive Non-metal |\n| **2** | Helium | $\\text{He}$ | $2$ | $2$ (Duplet) | $0$ | Noble Gas (Inert) |\n| **3** | Lithium | $\\text{Li}$ | $2, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **4** | Beryllium | $\\text{Be}$ | $2, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **5** | Boron | $\\text{B}$ | $2, 3$ | $3$ | $3$ | Metalloid (Semi-metal) |\n| **6** | Carbon | $\\text{C}$ | $2, 4$ | $4$ | $4$ | Non-metal |\n| **7** | Nitrogen | $\\text{N}$ | $2, 5$ | $5$ | $3$ | Non-metal |\n| **8** | Oxygen | $\\text{O}$ | $2, 6$ | $6$ | $2$ | Non-metal |\n| **9** | Fluorine | $\\text{F}$ | $2, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **10** | Neon | $\\text{Ne}$ | $2, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **11** | Sodium | $\\text{Na}$ | $2, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **12** | Magnesium | $\\text{Mg}$ | $2, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n| **13** | Aluminium | $\\text{Al}$ | $2, 8, 3$ | $3$ | $3$ | Metal (Group 13) |\n| **14** | Silicon | $\\text{Si}$ | $2, 8, 4$ | $4$ | $4$ | Metalloid / Semiconductor |\n| **15** | Phosphorus | $\\text{P}$ | $2, 8, 5$ | $5$ | $3, 5$ | Non-metal |\n| **16** | Sulfur | $\\text{S}$ | $2, 8, 6$ | $6$ | $2$ | Non-metal |\n| **17** | Chlorine | $\\text{Cl}$ | $2, 8, 7$ | $7$ | $1$ | Halogen (Group 17) |\n| **18** | Argon | $\\text{Ar}$ | $2, 8, 8$ | $8$ (Octet) | $0$ | Noble Gas (Inert) |\n| **19** | Potassium | $\\text{K}$ | $2, 8, 8, 1$ | $1$ | $1$ | Alkali Metal (Group 1) |\n| **20** | Calcium | $\\text{Ca}$ | $2, 8, 8, 2$ | $2$ | $2$ | Alkaline Earth Metal (Group 2) |\n\n#### Master Examination Reference: The First 20 Elements (Bohr Electron Shell Models)\nBelow is the complete structural architecture of the first 20 elements on the Periodic Table. In Basic 8 exams, students are frequently asked to draw the electron configuration for any of these 20 elements:\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"820\" height=\"700\" viewBox=\"0 0 820 700\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"820\" height=\"700\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"410\" y=\"28\" font-family=\"sans-serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ATOMIC ARCHITECTURE: THE FIRST 20 ELEMENTS (BOHR SHELL MODELS)</text><g transform=\"translate(25, 45)\"><rect width=\"88\" height=\"95\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"42\" r=\"26\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"42\" r=\"12\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">1p</text><circle cx=\"44\" cy=\"16\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">1. Hydrogen (H)</text><text x=\"44\" y=\"90\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 1</text></g><g transform=\"translate(705, 45)\"><rect width=\"88\" height=\"95\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"42\" r=\"26\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"42\" r=\"12\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"45\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">2p</text><circle cx=\"44\" cy=\"16\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"68\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"78\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">2. Helium (He)</text><text x=\"44\" y=\"90\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2</text></g><g transform=\"translate(25, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">3p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">3. Lithium (Li)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 1</text></g><g transform=\"translate(122, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">4p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">4. Beryllium (Be)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 2</text></g><g transform=\"translate(219, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">5p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#ca8a04\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">5. Boron (B)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ca8a04\" text-anchor=\"middle\">Config: 2, 3</text></g><g transform=\"translate(316, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#475569\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">6p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#475569\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#475569\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#475569\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#475569\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">6. Carbon (C)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#475569\" text-anchor=\"middle\">Config: 2, 4</text></g><g transform=\"translate(413, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">7p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">7. Nitrogen (N)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 5</text></g><g transform=\"translate(510, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">8p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"20\" cy=\"69\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">8. Oxygen (O)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 6</text></g><g transform=\"translate(607, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">9p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"20\" cy=\"69\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"20\" cy=\"21\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">9. Fluorine (F)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 7</text></g><g transform=\"translate(705, 150)\"><rect width=\"88\" height=\"115\" rx=\"5\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"45\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"20\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"45\" r=\"10\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"48\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">10p</text><circle cx=\"44\" cy=\"25\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"65\" r=\"2.5\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"11\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"78\" cy=\"45\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"44\" cy=\"79\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"10\" cy=\"45\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"68\" cy=\"21\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"69\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"21\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"68\" cy=\"69\" r=\"3\" fill=\"#16a34a\"/><text x=\"44\" y=\"92\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">10. Neon (Ne)</text><text x=\"44\" y=\"106\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#16a34a\" text-anchor=\"middle\">Config: 2, 8</text></g><g transform=\"translate(25, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">11p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">11. Sodium (Na)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 1</text></g><g transform=\"translate(122, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">12p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">12. Magnesium (Mg)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 2</text></g><g transform=\"translate(219, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">13p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">13. Aluminium (Al)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 3</text></g><g transform=\"translate(316, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#fefce8\" stroke=\"#ca8a04\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">14p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#ca8a04\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#ca8a04\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">14. Silicon (Si)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#ca8a04\" text-anchor=\"middle\">Config: 2, 8, 4</text></g><g transform=\"translate(413, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">15p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">15. Phosphorus (P)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 8, 5</text></g><g transform=\"translate(510, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">16p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"16\" cy=\"76\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">16. Sulfur (S)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 8, 6</text></g><g transform=\"translate(607, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">17p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"16\" cy=\"76\" r=\"3\" fill=\"#2563eb\"/><circle cx=\"16\" cy=\"20\" r=\"3\" fill=\"#2563eb\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">17. Chlorine (Cl)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#2563eb\" text-anchor=\"middle\">Config: 2, 8, 7</text></g><g transform=\"translate(705, 280)\"><rect width=\"88\" height=\"125\" rx=\"5\" fill=\"#f1f5f9\" stroke=\"#475569\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"48\" r=\"40\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"48\" r=\"28\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"16\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"48\" r=\"9\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"51\" font-family=\"sans-serif\" font-size=\"6.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">18p</text><circle cx=\"44\" cy=\"8\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"84\" cy=\"48\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"44\" cy=\"88\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"4\" cy=\"48\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"72\" cy=\"20\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"16\" cy=\"76\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"16\" cy=\"20\" r=\"3\" fill=\"#16a34a\"/><circle cx=\"72\" cy=\"76\" r=\"3\" fill=\"#16a34a\"/><text x=\"44\" y=\"100\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">18. Argon (Ar)</text><text x=\"44\" y=\"114\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#16a34a\" text-anchor=\"middle\">Config: 2, 8, 8</text></g><g transform=\"translate(25, 415)\"><rect width=\"88\" height=\"135\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"52\" r=\"46\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"52\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"22\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"12\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"7\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"54\" font-family=\"sans-serif\" font-size=\"5.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">19p</text><circle cx=\"44\" cy=\"6\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">19. Potassium (K)</text><text x=\"44\" y=\"124\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 8, 1</text></g><g transform=\"translate(122, 415)\"><rect width=\"88\" height=\"135\" rx=\"5\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1\"/><circle cx=\"44\" cy=\"52\" r=\"46\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"44\" cy=\"52\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"22\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"12\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/><circle cx=\"44\" cy=\"52\" r=\"7\" fill=\"#fee2e2\" stroke=\"#ef4444\" stroke-width=\"1\"/><text x=\"44\" y=\"54\" font-family=\"sans-serif\" font-size=\"5.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">20p</text><circle cx=\"44\" cy=\"6\" r=\"3\" fill=\"#ea580c\"/><circle cx=\"44\" cy=\"98\" r=\"3\" fill=\"#ea580c\"/><text x=\"44\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">20. Calcium (Ca)</text><text x=\"44\" y=\"124\" font-family=\"sans-serif\" font-size=\"7.5\" fill=\"#ea580c\" text-anchor=\"middle\">Config: 2, 8, 8, 2</text></g><g transform=\"translate(25, 560)\"><rect width=\"768\" height=\"125\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#94a3b8\" stroke-width=\"1.2\"/><text x=\"384\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">SUMMARY OF ELECTRON FILLING RULES FOR BASIC 8 LEARNERS</text><text x=\"20\" y=\"46\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• The 1st shell (K-shell) holds a maximum of 2 electrons [Duplet rule].</text><text x=\"20\" y=\"66\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• The 2nd shell (L-shell) holds a maximum of 8 electrons [Octet rule].</text><text x=\"20\" y=\"86\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• The 3rd shell (M-shell) stabilizes at 8 electrons before the 4th shell starts filling (Elements 1 to 20).</text><text x=\"20\" y=\"106\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#334155\">• Shell capacity formula = 2n² (where n is the shell number 1, 2, 3, or 4).</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.7b: Complete Periodic Table Grid of the First 20 Elements with Bohr Electron Shell Diagrams and Configurations</p>\n</div>\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ELECTRON CONFIGURATION OF SODIUM AND CHLORINE ATOMS</text><g transform=\"translate(130, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Na (11p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"4.5\" fill=\"#ea580c\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Sodium Atom (2, 8, 1)</text></g><g transform=\"translate(440, 35)\"><circle cx=\"90\" cy=\"80\" r=\"18\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><text x=\"90\" y=\"84\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Cl (17p)</text><circle cx=\"90\" cy=\"80\" r=\"34\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"52\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"2,2\"/><circle cx=\"90\" cy=\"80\" r=\"70\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"46\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"114\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"56\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"124\" cy=\"80\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"66\" cy=\"104\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"114\" cy=\"56\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"75\" cy=\"70\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"105\" cy=\"90\" r=\"3.5\" fill=\"#1e293b\"/><circle cx=\"90\" cy=\"10\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"90\" cy=\"150\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"20\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"160\" cy=\"80\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"30\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"140\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><circle cx=\"40\" cy=\"130\" r=\"3.5\" fill=\"#16a34a\"/><text x=\"90\" y=\"172\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Chlorine Atom (2, 8, 7)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.7: Concentric Bohr Electron Shell Configurations for Sodium (2, 8, 1) and Chlorine (2, 8, 7)</p>\n</div>\n\n---\n\n### MODULE 8: Ion Formation: How Neutral Atoms Become Charged Particles\n\n#### 1. What is an Ion?\nAn **ion** is an electrically charged atom (or group of atoms) formed when a neutral atom either **loses** or **gains** one or more valence electrons.\n\n* **Why Do Atoms Form Ions?** Atoms gain or lose electrons to attain a stable, completely filled outermost energy shell (a stable duplet of 2 electrons for Helium, or a stable octet of 8 electrons like Neon and Argon).\n* **Electrical Neutrality of Free Atoms:** In an isolated neutral atom, the number of positive protons exactly equals the number of negative electrons ($\text{Net charge} = 0$).\n\n#### 2. The Two Classes of Ions\n\n##### 1. Cations (Positively Charged Ions):\n* **Formation:** Formed when a metal atom **loses** one, two, or three valence electrons.\n* **Mechanism:** Because electrons are lost while the nuclear proton count remains unchanged, the number of positive protons becomes greater than the number of negative electrons ($p^+ > e^-$).\n* **Symbol Notation:** Written with a positive superscript sign ($+$), e.g., $\\text{Na}^+$, $\\text{K}^+$, $\\text{Mg}^{2+}$, $\\text{Ca}^{2+}$, $\\text{Al}^{3+}$.\n* **Case Study — Sodium Ion ($\\text{Na}^+$):**\n  * Neutral Sodium atom ($_{11}\\text{Na}$): Configuration = $2, 8, 1$ ($11p^+, 11e^-$). Net charge = $0$.\n  * Sodium loses its $1$ valence electron: $\\text{Na} \\rightarrow \\text{Na}^+ + e^-$.\n  * Sodium cation ($\\text{Na}^+$): Configuration = $2, 8$ ($11p^+, 10e^-$). Net charge = $+1$.\n\n##### 2. Anions (Negatively Charged Ions):\n* **Formation:** Formed when a non-metal atom **gains** one, two, or three electrons into its valence shell.\n* **Mechanism:** The atom acquires extra negative electrons while the proton count stays constant, resulting in more electrons than protons ($e^- > p^+$).\n* **Symbol Notation:** Written with a negative superscript sign ($-$), e.g., $\\text{Cl}^-$, $\\text{O}^{2-}$, $\\text{N}^{3-}$.\n* **Case Study — Chloride Ion ($\\text{Cl}^-$):**\n  * Neutral Chlorine atom ($_{17}\\text{Cl}$): Configuration = $2, 8, 7$ ($17p^+, 17e^-$). Net charge = $0$.\n  * Chlorine gains $1$ electron: $\\text{Cl} + e^- \\rightarrow \\text{Cl}^-$.\n  * Chloride anion ($\\text{Cl}^-$): Configuration = $2, 8, 8$ ($17p^+, 18e^-$). Net charge = $-1$.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"200\" viewBox=\"0 0 760 200\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"200\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ION FORMATION: TRANSFER OF AN ELECTRON</text><g transform=\"translate(50, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Neutral Sodium (Na)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Configuration: 2, 8, 1</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7c2d12\">Electrons = 11 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Net Charge = 0 (Neutral)</text></g><g transform=\"translate(235, 95)\"><path d=\"M 10 15 L 60 15\" stroke=\"#ea580c\" stroke-width=\"2\"/><polygon points=\"58,10 68,15 58,20\" fill=\"#ea580c\"/><text x=\"38\" y=\"8\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#ea580c\" text-anchor=\"middle\">Loses 1 e⁻</text></g><g transform=\"translate(320, 45)\"><rect width=\"170\" height=\"125\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Sodium Cation (Na⁺)</text><text x=\"85\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Configuration: 2, 8</text><text x=\"85\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Protons = 11 (+)</text><text x=\"85\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">Electrons = 10 (-)</text><text x=\"85\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\" text-anchor=\"middle\">Net Charge = +1 (Cation)</text></g><g transform=\"translate(510, 45)\"><rect width=\"200\" height=\"125\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.2\"/><text x=\"100\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Chloride Anion (Cl⁻)</text><text x=\"100\" y=\"45\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Configuration: 2, 8, 8</text><text x=\"100\" y=\"65\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Protons = 17 (+)</text><text x=\"100\" y=\"85\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">Electrons = 18 (-)</text><text x=\"100\" y=\"110\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#2563eb\" text-anchor=\"middle\">Net Charge = -1 (Anion)</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1.8: Ion Formation Mechanics: Electron Transfer from Sodium (Cation) to Chlorine (Anion)</p>\n</div>\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
@@ -49889,35 +52406,2403 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     ],
     "drillQuestions": [
       {
-        "id": "q_b8_s1_1",
+        "id": "B8_MAT_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "What is the electron configuration of an atom of Phosphorus with atomic number Z = 15?",
+        "prompt": "Which state of matter is described as super-heated matter or ionized gas?",
         "options": [
-          "2, 8, 5",
-          "2, 8, 3",
-          "2, 5, 8",
-          "2, 8, 7"
+          "A. Solid",
+          "B. Liquid",
+          "C. Gas",
+          "D. Plasma"
         ],
-        "correctAnswer": "2, 8, 5",
-        "hint": "The K-shell takes 2, L-shell takes 8, and the remainder goes to the M-shell.",
-        "workedSolution": "For atomic number 15: K-shell = 2, L-shell = 8, M-shell = 15 - 10 = 5. Hence, electron configuration is 2, 8, 5.",
+        "correctAnswer": "D. Plasma",
+        "hint": "Apart from solids, liquids, and gases, plasma exists as a fourth state of matter consisting of super-heated ionized gas.",
+        "workedSolution": "Apart from solids, liquids, and gases, plasma exists as a fourth state of matter consisting of super-heated ionized gas.",
         "points": 1
       },
       {
-        "id": "q_b8_s1_2",
+        "id": "B8_MAT_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a mixture scientifically defined as?",
+        "options": [
+          "A. A substance formed by the physical combination of two or more substances",
+          "B. A pure substance that cannot be broken down by chemical means",
+          "C. A group of atoms joined permanently by chemical bonds",
+          "D. A compound with a fixed chemical formula"
+        ],
+        "correctAnswer": "A. A substance formed by the physical combination of two or more substances",
+        "hint": "A mixture is formed by physically combining two or more different substances without chemical bonding.",
+        "workedSolution": "A mixture is formed by physically combining two or more different substances without chemical bonding.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a solid-solid mixture (alloy)?",
+        "options": [
+          "A. Sugar dissolved in water",
+          "B. Bronze (copper and tin)",
+          "C. Muddy water",
+          "D. Air"
+        ],
+        "correctAnswer": "B. Bronze (copper and tin)",
+        "hint": "Bronze is an alloy formed by the physical mixing of solid copper and tin.",
+        "workedSolution": "Bronze is an alloy formed by the physical mixing of solid copper and tin.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A mixture of tiny solid soot particles suspended in air, such as smoke, is categorized as a:",
+        "options": [
+          "A. Solid - liquid mixture",
+          "B. Solid - gas mixture",
+          "C. Gas - liquid mixture",
+          "D. Liquid - liquid mixture"
+        ],
+        "correctAnswer": "B. Solid - gas mixture",
+        "hint": "Smoke consists of solid unburned particles dispersed in air, making it a solid-gas mixture.",
+        "workedSolution": "Smoke consists of solid unburned particles dispersed in air, making it a solid-gas mixture.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Clean atmospheric air is an example of what type of mixture?",
+        "options": [
+          "A. Gas - gas mixture",
+          "B. Liquid - gas mixture",
+          "C. Solid - liquid mixture",
+          "D. Solid - solid mixture"
+        ],
+        "correctAnswer": "A. Gas - gas mixture",
+        "hint": "Air is a homogeneous mixture formed from the physical combination of gases like nitrogen and oxygen.",
+        "workedSolution": "Air is a homogeneous mixture formed from the physical combination of gases like nitrogen and oxygen.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a homogeneous mixture?",
+        "options": [
+          "A. A mixture where the components separate into visible layers",
+          "B. A mixture where the components mix completely and have a uniform composition throughout",
+          "C. A mixture containing only magnetic solids",
+          "D. A mixture whose parts can easily be distinguished with the naked eye"
+        ],
+        "correctAnswer": "B. A mixture where the components mix completely and have a uniform composition throughout",
+        "hint": "In a homogeneous mixture, the substances mix completely so that the composition is uniform throughout.",
+        "workedSolution": "In a homogeneous mixture, the substances mix completely so that the composition is uniform throughout.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a heterogeneous mixture?",
+        "options": [
+          "A. Salt solution",
+          "B. Clean air",
+          "C. Sand and water",
+          "D. Diluted alcohol"
+        ],
+        "correctAnswer": "C. Sand and water",
+        "hint": "Sand does not dissolve in water; the components form separate visible phases, making it heterogeneous.",
+        "workedSolution": "Sand does not dissolve in water; the components form separate visible phases, making it heterogeneous.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a salt solution, what is the salt referred to as?",
+        "options": [
+          "A. Solvent",
+          "B. Solute",
+          "C. Filtrate",
+          "D. Distillate"
+        ],
+        "correctAnswer": "B. Solute",
+        "hint": "The solute is the substance that dissolves in the solvent.",
+        "workedSolution": "The solute is the substance that dissolves in the solvent.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a sugar solution, what role does water play?",
+        "options": [
+          "A. Solute",
+          "B. Solvent",
+          "C. Residue",
+          "D. Precipitate"
+        ],
+        "correctAnswer": "B. Solvent",
+        "hint": "Water is the dissolving medium (usually present in larger volume), which is the solvent.",
+        "workedSolution": "Water is the dissolving medium (usually present in larger volume), which is the solvent.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A solution in which water is the solvent is called a/an:",
+        "options": [
+          "A. Saturated solution",
+          "B. Aqueous solution",
+          "C. Standard solution",
+          "D. Immiscible solution"
+        ],
+        "correctAnswer": "B. Aqueous solution",
+        "hint": "An aqueous solution is any solution whose solvent is water.",
+        "workedSolution": "An aqueous solution is any solution whose solvent is water.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A solution that can no longer dissolve any more solute at a given temperature in the presence of excess solute is:",
+        "options": [
+          "A. Unsaturated",
+          "B. Dilute",
+          "C. Saturated",
+          "D. Standard"
+        ],
+        "correctAnswer": "C. Saturated",
+        "hint": "A saturated solution contains the maximum amount of dissolved solute at that specific temperature.",
+        "workedSolution": "A saturated solution contains the maximum amount of dissolved solute at that specific temperature.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an unsaturated solution?",
+        "options": [
+          "A. A solution that cannot dissolve any more solute",
+          "B. A solution in which the solvent can still dissolve more solute at a given temperature",
+          "C. A solution whose concentration is precisely known",
+          "D. A mixture of two immiscible liquids"
+        ],
+        "correctAnswer": "B. A solution in which the solvent can still dissolve more solute at a given temperature",
+        "hint": "An unsaturated solution has the capacity to dissolve additional solute at that temperature.",
+        "workedSolution": "An unsaturated solution has the capacity to dissolve additional solute at that temperature.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a solution whose concentration is accurately known called?",
+        "options": [
+          "A. Standard solution",
+          "B. Saturated solution",
+          "C. Aqueous solution",
+          "D. Colloidal solution"
+        ],
+        "correctAnswer": "A. Standard solution",
+        "hint": "A standard solution is one whose chemical concentration has been precisely determined.",
+        "workedSolution": "A standard solution is one whose chemical concentration has been precisely determined.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A heterogeneous mixture in which solid particles do not dissolve and are large enough to be seen with the naked eye is a:",
+        "options": [
+          "A. True solution",
+          "B. Colloid",
+          "C. Suspension",
+          "D. Alloy"
+        ],
+        "correctAnswer": "C. Suspension",
+        "hint": "In a suspension, solid particles remain undissolved and are visible to the naked eye.",
+        "workedSolution": "In a suspension, solid particles remain undissolved and are visible to the naked eye.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the particle size in a true solution?",
+        "options": [
+          "A. Less than 1 nm",
+          "B. Between 1 nm and 1000 nm",
+          "C. Greater than 1000 nm",
+          "D. Exactly 10 cm"
+        ],
+        "correctAnswer": "A. Less than 1 nm",
+        "hint": "True solutions contain individual ions or molecules with particle sizes less than 1 nanometer (< 1 nm).",
+        "workedSolution": "True solutions contain individual ions or molecules with particle sizes less than 1 nanometer (< 1 nm).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the particle size range in a colloidal mixture?",
+        "options": [
+          "A. < 0.1 nm",
+          "B. 1 nm to 1000 nm",
+          "C. > 1000 nm",
+          "D. > 10,000 nm"
+        ],
+        "correctAnswer": "B. 1 nm to 1000 nm",
+        "hint": "Colloidal particles range in size between 1 nm and 1000 nm.",
+        "workedSolution": "Colloidal particles range in size between 1 nm and 1000 nm.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is an example of a colloid?",
+        "options": [
+          "A. Filtered tap water",
+          "B. Milk",
+          "C. Sand in water",
+          "D. Brass"
+        ],
+        "correctAnswer": "B. Milk",
+        "hint": "Milk, blood, fog, and glue are examples of colloids whose particles remain permanently suspended.",
+        "workedSolution": "Milk, blood, fog, and glue are examples of colloids whose particles remain permanently suspended.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Liquids that mix completely together in all proportions to form a uniform single layer are described as:",
+        "options": [
+          "A. Immiscible liquids",
+          "B. Miscible liquids",
+          "C. Saturated liquids",
+          "D. Suspensions"
+        ],
+        "correctAnswer": "B. Miscible liquids",
+        "hint": "Miscible liquids (e.g., water and ethanol) dissolve mutually to form a homogeneous solution.",
+        "workedSolution": "Miscible liquids (e.g., water and ethanol) dissolve mutually to form a homogeneous solution.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Liquids that do not mix and instead form separate distinct layers are termed:",
+        "options": [
+          "A. Miscible",
+          "B. Aqueous",
+          "C. Immiscible",
+          "D. Colloidal"
+        ],
+        "correctAnswer": "C. Immiscible",
+        "hint": "Immiscible liquids (e.g., oil and water) cannot mix homogeneously and separate by density.",
+        "workedSolution": "Immiscible liquids (e.g., oil and water) cannot mix homogeneously and separate by density.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which method is used to pour off a clear liquid after an insoluble solid settles at the bottom?",
+        "options": [
+          "A. Decantation",
+          "B. Sublimation",
+          "C. Chromatography",
+          "D. Evaporation"
+        ],
+        "correctAnswer": "A. Decantation",
+        "hint": "Decantation involves carefully pouring off the top liquid layer leaving the heavy sediment behind.",
+        "workedSolution": "Decantation involves carefully pouring off the top liquid layer leaving the heavy sediment behind.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which separation method relies on a magnetic field to separate magnetic solids from non-magnetic solids?",
+        "options": [
+          "A. Filtration",
+          "B. Magnetic separation",
+          "C. Distillation",
+          "D. Crystallization"
+        ],
+        "correctAnswer": "B. Magnetic separation",
+        "hint": "Magnetic separation uses a magnet to attract magnetic materials (like iron filings) away from non-magnetic solids.",
+        "workedSolution": "Magnetic separation uses a magnet to attract magnetic materials (like iron filings) away from non-magnetic solids.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a filtration experiment, what is the solid left behind on the filter paper called?",
+        "options": [
+          "A. Filtrate",
+          "B. Distillate",
+          "C. Residue",
+          "D. Solute"
+        ],
+        "correctAnswer": "C. Residue",
+        "hint": "The trapped solid remaining on the filter paper is called the residue.",
+        "workedSolution": "The trapped solid remaining on the filter paper is called the residue.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the clear liquid that passes through the filter paper during filtration called?",
+        "options": [
+          "A. Residue",
+          "B. Filtrate",
+          "C. Precipitate",
+          "D. Slag"
+        ],
+        "correctAnswer": "B. Filtrate",
+        "hint": "The liquid passing through the pores of the filter is known as the filtrate.",
+        "workedSolution": "The liquid passing through the pores of the filter is known as the filtrate.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which laboratory method is best suited to recover solid salt from a salt solution when the liquid water is not needed?",
+        "options": [
+          "A. Evaporation",
+          "B. Decantation",
+          "C. Magnetic separation",
+          "D. Filtration"
+        ],
+        "correctAnswer": "A. Evaporation",
+        "hint": "Evaporating the solution drives off the water vapor, leaving dry salt crystals behind.",
+        "workedSolution": "Evaporating the solution drives off the water vapor, leaving dry salt crystals behind.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is sublimation?",
+        "options": [
+          "A. The process of converting liquid to gas by boiling",
+          "B. The direct change of a solid into gas without passing through the liquid state",
+          "C. The settling of solid particles at the bottom of a liquid",
+          "D. The separation of colored dyes by porous paper"
+        ],
+        "correctAnswer": "B. The direct change of a solid into gas without passing through the liquid state",
+        "hint": "Sublimation is the phase transition directly from solid to vapor upon heating.",
+        "workedSolution": "Sublimation is the phase transition directly from solid to vapor upon heating.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following substances can sublime when heated?",
+        "options": [
+          "A. Sodium chloride",
+          "B. Ammonium chloride",
+          "C. Sand",
+          "D. Copper filings"
+        ],
+        "correctAnswer": "B. Ammonium chloride",
+        "hint": "Ammonium chloride, iodine crystals, and naphthalene sublime when heated.",
+        "workedSolution": "Ammonium chloride, iodine crystals, and naphthalene sublime when heated.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which apparatus is used to separate two immiscible liquids like kerosene and water?",
+        "options": [
+          "A. Filter funnel",
+          "B. Separating funnel",
+          "C. Liebig condenser",
+          "D. Fractionating column"
+        ],
+        "correctAnswer": "B. Separating funnel",
+        "hint": "A separating funnel allows two immiscible liquids to separate into distinct density layers.",
+        "workedSolution": "A separating funnel allows two immiscible liquids to separate into distinct density layers.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which method is used to separate the different colored dyes in black ink?",
+        "options": [
+          "A. Paper chromatography",
+          "B. Sublimation",
+          "C. Decantation",
+          "D. Magnetic separation"
+        ],
+        "correctAnswer": "A. Paper chromatography",
+        "hint": "Paper chromatography separates solutes based on their differing speeds of travel across a porous medium.",
+        "workedSolution": "Paper chromatography separates solutes based on their differing speeds of travel across a porous medium.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which separation method is used to separate miscible liquids with close boiling points, such as crude oil or alcohol and water?",
+        "options": [
+          "A. Simple distillation",
+          "B. Fractional distillation",
+          "C. Filtration",
+          "D. Evaporation"
+        ],
+        "correctAnswer": "B. Fractional distillation",
+        "hint": "Fractional distillation separates liquids with close boiling points using a fractionating column.",
+        "workedSolution": "Fractional distillation separates liquids with close boiling points using a fractionating column.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the smallest particle of an element that can take part in a chemical reaction?",
+        "options": [
+          "A. Atom",
+          "B. Molecule",
+          "C. Colloid",
+          "D. Mixture"
+        ],
+        "correctAnswer": "A. Atom",
+        "hint": "An atom is the fundamental building unit of an element that takes part in reactions.",
+        "workedSolution": "An atom is the fundamental building unit of an element that takes part in reactions.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A substance composed of only one type of atom that cannot be split into simpler substances by chemical means is an:",
+        "options": [
+          "A. Element",
+          "B. Alloy",
+          "C. Solution",
+          "D. Ion"
+        ],
+        "correctAnswer": "A. Element",
+        "hint": "An element consists of identical atoms and cannot be simplified chemically.",
+        "workedSolution": "An element consists of identical atoms and cannot be simplified chemically.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the three fundamental subatomic particles that make up an atom?",
+        "options": [
+          "A. Cells, tissues, and organs",
+          "B. Protons, neutrons, and electrons",
+          "C. Solutes, solvents, and solutions",
+          "D. Solids, liquids, and gases"
+        ],
+        "correctAnswer": "B. Protons, neutrons, and electrons",
+        "hint": "Atoms are composed of subatomic protons, neutrons, and electrons.",
+        "workedSolution": "Atoms are composed of subatomic protons, neutrons, and electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What electrical charge is carried by a proton?",
+        "options": [
+          "A. Positive (+)",
+          "B. Negative (-)",
+          "C. Neutral (0)",
+          "D. Variable"
+        ],
+        "correctAnswer": "A. Positive (+)",
+        "hint": "Protons have a positive electrical charge of +1.",
+        "workedSolution": "Protons have a positive electrical charge of +1.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the electrical charge of an electron?",
+        "options": [
+          "A. Positive (+)",
+          "B. Negative (-)",
+          "C. Neutral (0)",
+          "D. Super-heated"
+        ],
+        "correctAnswer": "B. Negative (-)",
+        "hint": "Electrons carry a unit negative electrical charge (-1).",
+        "workedSolution": "Electrons carry a unit negative electrical charge (-1).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which subatomic particle has no electrical charge (is neutral)?",
+        "options": [
+          "A. Proton",
+          "B. Neutron",
+          "C. Electron",
+          "D. Positron"
+        ],
+        "correctAnswer": "B. Neutron",
+        "hint": "Neutrons have zero electrical charge.",
+        "workedSolution": "Neutrons have zero electrical charge.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where in the atom are protons and neutrons located?",
+        "options": [
+          "A. In the outer electron shells",
+          "B. Inside the central nucleus",
+          "C. Free floating outside the atom",
+          "D. In the cell wall"
+        ],
+        "correctAnswer": "B. Inside the central nucleus",
+        "hint": "Protons and neutrons are tightly bound within the central nucleus.",
+        "workedSolution": "Protons and neutrons are tightly bound within the central nucleus.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the relative mass of a proton in atomic mass units (a.m.u.)?",
+        "options": [
+          "A. 0 a.m.u.",
+          "B. 1 a.m.u.",
+          "C. 10 a.m.u.",
+          "D. 1840 a.m.u."
+        ],
+        "correctAnswer": "B. 1 a.m.u.",
+        "hint": "A proton has a relative atomic mass of approximately 1 a.m.u..",
+        "workedSolution": "A proton has a relative atomic mass of approximately 1 a.m.u..",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which subatomic particle has a negligible (almost zero) mass?",
+        "options": [
+          "A. Proton",
+          "B. Neutron",
+          "C. Electron",
+          "D. Nucleus"
+        ],
+        "correctAnswer": "C. Electron",
+        "hint": "Electrons have negligible mass compared to nucleons (about 1/1840 a.m.u.).",
+        "workedSolution": "Electrons have negligible mass compared to nucleons (about 1/1840 a.m.u.).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What does the atomic number (Z) of an element represent?",
+        "options": [
+          "A. Total number of neutrons",
+          "B. Total number of protons in the nucleus",
+          "C. Number of shells in the atom",
+          "D. Sum of protons and electrons"
+        ],
+        "correctAnswer": "B. Total number of protons in the nucleus",
+        "hint": "Atomic number (Z) is defined as the number of protons in an atom's nucleus.",
+        "workedSolution": "Atomic number (Z) is defined as the number of protons in an atom's nucleus.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In a neutral atom, the number of protons is always equal to the number of:",
+        "options": [
+          "A. Neutrons",
+          "B. Electrons",
+          "C. Nuclei",
+          "D. Shells"
+        ],
+        "correctAnswer": "B. Electrons",
+        "hint": "To remain electrically neutral, positive protons must equal negative electrons.",
+        "workedSolution": "To remain electrically neutral, positive protons must equal negative electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What does the mass number (A) of an atom represent?",
+        "options": [
+          "A. The number of electrons only",
+          "B. The total number of protons and neutrons in the nucleus",
+          "C. The number of electron shells",
+          "D. The volume of the atom"
+        ],
+        "correctAnswer": "B. The total number of protons and neutrons in the nucleus",
+        "hint": "Mass number (A) equals the sum of protons (Z) and neutrons (n).",
+        "workedSolution": "Mass number (A) equals the sum of protons (Z) and neutrons (n).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do you calculate the number of neutrons in an atom?",
+        "options": [
+          "A. Neutrons = Mass number + Atomic number",
+          "B. Neutrons = Mass number - Atomic number (n = A - Z)",
+          "C. Neutrons = Atomic number × 2",
+          "D. Neutrons = Electrons ÷ 2"
+        ],
+        "correctAnswer": "B. Neutrons = Mass number - Atomic number (n = A - Z)",
+        "hint": "Since A = Z + n, rearranging gives n = A - Z.",
+        "workedSolution": "Since A = Z + n, rearranging gives n = A - Z.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the name of the first electron shell closest to the nucleus?",
+        "options": [
+          "A. K-shell",
+          "B. L-shell",
+          "C. M-shell",
+          "D. N-shell"
+        ],
+        "correctAnswer": "A. K-shell",
+        "hint": "The 1st shell is designated the K-shell.",
+        "workedSolution": "The 1st shell is designated the K-shell.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the maximum number of electrons that the first (K) shell can hold?",
+        "options": [
+          "A. 2 electrons",
+          "B. 8 electrons",
+          "C. 18 electrons",
+          "D. 32 electrons"
+        ],
+        "correctAnswer": "A. 2 electrons",
+        "hint": "Using 2n^2 with n = 1, the K-shell accommodates a maximum of 2 electrons.",
+        "workedSolution": "Using 2n^2 with n = 1, the K-shell accommodates a maximum of 2 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the maximum number of electrons the second (L) shell can hold?",
+        "options": [
+          "A. 2",
+          "B. 8",
+          "C. 10",
+          "D. 18"
+        ],
+        "correctAnswer": "B. 8",
+        "hint": "The L-shell (n = 2) can hold up to 8 electrons.",
+        "workedSolution": "The L-shell (n = 2) can hold up to 8 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the electron configuration of a Sodium atom with atomic number 11?",
+        "options": [
+          "A. 2, 8, 1",
+          "B. 2, 9",
+          "C. 1, 8, 2",
+          "D. 2, 8, 8"
+        ],
+        "correctAnswer": "A. 2, 8, 1",
+        "hint": "11 electrons fill shells as 2 in K, 8 in L, and 1 in M (2, 8, 1).",
+        "workedSolution": "11 electrons fill shells as 2 in K, 8 in L, and 1 in M (2, 8, 1).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is an ion?",
+        "options": [
+          "A. A neutral atom with equal charges",
+          "B. An electrically charged atom formed by losing or gaining electrons",
+          "C. A solid mixed with a liquid",
+          "D. An uncharged neutron"
+        ],
+        "correctAnswer": "B. An electrically charged atom formed by losing or gaining electrons",
+        "hint": "An ion is formed when an atom gains or loses electrons, acquiring a net electrical charge.",
+        "workedSolution": "An ion is formed when an atom gains or loses electrons, acquiring a net electrical charge.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A positively charged ion formed when a neutral atom loses electrons is called a/an:",
+        "options": [
+          "A. Anion",
+          "B. Cation",
+          "C. Isotope",
+          "D. Molecule"
+        ],
+        "correctAnswer": "B. Cation",
+        "hint": "Loss of negative electrons leaves an excess of positive protons, forming a cation.",
+        "workedSolution": "Loss of negative electrons leaves an excess of positive protons, forming a cation.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "A negatively charged ion formed when a neutral atom gains electrons is called a/an:",
+        "options": [
+          "A. Cation",
+          "B. Anion",
+          "C. Nuclide",
+          "D. Nucleus"
+        ],
+        "correctAnswer": "B. Anion",
+        "hint": "Gaining electrons creates an excess of negative charge, producing an anion.",
+        "workedSolution": "Gaining electrons creates an excess of negative charge, producing an anion.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for the element Potassium?",
+        "options": [
+          "A. P",
+          "B. Po",
+          "C. K",
+          "D. Pt"
+        ],
+        "correctAnswer": "C. K",
+        "hint": "Potassium is represented by the chemical symbol K.",
+        "workedSolution": "Potassium is represented by the chemical symbol K.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "Which pair of elements will combine predominantly by covalent bonding?",
+        "prompt": "Why is brass (copper and zinc) classified as a mixture rather than a compound?",
         "options": [
-          "Sodium and Chlorine",
-          "Carbon and Oxygen",
-          "Magnesium and Oxygen",
-          "Calcium and Fluorine"
+          "A. Its constituent metals are chemically bonded in fixed proportions",
+          "B. Its constituents retain their individual properties and can be mixed in variable proportions without a chemical reaction",
+          "C. It melts at a single fixed temperature",
+          "D. It cannot conduct heat or electricity"
         ],
-        "correctAnswer": "Carbon and Oxygen",
-        "hint": "Covalent bonds occur between non-metals sharing electron pairs.",
-        "workedSolution": "Carbon and Oxygen are both non-metals. Neither loses electrons readily; instead, they share electron pairs to form covalent carbon dioxide (CO2). Metal + non-metal pairs form ionic bonds.",
+        "correctAnswer": "B. Its constituents retain their individual properties and can be mixed in variable proportions without a chemical reaction",
+        "hint": "Alloys are physical mixtures: components are not chemically bonded and retain their individual physical traits.",
+        "workedSolution": "Alloys are physical mixtures: components are not chemically bonded and retain their individual physical traits.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a beam of light become visible when passing through a colloid (Tyndall effect) but remains invisible in a true solution?",
+        "options": [
+          "A. Colloidal particles (1-1000 nm) are large enough to scatter light, whereas true solution particles (<1 nm) are too small",
+          "B. True solutions absorb 100% of light energy",
+          "C. Colloidal particles emit their own light",
+          "D. True solutions are always opaque"
+        ],
+        "correctAnswer": "A. Colloidal particles (1-1000 nm) are large enough to scatter light, whereas true solution particles (<1 nm) are too small",
+        "hint": "Particles between 1 nm and 1000 nm scatter visible light rays; true solution particles are too small to scatter light.",
+        "workedSolution": "Particles between 1 nm and 1000 nm scatter visible light rays; true solution particles are too small to scatter light.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a suspension settle into layers when left undisturbed while a colloid remains uniformly dispersed?",
+        "options": [
+          "A. Suspensions contain larger particles (>1000 nm) that gravity pulls down; colloidal particles are small enough to remain suspended",
+          "B. Colloids are boiling liquids",
+          "C. Suspensions are pure substances",
+          "D. Colloidal particles are magnetic"
+        ],
+        "correctAnswer": "A. Suspensions contain larger particles (>1000 nm) that gravity pulls down; colloidal particles are small enough to remain suspended",
+        "hint": "Particles greater than 1000 nm in suspensions are overcome by gravity and settle as sediment.",
+        "workedSolution": "Particles greater than 1000 nm in suspensions are overcome by gravity and settle as sediment.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of cold water circulating through the jacket of a Liebig condenser during distillation?",
+        "options": [
+          "A. To cool hot vapor back into liquid distillate",
+          "B. To react chemically with the hot vapor",
+          "C. To heat up the receiving flask",
+          "D. To filter out insoluble dirt"
+        ],
+        "correctAnswer": "A. To cool hot vapor back into liquid distillate",
+        "hint": "Cold water running through the outer jacket removes heat from the inner vapor tube, condensing vapor to liquid.",
+        "workedSolution": "Cold water running through the outer jacket removes heat from the inner vapor tube, condensing vapor to liquid.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the fractionating column enable the separation of ethanol (boiling point 78°C) from water (boiling point 100°C)?",
+        "options": [
+          "A. It provides surfaces for repeated condensation and vaporization, allowing the more volatile ethanol to rise to the top first",
+          "B. It freezes water into ice inside the column",
+          "C. It uses a magnet to pull ethanol upward",
+          "D. It decomposes water into oxygen and hydrogen"
+        ],
+        "correctAnswer": "A. It provides surfaces for repeated condensation and vaporization, allowing the more volatile ethanol to rise to the top first",
+        "hint": "Repeated vaporization and condensation cycles along the column concentrate the lower-boiling-point vapor at the top.",
+        "workedSolution": "Repeated vaporization and condensation cycles along the column concentrate the lower-boiling-point vapor at the top.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "When separating a mixture of sand and sodium chloride (table salt), which sequence of separation methods is correct?",
+        "options": [
+          "A. Sublimation → Condensation",
+          "B. Dissolution in water → Filtration → Evaporation to dryness",
+          "C. Magnetic separation → Decantation",
+          "D. Chromatography → Distillation"
+        ],
+        "correctAnswer": "B. Dissolution in water → Filtration → Evaporation to dryness",
+        "hint": "Add water to dissolve salt, filter to collect sand as residue, and evaporate the filtrate to obtain dry salt crystals.",
+        "workedSolution": "Add water to dissolve salt, filter to collect sand as residue, and evaporate the filtrate to obtain dry salt crystals.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In a sublimation apparatus, what is the purpose of placing a cotton plug in the top stem of the inverted funnel?",
+        "options": [
+          "A. To prevent sublimed vapor from escaping into the atmosphere so it condenses on the cold funnel walls",
+          "B. To catch liquid water droplets",
+          "C. To ignite the flame inside the funnel",
+          "D. To filter out non-subliming solids"
+        ],
+        "correctAnswer": "A. To prevent sublimed vapor from escaping into the atmosphere so it condenses on the cold funnel walls",
+        "hint": "The cotton plug closes the funnel stem, trapping vapor inside to deposit as crystals on the glass.",
+        "workedSolution": "The cotton plug closes the funnel stem, trapping vapor inside to deposit as crystals on the glass.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is paper chromatography effective at separating different dyes in an ink sample?",
+        "options": [
+          "A. Each dye has a different solubility in the solvent and moves at a different rate through the paper",
+          "B. The dyes react chemically with the paper fibers",
+          "C. All dyes travel at identical speeds",
+          "D. The paper melts the dyes with heat"
+        ],
+        "correctAnswer": "A. Each dye has a different solubility in the solvent and moves at a different rate through the paper",
+        "hint": "Components travel at different velocities based on their solubility in the mobile phase and attraction to paper fibers.",
+        "workedSolution": "Components travel at different velocities based on their solubility in the mobile phase and attraction to paper fibers.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why can decantation NOT fully replace filtration when separating chalk powder from water?",
+        "options": [
+          "A. Decantation cannot remove fine particles that remain suspended in the liquid",
+          "B. Decantation dissolves chalk chemically",
+          "C. Chalk is a magnetic substance",
+          "D. Decantation only works for gases"
+        ],
+        "correctAnswer": "A. Decantation cannot remove fine particles that remain suspended in the liquid",
+        "hint": "Fine particles remain suspended and pour over with the liquid, unlike filtration which traps all solids on paper.",
+        "workedSolution": "Fine particles remain suspended and pour over with the liquid, unlike filtration which traps all solids on paper.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An atom has 17 protons, 18 neutrons, and 17 electrons. What is its mass number?",
+        "options": [
+          "A. 17",
+          "B. 18",
+          "C. 34",
+          "D. 35"
+        ],
+        "correctAnswer": "D. 35",
+        "hint": "Mass number A = protons + neutrons = 17 + 18 = 35.",
+        "workedSolution": "Mass number A = protons + neutrons = 17 + 18 = 35.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An atom has an atomic number of 12 and a mass number of 24. How many neutrons does it contain?",
+        "options": [
+          "A. 6",
+          "B. 12",
+          "C. 24",
+          "D. 36"
+        ],
+        "correctAnswer": "B. 12",
+        "hint": "Neutrons n = A - Z = 24 - 12 = 12 neutrons.",
+        "workedSolution": "Neutrons n = A - Z = 24 - 12 = 12 neutrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is an uncharged atom electrically neutral?",
+        "options": [
+          "A. The number of positively charged protons equals the number of negatively charged electrons",
+          "B. Neutrons cancel out the mass of electrons",
+          "C. Protons have no charge inside the nucleus",
+          "D. Electrons carry a positive charge in the shells"
+        ],
+        "correctAnswer": "A. The number of positively charged protons equals the number of negatively charged electrons",
+        "hint": "Equal numbers of positive protons and negative electrons cancel out net electrical charge.",
+        "workedSolution": "Equal numbers of positive protons and negative electrons cancel out net electrical charge.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the electron configuration of a Chlorine atom (atomic number 17)?",
+        "options": [
+          "A. 2, 7, 8",
+          "B. 2, 8, 7",
+          "C. 2, 8, 8, 1",
+          "D. 17"
+        ],
+        "correctAnswer": "B. 2, 8, 7",
+        "hint": "17 electrons fill as 2 in the 1st shell, 8 in the 2nd shell, and 7 in the 3rd shell (2, 8, 7).",
+        "workedSolution": "17 electrons fill as 2 in the 1st shell, 8 in the 2nd shell, and 7 in the 3rd shell (2, 8, 7).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the electron configuration of Calcium (atomic number 20)?",
+        "options": [
+          "A. 2, 8, 8, 2",
+          "B. 2, 8, 10",
+          "C. 2, 18",
+          "D. 2, 8, 9, 1"
+        ],
+        "correctAnswer": "A. 2, 8, 8, 2",
+        "hint": "Following the 2, 8, 8, 2 filling rule for the first 20 elements, Calcium is 2, 8, 8, 2.",
+        "workedSolution": "Following the 2, 8, 8, 2 filling rule for the first 20 elements, Calcium is 2, 8, 8, 2.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do atoms of elements lose or gain electrons during chemical reactions?",
+        "options": [
+          "A. To achieve a stable, full outer electron shell like noble gases",
+          "B. To destroy their nucleus",
+          "C. To increase their mass number",
+          "D. To turn into neutrons"
+        ],
+        "correctAnswer": "A. To achieve a stable, full outer electron shell like noble gases",
+        "hint": "Atoms transfer electrons to attain a full, stable outer shell configuration (octet/duplet rule).",
+        "workedSolution": "Atoms transfer electrons to attain a full, stable outer shell configuration (octet/duplet rule).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "When a neutral Sodium atom (2, 8, 1) forms a sodium ion (Na⁺), what happens?",
+        "options": [
+          "A. It loses its 1 outer electron, leaving 11 protons and 10 electrons",
+          "B. It gains 7 electrons to fill the shell",
+          "C. It gains 1 proton in its nucleus",
+          "D. Its mass number doubles"
+        ],
+        "correctAnswer": "A. It loses its 1 outer electron, leaving 11 protons and 10 electrons",
+        "hint": "Sodium loses 1 valence electron; with 11 protons and 10 electrons, it carries a +1 charge.",
+        "workedSolution": "Sodium loses 1 valence electron; with 11 protons and 10 electrons, it carries a +1 charge.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "When a neutral Chlorine atom (2, 8, 7) forms a chloride ion (Cl⁻), what occurs?",
+        "options": [
+          "A. It gains 1 electron, leaving 17 protons and 18 electrons",
+          "B. It loses all 7 valence electrons",
+          "C. It loses 1 proton from the nucleus",
+          "D. It becomes a cation"
+        ],
+        "correctAnswer": "A. It gains 1 electron, leaving 17 protons and 18 electrons",
+        "hint": "Chlorine gains 1 electron to achieve 2, 8, 8; with 17 protons and 18 electrons, its net charge is -1.",
+        "workedSolution": "Chlorine gains 1 electron to achieve 2, 8, 8; with 17 protons and 18 electrons, its net charge is -1.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following represents a group of cations?",
+        "options": [
+          "A. Cl⁻, O²⁻, N³⁻",
+          "B. Na⁺, K⁺, Mg²⁺, Ca²⁺",
+          "C. H₂O, CO₂, CH₄",
+          "D. He, Ne, Ar"
+        ],
+        "correctAnswer": "B. Na⁺, K⁺, Mg²⁺, Ca²⁺",
+        "hint": "Na⁺, K⁺, Mg²⁺, and Ca²⁺ are positively charged metal ions (cations).",
+        "workedSolution": "Na⁺, K⁺, Mg²⁺, and Ca²⁺ are positively charged metal ions (cations).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following represents anions?",
+        "options": [
+          "A. Na⁺, Al³⁺",
+          "B. Cl⁻, O²⁻",
+          "C. Fe, Cu",
+          "D. K⁺, Ca²⁺"
+        ],
+        "correctAnswer": "B. Cl⁻, O²⁻",
+        "hint": "Chloride (Cl⁻) and oxide (O²⁻) are negatively charged non-metal ions (anions).",
+        "workedSolution": "Chloride (Cl⁻) and oxide (O²⁻) are negatively charged non-metal ions (anions).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for the element Iron?",
+        "options": [
+          "A. Ir",
+          "B. In",
+          "C. Fe",
+          "D. I"
+        ],
+        "correctAnswer": "C. Fe",
+        "hint": "Iron derives its chemical symbol Fe from its Latin name Ferrum.",
+        "workedSolution": "Iron derives its chemical symbol Fe from its Latin name Ferrum.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Lead?",
+        "options": [
+          "A. Ld",
+          "B. Pb",
+          "C. Le",
+          "D. Sn"
+        ],
+        "correctAnswer": "B. Pb",
+        "hint": "Lead has the chemical symbol Pb from Plumbum.",
+        "workedSolution": "Lead has the chemical symbol Pb from Plumbum.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Silver?",
+        "options": [
+          "A. Si",
+          "B. Ag",
+          "C. Au",
+          "D. Sl"
+        ],
+        "correctAnswer": "B. Ag",
+        "hint": "Silver has the symbol Ag from Argentum.",
+        "workedSolution": "Silver has the symbol Ag from Argentum.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Gold?",
+        "options": [
+          "A. Gd",
+          "B. Go",
+          "C. Au",
+          "D. Ag"
+        ],
+        "correctAnswer": "C. Au",
+        "hint": "Gold has the symbol Au from Aurum.",
+        "workedSolution": "Gold has the symbol Au from Aurum.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Copper?",
+        "options": [
+          "A. Co",
+          "B. Cp",
+          "C. Cu",
+          "D. Cr"
+        ],
+        "correctAnswer": "C. Cu",
+        "hint": "Copper is represented by the symbol Cu.",
+        "workedSolution": "Copper is represented by the symbol Cu.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has the symbol Sn?",
+        "options": [
+          "A. Sodium",
+          "B. Tin",
+          "C. Sulfur",
+          "D. Silicon"
+        ],
+        "correctAnswer": "B. Tin",
+        "hint": "Sn is the symbol for Tin (from Stannum).",
+        "workedSolution": "Sn is the symbol for Tin (from Stannum).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which element has the symbol Hg?",
+        "options": [
+          "A. Hydrogen",
+          "B. Helium",
+          "C. Mercury",
+          "D. Magnesium"
+        ],
+        "correctAnswer": "C. Mercury",
+        "hint": "Mercury is represented by the symbol Hg (from Hydrargyrum).",
+        "workedSolution": "Mercury is represented by the symbol Hg (from Hydrargyrum).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is air considered a mixture rather than a chemical compound?",
+        "options": [
+          "A. Its constituent gases can be separated by physical means and vary in proportion from place to place",
+          "B. It has a single fixed chemical formula",
+          "C. Heat is always produced when gases combine to form air",
+          "D. It cannot be liquefied"
+        ],
+        "correctAnswer": "A. Its constituent gases can be separated by physical means and vary in proportion from place to place",
+        "hint": "Air has no fixed chemical formula, its components retain their properties, and it can be separated physically.",
+        "workedSolution": "Air has no fixed chemical formula, its components retain their properties, and it can be separated physically.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following mixtures can be separated using a separating funnel?",
+        "options": [
+          "A. Alcohol and water",
+          "B. Palm oil and water",
+          "C. Salt and water",
+          "D. Sugar and water"
+        ],
+        "correctAnswer": "B. Palm oil and water",
+        "hint": "Palm oil and water are immiscible liquids of different densities, easily separated by a separating funnel.",
+        "workedSolution": "Palm oil and water are immiscible liquids of different densities, easily separated by a separating funnel.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In a separating funnel containing kerosene and water, which liquid forms the bottom layer?",
+        "options": [
+          "A. Kerosene, because it has lower density",
+          "B. Water, because it has higher density than kerosene",
+          "C. Both mix together into one layer",
+          "D. The liquid with the lower boiling point"
+        ],
+        "correctAnswer": "B. Water, because it has higher density than kerosene",
+        "hint": "Water is denser than kerosene and sinks to the bottom of the funnel.",
+        "workedSolution": "Water is denser than kerosene and sinks to the bottom of the funnel.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does simple distillation recover both the solute and solvent, whereas evaporation loses the solvent?",
+        "options": [
+          "A. Distillation condenses the evaporated solvent vapor using a cooling condenser, whereas evaporation allows vapor to escape",
+          "B. Distillation uses filter paper to trap the liquid",
+          "C. Evaporation destroys the solute chemically",
+          "D. Distillation does not require heat"
+        ],
+        "correctAnswer": "A. Distillation condenses the evaporated solvent vapor using a cooling condenser, whereas evaporation allows vapor to escape",
+        "hint": "In simple distillation, evaporated solvent vapor is cooled in a condenser and collected, saving both parts.",
+        "workedSolution": "In simple distillation, evaporated solvent vapor is cooled in a condenser and collected, saving both parts.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the electron configuration of an Aluminium atom (atomic number 13)?",
+        "options": [
+          "A. 2, 8, 3",
+          "B. 2, 3, 8",
+          "C. 3, 8, 2",
+          "D. 2, 8, 2, 1"
+        ],
+        "correctAnswer": "A. 2, 8, 3",
+        "hint": "Aluminium's 13 electrons fill as 2 in K, 8 in L, and 3 in M (2, 8, 3).",
+        "workedSolution": "Aluminium's 13 electrons fill as 2 in K, 8 in L, and 3 in M (2, 8, 3).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many valence electrons are present in an Oxygen atom (atomic number 8)?",
+        "options": [
+          "A. 2",
+          "B. 6",
+          "C. 8",
+          "D. 4"
+        ],
+        "correctAnswer": "B. 6",
+        "hint": "Oxygen has electron configuration 2, 6; the outermost shell contains 6 valence electrons.",
+        "workedSolution": "Oxygen has electron configuration 2, 6; the outermost shell contains 6 valence electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many electrons does an atom of Oxygen need to gain to achieve a stable octet structure?",
+        "options": [
+          "A. 1 electron",
+          "B. 2 electrons",
+          "C. 6 electrons",
+          "D. 8 electrons"
+        ],
+        "correctAnswer": "B. 2 electrons",
+        "hint": "Oxygen (2, 6) needs 2 electrons to complete its valence shell to 8, forming O²⁻.",
+        "workedSolution": "Oxygen (2, 6) needs 2 electrons to complete its valence shell to 8, forming O²⁻.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the charge on an Aluminium ion formed from an Al atom (2, 8, 3)?",
+        "options": [
+          "A. +1",
+          "B. +2",
+          "C. +3",
+          "D. -3"
+        ],
+        "correctAnswer": "C. +3",
+        "hint": "Aluminium loses its 3 valence electrons to form Al³⁺.",
+        "workedSolution": "Aluminium loses its 3 valence electrons to form Al³⁺.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "An atom has 8 protons and 9 neutrons. What is its standard nuclide representation?",
+        "options": [
+          "A. ¹⁷₈O",
+          "B. ⁹₈O",
+          "C. ⁸₁₇O",
+          "D. ¹₇₉O"
+        ],
+        "correctAnswer": "A. ¹⁷₈O",
+        "hint": "Z = 8 (subscript), A = 8 + 9 = 17 (superscript); the nuclide is ¹⁷₈O.",
+        "workedSolution": "Z = 8 (subscript), A = 8 + 9 = 17 (superscript); the nuclide is ¹⁷₈O.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "In the nuclide notation ²³₁₁Na, what do the numbers 23 and 11 represent?",
+        "options": [
+          "A. 23 is atomic number; 11 is mass number",
+          "B. 23 is mass number; 11 is atomic number",
+          "C. 23 is electrons; 11 is neutrons",
+          "D. 23 is neutrons; 11 is protons"
+        ],
+        "correctAnswer": "B. 23 is mass number; 11 is atomic number",
+        "hint": "The top number (23) is the mass number A; the bottom number (11) is the atomic number Z.",
+        "workedSolution": "The top number (23) is the mass number A; the bottom number (11) is the atomic number Z.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many neutrons are in the nuclide ³⁹₁₉K?",
+        "options": [
+          "A. 19",
+          "B. 20",
+          "C. 39",
+          "D. 58"
+        ],
+        "correctAnswer": "B. 20",
+        "hint": "Neutrons n = A - Z = 39 - 19 = 20 neutrons.",
+        "workedSolution": "Neutrons n = A - Z = 39 - 19 = 20 neutrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements has a stable duplet outer shell configuration in its neutral atom?",
+        "options": [
+          "A. Hydrogen",
+          "B. Helium",
+          "C. Neon",
+          "D. Argon"
+        ],
+        "correctAnswer": "B. Helium",
+        "hint": "Helium has atomic number 2 with a fully occupied first shell (duplet).",
+        "workedSolution": "Helium has atomic number 2 with a fully occupied first shell (duplet).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following elements has a complete octet (8 electrons) in its outer shell as a neutral atom?",
+        "options": [
+          "A. Carbon",
+          "B. Nitrogen",
+          "C. Neon",
+          "D. Sodium"
+        ],
+        "correctAnswer": "C. Neon",
+        "hint": "Neon (atomic number 10) has electron configuration 2, 8, with an octet outer shell.",
+        "workedSolution": "Neon (atomic number 10) has electron configuration 2, 8, with an octet outer shell.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do Magnesium (2, 8, 2) and Calcium (2, 8, 8, 2) exhibit similar chemical properties?",
+        "options": [
+          "A. They have the same number of valence electrons (2)",
+          "B. They have the same atomic number",
+          "C. They have identical mass numbers",
+          "D. They have the same number of shells"
+        ],
+        "correctAnswer": "A. They have the same number of valence electrons (2)",
+        "hint": "Elements with the same number of valence electrons exhibit similar chemical reactivities.",
+        "workedSolution": "Elements with the same number of valence electrons exhibit similar chemical reactivities.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the electron configuration of a Magnesium ion (Mg²⁺)?",
+        "options": [
+          "A. 2, 8, 2",
+          "B. 2, 8",
+          "C. 2, 8, 8",
+          "D. 2, 8, 4"
+        ],
+        "correctAnswer": "B. 2, 8",
+        "hint": "Neutral Mg (2, 8, 2) loses its 2 valence electrons, leaving the configuration 2, 8.",
+        "workedSolution": "Neutral Mg (2, 8, 2) loses its 2 valence electrons, leaving the configuration 2, 8.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the electron configuration of an Oxide ion (O²⁻)?",
+        "options": [
+          "A. 2, 6",
+          "B. 2, 8",
+          "C. 2, 4",
+          "D. 2, 8, 2"
+        ],
+        "correctAnswer": "B. 2, 8",
+        "hint": "Neutral Oxygen (2, 6) gains 2 electrons to form O²⁻ with configuration 2, 8.",
+        "workedSolution": "Neutral Oxygen (2, 6) gains 2 electrons to form O²⁻ with configuration 2, 8.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which separation method is used industrially to extract local gin (akpeteshie) from fermented palm wine?",
+        "options": [
+          "A. Distillation",
+          "B. Sublimation",
+          "C. Magnetic separation",
+          "D. Decantation"
+        ],
+        "correctAnswer": "A. Distillation",
+        "hint": "Akpeteshie is distilled from fermented palm wine based on differences in boiling points.",
+        "workedSolution": "Akpeteshie is distilled from fermented palm wine based on differences in boiling points.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following products is obtained from the fractional distillation of crude oil?",
+        "options": [
+          "A. Bronze",
+          "B. Bitumen and diesel",
+          "C. Sodium chloride",
+          "D. Starch"
+        ],
+        "correctAnswer": "B. Bitumen and diesel",
+        "hint": "Crude oil yields gas oil, bitumen, diesel, and lubricating oils upon fractional distillation.",
+        "workedSolution": "Crude oil yields gas oil, bitumen, diesel, and lubricating oils upon fractional distillation.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does heating a saturated solution allow more solute to dissolve?",
+        "options": [
+          "A. Increasing temperature increases the kinetic motion of solvent molecules, expanding solubility",
+          "B. Heat destroys the solute particles",
+          "C. The solution turns into a suspension",
+          "D. Heat makes the solution immiscible"
+        ],
+        "correctAnswer": "A. Increasing temperature increases the kinetic motion of solvent molecules, expanding solubility",
+        "hint": "Solubility of most solid solutes increases with rising temperature.",
+        "workedSolution": "Solubility of most solid solutes increases with rising temperature.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which non-metal is represented by the chemical symbol P?",
+        "options": [
+          "A. Potassium",
+          "B. Phosphorus",
+          "C. Lead",
+          "D. Platinum"
+        ],
+        "correctAnswer": "B. Phosphorus",
+        "hint": "P is the chemical symbol for Phosphorus (atomic number 15).",
+        "workedSolution": "P is the chemical symbol for Phosphorus (atomic number 15).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Manganese?",
+        "options": [
+          "A. Mg",
+          "B. Mn",
+          "C. Ma",
+          "D. Me"
+        ],
+        "correctAnswer": "B. Mn",
+        "hint": "Manganese is represented by Mn; Mg is Magnesium.",
+        "workedSolution": "Manganese is represented by Mn; Mg is Magnesium.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the chemical symbol for Zinc?",
+        "options": [
+          "A. Z",
+          "B. Zi",
+          "C. Zn",
+          "D. Zc"
+        ],
+        "correctAnswer": "C. Zn",
+        "hint": "Zinc has the chemical symbol Zn.",
+        "workedSolution": "Zinc has the chemical symbol Zn.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How many electron shells are occupied in a Potassium atom (atomic number 19)?",
+        "options": [
+          "A. 2 shells",
+          "B. 3 shells",
+          "C. 4 shells",
+          "D. 5 shells"
+        ],
+        "correctAnswer": "C. 4 shells",
+        "hint": "Potassium's configuration (2, 8, 8, 1) occupies four shells (K, L, M, N).",
+        "workedSolution": "Potassium's configuration (2, 8, 8, 1) occupies four shells (K, L, M, N).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which subatomic particle was discovered to move in designated orbitals around the nucleus?",
+        "options": [
+          "A. Proton",
+          "B. Neutron",
+          "C. Electron",
+          "D. Alpha particle"
+        ],
+        "correctAnswer": "C. Electron",
+        "hint": "Electrons orbit the central nucleus within defined energy levels or shells.",
+        "workedSolution": "Electrons orbit the central nucleus within defined energy levels or shells.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An element X has mass number 31 and contains 16 neutrons. Determine its atomic number, its electron configuration, and its valency.",
+        "options": [
+          "A. Atomic number = 15; Configuration = 2, 8, 5; Valency = 3",
+          "B. Atomic number = 16; Configuration = 2, 8, 6; Valency = 2",
+          "C. Atomic number = 15; Configuration = 2, 8, 5; Valency = 5",
+          "D. Atomic number = 47; Configuration = 2, 8, 8; Valency = 1"
+        ],
+        "correctAnswer": "A. Atomic number = 15; Configuration = 2, 8, 5; Valency = 3",
+        "hint": "Z = A - n = 31 - 16 = 15 (Phosphorus). Configuration is 2, 8, 5. To complete an octet it needs 3 electrons, so its combining capacity (valency) is 3.",
+        "workedSolution": "Z = A - n = 31 - 16 = 15 (Phosphorus). Configuration is 2, 8, 5. To complete an octet it needs 3 electrons, so its combining capacity (valency) is 3.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Calculate the maximum theoretical number of electrons that can occupy the 4th electron shell (N-shell) using the formula 2n².",
+        "options": [
+          "A. 8 electrons",
+          "B. 16 electrons",
+          "C. 32 electrons",
+          "D. 64 electrons"
+        ],
+        "correctAnswer": "C. 32 electrons",
+        "hint": "Using 2n² with n = 4: 2 × (4)² = 2 × 16 = 32 electrons.",
+        "workedSolution": "Using 2n² with n = 4: 2 × (4)² = 2 × 16 = 32 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A sample containing 5.0 g of salt and 15.0 g of fine sand is stirred into 100 mL of water and filtered. The residue on the filter paper is dried. What is the expected mass of the dry residue?",
+        "options": [
+          "A. 5.0 g",
+          "B. 15.0 g",
+          "C. 20.0 g",
+          "D. 0.0 g"
+        ],
+        "correctAnswer": "B. 15.0 g",
+        "hint": "Sand is insoluble and remains on the filter paper as residue (15.0 g); the salt dissolves and passes into the filtrate.",
+        "workedSolution": "Sand is insoluble and remains on the filter paper as residue (15.0 g); the salt dissolves and passes into the filtrate.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "If 20 g of salt is dissolved in 80 g of water to make a saline solution, what is the percentage by mass (% w/w) of the solute in the solution?",
+        "options": [
+          "A. 20%",
+          "B. 25%",
+          "C. 80%",
+          "D. 16%"
+        ],
+        "correctAnswer": "A. 20%",
+        "hint": "Total mass of solution = solute + solvent = 20 g + 80 g = 100 g. % concentration = (20 / 100) × 100% = 20%.",
+        "workedSolution": "Total mass of solution = solute + solvent = 20 g + 80 g = 100 g. % concentration = (20 / 100) × 100% = 20%.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A student separates a mixture of ammonium chloride, iron filings, and sand. Which order of operations successfully isolates all three components?",
+        "options": [
+          "A. Magnet → Heat (Sublimation) → Add water, filter, and dry",
+          "B. Add water → Evaporate → Filter → Magnet",
+          "C. Distillation → Decantation → Chromatography",
+          "D. Filter → Magnet → Condense"
+        ],
+        "correctAnswer": "A. Magnet → Heat (Sublimation) → Add water, filter, and dry",
+        "hint": "Use a magnet to extract iron filings, heat to sublime ammonium chloride, and sand remains as the final residue.",
+        "workedSolution": "Use a magnet to extract iron filings, heat to sublime ammonium chloride, and sand remains as the final residue.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An unknown ion Y²⁺ has an electron configuration of 2, 8 and contains 12 neutrons. What is the mass number of element Y?",
+        "options": [
+          "A. 10",
+          "B. 22",
+          "C. 24",
+          "D. 26"
+        ],
+        "correctAnswer": "C. 24",
+        "hint": "Y²⁺ lost 2 electrons to have 10 electrons, so neutral Y has 12 electrons (Z = 12, Magnesium). Mass number A = Z + n = 12 + 12 = 24.",
+        "workedSolution": "Y²⁺ lost 2 electrons to have 10 electrons, so neutral Y has 12 electrons (Z = 12, Magnesium). Mass number A = Z + n = 12 + 12 = 24.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An anion Z³⁻ has 18 electrons and a mass number of 31. How many neutrons are present in its nucleus?",
+        "options": [
+          "A. 15",
+          "B. 16",
+          "C. 18",
+          "D. 31"
+        ],
+        "correctAnswer": "B. 16",
+        "hint": "Z gained 3 electrons to have 18 electrons, so neutral Z has 15 protons (Z = 15). Neutrons n = A - Z = 31 - 15 = 16 neutrons.",
+        "workedSolution": "Z gained 3 electrons to have 18 electrons, so neutral Z has 15 protons (Z = 15). Neutrons n = A - Z = 31 - 15 = 16 neutrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does ink chromatography show multiple spots at varying heights on the paper strip?",
+        "options": [
+          "A. Dyes with higher solubility in the mobile solvent and lower attraction to the stationary paper travel farther",
+          "B. Some dyes evaporate into the air before others",
+          "C. Heavier dyes are pulled faster by gravity",
+          "D. The paper destroys insoluble dyes"
+        ],
+        "correctAnswer": "A. Dyes with higher solubility in the mobile solvent and lower attraction to the stationary paper travel farther",
+        "hint": "Separation depends on the partition between mobile solvent solubility and stationary paper adsorption.",
+        "workedSolution": "Separation depends on the partition between mobile solvent solubility and stationary paper adsorption.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a mixture of iodine crystals and charcoal powder separate upon gentle heating under an inverted funnel?",
+        "options": [
+          "A. Iodine sublimes directly to violet vapor and solidifies on the cool glass, while non-volatile charcoal remains in the dish",
+          "B. Charcoal evaporates before iodine",
+          "C. Iodine reacts with charcoal to form gas",
+          "D. Charcoal dissolves in the dish"
+        ],
+        "correctAnswer": "A. Iodine sublimes directly to violet vapor and solidifies on the cool glass, while non-volatile charcoal remains in the dish",
+        "hint": "Iodine sublimes into vapor and deposits as crystals on the cold funnel, leaving non-subliming charcoal behind.",
+        "workedSolution": "Iodine sublimes into vapor and deposits as crystals on the cold funnel, leaving non-subliming charcoal behind.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Two elements are represented as ³⁵₁₇Cl and ³⁷₁₇Cl. What is the relationship between these two nuclides?",
+        "options": [
+          "A. They are allotropes",
+          "B. They are isotopes with the same atomic number but different mass numbers due to differing neutron counts",
+          "C. They are completely different chemical elements",
+          "D. They are cations"
+        ],
+        "correctAnswer": "B. They are isotopes with the same atomic number but different mass numbers due to differing neutron counts",
+        "hint": "Atoms of the same element (Z = 17) with different mass numbers (35 and 37) due to different neutron counts are isotopes.",
+        "workedSolution": "Atoms of the same element (Z = 17) with different mass numbers (35 and 37) due to different neutron counts are isotopes.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the net electrical charge of an atomic nucleus containing 13 protons and 14 neutrons?",
+        "options": [
+          "A. Zero",
+          "B. +13",
+          "C. -13",
+          "D. +27"
+        ],
+        "correctAnswer": "B. +13",
+        "hint": "Neutrons have zero charge, so nuclear charge is solely determined by protons (+13).",
+        "workedSolution": "Neutrons have zero charge, so nuclear charge is solely determined by protons (+13).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How many total subatomic particles (protons + neutrons + electrons) are in a neutral atom of Calcium (⁴⁰₂₀Ca)?",
+        "options": [
+          "A. 40",
+          "B. 20",
+          "C. 60",
+          "D. 80"
+        ],
+        "correctAnswer": "C. 60",
+        "hint": "Protons = 20, Electrons = 20, Neutrons = 40 - 20 = 20. Total particles = 20 + 20 + 20 = 60.",
+        "workedSolution": "Protons = 20, Electrons = 20, Neutrons = 40 - 20 = 20. Total particles = 20 + 20 + 20 = 60.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "During the ionic reaction between Sodium and Chlorine, what electron transfer occurs?",
+        "options": [
+          "A. Sodium transfers 1 electron to Chlorine, forming Na⁺ and Cl⁻",
+          "B. Chlorine transfers 1 electron to Sodium",
+          "C. Sodium shares 2 electrons with Chlorine",
+          "D. Both atoms lose all their valence electrons"
+        ],
+        "correctAnswer": "A. Sodium transfers 1 electron to Chlorine, forming Na⁺ and Cl⁻",
+        "hint": "Sodium (2, 8, 1) donates 1 electron to Chlorine (2, 8, 7), producing stable Na⁺ (2, 8) and Cl⁻ (2, 8, 8).",
+        "workedSolution": "Sodium (2, 8, 1) donates 1 electron to Chlorine (2, 8, 7), producing stable Na⁺ (2, 8) and Cl⁻ (2, 8, 8).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is pure liquid water classified as a compound, whereas muddy river water is classified as a suspension?",
+        "options": [
+          "A. Pure water consists of hydrogen and oxygen chemically bonded in a fixed 2:1 ratio, while muddy water is a physical, non-uniform mixture of soil and water",
+          "B. Water can be separated by a magnet",
+          "C. Muddy water contains no solvent",
+          "D. Pure water is an element"
+        ],
+        "correctAnswer": "A. Pure water consists of hydrogen and oxygen chemically bonded in a fixed 2:1 ratio, while muddy water is a physical, non-uniform mixture of soil and water",
+        "hint": "Water is a chemical compound ($H_2O$); muddy water is a physical heterogeneous suspension that settles.",
+        "workedSolution": "Water is a chemical compound ($H_2O$); muddy water is a physical heterogeneous suspension that settles.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An element M has atomic number 12. Write the formula of the compound formed when element M combines with Chlorine (atomic number 17).",
+        "options": [
+          "A. MCl",
+          "B. MCl₂",
+          "C. M₂Cl",
+          "D. M₂Cl₃"
+        ],
+        "correctAnswer": "B. MCl₂",
+        "hint": "M (2, 8, 2) forms M²⁺. Chlorine (2, 8, 7) forms Cl⁻. Two Cl⁻ balance one M²⁺, giving MCl₂ (Magnesium chloride).",
+        "workedSolution": "M (2, 8, 2) forms M²⁺. Chlorine (2, 8, 7) forms Cl⁻. Two Cl⁻ balance one M²⁺, giving MCl₂ (Magnesium chloride).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a mixture of ethanol and water require fractional distillation rather than simple distillation?",
+        "options": [
+          "A. Their boiling points (78°C and 100°C) are too close for a single simple boiling step to yield complete separation",
+          "B. Ethanol does not vaporize",
+          "C. Water boils before ethanol",
+          "D. Simple distillation decomposes ethanol"
+        ],
+        "correctAnswer": "A. Their boiling points (78°C and 100°C) are too close for a single simple boiling step to yield complete separation",
+        "hint": "Simple distillation requires large boiling point differences (>40-50°C); close boiling points require a fractionating column.",
+        "workedSolution": "Simple distillation requires large boiling point differences (>40-50°C); close boiling points require a fractionating column.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following elements has the greatest number of valence electrons in its neutral atom?",
+        "options": [
+          "A. Carbon (Z = 6)",
+          "B. Nitrogen (Z = 7)",
+          "C. Phosphorus (Z = 15)",
+          "D. Argon (Z = 18)"
+        ],
+        "correctAnswer": "D. Argon (Z = 18)",
+        "hint": "Argon (2, 8, 8) has 8 valence electrons, while C has 4, and N and P have 5.",
+        "workedSolution": "Argon (2, 8, 8) has 8 valence electrons, while C has 4, and N and P have 5.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an atom's mass reside almost entirely inside its central nucleus?",
+        "options": [
+          "A. Protons and neutrons each have a mass of 1 a.m.u. in the nucleus, whereas orbiting electrons have negligible mass",
+          "B. Electrons are packed into the center of the nucleus",
+          "C. The nucleus is hollow and attracts external mass",
+          "D. Neutrons have negative mass"
+        ],
+        "correctAnswer": "A. Protons and neutrons each have a mass of 1 a.m.u. in the nucleus, whereas orbiting electrons have negligible mass",
+        "hint": "Nucleons (protons and neutrons) possess virtually all of an atom's mass; electrons contribute less than 0.05%.",
+        "workedSolution": "Nucleons (protons and neutrons) possess virtually all of an atom's mass; electrons contribute less than 0.05%.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An element Q has an atomic number of 8. What is the valency and ion symbol of element Q?",
+        "options": [
+          "A. Valency = 2, Ion = Q²⁻",
+          "B. Valency = 6, Ion = Q⁶⁺",
+          "C. Valency = 1, Ion = Q⁻",
+          "D. Valency = 8, Ion = Q⁸⁻"
+        ],
+        "correctAnswer": "A. Valency = 2, Ion = Q²⁻",
+        "hint": "Q has configuration 2, 6. It gains 2 electrons to form Q²⁻ with a combining power (valency) of 2.",
+        "workedSolution": "Q has configuration 2, 6. It gains 2 electrons to form Q²⁻ with a combining power (valency) of 2.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a separating funnel work for oil and water, but fails completely for a mixture of ethanol and water?",
+        "options": [
+          "A. Ethanol and water are completely miscible and form a single phase, while oil and water are immiscible and separate by density",
+          "B. Ethanol is too dense to enter the funnel",
+          "C. Oil and water dissolve each other",
+          "D. The tap of the funnel reacts with ethanol"
+        ],
+        "correctAnswer": "A. Ethanol and water are completely miscible and form a single phase, while oil and water are immiscible and separate by density",
+        "hint": "A separating funnel requires two distinct immiscible layers; miscible ethanol-water forms a single phase.",
+        "workedSolution": "A separating funnel requires two distinct immiscible layers; miscible ethanol-water forms a single phase.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A mystery element has electron configuration 2, 8, 8, 2. Identify the element and state the formula of its oxide.",
+        "options": [
+          "A. Potassium (K), KO",
+          "B. Calcium (Ca), CaO",
+          "C. Magnesium (Mg), MgO",
+          "D. Argon (Ar), ArO"
+        ],
+        "correctAnswer": "B. Calcium (Ca), CaO",
+        "hint": "Total electrons = 20 (Calcium, Ca). Ca forms Ca²⁺; Oxygen forms O²⁻. The formula is CaO.",
+        "workedSolution": "Total electrons = 20 (Calcium, Ca). Ca forms Ca²⁺; Oxygen forms O²⁻. The formula is CaO.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "If an atom has 19 protons and 20 neutrons, what is its electron configuration and identity?",
+        "options": [
+          "A. 2, 8, 8, 1; Potassium (K)",
+          "B. 2, 8, 9; Calcium (Ca)",
+          "C. 2, 8, 8, 2; Argon (Ar)",
+          "D. 2, 17; Chlorine (Cl)"
+        ],
+        "correctAnswer": "A. 2, 8, 8, 1; Potassium (K)",
+        "hint": "19 protons = 19 electrons. Configuration is 2, 8, 8, 1, which is Potassium (K).",
+        "workedSolution": "19 protons = 19 electrons. Configuration is 2, 8, 8, 1, which is Potassium (K).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the temperature of a boiling mixture of miscible liquids change continuously during simple distillation without a fractionating column?",
+        "options": [
+          "A. Both liquid components evaporate simultaneously in varying proportions as the composition of the boiling liquid shifts",
+          "B. Distillation destroys the liquid molecules",
+          "C. The thermometer absorbs the heat completely",
+          "D. The condenser stops working at high temperatures"
+        ],
+        "correctAnswer": "A. Both liquid components evaporate simultaneously in varying proportions as the composition of the boiling liquid shifts",
+        "hint": "Vapor above a miscible mixture contains both components, changing the boiling point continuously unless fractionated.",
+        "workedSolution": "Vapor above a miscible mixture contains both components, changing the boiling point continuously unless fractionated.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the key difference in particle size and filterability between a true solution and a suspension?",
+        "options": [
+          "A. Solution particles (<1 nm) pass through filter paper; suspension particles (>1000 nm) are trapped on the paper as residue",
+          "B. Solution particles settle into layers; suspension particles never settle",
+          "C. Solution particles scatter light; suspensions are completely transparent",
+          "D. Both pass freely through filter paper"
+        ],
+        "correctAnswer": "A. Solution particles (<1 nm) pass through filter paper; suspension particles (>1000 nm) are trapped on the paper as residue",
+        "hint": "Dissolved ions (<1 nm) pass through filter pores; large suspension aggregates (>1000 nm) are retained as residue.",
+        "workedSolution": "Dissolved ions (<1 nm) pass through filter pores; large suspension aggregates (>1000 nm) are retained as residue.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How many electrons are in the outermost valence shell of a neutral Boron atom (atomic number 5)?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 3",
+          "D. 5"
+        ],
+        "correctAnswer": "C. 3",
+        "hint": "Boron has atomic number 5 with configuration 2, 3; its valence shell contains 3 electrons.",
+        "workedSolution": "Boron has atomic number 5 with configuration 2, 3; its valence shell contains 3 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following ions has the same electron configuration as Neon (2, 8)?",
+        "options": [
+          "A. Na⁺",
+          "B. K⁺",
+          "C. Cl⁻",
+          "D. Ca²⁺"
+        ],
+        "correctAnswer": "A. Na⁺",
+        "hint": "Na⁺ (Z = 11, lost 1 e⁻) has 10 electrons (2, 8), isoelectronic with Neon.",
+        "workedSolution": "Na⁺ (Z = 11, lost 1 e⁻) has 10 electrons (2, 8), isoelectronic with Neon.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following ions has the same electron configuration as Argon (2, 8, 8)?",
+        "options": [
+          "A. O²⁻",
+          "B. Mg²⁺",
+          "C. Cl⁻",
+          "D. Na⁺"
+        ],
+        "correctAnswer": "C. Cl⁻",
+        "hint": "Chloride ion (Cl⁻, Z = 17, gained 1 e⁻) has 18 electrons (2, 8, 8), matching Argon.",
+        "workedSolution": "Chloride ion (Cl⁻, Z = 17, gained 1 e⁻) has 18 electrons (2, 8, 8), matching Argon.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What happens to the mass number of an atom when it loses two electrons to become a cation?",
+        "options": [
+          "A. It decreases by 2",
+          "B. It increases by 2",
+          "C. It remains unchanged because mass number depends only on protons and neutrons in the nucleus",
+          "D. It becomes zero"
+        ],
+        "correctAnswer": "C. It remains unchanged because mass number depends only on protons and neutrons in the nucleus",
+        "hint": "Electrons have negligible mass; mass number A = protons + neutrons, which remain unchanged during ionization.",
+        "workedSolution": "Electrons have negligible mass; mass number A = protons + neutrons, which remain unchanged during ionization.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the relative atomic mass of chlorine approximately 35.5 rather than a whole integer?",
+        "options": [
+          "A. It exists naturally as a mixture of two isotopes (³⁵Cl and ³⁷Cl) in approximate 3:1 relative abundance",
+          "B. Protons in chlorine weigh 1.5 a.m.u.",
+          "C. Electrons have high mass in chlorine",
+          "D. Chlorine atoms are split in half in nature"
+        ],
+        "correctAnswer": "A. It exists naturally as a mixture of two isotopes (³⁵Cl and ³⁷Cl) in approximate 3:1 relative abundance",
+        "hint": "Relative atomic mass reflects the weighted average of natural isotopes: (35 × 0.75) + (37 × 0.25) = 35.5.",
+        "workedSolution": "Relative atomic mass reflects the weighted average of natural isotopes: (35 × 0.75) + (37 × 0.25) = 35.5.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An element R forms an ion R²⁻ with 10 electrons. What is element R and what is its atomic number?",
+        "options": [
+          "A. Magnesium (Z = 12)",
+          "B. Oxygen (Z = 8)",
+          "C. Neon (Z = 10)",
+          "D. Carbon (Z = 6)"
+        ],
+        "correctAnswer": "B. Oxygen (Z = 8)",
+        "hint": "R²⁻ gained 2 electrons to reach 10, meaning neutral R had 8 electrons and 8 protons (Oxygen, Z = 8).",
+        "workedSolution": "R²⁻ gained 2 electrons to reach 10, meaning neutral R had 8 electrons and 8 protons (Oxygen, Z = 8).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the use of a condenser necessary in simple distillation but not in evaporation?",
+        "options": [
+          "A. Distillation aims to collect the vapor as a pure liquid, while evaporation intentionally allows the vapor to escape into the atmosphere",
+          "B. Evaporation cannot boil liquids",
+          "C. Condensers only work with solid mixtures",
+          "D. Distillation does not produce vapors"
+        ],
+        "correctAnswer": "A. Distillation aims to collect the vapor as a pure liquid, while evaporation intentionally allows the vapor to escape into the atmosphere",
+        "hint": "A condenser cools and collects the vapor as liquid distillate; evaporation vents the vapor.",
+        "workedSolution": "A condenser cools and collects the vapor as liquid distillate; evaporation vents the vapor.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How many protons, neutrons, and electrons are in the phosphide ion (³¹₁₅P³⁻)?",
+        "options": [
+          "A. 15 protons, 16 neutrons, 18 electrons",
+          "B. 15 protons, 15 neutrons, 15 electrons",
+          "C. 16 protons, 15 neutrons, 12 electrons",
+          "D. 31 protons, 15 neutrons, 18 electrons"
+        ],
+        "correctAnswer": "A. 15 protons, 16 neutrons, 18 electrons",
+        "hint": "Z = 15 protons; neutrons = 31 - 15 = 16; P³⁻ gained 3 electrons = 15 + 3 = 18 electrons.",
+        "workedSolution": "Z = 15 protons; neutrons = 31 - 15 = 16; P³⁻ gained 3 electrons = 15 + 3 = 18 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A liquid mixture containing crude oil is separated into fractions. Which fraction condenses at the lowest part of the fractionating column due to its high boiling point?",
+        "options": [
+          "A. Petroleum gas",
+          "B. Petrol",
+          "C. Kerosene",
+          "D. Bitumen"
+        ],
+        "correctAnswer": "D. Bitumen",
+        "hint": "Bitumen has the highest boiling point and remains at the bottom of the column as residue.",
+        "workedSolution": "Bitumen has the highest boiling point and remains at the bottom of the column as residue.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the electronic configuration of a neutral Silicon atom (atomic number 14)?",
+        "options": [
+          "A. 2, 8, 4",
+          "B. 2, 4, 8",
+          "C. 4, 8, 2",
+          "D. 2, 8, 2, 2"
+        ],
+        "correctAnswer": "A. 2, 8, 4",
+        "hint": "14 electrons distribute as 2 in K, 8 in L, and 4 in M (2, 8, 4).",
+        "workedSolution": "14 electrons distribute as 2 in K, 8 in L, and 4 in M (2, 8, 4).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following particles is deflected toward the positive plate in an electric field?",
+        "options": [
+          "A. Proton",
+          "B. Neutron",
+          "C. Electron",
+          "D. Cation"
+        ],
+        "correctAnswer": "C. Electron",
+        "hint": "Electrons carry a negative charge and are attracted toward the positive electrode.",
+        "workedSolution": "Electrons carry a negative charge and are attracted toward the positive electrode.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which subatomic particle passes straight through an electric field without any deflection?",
+        "options": [
+          "A. Proton",
+          "B. Neutron",
+          "C. Electron",
+          "D. Cation"
+        ],
+        "correctAnswer": "B. Neutron",
+        "hint": "Neutrons have zero electrical charge and do not interact with electric fields.",
+        "workedSolution": "Neutrons have zero electrical charge and do not interact with electric fields.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the valency of the element Nitrogen (atomic number 7)?",
+        "options": [
+          "A. 1",
+          "B. 2",
+          "C. 3",
+          "D. 5"
+        ],
+        "correctAnswer": "C. 3",
+        "hint": "Nitrogen (2, 5) needs 3 electrons to complete its valence shell, giving it a combining valency of 3.",
+        "workedSolution": "Nitrogen (2, 5) needs 3 electrons to complete its valence shell, giving it a combining valency of 3.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the valency of the element Carbon (atomic number 6)?",
+        "options": [
+          "A. 2",
+          "B. 3",
+          "C. 4",
+          "D. 6"
+        ],
+        "correctAnswer": "C. 4",
+        "hint": "Carbon (2, 4) has 4 valence electrons and forms 4 covalent bonds (tetravalent).",
+        "workedSolution": "Carbon (2, 4) has 4 valence electrons and forms 4 covalent bonds (tetravalent).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which two elements combine in a 1:1 ratio to form table salt via ionic electron transfer?",
+        "options": [
+          "A. Potassium and Sulfur",
+          "B. Sodium and Chlorine",
+          "C. Magnesium and Oxygen",
+          "D. Calcium and Fluorine"
+        ],
+        "correctAnswer": "B. Sodium and Chlorine",
+        "hint": "Na⁺ (+1) and Cl⁻ (-1) combine in a 1:1 ratio to form NaCl.",
+        "workedSolution": "Na⁺ (+1) and Cl⁻ (-1) combine in a 1:1 ratio to form NaCl.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is a mixture of oil and alcohol miscible, while oil and water are immiscible?",
+        "options": [
+          "A. Non-polar oil molecules dissolve in moderately non-polar organic alcohol, but cannot overcome polar hydrogen bonds in water",
+          "B. Oil is an element and alcohol is a mixture",
+          "C. Water freezes oil instantly",
+          "D. Alcohol is a solid at room temperature"
+        ],
+        "correctAnswer": "A. Non-polar oil molecules dissolve in moderately non-polar organic alcohol, but cannot overcome polar hydrogen bonds in water",
+        "hint": "Like dissolves like: oil dissolves in organic solvents (alcohol) but does not mix with polar water.",
+        "workedSolution": "Like dissolves like: oil dissolves in organic solvents (alcohol) but does not mix with polar water.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An atom has 1 proton and 0 neutrons in its nucleus. What is its mass number and identity?",
+        "options": [
+          "A. Mass number = 1; Hydrogen (¹₁H)",
+          "B. Mass number = 2; Helium (²₂He)",
+          "C. Mass number = 0; Neutron",
+          "D. Mass number = 1; Deuterium"
+        ],
+        "correctAnswer": "A. Mass number = 1; Hydrogen (¹₁H)",
+        "hint": "Ordinary hydrogen (protium) contains 1 proton and 0 neutrons; A = 1 + 0 = 1.",
+        "workedSolution": "Ordinary hydrogen (protium) contains 1 proton and 0 neutrons; A = 1 + 0 = 1.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How many electrons are in the outer shell of an atom of Fluorine (atomic number 9)?",
+        "options": [
+          "A. 2",
+          "B. 7",
+          "C. 8",
+          "D. 9"
+        ],
+        "correctAnswer": "B. 7",
+        "hint": "Fluorine (2, 7) has 7 valence electrons in its outer L-shell.",
+        "workedSolution": "Fluorine (2, 7) has 7 valence electrons in its outer L-shell.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the formula of the fluoride ion formed from a Fluorine atom?",
+        "options": [
+          "A. F⁺",
+          "B. F²⁺",
+          "C. F⁻",
+          "D. F²⁻"
+        ],
+        "correctAnswer": "C. F⁻",
+        "hint": "Fluorine (2, 7) gains 1 electron to form the fluoride anion F⁻.",
+        "workedSolution": "Fluorine (2, 7) gains 1 electron to form the fluoride anion F⁻.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the total number of occupied electron shells in Calcium (atomic number 20) compared to Magnesium (atomic number 12)?",
+        "options": [
+          "A. Calcium has 4 shells; Magnesium has 3 shells",
+          "B. Both have 3 shells",
+          "C. Calcium has 3 shells; Magnesium has 4 shells",
+          "D. Both have 2 shells"
+        ],
+        "correctAnswer": "A. Calcium has 4 shells; Magnesium has 3 shells",
+        "hint": "Calcium is 2, 8, 8, 2 (4 shells); Magnesium is 2, 8, 2 (3 shells).",
+        "workedSolution": "Calcium is 2, 8, 8, 2 (4 shells); Magnesium is 2, 8, 2 (3 shells).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an atom's atomic number (Z) never change during ordinary chemical reactions?",
+        "options": [
+          "A. Chemical reactions involve only the sharing, loss, or gain of valence electrons; nuclear protons remain untouched",
+          "B. Protons have zero mass",
+          "C. Nuclei do not exist in chemical reactions",
+          "D. Atoms destroy their protons during bonding"
+        ],
+        "correctAnswer": "A. Chemical reactions involve only the sharing, loss, or gain of valence electrons; nuclear protons remain untouched",
+        "hint": "Chemical reactions occur via electron exchanges in outer shells; the nucleus remains unaltered.",
+        "workedSolution": "Chemical reactions occur via electron exchanges in outer shells; the nucleus remains unaltered.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the maximum number of electrons that can be held in the 3rd shell (M-shell) according to 2n²?",
+        "options": [
+          "A. 8 electrons",
+          "B. 18 electrons",
+          "C. 32 electrons",
+          "D. 2 electrons"
+        ],
+        "correctAnswer": "B. 18 electrons",
+        "hint": "Using 2n² with n = 3: 2 × (3)² = 2 × 9 = 18 electrons.",
+        "workedSolution": "Using 2n² with n = 3: 2 × (3)² = 2 × 9 = 18 electrons.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does potassium (Z = 19) place its 19th electron in the 4th shell (N-shell) as 2, 8, 8, 1 rather than 2, 8, 9?",
+        "options": [
+          "A. The 3rd shell becomes temporarily stable with an octet of 8 electrons before the 4th shell begins filling",
+          "B. The 3rd shell can hold only 8 electrons maximum",
+          "C. Potassium loses a proton",
+          "D. The 4th shell is closer to the nucleus"
+        ],
+        "correctAnswer": "A. The 3rd shell becomes temporarily stable with an octet of 8 electrons before the 4th shell begins filling",
+        "hint": "An outer octet represents a stable configuration, prompting the 19th and 20th electrons to enter the 4s shell (2, 8, 8, 1 and 2, 8, 8, 2).",
+        "workedSolution": "An outer octet represents a stable configuration, prompting the 19th and 20th electrons to enter the 4s shell (2, 8, 8, 1 and 2, 8, 8, 2).",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A student accidentally mixed copper filings, salt, and ammonium chloride. Which separation sequence correctly isolates all three?",
+        "options": [
+          "A. Heat to sublime ammonium chloride → Add water to dissolve salt → Filter copper filings → Evaporate filtrate for salt",
+          "B. Magnet → Filter → Evaporate",
+          "C. Distillation → Decantation → Chromatography",
+          "D. Sieve → Centrifuge → Freeze"
+        ],
+        "correctAnswer": "A. Heat to sublime ammonium chloride → Add water to dissolve salt → Filter copper filings → Evaporate filtrate for salt",
+        "hint": "Heating sublimes ammonium chloride; adding water dissolves salt, allowing filtration of insoluble copper and evaporation of salt.",
+        "workedSolution": "Heating sublimes ammonium chloride; adding water dissolves salt, allowing filtration of insoluble copper and evaporation of salt.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the chemical name and formula of the compound formed between Aluminium (Al) and Oxygen (O)?",
+        "options": [
+          "A. Aluminium oxide, Al₂O₃",
+          "B. Aluminium oxide, AlO",
+          "C. Aluminium dioxide, AlO₂",
+          "D. Dialuminium oxide, Al₃O₂"
+        ],
+        "correctAnswer": "A. Aluminium oxide, Al₂O₃",
+        "hint": "Al forms Al³⁺; Oxygen forms O²⁻. Balancing charges requires two Al³⁺ and three O²⁻, yielding Al₂O₃.",
+        "workedSolution": "Al forms Al³⁺; Oxygen forms O²⁻. Balancing charges requires two Al³⁺ and three O²⁻, yielding Al₂O₃.",
+        "points": 1
+      },
+      {
+        "id": "B8_MAT_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do noble gases like Helium, Neon, and Argon not readily form chemical bonds or ions?",
+        "options": [
+          "A. They already possess completely filled outer valence shells (duplet/octet), making them chemically stable",
+          "B. They contain no electrons",
+          "C. Their nuclei contain only neutrons",
+          "D. They are liquids at room temperature"
+        ],
+        "correctAnswer": "A. They already possess completely filled outer valence shells (duplet/octet), making them chemically stable",
+        "hint": "Noble gases have fully saturated valence shells (He has 2; Ne and Ar have 8), preventing spontaneous electron gain, loss, or sharing.",
+        "workedSolution": "Noble gases have fully saturated valence shells (He has 2; Ne and Ar have 8), preventing spontaneous electron gain, loss, or sharing.",
         "points": 1
       }
     ]
