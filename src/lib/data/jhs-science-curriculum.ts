@@ -5350,7 +5350,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.564Z"
+    "updatedAt": "2026-10-09T14:56:37.191Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -5363,10 +5363,12 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "tier": "Junior Secondary (JHS)",
     "badge": "NaCCA Common Core Programme (CCP)",
     "description": "Examine microscopic structural biology through virtual light microscopy and organelle dissection modules. Students trace life from fundamental cell theory and plant vs. animal ultrastructure to multicellular differentiation and organ-system hierarchies.",
-    "totalPracticeQuestions": 156,
+    "totalPracticeQuestions": 303,
     "version": 1,
     "aliases": [
-      "b7_strand1_cells"
+      "b7_strand1_cells",
+      "CARD_02_LIVING_CELLS_ARCHITECTURE",
+      "b8_strand1_cells"
     ],
     "levels": {
       "b7": {
@@ -7960,62 +7962,2614 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       },
       "b8": {
-        "levelTitle": "Basic 8 (JHS 2) • Cellular Specialization & Structure-Function Adaptation",
-        "summary": "Analyze specialized plant and animal cells and correlate unique morphological adaptations with physiological functions.",
-        "notes": "### Cellular Specialization & Structure-Function Adaptations\n* **NaCCA Curriculum Code:** `B8.1.2.1`\n* **Core Competency:** Explain how cells differentiate and modify their structures to execute specialized physiological functions.\n\n#### 1. Cellular Differentiation & Specialization\nIn single-celled organisms (*Amoeba*, *Paramecium*), one cell carries out all metabolic activities. In multicellular organisms, cells differentiate through selective gene expression to perform specific functions with greater efficiency.\n\n#### 2. Specialized Plant Cells\n* **Root Hair Cells:** Long, thin tubular cytoplasmic extension greatly increases surface area-to-volume ratio for rapid absorption of water (osmosis) and dissolved mineral ions (active transport). Thin cell wall; no chloroplasts.\n* **Xylem Vessels:** Dead, hollow elongated tubes with cell walls reinforced by lignin. Form continuous capillaries for long-distance transport of water and mineral salts from roots to leaves; provides mechanical support.\n* **Phloem Sieve Tube Elements:** Living elongated cells with perforated sieve plates; translocate manufactured sucrose and amino acids from photosynthetic source to metabolic sinks.\n* **Guard Cells:** Bean-shaped epidermal cells containing chloroplasts. Inner cell wall is thicker and less elastic than outer wall. Changes in turgor pressure regulate stomatal opening and closing for gas exchange and transpiration control.\n\n#### 3. Specialized Animal Cells\n* **Red Blood Cells (Erythrocytes):** Biconcave disc geometry maximizes surface area for rapid oxygen diffusion; absence of nucleus leaves more volume for hemoglobin molecules; flexible to squeeze through microscopic capillaries.\n* **Nerve Cells (Neurons):** Elongated axons transmit electrochemical impulses over long distances; surrounded by insulating myelin sheath; terminal dendrites synapse with adjacent receptors/effectors.\n* **Spermatozoa:** Flagellated tail provides swimming motility toward ovum; head possesses an acrosome cap filled with hydrolytic enzymes to penetrate ovum jelly coat; midpiece packed with mitochondria for ATP energy.\n* **Muscle Cells:** Elongated fibers containing contractile actin and myosin proteins that contract and relax to produce coordinated mechanical movement.",
+        "levelTitle": "Basic 8 (JHS 2) • Prokaryotic & Eukaryotic Cellular Architecture",
+        "summary": "Examine and describe the structure of prokaryotic cells (bacteria), eukaryotic cells (plant, animal, fungal, protozoan), and akaryotes. Compare organelles, cell boundaries, and reproductive processes, and evaluate the beneficial and harmful health impacts of microorganisms.",
+        "notes": "### Living Cells & Cellular Architecture\n* **Curriculum Alignment:** NaCCA Common Core Programme (Ghana)\n* **Strand:** 1 — Diversity of Matter\n* **Sub-Strand:** Living Cells\n* **Grade Level:** Basic 8 (JHS 2)\n* **Content Standards:**\n  * `B8.1.2.1`: Examine and describe the structure of prokaryotic and eukaryotic cells.\n  * `B8.1.2.1.2`: Classify organisms (plants or animals) as prokaryotic or eukaryotic based on the type of cells they are made of.\n* **Key Indicators:**\n  * `B8.1.2.1.1`: Examine and describe the structure of prokaryotic and eukaryotic cells.\n  * `B8.1.2.1.2`: Classify organisms as prokaryotic or eukaryotic based on their cellular architecture.\n\n---\n\n### Module 1: Introduction to Living Cells & Major Cell Categories\n\n#### 1. Historical Background & The Cell Concept\nIn 1665, an English scientist named **Robert Hooke** first discovered cells while examining a thin slice of cork bark under an early primitive light microscope. He observed rows of tiny, hollow, box-like compartments which reminded him of the small bare rooms (\"cells\") inhabited by monks in a monastery, and coined the term **\"cell\"**.\n\nToday, biological science defines a **cell** as:\n> **The basic structural, functional, and biological unit of all living organisms.** It is the smallest unit of life capable of independent existence and executing essential metabolic activities (growth, respiration, excretion, irritability, reproduction).\n\n#### 2. Organelles — The Specialized Working Engines\nInside every living cell are specialized microscopic working compartments and structures called **organelles** (literally meaning *\"little organs\"*). \n* Just as human organs (heart, lungs, kidneys) perform dedicated bodily tasks, each cellular organelle has a distinct physiological role to keep the whole cell alive.\n* The most prominent and critical organelle directing metabolic operations, cellular growth, and hereditary transmission is the **nucleus**.\n\n#### 3. Primary Taxonomic Classification of Cells\nAll biological systems and organisms on Earth are categorized into three structural groups based on the presence, absence, and organization of their nucleus and cellular boundaries:\n\n1. **Prokaryotic Cells (Prokaryotes):**\n   * **Definition:** Tiny, structurally simple, unicellular organisms that **completely lack a true nucleus** and membrane-enclosed organelles.\n   * **Genetic Material:** Their genetic blueprint (DNA) is not enclosed by a nuclear envelope; it floats freely in a specialized, non-membrane central area of the cytoplasm known as the **nucleoid**.\n   * **Size & Complexity:** Very small (typically 0.1 to 5.0 micrometers in diameter) with minimal internal compartmentalization.\n   * **Representative Examples:** Bacteria (e.g., *Escherichia coli*, *Lactobacillus*, *Salmonella*) and Archaea (extremophiles living in hot springs and hypersaline pools).\n\n2. **Eukaryotic Cells (Eukaryotes):**\n   * **Definition:** Larger, complex, highly compartmentalized cells possessing a **true nucleus enclosed by a double nuclear membrane**, as well as various membrane-bound organelles (mitochondria, endoplasmic reticulum, Golgi apparatus, lysosomes, vacuoles).\n   * **Genetic Material:** Multiple linear strands of DNA tightly wound around histone proteins to form distinct chromosomes housed safely within the nucleus.\n   * **Size & Complexity:** Typically 10 to 100 micrometers in diameter (10 to 100 times larger than bacteria).\n   * **Representative Examples:** All plants (flowering trees, mosses, grasses), animals (humans, fish, insects), fungi (mushrooms, molds, baker's yeast), and protists (unicellular organisms such as *Amoeba*, *Paramecium*, and *Euglena*).\n\n3. **Akaryotes (Acaryocytes) — Non-Cellular Entities:**\n   * **Etymology & Definition:** Derived from the Greek roots *\"a-\"* (meaning *without*) and *\"karyon\"* (meaning *kernel* or *nucleus*). Akaryotes are biological entities that **completely lack a nucleus, cytoplasm, and standard metabolic machinery**.\n   * **Biological Status:** They do not meet the full criteria of living cells because they cannot carry out respiration, nutrition, or reproduction on their own.\n   * **Key Examples:**\n     * **Viruses:** Sub-microscopic infectious particles consisting solely of a protective protein coat (capsid) enclosing a central core of nucleic acid (either DNA or RNA). Examples include Influenza virus, HIV, Coronavirus, and Bacteriophages. They are obligate intracellular parasites that must hijack host cell machinery to replicate.\n     * **Mature Mammalian Red Blood Cells (Erythrocytes):** In humans and other mammals, developing red blood cells intentionally eject their nucleus and mitochondria during maturation to maximize internal space for packing oxygen-carrying **hemoglobin** molecules.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE THREE STRUCTURAL GROUPS OF CELLS (BASIC 8)</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"155\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.3\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">1. PROKARYOTES</text><line x1=\"15\" y1=\"32\" x2=\"205\" y2=\"32\" stroke=\"#fecaca\" stroke-width=\"1\"/><text x=\"12\" y=\"52\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• NO nuclear membrane</text><text x=\"12\" y=\"72\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• DNA in open nucleoid</text><text x=\"12\" y=\"92\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• No mitochondria or Golgi</text><text x=\"12\" y=\"112\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• Circular DNA ring</text><text x=\"12\" y=\"136\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\">e.g., Bacteria, Archaea</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"155\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.3\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">2. EUKARYOTES</text><line x1=\"15\" y1=\"32\" x2=\"205\" y2=\"32\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"12\" y=\"52\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Has a TRUE nucleus</text><text x=\"12\" y=\"72\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Membrane-bound organelles</text><text x=\"12\" y=\"92\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Mitochondria &amp; ER present</text><text x=\"12\" y=\"112\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Linear DNA inside nucleus</text><text x=\"12\" y=\"136\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">e.g., Plants, Animals, Fungi</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"155\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. AKARYOTES</text><line x1=\"15\" y1=\"32\" x2=\"205\" y2=\"32\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"12\" y=\"52\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Completely LACK a nucleus</text><text x=\"12\" y=\"72\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• No cytoplasm or organelles</text><text x=\"12\" y=\"92\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Core of DNA or RNA only</text><text x=\"12\" y=\"112\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Non-cellular particles</text><text x=\"12\" y=\"136\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">e.g., Viruses, Mature RBCs</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1: High-Level Taxonomy of Cellular Life (Prokaryotes, Eukaryotes, and Akaryotes)</p>\n</div>\n\n---\n\n### Module 2: Prokaryotic Cell Structure — Anatomy of a Bacterium\n\n#### 1. Evolutionary Importance & General Features\nProkaryotes represent the most ancient lineage of life on Earth, appearing in fossil records over 3.5 billion years ago. Despite their small size, bacteria inhabit virtually every ecological niche—from deep ocean hydrothermal vents to soil, air, and animal digestive tracts. A typical bacterium has no internal membrane partitions; all chemical reactions take place directly within the cytoplasm or at the plasma membrane boundary.\n\n#### 2. Structural Components of a Typical Bacterium\nA complete bacterial cell comprises the following specialized structures:\n\n| Structural Component | Anatomical Nature | Physiological Function in Survival |\n| :--- | :--- | :--- |\n| **Capsule (Slime Coat)** | Sticky outer layer of gelatinous polysaccharides surrounding the cell wall | Prevents desiccation (drying out); shields bacterium against phagocytosis by host white blood cells; helps bacteria adhere firmly to surfaces (e.g., teeth, intestinal walls). |\n| **Cell Wall** | Rigid, porous structural envelope made of peptidoglycan (murein) | Imparts mechanical strength and defines cell shape (rod, sphere, spiral); prevents the cell from bursting (osmotic lysis) in hypotonic environments. |\n| **Plasma (Cell) Membrane** | Delicate, selectively permeable phospholipid bilayer with embedded proteins | Controls influx and efflux of ions, water, and nutrients; hosts respiratory electron transport chains to generate ATP energy (in the absence of mitochondria). |\n| **Cytoplasm** | Aqueous, jelly-like matrix containing enzymes, dissolved salts, and nutrients | Fluid medium in which all metabolic and biochemical reactions occur. |\n| **Nucleoid Region** | Non-delimited central clear zone of the cytoplasm | Houses the single, long, circular chromosome composed of naked double-stranded DNA that carries core hereditary genes. |\n| **Plasmids** | Small, separate circular rings of non-chromosomal extra DNA | Carry supplemental, adaptive survival genes, such as genes conferring resistance to antibiotics and heavy metals; can be duplicated and shared. |\n| **Ribosomes (70S)** | Small, dense ribonucleoprotein granules floating freely in cytoplasm | Translate messenger RNA into functional proteins and enzymes (smaller than 80S eukaryotic ribosomes). |\n| **Flagellum (pl. Flagella)** | Long, helical whip-like protein fiber (flagellin) attached to a motor basal body | Rotates like a propeller to drive rapid swimming locomotion in liquid media toward food (chemotaxis). |\n| **Pili / Fimbriae (sing. Pilus)**| Short, hair-like protein appendages projecting across the surface | Short fimbriae allow attachment to host epithelial tissues; elongated **sex pili** form physical mating bridges for genetic exchange during conjugation. |\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ANATOMY OF A PROKARYOTIC CELL (BACTERIUM)</text><g transform=\"translate(210, 45)\"><path d=\"M 320 120 Q 360 80 400 130 Q 430 170 470 120\" fill=\"none\" stroke=\"#334155\" stroke-width=\"4\" stroke-linecap=\"round\"/><rect x=\"40\" y=\"40\" width=\"280\" height=\"160\" rx=\"80\" fill=\"#fef3c7\" stroke=\"#d97706\" stroke-width=\"6\"/><rect x=\"46\" y=\"46\" width=\"268\" height=\"148\" rx=\"74\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"4\"/><rect x=\"52\" y=\"52\" width=\"256\" height=\"136\" rx=\"68\" fill=\"#ecfdf5\" stroke=\"#059669\" stroke-width=\"2.5\"/><path d=\"M 130 115 Q 150 85 180 120 Q 210 145 230 105 Q 210 90 170 95 Q 140 130 130 115 Z\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"3\"/><circle cx=\"250\" cy=\"80\" r=\"12\" fill=\"none\" stroke=\"#7c3aed\" stroke-width=\"2.5\"/><circle cx=\"100\" cy=\"90\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"115\" cy=\"140\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"210\" cy=\"150\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"260\" cy=\"130\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"160\" cy=\"160\" r=\"3\" fill=\"#1e293b\"/><line x1=\"20\" y1=\"70\" x2=\"40\" y2=\"70\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"20\" y1=\"120\" x2=\"40\" y2=\"120\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"20\" y1=\"170\" x2=\"40\" y2=\"170\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"240\" y1=\"20\" x2=\"240\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"2\"/></g><g transform=\"translate(20, 45)\"><line x1=\"140\" y1=\"65\" x2=\"240\" y2=\"65\" stroke=\"#d97706\" stroke-width=\"1.2\"/><circle cx=\"240\" cy=\"65\" r=\"2.5\" fill=\"#d97706\"/><text x=\"135\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"end\">Capsule (Slime coat)</text><line x1=\"140\" y1=\"95\" x2=\"246\" y2=\"95\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle cx=\"246\" cy=\"95\" r=\"2.5\" fill=\"#ca8a04\"/><text x=\"135\" y=\"98\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Cell Wall</text><line x1=\"140\" y1=\"125\" x2=\"252\" y2=\"125\" stroke=\"#059669\" stroke-width=\"1.2\"/><circle cx=\"252\" cy=\"125\" r=\"2.5\" fill=\"#059669\"/><text x=\"135\" y=\"128\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#065f46\" text-anchor=\"end\">Plasma Membrane</text><line x1=\"140\" y1=\"155\" x2=\"220\" y2=\"155\" stroke=\"#d97706\" stroke-width=\"1.2\"/><circle cx=\"220\" cy=\"155\" r=\"2.5\" fill=\"#d97706\"/><text x=\"135\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#b45309\" text-anchor=\"end\">Pili (Attachment hairs)</text><line x1=\"140\" y1=\"185\" x2=\"390\" y2=\"145\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><circle cx=\"390\" cy=\"145\" r=\"2.5\" fill=\"#dc2626\"/><text x=\"135\" y=\"188\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"end\">Nucleoid (Circular DNA)</text></g><g transform=\"translate(540, 45)\"><line x1=\"5\" y1=\"65\" x2=\"120\" y2=\"80\" stroke=\"#7c3aed\" stroke-width=\"1.2\"/><circle cx=\"120\" cy=\"80\" r=\"2.5\" fill=\"#7c3aed\"/><text x=\"10\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#6d28d9\">Plasmid (Extra DNA ring)</text><line x1=\"5\" y1=\"105\" x2=\"70\" y2=\"130\" stroke=\"#1e293b\" stroke-width=\"1.2\"/><circle cx=\"70\" cy=\"130\" r=\"2.5\" fill=\"#1e293b\"/><text x=\"10\" y=\"108\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0f172a\">Ribosomes (70S)</text><line x1=\"5\" y1=\"145\" x2=\"60\" y2=\"150\" stroke=\"#059669\" stroke-width=\"1.2\"/><circle cx=\"60\" cy=\"150\" r=\"2.5\" fill=\"#059669\"/><text x=\"10\" y=\"148\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#065f46\">Cytoplasm</text><line x1=\"5\" y1=\"185\" x2=\"130\" y2=\"140\" stroke=\"#334155\" stroke-width=\"1.2\"/><circle cx=\"130\" cy=\"140\" r=\"2.5\" fill=\"#334155\"/><text x=\"10\" y=\"188\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e293b\">Flagellum (Swimming tail)</text></g><rect x=\"25\" y=\"270\" width=\"710\" height=\"55\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"35\" y=\"290\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\">EXAM DRAWING TIP: Always label the 3 outer layers in correct order from OUTSIDE to INSIDE:</text><text x=\"35\" y=\"310\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#334155\">1. Capsule (outer slime) → 2. Cell Wall (middle rigid box) → 3. Plasma Membrane (inner delicate skin)</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2: Comprehensive Labeled Vector Diagram of a Typical Bacterium (Prokaryotic Cell)</p>\n</div>\n\n> **BECE Examination Drawing Tip:**\n> When asked to draw or label a bacterium, always represent and identify the **three concentric outer boundary layers** in the exact sequence from outside to inside:\n> 1. **Capsule / Slime Layer** (outermost protective gelatinous jacket)\n> 2. **Cell Wall** (middle rigid structural support box)\n> 3. **Plasma Membrane** (innermost semi-permeable physiological boundary)\n\n#### 3. Modes of Bacterial Reproduction\nBacteria propagate rapidly through two distinct cellular processes:\n* **Asexual Reproduction (Binary Fission):**\n  * The primary, extremely fast method of vegetative reproduction.\n  * Under favorable temperature and nutrient conditions (e.g., in contaminated food or infected wounds), a bacterium replicates its circular DNA loop, elongates, and pinches inward along the center.\n  * The cell divides into two genetically identical daughter cells in as little as 20 minutes.\n* **Parasexual Exchange (Bacterial Conjugation):**\n  * A sexual process where two compatible bacteria form a temporary cytoplasmic bridge using a **sex pilus**.\n  * A copy of a **plasmid** (e.g., carrying antibiotic resistance genes) is transferred from the donor cell to the recipient cell.\n  * This horizontal gene transfer enables rapid dissemination of drug resistance across bacterial populations.\n\n---\n\n### Module 3: Eukaryotic Organelles & Comparative Architecture\n\n#### 1. Detailed Review of Eukaryotic Organelles\nEukaryotic cells are compartmentalized by intracellular membranes, allowing mutually incompatible biochemical processes to occur simultaneously in distinct micro-environments.\n\n* **Nucleus & Nucleolus:**\n  * Enclosed by a **double-membrane nuclear envelope** punctuated by nuclear pores that regulate transport of RNA and proteins.\n  * Houses **chromatin**—long, linear DNA strands wrapped around histone protein spools. During cell division, chromatin condenses into visible **chromosomes**.\n  * The **nucleolus** is a dark, dense interior sub-region responsible for assembling ribosomal RNA and ribosome subunits.\n* **Mitochondria (\"The Powerhouse of the Cell\"):**\n  * Oval-shaped, double-membraned organelles. The outer membrane is smooth, while the inner membrane is deeply folded into transverse ridges called **cristae** to maximize surface area.\n  * The interior jelly-like fluid is the **mitochondrial matrix**, containing respiratory enzymes, mitochondrial DNA, and ribosomes.\n  * Mitochondria perform **aerobic cellular respiration**: they oxidize glucose in the presence of oxygen to synthesize high-energy **adenosine triphosphate (ATP)** molecules:\n    $$\\text{Glucose} + \\text{Oxygen} \\longrightarrow \\text{Carbon Dioxide} + \\text{Water} + \\text{ATP Energy}$$\n* **Endoplasmic Reticulum (ER):**\n  * A vast, interconnected labyrinth of folded membranous tubules and flattened sacs extending outward from the nuclear envelope.\n  * **Rough Endoplasmic Reticulum (RER):** Studded with ribosomes on its outer cytoplasmic face. It folds, packages, and transports newly synthesized proteins destined for secretion or membrane insertion.\n  * **Smooth Endoplasmic Reticulum (SER):** Lacks ribosomes. It synthesizes lipids, phospholipids, and steroid hormones, and actively detoxifies drugs, alcohol, and metabolic poisons (highly abundant in liver cells).\n* **Golgi Apparatus (Golgi Complex / Body):**\n  * Composed of 4 to 8 flattened, curved, disc-like membranous sacs called **cisternae** stacked like pancakes.\n  * Acts as the cell's **post office and shipping center**: receives transport vesicles containing proteins and lipids from the ER, chemically modifies them (e.g., adding sugar chains to create glycoproteins), packages them into secretory vesicles, and routes them to lysosomes or the cell membrane for exocytosis.\n* **Lysosomes (\"Suicidal Bags\"):**\n  * Spherical, single-membraned digestive vesicles packed with over 40 distinct **hydrolytic (digestive) enzymes** operating at an acidic pH.\n  * They digest foreign bacteria and viruses engulfed by the cell, break down complex nutrient macromolecules, and recycle damaged organelles (autophagy).\n  * If a cell is severely injured or aged, lysosomes rupture and release their digestive enzymes throughout the cytoplasm, digesting the cell itself from within (autolysis), earning their nickname *\"suicidal bags\"*.\n* **Plastids (Unique to Plant Cells):**\n  * Double-membraned metabolic organelles exclusive to photosynthetic plants and algae:\n    1. **Chloroplasts:** Contain the green pigment **chlorophyll** arranged in stacks of thylakoid discs (grana) embedded in a fluid stroma. Chloroplasts trap radiant sunlight energy to perform **photosynthesis**, manufacturing glucose from carbon dioxide and water.\n    2. **Chromoplasts:** Contain carotenoid and xanthophyll pigments that produce vivid yellow, orange, and red colors in flower petals and ripening fruits, attracting pollinating insects and seed-dispersing birds.\n    3. **Leucoplasts:** Colorless storage plastids found in non-photosynthetic roots, tubers, and seeds. Varieties include **amyloplasts** (store starch, abundant in cassava and yam tubers), **elaioplasts** (store oils/lipids), and **aleuroplasts** (store proteins).\n* **Vacuoles:**\n  * Membrane-bound fluid cavities enclosed by a selectively permeable membrane called the **tonoplast**.\n  * **Plant Cells:** Possess a single, massive, permanent **central sap vacuole** occupying up to 90% of cell volume. It stores cell sap (water, dissolved sugars, mineral salts, amino acids, pigments) and maintains high **turgor pressure**, keeping herbaceous stems and leaves erect.\n  * **Animal Cells:** Possess only small, temporary, transient vacuoles (such as phagocytic food vacuoles or osmoregulatory contractile vacuoles in freshwater protozoa).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"360\" viewBox=\"0 0 760 360\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"360\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EUKARYOTIC ARCHITECTURE: PLANT CELL vs. ANIMAL CELL</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"300\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">PLANT CELL (DIAGRAM I)</text><rect x=\"40\" y=\"35\" width=\"250\" height=\"220\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#15803d\" stroke-width=\"6\"/><rect x=\"46\" y=\"41\" width=\"238\" height=\"208\" rx=\"4\" fill=\"#f0fdf4\" stroke=\"#4ade80\" stroke-width=\"2\"/><rect x=\"110\" y=\"80\" width=\"130\" height=\"130\" rx=\"10\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><text x=\"175\" y=\"145\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Vacuole</text><circle cx=\"75\" cy=\"90\" r=\"22\" fill=\"#fce7f3\" stroke=\"#db2777\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"90\" r=\"8\" fill=\"#be185d\"/><ellipse cx=\"75\" cy=\"150\" rx=\"14\" ry=\"8\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><ellipse cx=\"150\" cy=\"58\" rx=\"14\" ry=\"8\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><ellipse cx=\"75\" cy=\"210\" rx=\"14\" ry=\"7\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><line x1=\"290\" y1=\"50\" x2=\"320\" y2=\"50\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"325\" y=\"53\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">Cell Wall</text><line x1=\"284\" y1=\"70\" x2=\"320\" y2=\"70\" stroke=\"#4ade80\" stroke-width=\"1.2\"/><text x=\"325\" y=\"73\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#15803d\">Cell Membrane</text><line x1=\"97\" y1=\"90\" x2=\"320\" y2=\"90\" stroke=\"#db2777\" stroke-width=\"1.2\"/><text x=\"325\" y=\"93\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#be185d\">Nucleus</text><line x1=\"89\" y1=\"150\" x2=\"320\" y2=\"150\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"325\" y=\"153\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\">Chloroplast</text><line x1=\"89\" y1=\"210\" x2=\"320\" y2=\"210\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"325\" y=\"213\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#c2410c\">Mitochondrion</text></g><g transform=\"translate(400, 45)\"><rect width=\"330\" height=\"300\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">ANIMAL CELL (DIAGRAM II)</text><path d=\"M 60 70 Q 140 40 230 60 Q 280 120 260 200 Q 180 260 90 230 Q 30 160 60 70 Z\" fill=\"#fefce8\" stroke=\"#ea580c\" stroke-width=\"2.5\"/><circle cx=\"150\" cy=\"140\" r=\"32\" fill=\"#fce7f3\" stroke=\"#db2777\" stroke-width=\"1.5\"/><circle cx=\"150\" cy=\"140\" r=\"10\" fill=\"#be185d\"/><ellipse cx=\"85\" cy=\"110\" rx=\"14\" ry=\"7\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><ellipse cx=\"210\" cy=\"180\" rx=\"14\" ry=\"7\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"180\" r=\"7\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/><circle cx=\"210\" cy=\"90\" r=\"8\" fill=\"#fee2e2\" stroke=\"#dc2626\" stroke-width=\"1\"/><text x=\"210\" y=\"93\" font-family=\"sans-serif\" font-size=\"6\" fill=\"#991b1b\" text-anchor=\"middle\">Lysosome</text><line x1=\"255\" y1=\"80\" x2=\"285\" y2=\"60\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"290\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#c2410c\">Cell Membrane</text><line x1=\"182\" y1=\"140\" x2=\"285\" y2=\"130\" stroke=\"#db2777\" stroke-width=\"1.2\"/><text x=\"290\" y=\"133\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#be185d\">Nucleus</text><line x1=\"224\" y1=\"180\" x2=\"285\" y2=\"180\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"290\" y=\"183\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#c2410c\">Mitochondrion</text><line x1=\"97\" y1=\"180\" x2=\"285\" y2=\"220\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><text x=\"290\" y=\"223\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#0369a1\">Small Vacuole</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 3: Side-by-Side Architectural Comparison of Plant Cell vs. Animal Cell</p>\n</div>\n\n#### 2. Systematic Comparison: Plant Cell vs. Animal Cell\nThe following table summarizes the mandatory diagnostic structural differences tested in NaCCA examinations:\n\n| Anatomical Feature | Plant Cell (Diagram I) | Animal Cell (Diagram II) |\n| :--- | :--- | :--- |\n| **Cell Wall** | **Present:** Rigid, non-living outer box composed of tough **cellulose** fibers. | **Absent:** Enclosed solely by a thin, flexible, living plasma membrane. |\n| **Definite Shape** | **Definite, rigid, regular polygonal/rectangular shape** maintained by the wall. | **Flexible, irregular, variable shape**; easily conforms and changes outline. |\n| **Chloroplasts / Plastids** | **Present** in green leaves and stems; enables autotrophic photosynthesis. | **Absent**; animals are heterotrophic and must ingest preformed food. |\n| **Central Vacuole** | **Present:** One large, permanent, central vacuole filled with cell sap. | **Small, few, and temporary** vacuoles scattered in cytoplasm. |\n| **Storage Carbohydrate** | Stored in the form of insoluble **starch granules** (in leucoplasts/cytoplasm). | Stored in the form of **glycogen granules** (in liver and muscle cells). |\n| **Centrosomes & Centrioles** | **Absent** in most higher plants (spindle forms without centrioles). | **Present**; pair of centrioles organizes aster fibers during mitosis. |\n| **Nucleus Position** | Pushed to the **periphery (side)** by the massive central vacuole. | Located centrally in the middle of the cytoplasm. |\n\n#### 3. Distinct Architecture of Fungi and Protozoa\nBeyond classical plants and animals, the eukaryotic kingdom encompasses two other major groups:\n* **Fungal Cells (Mushrooms, Molds, Yeasts):**\n  * Like plant cells, fungi are non-motile and have a rigid cell wall; however, their wall is made of **chitin** (a nitrogenous polysaccharide), never cellulose.\n  * Fungi are completely non-photosynthetic and lack chloroplasts; they feed saprophytically by secreting digestive enzymes onto dead organic matter and absorbing dissolved nutrients.\n  * In filamentous molds (hyphae), cells are separated by internal cross-walls called **septa**, which possess central pores allowing cytoplasm and organelles to stream freely between cells.\n* **Protozoan Cells (Amoeba, Paramecium, Euglena):**\n  * Unicellular eukaryotic microorganisms living in water and damp soils.\n  * They lack cellulose cell walls; many (like *Paramecium*) have a specialized flexible protein skin called a **pellicle** that maintains cell shape while permitting flexible movement.\n  * Equipped with specialized locomotion organelles: **pseudopodia** (amoeboid crawling in *Amoeba*), **cilia** (beating hair-like rows in *Paramecium*), or **flagella** (whip-like tails in *Euglena*).\n\n---\n\n### Module 4: Health Impacts of Microorganisms & Preventive Hygiene\n\n#### 1. Dual Nature of Microorganisms\nMicroorganisms (both prokaryotic bacteria and eukaryotic fungi/protozoa) are ubiquitous. While frequently feared as disease vectors, the overwhelming majority are harmless or directly beneficial to life, industry, and human survival.\n\n#### 2. Beneficial Roles of Microorganisms\n* **Industrial Food Processing & Fermentation:**\n  * **Dairy Products:** Harmless lactic acid bacteria (e.g., *Lactobacillus bulgaricus*, *Streptococcus thermophilus*) ferment lactose milk sugar into lactic acid, curdling milk to produce yogurt, cheese, and butter.\n  * **Baking & Brewing:** Unicellular eukaryotic yeast (*Saccharomyces cerevisiae*) ferments glucose anaerobically to yield ethanol and carbon dioxide gas:\n    $$\\text{Glucose} \\xrightarrow{\\text{Yeast}} \\text{Ethanol} + 2\\text{CO}_2 \\uparrow$$\n    The bubbling $\\text{CO}_2$ gas causes bread dough to rise, producing a soft, spongy texture; the same reaction is harnessed to brew traditional Ghanaian palm wine, pito, and beer.\n* **Human Digestion & Nutritional Symbiosis:**\n  * Trillions of beneficial commensal bacteria (*gut microbiota*) colonize the human large intestine.\n  * They ferment indigestible dietary plant fibers, protect the gut lining against pathogenic bacteria, and synthesize vital **Vitamin K** (essential for blood clotting) and B-complex vitamins.\n* **Ecological Decomposition & Soil Fertility:**\n  * Saprophytic bacteria and fungi act as the primary **decomposers** of the biosphere.\n  * They break down fallen leaves, animal carcasses, and sewage waste into simple mineral ions (nitrates, phosphates, potassium), restoring fertility to agricultural soils and preventing environmental clogging.\n* **Pharmaceutical & Medical Production:**\n  * **Antibiotic Discovery:** In 1928, Alexander Fleming discovered that the green fungus *Penicillium notatum* secretes a biochemical substance—**penicillin**—that destroys bacterial cell walls. Today, industrial molds and soil actinomycetes are cultured in giant fermenters to produce antibiotics.\n  * **Vaccines & Biotechnology:** Genetically engineered *E. coli* bacteria are mass-cultured to synthesize human insulin for diabetic patients.\n\n#### 3. Pathogenic Impacts & Infectious Diseases\nPathogenic microbes cause severe morbidity and mortality when they invade host tissues:\n\n| Pathogen Class | Biological Group | Infectious Disease | Causative Microbe | Primary Symptoms & Transmission |\n| :--- | :--- | :--- | :--- | :--- |\n| **Bacterial Pathogens** | Prokaryote | **Cholera** | *Vibrio cholerae* | Profuse watery diarrhea (\"rice-water stools\") and rapid dehydration; transmitted by fecal contamination of drinking water. |\n| **Bacterial Pathogens** | Prokaryote | **Typhoid Fever** | *Salmonella typhi* | Prolonged high fever, abdominal pain, headache; transmitted through unhygienic food handling and contaminated water. |\n| **Bacterial Pathogens** | Prokaryote | **Tuberculosis (TB)** | *Mycobacterium tuberculosis* | Persistent bloody cough, chest pain, fever, weight loss; airborne transmission via respiratory droplets. |\n| **Bacterial Pathogens** | Prokaryote | **Tetanus (\"Lockjaw\")** | *Clostridium tetani* | Painful muscle spasms, lockjaw; spores enter through deep cuts contaminated with farm soil or rusted nails. |\n| **Fungal Pathogens** | Eukaryote | **Ringworm (Tinea)** | *Trichophyton* species | Circular, itchy, red scaly skin patches and hair loss; spread by direct contact, shared towels, or barber combs. |\n| **Fungal Pathogens** | Eukaryote | **Athlete's Foot** | *Tinea pedis* | Itching, peeling, and cracked skin between the toes; contracted in damp communal bathrooms and sweaty shoes. |\n| **Protozoan Pathogens** | Eukaryote | **Malaria** | *Plasmodium falciparum* | Recurrent high fever, chills, sweating, anemia; transmitted by the bite of an infected female *Anopheles* mosquito. |\n| **Protozoan Pathogens** | Eukaryote | **Amoebic Dysentery** | *Entamoeba histolytica* | Severe diarrhea containing blood and mucus, abdominal cramps; spread via water or vegetables contaminated with cysts. |\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"160\" viewBox=\"0 0 760 160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">KEY SUMMARY DIFFERENCES: PROKARYOTE vs. EUKARYOTE (EXAM CHECKLIST)</text><g transform=\"translate(25, 38)\"><rect width=\"345\" height=\"105\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><text x=\"172\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">PROKARYOTES (Bacteria)</text><text x=\"12\" y=\"40\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Nucleus: ABSENT (open nucleoid)</text><text x=\"12\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Organelles: No mitochondria, ER, or Golgi</text><text x=\"12\" y=\"76\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• DNA: Circular naked loop</text><text x=\"12\" y=\"94\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Division: Fast binary fission</text></g><g transform=\"translate(390, 38)\"><rect width=\"345\" height=\"105\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"172\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">EUKARYOTES (Plants, Animals, Fungi)</text><text x=\"12\" y=\"40\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Nucleus: PRESENT with double membrane</text><text x=\"12\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Organelles: Mitochondria, ER, Golgi present</text><text x=\"12\" y=\"76\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• DNA: Linear strands bound with histones</text><text x=\"12\" y=\"94\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Division: Complex mitosis and meiosis</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 4: Key Diagnostic Examination Checklist: Prokaryotes vs. Eukaryotes</p>\n</div>\n\n#### 4. The Four Pillars of Preventive Health & Defense\nTo disrupt microbial transmission pathways and preserve community health, students must apply four scientific hygiene rules:\n\n1. **Rigorous Hand Hygiene:**\n   * Wash hands thoroughly with clean running water and soap for at least 20 seconds before preparing or eating food, after using the washroom, and after handling soil or animals. Soap dissolves the lipid membrane of enveloped microbes and mechanically lifts bacterial pathogens off the skin.\n2. **Thorough Cooking & Safe Food Storage:**\n   * Heat soups, meats, poultry, and fish to rolling boiling temperatures (above 70°C) to denature bacterial proteins and inactivate heat-labile toxins. Cover cooked food immediately to exclude houseflies, and refrigerate leftovers promptly below 5°C to arrest bacterial multiplication.\n3. **Potable & Safe Drinking Water:**\n   * Boil drinking water vigorously for at least 3 minutes, or treat it with approved chlorination tablets (or filtration). Boiling destroys waterborne cholera bacteria, typhoid bacilli, and amoebic cysts.\n4. **Responsible Antibiotic Stewardship:**\n   * **Take Only on Prescription:** Antibiotics kill bacteria; they have **zero effect on viral infections** (common colds, influenza, COVID-19, measles). Taking antibiotics for viral colds exposes normal bacteria to unnecessary drug pressure.\n   * **Complete the Full Dosage:** Never discontinue an antibiotic course simply because symptoms abate after 2 or 3 days. Stopping prematurely leaves partially resistant surviving bacteria to multiply and transfer resistance **plasmids**, breeding incurable \"superbugs\".\n\n---\n\n### Core Comparative Summary Table\n\n| Criterion | Prokaryotic Cells | Eukaryotic Cells | Akaryotes (Viruses / Mature RBCs) |\n| :--- | :--- | :--- | :--- |\n| **True Nucleus** | **Absent** (naked nucleoid region) | **Present** (enclosed by double membrane) | **Completely Absent** |\n| **Nuclear Membrane** | Absent | Present with nuclear pores | Absent |\n| **DNA Structure** | Single, circular loop without histones | Multiple linear chromosomes with histones | DNA or RNA core (or absent in RBCs) |\n| **Membrane Organelles** | Absent (no mitochondria, ER, Golgi) | Present (mitochondria, ER, Golgi, lysosomes)| None |\n| **Ribosome Type** | Small (70S) | Large (80S) in cytoplasm; 70S in mitochondria| None (viruses use host ribosomes) |\n| **Cell Wall Material** | Peptidoglycan (murein) | Cellulose (plants), Chitin (fungi), None (animals)| Protein capsid in viruses; None in RBCs |\n| **Cell Size** | Small (0.1 – 5.0 µm) | Large (10 – 100 µm) | Ultramicroscopic (0.02 – 0.3 µm in viruses) |\n| **Cell Division** | Fast binary fission | Mitosis and Meiosis | Viral replication inside host / none in RBCs|\n| **Examples** | *E. coli*, Cyanobacteria, Archaea | Mango tree, Human, Mushroom, *Amoeba* | HIV, Rabies virus, Mature red blood cell |\n",
         "workedExamples": [
           {
-            "id": "ex_b8_s2_1",
-            "title": "Worked Example: Adaptations of the Red Blood Cell",
-            "problem": "State three distinct structural features of the human red blood cell and explain how each structure adapts the cell to its function.",
+            "id": "WE_B8_CELL_01",
+            "title": "Worked Example 1: Taxonomic Classification of Mystery Organisms from Microscopic Observations",
+            "problem": "A junior high school student examined three unknown biological specimens (A, B, and C) under a high-power laboratory microscope and recorded the following characteristics:\n- Specimen A: Unicellular, possesses a rigid peptidoglycan cell wall, lacks a visible nuclear membrane, contains small circular rings of extra DNA floating in the cytoplasm, and swims using a whip-like tail.\n- Specimen B: Multicellular, cells have a distinct double-layered nuclear envelope, numerous mitochondria, a large central fluid-filled vacuole, and a thick cellulose cell wall.\n- Specimen C: Sub-microscopic, non-cellular particle lacking cytoplasm and ribosomes, consisting only of a geometric protein shell enclosing a single molecule of RNA.\n\n(a) Classify each specimen as a Prokaryote, Eukaryote, or Akaryote.\n(b) Give one concrete biological example for each specimen category.",
             "steps": [
-              "Feature 1: Biconcave Disc Shape — Adaptation: Increases the surface area to volume ratio, facilitating rapid diffusion of oxygen into and out of the cell.",
-              "Feature 2: Absence of Nucleus (and other organelles) at maturity — Adaptation: Maximizes internal cytoplasmic volume to pack more hemoglobin molecules, increasing oxygen-carrying capacity.",
-              "Feature 3: Flexible Plasma Membrane — Adaptation: Allows the erythrocyte to bend and squeeze through narrow capillaries without rupturing."
+              "Step 1: Analyze Specimen A — The key diagnostic features are: (1) Absence of a nuclear membrane, (2) Presence of a peptidoglycan cell wall, and (3) Presence of circular plasmids and a flagellum. Because it lacks a membrane-bound nucleus and possesses a peptidoglycan wall, Specimen A is unambiguously a Prokaryote.",
+              "Step 2: Analyze Specimen B — The key diagnostic features are: (1) A true nucleus enclosed by a double membrane, (2) Membrane-bound organelles (mitochondria), (3) A large central sap vacuole, and (4) A cellulose cell wall. The presence of a true nucleus and mitochondria confirms it is a Eukaryote (specifically a plant cell due to the cellulose wall and large central vacuole).",
+              "Step 3: Analyze Specimen C — The key diagnostic features are: (1) Completely non-cellular, (2) Lacks cytoplasm, nucleus, and ribosomes, and (3) Consists only of a protein capsid enclosing an RNA core. This matches the strict definition of an Akaryote (non-cellular biological entity / virus).",
+              "Step 4: Formulate Concrete Examples — Specimen A (Prokaryote): Bacterium such as Escherichia coli, Lactobacillus, or Vibrio cholerae. Specimen B (Eukaryote): Plant tissue such as an onion epidermal cell or Elodea leaf cell. Specimen C (Akaryote): A virus such as Tobacco Mosaic Virus (TMV), Poliovirus, or Human Immunodeficiency Virus (HIV)."
             ],
-            "finalAnswer": "Examiner Tip: Always connect the physical structure directly to the biological function in adaptation questions."
+            "finalAnswer": "Examiner Tip: In BECE questions, always check for the presence of a nuclear membrane first. If absent, the organism is prokaryotic; if enclosed by a membrane with organelles, it is eukaryotic; if non-cellular with only protein and nucleic acid, it is an akaryote."
+          },
+          {
+            "id": "WE_B8_CELL_02",
+            "title": "Worked Example 2: Diagnostic Differentiation of Unlabeled Plant vs. Animal Micrographs",
+            "problem": "In a practical science examination, two unlabeled diagrams of living eukaryotic cells, labeled Cell X and Cell Y, are presented. Cell X has a rigid rectangular outline, a boundary composed of two distinct layers, green disc-like organelles distributed in the cytoplasm, and its nucleus is pushed to the outer margin. Cell Y has an irregular rounded shape, only a single outer boundary layer, numerous tiny food vesicles, and a centrally placed nucleus.\n(a) Identify Cell X and Cell Y with two supporting structural reasons for each.\n(b) Explain why Cell X possesses a definite rectangular shape whereas Cell Y has a variable, flexible shape.",
+            "steps": [
+              "Step 1: Identify Cell X — Cell X is a Plant Cell. Reasons: (1) It possesses an outer rigid cellulose cell wall outside the plasma membrane, giving it a double boundary layer. (2) It contains green chloroplasts for photosynthesis. (3) Its nucleus is displaced toward the periphery by a large permanent central vacuole.",
+              "Step 2: Identify Cell Y — Cell Y is an Animal Cell. Reasons: (1) It is bounded only by a single delicate plasma membrane without a cell wall. (2) It has a flexible, irregular outline with a centrally positioned nucleus. (3) It contains small, temporary vesicles rather than a large permanent vacuole.",
+              "Step 3: Explain the structural reason for the difference in shape — Cell X maintains a fixed, definite rectangular geometry because its outer boundary is reinforced with a thick, rigid, non-living cell wall made of tough cellulose fibers that resist mechanical deformation and hydrostatic pressure. In contrast, Cell Y lacks a cell wall and is enclosed solely by a thin, flexible, fluid phospholipid plasma membrane, allowing the cell to change its contour and deform easily."
+            ],
+            "finalAnswer": "Examiner Tip: Never state that an animal cell has 'no membrane'; all living cells have a plasma (cell) membrane. The correct phrase is: 'Animal cells lack a cell wall'."
+          },
+          {
+            "id": "WE_B8_CELL_03",
+            "title": "Worked Example 3: Biological Drawing Magnification & Real Cell Size Calculations",
+            "problem": "A student drew an enlarged biological diagram of a bacterium. In the drawing, the length of the bacterium measured 45.0 mm. If the actual physical length of the bacterium is 0.003 mm (3.0 micrometers):\n(a) State the scientific formula for calculating linear magnification.\n(b) Calculate the magnification of the student's drawing.\n(c) If a plant cell viewed under the same microscope has an actual diameter of 0.06 mm, calculate how long the plant cell drawing should be at a magnification of ×500.",
+            "steps": [
+              "Step 1: State the Magnification Formula — Magnification (M) = Size of biological drawing (Image size, I) / Actual size of specimen (Real size, A). In short: M = I / A.",
+              "Step 2: Calculate Drawing Magnification for the Bacterium — Given Image size (I) = 45.0 mm, Actual size (A) = 0.003 mm. Magnification = 45.0 mm / 0.003 mm = 15,000. Expressed in scientific format: ×15,000 (or 15,000×).",
+              "Step 3: Calculate Drawing Size for the Plant Cell — Using the rearranged formula: Image size (I) = Magnification (M) × Actual size (A). Given M = 500, A = 0.06 mm. Image size = 500 × 0.06 mm = 30.0 mm (which equals 3.0 cm)."
+            ],
+            "finalAnswer": "Final Answer: (a) Formula: Magnification = Drawing size / Actual size. (b) Magnification = ×15,000. (c) Drawing length = 30.0 mm (or 3.0 cm). Note: Magnification has no units, but must always be preceded by the multiplication sign '×'."
+          },
+          {
+            "id": "WE_B8_CELL_04",
+            "title": "Worked Example 4: Evaluating Bacterial Adaptation, Antibiotic Action & Drug Resistance",
+            "problem": "A patient diagnosed with a severe bacterial throat infection was prescribed a 7-day course of penicillin (an antibiotic that blocks peptidoglycan cell wall synthesis). After 3 days, the patient felt completely well and discontinued taking the medication. Two weeks later, the infection returned more aggressively, and a second course of penicillin failed to cure the infection.\n(a) Explain why penicillin kills bacteria but does not harm human host cells.\n(b) Explain from a cellular and genetic standpoint why the infection returned and why penicillin became ineffective.",
+            "steps": [
+              "Step 1: Explain Selective Toxicity of Penicillin — Penicillin selectively targets and inhibits the bacterial enzyme transpeptidase, preventing the cross-linking of peptidoglycan in bacterial cell walls. As a result, growing bacteria develop weak walls and burst due to osmotic lysis. Penicillin has zero harmful effect on human host cells because human cells are eukaryotic and do not possess cell walls or peptidoglycan.",
+              "Step 2: Analyze Early Discontinuation of Antibiotics — When the patient stopped taking penicillin after only 3 days, the antibiotic had killed only the most vulnerable and sensitive bacteria. A small sub-population of hardier bacteria with slight natural resistance survived.",
+              "Step 3: Explain the Cellular Mechanism of Resistance — The surviving bacteria harbored small extra circular DNA rings called plasmids containing genes for beta-lactamase (penicillinase enzymes that chemically destroy the penicillin molecule). Relieved of competition, these resistant bacteria multiplied exponentially via binary fission and shared their resistance plasmids with other bacteria via conjugation (sex pili bridges).",
+              "Step 4: Formulate the Clinical Conclusion — When the infection re-emerged, the entire bacterial colony was composed of penicillin-resistant cells capable of neutralizing the drug, rendering the second treatment completely ineffective."
+            ],
+            "finalAnswer": "Examiner Tip: When discussing bacterial resistance, always emphasize two cellular structures: (1) Plasmids (which carry the resistance gene) and (2) Pili / Conjugation (which transfer the plasmid to other bacteria)."
           }
         ],
         "practicePool": {
           "low": [
             {
-              "id": "q_b8_s2_1",
+              "id": "B8_CEL_F01",
               "difficulty": "low",
-              "prompt": "Which specialized cell contains a high density of mitochondria in its midpiece to power rapid motility?",
+              "prompt": "Who first discovered cells in 1665 using an early microscope?",
               "options": [
-                "White blood cell",
-                "Sperm cell (spermatozoon)",
-                "Xylem vessel",
-                "Guard cell"
+                "A. Louis Pasteur",
+                "B. Robert Hooke",
+                "C. Gregor Mendel",
+                "D. Charles Darwin"
               ],
-              "correctAnswer": "Sperm cell (spermatozoon)",
-              "hint": "Mitochondria produce ATP needed for flagellar propulsion.",
-              "workedSolution": "The spermatozoon has a specialized midpiece packed with spiraled mitochondria that generate ATP energy to whip its flagellum and swim toward the ovum.",
+              "correctAnswer": "B. Robert Hooke",
+              "hint": "Robert Hooke discovered and coined the term 'cell' in 1665 while observing thin slices of cork under an early microscope.",
+              "workedSolution": "Robert Hooke discovered and coined the term 'cell' in 1665 while observing thin slices of cork under an early microscope.",
               "points": 1,
-              "learningCompetency": "B8.1.2.1",
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F02",
+              "difficulty": "low",
+              "prompt": "What is a cell scientifically defined as?",
+              "options": [
+                "A. An organ that pumps blood through the body",
+                "B. The basic structural and functional unit of all living things",
+                "C. A chemical solution made of sugar and water",
+                "D. A non-living mineral crystal found inside bones"
+              ],
+              "correctAnswer": "B. The basic structural and functional unit of all living things",
+              "hint": "A cell is the fundamental structural and functional building block of all living organisms.",
+              "workedSolution": "A cell is the fundamental structural and functional building block of all living organisms.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F03",
+              "difficulty": "low",
+              "prompt": "What are the specialized functioning compartments inside a living cell called?",
+              "options": [
+                "A. Tissues",
+                "B. Organelles",
+                "C. Molecules",
+                "D. Solutes"
+              ],
+              "correctAnswer": "B. Organelles",
+              "hint": "Organelles are membrane-bound internal working structures that perform specific metabolic functions inside the cell.",
+              "workedSolution": "Organelles are membrane-bound internal working structures that perform specific metabolic functions inside the cell.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F04",
+              "difficulty": "low",
+              "prompt": "Which organelle is considered the most important control center of a eukaryotic cell?",
+              "options": [
+                "A. Vacuole",
+                "B. Nucleus",
+                "C. Cell wall",
+                "D. Ribosome"
+              ],
+              "correctAnswer": "B. Nucleus",
+              "hint": "The nucleus controls all metabolic activities, growth, protein synthesis, and reproduction in eukaryotic cells.",
+              "workedSolution": "The nucleus controls all metabolic activities, growth, protein synthesis, and reproduction in eukaryotic cells.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F05",
+              "difficulty": "low",
+              "prompt": "What is a prokaryotic cell?",
+              "options": [
+                "A. A complex cell that contains many nuclei",
+                "B. A cell that lacks a true membrane-bound nucleus and membrane-bound organelles",
+                "C. A plant cell that contains numerous green chloroplasts",
+                "D. An animal cell with a thick outer cellulose cell wall"
+              ],
+              "correctAnswer": "B. A cell that lacks a true membrane-bound nucleus and membrane-bound organelles",
+              "hint": "Prokaryotic cells lack a distinct nuclear membrane and membrane-enclosed organelles.",
+              "workedSolution": "Prokaryotic cells lack a distinct nuclear membrane and membrane-enclosed organelles.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F06",
+              "difficulty": "low",
+              "prompt": "Which of the following organisms is an example of a prokaryote?",
+              "options": [
+                "A. Amoeba",
+                "B. Bacterium",
+                "C. Mushroom",
+                "D. Mango tree"
+              ],
+              "correctAnswer": "B. Bacterium",
+              "hint": "Bacteria and Archaea are unicellular prokaryotic organisms.",
+              "workedSolution": "Bacteria and Archaea are unicellular prokaryotic organisms.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F07",
+              "difficulty": "low",
+              "prompt": "What is a eukaryotic cell?",
+              "options": [
+                "A. A cell with a true membrane-bound nucleus and membrane-bound organelles",
+                "B. A cell without any genetic material",
+                "C. A non-living viral particle",
+                "D. A cell that has no cell membrane"
+              ],
+              "correctAnswer": "A. A cell with a true membrane-bound nucleus and membrane-bound organelles",
+              "hint": "Eukaryotic cells possess a defined nucleus enclosed by a nuclear envelope and internal membrane-bound organelles.",
+              "workedSolution": "Eukaryotic cells possess a defined nucleus enclosed by a nuclear envelope and internal membrane-bound organelles.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F08",
+              "difficulty": "low",
+              "prompt": "Which of the following kingdoms is composed entirely of eukaryotic organisms?",
+              "options": [
+                "A. Bacteria",
+                "B. Archaea",
+                "C. Plants and animals",
+                "D. Cyanobacteria"
+              ],
+              "correctAnswer": "C. Plants and animals",
+              "hint": "Plants, animals, fungi, and protists are made of eukaryotic cells.",
+              "workedSolution": "Plants, animals, fungi, and protists are made of eukaryotic cells.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F09",
+              "difficulty": "low",
+              "prompt": "What term describes biological entities that completely lack a nucleus and cytoplasm, such as viruses?",
+              "options": [
+                "A. Eukaryotes",
+                "B. Prokaryotes",
+                "C. Akaryotes",
+                "D. Protists"
+              ],
+              "correctAnswer": "C. Akaryotes",
+              "hint": "Akaryotes (or acaryocytes) lack a nucleus and cytoplasm; viruses are a prime example.",
+              "workedSolution": "Akaryotes (or acaryocytes) lack a nucleus and cytoplasm; viruses are a prime example.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F10",
+              "difficulty": "low",
+              "prompt": "Why is a mature mammalian red blood cell classified as an akaryote?",
+              "options": [
+                "A. It has ten nuclei",
+                "B. It sheds its nucleus during maturation to carry more hemoglobin",
+                "C. It is an infectious virus",
+                "D. It is surrounded by a cellulose cell wall"
+              ],
+              "correctAnswer": "B. It sheds its nucleus during maturation to carry more hemoglobin",
+              "hint": "Mature red blood cells lose their nucleus during development to maximize internal volume for oxygen-carrying hemoglobin.",
+              "workedSolution": "Mature red blood cells lose their nucleus during development to maximize internal volume for oxygen-carrying hemoglobin.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F11",
+              "difficulty": "low",
+              "prompt": "Where is the genetic material (DNA) located in a bacterial cell?",
+              "options": [
+                "A. Inside a double-membraned nucleus",
+                "B. In the nucleoid region of the cytoplasm",
+                "C. Inside the vacuole",
+                "D. Inside chloroplasts"
+              ],
+              "correctAnswer": "B. In the nucleoid region of the cytoplasm",
+              "hint": "In bacteria, circular DNA lies in an open area of the cytoplasm called the nucleoid.",
+              "workedSolution": "In bacteria, circular DNA lies in an open area of the cytoplasm called the nucleoid.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F12",
+              "difficulty": "low",
+              "prompt": "What is the outermost sticky protective layer found outside the cell wall of many bacteria called?",
+              "options": [
+                "A. Plasma membrane",
+                "B. Capsule",
+                "C. Pellicle",
+                "D. Tonoplast"
+              ],
+              "correctAnswer": "B. Capsule",
+              "hint": "The capsule is a gelatinous outer layer that protects the bacterium from drying out and phagocytosis.",
+              "workedSolution": "The capsule is a gelatinous outer layer that protects the bacterium from drying out and phagocytosis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F13",
+              "difficulty": "low",
+              "prompt": "What are plasmids in a bacterial cell?",
+              "options": [
+                "A. Large food storage vacuoles",
+                "B. Small, extra circular rings of non-chromosomal DNA",
+                "C. Digestive enzymes that destroy the cell wall",
+                "D. Swimming tails used for locomotion"
+              ],
+              "correctAnswer": "B. Small, extra circular rings of non-chromosomal DNA",
+              "hint": "Plasmids are small, autonomous circular DNA molecules separate from the main bacterial chromosome.",
+              "workedSolution": "Plasmids are small, autonomous circular DNA molecules separate from the main bacterial chromosome.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F14",
+              "difficulty": "low",
+              "prompt": "Which long, whip-like appendage enables bacteria to swim through liquid environments?",
+              "options": [
+                "A. Pilus",
+                "B. Flagellum",
+                "C. Cilia",
+                "D. Pseudopodium"
+              ],
+              "correctAnswer": "B. Flagellum",
+              "hint": "Flagella are whip-like protein structures that rotate to provide motility to bacterial cells.",
+              "workedSolution": "Flagella are whip-like protein structures that rotate to provide motility to bacterial cells.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F15",
+              "difficulty": "low",
+              "prompt": "What are the short, hair-like projections on bacterial surfaces used for attachment and conjugation called?",
+              "options": [
+                "A. Flagella",
+                "B. Pili",
+                "C. Ribosomes",
+                "D. Cristae"
+              ],
+              "correctAnswer": "B. Pili",
+              "hint": "Pili are short surface appendages that allow bacteria to adhere to surfaces or exchange DNA during conjugation.",
+              "workedSolution": "Pili are short surface appendages that allow bacteria to adhere to surfaces or exchange DNA during conjugation.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F16",
+              "difficulty": "low",
+              "prompt": "By which asexual process do bacterial cells rapidly divide into two identical daughter cells?",
+              "options": [
+                "A. Mitosis",
+                "B. Meiosis",
+                "C. Binary fission",
+                "D. Budding"
+              ],
+              "correctAnswer": "C. Binary fission",
+              "hint": "Prokaryotes reproduce asexually by binary fission, where the single cell replicates its DNA and divides in two.",
+              "workedSolution": "Prokaryotes reproduce asexually by binary fission, where the single cell replicates its DNA and divides in two.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F17",
+              "difficulty": "low",
+              "prompt": "Which tough polysaccharide compound forms the rigid cell wall of plant cells?",
+              "options": [
+                "A. Chitin",
+                "B. Cellulose",
+                "C. Glycogen",
+                "D. Peptidoglycan"
+              ],
+              "correctAnswer": "B. Cellulose",
+              "hint": "Plant cell walls are made of cellulose fibers that provide structural strength and turgor resistance.",
+              "workedSolution": "Plant cell walls are made of cellulose fibers that provide structural strength and turgor resistance.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F18",
+              "difficulty": "low",
+              "prompt": "What is the cell wall of fungi (e.g., mushrooms and yeast) composed of?",
+              "options": [
+                "A. Cellulose",
+                "B. Chitin",
+                "C. Starch",
+                "D. Pectin"
+              ],
+              "correctAnswer": "B. Chitin",
+              "hint": "Fungal cell walls are composed of chitin, a tough nitrogen-containing polysaccharide.",
+              "workedSolution": "Fungal cell walls are composed of chitin, a tough nitrogen-containing polysaccharide.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F19",
+              "difficulty": "low",
+              "prompt": "Why do animal cells have irregular and flexible shapes compared to plant cells?",
+              "options": [
+                "A. Animal cells have no cytoplasm",
+                "B. Animal cells lack a rigid cellulose cell wall",
+                "C. Animal cells contain too much cellulose",
+                "D. Animal cells are completely hollow"
+              ],
+              "correctAnswer": "B. Animal cells lack a rigid cellulose cell wall",
+              "hint": "Animal cells lack a rigid cell wall; they are enclosed only by a flexible plasma membrane.",
+              "workedSolution": "Animal cells lack a rigid cell wall; they are enclosed only by a flexible plasma membrane.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F20",
+              "difficulty": "low",
+              "prompt": "Which organelle is popularly known as the 'powerhouse of the cell'?",
+              "options": [
+                "A. Ribosome",
+                "B. Chloroplast",
+                "C. Mitochondrion",
+                "D. Golgi body"
+              ],
+              "correctAnswer": "C. Mitochondrion",
+              "hint": "Mitochondria generate cellular energy (ATP) through aerobic respiration and are known as the powerhouse of the cell.",
+              "workedSolution": "Mitochondria generate cellular energy (ATP) through aerobic respiration and are known as the powerhouse of the cell.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F21",
+              "difficulty": "low",
+              "prompt": "What are the inner folds of the mitochondrial membrane called?",
+              "options": [
+                "A. Grana",
+                "B. Cristae",
+                "C. Cisternae",
+                "D. Septa"
+              ],
+              "correctAnswer": "B. Cristae",
+              "hint": "The inner mitochondrial membrane is folded into finger-like projections called cristae to expand surface area for ATP production.",
+              "workedSolution": "The inner mitochondrial membrane is folded into finger-like projections called cristae to expand surface area for ATP production.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F22",
+              "difficulty": "low",
+              "prompt": "Which green organelle in plant cells is responsible for trapping sunlight for photosynthesis?",
+              "options": [
+                "A. Amyloplast",
+                "B. Chloroplast",
+                "C. Chromoplast",
+                "D. Leucoplast"
+              ],
+              "correctAnswer": "B. Chloroplast",
+              "hint": "Chloroplasts contain green chlorophyll pigments that absorb solar energy to drive photosynthesis.",
+              "workedSolution": "Chloroplasts contain green chlorophyll pigments that absorb solar energy to drive photosynthesis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F23",
+              "difficulty": "low",
+              "prompt": "Which type of plastid gives bright yellow, orange, and red colors to ripening fruits and flower petals?",
+              "options": [
+                "A. Chloroplast",
+                "B. Chromoplast",
+                "C. Leucoplast",
+                "D. Amyloplast"
+              ],
+              "correctAnswer": "B. Chromoplast",
+              "hint": "Chromoplasts contain carotenoid pigments that produce bright yellow, orange, and red colors in flowers and fruits.",
+              "workedSolution": "Chromoplasts contain carotenoid pigments that produce bright yellow, orange, and red colors in flowers and fruits.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F24",
+              "difficulty": "low",
+              "prompt": "What is the primary function of colorless leucoplasts (such as amyloplasts) in plant root and tuber cells?",
+              "options": [
+                "A. Digesting foreign bacteria",
+                "B. Storing food nutrients like starches, oils, and proteins",
+                "C. Pumping water out of the cell",
+                "D. Synthesizing chlorophyll"
+              ],
+              "correctAnswer": "B. Storing food nutrients like starches, oils, and proteins",
+              "hint": "Leucoplasts are non-pigmented plastids specialized for storing starch (amyloplasts), lipids, and proteins.",
+              "workedSolution": "Leucoplasts are non-pigmented plastids specialized for storing starch (amyloplasts), lipids, and proteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F25",
+              "difficulty": "low",
+              "prompt": "Which organelle is known as the 'suicidal bag' because it contains strong hydrolytic digestive enzymes?",
+              "options": [
+                "A. Ribosome",
+                "B. Lysosome",
+                "C. Centrosome",
+                "D. Peroxisome"
+              ],
+              "correctAnswer": "B. Lysosome",
+              "hint": "Lysosomes contain acidic hydrolytic enzymes that digest cellular wastes, pathogens, or the cell itself upon breakdown.",
+              "workedSolution": "Lysosomes contain acidic hydrolytic enzymes that digest cellular wastes, pathogens, or the cell itself upon breakdown.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F26",
+              "difficulty": "low",
+              "prompt": "What is the primary function of the ribosomes found floating in the cytoplasm or attached to endoplasmic reticulum?",
+              "options": [
+                "A. Lipid synthesis",
+                "B. Protein synthesis",
+                "C. Cellular respiration",
+                "D. Starch storage"
+              ],
+              "correctAnswer": "B. Protein synthesis",
+              "hint": "Ribosomes are molecular factories responsible for translating RNA into polypeptide protein chains.",
+              "workedSolution": "Ribosomes are molecular factories responsible for translating RNA into polypeptide protein chains.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F27",
+              "difficulty": "low",
+              "prompt": "What makes the Rough Endoplasmic Reticulum (RER) appear rough under an electron microscope?",
+              "options": [
+                "A. Sand grains embedded in the membrane",
+                "B. Tiny ribosomes studded across its outer surface",
+                "C. Broken fragments of the cell wall",
+                "D. Pores in the nuclear envelope"
+              ],
+              "correctAnswer": "B. Tiny ribosomes studded across its outer surface",
+              "hint": "Rough ER is studded with membrane-bound ribosomes engaged in synthesizing secretory proteins.",
+              "workedSolution": "Rough ER is studded with membrane-bound ribosomes engaged in synthesizing secretory proteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F28",
+              "difficulty": "low",
+              "prompt": "What is the primary function of the Smooth Endoplasmic Reticulum (SER)?",
+              "options": [
+                "A. Synthesizing lipids, phospholipids, and detoxifying chemicals",
+                "B. Capturing solar photons for photosynthesis",
+                "C. Digesting bacterial invaders",
+                "D. Housing genetic chromosomes"
+              ],
+              "correctAnswer": "A. Synthesizing lipids, phospholipids, and detoxifying chemicals",
+              "hint": "Smooth ER lacks ribosomes and synthesizes lipids, steroid hormones, and detoxifies metabolic by-products.",
+              "workedSolution": "Smooth ER lacks ribosomes and synthesizes lipids, steroid hormones, and detoxifies metabolic by-products.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F29",
+              "difficulty": "low",
+              "prompt": "Which organelle consists of stacks of flattened membrane sacs called cisternae that package and distribute proteins?",
+              "options": [
+                "A. Mitochondrion",
+                "B. Golgi apparatus",
+                "C. Lysosome",
+                "D. Vacuole"
+              ],
+              "correctAnswer": "B. Golgi apparatus",
+              "hint": "The Golgi apparatus modifies, sorts, and packages proteins received from the ER into vesicles for secretion.",
+              "workedSolution": "The Golgi apparatus modifies, sorts, and packages proteins received from the ER into vesicles for secretion.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F30",
+              "difficulty": "low",
+              "prompt": "How does the vacuole of a mature plant cell differ from that of an animal cell?",
+              "options": [
+                "A. Plant cells have one large, permanent central vacuole; animal cells have small, temporary vacuoles",
+                "B. Plant cells have no vacuoles at all",
+                "C. Animal vacuoles are filled with green chlorophyll",
+                "D. Animal vacuoles are surrounded by a cellulose wall"
+              ],
+              "correctAnswer": "A. Plant cells have one large, permanent central vacuole; animal cells have small, temporary vacuoles",
+              "hint": "Plant cells feature a dominant, permanent central vacuole maintaining turgor; animal cells have tiny, transient vacuoles.",
+              "workedSolution": "Plant cells feature a dominant, permanent central vacuole maintaining turgor; animal cells have tiny, transient vacuoles.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F31",
+              "difficulty": "low",
+              "prompt": "In what form do plant cells store excess manufactured carbohydrate food?",
+              "options": [
+                "A. Glycogen granules",
+                "B. Starch granules",
+                "C. Chitin fibers",
+                "D. Cellulose plates"
+              ],
+              "correctAnswer": "B. Starch granules",
+              "hint": "Plants store surplus carbohydrates as insoluble starch granules inside plastids.",
+              "workedSolution": "Plants store surplus carbohydrates as insoluble starch granules inside plastids.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F32",
+              "difficulty": "low",
+              "prompt": "In what form do animal cells store excess glucose carbohydrates in liver and muscle tissues?",
+              "options": [
+                "A. Starch",
+                "B. Glycogen",
+                "C. Cellulose",
+                "D. Peptidoglycan"
+              ],
+              "correctAnswer": "B. Glycogen",
+              "hint": "Animal cells convert and store excess glucose as branched glycogen granules.",
+              "workedSolution": "Animal cells convert and store excess glucose as branched glycogen granules.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F33",
+              "difficulty": "low",
+              "prompt": "What is the dark, dense spherical structure located inside the eukaryotic nucleus that manufactures ribosomes?",
+              "options": [
+                "A. Nucleolus",
+                "B. Centriole",
+                "C. Plasmid",
+                "D. Tonoplast"
+              ],
+              "correctAnswer": "A. Nucleolus",
+              "hint": "The nucleolus is a sub-nuclear structure dedicated to transcribing ribosomal RNA and assembling ribosome subunits.",
+              "workedSolution": "The nucleolus is a sub-nuclear structure dedicated to transcribing ribosomal RNA and assembling ribosome subunits.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F34",
+              "difficulty": "low",
+              "prompt": "What is the thin, flexible protein-rich layer beneath the plasma membrane in protozoans (like *Paramecium*) called?",
+              "options": [
+                "A. Capsule",
+                "B. Pellicle",
+                "C. Cell wall",
+                "D. Chitin"
+              ],
+              "correctAnswer": "B. Pellicle",
+              "hint": "A pellicle is a flexible protein layer supporting the cell membrane in protozoans, allowing shape retention and movement.",
+              "workedSolution": "A pellicle is a flexible protein layer supporting the cell membrane in protozoans, allowing shape retention and movement.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F35",
+              "difficulty": "low",
+              "prompt": "Which microscopic cross-wall structures in fungal hyphae contain pores that allow cytoplasm and organelles to flow between cells?",
+              "options": [
+                "A. Septa",
+                "B. Pili",
+                "C. Cristae",
+                "D. Cisternae"
+              ],
+              "correctAnswer": "A. Septa",
+              "hint": "Septa are porous internal partitions in fungal hyphae that permit intercellular cytoplasmic and organelle circulation.",
+              "workedSolution": "Septa are porous internal partitions in fungal hyphae that permit intercellular cytoplasmic and organelle circulation.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F36",
+              "difficulty": "low",
+              "prompt": "Which cellular locomotion structures are short, numerous, hair-like projections that beat rhythmically on protozoan surfaces?",
+              "options": [
+                "A. Flagella",
+                "B. Cilia",
+                "C. Pili",
+                "D. Pseudopodia"
+              ],
+              "correctAnswer": "B. Cilia",
+              "hint": "Cilia are short, hair-like motile projections covering cells like *Paramecium* to drive locomotion and feeding.",
+              "workedSolution": "Cilia are short, hair-like motile projections covering cells like *Paramecium* to drive locomotion and feeding.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F37",
+              "difficulty": "low",
+              "prompt": "What temporary finger-like projections of cytoplasm does *Amoeba* extend to move and engulf food particles?",
+              "options": [
+                "A. Flagella",
+                "B. Cilia",
+                "C. Pseudopodia",
+                "D. Septa"
+              ],
+              "correctAnswer": "C. Pseudopodia",
+              "hint": "Pseudopodia ('false feet') are cytoplasmic extensions used by amoeboid cells for crawling locomotion and phagocytosis.",
+              "workedSolution": "Pseudopodia ('false feet') are cytoplasmic extensions used by amoeboid cells for crawling locomotion and phagocytosis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F38",
+              "difficulty": "low",
+              "prompt": "Which of the following cellular structures is present in plant cells but absent in normal animal cells?",
+              "options": [
+                "A. Cell membrane",
+                "B. Nucleus",
+                "C. Cellulose cell wall and chloroplasts",
+                "D. Mitochondria"
+              ],
+              "correctAnswer": "C. Cellulose cell wall and chloroplasts",
+              "hint": "Cellulose cell walls and photosynthesizing chloroplasts are hallmarks of plant cells absent in animal cells.",
+              "workedSolution": "Cellulose cell walls and photosynthesizing chloroplasts are hallmarks of plant cells absent in animal cells.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F39",
+              "difficulty": "low",
+              "prompt": "What is the primary substance that forms the plasma membrane of both plant and animal cells?",
+              "options": [
+                "A. Cellulose fibers only",
+                "B. Phospholipid bilayer with embedded proteins",
+                "C. Solid silica rock",
+                "D. Pure starch"
+              ],
+              "correctAnswer": "B. Phospholipid bilayer with embedded proteins",
+              "hint": "Plasma membranes are composed of a fluid phospholipid bilayer embedded with functional proteins.",
+              "workedSolution": "Plasma membranes are composed of a fluid phospholipid bilayer embedded with functional proteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F40",
+              "difficulty": "low",
+              "prompt": "What cellular process allows animal cells to engulf solid food particles or bacteria by wrapping the cell membrane around them?",
+              "options": [
+                "A. Phagocytosis",
+                "B. Photosynthesis",
+                "C. Transpiration",
+                "D. Binary fission"
+              ],
+              "correctAnswer": "A. Phagocytosis",
+              "hint": "Phagocytosis ('cell eating') is endocytosis where an animal cell engulfs large solid particles or microbes.",
+              "workedSolution": "Phagocytosis ('cell eating') is endocytosis where an animal cell engulfs large solid particles or microbes.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F41",
+              "difficulty": "low",
+              "prompt": "Which of the following is a dangerous human disease caused by pathogenic prokaryotic bacteria?",
+              "options": [
+                "A. Cholera",
+                "B. Malaria",
+                "C. Ringworm",
+                "D. Athlete's foot"
+              ],
+              "correctAnswer": "A. Cholera",
+              "hint": "Cholera is a severe water-borne bacterial infection caused by *Vibrio cholerae*.",
+              "workedSolution": "Cholera is a severe water-borne bacterial infection caused by *Vibrio cholerae*.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F42",
+              "difficulty": "low",
+              "prompt": "Which common skin infection is caused by a microscopic eukaryotic fungus?",
+              "options": [
+                "A. Ringworm",
+                "B. Typhoid fever",
+                "C. Tuberculosis",
+                "D. Tetanus"
+              ],
+              "correctAnswer": "A. Ringworm",
+              "hint": "Ringworm (tinea) is a fungal skin infection caused by dermatophyte fungi.",
+              "workedSolution": "Ringworm (tinea) is a fungal skin infection caused by dermatophyte fungi.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F43",
+              "difficulty": "low",
+              "prompt": "Which tropical disease is caused by the parasitic eukaryotic protozoan *Plasmodium* transmitted by mosquitoes?",
+              "options": [
+                "A. Cholera",
+                "B. Malaria",
+                "C. Tetanus",
+                "D. Tuberculosis"
+              ],
+              "correctAnswer": "B. Malaria",
+              "hint": "Malaria is caused by the unicellular protozoan parasite *Plasmodium*.",
+              "workedSolution": "Malaria is caused by the unicellular protozoan parasite *Plasmodium*.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F44",
+              "difficulty": "low",
+              "prompt": "How do helpful prokaryotic bacteria benefit the dairy industry?",
+              "options": [
+                "A. They ferment milk sugars into lactic acid to produce yogurt and cheese",
+                "B. They turn milk into poison",
+                "C. They freeze milk into rock",
+                "D. They convert milk into alcohol"
+              ],
+              "correctAnswer": "A. They ferment milk sugars into lactic acid to produce yogurt and cheese",
+              "hint": "Lactic acid bacteria ferment lactose in milk, curdling proteins into yogurt and cheese.",
+              "workedSolution": "Lactic acid bacteria ferment lactose in milk, curdling proteins into yogurt and cheese.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F45",
+              "difficulty": "low",
+              "prompt": "Which beneficial eukaryotic single-celled fungus is used in baking bread and brewing local drinks like palm wine?",
+              "options": [
+                "A. Yeast",
+                "B. *E. coli*",
+                "C. *Plasmodium*",
+                "D. *Amoeba*"
+              ],
+              "correctAnswer": "A. Yeast",
+              "hint": "Yeast ferment sugars into carbon dioxide and ethanol, making bread rise and brewing palm wine.",
+              "workedSolution": "Yeast ferment sugars into carbon dioxide and ethanol, making bread rise and brewing palm wine.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F46",
+              "difficulty": "low",
+              "prompt": "From which group of eukaryotic microorganisms was the world's first life-saving antibiotic, penicillin, extracted?",
+              "options": [
+                "A. Bacteria",
+                "B. Mold (Fungi)",
+                "C. Viruses",
+                "D. Protozoa"
+              ],
+              "correctAnswer": "B. Mold (Fungi)",
+              "hint": "Penicillin was discovered from the fungus mold *Penicillium notatum*.",
+              "workedSolution": "Penicillin was discovered from the fungus mold *Penicillium notatum*.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F47",
+              "difficulty": "low",
+              "prompt": "Why is regular hand washing with soap and running water critical for protecting against disease-causing prokaryotes?",
+              "options": [
+                "A. It removes dirt and mechanically washes away pathogenic bacteria and cysts",
+                "B. It turns bacteria into friendly cells",
+                "C. It permanently dyes human skin",
+                "D. It makes bacteria multiply"
+              ],
+              "correctAnswer": "A. It removes dirt and mechanically washes away pathogenic bacteria and cysts",
+              "hint": "Hand hygiene washes off grease, dirt, and pathogenic bacteria before they can be ingested or transmitted.",
+              "workedSolution": "Hand hygiene washes off grease, dirt, and pathogenic bacteria before they can be ingested or transmitted.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F48",
+              "difficulty": "low",
+              "prompt": "Why must antibiotic medications always be taken strictly as prescribed by a qualified medical professional?",
+              "options": [
+                "A. Incomplete or incorrect doses allow surviving bacteria to develop dangerous antibiotic resistance",
+                "B. Antibiotics only work when taken with palm oil",
+                "C. Antibiotics turn into viruses if not completed",
+                "D. Antibiotics damage plant cells"
+              ],
+              "correctAnswer": "A. Incomplete or incorrect doses allow surviving bacteria to develop dangerous antibiotic resistance",
+              "hint": "Improper antibiotic usage creates selective pressures that encourage bacteria to mutate into drug-resistant superbugs.",
+              "workedSolution": "Improper antibiotic usage creates selective pressures that encourage bacteria to mutate into drug-resistant superbugs.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F49",
+              "difficulty": "low",
+              "prompt": "What is the internal network of protein filaments and microtubules that supports cell shape and anchors organelles called?",
+              "options": [
+                "A. Cytoskeleton",
+                "B. Capsule",
+                "C. Cell wall",
+                "D. Pellicle"
+              ],
+              "correctAnswer": "A. Cytoskeleton",
+              "hint": "The cytoskeleton consists of microfilaments and microtubules that provide structural support and facilitate cell movement.",
+              "workedSolution": "The cytoskeleton consists of microfilaments and microtubules that provide structural support and facilitate cell movement.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_F50",
+              "difficulty": "low",
+              "prompt": "By which process do eukaryotic somatic cells divide to produce two genetically identical diploid daughter cells for growth?",
+              "options": [
+                "A. Binary fission",
+                "B. Mitosis",
+                "C. Meiosis",
+                "D. Conjugation"
+              ],
+              "correctAnswer": "B. Mitosis",
+              "hint": "Mitosis is eukaryotic nuclear division resulting in two daughter cells with identical chromosome numbers.",
+              "workedSolution": "Mitosis is eukaryotic nuclear division resulting in two daughter cells with identical chromosome numbers.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
               "type": "objective"
             }
           ],
           "medium": [
             {
-              "id": "q_b8_s2_2",
+              "id": "B8_CEL_I01",
               "difficulty": "medium",
-              "prompt": "The stomata of plant leaves open during daylight hours primarily because guard cells:",
+              "prompt": "How does the organization of genetic material differ between a bacterium and a human cheek cell?",
               "options": [
-                "Lose water by osmosis and become flaccid",
-                "Absorb water, become turgid, and curve outward due to unequal wall thickness",
-                "Lose their chloroplasts and shrink",
-                "Decompose their cellulose cell walls"
+                "A. Bacterium has a naked, circular DNA strand in the nucleoid; cheek cell has linear DNA packaged with histones inside a nuclear membrane",
+                "B. Bacterium has ten linear chromosomes; cheek cell has only one circular plasmid",
+                "C. Bacterium has no DNA whatsoever",
+                "D. Cheek cell lacks a nuclear membrane"
               ],
-              "correctAnswer": "Absorb water, become turgid, and curve outward due to unequal wall thickness",
-              "hint": "Remember that the inner wall of the guard cell is thicker than the outer wall.",
-              "workedSolution": "During photosynthesis, guard cells accumulate solutes, causing water influx by osmosis. As they swell with turgor, their thinner outer walls expand more than the thick inner walls, bowing apart and opening the stomatal pore.",
+              "correctAnswer": "A. Bacterium has a naked, circular DNA strand in the nucleoid; cheek cell has linear DNA packaged with histones inside a nuclear membrane",
+              "hint": "Prokaryotes possess circular DNA unassociated with histones in the nucleoid; eukaryotes possess linear chromatin enclosed in a nucleus.",
+              "workedSolution": "Prokaryotes possess circular DNA unassociated with histones in the nucleoid; eukaryotes possess linear chromatin enclosed in a nucleus.",
               "points": 1,
-              "learningCompetency": "B8.1.2.1",
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I02",
+              "difficulty": "medium",
+              "prompt": "Why are bacterial cells able to synthesize proteins even though they lack a nucleus, endoplasmic reticulum, and Golgi bodies?",
+              "options": [
+                "A. They possess numerous functional 70S ribosomes suspended directly in their cytoplasm",
+                "B. They absorb pre-made proteins directly through their capsule",
+                "C. Their cell wall manufactures proteins automatically",
+                "D. Flagella produce proteins during swimming"
+              ],
+              "correctAnswer": "A. They possess numerous functional 70S ribosomes suspended directly in their cytoplasm",
+              "hint": "Ribosomes are non-membrane-bound complexes; bacterial cytoplasm is packed with 70S ribosomes that directly translate mRNA.",
+              "workedSolution": "Ribosomes are non-membrane-bound complexes; bacterial cytoplasm is packed with 70S ribosomes that directly translate mRNA.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I03",
+              "difficulty": "medium",
+              "prompt": "What survival advantage does an extra-chromosomal plasmid provide to a pathogenic bacterium?",
+              "options": [
+                "A. It carries non-essential accessory genes, such as enzymes that destroy antibiotic drugs",
+                "B. It makes the bacterium visible to human eyes",
+                "C. It allows the bacterium to carry out photosynthesis in the dark",
+                "D. It converts the bacterium into a fungal cell"
+              ],
+              "correctAnswer": "A. It carries non-essential accessory genes, such as enzymes that destroy antibiotic drugs",
+              "hint": "Plasmids carry adaptive accessory genes, such as beta-lactamase, conferring antibiotic resistance and virulence factors.",
+              "workedSolution": "Plasmids carry adaptive accessory genes, such as beta-lactamase, conferring antibiotic resistance and virulence factors.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I04",
+              "difficulty": "medium",
+              "prompt": "When observing bacterial cell envelopes from outside to inside, which sequence of layers is correct?",
+              "options": [
+                "A. Plasma membrane → Cell wall → Capsule",
+                "B. Capsule → Cell wall → Plasma membrane",
+                "C. Cell wall → Capsule → Nucleoid",
+                "D. Plasma membrane → Capsule → Flagellum"
+              ],
+              "correctAnswer": "B. Capsule → Cell wall → Plasma membrane",
+              "hint": "The typical bacterial envelope consists of an outermost protective capsule, middle rigid peptidoglycan cell wall, and inner plasma membrane.",
+              "workedSolution": "The typical bacterial envelope consists of an outermost protective capsule, middle rigid peptidoglycan cell wall, and inner plasma membrane.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I05",
+              "difficulty": "medium",
+              "prompt": "Why does a plant cell not burst when placed in pure distilled water, whereas an animal red blood cell swells and bursts (lysis)?",
+              "options": [
+                "A. The plant cell wall exerts inward mechanical wall pressure that resists swelling; animal cells lack a cell wall",
+                "B. Plant cells do not absorb water by osmosis",
+                "C. Animal cells actively pump water inward",
+                "D. Plant cells have no cell membrane"
+              ],
+              "correctAnswer": "A. The plant cell wall exerts inward mechanical wall pressure that resists swelling; animal cells lack a cell wall",
+              "hint": "The rigid cellulose plant cell wall withstands high internal osmotic turgor pressure, preventing lysis.",
+              "workedSolution": "The rigid cellulose plant cell wall withstands high internal osmotic turgor pressure, preventing lysis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I06",
+              "difficulty": "medium",
+              "prompt": "What is the role of turgor pressure exerted by the central sap vacuole in herbaceous green plants?",
+              "options": [
+                "A. It pushes the cytoplasm against the cell wall, keeping soft stems and leaves upright and firm",
+                "B. It causes the plant leaves to wilt and drop",
+                "C. It converts chlorophyll into red carotene",
+                "D. It decomposes dead plant cells"
+              ],
+              "correctAnswer": "A. It pushes the cytoplasm against the cell wall, keeping soft stems and leaves upright and firm",
+              "hint": "Water entering the vacuole creates outward hydrostatic turgor pressure against the cell wall, providing mechanical support to non-woody tissues.",
+              "workedSolution": "Water entering the vacuole creates outward hydrostatic turgor pressure against the cell wall, providing mechanical support to non-woody tissues.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I07",
+              "difficulty": "medium",
+              "prompt": "How do the functions of chloroplasts and mitochondria complement each other in a green plant cell?",
+              "options": [
+                "A. Chloroplasts synthesize glucose and oxygen using sunlight; mitochondria oxidize that glucose to generate ATP energy",
+                "B. Chloroplasts digest dead mitochondria",
+                "C. Mitochondria make glucose while chloroplasts produce waste water",
+                "D. Both organelles produce identical sugar molecules from sunlight"
+              ],
+              "correctAnswer": "A. Chloroplasts synthesize glucose and oxygen using sunlight; mitochondria oxidize that glucose to generate ATP energy",
+              "hint": "Chloroplasts build organic glucose via photosynthesis; mitochondria catabolize glucose to produce ATP for cellular work.",
+              "workedSolution": "Chloroplasts build organic glucose via photosynthesis; mitochondria catabolize glucose to produce ATP for cellular work.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I08",
+              "difficulty": "medium",
+              "prompt": "Why are lysosomes termed 'suicidal bags' during programmed cell death (autolysis)?",
+              "options": [
+                "A. If a cell is irreversibly damaged, lysosomal membranes rupture, releasing hydrolytic enzymes that digest the host cell from within",
+                "B. They explode to kill invading predators outside the body",
+                "C. They synthesize toxic poisons to kill neighboring healthy cells",
+                "D. They starve the cell of water"
+              ],
+              "correctAnswer": "A. If a cell is irreversibly damaged, lysosomal membranes rupture, releasing hydrolytic enzymes that digest the host cell from within",
+              "hint": "Mass release of lysosomal hydrolytic enzymes breaks down all internal macromolecular components, destroying the cell.",
+              "workedSolution": "Mass release of lysosomal hydrolytic enzymes breaks down all internal macromolecular components, destroying the cell.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I09",
+              "difficulty": "medium",
+              "prompt": "How do the structural components of the fungal cell wall (chitin) differ from the plant cell wall (cellulose)?",
+              "options": [
+                "A. Chitin is a polymer of N-acetylglucosamine, while cellulose is a polymer of glucose subunits",
+                "B. Chitin is made of pure liquid fats",
+                "C. Cellulose dissolves completely in cold water",
+                "D. Fungal cell walls contain green chlorophyll"
+              ],
+              "correctAnswer": "A. Chitin is a polymer of N-acetylglucosamine, while cellulose is a polymer of glucose subunits",
+              "hint": "Chitin is a nitrogenous polysaccharide, whereas cellulose consists of unbranched beta-glucose chains.",
+              "workedSolution": "Chitin is a nitrogenous polysaccharide, whereas cellulose consists of unbranched beta-glucose chains.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I10",
+              "difficulty": "medium",
+              "prompt": "Why is the presence of porous septa in fungal hyphae biologically significant?",
+              "options": [
+                "A. It permits continuous streaming of nutrients, cytoplasm, and even nuclei between adjacent fungal compartments",
+                "B. It prevents water from entering the fungus",
+                "C. It turns the fungus into an autotrophic plant",
+                "D. It produces reproductive pollen grains"
+              ],
+              "correctAnswer": "A. It permits continuous streaming of nutrients, cytoplasm, and even nuclei between adjacent fungal compartments",
+              "hint": "Septal pores allow cytoplasmic streaming, distributing nutrients and organelles across long hyphal filaments.",
+              "workedSolution": "Septal pores allow cytoplasmic streaming, distributing nutrients and organelles across long hyphal filaments.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I11",
+              "difficulty": "medium",
+              "prompt": "How does pinocytosis differ from phagocytosis in eukaryotic animal cells?",
+              "options": [
+                "A. Pinocytosis is the intake of dissolved extracellular liquid droplets ('cell drinking'); phagocytosis is the engulfing of large solid particles ('cell eating')",
+                "B. Pinocytosis occurs only in plants; phagocytosis occurs only in bacteria",
+                "C. Pinocytosis releases waste; phagocytosis absorbs light",
+                "D. There is no difference between the two processes"
+              ],
+              "correctAnswer": "A. Pinocytosis is the intake of dissolved extracellular liquid droplets ('cell drinking'); phagocytosis is the engulfing of large solid particles ('cell eating')",
+              "hint": "Both are endocytic mechanisms: phagocytosis internalizes large solid matter, whereas pinocytosis ingests liquid solutes.",
+              "workedSolution": "Both are endocytic mechanisms: phagocytosis internalizes large solid matter, whereas pinocytosis ingests liquid solutes.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I12",
+              "difficulty": "medium",
+              "prompt": "Why do white blood cells (phagocytes) contain an unusually high concentration of lysosomes?",
+              "options": [
+                "A. To rapidly fuse with phagocytic vacuoles and digest engulfed disease-causing pathogens",
+                "B. To synthesize red hemoglobin pigment",
+                "C. To store starch for energy",
+                "D. To provide green coloration to the blood"
+              ],
+              "correctAnswer": "A. To rapidly fuse with phagocytic vacuoles and digest engulfed disease-causing pathogens",
+              "hint": "Phagosomes fuse with lysosomes (forming phagolysosomes), utilizing digestive enzymes to destroy pathogens.",
+              "workedSolution": "Phagosomes fuse with lysosomes (forming phagolysosomes), utilizing digestive enzymes to destroy pathogens.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I13",
+              "difficulty": "medium",
+              "prompt": "What is the structural relationship between chromatin, chromosomes, and DNA inside the eukaryotic nucleus?",
+              "options": [
+                "A. Chromatin is the loose, uncoiled form of DNA wound around histone proteins; during cell division, it condenses into distinct chromosomes",
+                "B. Chromosomes are non-living lipids that float outside the nucleus",
+                "C. DNA is made of starch and stored in the vacuole",
+                "D. Chromatin has no connection to chromosomes or DNA"
+              ],
+              "correctAnswer": "A. Chromatin is the loose, uncoiled form of DNA wound around histone proteins; during cell division, it condenses into distinct chromosomes",
+              "hint": "DNA coils around histones to form chromatin fibers, which condense into rod-shaped chromosomes during mitosis.",
+              "workedSolution": "DNA coils around histones to form chromatin fibers, which condense into rod-shaped chromosomes during mitosis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I14",
+              "difficulty": "medium",
+              "prompt": "Why do viruses fail to fit into the standard two-kingdom classification of living cells (prokaryotes and eukaryotes)?",
+              "options": [
+                "A. They are acellular particles lacking a cytoplasm, cell membrane, ribosomes, and independent metabolic machinery",
+                "B. They have hundreds of nuclei per cell",
+                "C. They carry out vigorous photosynthesis",
+                "D. They are larger than elephant cells"
+              ],
+              "correctAnswer": "A. They are acellular particles lacking a cytoplasm, cell membrane, ribosomes, and independent metabolic machinery",
+              "hint": "Viruses are obligate acellular parasites consisting only of a genetic core in a protein capsid, lacking metabolic structures.",
+              "workedSolution": "Viruses are obligate acellular parasites consisting only of a genetic core in a protein capsid, lacking metabolic structures.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I15",
+              "difficulty": "medium",
+              "prompt": "How does the nuclear envelope regulate molecular transport between the nucleoplasm and cytoplasm?",
+              "options": [
+                "A. Through specialized protein-lined nuclear pores that permit selective passage of RNA, proteins, and ribosomal subunits",
+                "B. It has an open hole that lets all organelles enter freely",
+                "C. It is completely impermeable to all molecules",
+                "D. It pumps water out using cilia"
+              ],
+              "correctAnswer": "A. Through specialized protein-lined nuclear pores that permit selective passage of RNA, proteins, and ribosomal subunits",
+              "hint": "Nuclear pore complexes span the double membrane, selectively gating traffic of RNA and regulatory proteins.",
+              "workedSolution": "Nuclear pore complexes span the double membrane, selectively gating traffic of RNA and regulatory proteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I16",
+              "difficulty": "medium",
+              "prompt": "What is the primary operational difference between the cis-face and trans-face of the Golgi apparatus?",
+              "options": [
+                "A. Cis-face receives transport vesicles from the rough ER; trans-face buds off secretory vesicles to their destinations",
+                "B. Cis-face stores food; trans-face synthesizes DNA",
+                "C. Cis-face makes chlorophyll; trans-face destroys glucose",
+                "D. Both faces perform identical functions simultaneously"
+              ],
+              "correctAnswer": "A. Cis-face receives transport vesicles from the rough ER; trans-face buds off secretory vesicles to their destinations",
+              "hint": "Proteins enter the cis-cisternae from the ER, undergo post-translational modification, and exit from the trans-face.",
+              "workedSolution": "Proteins enter the cis-cisternae from the ER, undergo post-translational modification, and exit from the trans-face.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I17",
+              "difficulty": "medium",
+              "prompt": "Why does bacterial conjugation via sex pili lead to rapid spread of multidrug resistance in hospital environments?",
+              "options": [
+                "A. Conjugative plasmids carrying antibiotic-resistance genes are transferred directly from a resistant donor bacterium to a sensitive recipient",
+                "B. Pili inject poison into human patients directly",
+                "C. Conjugation forces bacteria to turn into fungi",
+                "D. Pili destroy all antibiotics on hospital surfaces"
+              ],
+              "correctAnswer": "A. Conjugative plasmids carrying antibiotic-resistance genes are transferred directly from a resistant donor bacterium to a sensitive recipient",
+              "hint": "Horizontal gene transfer via conjugative pili spreads R-plasmids between different bacterial strains.",
+              "workedSolution": "Horizontal gene transfer via conjugative pili spreads R-plasmids between different bacterial strains.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I18",
+              "difficulty": "medium",
+              "prompt": "Why are antibiotics like penicillin highly effective at killing bacteria without harming human host cells?",
+              "options": [
+                "A. Penicillin targets peptidoglycan synthesis in bacterial cell walls, a structure human cells do not possess",
+                "B. Penicillin only kills cells that contain a nucleus",
+                "C. Human cells absorb penicillin as a vitamin nutrient",
+                "D. Penicillin destroys human white blood cells"
+              ],
+              "correctAnswer": "A. Penicillin targets peptidoglycan synthesis in bacterial cell walls, a structure human cells do not possess",
+              "hint": "Penicillin inhibits bacterial peptidoglycan wall cross-linking; human cells lack walls and are unaffected.",
+              "workedSolution": "Penicillin inhibits bacterial peptidoglycan wall cross-linking; human cells lack walls and are unaffected.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I19",
+              "difficulty": "medium",
+              "prompt": "What is the metabolic function of peroxisomes found in both plant and animal eukaryotic cells?",
+              "options": [
+                "A. Breaking down toxic hydrogen peroxide ($H_2O_2$) into harmless water and oxygen using catalase enzymes",
+                "B. Manufacturing starch granules",
+                "C. Packaging proteins for export",
+                "D. Pumping sodium ions out of the cell"
+              ],
+              "correctAnswer": "A. Breaking down toxic hydrogen peroxide ($H_2O_2$) into harmless water and oxygen using catalase enzymes",
+              "hint": "Peroxisomes contain catalase and oxidases that convert harmful reactive oxygen species and $H_2O_2$ into $H_2O$ and $O_2$.",
+              "workedSolution": "Peroxisomes contain catalase and oxidases that convert harmful reactive oxygen species and $H_2O_2$ into $H_2O$ and $O_2$.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I20",
+              "difficulty": "medium",
+              "prompt": "Why does potato tuber tissue turn dark blue-black when stained with dilute iodine solution?",
+              "options": [
+                "A. Potato tuber cells contain abundant amyloplasts (leucoplasts) packed with stored starch",
+                "B. Iodine stains cell membranes red",
+                "C. Potato cells have no cell walls",
+                "D. Iodine destroys potato proteins"
+              ],
+              "correctAnswer": "A. Potato tuber cells contain abundant amyloplasts (leucoplasts) packed with stored starch",
+              "hint": "Amyloplasts store starch, which forms an intensely dark blue-black charge-transfer complex with iodine.",
+              "workedSolution": "Amyloplasts store starch, which forms an intensely dark blue-black charge-transfer complex with iodine.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I21",
+              "difficulty": "medium",
+              "prompt": "What is the biochemical significance of respiratory enzymes being located on the bacterial plasma membrane?",
+              "options": [
+                "A. Because bacteria lack mitochondria, their plasma membrane carries out electron transport and ATP production",
+                "B. It allows bacteria to eat their own cell wall",
+                "C. It prevents bacteria from absorbing oxygen",
+                "D. It converts sunlight into solid rock"
+              ],
+              "correctAnswer": "A. Because bacteria lack mitochondria, their plasma membrane carries out electron transport and ATP production",
+              "hint": "In prokaryotes, proton gradients and ATP synthases are located along the cell membrane due to the absence of mitochondria.",
+              "workedSolution": "In prokaryotes, proton gradients and ATP synthases are located along the cell membrane due to the absence of mitochondria.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I22",
+              "difficulty": "medium",
+              "prompt": "Which of the following describes the locomotion of a ciliated protozoan like *Paramecium*?",
+              "options": [
+                "A. Coordinated, rhythmic wave-like beating of thousands of surface cilia propelling the cell forward",
+                "B. Spinning a single long flagellum like a boat propeller",
+                "C. Extending pseudopodia into soil pockets",
+                "D. Floating passively without any self-propulsion"
+              ],
+              "correctAnswer": "A. Coordinated, rhythmic wave-like beating of thousands of surface cilia propelling the cell forward",
+              "hint": "*Paramecium* uses metachronal waves of beating cilia for rapid, directional swimming.",
+              "workedSolution": "*Paramecium* uses metachronal waves of beating cilia for rapid, directional swimming.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I23",
+              "difficulty": "medium",
+              "prompt": "Why do ripe tomato fruits turn from green to red during development?",
+              "options": [
+                "A. Chloroplasts inside the cells break down their chlorophyll and transform into chromoplasts filled with red lycopene/carotene",
+                "B. The cells lose their nuclei",
+                "C. Animal blood enters the tomato skin",
+                "D. The cell wall turns into glycogen"
+              ],
+              "correctAnswer": "A. Chloroplasts inside the cells break down their chlorophyll and transform into chromoplasts filled with red lycopene/carotene",
+              "hint": "Plastid differentiation transforms green photosynthetic chloroplasts into red carotenoid-rich chromoplasts.",
+              "workedSolution": "Plastid differentiation transforms green photosynthetic chloroplasts into red carotenoid-rich chromoplasts.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I24",
+              "difficulty": "medium",
+              "prompt": "What is the structural role of the tonoplast in plant cells?",
+              "options": [
+                "A. The selectively permeable single membrane bounding the central vacuole, regulating solute movement in and out of the cell sap",
+                "B. The outer cellulose wall",
+                "C. The double membrane of the nucleus",
+                "D. The protein coat of a virus"
+              ],
+              "correctAnswer": "A. The selectively permeable single membrane bounding the central vacuole, regulating solute movement in and out of the cell sap",
+              "hint": "The tonoplast is the vacuolar membrane that regulates osmotic pressure and solute accumulation in cell sap.",
+              "workedSolution": "The tonoplast is the vacuolar membrane that regulates osmotic pressure and solute accumulation in cell sap.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I25",
+              "difficulty": "medium",
+              "prompt": "Why are bacterial endospores capable of surviving boiling water and harsh disinfectants?",
+              "options": [
+                "A. They possess a dehydrated core, high dipicolinic acid content, and thick protective protein coats that shield DNA",
+                "B. They contain active fire-resistant enzymes",
+                "C. They have twenty plasma membranes",
+                "D. They turn into eukaryotic fungi"
+              ],
+              "correctAnswer": "A. They possess a dehydrated core, high dipicolinic acid content, and thick protective protein coats that shield DNA",
+              "hint": "Endospores are dormant structures with low water content and keratin-like coats that resist extreme heat and chemicals.",
+              "workedSolution": "Endospores are dormant structures with low water content and keratin-like coats that resist extreme heat and chemicals.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I26",
+              "difficulty": "medium",
+              "prompt": "How do yeast cells reproduce asexually under favorable, nutrient-rich conditions?",
+              "options": [
+                "A. Asymmetric budding, where a small daughter outgrowth forms and pinches off from the parent cell",
+                "B. Binary fission identical to bacteria",
+                "C. Producing macroscopic mushrooms",
+                "D. Fusing two flagella together"
+              ],
+              "correctAnswer": "A. Asymmetric budding, where a small daughter outgrowth forms and pinches off from the parent cell",
+              "hint": "Yeast commonly reproduce asexually by budding, forming a small cellular protuberance that detaches as an independent cell.",
+              "workedSolution": "Yeast commonly reproduce asexually by budding, forming a small cellular protuberance that detaches as an independent cell.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I27",
+              "difficulty": "medium",
+              "prompt": "What is the biological function of the contractile vacuole found in freshwater amoebae?",
+              "options": [
+                "A. Osmoregulation: collecting excess water that enters by osmosis and expelling it to prevent the cell from bursting",
+                "B. Synthesizing proteins for cell division",
+                "C. Storing reserve starch granules",
+                "D. Manufacturing chlorophyll for photosynthesis"
+              ],
+              "correctAnswer": "A. Osmoregulation: collecting excess water that enters by osmosis and expelling it to prevent the cell from bursting",
+              "hint": "In hypotonic freshwater, amoebae accumulate excess water; contractile vacuoles pump this water out to maintain osmotic balance.",
+              "workedSolution": "In hypotonic freshwater, amoebae accumulate excess water; contractile vacuoles pump this water out to maintain osmotic balance.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I28",
+              "difficulty": "medium",
+              "prompt": "Why is the genetic code in eukaryotic cells vulnerable to mutations when exposed to ultraviolet radiation?",
+              "options": [
+                "A. UV photons damage DNA nucleotides directly, causing thymine dimers that disrupt replication and transcription",
+                "B. UV light dissolves the cell wall",
+                "C. UV rays convert ribosomes into lysosomes",
+                "D. UV radiation turns cytoplasm into solid ice"
+              ],
+              "correctAnswer": "A. UV photons damage DNA nucleotides directly, causing thymine dimers that disrupt replication and transcription",
+              "hint": "UV energy forms covalent thymine-thymine cross-links in DNA, interfering with polymerase fidelity and causing mutations.",
+              "workedSolution": "UV energy forms covalent thymine-thymine cross-links in DNA, interfering with polymerase fidelity and causing mutations.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I29",
+              "difficulty": "medium",
+              "prompt": "What happens to a bacterial culture if all individuals lose their flagellar gene via mutation?",
+              "options": [
+                "A. They lose motile swimming ability and become completely non-motile, relying on passive fluid movement",
+                "B. They can no longer synthesize proteins",
+                "C. Their cell wall dissolves immediately",
+                "D. They turn into eukaryotic protists"
+              ],
+              "correctAnswer": "A. They lose motile swimming ability and become completely non-motile, relying on passive fluid movement",
+              "hint": "Flagella provide active motility; non-flagellated mutants cannot swim or navigate toward nutrients via chemotaxis.",
+              "workedSolution": "Flagella provide active motility; non-flagellated mutants cannot swim or navigate toward nutrients via chemotaxis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I30",
+              "difficulty": "medium",
+              "prompt": "Why does bread dough rise when baker's yeast is kneaded into the flour mixture and kept warm?",
+              "options": [
+                "A. Yeast cells respire anaerobically, fermenting glucose and releasing expanding bubbles of carbon dioxide gas ($CO_2$)",
+                "B. Yeast cells absorb all water from the flour",
+                "C. Yeast reproduces so fast that its physical cells push the dough up",
+                "D. Flour starch turns into solid ice"
+              ],
+              "correctAnswer": "A. Yeast cells respire anaerobically, fermenting glucose and releasing expanding bubbles of carbon dioxide gas ($CO_2$)",
+              "hint": "Anaerobic fermentation by yeast converts dough sugars into ethanol and $CO_2$ gas, which gets trapped and leavens the dough.",
+              "workedSolution": "Anaerobic fermentation by yeast converts dough sugars into ethanol and $CO_2$ gas, which gets trapped and leavens the dough.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I31",
+              "difficulty": "medium",
+              "prompt": "How do saprophytic fungi obtain nutrition from decaying organic matter?",
+              "options": [
+                "A. They secrete extracellular digestive enzymes onto dead substrate and absorb the solubilized simple nutrients",
+                "B. They swallow whole chunks of rotting wood by phagocytosis",
+                "C. They perform photosynthesis using green chlorophyll",
+                "D. They hunt and kill live animals"
+              ],
+              "correctAnswer": "A. They secrete extracellular digestive enzymes onto dead substrate and absorb the solubilized simple nutrients",
+              "hint": "Fungi exhibit absorptive heterotrophy, releasing enzymes to digest polymers externally before absorbing monomers.",
+              "workedSolution": "Fungi exhibit absorptive heterotrophy, releasing enzymes to digest polymers externally before absorbing monomers.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I32",
+              "difficulty": "medium",
+              "prompt": "Why is the cell wall of a gram-negative bacterium more chemically resistant to certain antibiotics than that of a gram-positive bacterium?",
+              "options": [
+                "A. It possesses an extra outer lipopolysaccharide (LPS) membrane that acts as a protective permeability barrier",
+                "B. It has no cell membrane",
+                "C. It contains thick chitin plates",
+                "D. It is made of pure cellulose"
+              ],
+              "correctAnswer": "A. It possesses an extra outer lipopolysaccharide (LPS) membrane that acts as a protective permeability barrier",
+              "hint": "Gram-negative bacteria possess an asymmetric outer membrane containing lipopolysaccharides that excludes many antibiotics.",
+              "workedSolution": "Gram-negative bacteria possess an asymmetric outer membrane containing lipopolysaccharides that excludes many antibiotics.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I33",
+              "difficulty": "medium",
+              "prompt": "What is the primary role of the nucleolus in maintaining eukaryotic cell viability?",
+              "options": [
+                "A. Transcribing ribosomal RNA (rRNA) and assembling immature ribosomal subunits",
+                "B. Breaking down toxic drugs",
+                "C. Producing ATP energy through respiration",
+                "D. Pumping water into the central vacuole"
+              ],
+              "correctAnswer": "A. Transcribing ribosomal RNA (rRNA) and assembling immature ribosomal subunits",
+              "hint": "The nucleolus is the nuclear site dedicated to synthesizing rRNA and assembling ribosome complexes.",
+              "workedSolution": "The nucleolus is the nuclear site dedicated to synthesizing rRNA and assembling ribosome complexes.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I34",
+              "difficulty": "medium",
+              "prompt": "Which of the following correctly pairs an organelle with its primary function?",
+              "options": [
+                "A. Golgi apparatus — Cellular respiration",
+                "B. Ribosome — Protein synthesis",
+                "C. Chloroplast — Lipid breakdown",
+                "D. Lysosome — Photosynthesis"
+              ],
+              "correctAnswer": "B. Ribosome — Protein synthesis",
+              "hint": "Ribosomes decode mRNA sequences to synthesize polypeptide chains.",
+              "workedSolution": "Ribosomes decode mRNA sequences to synthesize polypeptide chains.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I35",
+              "difficulty": "medium",
+              "prompt": "How does the size of a typical prokaryotic cell compare to a typical eukaryotic cell?",
+              "options": [
+                "A. Prokaryotic cells (1-5 μm) are roughly 10 to 100 times smaller than eukaryotic cells (10-100 μm)",
+                "B. Prokaryotes are 100 times larger than plant cells",
+                "C. Both are exactly identical in diameter",
+                "D. Prokaryotes are visible without a microscope"
+              ],
+              "correctAnswer": "A. Prokaryotic cells (1-5 μm) are roughly 10 to 100 times smaller than eukaryotic cells (10-100 μm)",
+              "hint": "Prokaryotes generally range from 1–5 micrometers, whereas eukaryotes measure 10–100 micrometers.",
+              "workedSolution": "Prokaryotes generally range from 1–5 micrometers, whereas eukaryotes measure 10–100 micrometers.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I36",
+              "difficulty": "medium",
+              "prompt": "Why do eukaryotic plant cells require mitochondria if they already contain chloroplasts?",
+              "options": [
+                "A. Chloroplasts only make sugars; mitochondria are needed to break down those sugars into usable ATP, especially at night",
+                "B. Chloroplasts do not function during the daytime",
+                "C. Mitochondria produce green chlorophyll",
+                "D. Plant cells do not actually contain mitochondria"
+              ],
+              "correctAnswer": "A. Chloroplasts only make sugars; mitochondria are needed to break down those sugars into usable ATP, especially at night",
+              "hint": "Chloroplasts synthesize sugars; mitochondria continuously catabolize sugars to supply ATP for maintenance and transport.",
+              "workedSolution": "Chloroplasts synthesize sugars; mitochondria continuously catabolize sugars to supply ATP for maintenance and transport.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I37",
+              "difficulty": "medium",
+              "prompt": "What cellular feature enables *Euglena* to move toward a light source (positive phototaxis)?",
+              "options": [
+                "A. A light-sensitive eyespot (stigma) working in coordination with its swimming flagellum",
+                "B. A thick cellulose cell wall",
+                "C. A large central sap vacuole",
+                "D. A chitinous pellicle"
+              ],
+              "correctAnswer": "A. A light-sensitive eyespot (stigma) working in coordination with its swimming flagellum",
+              "hint": "*Euglena* possesses a photoreceptive eyespot that shades a basal swelling, steering the flagellum toward illumination.",
+              "workedSolution": "*Euglena* possesses a photoreceptive eyespot that shades a basal swelling, steering the flagellum toward illumination.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I38",
+              "difficulty": "medium",
+              "prompt": "What is the primary danger of consuming improperly prepared or unboiled street food in tropical environments?",
+              "options": [
+                "A. Ingestion of enteropathogenic bacteria like *Salmonella* and *Vibrio cholerae* that cause severe gastroenteritis",
+                "B. Loss of human white blood cells",
+                "C. Converting human stomach cells into plant cells",
+                "D. Instant freezing of the digestive tract"
+              ],
+              "correctAnswer": "A. Ingestion of enteropathogenic bacteria like *Salmonella* and *Vibrio cholerae* that cause severe gastroenteritis",
+              "hint": "Contaminated food serves as a vehicle for pathogenic bacteria that release enterotoxins, triggering diarrhea and vomiting.",
+              "workedSolution": "Contaminated food serves as a vehicle for pathogenic bacteria that release enterotoxins, triggering diarrhea and vomiting.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I39",
+              "difficulty": "medium",
+              "prompt": "How do microfilaments (actin) in the eukaryotic cytoskeleton assist in amoeboid movement?",
+              "options": [
+                "A. Rapid polymerizing and depolymerizing of actin networks drives cytoplasmic gel-sol transitions and extends pseudopodia",
+                "B. They form rigid outer bones inside the cell",
+                "C. They make the amoeba transparent to light",
+                "D. They pump water out through the cell wall"
+              ],
+              "correctAnswer": "A. Rapid polymerizing and depolymerizing of actin networks drives cytoplasmic gel-sol transitions and extends pseudopodia",
+              "hint": "Actin-myosin dynamics generate cytoplasmic streaming, extending the cell cortex to form pseudopodia.",
+              "workedSolution": "Actin-myosin dynamics generate cytoplasmic streaming, extending the cell cortex to form pseudopodia.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I40",
+              "difficulty": "medium",
+              "prompt": "Why does treating a viral infection (like the common cold or influenza) with antibacterial penicillin fail completely?",
+              "options": [
+                "A. Viruses are non-cellular akaryotes lacking peptidoglycan cell walls, ribosomes, and bacterial metabolic pathways targeted by antibiotics",
+                "B. Viruses absorb antibiotics as food",
+                "C. Penicillin is made of pure sugar",
+                "D. Viruses only infect plants"
+              ],
+              "correctAnswer": "A. Viruses are non-cellular akaryotes lacking peptidoglycan cell walls, ribosomes, and bacterial metabolic pathways targeted by antibiotics",
+              "hint": "Antibacterial drugs target prokaryotic structures; viruses lack these targets and are unaffected by antibacterials.",
+              "workedSolution": "Antibacterial drugs target prokaryotic structures; viruses lack these targets and are unaffected by antibacterials.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I41",
+              "difficulty": "medium",
+              "prompt": "What is the function of the nuclear pores embedded in the nuclear envelope?",
+              "options": [
+                "A. Permitting mRNA and ribosomal subunits to exit into the cytoplasm while allowing regulatory proteins into the nucleus",
+                "B. Letting mitochondria enter the nucleus",
+                "C. Pumping green chlorophyll into chromosomes",
+                "D. Draining waste water out of the cell"
+              ],
+              "correctAnswer": "A. Permitting mRNA and ribosomal subunits to exit into the cytoplasm while allowing regulatory proteins into the nucleus",
+              "hint": "Nuclear pores maintain bidirectional transport, exporting transcripts and importing nuclear proteins.",
+              "workedSolution": "Nuclear pores maintain bidirectional transport, exporting transcripts and importing nuclear proteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I42",
+              "difficulty": "medium",
+              "prompt": "Which organelle is responsible for post-translational modification, such as adding carbohydrate chains to form glycoproteins?",
+              "options": [
+                "A. Golgi apparatus",
+                "B. Ribosome",
+                "C. Mitochondrion",
+                "D. Centrosome"
+              ],
+              "correctAnswer": "A. Golgi apparatus",
+              "hint": "The Golgi apparatus carries out glycosylation, attaching sugar residues to proteins to produce glycoproteins.",
+              "workedSolution": "The Golgi apparatus carries out glycosylation, attaching sugar residues to proteins to produce glycoproteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I43",
+              "difficulty": "medium",
+              "prompt": "Why do athletes' muscle cells contain significantly more mitochondria than skin epithelial cells?",
+              "options": [
+                "A. Muscle contraction demands massive and continuous inputs of ATP energy generated by cellular respiration",
+                "B. Muscles require more green pigment",
+                "C. Skin cells do not require oxygen",
+                "D. Mitochondria make muscle cells transparent"
+              ],
+              "correctAnswer": "A. Muscle contraction demands massive and continuous inputs of ATP energy generated by cellular respiration",
+              "hint": "Tissues with intense metabolic activity (like contracting skeletal muscle) require high mitochondrial densities to sustain ATP turnover.",
+              "workedSolution": "Tissues with intense metabolic activity (like contracting skeletal muscle) require high mitochondrial densities to sustain ATP turnover.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I44",
+              "difficulty": "medium",
+              "prompt": "What distinguishes an Archaea prokaryote from a true Bacteria prokaryote?",
+              "options": [
+                "A. Archaea possess unique ether-linked membrane lipids and lack peptidoglycan, enabling them to inhabit extreme environments",
+                "B. Archaea have ten true nuclei",
+                "C. Archaea are multicellular plants",
+                "D. Bacteria contain cellulose cell walls"
+              ],
+              "correctAnswer": "A. Archaea possess unique ether-linked membrane lipids and lack peptidoglycan, enabling them to inhabit extreme environments",
+              "hint": "Archaea differ biochemically: their membranes feature branched ether-linked lipids and their walls lack peptidoglycan.",
+              "workedSolution": "Archaea differ biochemically: their membranes feature branched ether-linked lipids and their walls lack peptidoglycan.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I45",
+              "difficulty": "medium",
+              "prompt": "How does the lack of a cell wall benefit predatory phagocytes (such as human macrophages)?",
+              "options": [
+                "A. It allows the cell membrane to deform flexibly, project pseudopodia, and engulf bacterial invaders",
+                "B. It prevents the cell from bursting in water",
+                "C. It makes the macrophage rigid like wood",
+                "D. It turns the macrophage into a bacterium"
+              ],
+              "correctAnswer": "A. It allows the cell membrane to deform flexibly, project pseudopodia, and engulf bacterial invaders",
+              "hint": "Membrane fluidity without a rigid cell wall allows macrophages to change shape and perform phagocytosis.",
+              "workedSolution": "Membrane fluidity without a rigid cell wall allows macrophages to change shape and perform phagocytosis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I46",
+              "difficulty": "medium",
+              "prompt": "What is the function of the amyloplasts in plant storage tissues?",
+              "options": [
+                "A. Converting glucose into starch and storing it as granules",
+                "B. Producing red carotenoid pigments",
+                "C. Digesting worn-out mitochondria",
+                "D. Pumping out waste salt"
+              ],
+              "correctAnswer": "A. Converting glucose into starch and storing it as granules",
+              "hint": "Amyloplasts are specialized leucoplasts that polymerize glucose into amylose and amylopectin starch grains.",
+              "workedSolution": "Amyloplasts are specialized leucoplasts that polymerize glucose into amylose and amylopectin starch grains.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I47",
+              "difficulty": "medium",
+              "prompt": "Why does boiling water kill pathogenic bacteria like *Vibrio cholerae*?",
+              "options": [
+                "A. High thermal energy denatures essential bacterial enzymes, coagulates proteins, and destroys plasma membranes",
+                "B. Boiling freezes bacterial chromosomes",
+                "C. Water turns into solid rock",
+                "D. Boiling makes bacteria grow faster"
+              ],
+              "correctAnswer": "A. High thermal energy denatures essential bacterial enzymes, coagulates proteins, and destroys plasma membranes",
+              "hint": "Temperatures of 100°C irreversibly denature microbial proteins and enzymes, rendering cells non-viable.",
+              "workedSolution": "Temperatures of 100°C irreversibly denature microbial proteins and enzymes, rendering cells non-viable.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I48",
+              "difficulty": "medium",
+              "prompt": "What is the role of flagellin protein in bacterial mobility?",
+              "options": [
+                "A. It forms the helical filament of the flagellum that rotates like a propeller to drive motility",
+                "B. It forms the outer cellulose wall",
+                "C. It stores food inside the nucleoid",
+                "D. It synthesizes bacterial DNA"
+              ],
+              "correctAnswer": "A. It forms the helical filament of the flagellum that rotates like a propeller to drive motility",
+              "hint": "Bacterial flagella are constructed from flagellin subunits arranged in a hollow cylinder powered by a basal rotary motor.",
+              "workedSolution": "Bacterial flagella are constructed from flagellin subunits arranged in a hollow cylinder powered by a basal rotary motor.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I49",
+              "difficulty": "medium",
+              "prompt": "How does the mode of cell division in prokaryotes differ fundamentally from eukaryotes?",
+              "options": [
+                "A. Prokaryotes divide by simple binary fission without spindle fibers; eukaryotes undergo mitotic division with chromosomes and spindles",
+                "B. Prokaryotes undergo complex meiosis only",
+                "C. Eukaryotes divide without copying their DNA",
+                "D. Both mechanisms are identical in every detail"
+              ],
+              "correctAnswer": "A. Prokaryotes divide by simple binary fission without spindle fibers; eukaryotes undergo mitotic division with chromosomes and spindles",
+              "hint": "Binary fission lacks mitotic spindle apparatus; eukaryotic mitosis uses microtubule spindles to segregate sister chromatids.",
+              "workedSolution": "Binary fission lacks mitotic spindle apparatus; eukaryotic mitosis uses microtubule spindles to segregate sister chromatids.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_I50",
+              "difficulty": "medium",
+              "prompt": "Why does keeping food inside a cold refrigerator inhibit bacterial growth and spoilage?",
+              "options": [
+                "A. Low temperatures suppress the kinetic energy and enzymatic activity of bacterial metabolic pathways, halting replication",
+                "B. Refrigeration melts all bacterial cell walls",
+                "C. Refrigerators remove all oxygen from food",
+                "D. Cold temperatures turn bacteria into viruses"
+              ],
+              "correctAnswer": "A. Low temperatures suppress the kinetic energy and enzymatic activity of bacterial metabolic pathways, halting replication",
+              "hint": "Refrigeration (~4°C) slows enzymatic kinetics and membrane transport in mesophilic bacteria, arresting population growth.",
+              "workedSolution": "Refrigeration (~4°C) slows enzymatic kinetics and membrane transport in mesophilic bacteria, arresting population growth.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
               "type": "objective"
             }
           ],
-          "hard": []
+          "hard": [
+            {
+              "id": "B8_CEL_A01",
+              "difficulty": "hard",
+              "prompt": "A cell biologist treats a bacterial culture with lysozyme, an enzyme that specifically hydrolyzes beta-(1,4)-glycosidic bonds in peptidoglycan. In a hypotonic medium, what will happen to the treated bacteria?",
+              "options": [
+                "A. The cell wall will dissolve and uncontrolled osmotic water influx will cause the protoplasts to swell and burst (osmotic lysis)",
+                "B. The bacteria will instantly develop a thick cellulose wall",
+                "C. The bacteria will begin performing photosynthesis",
+                "D. The bacteria will transform into eukaryotic amoebae"
+              ],
+              "correctAnswer": "A. The cell wall will dissolve and uncontrolled osmotic water influx will cause the protoplasts to swell and burst (osmotic lysis)",
+              "hint": "Degrading the peptidoglycan wall removes structural resistance against osmotic pressure, causing cell lysis in hypotonic solutions.",
+              "workedSolution": "Degrading the peptidoglycan wall removes structural resistance against osmotic pressure, causing cell lysis in hypotonic solutions.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A02",
+              "difficulty": "hard",
+              "prompt": "The endosymbiotic theory posits that eukaryotic mitochondria and chloroplasts evolved from engulfed prokaryotes. Which of the following provides strong structural evidence supporting this theory?",
+              "options": [
+                "A. Both possess their own circular DNA, replicate by binary fission, and contain 70S ribosomes like bacteria",
+                "B. Both possess thick chitinous cell walls",
+                "C. Both contain linear chromosomes packaged inside a nucleus",
+                "D. Both lack internal membrane structures"
+              ],
+              "correctAnswer": "A. Both possess their own circular DNA, replicate by binary fission, and contain 70S ribosomes like bacteria",
+              "hint": "Mitochondria and plastids carry circular genomes, 70S ribosomes, and double membranes consistent with an endosymbiotic alphaproteobacterium and cyanobacterium origin.",
+              "workedSolution": "Mitochondria and plastids carry circular genomes, 70S ribosomes, and double membranes consistent with an endosymbiotic alphaproteobacterium and cyanobacterium origin.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A03",
+              "difficulty": "hard",
+              "prompt": "An unknown unicellular organism isolated from a pond displays a flexible protein pellicle, numerous green chloroplasts, a red eyespot, and a long anterior flagellum. How should this organism be classified?",
+              "options": [
+                "A. A photosynthetic flagellated eukaryotic protist (e.g., *Euglena*)",
+                "B. A gram-positive prokaryotic bacterium",
+                "C. An obligate parasitic akaryote",
+                "D. A multicellular basidiomycete fungus"
+              ],
+              "correctAnswer": "A. A photosynthetic flagellated eukaryotic protist (e.g., *Euglena*)",
+              "hint": "The presence of a pellicle, chloroplasts, eyespot, and flagellum identifies the organism as *Euglena*, a photosynthetic protist.",
+              "workedSolution": "The presence of a pellicle, chloroplasts, eyespot, and flagellum identifies the organism as *Euglena*, a photosynthetic protist.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A04",
+              "difficulty": "hard",
+              "prompt": "If a chemical toxin inhibits the proton-pumping ATPase enzymes embedded in the cristae of the inner mitochondrial membrane, what is the immediate metabolic consequence for the cell?",
+              "options": [
+                "A. Oxidative phosphorylation ceases, causing an immediate collapse of cellular ATP synthesis",
+                "B. Photosynthesis in chloroplasts accelerates by 500%",
+                "C. The cell wall doubles in thickness",
+                "D. The nucleus divides uncontrollably without DNA"
+              ],
+              "correctAnswer": "A. Oxidative phosphorylation ceases, causing an immediate collapse of cellular ATP synthesis",
+              "hint": "Inhibiting proton-translocating ATP synthases halts the chemiosmotic synthesis of ATP from ADP and inorganic phosphate.",
+              "workedSolution": "Inhibiting proton-translocating ATP synthases halts the chemiosmotic synthesis of ATP from ADP and inorganic phosphate.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A05",
+              "difficulty": "hard",
+              "prompt": "Why is the surface area-to-volume ratio ($SA/V$) a major physical constraint limiting the maximum size achievable by a single prokaryotic cell?",
+              "options": [
+                "A. Because as cell radius ($r$) increases, volume ($r^3$) grows much faster than surface area ($r^2$), making simple diffusion across the membrane insufficient for metabolic exchange",
+                "B. Larger cells attract dangerous gravitational fields",
+                "C. The cell wall melts when diameter exceeds 5 micrometers",
+                "D. Plasmids can only replicate in small volumes"
+              ],
+              "correctAnswer": "A. Because as cell radius ($r$) increases, volume ($r^3$) grows much faster than surface area ($r^2$), making simple diffusion across the membrane insufficient for metabolic exchange",
+              "hint": "As spherical cells grow, $SA/V = 3/r$ declines, limiting nutrient influx and waste clearance rates dependent on simple diffusion across the plasma membrane.",
+              "workedSolution": "As spherical cells grow, $SA/V = 3/r$ declines, limiting nutrient influx and waste clearance rates dependent on simple diffusion across the plasma membrane.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A06",
+              "difficulty": "hard",
+              "prompt": "How do eukaryotic cells overcome the physical surface area-to-volume diffusion bottleneck that constrains prokaryotes?",
+              "options": [
+                "A. By extensive internal compartmentalization into membrane-bound organelles and specialized intracellular transport networks",
+                "B. By losing their cell membrane completely",
+                "C. By stopping all metabolic reactions",
+                "D. By remaining smaller than 1 micrometer"
+              ],
+              "correctAnswer": "A. By extensive internal compartmentalization into membrane-bound organelles and specialized intracellular transport networks",
+              "hint": "Endomembrane systems (ER, Golgi, vesicles) compartmentalize biochemical reactions, overcoming spatial diffusion limits in large cell volumes.",
+              "workedSolution": "Endomembrane systems (ER, Golgi, vesicles) compartmentalize biochemical reactions, overcoming spatial diffusion limits in large cell volumes.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A07",
+              "difficulty": "hard",
+              "prompt": "A student views an onion epidermal cell under a light microscope using a 10× eyepiece and a 40× objective lens. If the measured image length of the cell is 6.0 mm, calculate the actual real-life length of the cell.",
+              "options": [
+                "A. 15 μm (0.015 mm)",
+                "B. 150 μm (0.15 mm)",
+                "C. 24 μm (0.024 mm)",
+                "D. 600 μm (0.60 mm)"
+              ],
+              "correctAnswer": "A. 15 μm (0.015 mm)",
+              "hint": "Total magnification = 10 × 40 = 400×. Actual size = Image size / Magnification = 6.0 mm / 400 = 0.015 mm = 15 μm.",
+              "workedSolution": "Total magnification = 10 × 40 = 400×. Actual size = Image size / Magnification = 6.0 mm / 400 = 0.015 mm = 15 μm.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A08",
+              "difficulty": "hard",
+              "prompt": "Why does treatment of plant tissue with a detergent that dissolves phospholipid bilayers cause leakage of red betalain pigments from beet vacuolar sap?",
+              "options": [
+                "A. The detergent solubilizes the lipid bilayer of both the outer plasma membrane and the inner tonoplast, destroying the permeability barrier",
+                "B. The detergent turns the cell wall into pure sugar",
+                "C. The detergent freezes the cytoplasm",
+                "D. The red pigment reacts with cellulose to form water"
+              ],
+              "correctAnswer": "A. The detergent solubilizes the lipid bilayer of both the outer plasma membrane and the inner tonoplast, destroying the permeability barrier",
+              "hint": "Detergents disrupt hydrophobic interactions in membrane lipids, solubilizing the plasma membrane and tonoplast and releasing vacuolar contents.",
+              "workedSolution": "Detergents disrupt hydrophobic interactions in membrane lipids, solubilizing the plasma membrane and tonoplast and releasing vacuolar contents.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A09",
+              "difficulty": "hard",
+              "prompt": "What is the structural role of the protein coat (capsid) in an akaryotic virus particle?",
+              "options": [
+                "A. It encloses and protects the viral nucleic acid core and facilitates attachment and penetration into specific host cell receptors",
+                "B. It carries out aerobic cellular respiration",
+                "C. It synthesizes proteins for the virus outside the host",
+                "D. It stores excess starch granules"
+              ],
+              "correctAnswer": "A. It encloses and protects the viral nucleic acid core and facilitates attachment and penetration into specific host cell receptors",
+              "hint": "The viral capsid protects the viral genome from nucleases and mediates binding to host-cell surface receptors.",
+              "workedSolution": "The viral capsid protects the viral genome from nucleases and mediates binding to host-cell surface receptors.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A10",
+              "difficulty": "hard",
+              "prompt": "How does the ribosome sedimentation coefficient differ between prokaryotic cells and eukaryotic cytoplasmic ribosomes?",
+              "options": [
+                "A. Prokaryotes contain smaller 70S ribosomes (composed of 50S and 30S subunits); eukaryotic cytoplasm contains larger 80S ribosomes (60S and 40S subunits)",
+                "B. Prokaryotes contain 100S ribosomes; eukaryotes contain 10S ribosomes",
+                "C. Both contain identical 50S ribosomes",
+                "D. Eukaryotes do not contain ribosomes"
+              ],
+              "correctAnswer": "A. Prokaryotes contain smaller 70S ribosomes (composed of 50S and 30S subunits); eukaryotic cytoplasm contains larger 80S ribosomes (60S and 40S subunits)",
+              "hint": "Prokaryotic ribosomes sediment at 70S, whereas eukaryotic cytosolic ribosomes sediment at 80S.",
+              "workedSolution": "Prokaryotic ribosomes sediment at 70S, whereas eukaryotic cytosolic ribosomes sediment at 80S.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A11",
+              "difficulty": "hard",
+              "prompt": "Why does an antibiotic that specifically binds to the 50S subunit of bacterial 70S ribosomes (such as chloramphenicol) stop bacterial infection while sparing human host ribosomes?",
+              "options": [
+                "A. Human cytoplasmic ribosomes are 80S (with a 60S large subunit) and do not possess the binding site found on bacterial 50S subunits",
+                "B. Human cells destroy all antibiotic molecules",
+                "C. Bacteria lack ribosomes completely",
+                "D. Human cells have no protein synthesis"
+              ],
+              "correctAnswer": "A. Human cytoplasmic ribosomes are 80S (with a 60S large subunit) and do not possess the binding site found on bacterial 50S subunits",
+              "hint": "Structural divergence between 70S and 80S ribosomes allows selective inhibition of prokaryotic translation without affecting human cytosolic translation.",
+              "workedSolution": "Structural divergence between 70S and 80S ribosomes allows selective inhibition of prokaryotic translation without affecting human cytosolic translation.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A12",
+              "difficulty": "hard",
+              "prompt": "What is the consequence of defective lysosomal enzymes in human genetic disorders (lysosomal storage diseases such as Tay-Sachs disease)?",
+              "options": [
+                "A. Undigested cellular lipids or carbohydrates accumulate progressively inside bloated lysosomes, causing cellular dysfunction and tissue death",
+                "B. The cell wall turns into wood",
+                "C. Mitochondria begin manufacturing chlorophyll",
+                "D. All red blood cells develop ten nuclei"
+              ],
+              "correctAnswer": "A. Undigested cellular lipids or carbohydrates accumulate progressively inside bloated lysosomes, causing cellular dysfunction and tissue death",
+              "hint": "In lysosomal storage disorders, absence of a hydrolytic enzyme causes substrates to accumulate, distending lysosomes and damaging cells.",
+              "workedSolution": "In lysosomal storage disorders, absence of a hydrolytic enzyme causes substrates to accumulate, distending lysosomes and damaging cells.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A13",
+              "difficulty": "hard",
+              "prompt": "Why are bacterial plasmids widely utilized as vectors in recombinant DNA biotechnology and genetic engineering?",
+              "options": [
+                "A. They are small, circular, easily cut with restriction enzymes, replicate autonomously inside host bacteria, and can carry foreign human genes",
+                "B. They turn bacteria into edible eukaryotic mushrooms",
+                "C. They freeze bacterial DNA permanently",
+                "D. They destroy all bacterial membranes"
+              ],
+              "correctAnswer": "A. They are small, circular, easily cut with restriction enzymes, replicate autonomously inside host bacteria, and can carry foreign human genes",
+              "hint": "Plasmids act as cloning vectors: their small size, selectable markers, and autonomous replication enable insertion of foreign genes for expression.",
+              "workedSolution": "Plasmids act as cloning vectors: their small size, selectable markers, and autonomous replication enable insertion of foreign genes for expression.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A14",
+              "difficulty": "hard",
+              "prompt": "When a living plant cell is placed in an intensely concentrated hypertonic sucrose solution, the protoplast shrinks away from the cell wall. What is this phenomenon called?",
+              "options": [
+                "A. Plasmolysis",
+                "B. Turgidity",
+                "C. Lysis",
+                "D. Mitosis"
+              ],
+              "correctAnswer": "A. Plasmolysis",
+              "hint": "Plasmolysis occurs when exosmosis withdraws water from the vacuole, causing the protoplast to contract away from the rigid cell wall.",
+              "workedSolution": "Plasmolysis occurs when exosmosis withdraws water from the vacuole, causing the protoplast to contract away from the rigid cell wall.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A15",
+              "difficulty": "hard",
+              "prompt": "In the fluid mosaic model of the eukaryotic plasma membrane, what is the role of cholesterol molecules intercalated among phospholipids?",
+              "options": [
+                "A. Regulating membrane fluidity: preventing membranes from freezing at low temperatures and restricting excessive fluidity at high temperatures",
+                "B. Storing starch granules for cellular respiration",
+                "C. Producing green pigment for the cell",
+                "D. Anchoring the cell to the earth's surface"
+              ],
+              "correctAnswer": "A. Regulating membrane fluidity: preventing membranes from freezing at low temperatures and restricting excessive fluidity at high temperatures",
+              "hint": "Cholesterol acts as a bidirectional membrane fluidity buffer, preventing crystallization in the cold and hindering excessive movement in heat.",
+              "workedSolution": "Cholesterol acts as a bidirectional membrane fluidity buffer, preventing crystallization in the cold and hindering excessive movement in heat.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A16",
+              "difficulty": "hard",
+              "prompt": "Why does a suspension of green algae (*Chlorella*) generate bubbles of oxygen gas when placed in sunlight, while a suspension of non-photosynthetic yeast does not?",
+              "options": [
+                "A. *Chlorella* contains chloroplasts that split water molecules during photosynthetic photolysis; yeast lacks chloroplasts and respires heterotrophically",
+                "B. Yeast cells have no cell membrane",
+                "C. Algae contain mitochondria that generate oxygen",
+                "D. Yeast cells freeze under sunlight"
+              ],
+              "correctAnswer": "A. *Chlorella* contains chloroplasts that split water molecules during photosynthetic photolysis; yeast lacks chloroplasts and respires heterotrophically",
+              "hint": "*Chlorella* is a photosynthetic alga whose chloroplast thylakoids photolyze water into oxygen; heterotrophic yeast lacks chloroplasts.",
+              "workedSolution": "*Chlorella* is a photosynthetic alga whose chloroplast thylakoids photolyze water into oxygen; heterotrophic yeast lacks chloroplasts.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A17",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of the signal peptide sequence on a newly synthesizing protein targeted for the Rough Endoplasmic Reticulum?",
+              "options": [
+                "A. Directing the translating ribosome to dock onto the translocon channel of the RER membrane so the polypeptide enters the lumen",
+                "B. Digesting the protein immediately",
+                "C. Moving the protein into the vacuole",
+                "D. Converting the protein into a lipid"
+              ],
+              "correctAnswer": "A. Directing the translating ribosome to dock onto the translocon channel of the RER membrane so the polypeptide enters the lumen",
+              "hint": "The N-terminal signal peptide is recognized by the Signal Recognition Particle (SRP), docking the ribosome to the RER membrane.",
+              "workedSolution": "The N-terminal signal peptide is recognized by the Signal Recognition Particle (SRP), docking the ribosome to the RER membrane.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A18",
+              "difficulty": "hard",
+              "prompt": "What is the structural role of the peptidoglycan mesh (murein) in preventing osmotic rupture in bacteria?",
+              "options": [
+                "A. Cross-linked glycan chains connected by peptide cross-bridges provide immense mechanical tensile strength against internal hydrostatic turgor pressure",
+                "B. It acts as an open sponge that lets all water escape",
+                "C. It destroys external water molecules chemically",
+                "D. It replaces the need for a plasma membrane"
+              ],
+              "correctAnswer": "A. Cross-linked glycan chains connected by peptide cross-bridges provide immense mechanical tensile strength against internal hydrostatic turgor pressure",
+              "hint": "The covalent lattice of repeating NAG-NAM disaccharides and peptide bridges prevents cell lysis from high intracellular turgor pressure.",
+              "workedSolution": "The covalent lattice of repeating NAG-NAM disaccharides and peptide bridges prevents cell lysis from high intracellular turgor pressure.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A19",
+              "difficulty": "hard",
+              "prompt": "Why does the removal of the cell nucleus from an *Amoeba* result in the cessation of cell division and eventual cell death within days?",
+              "options": [
+                "A. The nucleus houses the master DNA instructions; without ongoing transcription of mRNA, essential structural proteins and metabolic enzymes cannot be renewed",
+                "B. The cytoplasm immediately evaporates",
+                "C. The cell membrane turns into chitin",
+                "D. Mitochondria can only function inside the nucleus"
+              ],
+              "correctAnswer": "A. The nucleus houses the master DNA instructions; without ongoing transcription of mRNA, essential structural proteins and metabolic enzymes cannot be renewed",
+              "hint": "Enucleated cells cannot transcribe new mRNA; as existing proteins and enzymes degrade, metabolic breakdown and death follow.",
+              "workedSolution": "Enucleated cells cannot transcribe new mRNA; as existing proteins and enzymes degrade, metabolic breakdown and death follow.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A20",
+              "difficulty": "hard",
+              "prompt": "How do prokaryotic cyanobacteria perform oxygenic photosynthesis despite lacking membrane-bound chloroplast organelles?",
+              "options": [
+                "A. Their photosynthetic pigments and electron transport complexes are embedded within extensively folded internal thylakoid membranes in the cytoplasm",
+                "B. They absorb pre-made starch from surrounding water",
+                "C. They use their flagella to capture solar photons",
+                "D. They live inside plant roots to borrow chloroplasts"
+              ],
+              "correctAnswer": "A. Their photosynthetic pigments and electron transport complexes are embedded within extensively folded internal thylakoid membranes in the cytoplasm",
+              "hint": "Cyanobacteria contain lamellar thylakoid sheets within their cytoplasm that carry out light harvesting without a formal chloroplast organelle.",
+              "workedSolution": "Cyanobacteria contain lamellar thylakoid sheets within their cytoplasm that carry out light harvesting without a formal chloroplast organelle.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A21",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical cause of cell lysis when red blood cells are placed in an aqueous solution of 0.1% sodium chloride (hypotonic)?",
+              "options": [
+                "A. Water potential inside the cell is lower than outside, causing rapid osmotic influx of water that expands the flexible membrane beyond its elastic breaking point",
+                "B. Salt enters the cell and cuts the membrane",
+                "C. Hemoglobin turns into a gas and expands",
+                "D. The nucleus pushes through the cell wall"
+              ],
+              "correctAnswer": "A. Water potential inside the cell is lower than outside, causing rapid osmotic influx of water that expands the flexible membrane beyond its elastic breaking point",
+              "hint": "Net water influx down the water potential gradient distends the plasma membrane until hydrostatic tension exceeds membrane tensile strength, causing lysis.",
+              "workedSolution": "Net water influx down the water potential gradient distends the plasma membrane until hydrostatic tension exceeds membrane tensile strength, causing lysis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A22",
+              "difficulty": "hard",
+              "prompt": "Why do fungal infections in humans require more carefully targeted pharmaceutical drugs than bacterial infections?",
+              "options": [
+                "A. Fungi are eukaryotic organisms whose ribosomes, enzymes, and cellular machinery share deep biochemical similarities with human host cells",
+                "B. Fungi have no cell membrane",
+                "C. Fungi reproduce faster than light",
+                "D. Fungi are identical to human red blood cells"
+              ],
+              "correctAnswer": "A. Fungi are eukaryotic organisms whose ribosomes, enzymes, and cellular machinery share deep biochemical similarities with human host cells",
+              "hint": "Because both fungi and humans are eukaryotes, antifungals must exploit narrow differences (e.g., ergosterol vs. cholesterol) to avoid host toxicity.",
+              "workedSolution": "Because both fungi and humans are eukaryotes, antifungals must exploit narrow differences (e.g., ergosterol vs. cholesterol) to avoid host toxicity.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A23",
+              "difficulty": "hard",
+              "prompt": "What is the role of the enzyme catalase located inside eukaryotic peroxisomes?",
+              "options": [
+                "A. Catalyzing the rapid decomposition of cytotoxic hydrogen peroxide: $2H_2O_2 \\rightarrow 2H_2O + O_2$",
+                "B. Synthesizing cellulose fibers for the cell wall",
+                "C. Replicating circular bacterial plasmids",
+                "D. Converting starch into glycogen"
+              ],
+              "correctAnswer": "A. Catalyzing the rapid decomposition of cytotoxic hydrogen peroxide: $2H_2O_2 \\rightarrow 2H_2O + O_2$",
+              "hint": "Catalase converts toxic hydrogen peroxide produced during beta-oxidation of fatty acids into water and oxygen.",
+              "workedSolution": "Catalase converts toxic hydrogen peroxide produced during beta-oxidation of fatty acids into water and oxygen.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A24",
+              "difficulty": "hard",
+              "prompt": "How do transport vesicles budding from the Rough Endoplasmic Reticulum recognize and fuse with the correct cis-cisternae of the Golgi apparatus?",
+              "options": [
+                "A. Complementary interaction between v-SNARE proteins on the vesicle and t-SNARE receptor proteins on the target Golgi membrane",
+                "B. Magnetic attraction between protons",
+                "C. Random collisions without any biochemical guidance",
+                "D. Centrioles guide them using cilia"
+              ],
+              "correctAnswer": "A. Complementary interaction between v-SNARE proteins on the vesicle and t-SNARE receptor proteins on the target Golgi membrane",
+              "hint": "Vesicle targeting is mediated by Rab GTPases and specific pairing between v-SNAREs and t-SNAREs, driving membrane fusion.",
+              "workedSolution": "Vesicle targeting is mediated by Rab GTPases and specific pairing between v-SNAREs and t-SNAREs, driving membrane fusion.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A25",
+              "difficulty": "hard",
+              "prompt": "Why does the inner membrane of a mitochondrion contain a high concentration of cardiolipin and show very low permeability to ions?",
+              "options": [
+                "A. To maintain an impermeable barrier that allows establishment of an electrochemical proton ($H^+$) gradient across the intermembrane space",
+                "B. To prevent glucose from entering the matrix",
+                "C. To allow DNA to escape into the cytoplasm",
+                "D. To give the mitochondrion a red color"
+              ],
+              "correctAnswer": "A. To maintain an impermeable barrier that allows establishment of an electrochemical proton ($H^+$) gradient across the intermembrane space",
+              "hint": "Low proton permeability ensures the electrochemical gradient generated by the electron transport chain drives ATP synthase.",
+              "workedSolution": "Low proton permeability ensures the electrochemical gradient generated by the electron transport chain drives ATP synthase.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A26",
+              "difficulty": "hard",
+              "prompt": "What is the primary role of histone proteins in the eukaryotic cell nucleus?",
+              "options": [
+                "A. Acting as alkaline spools around which linear DNA winds to form nucleosomes, condensing genetic material into compact chromatin",
+                "B. Synthesizing lipid droplets for the smooth ER",
+                "C. Digesting bacterial invaders in lysosomes",
+                "D. Pumping sodium across the cell membrane"
+              ],
+              "correctAnswer": "A. Acting as alkaline spools around which linear DNA winds to form nucleosomes, condensing genetic material into compact chromatin",
+              "hint": "Basic histone octamers bind negatively charged DNA, packaging long linear genomes into chromatin and chromosomes.",
+              "workedSolution": "Basic histone octamers bind negatively charged DNA, packaging long linear genomes into chromatin and chromosomes.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A27",
+              "difficulty": "hard",
+              "prompt": "Why are mature human red blood cells incapable of cellular repair, protein synthesis, or aerobic respiration?",
+              "options": [
+                "A. They lack a nucleus, ribosomes, and mitochondria, relying strictly on anaerobic glycolysis in the cytoplasm for basic energy",
+                "B. They are completely frozen",
+                "C. They are covered in a thick layer of cellulose",
+                "D. They are classified as prokaryotes"
+              ],
+              "correctAnswer": "A. They lack a nucleus, ribosomes, and mitochondria, relying strictly on anaerobic glycolysis in the cytoplasm for basic energy",
+              "hint": "Lacking a nucleus, ribosomes, and mitochondria, mature erythrocytes cannot transcribe mRNA, translate proteins, or undergo oxidative phosphorylation.",
+              "workedSolution": "Lacking a nucleus, ribosomes, and mitochondria, mature erythrocytes cannot transcribe mRNA, translate proteins, or undergo oxidative phosphorylation.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A28",
+              "difficulty": "hard",
+              "prompt": "How does the structure of the plant cell wall accommodate intercellular communication between neighboring cells?",
+              "options": [
+                "A. Through microscopic cytoplasmic channels traversing the wall called plasmodesmata",
+                "B. By having the cell wall dissolve every morning",
+                "C. Through the pores of the contractile vacuole",
+                "D. By using external flagella"
+              ],
+              "correctAnswer": "A. Through microscopic cytoplasmic channels traversing the wall called plasmodesmata",
+              "hint": "Plasmodesmata are plasma-membrane-lined cytoplasmic bridges penetrating plant walls, enabling symplastic molecular exchange.",
+              "workedSolution": "Plasmodesmata are plasma-membrane-lined cytoplasmic bridges penetrating plant walls, enabling symplastic molecular exchange.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A29",
+              "difficulty": "hard",
+              "prompt": "What mechanism enables certain pathogenic bacteria (like *Streptococcus pneumoniae*) to avoid destruction by human alveolar macrophages?",
+              "options": [
+                "A. Their thick polysaccharide capsule masks surface antigens and impairs phagocytic engulfment by macrophages",
+                "B. They inject lysosomes into human cells",
+                "C. They turn into eukaryotic plant cells",
+                "D. They build a cellulose cell wall"
+              ],
+              "correctAnswer": "A. Their thick polysaccharide capsule masks surface antigens and impairs phagocytic engulfment by macrophages",
+              "hint": "Smooth capsule layers reduce complement deposition and hinder macrophage Fc-receptor binding, inhibiting phagocytosis.",
+              "workedSolution": "Smooth capsule layers reduce complement deposition and hinder macrophage Fc-receptor binding, inhibiting phagocytosis.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A30",
+              "difficulty": "hard",
+              "prompt": "What causes the green discoloration of bruised leaves when plant tissue cells are crushed mechanically?",
+              "options": [
+                "A. Chloroplast thylakoid membranes rupture, releasing chlorophyll pigment into the damaged cytoplasm and apoplast",
+                "B. The nucleus converts into green copper",
+                "C. Mitochondria turn into chloroplasts",
+                "D. Bacteria enter and produce green slime"
+              ],
+              "correctAnswer": "A. Chloroplast thylakoid membranes rupture, releasing chlorophyll pigment into the damaged cytoplasm and apoplast",
+              "hint": "Mechanical shear damages cell walls, membranes, and plastid envelopes, leaking chlorophyll and vacuolar fluids into crushed tissues.",
+              "workedSolution": "Mechanical shear damages cell walls, membranes, and plastid envelopes, leaking chlorophyll and vacuolar fluids into crushed tissues.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A31",
+              "difficulty": "hard",
+              "prompt": "Which of the following cellular components is found in ALL three cellular classifications: prokaryotes, eukaryotic plant cells, and eukaryotic animal cells?",
+              "options": [
+                "A. Mitochondria",
+                "B. Plasma membrane, cytoplasm, and ribosomes",
+                "C. Cellulose cell wall",
+                "D. Nuclear envelope"
+              ],
+              "correctAnswer": "B. Plasma membrane, cytoplasm, and ribosomes",
+              "hint": "Every living cell is bounded by a plasma membrane, filled with cytosol (cytoplasm), and utilizes ribosomes to translate proteins.",
+              "workedSolution": "Every living cell is bounded by a plasma membrane, filled with cytosol (cytoplasm), and utilizes ribosomes to translate proteins.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A32",
+              "difficulty": "hard",
+              "prompt": "How do eukaryotic protozoans like *Paramecium* digest food particles captured in their oral groove?",
+              "options": [
+                "A. Food vacuoles fuse with primary lysosomes; hydrolytic enzymes break down contents, and wastes are expelled at the cytoproct (anal pore)",
+                "B. Food is pumped directly into the nucleus for digestion",
+                "C. Cilia cut food into atoms outside the cell",
+                "D. Food is stored permanently in the pellicle"
+              ],
+              "correctAnswer": "A. Food vacuoles fuse with primary lysosomes; hydrolytic enzymes break down contents, and wastes are expelled at the cytoproct (anal pore)",
+              "hint": "Phagocytic food vacuoles merge with lysosomes for acidic digestion; undigested residue is exocytosed at the cytoproct.",
+              "workedSolution": "Phagocytic food vacuoles merge with lysosomes for acidic digestion; undigested residue is exocytosed at the cytoproct.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A33",
+              "difficulty": "hard",
+              "prompt": "Why does bacterial binary fission allow populations of *Escherichia coli* to double every 20 minutes under ideal conditions?",
+              "options": [
+                "A. The circular chromosome lacks complex nucleosomes and replicates bidirectionally while the cell elongates and cleaves with no mitotic phases",
+                "B. Bacteria produce thousands of eggs",
+                "C. The nucleus dissolves into ten cells",
+                "D. Bacteria do not replicate their DNA before dividing"
+              ],
+              "correctAnswer": "A. The circular chromosome lacks complex nucleosomes and replicates bidirectionally while the cell elongates and cleaves with no mitotic phases",
+              "hint": "Prokaryotic binary fission avoids mitotic phases, chromatin remodeling, and envelope disassembly, enabling rapid division cycles.",
+              "workedSolution": "Prokaryotic binary fission avoids mitotic phases, chromatin remodeling, and envelope disassembly, enabling rapid division cycles.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A34",
+              "difficulty": "hard",
+              "prompt": "What is the biological consequence of a mutation that permanently blocks the formation of septa in filamentous fungi?",
+              "options": [
+                "A. The fungus becomes a continuous, coenocytic (aseptate) multinucleated hypha with uninterrupted cytoplasmic streaming",
+                "B. The fungus stops growing completely and dissolves",
+                "C. The fungus transforms into an animal cell",
+                "D. Chitin disappears from the cell wall"
+              ],
+              "correctAnswer": "A. The fungus becomes a continuous, coenocytic (aseptate) multinucleated hypha with uninterrupted cytoplasmic streaming",
+              "hint": "Aseptate fungi (e.g., Zygomycetes) lack transverse cross-walls, resulting in coenocytic filaments with shared cytoplasm and multiple nuclei.",
+              "workedSolution": "Aseptate fungi (e.g., Zygomycetes) lack transverse cross-walls, resulting in coenocytic filaments with shared cytoplasm and multiple nuclei.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A35",
+              "difficulty": "hard",
+              "prompt": "Why are lysosomes in eukaryotic cells maintained at an acidic internal pH of approximately 4.5 to 5.0?",
+              "options": [
+                "A. Lysosomal acid hydrolases operate at peak catalytic efficiency in acidic conditions; this prevents autodigestion if a lysosome leaks into neutral cytosol (pH 7.2)",
+                "B. To freeze bacteria with acid",
+                "C. Because mitochondria pump sulfuric acid into them",
+                "D. To dissolve the cell wall from within"
+              ],
+              "correctAnswer": "A. Lysosomal acid hydrolases operate at peak catalytic efficiency in acidic conditions; this prevents autodigestion if a lysosome leaks into neutral cytosol (pH 7.2)",
+              "hint": "Vacuolar $H^+$-ATPases acidify the lysosomal lumen; acid hydrolases are inactive at neutral cytosolic pH, protecting the cell against leaks.",
+              "workedSolution": "Vacuolar $H^+$-ATPases acidify the lysosomal lumen; acid hydrolases are inactive at neutral cytosolic pH, protecting the cell against leaks.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A36",
+              "difficulty": "hard",
+              "prompt": "How do eukaryotic cells maintain directed vesicular trafficking between the Endoplasmic Reticulum, Golgi apparatus, and plasma membrane?",
+              "options": [
+                "A. Motor proteins (kinesin and dynein) hydrolyze ATP to walk vesicles along cytoskeletal microtubule tracks",
+                "B. Vesicles float randomly by brownian motion without control",
+                "C. Vacuoles push vesicles using water currents",
+                "D. The nucleus attracts vesicles using magnetism"
+              ],
+              "correctAnswer": "A. Motor proteins (kinesin and dynein) hydrolyze ATP to walk vesicles along cytoskeletal microtubule tracks",
+              "hint": "Microtubule molecular motors (plus-end-directed kinesins, minus-end-directed dyneins) transport vesicles to specific destination sites.",
+              "workedSolution": "Microtubule molecular motors (plus-end-directed kinesins, minus-end-directed dyneins) transport vesicles to specific destination sites.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A37",
+              "difficulty": "hard",
+              "prompt": "What is the functional difference between the rough endoplasmic reticulum and the Golgi apparatus in the secretory pathway?",
+              "options": [
+                "A. RER synthesizes and initially folds polypeptide chains; Golgi apparatus modifies (e.g., glycosylates), sorts, and packages them into secretory vesicles",
+                "B. RER breaks down sugars; Golgi manufactures chlorophyll",
+                "C. RER stores glycogen; Golgi manufactures DNA",
+                "D. RER produces lipids; Golgi manufactures ribosomes"
+              ],
+              "correctAnswer": "A. RER synthesizes and initially folds polypeptide chains; Golgi apparatus modifies (e.g., glycosylates), sorts, and packages them into secretory vesicles",
+              "hint": "RER is the entry port for co-translational translocation; the Golgi apparatus sorts and post-translationally modifies proteins for targeting.",
+              "workedSolution": "RER is the entry port for co-translational translocation; the Golgi apparatus sorts and post-translationally modifies proteins for targeting.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A38",
+              "difficulty": "hard",
+              "prompt": "Why is the bacterial nucleoid not surrounded by a membrane, unlike the eukaryotic nucleus?",
+              "options": [
+                "A. Prokaryotes lack an internal endomembrane system; their genetic material is in direct contact with the cytosol",
+                "B. The nuclear membrane was dissolved by digestive enzymes",
+                "C. Bacteria have no DNA",
+                "D. The bacterial cell wall replaces the nuclear membrane"
+              ],
+              "correctAnswer": "A. Prokaryotes lack an internal endomembrane system; their genetic material is in direct contact with the cytosol",
+              "hint": "Prokaryotic evolutionary architecture lacks a nuclear envelope, allowing coupled transcription-translation in the cytosol.",
+              "workedSolution": "Prokaryotic evolutionary architecture lacks a nuclear envelope, allowing coupled transcription-translation in the cytosol.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A39",
+              "difficulty": "hard",
+              "prompt": "How does the cell wall of a gram-positive bacterium differ structurally from that of a gram-negative bacterium?",
+              "options": [
+                "A. Gram-positive bacteria have a thick multilayered peptidoglycan wall with teichoic acids; gram-negative bacteria have a thin peptidoglycan layer enclosed by an outer LPS membrane",
+                "B. Gram-positive bacteria have a cellulose wall; gram-negative have a chitin wall",
+                "C. Gram-positive bacteria lack a plasma membrane",
+                "D. Gram-negative bacteria have no cell wall whatsoever"
+              ],
+              "correctAnswer": "A. Gram-positive bacteria have a thick multilayered peptidoglycan wall with teichoic acids; gram-negative bacteria have a thin peptidoglycan layer enclosed by an outer LPS membrane",
+              "hint": "Gram-positive walls have thick peptidoglycan (20–80 nm); gram-negative walls have thin peptidoglycan (2–7 nm) and an outer lipopolysaccharide membrane.",
+              "workedSolution": "Gram-positive walls have thick peptidoglycan (20–80 nm); gram-negative walls have thin peptidoglycan (2–7 nm) and an outer lipopolysaccharide membrane.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A40",
+              "difficulty": "hard",
+              "prompt": "What is the primary function of the contractile ring composed of actin and myosin during eukaryotic animal cell cytokinesis?",
+              "options": [
+                "A. Constricting the plasma membrane inward to form a cleavage furrow that pinches the parent cell into two daughter cells",
+                "B. Building a cellulose cell plate across the equator",
+                "C. Replicating mitochondrial DNA",
+                "D. Moving chromosomes to the poles"
+              ],
+              "correctAnswer": "A. Constricting the plasma membrane inward to form a cleavage furrow that pinches the parent cell into two daughter cells",
+              "hint": "An actomyosin contractile ring constricts the equatorial cortex, furrowing and cleaving animal cells into two daughter cells.",
+              "workedSolution": "An actomyosin contractile ring constricts the equatorial cortex, furrowing and cleaving animal cells into two daughter cells.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A41",
+              "difficulty": "hard",
+              "prompt": "Why is cytokinesis in plant cells accomplished by forming a cell plate rather than a cleavage furrow?",
+              "options": [
+                "A. The presence of the rigid outer cellulose cell wall prevents inward pinching; Golgi vesicles must fuse at the equator to build a new middle lamella and wall",
+                "B. Plant cells have no cell membrane",
+                "C. Plant cells do not divide",
+                "D. Animal cells have a cell wall that allows pinching"
+              ],
+              "correctAnswer": "A. The presence of the rigid outer cellulose cell wall prevents inward pinching; Golgi vesicles must fuse at the equator to build a new middle lamella and wall",
+              "hint": "Rigid plant cell walls prevent membrane furrowing; phragmoplast vesicles coalesce into a cell plate that matures into a dividing cross-wall.",
+              "workedSolution": "Rigid plant cell walls prevent membrane furrowing; phragmoplast vesicles coalesce into a cell plate that matures into a dividing cross-wall.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A42",
+              "difficulty": "hard",
+              "prompt": "What is the role of bacterial pili in the transfer of antibiotic resistance via conjugation?",
+              "options": [
+                "A. The pilus establishes physical contact between donor and recipient cells, depolymerizing to draw the cells together for plasmid transfer",
+                "B. The pilus injects antibiotic drugs into human cells",
+                "C. The pilus acts as a swimming tail",
+                "D. The pilus digests foreign white blood cells"
+              ],
+              "correctAnswer": "A. The pilus establishes physical contact between donor and recipient cells, depolymerizing to draw the cells together for plasmid transfer",
+              "hint": "Conjugative F-pili tether recipient cells, retracting to form a mating junction that transfers single-stranded plasmid DNA.",
+              "workedSolution": "Conjugative F-pili tether recipient cells, retracting to form a mating junction that transfers single-stranded plasmid DNA.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A43",
+              "difficulty": "hard",
+              "prompt": "Why does the enzyme reverse transcriptase play a critical role in the life cycle of retroviral akaryotes (like HIV)?",
+              "options": [
+                "A. It transcribes single-stranded viral RNA into double-stranded DNA so it can integrate into the host eukaryotic genome",
+                "B. It manufactures a bacterial cell wall around the virus",
+                "C. It digests the host cell wall",
+                "D. It converts sunlight into glucose"
+              ],
+              "correctAnswer": "A. It transcribes single-stranded viral RNA into double-stranded DNA so it can integrate into the host eukaryotic genome",
+              "hint": "Retroviruses use reverse transcriptase (an RNA-dependent DNA polymerase) to reverse-transcribe RNA genomes into proviral DNA.",
+              "workedSolution": "Retroviruses use reverse transcriptase (an RNA-dependent DNA polymerase) to reverse-transcribe RNA genomes into proviral DNA.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A44",
+              "difficulty": "hard",
+              "prompt": "How do halophilic Archaea survive in hyper-saline salt lakes without undergoing severe plasmolysis and dehydration?",
+              "options": [
+                "A. They accumulate extremely high intracellular concentrations of potassium ions ($K^+$) to match or exceed external osmotic solute levels",
+                "B. They pump out all water from their cytoplasm",
+                "C. They convert surrounding salt into cellulose",
+                "D. They build a thick glass shell"
+              ],
+              "correctAnswer": "A. They accumulate extremely high intracellular concentrations of potassium ions ($K^+$) to match or exceed external osmotic solute levels",
+              "hint": "Halophiles balance hypertonic osmotic stress through the 'salt-in' strategy, concentrating intracellular potassium to prevent water loss.",
+              "workedSolution": "Halophiles balance hypertonic osmotic stress through the 'salt-in' strategy, concentrating intracellular potassium to prevent water loss.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A45",
+              "difficulty": "hard",
+              "prompt": "What is the biochemical function of the enzyme lysozyme found in human tears, saliva, and mucus secretions?",
+              "options": [
+                "A. Cleaving glycosidic bonds between NAG and NAM in bacterial peptidoglycan walls, causing microbial lysis",
+                "B. Digesting dietary carbohydrates into starch",
+                "C. Breaking down human cell membranes",
+                "D. Replicating viral DNA"
+              ],
+              "correctAnswer": "A. Cleaving glycosidic bonds between NAG and NAM in bacterial peptidoglycan walls, causing microbial lysis",
+              "hint": "Lysozyme hydrolyzes beta-(1,4) bonds in bacterial murein, serving as an innate antimicrobial barrier on mucosal surfaces.",
+              "workedSolution": "Lysozyme hydrolyzes beta-(1,4) bonds in bacterial murein, serving as an innate antimicrobial barrier on mucosal surfaces.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A46",
+              "difficulty": "hard",
+              "prompt": "Why does unpasteurized raw milk sour rapidly when left at room temperature in warm tropical climates?",
+              "options": [
+                "A. Lactic acid bacteria (e.g., *Lactobacillus*) multiply and ferment lactose into lactic acid, lowering pH and curdling casein proteins",
+                "B. Water evaporates, leaving pure salt crystals",
+                "C. Yeast cells turn milk into vinegar",
+                "D. Plant cells grow inside the milk"
+              ],
+              "correctAnswer": "A. Lactic acid bacteria (e.g., *Lactobacillus*) multiply and ferment lactose into lactic acid, lowering pH and curdling casein proteins",
+              "hint": "Lactic acid fermentation reduces milk pH below the isoelectric point of casein (pH 4.6), causing coagulation and souring.",
+              "workedSolution": "Lactic acid fermentation reduces milk pH below the isoelectric point of casein (pH 4.6), causing coagulation and souring.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A47",
+              "difficulty": "hard",
+              "prompt": "What is the cellular function of the nucleoid-associated proteins (NAPs) in prokaryotes compared to histones in eukaryotes?",
+              "options": [
+                "A. NAPs bind and bend circular bacterial DNA to induce supercoiling and compaction without forming nucleosome octamers",
+                "B. NAPs build the bacterial flagellum",
+                "C. NAPs synthesize lipids for the capsule",
+                "D. NAPs destroy viral RNA"
+              ],
+              "correctAnswer": "A. NAPs bind and bend circular bacterial DNA to induce supercoiling and compaction without forming nucleosome octamers",
+              "hint": "Prokaryotic NAPs (like HU, IHF, H-NS) introduce loops and supercoils, compacting the bacterial chromosome into the nucleoid.",
+              "workedSolution": "Prokaryotic NAPs (like HU, IHF, H-NS) introduce loops and supercoils, compacting the bacterial chromosome into the nucleoid.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A48",
+              "difficulty": "hard",
+              "prompt": "How do eukaryotic cells degrade damaged or non-functional mitochondria through autophagy?",
+              "options": [
+                "A. A double membrane encapsulates the defective mitochondrion into an autophagosome, which fuses with a lysosome for hydrolytic degradation",
+                "B. The mitochondrion is expelled through the cell wall",
+                "C. The nucleus absorbs the mitochondrion",
+                "D. Ribosomes digest the mitochondrion directly"
+              ],
+              "correctAnswer": "A. A double membrane encapsulates the defective mitochondrion into an autophagosome, which fuses with a lysosome for hydrolytic degradation",
+              "hint": "Mitophagy encloses depolarized mitochondria in autophagosomes; subsequent fusion with lysosomes degrades and recycles organellar components.",
+              "workedSolution": "Mitophagy encloses depolarized mitochondria in autophagosomes; subsequent fusion with lysosomes degrades and recycles organellar components.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A49",
+              "difficulty": "hard",
+              "prompt": "Why is the lipid A component of the lipopolysaccharide (LPS) outer membrane in gram-negative bacteria medically termed an endotoxin?",
+              "options": [
+                "A. When bacterial cells lyse, lipid A is released, triggering massive cytokine release, septic shock, and fever in human hosts",
+                "B. It dissolves human bones directly",
+                "C. It turns into an infectious virus",
+                "D. It destroys all red blood cells instantly"
+              ],
+              "correctAnswer": "A. When bacterial cells lyse, lipid A is released, triggering massive cytokine release, septic shock, and fever in human hosts",
+              "hint": "Lipid A binds TLR4 receptors on immune cells, triggering an inflammatory cytokine cascade that can precipitate septic shock.",
+              "workedSolution": "Lipid A binds TLR4 receptors on immune cells, triggering an inflammatory cytokine cascade that can precipitate septic shock.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            },
+            {
+              "id": "B8_CEL_A50",
+              "difficulty": "hard",
+              "prompt": "How does the structure of the fungal mycelium maximize nutrient absorption from soil and decaying plant litter?",
+              "options": [
+                "A. An extensive branching network of microscopic filamentous hyphae provides an immense surface area-to-volume ratio for secreting enzymes and absorbing solutes",
+                "B. By building heavy wooden trunks like trees",
+                "C. By producing large animal muscles for running",
+                "D. By capturing sunlight using red chromoplasts"
+              ],
+              "correctAnswer": "A. An extensive branching network of microscopic filamentous hyphae provides an immense surface area-to-volume ratio for secreting enzymes and absorbing solutes",
+              "hint": "Slender branching hyphae maximize surface contact with the substrate, optimizing exoenzyme release and solute uptake.",
+              "workedSolution": "Slender branching hyphae maximize surface contact with the substrate, optimizing exoenzyme release and solute uptake.",
+              "points": 1,
+              "learningCompetency": "B8.1.2.1.1 & B8.1.2.1.2",
+              "type": "objective"
+            }
+          ]
         }
       },
       "b9": {
@@ -8080,7 +10634,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.565Z"
+    "updatedAt": "2026-10-09T14:56:37.192Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -8096,7 +10650,9 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
     "totalPracticeQuestions": 24,
     "version": 1,
     "aliases": [
-      "b7_strand2_earth_cycles"
+      "b7_strand2_earth_cycles",
+      "CARD_03_THE_CARBON_CYCLE_AND_CLIMATE_CHANGE",
+      "b8_strand2_earth_cycles"
     ],
     "levels": {
       "b7": {
@@ -8442,20 +10998,55 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       },
       "b8": {
-        "levelTitle": "Basic 8 (JHS 2) • The Carbon Cycle & Atmospheric Balance",
-        "summary": "Trace carbon biogeochemical pathways between photosynthetic sinks, aerobic respiration, fossil combustion, and oceanic sequestration.",
-        "notes": "### The Global Carbon Cycle & Atmospheric Equilibrium\n* **NaCCA Curriculum Code:** `B8.2.1.1`\n* **Core Competency:** Trace carbon movement through the biosphere, atmosphere, hydrosphere, and geosphere.\n\n#### 1. Carbon Sequestration & Release Pathways\nCarbon is the fundamental structural backbone of organic macromolecules.\n* **Carbon Removal Pathways (Carbon Sinks):**\n  * **Photosynthesis:** Terrestrial vegetation and marine phytoplankton absorb atmospheric $\\text{CO}_2$:\n    $$6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{Light, Chlorophyll}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$$\n  * **Oceanic Dissolution:** $\\text{CO}_2$ dissolves into surface waters forming carbonic acid ($\\text{H}_2\\text{CO}_3$) and marine carbonate sediments (mollusk shells, corals).\n* **Carbon Release Pathways (Carbon Sources):**\n  * **Cellular Respiration:** Aerobic respiration by plants, animals, and microbes:\n    $$\\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2 \\rightarrow 6\\text{CO}_2 + 6\\text{H}_2\\text{O} + \\text{ATP}$$\n  * **Decomposition:** Saprophytic bacteria and fungi break down dead biomass, releasing $\\text{CO}_2$ and $\\text{CH}_4$.\n  * **Fossil Fuel Combustion:** Burning coal, crude oil, and natural gas oxidized stored subterranean carbon deposits.\n  * **Volcanic Outgassing:** Thermal degassing of subducted carbonate rocks.",
+        "levelTitle": "Basic 8 (JHS 2) • The Carbon Cycle, Greenhouse Dynamics & Climate Change",
+        "summary": "Master the biogeochemical pathways of the carbon cycle (photosynthesis, cellular respiration, decomposition, fossilization, combustion, and oceanic carbon sinks), evaluate the enhanced greenhouse effect and global warming dynamics, and apply practical mitigation strategies.",
+        "notes": "### The Carbon Cycle, Greenhouse Dynamics & Climate Change\n* **Curriculum Alignment:** NaCCA Common Core Programme (Ghana)\n* **Strand:** 2 — Cycles\n* **Sub-Strand:** Earth Science\n* **Grade Level:** Basic 8 (JHS 2)\n* **Content Standard:** `B8.2.1.1`: Demonstrate an understanding of the carbon cycle and evaluate its environmental significance.\n* **Indicators:**\n  * `B8.2.1.1.1`: Explain the process of the carbon cycle.\n  * `B8.2.1.1.2`: Describe the role of the carbon cycle in the environment.\n\n---\n\n### Module 1: Earth as a Closed System & The Carbon Cycle Concept\n\n#### 1. Earth as a Closed Thermodynamic System\nPlanet Earth and its enveloping atmosphere function essentially as a **closed physical system** with respect to matter. \n* While radiant solar energy flows continuously into the Earth system and radiates back into outer space as heat, physical matter (chemical elements such as carbon, nitrogen, oxygen, and hydrogen) **cannot enter or escape** the planet in significant quantities.\n* Therefore, the **total quantity of carbon atoms on Earth is fixed and constant**. \n* The carbon atoms existing today in the air, in human muscle, in a baobab tree, or locked within underground petroleum deposits are the very same atoms that formed part of prehistoric plants and dinosaurs hundreds of millions of years ago.\n\n#### 2. Planetary Distribution of Carbon Reservoirs\nCarbon is the fundamental elemental backbone of all organic life. It is distributed across four interconnected planetary spheres:\n1. **Biosphere:** Stored inside living organisms (proteins, carbohydrates, lipids, nucleic acids forming plant and animal tissues).\n2. **Atmosphere:** Exists primarily as a gas in the form of **carbon dioxide ($CO_2$)** (approximately 0.04% of air volume) and trace quantities of carbon monoxide ($CO$) and methane ($CH_4$).\n3. **Hydrosphere (Oceans, Lakes & Rivers):** Dissolved as bicarbonate ions ($HCO_3^-$), dissolved carbonic acid ($H_2CO_3$), and stored in the calcium carbonate ($CaCO_3$) shells of marine organisms.\n4. **Lithosphere (Earth's Crust & Rocks):** Locked within limestone rock strata, marble, carbonate minerals, and ancient fossilized organic deposits (coal, crude oil, bitumen, and natural gas).\n\n#### 3. Scientific Definition of the Carbon Cycle\n> **The Carbon Cycle** is defined as the continuous natural biogeochemical circulation and exchange of carbon in various chemical forms between the atmosphere, living organisms (biosphere), terrestrial soils/rocks (lithosphere), and aquatic water bodies (hydrosphere).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"360\" viewBox=\"0 0 760 360\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"360\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE BIOGEOCHEMICAL CARBON CYCLE (JHS 2)</text><g transform=\"translate(250, 42)\"><rect width=\"260\" height=\"45\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.4\"/><text x=\"130\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Atmospheric Carbon Dioxide (CO₂)</text><text x=\"130\" y=\"36\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\" text-anchor=\"middle\">[Global Reservoir Pool]</text></g><g transform=\"translate(40, 160)\"><rect width=\"170\" height=\"80\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.4\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Green Plants (Producers)</text><text x=\"85\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\" text-anchor=\"middle\">Photosynthesis fixes CO₂</text><text x=\"85\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\" text-anchor=\"middle\">Produces Organic Sugars</text></g><g transform=\"translate(290, 160)\"><rect width=\"180\" height=\"80\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.4\"/><text x=\"90\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Animals (Consumers)</text><text x=\"90\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7c2d12\" text-anchor=\"middle\">Feeding transfers carbon</text><text x=\"90\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7c2d12\" text-anchor=\"middle\">Respiration releases CO₂</text></g><g transform=\"translate(545, 160)\"><rect width=\"175\" height=\"80\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.4\"/><text x=\"87\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Fossil Fuels &amp; Industry</text><text x=\"87\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\" text-anchor=\"middle\">Coal, Petroleum &amp; Gas</text><text x=\"87\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\" text-anchor=\"middle\">Combustion vents CO₂</text></g><g transform=\"translate(180, 275)\"><rect width=\"400\" height=\"65\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.4\"/><text x=\"200\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">Decomposers &amp; Soil Organisms (Bacteria &amp; Fungi)</text><text x=\"200\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#334155\" text-anchor=\"middle\">Decomposes dead biomass into humus, fossil deposits, and CO₂ gas</text></g><path d=\"M 320 87 L 125 160\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\"/><polygon points=\"125,160 134,154 130,163\" fill=\"#16a34a\"/><text x=\"190\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">Photosynthesis (Removal)</text><path d=\"M 145 160 L 340 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><polygon points=\"340,87 331,91 334,83\" fill=\"#dc2626\"/><text x=\"220\" y=\"145\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#b91c1c\">Plant Respiration</text><path d=\"M 210 200 L 290 200\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"2\"/><polygon points=\"290,200 282,196 282,204\" fill=\"#ea580c\"/><text x=\"250\" y=\"192\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Feeding</text><path d=\"M 380 160 L 380 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"1.8\"/><polygon points=\"380,87 376,95 384,95\" fill=\"#dc2626\"/><text x=\"385\" y=\"125\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#b91c1c\">Animal Respiration</text><path d=\"M 630 160 L 480 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\"/><polygon points=\"480,87 489,90 486,98\" fill=\"#dc2626\"/><text x=\"570\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#b91c1c\">Combustion</text><path d=\"M 125 240 L 230 275\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.5\"/><polygon points=\"230,275 221,272 225,264\" fill=\"#64748b\"/><path d=\"M 380 240 L 380 275\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.5\"/><polygon points=\"380,275 376,267 384,267\" fill=\"#64748b\"/><text x=\"300\" y=\"258\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#334155\">Death &amp; Waste</text><path d=\"M 510 275 L 430 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><polygon points=\"430,87 433,96 439,90\" fill=\"#dc2626\"/><text x=\"485\" y=\"230\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#b91c1c\">Decomposition Respiration</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1: The Biogeochemical Carbon Cycle — Pathways of Carbon Removal, Transfer, and Release</p>\n</div>\n\n---\n\n### Module 2: Core Biological & Physical Stages of the Carbon Cycle\n\nThe carbon cycle operates through four primary complementary processes: one major natural removal mechanism and three primary release pathways.\n\n#### 1. Photosynthesis — The Primary Carbon Removal Mechanism\n* **Role:** Photosynthesis is the **only major natural biological process** that extracts carbon dioxide directly from the atmospheric reservoir pool.\n* **Mechanism:** Green plants, autotrophic algae, and phytoplankton absorb carbon dioxide through microscopic leaf pores called **stomata**. Using radiant sunlight energy absorbed by the green pigment **chlorophyll**, plants chemically combine $CO_2$ with water ($H_2O$) absorbed from the soil by roots to synthesize energy-rich glucose sugar and release pure oxygen gas ($O_2$) as a vital byproduct.\n* **Balanced Chemical Word & Symbolic Equation:**\n  $$\\text{Carbon Dioxide} + \\text{Water} \\xrightarrow{\\text{Light energy, Chlorophyll}} \\text{Glucose} + \\text{Oxygen}$$\n  $$6CO_2 + 6H_2O \\xrightarrow{\\text{light, chlorophyll}} C_6H_{12}O_6 + 6O_2$$\n* **Ecological Significance:** Fixes gaseous inorganic carbon into solid organic biomass that forms the base of terrestrial and aquatic food chains.\n\n#### 2. Respiration — Biological Carbon Release\n* **Role:** Respiration is the metabolic oxidation of organic food substances within living cells to release biochemical energy (ATP) for vital life activities (movement, growth, active transport, reproduction).\n* **Mechanism:** Both autotrophic plants and heterotrophic animals break down glucose molecules in the presence of oxygen within their **mitochondria**. This catabolic reaction releases carbon dioxide and water vapor back into the ambient atmosphere:\n  $$\\text{Glucose} + \\text{Oxygen} \\longrightarrow \\text{Carbon Dioxide} + \\text{Water} + \\text{Energy (ATP)}$$\n  $$C_6H_{12}O_6 + 6O_2 \\longrightarrow 6CO_2 + 6H_2O + \\text{Energy}$$\n* **Plant vs. Animal Gas Exchange:** Plants release $CO_2$ continuously day and night through stomata during cellular respiration. Animals discharge $CO_2$ into the air via specialized respiratory organs (lungs, gills, spiracles, skin).\n\n#### 3. Decomposition & Decay — The Biological Recycling of Carbon\n* **Role:** Recycles carbon stored in dead plant matter, animal carcasses, shed leaves, and excretory wastes (dung, urine).\n* **Mechanism:**\n  * **Microbial Action:** Saprophytic bacteria and fungi (**decomposers**) secrete digestive hydrolytic enzymes onto dead biological tissues. As they respire aerobically or anaerobically, they break down complex carbohydrates and proteins, discharging carbon dioxide gas back into the air and returning organic carbon to the soil as nutrient-rich **humus**.\n  * **Fossil Fuel Genesis (Geological Sequestration):** Millions of years ago, vast swathes of prehistoric ferns, swamp vegetation, and plankton died and were rapidly buried beneath thick silt, sand, and mud in oxygen-poor environments. Deprived of oxygen, decomposers could not break down the tissues. Under immense tectonic pressure and geothermal heat over hundreds of millions of years, these buried organic deposits underwent slow chemical carbonization to become **fossil fuels**:\n    * Buried terrestrial vegetation $\\longrightarrow$ **Coal**\n    * Buried microscopic marine algae and plankton $\\longrightarrow$ **Crude Petroleum Oil & Natural Gas**\n\n#### 4. Combustion — Rapid Chemical Oxidation\n* **Role:** Chemical burning of organic biomass and fossilized hydrocarbon fuels in the presence of oxygen.\n* **Mechanism:**\n  * When wood, charcoal, bushfires, coal, petrol, diesel, or liquefied petroleum gas (LPG) are ignited, the carbon locked in their chemical bonds reacts vigorously with atmospheric oxygen to liberate thermal energy, releasing carbon dioxide ($CO_2$), water vapor, and soot particles.\n  * Incomplete combustion (when oxygen supply is restricted) releases toxic **carbon monoxide ($CO$)**, a lethal odorless gas that binds irreversibly to hemoglobin:\n    $$\\text{Hydrocarbon Fuel} + \\text{Oxygen} \\longrightarrow \\text{Carbon Dioxide} + \\text{Water} + \\text{Heat}$$\n    $$\\text{e.g., Methane Combustion: } CH_4 + 2O_2 \\longrightarrow CO_2 + 2H_2O + \\text{Heat}$$\n\n#### 5. Oceanic Carbon Sink Mechanics\nThe world's oceans constitute the **largest active carbon reservoir on Earth**, containing roughly 50 times more carbon than the atmosphere:\n* **Direct Dissolution:** Atmospheric $CO_2$ dissolves physically into surface ocean waters, reacting with water molecules to form weak carbonic acid ($H_2CO_3$), which dissociates into hydrogen ions ($H^+$) and bicarbonate ions ($HCO_3^-$).\n* **Biological Precipitation of Shells:** Marine organisms (clams, oysters, snails, corals, and microscopic foraminifera) absorb dissolved calcium ions and bicarbonate to precipitate hard external protective shells composed of **calcium carbonate ($CaCO_3$)**:\n  $$Ca^{2+} + 2HCO_3^- \\longrightarrow CaCO_3 \\downarrow + CO_2 + H_2O$$\n* **Sedimentary Rock Formation:** When marine creatures die, their calcified shells sink to the ocean floor. Over millions of years, vast beds of sediment undergo cementation and compaction (lithification) to form **limestone and chalk** sedimentary rocks, locking away planetary carbon for millions of years.\n\n---\n\n### Module 3: Ecological Disruption, The Greenhouse Effect & Global Warming\n\n#### 1. Anthropogenic (Human) Disruptions to the Carbon Cycle\nFor millennia, the natural rates of carbon removal (photosynthesis and oceanic dissolution) were in dynamic equilibrium with carbon release (respiration and natural decomposition). However, since the dawn of the Industrial Revolution (circa 1750), accelerated human industrial activities have severely unbalanced this cycle:\n\n| Human Activity | Environmental Mechanism | Consequence on Carbon Balance |\n| :--- | :--- | :--- |\n| **Combustion of Fossil Fuels** | Burning coal in power plants, petrol/diesel in motor vehicles, and natural gas in factories. | Injects over 36 billion metric tons of ancient geologically locked carbon into the atmospheric pool every year. |\n| **Deforestation & Bush Burning** | Indiscriminate felling of tropical rainforests for timber, slash-and-burn farming, and urban expansion. | Drastically reduces the global photosynthetic leaf canopy available to remove $CO_2$, while burning tree trunks vents stored biomass carbon directly into the sky. |\n| **Industrial Cement Manufacturing** | Thermal decomposition of limestone rocks (calcium carbonate) inside industrial kilns ($CaCO_3 \\rightarrow CaO + CO_2$). | Releases enormous process-driven volumes of gaseous $CO_2$ independent of fuel burning. |\n| **Ruminant Livestock Breeding** | Commercial cattle, sheep, and goat ranching for beef and milk. | Microbial fermentation inside ruminant digestive tracts (enteric fermentation) produces large volumes of **methane ($CH_4$)**, a greenhouse gas 28 times more potent than $CO_2$. |\n\n#### 2. The Physics of the Greenhouse Effect\n* **The Natural Greenhouse Effect (Beneficial):**\n  * The Sun radiates high-energy, short-wavelength solar ultraviolet and visible light through the Earth's atmosphere.\n  * The Earth's surface absorbs this shortwave radiation, warms up, and re-emits the energy upward as low-energy, long-wavelength **infrared radiation (thermal heat)**.\n  * Naturally occurring atmospheric gases known as **greenhouse gases**—principally water vapor ($H_2O$), carbon dioxide ($CO_2$), methane ($CH_4$), and nitrous oxide ($N_2O$)—absorb a portion of this escaping infrared heat and re-radiate it in all directions, including back toward the Earth's surface.\n  * **Without this natural greenhouse blanket, Earth's average surface temperature would plunge to approximately $-18^\\circ\\text{C}$**, freezing all oceans and making biological life impossible.\n* **The Enhanced Greenhouse Effect (Harmful Anthropogenic Warming):**\n  * Rapid accumulation of human-generated $CO_2$ and $CH_4$ thickens this insulating atmospheric gas layer.\n  * As a consequence, far less infrared heat escapes into outer space; excess thermal energy is trapped within the lower troposphere, leading directly to **Global Warming**.\n\n#### 3. Dangerous Ecological & Economic Impacts of Global Warming\n1. **Rising Planetary Temperatures:** Sustained increases in average global surface and atmospheric temperatures, generating more frequent, prolonged, and lethal heatwaves.\n2. **Polar Ice Cap Melting & Glacier Retreat:** Accelerated thermal melting of continental ice sheets in Greenland, Antarctica, and mountain glaciers, releasing freshwater volumes into the seas.\n3. **Sea-Level Rise & Coastal Submersion:**\n   * Caused by two synergistic physical factors: (1) runoff meltwater from land ice, and (2) **thermal expansion of seawater** (as water warms, its physical volume expands).\n   * Result: Severe coastal erosion, saltwater intrusion into agricultural freshwater aquifers, and submergence of low-lying coastal communities (e.g., Keta and Ada along Ghana's coastline).\n4. **Ocean Acidification:**\n   * Excess atmospheric $CO_2$ dissolving in seawater forms excessive carbonic acid, driving down the natural alkaline pH of ocean water.\n   * Ocean acidification consumes available carbonate ions, dissolving coral reef skeletons and preventing shellfish, oysters, and crabs from building protective shells, triggering marine ecosystem collapse.\n5. **Extreme Climatic Destabilization:** Severe and prolonged agricultural droughts in the Sahel and savanna belts, unpredictable rainy seasons, intense tropical storms, catastrophic flooding, and widespread crop failures threatening food security.\n\n---\n\n### Module 4: Practical Environmental Solutions & Carbon Management\n\nTo restore atmospheric carbon equilibrium and halt runaway climate change, human society must adopt coordinated technological, agricultural, and behavioral interventions:\n\n#### 1. Afforestation and Reforestation\n* **Afforestation:** Planting new forests on barren land that historically had no tree cover.\n* **Reforestation:** Replanting trees on deforested or clear-cut land.\n* **Carbon Sequestration:** Fast-growing trees act as long-term biological carbon sinks, absorbing massive volumes of $CO_2$ via photosynthesis and locking carbon into woody cellulose trunks, roots, and soil for centuries. Programs like Ghana's *\"Green Ghana Day\"* represent vital national contributions.\n\n#### 2. Accelerating Transition to Renewable Energy Sources\n* Phasing out fossil-fueled thermal power stations in favor of zero-emission clean energy alternatives:\n  * **Solar Photovoltaic Energy:** Harnessing Ghana's abundant tropical solar irradiance to generate electricity without burning hydrocarbons.\n  * **Hydroelectric Power:** Generating clean energy from flowing rivers (e.g., Akosombo and Bui hydroelectric dams).\n  * **Wind & Biomass Energy:** Deploying coastal wind turbines and biogas digestors.\n\n#### 3. Clean Domestic Fuel Substitution\n* Halting the widespread harvesting of wood for firewood and charcoal burning in rural and urban households.\n* Promoting adoption of **Liquefied Petroleum Gas (LPG)** and solar cookers. While LPG is a hydrocarbon, it burns with vastly higher thermodynamic efficiency and produces minimal soot and toxic carbon monoxide compared to wood fuel.\n\n#### 4. Sustainable Climate-Smart Agriculture\n* **Agroforestry:** Integrating nitrogen-fixing trees and fruit trees within crop farms to retain soil moisture and sequester carbon.\n* **Conservation Tillage:** Avoiding deep mechanical ploughing that exposes buried soil humus to oxidation and bacterial decomposition into $CO_2$.\n* **Organic Composting:** Recycling crop residues and manure into organic compost instead of setting bushfires to clear farmlands.\n\n#### 5. Efficient Waste Management & Resource Recycling\n* Stopping open burning of municipal rubbish and electronic waste (e.g., at Agbogbloshie).\n* Establishing sanitary landfills equipped with methane capture pipes to collect biogas for electricity generation.\n* Recycling plastics, scrap metals, glass, and paper to lower industrial manufacturing energy requirements.\n\n#### 6. Energy Efficiency & Conservation Habits\n* Replacing energy-wasting incandescent filament bulbs with modern **LED (Light Emitting Diode)** and CFL lighting.\n* Turning off electrical appliances, air conditioners, and fans when not in use.\n* Utilizing public transit, carpooling, or walking to curtail automobile exhaust emissions.\n\n---\n\n### Core Comparative Summary: Natural Carbon Balance vs. Human Disruption\n\n| Feature / Metric | Natural Undisturbed Carbon Cycle | Modern Anthropogenically Disrupted Cycle |\n| :--- | :--- | :--- |\n| **Atmospheric $CO_2$ Concentration** | Stable (~280 parts per million for 10,000 years) | Surging rapidly (>420 parts per million and rising) |\n| **Carbon Influx vs. Efflux** | Balanced: Photosynthesis removal equals respiration and decay release | Unbalanced: Release far outstrips photosynthetic absorption capacity |\n| **Rate of Fossil Carbon Movement**| Millions of years to form and remain sequestered deep underground | Millions of tons mined and combusted in hours |\n| **Primary Climate Outcome** | Stable planetary climate with mild seasonal variations | Global warming, polar ice melt, rising seas, extreme droughts, and floods |\n| **Oceanic Condition** | Moderately alkaline waters supporting rich coral and shellfish reefs | Ocean acidification dissolving carbonate shells and bleaching corals |\n",
         "workedExamples": [
           {
-            "id": "ex_b8_s3_1",
-            "title": "Worked Example: The Carbon Interplay Between Respiration and Photosynthesis",
-            "problem": "Demonstrate chemically how photosynthesis and aerobic cellular respiration form a complementary closed loop in the carbon cycle.",
+            "id": "WE_B8_CARB_01",
+            "title": "Worked Example 1: Tracing the Biogeochemical Pathway of a Carbon Atom",
+            "problem": "A carbon atom currently exists as part of a carbon dioxide ($CO_2$) molecule in the atmosphere over a Ghanaian maize farm. Describe the sequential biogeochemical pathway through which this exact carbon atom could:\n(a) Become incorporated into the muscle tissue of a domestic goat.\n(b) Be converted into an underground fossil fuel.\n(c) Be discharged back into the atmosphere.",
             "steps": [
-              "Step 1: Write photosynthesis equation: 6CO2 + 6H2O + Light Energy -> C6H12O6 (glucose) + 6O2. Carbon dioxide is absorbed from the atmosphere and fixed into organic carbohydrate biomass.",
-              "Step 2: Write respiration equation: C6H12O6 + 6O2 -> 6CO2 + 6H2O + Energy (ATP). Heterotrophs and autotrophs oxidize glucose to yield metabolic energy, returning CO2 to the atmosphere.",
-              "Step 3: Conclude complementarity: The products of photosynthesis (glucose and oxygen) serve directly as the reactants for cellular respiration, while the waste products of respiration (carbon dioxide and water) serve as the essential raw materials for photosynthesis."
+              "Step 1: Atmospheric Extraction into Plant Biomass (Photosynthesis) — The atmospheric $CO_2$ molecule diffuses into a maize leaf through open stomata. Inside the leaf's mesophyll cells, chloroplasts use solar energy trapped by chlorophyll to combine the carbon dioxide with water, synthesizing a glucose molecule ($C_6H_{12}O_6$). The plant then converts this glucose into starch and cellulose forming the maize grain.",
+              "Step 2: Transfer to Herbivore Muscle Tissue (Feeding & Assimilation) — A domestic goat feeds on the ripe maize plant. In the goat's digestive tract, digestive enzymes hydrolyze the maize starch into glucose, which is absorbed into the bloodstream and assimilated into protein and glycogen inside skeletal muscle cells.",
+              "Step 3: Conversion into Fossil Deposit (Geological Sequestration) — If organic plant and animal remains are buried under anaerobic swamp sediments, prevented from decomposing, and subjected to intense geological pressure and geothermal heat over millions of years, the organic carbon carbonizes into crude oil or coal.",
+              "Step 4: Return to the Atmosphere (Respiration or Combustion) — Alternatively, the goat oxidizes glucose during aerobic cellular respiration in its mitochondria, venting $CO_2$ back out through its lungs into the air. If the carbon became fossil fuel, human extraction and combustion in a diesel engine would rapidly oxidize it back into gaseous $CO_2$."
             ],
-            "finalAnswer": "Examiner Tip: Notice that the two equations are the exact mathematical and chemical reverse of each other."
+            "finalAnswer": "Examiner Tip: In BECE questions tracing biogeochemical cycles, always clearly name the physiological or chemical processes at each transfer: Photosynthesis (entry) → Feeding/Assimilation (transfer) → Respiration/Combustion (return)."
+          },
+          {
+            "id": "WE_B8_CARB_02",
+            "title": "Worked Example 2: Distinguishing the Natural Greenhouse Effect from Enhanced Global Warming",
+            "problem": "A student wrote in a science essay: 'The greenhouse effect is an environmental poison caused by human factories and should be 100% eliminated from planet Earth.'\n(a) Critically evaluate this student's statement and explain why it is scientifically flawed.\n(b) Clearly distinguish between the natural greenhouse effect and the enhanced greenhouse effect.",
+            "steps": [
+              "Step 1: Evaluate the Scientific Flaw — The student's claim is completely incorrect. The natural greenhouse effect is not a poison; it is an indispensable natural thermal insulation mechanism. Without greenhouse gases trapping outgoing infrared heat, Earth's average surface temperature would plummet to approximately -18°C, freezing all water bodies and making life impossible.",
+              "Step 2: Define the Natural Greenhouse Effect — The natural greenhouse effect is the normal physical trapping of thermal infrared radiation by baseline atmospheric greenhouse gases (principally water vapor, natural carbon dioxide, and methane) that keeps the Earth's average surface temperature at a hospitable +15°C.",
+              "Step 3: Define the Enhanced Greenhouse Effect (Global Warming) — The enhanced greenhouse effect is the unnatural, excessive trapping of outgoing infrared heat caused by human activities (burning fossil fuels, deforestation, cement manufacture) injecting massive surplus quantities of $CO_2$ and $CH_4$ into the atmosphere, causing mean global temperatures to rise dangerously."
+            ],
+            "finalAnswer": "Examiner Tip: Always emphasize that the greenhouse effect is a natural, life-sustaining physical phenomenon; it is only the human-caused 'enhanced' greenhouse effect that produces global warming and climate change."
+          },
+          {
+            "id": "WE_B8_CARB_03",
+            "title": "Worked Example 3: Oceanic Carbon Mechanics, Shell Formation & Acidification",
+            "problem": "The world's oceans absorb approximately 25% of all human-generated $CO_2$ emissions each year.\n(a) Explain how marine shellfish and coral reefs utilize dissolved carbon to construct their physical skeletons.\n(b) Explain the chemical process of ocean acidification and state two devastating consequences it poses to marine life.",
+            "steps": [
+              "Step 1: Mechanism of Shell Formation — Marine shellfish (oysters, clams, snails) and reef-building corals absorb dissolved calcium ions ($Ca^{2+}$) and bicarbonate ions ($HCO_3^-$) from seawater. Through biological calcification, they precipitate insoluble solid calcium carbonate ($CaCO_3$), forming rigid, durable protective shells and limestone reef skeletons.",
+              "Step 2: Chemical Mechanism of Ocean Acidification — When excess atmospheric $CO_2$ dissolves into ocean surface waters, it reacts with water molecules to form carbonic acid ($H_2CO_3$): $CO_2 + H_2O \\rightarrow H_2CO_3$. Carbonic acid dissociates into hydrogen ions ($H^+$) and bicarbonate ($HCO_3^-$). The elevated surge of free $H^+$ ions lowers the natural pH of seawater, making it more acidic.",
+              "Step 3: State Two Consequences to Marine Life — (1) The free $H^+$ ions react with available carbonate ions, depleting the raw building blocks shellfish need to build shells. (2) Highly acidic seawater directly dissolves the existing fragile calcium carbonate shells of young oysters, snails, and coral reefs, causing coral bleaching and triggering marine food web collapse."
+            ],
+            "finalAnswer": "Examiner Tip: Chemical equations in ocean science carry high marks: remember that dissolving $CO_2$ yields carbonic acid ($H_2CO_3$), which liberates $H^+$ ions to decrease pH."
+          },
+          {
+            "id": "WE_B8_CARB_04",
+            "title": "Worked Example 4: Designing a Community Carbon Abatement Plan for a Ghanaian Town",
+            "problem": "A peri-urban community in Ghana relies heavily on charcoal for cooking, burns municipal garbage in open pits, and has suffered severe deforestation due to illegal chainsaw logging. As a youth science environmental ambassador, formulate a 4-point practical scientific plan to reduce the community's net carbon footprint.",
+            "steps": [
+              "Step 1: Implement Community Afforestation & Reforestation — Organize community tree-planting days (planting fast-growing indigenous and nitrogen-fixing trees such as Cassia and Mahogany) around deforested areas, riverbanks, and school compounds. These trees will actively sequester atmospheric $CO_2$ through continuous photosynthesis.",
+              "Step 2: Transition from Charcoal to LPG and Efficient Cookstoves — Facilitate access to the national LPG promotion program to replace wood charcoal with clean-burning Liquefied Petroleum Gas (LPG) or subsidized improved institutional cookstoves, dramatically halting tree felling for firewood.",
+              "Step 3: End Open Refuse Burning via Composting and Recycling — Ban the open-air burning of municipal refuse (which vents thick smoke, soot, and $CO_2$). Separate biodegradable kitchen/market wastes to create organic compost for local vegetable farming, and sort plastics and cans for commercial recycling.",
+              "Step 4: Deploy Solar Lighting and Energy Conservation Habits — Install standalone solar-powered streetlights along main roads and replace high-wattage incandescent filament light bulbs in residential homes with energy-efficient LED bulbs."
+            ],
+            "finalAnswer": "Examiner Tip: When answering environmental mitigation questions, always state the scientific justification (e.g., 'planting trees absorbs $CO_2$ via photosynthesis', 'clean LPG prevents tree cutting', 'LEDs lower electricity demand')."
           }
         ],
         "practicePool": {
@@ -8474,7 +11065,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Green plants require this gas to synthesize carbohydrates.",
               "workedSolution": "Photosynthesis is the primary biological carbon sequestration mechanism, where autotrophic organisms fix gaseous CO2 into organic carbon compounds using light energy.",
               "points": 1,
-              "learningCompetency": "B8.2.1.1",
+              "learningCompetency": "B8.2.1.1.1 & B8.2.1.1.2",
               "type": "objective"
             }
           ],
@@ -8493,7 +11084,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
               "hint": "Fossil fuels release sequestered subterranean carbon back into the air.",
               "workedSolution": "Combustion releases carbon sequestered over hundreds of millions of years in geological strata, overwhelming natural photosynthetic sinks and increasing atmospheric greenhouse gas concentrations.",
               "points": 1,
-              "learningCompetency": "B8.2.1.1",
+              "learningCompetency": "B8.2.1.1.1 & B8.2.1.1.2",
               "type": "objective"
             }
           ],
@@ -8560,7 +11151,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.565Z"
+    "updatedAt": "2026-10-09T14:56:37.192Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -11285,7 +13876,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.192Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -14010,7 +16601,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -16734,7 +19325,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -19460,7 +22051,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -22185,7 +24776,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -24901,7 +27492,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -27641,7 +30232,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -30417,7 +33008,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -33180,7 +35771,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.566Z"
+    "updatedAt": "2026-10-09T14:56:37.193Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -35979,7 +38570,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -36177,7 +38768,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -38961,7 +41552,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -41710,7 +44301,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -44457,7 +47048,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -47187,7 +49778,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -49922,7 +52513,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-09T14:13:57.567Z"
+    "updatedAt": "2026-10-09T14:56:37.194Z"
   }
 ];
 
@@ -57297,48 +59888,2434 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Living Cells & Cellular Organization (Ultrastructure, Specialization & Tissues)",
     "order": 5,
     "notes": {
-      "summaryMarkdown": "### Cellular Specialization & Structure-Function Adaptations\n* **NaCCA Curriculum Code:** `B8.1.2.1`\n* **Core Competency:** Explain how cells differentiate and modify their structures to execute specialized physiological functions.\n\n#### 1. Cellular Differentiation & Specialization\nIn single-celled organisms (*Amoeba*, *Paramecium*), one cell carries out all metabolic activities. In multicellular organisms, cells differentiate through selective gene expression to perform specific functions with greater efficiency.\n\n#### 2. Specialized Plant Cells\n* **Root Hair Cells:** Long, thin tubular cytoplasmic extension greatly increases surface area-to-volume ratio for rapid absorption of water (osmosis) and dissolved mineral ions (active transport). Thin cell wall; no chloroplasts.\n* **Xylem Vessels:** Dead, hollow elongated tubes with cell walls reinforced by lignin. Form continuous capillaries for long-distance transport of water and mineral salts from roots to leaves; provides mechanical support.\n* **Phloem Sieve Tube Elements:** Living elongated cells with perforated sieve plates; translocate manufactured sucrose and amino acids from photosynthetic source to metabolic sinks.\n* **Guard Cells:** Bean-shaped epidermal cells containing chloroplasts. Inner cell wall is thicker and less elastic than outer wall. Changes in turgor pressure regulate stomatal opening and closing for gas exchange and transpiration control.\n\n#### 3. Specialized Animal Cells\n* **Red Blood Cells (Erythrocytes):** Biconcave disc geometry maximizes surface area for rapid oxygen diffusion; absence of nucleus leaves more volume for hemoglobin molecules; flexible to squeeze through microscopic capillaries.\n* **Nerve Cells (Neurons):** Elongated axons transmit electrochemical impulses over long distances; surrounded by insulating myelin sheath; terminal dendrites synapse with adjacent receptors/effectors.\n* **Spermatozoa:** Flagellated tail provides swimming motility toward ovum; head possesses an acrosome cap filled with hydrolytic enzymes to penetrate ovum jelly coat; midpiece packed with mitochondria for ATP energy.\n* **Muscle Cells:** Elongated fibers containing contractile actin and myosin proteins that contract and relax to produce coordinated mechanical movement.",
+      "summaryMarkdown": "### Living Cells & Cellular Architecture\n* **Curriculum Alignment:** NaCCA Common Core Programme (Ghana)\n* **Strand:** 1 — Diversity of Matter\n* **Sub-Strand:** Living Cells\n* **Grade Level:** Basic 8 (JHS 2)\n* **Content Standards:**\n  * `B8.1.2.1`: Examine and describe the structure of prokaryotic and eukaryotic cells.\n  * `B8.1.2.1.2`: Classify organisms (plants or animals) as prokaryotic or eukaryotic based on the type of cells they are made of.\n* **Key Indicators:**\n  * `B8.1.2.1.1`: Examine and describe the structure of prokaryotic and eukaryotic cells.\n  * `B8.1.2.1.2`: Classify organisms as prokaryotic or eukaryotic based on their cellular architecture.\n\n---\n\n### Module 1: Introduction to Living Cells & Major Cell Categories\n\n#### 1. Historical Background & The Cell Concept\nIn 1665, an English scientist named **Robert Hooke** first discovered cells while examining a thin slice of cork bark under an early primitive light microscope. He observed rows of tiny, hollow, box-like compartments which reminded him of the small bare rooms (\"cells\") inhabited by monks in a monastery, and coined the term **\"cell\"**.\n\nToday, biological science defines a **cell** as:\n> **The basic structural, functional, and biological unit of all living organisms.** It is the smallest unit of life capable of independent existence and executing essential metabolic activities (growth, respiration, excretion, irritability, reproduction).\n\n#### 2. Organelles — The Specialized Working Engines\nInside every living cell are specialized microscopic working compartments and structures called **organelles** (literally meaning *\"little organs\"*). \n* Just as human organs (heart, lungs, kidneys) perform dedicated bodily tasks, each cellular organelle has a distinct physiological role to keep the whole cell alive.\n* The most prominent and critical organelle directing metabolic operations, cellular growth, and hereditary transmission is the **nucleus**.\n\n#### 3. Primary Taxonomic Classification of Cells\nAll biological systems and organisms on Earth are categorized into three structural groups based on the presence, absence, and organization of their nucleus and cellular boundaries:\n\n1. **Prokaryotic Cells (Prokaryotes):**\n   * **Definition:** Tiny, structurally simple, unicellular organisms that **completely lack a true nucleus** and membrane-enclosed organelles.\n   * **Genetic Material:** Their genetic blueprint (DNA) is not enclosed by a nuclear envelope; it floats freely in a specialized, non-membrane central area of the cytoplasm known as the **nucleoid**.\n   * **Size & Complexity:** Very small (typically 0.1 to 5.0 micrometers in diameter) with minimal internal compartmentalization.\n   * **Representative Examples:** Bacteria (e.g., *Escherichia coli*, *Lactobacillus*, *Salmonella*) and Archaea (extremophiles living in hot springs and hypersaline pools).\n\n2. **Eukaryotic Cells (Eukaryotes):**\n   * **Definition:** Larger, complex, highly compartmentalized cells possessing a **true nucleus enclosed by a double nuclear membrane**, as well as various membrane-bound organelles (mitochondria, endoplasmic reticulum, Golgi apparatus, lysosomes, vacuoles).\n   * **Genetic Material:** Multiple linear strands of DNA tightly wound around histone proteins to form distinct chromosomes housed safely within the nucleus.\n   * **Size & Complexity:** Typically 10 to 100 micrometers in diameter (10 to 100 times larger than bacteria).\n   * **Representative Examples:** All plants (flowering trees, mosses, grasses), animals (humans, fish, insects), fungi (mushrooms, molds, baker's yeast), and protists (unicellular organisms such as *Amoeba*, *Paramecium*, and *Euglena*).\n\n3. **Akaryotes (Acaryocytes) — Non-Cellular Entities:**\n   * **Etymology & Definition:** Derived from the Greek roots *\"a-\"* (meaning *without*) and *\"karyon\"* (meaning *kernel* or *nucleus*). Akaryotes are biological entities that **completely lack a nucleus, cytoplasm, and standard metabolic machinery**.\n   * **Biological Status:** They do not meet the full criteria of living cells because they cannot carry out respiration, nutrition, or reproduction on their own.\n   * **Key Examples:**\n     * **Viruses:** Sub-microscopic infectious particles consisting solely of a protective protein coat (capsid) enclosing a central core of nucleic acid (either DNA or RNA). Examples include Influenza virus, HIV, Coronavirus, and Bacteriophages. They are obligate intracellular parasites that must hijack host cell machinery to replicate.\n     * **Mature Mammalian Red Blood Cells (Erythrocytes):** In humans and other mammals, developing red blood cells intentionally eject their nucleus and mitochondria during maturation to maximize internal space for packing oxygen-carrying **hemoglobin** molecules.\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"220\" viewBox=\"0 0 760 220\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"220\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE THREE STRUCTURAL GROUPS OF CELLS (BASIC 8)</text><g transform=\"translate(25, 45)\"><rect width=\"220\" height=\"155\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.3\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">1. PROKARYOTES</text><line x1=\"15\" y1=\"32\" x2=\"205\" y2=\"32\" stroke=\"#fecaca\" stroke-width=\"1\"/><text x=\"12\" y=\"52\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• NO nuclear membrane</text><text x=\"12\" y=\"72\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• DNA in open nucleoid</text><text x=\"12\" y=\"92\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• No mitochondria or Golgi</text><text x=\"12\" y=\"112\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#7f1d1d\">• Circular DNA ring</text><text x=\"12\" y=\"136\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#991b1b\">e.g., Bacteria, Archaea</text></g><g transform=\"translate(270, 45)\"><rect width=\"220\" height=\"155\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.3\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">2. EUKARYOTES</text><line x1=\"15\" y1=\"32\" x2=\"205\" y2=\"32\" stroke=\"#bbf7d0\" stroke-width=\"1\"/><text x=\"12\" y=\"52\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Has a TRUE nucleus</text><text x=\"12\" y=\"72\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Membrane-bound organelles</text><text x=\"12\" y=\"92\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Mitochondria &amp; ER present</text><text x=\"12\" y=\"112\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#14532d\">• Linear DNA inside nucleus</text><text x=\"12\" y=\"136\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">e.g., Plants, Animals, Fungi</text></g><g transform=\"translate(515, 45)\"><rect width=\"220\" height=\"155\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"1.3\"/><text x=\"110\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">3. AKARYOTES</text><line x1=\"15\" y1=\"32\" x2=\"205\" y2=\"32\" stroke=\"#bfdbfe\" stroke-width=\"1\"/><text x=\"12\" y=\"52\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Completely LACK a nucleus</text><text x=\"12\" y=\"72\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• No cytoplasm or organelles</text><text x=\"12\" y=\"92\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Core of DNA or RNA only</text><text x=\"12\" y=\"112\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#1e3a8a\">• Non-cellular particles</text><text x=\"12\" y=\"136\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#1e40af\">e.g., Viruses, Mature RBCs</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1: High-Level Taxonomy of Cellular Life (Prokaryotes, Eukaryotes, and Akaryotes)</p>\n</div>\n\n---\n\n### Module 2: Prokaryotic Cell Structure — Anatomy of a Bacterium\n\n#### 1. Evolutionary Importance & General Features\nProkaryotes represent the most ancient lineage of life on Earth, appearing in fossil records over 3.5 billion years ago. Despite their small size, bacteria inhabit virtually every ecological niche—from deep ocean hydrothermal vents to soil, air, and animal digestive tracts. A typical bacterium has no internal membrane partitions; all chemical reactions take place directly within the cytoplasm or at the plasma membrane boundary.\n\n#### 2. Structural Components of a Typical Bacterium\nA complete bacterial cell comprises the following specialized structures:\n\n| Structural Component | Anatomical Nature | Physiological Function in Survival |\n| :--- | :--- | :--- |\n| **Capsule (Slime Coat)** | Sticky outer layer of gelatinous polysaccharides surrounding the cell wall | Prevents desiccation (drying out); shields bacterium against phagocytosis by host white blood cells; helps bacteria adhere firmly to surfaces (e.g., teeth, intestinal walls). |\n| **Cell Wall** | Rigid, porous structural envelope made of peptidoglycan (murein) | Imparts mechanical strength and defines cell shape (rod, sphere, spiral); prevents the cell from bursting (osmotic lysis) in hypotonic environments. |\n| **Plasma (Cell) Membrane** | Delicate, selectively permeable phospholipid bilayer with embedded proteins | Controls influx and efflux of ions, water, and nutrients; hosts respiratory electron transport chains to generate ATP energy (in the absence of mitochondria). |\n| **Cytoplasm** | Aqueous, jelly-like matrix containing enzymes, dissolved salts, and nutrients | Fluid medium in which all metabolic and biochemical reactions occur. |\n| **Nucleoid Region** | Non-delimited central clear zone of the cytoplasm | Houses the single, long, circular chromosome composed of naked double-stranded DNA that carries core hereditary genes. |\n| **Plasmids** | Small, separate circular rings of non-chromosomal extra DNA | Carry supplemental, adaptive survival genes, such as genes conferring resistance to antibiotics and heavy metals; can be duplicated and shared. |\n| **Ribosomes (70S)** | Small, dense ribonucleoprotein granules floating freely in cytoplasm | Translate messenger RNA into functional proteins and enzymes (smaller than 80S eukaryotic ribosomes). |\n| **Flagellum (pl. Flagella)** | Long, helical whip-like protein fiber (flagellin) attached to a motor basal body | Rotates like a propeller to drive rapid swimming locomotion in liquid media toward food (chemotaxis). |\n| **Pili / Fimbriae (sing. Pilus)**| Short, hair-like protein appendages projecting across the surface | Short fimbriae allow attachment to host epithelial tissues; elongated **sex pili** form physical mating bridges for genetic exchange during conjugation. |\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"340\" viewBox=\"0 0 760 340\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"340\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">ANATOMY OF A PROKARYOTIC CELL (BACTERIUM)</text><g transform=\"translate(210, 45)\"><path d=\"M 320 120 Q 360 80 400 130 Q 430 170 470 120\" fill=\"none\" stroke=\"#334155\" stroke-width=\"4\" stroke-linecap=\"round\"/><rect x=\"40\" y=\"40\" width=\"280\" height=\"160\" rx=\"80\" fill=\"#fef3c7\" stroke=\"#d97706\" stroke-width=\"6\"/><rect x=\"46\" y=\"46\" width=\"268\" height=\"148\" rx=\"74\" fill=\"#fef9c3\" stroke=\"#ca8a04\" stroke-width=\"4\"/><rect x=\"52\" y=\"52\" width=\"256\" height=\"136\" rx=\"68\" fill=\"#ecfdf5\" stroke=\"#059669\" stroke-width=\"2.5\"/><path d=\"M 130 115 Q 150 85 180 120 Q 210 145 230 105 Q 210 90 170 95 Q 140 130 130 115 Z\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"3\"/><circle cx=\"250\" cy=\"80\" r=\"12\" fill=\"none\" stroke=\"#7c3aed\" stroke-width=\"2.5\"/><circle cx=\"100\" cy=\"90\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"115\" cy=\"140\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"210\" cy=\"150\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"260\" cy=\"130\" r=\"3\" fill=\"#1e293b\"/><circle cx=\"160\" cy=\"160\" r=\"3\" fill=\"#1e293b\"/><line x1=\"20\" y1=\"70\" x2=\"40\" y2=\"70\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"20\" y1=\"120\" x2=\"40\" y2=\"120\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"20\" y1=\"170\" x2=\"40\" y2=\"170\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"120\" y1=\"20\" x2=\"120\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"180\" y1=\"20\" x2=\"180\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"2\"/><line x1=\"240\" y1=\"20\" x2=\"240\" y2=\"40\" stroke=\"#d97706\" stroke-width=\"2\"/></g><g transform=\"translate(20, 45)\"><line x1=\"140\" y1=\"65\" x2=\"240\" y2=\"65\" stroke=\"#d97706\" stroke-width=\"1.2\"/><circle cx=\"240\" cy=\"65\" r=\"2.5\" fill=\"#d97706\"/><text x=\"135\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"end\">Capsule (Slime coat)</text><line x1=\"140\" y1=\"95\" x2=\"246\" y2=\"95\" stroke=\"#ca8a04\" stroke-width=\"1.2\"/><circle cx=\"246\" cy=\"95\" r=\"2.5\" fill=\"#ca8a04\"/><text x=\"135\" y=\"98\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#854d0e\" text-anchor=\"end\">Cell Wall</text><line x1=\"140\" y1=\"125\" x2=\"252\" y2=\"125\" stroke=\"#059669\" stroke-width=\"1.2\"/><circle cx=\"252\" cy=\"125\" r=\"2.5\" fill=\"#059669\"/><text x=\"135\" y=\"128\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#065f46\" text-anchor=\"end\">Plasma Membrane</text><line x1=\"140\" y1=\"155\" x2=\"220\" y2=\"155\" stroke=\"#d97706\" stroke-width=\"1.2\"/><circle cx=\"220\" cy=\"155\" r=\"2.5\" fill=\"#d97706\"/><text x=\"135\" y=\"158\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#b45309\" text-anchor=\"end\">Pili (Attachment hairs)</text><line x1=\"140\" y1=\"185\" x2=\"390\" y2=\"145\" stroke=\"#dc2626\" stroke-width=\"1.2\"/><circle cx=\"390\" cy=\"145\" r=\"2.5\" fill=\"#dc2626\"/><text x=\"135\" y=\"188\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"end\">Nucleoid (Circular DNA)</text></g><g transform=\"translate(540, 45)\"><line x1=\"5\" y1=\"65\" x2=\"120\" y2=\"80\" stroke=\"#7c3aed\" stroke-width=\"1.2\"/><circle cx=\"120\" cy=\"80\" r=\"2.5\" fill=\"#7c3aed\"/><text x=\"10\" y=\"68\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#6d28d9\">Plasmid (Extra DNA ring)</text><line x1=\"5\" y1=\"105\" x2=\"70\" y2=\"130\" stroke=\"#1e293b\" stroke-width=\"1.2\"/><circle cx=\"70\" cy=\"130\" r=\"2.5\" fill=\"#1e293b\"/><text x=\"10\" y=\"108\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#0f172a\">Ribosomes (70S)</text><line x1=\"5\" y1=\"145\" x2=\"60\" y2=\"150\" stroke=\"#059669\" stroke-width=\"1.2\"/><circle cx=\"60\" cy=\"150\" r=\"2.5\" fill=\"#059669\"/><text x=\"10\" y=\"148\" font-family=\"sans-serif\" font-size=\"8.5\" fill=\"#065f46\">Cytoplasm</text><line x1=\"5\" y1=\"185\" x2=\"130\" y2=\"140\" stroke=\"#334155\" stroke-width=\"1.2\"/><circle cx=\"130\" cy=\"140\" r=\"2.5\" fill=\"#334155\"/><text x=\"10\" y=\"188\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#1e293b\">Flagellum (Swimming tail)</text></g><rect x=\"25\" y=\"270\" width=\"710\" height=\"55\" rx=\"5\" fill=\"#f8fafc\" stroke=\"#cbd5e1\" stroke-width=\"1\"/><text x=\"35\" y=\"290\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#0f172a\">EXAM DRAWING TIP: Always label the 3 outer layers in correct order from OUTSIDE to INSIDE:</text><text x=\"35\" y=\"310\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#334155\">1. Capsule (outer slime) → 2. Cell Wall (middle rigid box) → 3. Plasma Membrane (inner delicate skin)</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 2: Comprehensive Labeled Vector Diagram of a Typical Bacterium (Prokaryotic Cell)</p>\n</div>\n\n> **BECE Examination Drawing Tip:**\n> When asked to draw or label a bacterium, always represent and identify the **three concentric outer boundary layers** in the exact sequence from outside to inside:\n> 1. **Capsule / Slime Layer** (outermost protective gelatinous jacket)\n> 2. **Cell Wall** (middle rigid structural support box)\n> 3. **Plasma Membrane** (innermost semi-permeable physiological boundary)\n\n#### 3. Modes of Bacterial Reproduction\nBacteria propagate rapidly through two distinct cellular processes:\n* **Asexual Reproduction (Binary Fission):**\n  * The primary, extremely fast method of vegetative reproduction.\n  * Under favorable temperature and nutrient conditions (e.g., in contaminated food or infected wounds), a bacterium replicates its circular DNA loop, elongates, and pinches inward along the center.\n  * The cell divides into two genetically identical daughter cells in as little as 20 minutes.\n* **Parasexual Exchange (Bacterial Conjugation):**\n  * A sexual process where two compatible bacteria form a temporary cytoplasmic bridge using a **sex pilus**.\n  * A copy of a **plasmid** (e.g., carrying antibiotic resistance genes) is transferred from the donor cell to the recipient cell.\n  * This horizontal gene transfer enables rapid dissemination of drug resistance across bacterial populations.\n\n---\n\n### Module 3: Eukaryotic Organelles & Comparative Architecture\n\n#### 1. Detailed Review of Eukaryotic Organelles\nEukaryotic cells are compartmentalized by intracellular membranes, allowing mutually incompatible biochemical processes to occur simultaneously in distinct micro-environments.\n\n* **Nucleus & Nucleolus:**\n  * Enclosed by a **double-membrane nuclear envelope** punctuated by nuclear pores that regulate transport of RNA and proteins.\n  * Houses **chromatin**—long, linear DNA strands wrapped around histone protein spools. During cell division, chromatin condenses into visible **chromosomes**.\n  * The **nucleolus** is a dark, dense interior sub-region responsible for assembling ribosomal RNA and ribosome subunits.\n* **Mitochondria (\"The Powerhouse of the Cell\"):**\n  * Oval-shaped, double-membraned organelles. The outer membrane is smooth, while the inner membrane is deeply folded into transverse ridges called **cristae** to maximize surface area.\n  * The interior jelly-like fluid is the **mitochondrial matrix**, containing respiratory enzymes, mitochondrial DNA, and ribosomes.\n  * Mitochondria perform **aerobic cellular respiration**: they oxidize glucose in the presence of oxygen to synthesize high-energy **adenosine triphosphate (ATP)** molecules:\n    $$\\text{Glucose} + \\text{Oxygen} \\longrightarrow \\text{Carbon Dioxide} + \\text{Water} + \\text{ATP Energy}$$\n* **Endoplasmic Reticulum (ER):**\n  * A vast, interconnected labyrinth of folded membranous tubules and flattened sacs extending outward from the nuclear envelope.\n  * **Rough Endoplasmic Reticulum (RER):** Studded with ribosomes on its outer cytoplasmic face. It folds, packages, and transports newly synthesized proteins destined for secretion or membrane insertion.\n  * **Smooth Endoplasmic Reticulum (SER):** Lacks ribosomes. It synthesizes lipids, phospholipids, and steroid hormones, and actively detoxifies drugs, alcohol, and metabolic poisons (highly abundant in liver cells).\n* **Golgi Apparatus (Golgi Complex / Body):**\n  * Composed of 4 to 8 flattened, curved, disc-like membranous sacs called **cisternae** stacked like pancakes.\n  * Acts as the cell's **post office and shipping center**: receives transport vesicles containing proteins and lipids from the ER, chemically modifies them (e.g., adding sugar chains to create glycoproteins), packages them into secretory vesicles, and routes them to lysosomes or the cell membrane for exocytosis.\n* **Lysosomes (\"Suicidal Bags\"):**\n  * Spherical, single-membraned digestive vesicles packed with over 40 distinct **hydrolytic (digestive) enzymes** operating at an acidic pH.\n  * They digest foreign bacteria and viruses engulfed by the cell, break down complex nutrient macromolecules, and recycle damaged organelles (autophagy).\n  * If a cell is severely injured or aged, lysosomes rupture and release their digestive enzymes throughout the cytoplasm, digesting the cell itself from within (autolysis), earning their nickname *\"suicidal bags\"*.\n* **Plastids (Unique to Plant Cells):**\n  * Double-membraned metabolic organelles exclusive to photosynthetic plants and algae:\n    1. **Chloroplasts:** Contain the green pigment **chlorophyll** arranged in stacks of thylakoid discs (grana) embedded in a fluid stroma. Chloroplasts trap radiant sunlight energy to perform **photosynthesis**, manufacturing glucose from carbon dioxide and water.\n    2. **Chromoplasts:** Contain carotenoid and xanthophyll pigments that produce vivid yellow, orange, and red colors in flower petals and ripening fruits, attracting pollinating insects and seed-dispersing birds.\n    3. **Leucoplasts:** Colorless storage plastids found in non-photosynthetic roots, tubers, and seeds. Varieties include **amyloplasts** (store starch, abundant in cassava and yam tubers), **elaioplasts** (store oils/lipids), and **aleuroplasts** (store proteins).\n* **Vacuoles:**\n  * Membrane-bound fluid cavities enclosed by a selectively permeable membrane called the **tonoplast**.\n  * **Plant Cells:** Possess a single, massive, permanent **central sap vacuole** occupying up to 90% of cell volume. It stores cell sap (water, dissolved sugars, mineral salts, amino acids, pigments) and maintains high **turgor pressure**, keeping herbaceous stems and leaves erect.\n  * **Animal Cells:** Possess only small, temporary, transient vacuoles (such as phagocytic food vacuoles or osmoregulatory contractile vacuoles in freshwater protozoa).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"360\" viewBox=\"0 0 760 360\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"360\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">EUKARYOTIC ARCHITECTURE: PLANT CELL vs. ANIMAL CELL</text><g transform=\"translate(30, 45)\"><rect width=\"330\" height=\"300\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">PLANT CELL (DIAGRAM I)</text><rect x=\"40\" y=\"35\" width=\"250\" height=\"220\" rx=\"8\" fill=\"#f0fdf4\" stroke=\"#15803d\" stroke-width=\"6\"/><rect x=\"46\" y=\"41\" width=\"238\" height=\"208\" rx=\"4\" fill=\"#f0fdf4\" stroke=\"#4ade80\" stroke-width=\"2\"/><rect x=\"110\" y=\"80\" width=\"130\" height=\"130\" rx=\"10\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1.5\"/><text x=\"175\" y=\"145\" font-family=\"sans-serif\" font-size=\"8.5\" font-weight=\"bold\" fill=\"#0369a1\" text-anchor=\"middle\">Large Vacuole</text><circle cx=\"75\" cy=\"90\" r=\"22\" fill=\"#fce7f3\" stroke=\"#db2777\" stroke-width=\"1.5\"/><circle cx=\"75\" cy=\"90\" r=\"8\" fill=\"#be185d\"/><ellipse cx=\"75\" cy=\"150\" rx=\"14\" ry=\"8\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><ellipse cx=\"150\" cy=\"58\" rx=\"14\" ry=\"8\" fill=\"#bbf7d0\" stroke=\"#16a34a\" stroke-width=\"1.5\"/><ellipse cx=\"75\" cy=\"210\" rx=\"14\" ry=\"7\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><line x1=\"290\" y1=\"50\" x2=\"320\" y2=\"50\" stroke=\"#15803d\" stroke-width=\"1.2\"/><text x=\"325\" y=\"53\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#166534\">Cell Wall</text><line x1=\"284\" y1=\"70\" x2=\"320\" y2=\"70\" stroke=\"#4ade80\" stroke-width=\"1.2\"/><text x=\"325\" y=\"73\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#15803d\">Cell Membrane</text><line x1=\"97\" y1=\"90\" x2=\"320\" y2=\"90\" stroke=\"#db2777\" stroke-width=\"1.2\"/><text x=\"325\" y=\"93\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#be185d\">Nucleus</text><line x1=\"89\" y1=\"150\" x2=\"320\" y2=\"150\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"325\" y=\"153\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#16a34a\">Chloroplast</text><line x1=\"89\" y1=\"210\" x2=\"320\" y2=\"210\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"325\" y=\"213\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#c2410c\">Mitochondrion</text></g><g transform=\"translate(400, 45)\"><rect width=\"330\" height=\"300\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.2\"/><text x=\"165\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#b45309\" text-anchor=\"middle\">ANIMAL CELL (DIAGRAM II)</text><path d=\"M 60 70 Q 140 40 230 60 Q 280 120 260 200 Q 180 260 90 230 Q 30 160 60 70 Z\" fill=\"#fefce8\" stroke=\"#ea580c\" stroke-width=\"2.5\"/><circle cx=\"150\" cy=\"140\" r=\"32\" fill=\"#fce7f3\" stroke=\"#db2777\" stroke-width=\"1.5\"/><circle cx=\"150\" cy=\"140\" r=\"10\" fill=\"#be185d\"/><ellipse cx=\"85\" cy=\"110\" rx=\"14\" ry=\"7\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><ellipse cx=\"210\" cy=\"180\" rx=\"14\" ry=\"7\" fill=\"#fed7aa\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><circle cx=\"90\" cy=\"180\" r=\"7\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"1\"/><circle cx=\"210\" cy=\"90\" r=\"8\" fill=\"#fee2e2\" stroke=\"#dc2626\" stroke-width=\"1\"/><text x=\"210\" y=\"93\" font-family=\"sans-serif\" font-size=\"6\" fill=\"#991b1b\" text-anchor=\"middle\">Lysosome</text><line x1=\"255\" y1=\"80\" x2=\"285\" y2=\"60\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"290\" y=\"63\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#c2410c\">Cell Membrane</text><line x1=\"182\" y1=\"140\" x2=\"285\" y2=\"130\" stroke=\"#db2777\" stroke-width=\"1.2\"/><text x=\"290\" y=\"133\" font-family=\"sans-serif\" font-size=\"8\" font-weight=\"bold\" fill=\"#be185d\">Nucleus</text><line x1=\"224\" y1=\"180\" x2=\"285\" y2=\"180\" stroke=\"#ea580c\" stroke-width=\"1.2\"/><text x=\"290\" y=\"183\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#c2410c\">Mitochondrion</text><line x1=\"97\" y1=\"180\" x2=\"285\" y2=\"220\" stroke=\"#0284c7\" stroke-width=\"1.2\"/><text x=\"290\" y=\"223\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#0369a1\">Small Vacuole</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 3: Side-by-Side Architectural Comparison of Plant Cell vs. Animal Cell</p>\n</div>\n\n#### 2. Systematic Comparison: Plant Cell vs. Animal Cell\nThe following table summarizes the mandatory diagnostic structural differences tested in NaCCA examinations:\n\n| Anatomical Feature | Plant Cell (Diagram I) | Animal Cell (Diagram II) |\n| :--- | :--- | :--- |\n| **Cell Wall** | **Present:** Rigid, non-living outer box composed of tough **cellulose** fibers. | **Absent:** Enclosed solely by a thin, flexible, living plasma membrane. |\n| **Definite Shape** | **Definite, rigid, regular polygonal/rectangular shape** maintained by the wall. | **Flexible, irregular, variable shape**; easily conforms and changes outline. |\n| **Chloroplasts / Plastids** | **Present** in green leaves and stems; enables autotrophic photosynthesis. | **Absent**; animals are heterotrophic and must ingest preformed food. |\n| **Central Vacuole** | **Present:** One large, permanent, central vacuole filled with cell sap. | **Small, few, and temporary** vacuoles scattered in cytoplasm. |\n| **Storage Carbohydrate** | Stored in the form of insoluble **starch granules** (in leucoplasts/cytoplasm). | Stored in the form of **glycogen granules** (in liver and muscle cells). |\n| **Centrosomes & Centrioles** | **Absent** in most higher plants (spindle forms without centrioles). | **Present**; pair of centrioles organizes aster fibers during mitosis. |\n| **Nucleus Position** | Pushed to the **periphery (side)** by the massive central vacuole. | Located centrally in the middle of the cytoplasm. |\n\n#### 3. Distinct Architecture of Fungi and Protozoa\nBeyond classical plants and animals, the eukaryotic kingdom encompasses two other major groups:\n* **Fungal Cells (Mushrooms, Molds, Yeasts):**\n  * Like plant cells, fungi are non-motile and have a rigid cell wall; however, their wall is made of **chitin** (a nitrogenous polysaccharide), never cellulose.\n  * Fungi are completely non-photosynthetic and lack chloroplasts; they feed saprophytically by secreting digestive enzymes onto dead organic matter and absorbing dissolved nutrients.\n  * In filamentous molds (hyphae), cells are separated by internal cross-walls called **septa**, which possess central pores allowing cytoplasm and organelles to stream freely between cells.\n* **Protozoan Cells (Amoeba, Paramecium, Euglena):**\n  * Unicellular eukaryotic microorganisms living in water and damp soils.\n  * They lack cellulose cell walls; many (like *Paramecium*) have a specialized flexible protein skin called a **pellicle** that maintains cell shape while permitting flexible movement.\n  * Equipped with specialized locomotion organelles: **pseudopodia** (amoeboid crawling in *Amoeba*), **cilia** (beating hair-like rows in *Paramecium*), or **flagella** (whip-like tails in *Euglena*).\n\n---\n\n### Module 4: Health Impacts of Microorganisms & Preventive Hygiene\n\n#### 1. Dual Nature of Microorganisms\nMicroorganisms (both prokaryotic bacteria and eukaryotic fungi/protozoa) are ubiquitous. While frequently feared as disease vectors, the overwhelming majority are harmless or directly beneficial to life, industry, and human survival.\n\n#### 2. Beneficial Roles of Microorganisms\n* **Industrial Food Processing & Fermentation:**\n  * **Dairy Products:** Harmless lactic acid bacteria (e.g., *Lactobacillus bulgaricus*, *Streptococcus thermophilus*) ferment lactose milk sugar into lactic acid, curdling milk to produce yogurt, cheese, and butter.\n  * **Baking & Brewing:** Unicellular eukaryotic yeast (*Saccharomyces cerevisiae*) ferments glucose anaerobically to yield ethanol and carbon dioxide gas:\n    $$\\text{Glucose} \\xrightarrow{\\text{Yeast}} \\text{Ethanol} + 2\\text{CO}_2 \\uparrow$$\n    The bubbling $\\text{CO}_2$ gas causes bread dough to rise, producing a soft, spongy texture; the same reaction is harnessed to brew traditional Ghanaian palm wine, pito, and beer.\n* **Human Digestion & Nutritional Symbiosis:**\n  * Trillions of beneficial commensal bacteria (*gut microbiota*) colonize the human large intestine.\n  * They ferment indigestible dietary plant fibers, protect the gut lining against pathogenic bacteria, and synthesize vital **Vitamin K** (essential for blood clotting) and B-complex vitamins.\n* **Ecological Decomposition & Soil Fertility:**\n  * Saprophytic bacteria and fungi act as the primary **decomposers** of the biosphere.\n  * They break down fallen leaves, animal carcasses, and sewage waste into simple mineral ions (nitrates, phosphates, potassium), restoring fertility to agricultural soils and preventing environmental clogging.\n* **Pharmaceutical & Medical Production:**\n  * **Antibiotic Discovery:** In 1928, Alexander Fleming discovered that the green fungus *Penicillium notatum* secretes a biochemical substance—**penicillin**—that destroys bacterial cell walls. Today, industrial molds and soil actinomycetes are cultured in giant fermenters to produce antibiotics.\n  * **Vaccines & Biotechnology:** Genetically engineered *E. coli* bacteria are mass-cultured to synthesize human insulin for diabetic patients.\n\n#### 3. Pathogenic Impacts & Infectious Diseases\nPathogenic microbes cause severe morbidity and mortality when they invade host tissues:\n\n| Pathogen Class | Biological Group | Infectious Disease | Causative Microbe | Primary Symptoms & Transmission |\n| :--- | :--- | :--- | :--- | :--- |\n| **Bacterial Pathogens** | Prokaryote | **Cholera** | *Vibrio cholerae* | Profuse watery diarrhea (\"rice-water stools\") and rapid dehydration; transmitted by fecal contamination of drinking water. |\n| **Bacterial Pathogens** | Prokaryote | **Typhoid Fever** | *Salmonella typhi* | Prolonged high fever, abdominal pain, headache; transmitted through unhygienic food handling and contaminated water. |\n| **Bacterial Pathogens** | Prokaryote | **Tuberculosis (TB)** | *Mycobacterium tuberculosis* | Persistent bloody cough, chest pain, fever, weight loss; airborne transmission via respiratory droplets. |\n| **Bacterial Pathogens** | Prokaryote | **Tetanus (\"Lockjaw\")** | *Clostridium tetani* | Painful muscle spasms, lockjaw; spores enter through deep cuts contaminated with farm soil or rusted nails. |\n| **Fungal Pathogens** | Eukaryote | **Ringworm (Tinea)** | *Trichophyton* species | Circular, itchy, red scaly skin patches and hair loss; spread by direct contact, shared towels, or barber combs. |\n| **Fungal Pathogens** | Eukaryote | **Athlete's Foot** | *Tinea pedis* | Itching, peeling, and cracked skin between the toes; contracted in damp communal bathrooms and sweaty shoes. |\n| **Protozoan Pathogens** | Eukaryote | **Malaria** | *Plasmodium falciparum* | Recurrent high fever, chills, sweating, anemia; transmitted by the bite of an infected female *Anopheles* mosquito. |\n| **Protozoan Pathogens** | Eukaryote | **Amoebic Dysentery** | *Entamoeba histolytica* | Severe diarrhea containing blood and mucus, abdominal cramps; spread via water or vegetables contaminated with cysts. |\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"160\" viewBox=\"0 0 760 160\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"160\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"22\" font-family=\"sans-serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">KEY SUMMARY DIFFERENCES: PROKARYOTE vs. EUKARYOTE (EXAM CHECKLIST)</text><g transform=\"translate(25, 38)\"><rect width=\"345\" height=\"105\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.2\"/><text x=\"172\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">PROKARYOTES (Bacteria)</text><text x=\"12\" y=\"40\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Nucleus: ABSENT (open nucleoid)</text><text x=\"12\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Organelles: No mitochondria, ER, or Golgi</text><text x=\"12\" y=\"76\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• DNA: Circular naked loop</text><text x=\"12\" y=\"94\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\">• Division: Fast binary fission</text></g><g transform=\"translate(390, 38)\"><rect width=\"345\" height=\"105\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.2\"/><text x=\"172\" y=\"20\" font-family=\"sans-serif\" font-size=\"9\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">EUKARYOTES (Plants, Animals, Fungi)</text><text x=\"12\" y=\"40\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Nucleus: PRESENT with double membrane</text><text x=\"12\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Organelles: Mitochondria, ER, Golgi present</text><text x=\"12\" y=\"76\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• DNA: Linear strands bound with histones</text><text x=\"12\" y=\"94\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\">• Division: Complex mitosis and meiosis</text></g></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 4: Key Diagnostic Examination Checklist: Prokaryotes vs. Eukaryotes</p>\n</div>\n\n#### 4. The Four Pillars of Preventive Health & Defense\nTo disrupt microbial transmission pathways and preserve community health, students must apply four scientific hygiene rules:\n\n1. **Rigorous Hand Hygiene:**\n   * Wash hands thoroughly with clean running water and soap for at least 20 seconds before preparing or eating food, after using the washroom, and after handling soil or animals. Soap dissolves the lipid membrane of enveloped microbes and mechanically lifts bacterial pathogens off the skin.\n2. **Thorough Cooking & Safe Food Storage:**\n   * Heat soups, meats, poultry, and fish to rolling boiling temperatures (above 70°C) to denature bacterial proteins and inactivate heat-labile toxins. Cover cooked food immediately to exclude houseflies, and refrigerate leftovers promptly below 5°C to arrest bacterial multiplication.\n3. **Potable & Safe Drinking Water:**\n   * Boil drinking water vigorously for at least 3 minutes, or treat it with approved chlorination tablets (or filtration). Boiling destroys waterborne cholera bacteria, typhoid bacilli, and amoebic cysts.\n4. **Responsible Antibiotic Stewardship:**\n   * **Take Only on Prescription:** Antibiotics kill bacteria; they have **zero effect on viral infections** (common colds, influenza, COVID-19, measles). Taking antibiotics for viral colds exposes normal bacteria to unnecessary drug pressure.\n   * **Complete the Full Dosage:** Never discontinue an antibiotic course simply because symptoms abate after 2 or 3 days. Stopping prematurely leaves partially resistant surviving bacteria to multiply and transfer resistance **plasmids**, breeding incurable \"superbugs\".\n\n---\n\n### Core Comparative Summary Table\n\n| Criterion | Prokaryotic Cells | Eukaryotic Cells | Akaryotes (Viruses / Mature RBCs) |\n| :--- | :--- | :--- | :--- |\n| **True Nucleus** | **Absent** (naked nucleoid region) | **Present** (enclosed by double membrane) | **Completely Absent** |\n| **Nuclear Membrane** | Absent | Present with nuclear pores | Absent |\n| **DNA Structure** | Single, circular loop without histones | Multiple linear chromosomes with histones | DNA or RNA core (or absent in RBCs) |\n| **Membrane Organelles** | Absent (no mitochondria, ER, Golgi) | Present (mitochondria, ER, Golgi, lysosomes)| None |\n| **Ribosome Type** | Small (70S) | Large (80S) in cytoplasm; 70S in mitochondria| None (viruses use host ribosomes) |\n| **Cell Wall Material** | Peptidoglycan (murein) | Cellulose (plants), Chitin (fungi), None (animals)| Protein capsid in viruses; None in RBCs |\n| **Cell Size** | Small (0.1 – 5.0 µm) | Large (10 – 100 µm) | Ultramicroscopic (0.02 – 0.3 µm in viruses) |\n| **Cell Division** | Fast binary fission | Mitosis and Meiosis | Viral replication inside host / none in RBCs|\n| **Examples** | *E. coli*, Cyanobacteria, Archaea | Mango tree, Human, Mushroom, *Amoeba* | HIV, Rabies virus, Mature red blood cell |\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b8_s2_1",
-        "questionPrompt": "State three distinct structural features of the human red blood cell and explain how each structure adapts the cell to its function.",
-        "stepByStepSolution": "Feature 1: Biconcave Disc Shape — Adaptation: Increases the surface area to volume ratio, facilitating rapid diffusion of oxygen into and out of the cell.\nFeature 2: Absence of Nucleus (and other organelles) at maturity — Adaptation: Maximizes internal cytoplasmic volume to pack more hemoglobin molecules, increasing oxygen-carrying capacity.\nFeature 3: Flexible Plasma Membrane — Adaptation: Allows the erythrocyte to bend and squeeze through narrow capillaries without rupturing.",
-        "examinerTip": "Examiner Tip: Always connect the physical structure directly to the biological function in adaptation questions."
+        "id": "WE_B8_CELL_01",
+        "questionPrompt": "A junior high school student examined three unknown biological specimens (A, B, and C) under a high-power laboratory microscope and recorded the following characteristics:\n- Specimen A: Unicellular, possesses a rigid peptidoglycan cell wall, lacks a visible nuclear membrane, contains small circular rings of extra DNA floating in the cytoplasm, and swims using a whip-like tail.\n- Specimen B: Multicellular, cells have a distinct double-layered nuclear envelope, numerous mitochondria, a large central fluid-filled vacuole, and a thick cellulose cell wall.\n- Specimen C: Sub-microscopic, non-cellular particle lacking cytoplasm and ribosomes, consisting only of a geometric protein shell enclosing a single molecule of RNA.\n\n(a) Classify each specimen as a Prokaryote, Eukaryote, or Akaryote.\n(b) Give one concrete biological example for each specimen category.",
+        "stepByStepSolution": "Step 1: Analyze Specimen A — The key diagnostic features are: (1) Absence of a nuclear membrane, (2) Presence of a peptidoglycan cell wall, and (3) Presence of circular plasmids and a flagellum. Because it lacks a membrane-bound nucleus and possesses a peptidoglycan wall, Specimen A is unambiguously a Prokaryote.\nStep 2: Analyze Specimen B — The key diagnostic features are: (1) A true nucleus enclosed by a double membrane, (2) Membrane-bound organelles (mitochondria), (3) A large central sap vacuole, and (4) A cellulose cell wall. The presence of a true nucleus and mitochondria confirms it is a Eukaryote (specifically a plant cell due to the cellulose wall and large central vacuole).\nStep 3: Analyze Specimen C — The key diagnostic features are: (1) Completely non-cellular, (2) Lacks cytoplasm, nucleus, and ribosomes, and (3) Consists only of a protein capsid enclosing an RNA core. This matches the strict definition of an Akaryote (non-cellular biological entity / virus).\nStep 4: Formulate Concrete Examples — Specimen A (Prokaryote): Bacterium such as Escherichia coli, Lactobacillus, or Vibrio cholerae. Specimen B (Eukaryote): Plant tissue such as an onion epidermal cell or Elodea leaf cell. Specimen C (Akaryote): A virus such as Tobacco Mosaic Virus (TMV), Poliovirus, or Human Immunodeficiency Virus (HIV).",
+        "examinerTip": "Examiner Tip: In BECE questions, always check for the presence of a nuclear membrane first. If absent, the organism is prokaryotic; if enclosed by a membrane with organelles, it is eukaryotic; if non-cellular with only protein and nucleic acid, it is an akaryote."
+      },
+      {
+        "id": "WE_B8_CELL_02",
+        "questionPrompt": "In a practical science examination, two unlabeled diagrams of living eukaryotic cells, labeled Cell X and Cell Y, are presented. Cell X has a rigid rectangular outline, a boundary composed of two distinct layers, green disc-like organelles distributed in the cytoplasm, and its nucleus is pushed to the outer margin. Cell Y has an irregular rounded shape, only a single outer boundary layer, numerous tiny food vesicles, and a centrally placed nucleus.\n(a) Identify Cell X and Cell Y with two supporting structural reasons for each.\n(b) Explain why Cell X possesses a definite rectangular shape whereas Cell Y has a variable, flexible shape.",
+        "stepByStepSolution": "Step 1: Identify Cell X — Cell X is a Plant Cell. Reasons: (1) It possesses an outer rigid cellulose cell wall outside the plasma membrane, giving it a double boundary layer. (2) It contains green chloroplasts for photosynthesis. (3) Its nucleus is displaced toward the periphery by a large permanent central vacuole.\nStep 2: Identify Cell Y — Cell Y is an Animal Cell. Reasons: (1) It is bounded only by a single delicate plasma membrane without a cell wall. (2) It has a flexible, irregular outline with a centrally positioned nucleus. (3) It contains small, temporary vesicles rather than a large permanent vacuole.\nStep 3: Explain the structural reason for the difference in shape — Cell X maintains a fixed, definite rectangular geometry because its outer boundary is reinforced with a thick, rigid, non-living cell wall made of tough cellulose fibers that resist mechanical deformation and hydrostatic pressure. In contrast, Cell Y lacks a cell wall and is enclosed solely by a thin, flexible, fluid phospholipid plasma membrane, allowing the cell to change its contour and deform easily.",
+        "examinerTip": "Examiner Tip: Never state that an animal cell has 'no membrane'; all living cells have a plasma (cell) membrane. The correct phrase is: 'Animal cells lack a cell wall'."
+      },
+      {
+        "id": "WE_B8_CELL_03",
+        "questionPrompt": "A student drew an enlarged biological diagram of a bacterium. In the drawing, the length of the bacterium measured 45.0 mm. If the actual physical length of the bacterium is 0.003 mm (3.0 micrometers):\n(a) State the scientific formula for calculating linear magnification.\n(b) Calculate the magnification of the student's drawing.\n(c) If a plant cell viewed under the same microscope has an actual diameter of 0.06 mm, calculate how long the plant cell drawing should be at a magnification of ×500.",
+        "stepByStepSolution": "Step 1: State the Magnification Formula — Magnification (M) = Size of biological drawing (Image size, I) / Actual size of specimen (Real size, A). In short: M = I / A.\nStep 2: Calculate Drawing Magnification for the Bacterium — Given Image size (I) = 45.0 mm, Actual size (A) = 0.003 mm. Magnification = 45.0 mm / 0.003 mm = 15,000. Expressed in scientific format: ×15,000 (or 15,000×).\nStep 3: Calculate Drawing Size for the Plant Cell — Using the rearranged formula: Image size (I) = Magnification (M) × Actual size (A). Given M = 500, A = 0.06 mm. Image size = 500 × 0.06 mm = 30.0 mm (which equals 3.0 cm).",
+        "examinerTip": "Final Answer: (a) Formula: Magnification = Drawing size / Actual size. (b) Magnification = ×15,000. (c) Drawing length = 30.0 mm (or 3.0 cm). Note: Magnification has no units, but must always be preceded by the multiplication sign '×'."
+      },
+      {
+        "id": "WE_B8_CELL_04",
+        "questionPrompt": "A patient diagnosed with a severe bacterial throat infection was prescribed a 7-day course of penicillin (an antibiotic that blocks peptidoglycan cell wall synthesis). After 3 days, the patient felt completely well and discontinued taking the medication. Two weeks later, the infection returned more aggressively, and a second course of penicillin failed to cure the infection.\n(a) Explain why penicillin kills bacteria but does not harm human host cells.\n(b) Explain from a cellular and genetic standpoint why the infection returned and why penicillin became ineffective.",
+        "stepByStepSolution": "Step 1: Explain Selective Toxicity of Penicillin — Penicillin selectively targets and inhibits the bacterial enzyme transpeptidase, preventing the cross-linking of peptidoglycan in bacterial cell walls. As a result, growing bacteria develop weak walls and burst due to osmotic lysis. Penicillin has zero harmful effect on human host cells because human cells are eukaryotic and do not possess cell walls or peptidoglycan.\nStep 2: Analyze Early Discontinuation of Antibiotics — When the patient stopped taking penicillin after only 3 days, the antibiotic had killed only the most vulnerable and sensitive bacteria. A small sub-population of hardier bacteria with slight natural resistance survived.\nStep 3: Explain the Cellular Mechanism of Resistance — The surviving bacteria harbored small extra circular DNA rings called plasmids containing genes for beta-lactamase (penicillinase enzymes that chemically destroy the penicillin molecule). Relieved of competition, these resistant bacteria multiplied exponentially via binary fission and shared their resistance plasmids with other bacteria via conjugation (sex pili bridges).\nStep 4: Formulate the Clinical Conclusion — When the infection re-emerged, the entire bacterial colony was composed of penicillin-resistant cells capable of neutralizing the drug, rendering the second treatment completely ineffective.",
+        "examinerTip": "Examiner Tip: When discussing bacterial resistance, always emphasize two cellular structures: (1) Plasmids (which carry the resistance gene) and (2) Pili / Conjugation (which transfer the plasmid to other bacteria)."
       }
     ],
     "drillQuestions": [
       {
-        "id": "q_b8_s2_1",
+        "id": "B8_CEL_F01",
         "difficulty": "low",
         "type": "objective",
-        "prompt": "Which specialized cell contains a high density of mitochondria in its midpiece to power rapid motility?",
+        "prompt": "Who first discovered cells in 1665 using an early microscope?",
         "options": [
-          "White blood cell",
-          "Sperm cell (spermatozoon)",
-          "Xylem vessel",
-          "Guard cell"
+          "A. Louis Pasteur",
+          "B. Robert Hooke",
+          "C. Gregor Mendel",
+          "D. Charles Darwin"
         ],
-        "correctAnswer": "Sperm cell (spermatozoon)",
-        "hint": "Mitochondria produce ATP needed for flagellar propulsion.",
-        "workedSolution": "The spermatozoon has a specialized midpiece packed with spiraled mitochondria that generate ATP energy to whip its flagellum and swim toward the ovum.",
+        "correctAnswer": "B. Robert Hooke",
+        "hint": "Robert Hooke discovered and coined the term 'cell' in 1665 while observing thin slices of cork under an early microscope.",
+        "workedSolution": "Robert Hooke discovered and coined the term 'cell' in 1665 while observing thin slices of cork under an early microscope.",
         "points": 1
       },
       {
-        "id": "q_b8_s2_2",
+        "id": "B8_CEL_F02",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a cell scientifically defined as?",
+        "options": [
+          "A. An organ that pumps blood through the body",
+          "B. The basic structural and functional unit of all living things",
+          "C. A chemical solution made of sugar and water",
+          "D. A non-living mineral crystal found inside bones"
+        ],
+        "correctAnswer": "B. The basic structural and functional unit of all living things",
+        "hint": "A cell is the fundamental structural and functional building block of all living organisms.",
+        "workedSolution": "A cell is the fundamental structural and functional building block of all living organisms.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F03",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the specialized functioning compartments inside a living cell called?",
+        "options": [
+          "A. Tissues",
+          "B. Organelles",
+          "C. Molecules",
+          "D. Solutes"
+        ],
+        "correctAnswer": "B. Organelles",
+        "hint": "Organelles are membrane-bound internal working structures that perform specific metabolic functions inside the cell.",
+        "workedSolution": "Organelles are membrane-bound internal working structures that perform specific metabolic functions inside the cell.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F04",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle is considered the most important control center of a eukaryotic cell?",
+        "options": [
+          "A. Vacuole",
+          "B. Nucleus",
+          "C. Cell wall",
+          "D. Ribosome"
+        ],
+        "correctAnswer": "B. Nucleus",
+        "hint": "The nucleus controls all metabolic activities, growth, protein synthesis, and reproduction in eukaryotic cells.",
+        "workedSolution": "The nucleus controls all metabolic activities, growth, protein synthesis, and reproduction in eukaryotic cells.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F05",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a prokaryotic cell?",
+        "options": [
+          "A. A complex cell that contains many nuclei",
+          "B. A cell that lacks a true membrane-bound nucleus and membrane-bound organelles",
+          "C. A plant cell that contains numerous green chloroplasts",
+          "D. An animal cell with a thick outer cellulose cell wall"
+        ],
+        "correctAnswer": "B. A cell that lacks a true membrane-bound nucleus and membrane-bound organelles",
+        "hint": "Prokaryotic cells lack a distinct nuclear membrane and membrane-enclosed organelles.",
+        "workedSolution": "Prokaryotic cells lack a distinct nuclear membrane and membrane-enclosed organelles.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F06",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following organisms is an example of a prokaryote?",
+        "options": [
+          "A. Amoeba",
+          "B. Bacterium",
+          "C. Mushroom",
+          "D. Mango tree"
+        ],
+        "correctAnswer": "B. Bacterium",
+        "hint": "Bacteria and Archaea are unicellular prokaryotic organisms.",
+        "workedSolution": "Bacteria and Archaea are unicellular prokaryotic organisms.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F07",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is a eukaryotic cell?",
+        "options": [
+          "A. A cell with a true membrane-bound nucleus and membrane-bound organelles",
+          "B. A cell without any genetic material",
+          "C. A non-living viral particle",
+          "D. A cell that has no cell membrane"
+        ],
+        "correctAnswer": "A. A cell with a true membrane-bound nucleus and membrane-bound organelles",
+        "hint": "Eukaryotic cells possess a defined nucleus enclosed by a nuclear envelope and internal membrane-bound organelles.",
+        "workedSolution": "Eukaryotic cells possess a defined nucleus enclosed by a nuclear envelope and internal membrane-bound organelles.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F08",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following kingdoms is composed entirely of eukaryotic organisms?",
+        "options": [
+          "A. Bacteria",
+          "B. Archaea",
+          "C. Plants and animals",
+          "D. Cyanobacteria"
+        ],
+        "correctAnswer": "C. Plants and animals",
+        "hint": "Plants, animals, fungi, and protists are made of eukaryotic cells.",
+        "workedSolution": "Plants, animals, fungi, and protists are made of eukaryotic cells.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F09",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What term describes biological entities that completely lack a nucleus and cytoplasm, such as viruses?",
+        "options": [
+          "A. Eukaryotes",
+          "B. Prokaryotes",
+          "C. Akaryotes",
+          "D. Protists"
+        ],
+        "correctAnswer": "C. Akaryotes",
+        "hint": "Akaryotes (or acaryocytes) lack a nucleus and cytoplasm; viruses are a prime example.",
+        "workedSolution": "Akaryotes (or acaryocytes) lack a nucleus and cytoplasm; viruses are a prime example.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F10",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is a mature mammalian red blood cell classified as an akaryote?",
+        "options": [
+          "A. It has ten nuclei",
+          "B. It sheds its nucleus during maturation to carry more hemoglobin",
+          "C. It is an infectious virus",
+          "D. It is surrounded by a cellulose cell wall"
+        ],
+        "correctAnswer": "B. It sheds its nucleus during maturation to carry more hemoglobin",
+        "hint": "Mature red blood cells lose their nucleus during development to maximize internal volume for oxygen-carrying hemoglobin.",
+        "workedSolution": "Mature red blood cells lose their nucleus during development to maximize internal volume for oxygen-carrying hemoglobin.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F11",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Where is the genetic material (DNA) located in a bacterial cell?",
+        "options": [
+          "A. Inside a double-membraned nucleus",
+          "B. In the nucleoid region of the cytoplasm",
+          "C. Inside the vacuole",
+          "D. Inside chloroplasts"
+        ],
+        "correctAnswer": "B. In the nucleoid region of the cytoplasm",
+        "hint": "In bacteria, circular DNA lies in an open area of the cytoplasm called the nucleoid.",
+        "workedSolution": "In bacteria, circular DNA lies in an open area of the cytoplasm called the nucleoid.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F12",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the outermost sticky protective layer found outside the cell wall of many bacteria called?",
+        "options": [
+          "A. Plasma membrane",
+          "B. Capsule",
+          "C. Pellicle",
+          "D. Tonoplast"
+        ],
+        "correctAnswer": "B. Capsule",
+        "hint": "The capsule is a gelatinous outer layer that protects the bacterium from drying out and phagocytosis.",
+        "workedSolution": "The capsule is a gelatinous outer layer that protects the bacterium from drying out and phagocytosis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F13",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are plasmids in a bacterial cell?",
+        "options": [
+          "A. Large food storage vacuoles",
+          "B. Small, extra circular rings of non-chromosomal DNA",
+          "C. Digestive enzymes that destroy the cell wall",
+          "D. Swimming tails used for locomotion"
+        ],
+        "correctAnswer": "B. Small, extra circular rings of non-chromosomal DNA",
+        "hint": "Plasmids are small, autonomous circular DNA molecules separate from the main bacterial chromosome.",
+        "workedSolution": "Plasmids are small, autonomous circular DNA molecules separate from the main bacterial chromosome.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F14",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which long, whip-like appendage enables bacteria to swim through liquid environments?",
+        "options": [
+          "A. Pilus",
+          "B. Flagellum",
+          "C. Cilia",
+          "D. Pseudopodium"
+        ],
+        "correctAnswer": "B. Flagellum",
+        "hint": "Flagella are whip-like protein structures that rotate to provide motility to bacterial cells.",
+        "workedSolution": "Flagella are whip-like protein structures that rotate to provide motility to bacterial cells.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F15",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the short, hair-like projections on bacterial surfaces used for attachment and conjugation called?",
+        "options": [
+          "A. Flagella",
+          "B. Pili",
+          "C. Ribosomes",
+          "D. Cristae"
+        ],
+        "correctAnswer": "B. Pili",
+        "hint": "Pili are short surface appendages that allow bacteria to adhere to surfaces or exchange DNA during conjugation.",
+        "workedSolution": "Pili are short surface appendages that allow bacteria to adhere to surfaces or exchange DNA during conjugation.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F16",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "By which asexual process do bacterial cells rapidly divide into two identical daughter cells?",
+        "options": [
+          "A. Mitosis",
+          "B. Meiosis",
+          "C. Binary fission",
+          "D. Budding"
+        ],
+        "correctAnswer": "C. Binary fission",
+        "hint": "Prokaryotes reproduce asexually by binary fission, where the single cell replicates its DNA and divides in two.",
+        "workedSolution": "Prokaryotes reproduce asexually by binary fission, where the single cell replicates its DNA and divides in two.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F17",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which tough polysaccharide compound forms the rigid cell wall of plant cells?",
+        "options": [
+          "A. Chitin",
+          "B. Cellulose",
+          "C. Glycogen",
+          "D. Peptidoglycan"
+        ],
+        "correctAnswer": "B. Cellulose",
+        "hint": "Plant cell walls are made of cellulose fibers that provide structural strength and turgor resistance.",
+        "workedSolution": "Plant cell walls are made of cellulose fibers that provide structural strength and turgor resistance.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F18",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the cell wall of fungi (e.g., mushrooms and yeast) composed of?",
+        "options": [
+          "A. Cellulose",
+          "B. Chitin",
+          "C. Starch",
+          "D. Pectin"
+        ],
+        "correctAnswer": "B. Chitin",
+        "hint": "Fungal cell walls are composed of chitin, a tough nitrogen-containing polysaccharide.",
+        "workedSolution": "Fungal cell walls are composed of chitin, a tough nitrogen-containing polysaccharide.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F19",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why do animal cells have irregular and flexible shapes compared to plant cells?",
+        "options": [
+          "A. Animal cells have no cytoplasm",
+          "B. Animal cells lack a rigid cellulose cell wall",
+          "C. Animal cells contain too much cellulose",
+          "D. Animal cells are completely hollow"
+        ],
+        "correctAnswer": "B. Animal cells lack a rigid cellulose cell wall",
+        "hint": "Animal cells lack a rigid cell wall; they are enclosed only by a flexible plasma membrane.",
+        "workedSolution": "Animal cells lack a rigid cell wall; they are enclosed only by a flexible plasma membrane.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F20",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle is popularly known as the 'powerhouse of the cell'?",
+        "options": [
+          "A. Ribosome",
+          "B. Chloroplast",
+          "C. Mitochondrion",
+          "D. Golgi body"
+        ],
+        "correctAnswer": "C. Mitochondrion",
+        "hint": "Mitochondria generate cellular energy (ATP) through aerobic respiration and are known as the powerhouse of the cell.",
+        "workedSolution": "Mitochondria generate cellular energy (ATP) through aerobic respiration and are known as the powerhouse of the cell.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F21",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What are the inner folds of the mitochondrial membrane called?",
+        "options": [
+          "A. Grana",
+          "B. Cristae",
+          "C. Cisternae",
+          "D. Septa"
+        ],
+        "correctAnswer": "B. Cristae",
+        "hint": "The inner mitochondrial membrane is folded into finger-like projections called cristae to expand surface area for ATP production.",
+        "workedSolution": "The inner mitochondrial membrane is folded into finger-like projections called cristae to expand surface area for ATP production.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F22",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which green organelle in plant cells is responsible for trapping sunlight for photosynthesis?",
+        "options": [
+          "A. Amyloplast",
+          "B. Chloroplast",
+          "C. Chromoplast",
+          "D. Leucoplast"
+        ],
+        "correctAnswer": "B. Chloroplast",
+        "hint": "Chloroplasts contain green chlorophyll pigments that absorb solar energy to drive photosynthesis.",
+        "workedSolution": "Chloroplasts contain green chlorophyll pigments that absorb solar energy to drive photosynthesis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F23",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which type of plastid gives bright yellow, orange, and red colors to ripening fruits and flower petals?",
+        "options": [
+          "A. Chloroplast",
+          "B. Chromoplast",
+          "C. Leucoplast",
+          "D. Amyloplast"
+        ],
+        "correctAnswer": "B. Chromoplast",
+        "hint": "Chromoplasts contain carotenoid pigments that produce bright yellow, orange, and red colors in flowers and fruits.",
+        "workedSolution": "Chromoplasts contain carotenoid pigments that produce bright yellow, orange, and red colors in flowers and fruits.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F24",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of colorless leucoplasts (such as amyloplasts) in plant root and tuber cells?",
+        "options": [
+          "A. Digesting foreign bacteria",
+          "B. Storing food nutrients like starches, oils, and proteins",
+          "C. Pumping water out of the cell",
+          "D. Synthesizing chlorophyll"
+        ],
+        "correctAnswer": "B. Storing food nutrients like starches, oils, and proteins",
+        "hint": "Leucoplasts are non-pigmented plastids specialized for storing starch (amyloplasts), lipids, and proteins.",
+        "workedSolution": "Leucoplasts are non-pigmented plastids specialized for storing starch (amyloplasts), lipids, and proteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F25",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle is known as the 'suicidal bag' because it contains strong hydrolytic digestive enzymes?",
+        "options": [
+          "A. Ribosome",
+          "B. Lysosome",
+          "C. Centrosome",
+          "D. Peroxisome"
+        ],
+        "correctAnswer": "B. Lysosome",
+        "hint": "Lysosomes contain acidic hydrolytic enzymes that digest cellular wastes, pathogens, or the cell itself upon breakdown.",
+        "workedSolution": "Lysosomes contain acidic hydrolytic enzymes that digest cellular wastes, pathogens, or the cell itself upon breakdown.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F26",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of the ribosomes found floating in the cytoplasm or attached to endoplasmic reticulum?",
+        "options": [
+          "A. Lipid synthesis",
+          "B. Protein synthesis",
+          "C. Cellular respiration",
+          "D. Starch storage"
+        ],
+        "correctAnswer": "B. Protein synthesis",
+        "hint": "Ribosomes are molecular factories responsible for translating RNA into polypeptide protein chains.",
+        "workedSolution": "Ribosomes are molecular factories responsible for translating RNA into polypeptide protein chains.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F27",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What makes the Rough Endoplasmic Reticulum (RER) appear rough under an electron microscope?",
+        "options": [
+          "A. Sand grains embedded in the membrane",
+          "B. Tiny ribosomes studded across its outer surface",
+          "C. Broken fragments of the cell wall",
+          "D. Pores in the nuclear envelope"
+        ],
+        "correctAnswer": "B. Tiny ribosomes studded across its outer surface",
+        "hint": "Rough ER is studded with membrane-bound ribosomes engaged in synthesizing secretory proteins.",
+        "workedSolution": "Rough ER is studded with membrane-bound ribosomes engaged in synthesizing secretory proteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F28",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary function of the Smooth Endoplasmic Reticulum (SER)?",
+        "options": [
+          "A. Synthesizing lipids, phospholipids, and detoxifying chemicals",
+          "B. Capturing solar photons for photosynthesis",
+          "C. Digesting bacterial invaders",
+          "D. Housing genetic chromosomes"
+        ],
+        "correctAnswer": "A. Synthesizing lipids, phospholipids, and detoxifying chemicals",
+        "hint": "Smooth ER lacks ribosomes and synthesizes lipids, steroid hormones, and detoxifies metabolic by-products.",
+        "workedSolution": "Smooth ER lacks ribosomes and synthesizes lipids, steroid hormones, and detoxifies metabolic by-products.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F29",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which organelle consists of stacks of flattened membrane sacs called cisternae that package and distribute proteins?",
+        "options": [
+          "A. Mitochondrion",
+          "B. Golgi apparatus",
+          "C. Lysosome",
+          "D. Vacuole"
+        ],
+        "correctAnswer": "B. Golgi apparatus",
+        "hint": "The Golgi apparatus modifies, sorts, and packages proteins received from the ER into vesicles for secretion.",
+        "workedSolution": "The Golgi apparatus modifies, sorts, and packages proteins received from the ER into vesicles for secretion.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F30",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How does the vacuole of a mature plant cell differ from that of an animal cell?",
+        "options": [
+          "A. Plant cells have one large, permanent central vacuole; animal cells have small, temporary vacuoles",
+          "B. Plant cells have no vacuoles at all",
+          "C. Animal vacuoles are filled with green chlorophyll",
+          "D. Animal vacuoles are surrounded by a cellulose wall"
+        ],
+        "correctAnswer": "A. Plant cells have one large, permanent central vacuole; animal cells have small, temporary vacuoles",
+        "hint": "Plant cells feature a dominant, permanent central vacuole maintaining turgor; animal cells have tiny, transient vacuoles.",
+        "workedSolution": "Plant cells feature a dominant, permanent central vacuole maintaining turgor; animal cells have tiny, transient vacuoles.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F31",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what form do plant cells store excess manufactured carbohydrate food?",
+        "options": [
+          "A. Glycogen granules",
+          "B. Starch granules",
+          "C. Chitin fibers",
+          "D. Cellulose plates"
+        ],
+        "correctAnswer": "B. Starch granules",
+        "hint": "Plants store surplus carbohydrates as insoluble starch granules inside plastids.",
+        "workedSolution": "Plants store surplus carbohydrates as insoluble starch granules inside plastids.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F32",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "In what form do animal cells store excess glucose carbohydrates in liver and muscle tissues?",
+        "options": [
+          "A. Starch",
+          "B. Glycogen",
+          "C. Cellulose",
+          "D. Peptidoglycan"
+        ],
+        "correctAnswer": "B. Glycogen",
+        "hint": "Animal cells convert and store excess glucose as branched glycogen granules.",
+        "workedSolution": "Animal cells convert and store excess glucose as branched glycogen granules.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F33",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the dark, dense spherical structure located inside the eukaryotic nucleus that manufactures ribosomes?",
+        "options": [
+          "A. Nucleolus",
+          "B. Centriole",
+          "C. Plasmid",
+          "D. Tonoplast"
+        ],
+        "correctAnswer": "A. Nucleolus",
+        "hint": "The nucleolus is a sub-nuclear structure dedicated to transcribing ribosomal RNA and assembling ribosome subunits.",
+        "workedSolution": "The nucleolus is a sub-nuclear structure dedicated to transcribing ribosomal RNA and assembling ribosome subunits.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F34",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the thin, flexible protein-rich layer beneath the plasma membrane in protozoans (like *Paramecium*) called?",
+        "options": [
+          "A. Capsule",
+          "B. Pellicle",
+          "C. Cell wall",
+          "D. Chitin"
+        ],
+        "correctAnswer": "B. Pellicle",
+        "hint": "A pellicle is a flexible protein layer supporting the cell membrane in protozoans, allowing shape retention and movement.",
+        "workedSolution": "A pellicle is a flexible protein layer supporting the cell membrane in protozoans, allowing shape retention and movement.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F35",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which microscopic cross-wall structures in fungal hyphae contain pores that allow cytoplasm and organelles to flow between cells?",
+        "options": [
+          "A. Septa",
+          "B. Pili",
+          "C. Cristae",
+          "D. Cisternae"
+        ],
+        "correctAnswer": "A. Septa",
+        "hint": "Septa are porous internal partitions in fungal hyphae that permit intercellular cytoplasmic and organelle circulation.",
+        "workedSolution": "Septa are porous internal partitions in fungal hyphae that permit intercellular cytoplasmic and organelle circulation.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F36",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which cellular locomotion structures are short, numerous, hair-like projections that beat rhythmically on protozoan surfaces?",
+        "options": [
+          "A. Flagella",
+          "B. Cilia",
+          "C. Pili",
+          "D. Pseudopodia"
+        ],
+        "correctAnswer": "B. Cilia",
+        "hint": "Cilia are short, hair-like motile projections covering cells like *Paramecium* to drive locomotion and feeding.",
+        "workedSolution": "Cilia are short, hair-like motile projections covering cells like *Paramecium* to drive locomotion and feeding.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F37",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What temporary finger-like projections of cytoplasm does *Amoeba* extend to move and engulf food particles?",
+        "options": [
+          "A. Flagella",
+          "B. Cilia",
+          "C. Pseudopodia",
+          "D. Septa"
+        ],
+        "correctAnswer": "C. Pseudopodia",
+        "hint": "Pseudopodia ('false feet') are cytoplasmic extensions used by amoeboid cells for crawling locomotion and phagocytosis.",
+        "workedSolution": "Pseudopodia ('false feet') are cytoplasmic extensions used by amoeboid cells for crawling locomotion and phagocytosis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F38",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following cellular structures is present in plant cells but absent in normal animal cells?",
+        "options": [
+          "A. Cell membrane",
+          "B. Nucleus",
+          "C. Cellulose cell wall and chloroplasts",
+          "D. Mitochondria"
+        ],
+        "correctAnswer": "C. Cellulose cell wall and chloroplasts",
+        "hint": "Cellulose cell walls and photosynthesizing chloroplasts are hallmarks of plant cells absent in animal cells.",
+        "workedSolution": "Cellulose cell walls and photosynthesizing chloroplasts are hallmarks of plant cells absent in animal cells.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F39",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the primary substance that forms the plasma membrane of both plant and animal cells?",
+        "options": [
+          "A. Cellulose fibers only",
+          "B. Phospholipid bilayer with embedded proteins",
+          "C. Solid silica rock",
+          "D. Pure starch"
+        ],
+        "correctAnswer": "B. Phospholipid bilayer with embedded proteins",
+        "hint": "Plasma membranes are composed of a fluid phospholipid bilayer embedded with functional proteins.",
+        "workedSolution": "Plasma membranes are composed of a fluid phospholipid bilayer embedded with functional proteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F40",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What cellular process allows animal cells to engulf solid food particles or bacteria by wrapping the cell membrane around them?",
+        "options": [
+          "A. Phagocytosis",
+          "B. Photosynthesis",
+          "C. Transpiration",
+          "D. Binary fission"
+        ],
+        "correctAnswer": "A. Phagocytosis",
+        "hint": "Phagocytosis ('cell eating') is endocytosis where an animal cell engulfs large solid particles or microbes.",
+        "workedSolution": "Phagocytosis ('cell eating') is endocytosis where an animal cell engulfs large solid particles or microbes.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F41",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which of the following is a dangerous human disease caused by pathogenic prokaryotic bacteria?",
+        "options": [
+          "A. Cholera",
+          "B. Malaria",
+          "C. Ringworm",
+          "D. Athlete's foot"
+        ],
+        "correctAnswer": "A. Cholera",
+        "hint": "Cholera is a severe water-borne bacterial infection caused by *Vibrio cholerae*.",
+        "workedSolution": "Cholera is a severe water-borne bacterial infection caused by *Vibrio cholerae*.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F42",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which common skin infection is caused by a microscopic eukaryotic fungus?",
+        "options": [
+          "A. Ringworm",
+          "B. Typhoid fever",
+          "C. Tuberculosis",
+          "D. Tetanus"
+        ],
+        "correctAnswer": "A. Ringworm",
+        "hint": "Ringworm (tinea) is a fungal skin infection caused by dermatophyte fungi.",
+        "workedSolution": "Ringworm (tinea) is a fungal skin infection caused by dermatophyte fungi.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F43",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which tropical disease is caused by the parasitic eukaryotic protozoan *Plasmodium* transmitted by mosquitoes?",
+        "options": [
+          "A. Cholera",
+          "B. Malaria",
+          "C. Tetanus",
+          "D. Tuberculosis"
+        ],
+        "correctAnswer": "B. Malaria",
+        "hint": "Malaria is caused by the unicellular protozoan parasite *Plasmodium*.",
+        "workedSolution": "Malaria is caused by the unicellular protozoan parasite *Plasmodium*.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F44",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "How do helpful prokaryotic bacteria benefit the dairy industry?",
+        "options": [
+          "A. They ferment milk sugars into lactic acid to produce yogurt and cheese",
+          "B. They turn milk into poison",
+          "C. They freeze milk into rock",
+          "D. They convert milk into alcohol"
+        ],
+        "correctAnswer": "A. They ferment milk sugars into lactic acid to produce yogurt and cheese",
+        "hint": "Lactic acid bacteria ferment lactose in milk, curdling proteins into yogurt and cheese.",
+        "workedSolution": "Lactic acid bacteria ferment lactose in milk, curdling proteins into yogurt and cheese.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F45",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Which beneficial eukaryotic single-celled fungus is used in baking bread and brewing local drinks like palm wine?",
+        "options": [
+          "A. Yeast",
+          "B. *E. coli*",
+          "C. *Plasmodium*",
+          "D. *Amoeba*"
+        ],
+        "correctAnswer": "A. Yeast",
+        "hint": "Yeast ferment sugars into carbon dioxide and ethanol, making bread rise and brewing palm wine.",
+        "workedSolution": "Yeast ferment sugars into carbon dioxide and ethanol, making bread rise and brewing palm wine.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F46",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "From which group of eukaryotic microorganisms was the world's first life-saving antibiotic, penicillin, extracted?",
+        "options": [
+          "A. Bacteria",
+          "B. Mold (Fungi)",
+          "C. Viruses",
+          "D. Protozoa"
+        ],
+        "correctAnswer": "B. Mold (Fungi)",
+        "hint": "Penicillin was discovered from the fungus mold *Penicillium notatum*.",
+        "workedSolution": "Penicillin was discovered from the fungus mold *Penicillium notatum*.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F47",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why is regular hand washing with soap and running water critical for protecting against disease-causing prokaryotes?",
+        "options": [
+          "A. It removes dirt and mechanically washes away pathogenic bacteria and cysts",
+          "B. It turns bacteria into friendly cells",
+          "C. It permanently dyes human skin",
+          "D. It makes bacteria multiply"
+        ],
+        "correctAnswer": "A. It removes dirt and mechanically washes away pathogenic bacteria and cysts",
+        "hint": "Hand hygiene washes off grease, dirt, and pathogenic bacteria before they can be ingested or transmitted.",
+        "workedSolution": "Hand hygiene washes off grease, dirt, and pathogenic bacteria before they can be ingested or transmitted.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F48",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "Why must antibiotic medications always be taken strictly as prescribed by a qualified medical professional?",
+        "options": [
+          "A. Incomplete or incorrect doses allow surviving bacteria to develop dangerous antibiotic resistance",
+          "B. Antibiotics only work when taken with palm oil",
+          "C. Antibiotics turn into viruses if not completed",
+          "D. Antibiotics damage plant cells"
+        ],
+        "correctAnswer": "A. Incomplete or incorrect doses allow surviving bacteria to develop dangerous antibiotic resistance",
+        "hint": "Improper antibiotic usage creates selective pressures that encourage bacteria to mutate into drug-resistant superbugs.",
+        "workedSolution": "Improper antibiotic usage creates selective pressures that encourage bacteria to mutate into drug-resistant superbugs.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F49",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "What is the internal network of protein filaments and microtubules that supports cell shape and anchors organelles called?",
+        "options": [
+          "A. Cytoskeleton",
+          "B. Capsule",
+          "C. Cell wall",
+          "D. Pellicle"
+        ],
+        "correctAnswer": "A. Cytoskeleton",
+        "hint": "The cytoskeleton consists of microfilaments and microtubules that provide structural support and facilitate cell movement.",
+        "workedSolution": "The cytoskeleton consists of microfilaments and microtubules that provide structural support and facilitate cell movement.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_F50",
+        "difficulty": "low",
+        "type": "objective",
+        "prompt": "By which process do eukaryotic somatic cells divide to produce two genetically identical diploid daughter cells for growth?",
+        "options": [
+          "A. Binary fission",
+          "B. Mitosis",
+          "C. Meiosis",
+          "D. Conjugation"
+        ],
+        "correctAnswer": "B. Mitosis",
+        "hint": "Mitosis is eukaryotic nuclear division resulting in two daughter cells with identical chromosome numbers.",
+        "workedSolution": "Mitosis is eukaryotic nuclear division resulting in two daughter cells with identical chromosome numbers.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I01",
         "difficulty": "medium",
         "type": "objective",
-        "prompt": "The stomata of plant leaves open during daylight hours primarily because guard cells:",
+        "prompt": "How does the organization of genetic material differ between a bacterium and a human cheek cell?",
         "options": [
-          "Lose water by osmosis and become flaccid",
-          "Absorb water, become turgid, and curve outward due to unequal wall thickness",
-          "Lose their chloroplasts and shrink",
-          "Decompose their cellulose cell walls"
+          "A. Bacterium has a naked, circular DNA strand in the nucleoid; cheek cell has linear DNA packaged with histones inside a nuclear membrane",
+          "B. Bacterium has ten linear chromosomes; cheek cell has only one circular plasmid",
+          "C. Bacterium has no DNA whatsoever",
+          "D. Cheek cell lacks a nuclear membrane"
         ],
-        "correctAnswer": "Absorb water, become turgid, and curve outward due to unequal wall thickness",
-        "hint": "Remember that the inner wall of the guard cell is thicker than the outer wall.",
-        "workedSolution": "During photosynthesis, guard cells accumulate solutes, causing water influx by osmosis. As they swell with turgor, their thinner outer walls expand more than the thick inner walls, bowing apart and opening the stomatal pore.",
+        "correctAnswer": "A. Bacterium has a naked, circular DNA strand in the nucleoid; cheek cell has linear DNA packaged with histones inside a nuclear membrane",
+        "hint": "Prokaryotes possess circular DNA unassociated with histones in the nucleoid; eukaryotes possess linear chromatin enclosed in a nucleus.",
+        "workedSolution": "Prokaryotes possess circular DNA unassociated with histones in the nucleoid; eukaryotes possess linear chromatin enclosed in a nucleus.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I02",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are bacterial cells able to synthesize proteins even though they lack a nucleus, endoplasmic reticulum, and Golgi bodies?",
+        "options": [
+          "A. They possess numerous functional 70S ribosomes suspended directly in their cytoplasm",
+          "B. They absorb pre-made proteins directly through their capsule",
+          "C. Their cell wall manufactures proteins automatically",
+          "D. Flagella produce proteins during swimming"
+        ],
+        "correctAnswer": "A. They possess numerous functional 70S ribosomes suspended directly in their cytoplasm",
+        "hint": "Ribosomes are non-membrane-bound complexes; bacterial cytoplasm is packed with 70S ribosomes that directly translate mRNA.",
+        "workedSolution": "Ribosomes are non-membrane-bound complexes; bacterial cytoplasm is packed with 70S ribosomes that directly translate mRNA.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I03",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What survival advantage does an extra-chromosomal plasmid provide to a pathogenic bacterium?",
+        "options": [
+          "A. It carries non-essential accessory genes, such as enzymes that destroy antibiotic drugs",
+          "B. It makes the bacterium visible to human eyes",
+          "C. It allows the bacterium to carry out photosynthesis in the dark",
+          "D. It converts the bacterium into a fungal cell"
+        ],
+        "correctAnswer": "A. It carries non-essential accessory genes, such as enzymes that destroy antibiotic drugs",
+        "hint": "Plasmids carry adaptive accessory genes, such as beta-lactamase, conferring antibiotic resistance and virulence factors.",
+        "workedSolution": "Plasmids carry adaptive accessory genes, such as beta-lactamase, conferring antibiotic resistance and virulence factors.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I04",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "When observing bacterial cell envelopes from outside to inside, which sequence of layers is correct?",
+        "options": [
+          "A. Plasma membrane → Cell wall → Capsule",
+          "B. Capsule → Cell wall → Plasma membrane",
+          "C. Cell wall → Capsule → Nucleoid",
+          "D. Plasma membrane → Capsule → Flagellum"
+        ],
+        "correctAnswer": "B. Capsule → Cell wall → Plasma membrane",
+        "hint": "The typical bacterial envelope consists of an outermost protective capsule, middle rigid peptidoglycan cell wall, and inner plasma membrane.",
+        "workedSolution": "The typical bacterial envelope consists of an outermost protective capsule, middle rigid peptidoglycan cell wall, and inner plasma membrane.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I05",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does a plant cell not burst when placed in pure distilled water, whereas an animal red blood cell swells and bursts (lysis)?",
+        "options": [
+          "A. The plant cell wall exerts inward mechanical wall pressure that resists swelling; animal cells lack a cell wall",
+          "B. Plant cells do not absorb water by osmosis",
+          "C. Animal cells actively pump water inward",
+          "D. Plant cells have no cell membrane"
+        ],
+        "correctAnswer": "A. The plant cell wall exerts inward mechanical wall pressure that resists swelling; animal cells lack a cell wall",
+        "hint": "The rigid cellulose plant cell wall withstands high internal osmotic turgor pressure, preventing lysis.",
+        "workedSolution": "The rigid cellulose plant cell wall withstands high internal osmotic turgor pressure, preventing lysis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I06",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the role of turgor pressure exerted by the central sap vacuole in herbaceous green plants?",
+        "options": [
+          "A. It pushes the cytoplasm against the cell wall, keeping soft stems and leaves upright and firm",
+          "B. It causes the plant leaves to wilt and drop",
+          "C. It converts chlorophyll into red carotene",
+          "D. It decomposes dead plant cells"
+        ],
+        "correctAnswer": "A. It pushes the cytoplasm against the cell wall, keeping soft stems and leaves upright and firm",
+        "hint": "Water entering the vacuole creates outward hydrostatic turgor pressure against the cell wall, providing mechanical support to non-woody tissues.",
+        "workedSolution": "Water entering the vacuole creates outward hydrostatic turgor pressure against the cell wall, providing mechanical support to non-woody tissues.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I07",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do the functions of chloroplasts and mitochondria complement each other in a green plant cell?",
+        "options": [
+          "A. Chloroplasts synthesize glucose and oxygen using sunlight; mitochondria oxidize that glucose to generate ATP energy",
+          "B. Chloroplasts digest dead mitochondria",
+          "C. Mitochondria make glucose while chloroplasts produce waste water",
+          "D. Both organelles produce identical sugar molecules from sunlight"
+        ],
+        "correctAnswer": "A. Chloroplasts synthesize glucose and oxygen using sunlight; mitochondria oxidize that glucose to generate ATP energy",
+        "hint": "Chloroplasts build organic glucose via photosynthesis; mitochondria catabolize glucose to produce ATP for cellular work.",
+        "workedSolution": "Chloroplasts build organic glucose via photosynthesis; mitochondria catabolize glucose to produce ATP for cellular work.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I08",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are lysosomes termed 'suicidal bags' during programmed cell death (autolysis)?",
+        "options": [
+          "A. If a cell is irreversibly damaged, lysosomal membranes rupture, releasing hydrolytic enzymes that digest the host cell from within",
+          "B. They explode to kill invading predators outside the body",
+          "C. They synthesize toxic poisons to kill neighboring healthy cells",
+          "D. They starve the cell of water"
+        ],
+        "correctAnswer": "A. If a cell is irreversibly damaged, lysosomal membranes rupture, releasing hydrolytic enzymes that digest the host cell from within",
+        "hint": "Mass release of lysosomal hydrolytic enzymes breaks down all internal macromolecular components, destroying the cell.",
+        "workedSolution": "Mass release of lysosomal hydrolytic enzymes breaks down all internal macromolecular components, destroying the cell.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I09",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do the structural components of the fungal cell wall (chitin) differ from the plant cell wall (cellulose)?",
+        "options": [
+          "A. Chitin is a polymer of N-acetylglucosamine, while cellulose is a polymer of glucose subunits",
+          "B. Chitin is made of pure liquid fats",
+          "C. Cellulose dissolves completely in cold water",
+          "D. Fungal cell walls contain green chlorophyll"
+        ],
+        "correctAnswer": "A. Chitin is a polymer of N-acetylglucosamine, while cellulose is a polymer of glucose subunits",
+        "hint": "Chitin is a nitrogenous polysaccharide, whereas cellulose consists of unbranched beta-glucose chains.",
+        "workedSolution": "Chitin is a nitrogenous polysaccharide, whereas cellulose consists of unbranched beta-glucose chains.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I10",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the presence of porous septa in fungal hyphae biologically significant?",
+        "options": [
+          "A. It permits continuous streaming of nutrients, cytoplasm, and even nuclei between adjacent fungal compartments",
+          "B. It prevents water from entering the fungus",
+          "C. It turns the fungus into an autotrophic plant",
+          "D. It produces reproductive pollen grains"
+        ],
+        "correctAnswer": "A. It permits continuous streaming of nutrients, cytoplasm, and even nuclei between adjacent fungal compartments",
+        "hint": "Septal pores allow cytoplasmic streaming, distributing nutrients and organelles across long hyphal filaments.",
+        "workedSolution": "Septal pores allow cytoplasmic streaming, distributing nutrients and organelles across long hyphal filaments.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I11",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does pinocytosis differ from phagocytosis in eukaryotic animal cells?",
+        "options": [
+          "A. Pinocytosis is the intake of dissolved extracellular liquid droplets ('cell drinking'); phagocytosis is the engulfing of large solid particles ('cell eating')",
+          "B. Pinocytosis occurs only in plants; phagocytosis occurs only in bacteria",
+          "C. Pinocytosis releases waste; phagocytosis absorbs light",
+          "D. There is no difference between the two processes"
+        ],
+        "correctAnswer": "A. Pinocytosis is the intake of dissolved extracellular liquid droplets ('cell drinking'); phagocytosis is the engulfing of large solid particles ('cell eating')",
+        "hint": "Both are endocytic mechanisms: phagocytosis internalizes large solid matter, whereas pinocytosis ingests liquid solutes.",
+        "workedSolution": "Both are endocytic mechanisms: phagocytosis internalizes large solid matter, whereas pinocytosis ingests liquid solutes.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I12",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do white blood cells (phagocytes) contain an unusually high concentration of lysosomes?",
+        "options": [
+          "A. To rapidly fuse with phagocytic vacuoles and digest engulfed disease-causing pathogens",
+          "B. To synthesize red hemoglobin pigment",
+          "C. To store starch for energy",
+          "D. To provide green coloration to the blood"
+        ],
+        "correctAnswer": "A. To rapidly fuse with phagocytic vacuoles and digest engulfed disease-causing pathogens",
+        "hint": "Phagosomes fuse with lysosomes (forming phagolysosomes), utilizing digestive enzymes to destroy pathogens.",
+        "workedSolution": "Phagosomes fuse with lysosomes (forming phagolysosomes), utilizing digestive enzymes to destroy pathogens.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I13",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the structural relationship between chromatin, chromosomes, and DNA inside the eukaryotic nucleus?",
+        "options": [
+          "A. Chromatin is the loose, uncoiled form of DNA wound around histone proteins; during cell division, it condenses into distinct chromosomes",
+          "B. Chromosomes are non-living lipids that float outside the nucleus",
+          "C. DNA is made of starch and stored in the vacuole",
+          "D. Chromatin has no connection to chromosomes or DNA"
+        ],
+        "correctAnswer": "A. Chromatin is the loose, uncoiled form of DNA wound around histone proteins; during cell division, it condenses into distinct chromosomes",
+        "hint": "DNA coils around histones to form chromatin fibers, which condense into rod-shaped chromosomes during mitosis.",
+        "workedSolution": "DNA coils around histones to form chromatin fibers, which condense into rod-shaped chromosomes during mitosis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I14",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do viruses fail to fit into the standard two-kingdom classification of living cells (prokaryotes and eukaryotes)?",
+        "options": [
+          "A. They are acellular particles lacking a cytoplasm, cell membrane, ribosomes, and independent metabolic machinery",
+          "B. They have hundreds of nuclei per cell",
+          "C. They carry out vigorous photosynthesis",
+          "D. They are larger than elephant cells"
+        ],
+        "correctAnswer": "A. They are acellular particles lacking a cytoplasm, cell membrane, ribosomes, and independent metabolic machinery",
+        "hint": "Viruses are obligate acellular parasites consisting only of a genetic core in a protein capsid, lacking metabolic structures.",
+        "workedSolution": "Viruses are obligate acellular parasites consisting only of a genetic core in a protein capsid, lacking metabolic structures.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I15",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the nuclear envelope regulate molecular transport between the nucleoplasm and cytoplasm?",
+        "options": [
+          "A. Through specialized protein-lined nuclear pores that permit selective passage of RNA, proteins, and ribosomal subunits",
+          "B. It has an open hole that lets all organelles enter freely",
+          "C. It is completely impermeable to all molecules",
+          "D. It pumps water out using cilia"
+        ],
+        "correctAnswer": "A. Through specialized protein-lined nuclear pores that permit selective passage of RNA, proteins, and ribosomal subunits",
+        "hint": "Nuclear pore complexes span the double membrane, selectively gating traffic of RNA and regulatory proteins.",
+        "workedSolution": "Nuclear pore complexes span the double membrane, selectively gating traffic of RNA and regulatory proteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I16",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary operational difference between the cis-face and trans-face of the Golgi apparatus?",
+        "options": [
+          "A. Cis-face receives transport vesicles from the rough ER; trans-face buds off secretory vesicles to their destinations",
+          "B. Cis-face stores food; trans-face synthesizes DNA",
+          "C. Cis-face makes chlorophyll; trans-face destroys glucose",
+          "D. Both faces perform identical functions simultaneously"
+        ],
+        "correctAnswer": "A. Cis-face receives transport vesicles from the rough ER; trans-face buds off secretory vesicles to their destinations",
+        "hint": "Proteins enter the cis-cisternae from the ER, undergo post-translational modification, and exit from the trans-face.",
+        "workedSolution": "Proteins enter the cis-cisternae from the ER, undergo post-translational modification, and exit from the trans-face.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I17",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does bacterial conjugation via sex pili lead to rapid spread of multidrug resistance in hospital environments?",
+        "options": [
+          "A. Conjugative plasmids carrying antibiotic-resistance genes are transferred directly from a resistant donor bacterium to a sensitive recipient",
+          "B. Pili inject poison into human patients directly",
+          "C. Conjugation forces bacteria to turn into fungi",
+          "D. Pili destroy all antibiotics on hospital surfaces"
+        ],
+        "correctAnswer": "A. Conjugative plasmids carrying antibiotic-resistance genes are transferred directly from a resistant donor bacterium to a sensitive recipient",
+        "hint": "Horizontal gene transfer via conjugative pili spreads R-plasmids between different bacterial strains.",
+        "workedSolution": "Horizontal gene transfer via conjugative pili spreads R-plasmids between different bacterial strains.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I18",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are antibiotics like penicillin highly effective at killing bacteria without harming human host cells?",
+        "options": [
+          "A. Penicillin targets peptidoglycan synthesis in bacterial cell walls, a structure human cells do not possess",
+          "B. Penicillin only kills cells that contain a nucleus",
+          "C. Human cells absorb penicillin as a vitamin nutrient",
+          "D. Penicillin destroys human white blood cells"
+        ],
+        "correctAnswer": "A. Penicillin targets peptidoglycan synthesis in bacterial cell walls, a structure human cells do not possess",
+        "hint": "Penicillin inhibits bacterial peptidoglycan wall cross-linking; human cells lack walls and are unaffected.",
+        "workedSolution": "Penicillin inhibits bacterial peptidoglycan wall cross-linking; human cells lack walls and are unaffected.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I19",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the metabolic function of peroxisomes found in both plant and animal eukaryotic cells?",
+        "options": [
+          "A. Breaking down toxic hydrogen peroxide ($H_2O_2$) into harmless water and oxygen using catalase enzymes",
+          "B. Manufacturing starch granules",
+          "C. Packaging proteins for export",
+          "D. Pumping sodium ions out of the cell"
+        ],
+        "correctAnswer": "A. Breaking down toxic hydrogen peroxide ($H_2O_2$) into harmless water and oxygen using catalase enzymes",
+        "hint": "Peroxisomes contain catalase and oxidases that convert harmful reactive oxygen species and $H_2O_2$ into $H_2O$ and $O_2$.",
+        "workedSolution": "Peroxisomes contain catalase and oxidases that convert harmful reactive oxygen species and $H_2O_2$ into $H_2O$ and $O_2$.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I20",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does potato tuber tissue turn dark blue-black when stained with dilute iodine solution?",
+        "options": [
+          "A. Potato tuber cells contain abundant amyloplasts (leucoplasts) packed with stored starch",
+          "B. Iodine stains cell membranes red",
+          "C. Potato cells have no cell walls",
+          "D. Iodine destroys potato proteins"
+        ],
+        "correctAnswer": "A. Potato tuber cells contain abundant amyloplasts (leucoplasts) packed with stored starch",
+        "hint": "Amyloplasts store starch, which forms an intensely dark blue-black charge-transfer complex with iodine.",
+        "workedSolution": "Amyloplasts store starch, which forms an intensely dark blue-black charge-transfer complex with iodine.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I21",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biochemical significance of respiratory enzymes being located on the bacterial plasma membrane?",
+        "options": [
+          "A. Because bacteria lack mitochondria, their plasma membrane carries out electron transport and ATP production",
+          "B. It allows bacteria to eat their own cell wall",
+          "C. It prevents bacteria from absorbing oxygen",
+          "D. It converts sunlight into solid rock"
+        ],
+        "correctAnswer": "A. Because bacteria lack mitochondria, their plasma membrane carries out electron transport and ATP production",
+        "hint": "In prokaryotes, proton gradients and ATP synthases are located along the cell membrane due to the absence of mitochondria.",
+        "workedSolution": "In prokaryotes, proton gradients and ATP synthases are located along the cell membrane due to the absence of mitochondria.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I22",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following describes the locomotion of a ciliated protozoan like *Paramecium*?",
+        "options": [
+          "A. Coordinated, rhythmic wave-like beating of thousands of surface cilia propelling the cell forward",
+          "B. Spinning a single long flagellum like a boat propeller",
+          "C. Extending pseudopodia into soil pockets",
+          "D. Floating passively without any self-propulsion"
+        ],
+        "correctAnswer": "A. Coordinated, rhythmic wave-like beating of thousands of surface cilia propelling the cell forward",
+        "hint": "*Paramecium* uses metachronal waves of beating cilia for rapid, directional swimming.",
+        "workedSolution": "*Paramecium* uses metachronal waves of beating cilia for rapid, directional swimming.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I23",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do ripe tomato fruits turn from green to red during development?",
+        "options": [
+          "A. Chloroplasts inside the cells break down their chlorophyll and transform into chromoplasts filled with red lycopene/carotene",
+          "B. The cells lose their nuclei",
+          "C. Animal blood enters the tomato skin",
+          "D. The cell wall turns into glycogen"
+        ],
+        "correctAnswer": "A. Chloroplasts inside the cells break down their chlorophyll and transform into chromoplasts filled with red lycopene/carotene",
+        "hint": "Plastid differentiation transforms green photosynthetic chloroplasts into red carotenoid-rich chromoplasts.",
+        "workedSolution": "Plastid differentiation transforms green photosynthetic chloroplasts into red carotenoid-rich chromoplasts.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I24",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the structural role of the tonoplast in plant cells?",
+        "options": [
+          "A. The selectively permeable single membrane bounding the central vacuole, regulating solute movement in and out of the cell sap",
+          "B. The outer cellulose wall",
+          "C. The double membrane of the nucleus",
+          "D. The protein coat of a virus"
+        ],
+        "correctAnswer": "A. The selectively permeable single membrane bounding the central vacuole, regulating solute movement in and out of the cell sap",
+        "hint": "The tonoplast is the vacuolar membrane that regulates osmotic pressure and solute accumulation in cell sap.",
+        "workedSolution": "The tonoplast is the vacuolar membrane that regulates osmotic pressure and solute accumulation in cell sap.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I25",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why are bacterial endospores capable of surviving boiling water and harsh disinfectants?",
+        "options": [
+          "A. They possess a dehydrated core, high dipicolinic acid content, and thick protective protein coats that shield DNA",
+          "B. They contain active fire-resistant enzymes",
+          "C. They have twenty plasma membranes",
+          "D. They turn into eukaryotic fungi"
+        ],
+        "correctAnswer": "A. They possess a dehydrated core, high dipicolinic acid content, and thick protective protein coats that shield DNA",
+        "hint": "Endospores are dormant structures with low water content and keratin-like coats that resist extreme heat and chemicals.",
+        "workedSolution": "Endospores are dormant structures with low water content and keratin-like coats that resist extreme heat and chemicals.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I26",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do yeast cells reproduce asexually under favorable, nutrient-rich conditions?",
+        "options": [
+          "A. Asymmetric budding, where a small daughter outgrowth forms and pinches off from the parent cell",
+          "B. Binary fission identical to bacteria",
+          "C. Producing macroscopic mushrooms",
+          "D. Fusing two flagella together"
+        ],
+        "correctAnswer": "A. Asymmetric budding, where a small daughter outgrowth forms and pinches off from the parent cell",
+        "hint": "Yeast commonly reproduce asexually by budding, forming a small cellular protuberance that detaches as an independent cell.",
+        "workedSolution": "Yeast commonly reproduce asexually by budding, forming a small cellular protuberance that detaches as an independent cell.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I27",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the biological function of the contractile vacuole found in freshwater amoebae?",
+        "options": [
+          "A. Osmoregulation: collecting excess water that enters by osmosis and expelling it to prevent the cell from bursting",
+          "B. Synthesizing proteins for cell division",
+          "C. Storing reserve starch granules",
+          "D. Manufacturing chlorophyll for photosynthesis"
+        ],
+        "correctAnswer": "A. Osmoregulation: collecting excess water that enters by osmosis and expelling it to prevent the cell from bursting",
+        "hint": "In hypotonic freshwater, amoebae accumulate excess water; contractile vacuoles pump this water out to maintain osmotic balance.",
+        "workedSolution": "In hypotonic freshwater, amoebae accumulate excess water; contractile vacuoles pump this water out to maintain osmotic balance.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I28",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the genetic code in eukaryotic cells vulnerable to mutations when exposed to ultraviolet radiation?",
+        "options": [
+          "A. UV photons damage DNA nucleotides directly, causing thymine dimers that disrupt replication and transcription",
+          "B. UV light dissolves the cell wall",
+          "C. UV rays convert ribosomes into lysosomes",
+          "D. UV radiation turns cytoplasm into solid ice"
+        ],
+        "correctAnswer": "A. UV photons damage DNA nucleotides directly, causing thymine dimers that disrupt replication and transcription",
+        "hint": "UV energy forms covalent thymine-thymine cross-links in DNA, interfering with polymerase fidelity and causing mutations.",
+        "workedSolution": "UV energy forms covalent thymine-thymine cross-links in DNA, interfering with polymerase fidelity and causing mutations.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I29",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What happens to a bacterial culture if all individuals lose their flagellar gene via mutation?",
+        "options": [
+          "A. They lose motile swimming ability and become completely non-motile, relying on passive fluid movement",
+          "B. They can no longer synthesize proteins",
+          "C. Their cell wall dissolves immediately",
+          "D. They turn into eukaryotic protists"
+        ],
+        "correctAnswer": "A. They lose motile swimming ability and become completely non-motile, relying on passive fluid movement",
+        "hint": "Flagella provide active motility; non-flagellated mutants cannot swim or navigate toward nutrients via chemotaxis.",
+        "workedSolution": "Flagella provide active motility; non-flagellated mutants cannot swim or navigate toward nutrients via chemotaxis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I30",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does bread dough rise when baker's yeast is kneaded into the flour mixture and kept warm?",
+        "options": [
+          "A. Yeast cells respire anaerobically, fermenting glucose and releasing expanding bubbles of carbon dioxide gas ($CO_2$)",
+          "B. Yeast cells absorb all water from the flour",
+          "C. Yeast reproduces so fast that its physical cells push the dough up",
+          "D. Flour starch turns into solid ice"
+        ],
+        "correctAnswer": "A. Yeast cells respire anaerobically, fermenting glucose and releasing expanding bubbles of carbon dioxide gas ($CO_2$)",
+        "hint": "Anaerobic fermentation by yeast converts dough sugars into ethanol and $CO_2$ gas, which gets trapped and leavens the dough.",
+        "workedSolution": "Anaerobic fermentation by yeast converts dough sugars into ethanol and $CO_2$ gas, which gets trapped and leavens the dough.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I31",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do saprophytic fungi obtain nutrition from decaying organic matter?",
+        "options": [
+          "A. They secrete extracellular digestive enzymes onto dead substrate and absorb the solubilized simple nutrients",
+          "B. They swallow whole chunks of rotting wood by phagocytosis",
+          "C. They perform photosynthesis using green chlorophyll",
+          "D. They hunt and kill live animals"
+        ],
+        "correctAnswer": "A. They secrete extracellular digestive enzymes onto dead substrate and absorb the solubilized simple nutrients",
+        "hint": "Fungi exhibit absorptive heterotrophy, releasing enzymes to digest polymers externally before absorbing monomers.",
+        "workedSolution": "Fungi exhibit absorptive heterotrophy, releasing enzymes to digest polymers externally before absorbing monomers.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I32",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why is the cell wall of a gram-negative bacterium more chemically resistant to certain antibiotics than that of a gram-positive bacterium?",
+        "options": [
+          "A. It possesses an extra outer lipopolysaccharide (LPS) membrane that acts as a protective permeability barrier",
+          "B. It has no cell membrane",
+          "C. It contains thick chitin plates",
+          "D. It is made of pure cellulose"
+        ],
+        "correctAnswer": "A. It possesses an extra outer lipopolysaccharide (LPS) membrane that acts as a protective permeability barrier",
+        "hint": "Gram-negative bacteria possess an asymmetric outer membrane containing lipopolysaccharides that excludes many antibiotics.",
+        "workedSolution": "Gram-negative bacteria possess an asymmetric outer membrane containing lipopolysaccharides that excludes many antibiotics.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I33",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary role of the nucleolus in maintaining eukaryotic cell viability?",
+        "options": [
+          "A. Transcribing ribosomal RNA (rRNA) and assembling immature ribosomal subunits",
+          "B. Breaking down toxic drugs",
+          "C. Producing ATP energy through respiration",
+          "D. Pumping water into the central vacuole"
+        ],
+        "correctAnswer": "A. Transcribing ribosomal RNA (rRNA) and assembling immature ribosomal subunits",
+        "hint": "The nucleolus is the nuclear site dedicated to synthesizing rRNA and assembling ribosome complexes.",
+        "workedSolution": "The nucleolus is the nuclear site dedicated to synthesizing rRNA and assembling ribosome complexes.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I34",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which of the following correctly pairs an organelle with its primary function?",
+        "options": [
+          "A. Golgi apparatus — Cellular respiration",
+          "B. Ribosome — Protein synthesis",
+          "C. Chloroplast — Lipid breakdown",
+          "D. Lysosome — Photosynthesis"
+        ],
+        "correctAnswer": "B. Ribosome — Protein synthesis",
+        "hint": "Ribosomes decode mRNA sequences to synthesize polypeptide chains.",
+        "workedSolution": "Ribosomes decode mRNA sequences to synthesize polypeptide chains.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I35",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the size of a typical prokaryotic cell compare to a typical eukaryotic cell?",
+        "options": [
+          "A. Prokaryotic cells (1-5 μm) are roughly 10 to 100 times smaller than eukaryotic cells (10-100 μm)",
+          "B. Prokaryotes are 100 times larger than plant cells",
+          "C. Both are exactly identical in diameter",
+          "D. Prokaryotes are visible without a microscope"
+        ],
+        "correctAnswer": "A. Prokaryotic cells (1-5 μm) are roughly 10 to 100 times smaller than eukaryotic cells (10-100 μm)",
+        "hint": "Prokaryotes generally range from 1–5 micrometers, whereas eukaryotes measure 10–100 micrometers.",
+        "workedSolution": "Prokaryotes generally range from 1–5 micrometers, whereas eukaryotes measure 10–100 micrometers.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I36",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do eukaryotic plant cells require mitochondria if they already contain chloroplasts?",
+        "options": [
+          "A. Chloroplasts only make sugars; mitochondria are needed to break down those sugars into usable ATP, especially at night",
+          "B. Chloroplasts do not function during the daytime",
+          "C. Mitochondria produce green chlorophyll",
+          "D. Plant cells do not actually contain mitochondria"
+        ],
+        "correctAnswer": "A. Chloroplasts only make sugars; mitochondria are needed to break down those sugars into usable ATP, especially at night",
+        "hint": "Chloroplasts synthesize sugars; mitochondria continuously catabolize sugars to supply ATP for maintenance and transport.",
+        "workedSolution": "Chloroplasts synthesize sugars; mitochondria continuously catabolize sugars to supply ATP for maintenance and transport.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I37",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What cellular feature enables *Euglena* to move toward a light source (positive phototaxis)?",
+        "options": [
+          "A. A light-sensitive eyespot (stigma) working in coordination with its swimming flagellum",
+          "B. A thick cellulose cell wall",
+          "C. A large central sap vacuole",
+          "D. A chitinous pellicle"
+        ],
+        "correctAnswer": "A. A light-sensitive eyespot (stigma) working in coordination with its swimming flagellum",
+        "hint": "*Euglena* possesses a photoreceptive eyespot that shades a basal swelling, steering the flagellum toward illumination.",
+        "workedSolution": "*Euglena* possesses a photoreceptive eyespot that shades a basal swelling, steering the flagellum toward illumination.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I38",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the primary danger of consuming improperly prepared or unboiled street food in tropical environments?",
+        "options": [
+          "A. Ingestion of enteropathogenic bacteria like *Salmonella* and *Vibrio cholerae* that cause severe gastroenteritis",
+          "B. Loss of human white blood cells",
+          "C. Converting human stomach cells into plant cells",
+          "D. Instant freezing of the digestive tract"
+        ],
+        "correctAnswer": "A. Ingestion of enteropathogenic bacteria like *Salmonella* and *Vibrio cholerae* that cause severe gastroenteritis",
+        "hint": "Contaminated food serves as a vehicle for pathogenic bacteria that release enterotoxins, triggering diarrhea and vomiting.",
+        "workedSolution": "Contaminated food serves as a vehicle for pathogenic bacteria that release enterotoxins, triggering diarrhea and vomiting.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I39",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How do microfilaments (actin) in the eukaryotic cytoskeleton assist in amoeboid movement?",
+        "options": [
+          "A. Rapid polymerizing and depolymerizing of actin networks drives cytoplasmic gel-sol transitions and extends pseudopodia",
+          "B. They form rigid outer bones inside the cell",
+          "C. They make the amoeba transparent to light",
+          "D. They pump water out through the cell wall"
+        ],
+        "correctAnswer": "A. Rapid polymerizing and depolymerizing of actin networks drives cytoplasmic gel-sol transitions and extends pseudopodia",
+        "hint": "Actin-myosin dynamics generate cytoplasmic streaming, extending the cell cortex to form pseudopodia.",
+        "workedSolution": "Actin-myosin dynamics generate cytoplasmic streaming, extending the cell cortex to form pseudopodia.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I40",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does treating a viral infection (like the common cold or influenza) with antibacterial penicillin fail completely?",
+        "options": [
+          "A. Viruses are non-cellular akaryotes lacking peptidoglycan cell walls, ribosomes, and bacterial metabolic pathways targeted by antibiotics",
+          "B. Viruses absorb antibiotics as food",
+          "C. Penicillin is made of pure sugar",
+          "D. Viruses only infect plants"
+        ],
+        "correctAnswer": "A. Viruses are non-cellular akaryotes lacking peptidoglycan cell walls, ribosomes, and bacterial metabolic pathways targeted by antibiotics",
+        "hint": "Antibacterial drugs target prokaryotic structures; viruses lack these targets and are unaffected by antibacterials.",
+        "workedSolution": "Antibacterial drugs target prokaryotic structures; viruses lack these targets and are unaffected by antibacterials.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I41",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the nuclear pores embedded in the nuclear envelope?",
+        "options": [
+          "A. Permitting mRNA and ribosomal subunits to exit into the cytoplasm while allowing regulatory proteins into the nucleus",
+          "B. Letting mitochondria enter the nucleus",
+          "C. Pumping green chlorophyll into chromosomes",
+          "D. Draining waste water out of the cell"
+        ],
+        "correctAnswer": "A. Permitting mRNA and ribosomal subunits to exit into the cytoplasm while allowing regulatory proteins into the nucleus",
+        "hint": "Nuclear pores maintain bidirectional transport, exporting transcripts and importing nuclear proteins.",
+        "workedSolution": "Nuclear pores maintain bidirectional transport, exporting transcripts and importing nuclear proteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I42",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Which organelle is responsible for post-translational modification, such as adding carbohydrate chains to form glycoproteins?",
+        "options": [
+          "A. Golgi apparatus",
+          "B. Ribosome",
+          "C. Mitochondrion",
+          "D. Centrosome"
+        ],
+        "correctAnswer": "A. Golgi apparatus",
+        "hint": "The Golgi apparatus carries out glycosylation, attaching sugar residues to proteins to produce glycoproteins.",
+        "workedSolution": "The Golgi apparatus carries out glycosylation, attaching sugar residues to proteins to produce glycoproteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I43",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why do athletes' muscle cells contain significantly more mitochondria than skin epithelial cells?",
+        "options": [
+          "A. Muscle contraction demands massive and continuous inputs of ATP energy generated by cellular respiration",
+          "B. Muscles require more green pigment",
+          "C. Skin cells do not require oxygen",
+          "D. Mitochondria make muscle cells transparent"
+        ],
+        "correctAnswer": "A. Muscle contraction demands massive and continuous inputs of ATP energy generated by cellular respiration",
+        "hint": "Tissues with intense metabolic activity (like contracting skeletal muscle) require high mitochondrial densities to sustain ATP turnover.",
+        "workedSolution": "Tissues with intense metabolic activity (like contracting skeletal muscle) require high mitochondrial densities to sustain ATP turnover.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I44",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What distinguishes an Archaea prokaryote from a true Bacteria prokaryote?",
+        "options": [
+          "A. Archaea possess unique ether-linked membrane lipids and lack peptidoglycan, enabling them to inhabit extreme environments",
+          "B. Archaea have ten true nuclei",
+          "C. Archaea are multicellular plants",
+          "D. Bacteria contain cellulose cell walls"
+        ],
+        "correctAnswer": "A. Archaea possess unique ether-linked membrane lipids and lack peptidoglycan, enabling them to inhabit extreme environments",
+        "hint": "Archaea differ biochemically: their membranes feature branched ether-linked lipids and their walls lack peptidoglycan.",
+        "workedSolution": "Archaea differ biochemically: their membranes feature branched ether-linked lipids and their walls lack peptidoglycan.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I45",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the lack of a cell wall benefit predatory phagocytes (such as human macrophages)?",
+        "options": [
+          "A. It allows the cell membrane to deform flexibly, project pseudopodia, and engulf bacterial invaders",
+          "B. It prevents the cell from bursting in water",
+          "C. It makes the macrophage rigid like wood",
+          "D. It turns the macrophage into a bacterium"
+        ],
+        "correctAnswer": "A. It allows the cell membrane to deform flexibly, project pseudopodia, and engulf bacterial invaders",
+        "hint": "Membrane fluidity without a rigid cell wall allows macrophages to change shape and perform phagocytosis.",
+        "workedSolution": "Membrane fluidity without a rigid cell wall allows macrophages to change shape and perform phagocytosis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I46",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the function of the amyloplasts in plant storage tissues?",
+        "options": [
+          "A. Converting glucose into starch and storing it as granules",
+          "B. Producing red carotenoid pigments",
+          "C. Digesting worn-out mitochondria",
+          "D. Pumping out waste salt"
+        ],
+        "correctAnswer": "A. Converting glucose into starch and storing it as granules",
+        "hint": "Amyloplasts are specialized leucoplasts that polymerize glucose into amylose and amylopectin starch grains.",
+        "workedSolution": "Amyloplasts are specialized leucoplasts that polymerize glucose into amylose and amylopectin starch grains.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I47",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does boiling water kill pathogenic bacteria like *Vibrio cholerae*?",
+        "options": [
+          "A. High thermal energy denatures essential bacterial enzymes, coagulates proteins, and destroys plasma membranes",
+          "B. Boiling freezes bacterial chromosomes",
+          "C. Water turns into solid rock",
+          "D. Boiling makes bacteria grow faster"
+        ],
+        "correctAnswer": "A. High thermal energy denatures essential bacterial enzymes, coagulates proteins, and destroys plasma membranes",
+        "hint": "Temperatures of 100°C irreversibly denature microbial proteins and enzymes, rendering cells non-viable.",
+        "workedSolution": "Temperatures of 100°C irreversibly denature microbial proteins and enzymes, rendering cells non-viable.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I48",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "What is the role of flagellin protein in bacterial mobility?",
+        "options": [
+          "A. It forms the helical filament of the flagellum that rotates like a propeller to drive motility",
+          "B. It forms the outer cellulose wall",
+          "C. It stores food inside the nucleoid",
+          "D. It synthesizes bacterial DNA"
+        ],
+        "correctAnswer": "A. It forms the helical filament of the flagellum that rotates like a propeller to drive motility",
+        "hint": "Bacterial flagella are constructed from flagellin subunits arranged in a hollow cylinder powered by a basal rotary motor.",
+        "workedSolution": "Bacterial flagella are constructed from flagellin subunits arranged in a hollow cylinder powered by a basal rotary motor.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I49",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "How does the mode of cell division in prokaryotes differ fundamentally from eukaryotes?",
+        "options": [
+          "A. Prokaryotes divide by simple binary fission without spindle fibers; eukaryotes undergo mitotic division with chromosomes and spindles",
+          "B. Prokaryotes undergo complex meiosis only",
+          "C. Eukaryotes divide without copying their DNA",
+          "D. Both mechanisms are identical in every detail"
+        ],
+        "correctAnswer": "A. Prokaryotes divide by simple binary fission without spindle fibers; eukaryotes undergo mitotic division with chromosomes and spindles",
+        "hint": "Binary fission lacks mitotic spindle apparatus; eukaryotic mitosis uses microtubule spindles to segregate sister chromatids.",
+        "workedSolution": "Binary fission lacks mitotic spindle apparatus; eukaryotic mitosis uses microtubule spindles to segregate sister chromatids.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_I50",
+        "difficulty": "medium",
+        "type": "objective",
+        "prompt": "Why does keeping food inside a cold refrigerator inhibit bacterial growth and spoilage?",
+        "options": [
+          "A. Low temperatures suppress the kinetic energy and enzymatic activity of bacterial metabolic pathways, halting replication",
+          "B. Refrigeration melts all bacterial cell walls",
+          "C. Refrigerators remove all oxygen from food",
+          "D. Cold temperatures turn bacteria into viruses"
+        ],
+        "correctAnswer": "A. Low temperatures suppress the kinetic energy and enzymatic activity of bacterial metabolic pathways, halting replication",
+        "hint": "Refrigeration (~4°C) slows enzymatic kinetics and membrane transport in mesophilic bacteria, arresting population growth.",
+        "workedSolution": "Refrigeration (~4°C) slows enzymatic kinetics and membrane transport in mesophilic bacteria, arresting population growth.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A01",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A cell biologist treats a bacterial culture with lysozyme, an enzyme that specifically hydrolyzes beta-(1,4)-glycosidic bonds in peptidoglycan. In a hypotonic medium, what will happen to the treated bacteria?",
+        "options": [
+          "A. The cell wall will dissolve and uncontrolled osmotic water influx will cause the protoplasts to swell and burst (osmotic lysis)",
+          "B. The bacteria will instantly develop a thick cellulose wall",
+          "C. The bacteria will begin performing photosynthesis",
+          "D. The bacteria will transform into eukaryotic amoebae"
+        ],
+        "correctAnswer": "A. The cell wall will dissolve and uncontrolled osmotic water influx will cause the protoplasts to swell and burst (osmotic lysis)",
+        "hint": "Degrading the peptidoglycan wall removes structural resistance against osmotic pressure, causing cell lysis in hypotonic solutions.",
+        "workedSolution": "Degrading the peptidoglycan wall removes structural resistance against osmotic pressure, causing cell lysis in hypotonic solutions.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A02",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "The endosymbiotic theory posits that eukaryotic mitochondria and chloroplasts evolved from engulfed prokaryotes. Which of the following provides strong structural evidence supporting this theory?",
+        "options": [
+          "A. Both possess their own circular DNA, replicate by binary fission, and contain 70S ribosomes like bacteria",
+          "B. Both possess thick chitinous cell walls",
+          "C. Both contain linear chromosomes packaged inside a nucleus",
+          "D. Both lack internal membrane structures"
+        ],
+        "correctAnswer": "A. Both possess their own circular DNA, replicate by binary fission, and contain 70S ribosomes like bacteria",
+        "hint": "Mitochondria and plastids carry circular genomes, 70S ribosomes, and double membranes consistent with an endosymbiotic alphaproteobacterium and cyanobacterium origin.",
+        "workedSolution": "Mitochondria and plastids carry circular genomes, 70S ribosomes, and double membranes consistent with an endosymbiotic alphaproteobacterium and cyanobacterium origin.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A03",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "An unknown unicellular organism isolated from a pond displays a flexible protein pellicle, numerous green chloroplasts, a red eyespot, and a long anterior flagellum. How should this organism be classified?",
+        "options": [
+          "A. A photosynthetic flagellated eukaryotic protist (e.g., *Euglena*)",
+          "B. A gram-positive prokaryotic bacterium",
+          "C. An obligate parasitic akaryote",
+          "D. A multicellular basidiomycete fungus"
+        ],
+        "correctAnswer": "A. A photosynthetic flagellated eukaryotic protist (e.g., *Euglena*)",
+        "hint": "The presence of a pellicle, chloroplasts, eyespot, and flagellum identifies the organism as *Euglena*, a photosynthetic protist.",
+        "workedSolution": "The presence of a pellicle, chloroplasts, eyespot, and flagellum identifies the organism as *Euglena*, a photosynthetic protist.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A04",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "If a chemical toxin inhibits the proton-pumping ATPase enzymes embedded in the cristae of the inner mitochondrial membrane, what is the immediate metabolic consequence for the cell?",
+        "options": [
+          "A. Oxidative phosphorylation ceases, causing an immediate collapse of cellular ATP synthesis",
+          "B. Photosynthesis in chloroplasts accelerates by 500%",
+          "C. The cell wall doubles in thickness",
+          "D. The nucleus divides uncontrollably without DNA"
+        ],
+        "correctAnswer": "A. Oxidative phosphorylation ceases, causing an immediate collapse of cellular ATP synthesis",
+        "hint": "Inhibiting proton-translocating ATP synthases halts the chemiosmotic synthesis of ATP from ADP and inorganic phosphate.",
+        "workedSolution": "Inhibiting proton-translocating ATP synthases halts the chemiosmotic synthesis of ATP from ADP and inorganic phosphate.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A05",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the surface area-to-volume ratio ($SA/V$) a major physical constraint limiting the maximum size achievable by a single prokaryotic cell?",
+        "options": [
+          "A. Because as cell radius ($r$) increases, volume ($r^3$) grows much faster than surface area ($r^2$), making simple diffusion across the membrane insufficient for metabolic exchange",
+          "B. Larger cells attract dangerous gravitational fields",
+          "C. The cell wall melts when diameter exceeds 5 micrometers",
+          "D. Plasmids can only replicate in small volumes"
+        ],
+        "correctAnswer": "A. Because as cell radius ($r$) increases, volume ($r^3$) grows much faster than surface area ($r^2$), making simple diffusion across the membrane insufficient for metabolic exchange",
+        "hint": "As spherical cells grow, $SA/V = 3/r$ declines, limiting nutrient influx and waste clearance rates dependent on simple diffusion across the plasma membrane.",
+        "workedSolution": "As spherical cells grow, $SA/V = 3/r$ declines, limiting nutrient influx and waste clearance rates dependent on simple diffusion across the plasma membrane.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A06",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do eukaryotic cells overcome the physical surface area-to-volume diffusion bottleneck that constrains prokaryotes?",
+        "options": [
+          "A. By extensive internal compartmentalization into membrane-bound organelles and specialized intracellular transport networks",
+          "B. By losing their cell membrane completely",
+          "C. By stopping all metabolic reactions",
+          "D. By remaining smaller than 1 micrometer"
+        ],
+        "correctAnswer": "A. By extensive internal compartmentalization into membrane-bound organelles and specialized intracellular transport networks",
+        "hint": "Endomembrane systems (ER, Golgi, vesicles) compartmentalize biochemical reactions, overcoming spatial diffusion limits in large cell volumes.",
+        "workedSolution": "Endomembrane systems (ER, Golgi, vesicles) compartmentalize biochemical reactions, overcoming spatial diffusion limits in large cell volumes.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A07",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "A student views an onion epidermal cell under a light microscope using a 10× eyepiece and a 40× objective lens. If the measured image length of the cell is 6.0 mm, calculate the actual real-life length of the cell.",
+        "options": [
+          "A. 15 μm (0.015 mm)",
+          "B. 150 μm (0.15 mm)",
+          "C. 24 μm (0.024 mm)",
+          "D. 600 μm (0.60 mm)"
+        ],
+        "correctAnswer": "A. 15 μm (0.015 mm)",
+        "hint": "Total magnification = 10 × 40 = 400×. Actual size = Image size / Magnification = 6.0 mm / 400 = 0.015 mm = 15 μm.",
+        "workedSolution": "Total magnification = 10 × 40 = 400×. Actual size = Image size / Magnification = 6.0 mm / 400 = 0.015 mm = 15 μm.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A08",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does treatment of plant tissue with a detergent that dissolves phospholipid bilayers cause leakage of red betalain pigments from beet vacuolar sap?",
+        "options": [
+          "A. The detergent solubilizes the lipid bilayer of both the outer plasma membrane and the inner tonoplast, destroying the permeability barrier",
+          "B. The detergent turns the cell wall into pure sugar",
+          "C. The detergent freezes the cytoplasm",
+          "D. The red pigment reacts with cellulose to form water"
+        ],
+        "correctAnswer": "A. The detergent solubilizes the lipid bilayer of both the outer plasma membrane and the inner tonoplast, destroying the permeability barrier",
+        "hint": "Detergents disrupt hydrophobic interactions in membrane lipids, solubilizing the plasma membrane and tonoplast and releasing vacuolar contents.",
+        "workedSolution": "Detergents disrupt hydrophobic interactions in membrane lipids, solubilizing the plasma membrane and tonoplast and releasing vacuolar contents.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A09",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the structural role of the protein coat (capsid) in an akaryotic virus particle?",
+        "options": [
+          "A. It encloses and protects the viral nucleic acid core and facilitates attachment and penetration into specific host cell receptors",
+          "B. It carries out aerobic cellular respiration",
+          "C. It synthesizes proteins for the virus outside the host",
+          "D. It stores excess starch granules"
+        ],
+        "correctAnswer": "A. It encloses and protects the viral nucleic acid core and facilitates attachment and penetration into specific host cell receptors",
+        "hint": "The viral capsid protects the viral genome from nucleases and mediates binding to host-cell surface receptors.",
+        "workedSolution": "The viral capsid protects the viral genome from nucleases and mediates binding to host-cell surface receptors.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A10",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the ribosome sedimentation coefficient differ between prokaryotic cells and eukaryotic cytoplasmic ribosomes?",
+        "options": [
+          "A. Prokaryotes contain smaller 70S ribosomes (composed of 50S and 30S subunits); eukaryotic cytoplasm contains larger 80S ribosomes (60S and 40S subunits)",
+          "B. Prokaryotes contain 100S ribosomes; eukaryotes contain 10S ribosomes",
+          "C. Both contain identical 50S ribosomes",
+          "D. Eukaryotes do not contain ribosomes"
+        ],
+        "correctAnswer": "A. Prokaryotes contain smaller 70S ribosomes (composed of 50S and 30S subunits); eukaryotic cytoplasm contains larger 80S ribosomes (60S and 40S subunits)",
+        "hint": "Prokaryotic ribosomes sediment at 70S, whereas eukaryotic cytosolic ribosomes sediment at 80S.",
+        "workedSolution": "Prokaryotic ribosomes sediment at 70S, whereas eukaryotic cytosolic ribosomes sediment at 80S.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A11",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does an antibiotic that specifically binds to the 50S subunit of bacterial 70S ribosomes (such as chloramphenicol) stop bacterial infection while sparing human host ribosomes?",
+        "options": [
+          "A. Human cytoplasmic ribosomes are 80S (with a 60S large subunit) and do not possess the binding site found on bacterial 50S subunits",
+          "B. Human cells destroy all antibiotic molecules",
+          "C. Bacteria lack ribosomes completely",
+          "D. Human cells have no protein synthesis"
+        ],
+        "correctAnswer": "A. Human cytoplasmic ribosomes are 80S (with a 60S large subunit) and do not possess the binding site found on bacterial 50S subunits",
+        "hint": "Structural divergence between 70S and 80S ribosomes allows selective inhibition of prokaryotic translation without affecting human cytosolic translation.",
+        "workedSolution": "Structural divergence between 70S and 80S ribosomes allows selective inhibition of prokaryotic translation without affecting human cytosolic translation.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A12",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the consequence of defective lysosomal enzymes in human genetic disorders (lysosomal storage diseases such as Tay-Sachs disease)?",
+        "options": [
+          "A. Undigested cellular lipids or carbohydrates accumulate progressively inside bloated lysosomes, causing cellular dysfunction and tissue death",
+          "B. The cell wall turns into wood",
+          "C. Mitochondria begin manufacturing chlorophyll",
+          "D. All red blood cells develop ten nuclei"
+        ],
+        "correctAnswer": "A. Undigested cellular lipids or carbohydrates accumulate progressively inside bloated lysosomes, causing cellular dysfunction and tissue death",
+        "hint": "In lysosomal storage disorders, absence of a hydrolytic enzyme causes substrates to accumulate, distending lysosomes and damaging cells.",
+        "workedSolution": "In lysosomal storage disorders, absence of a hydrolytic enzyme causes substrates to accumulate, distending lysosomes and damaging cells.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A13",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are bacterial plasmids widely utilized as vectors in recombinant DNA biotechnology and genetic engineering?",
+        "options": [
+          "A. They are small, circular, easily cut with restriction enzymes, replicate autonomously inside host bacteria, and can carry foreign human genes",
+          "B. They turn bacteria into edible eukaryotic mushrooms",
+          "C. They freeze bacterial DNA permanently",
+          "D. They destroy all bacterial membranes"
+        ],
+        "correctAnswer": "A. They are small, circular, easily cut with restriction enzymes, replicate autonomously inside host bacteria, and can carry foreign human genes",
+        "hint": "Plasmids act as cloning vectors: their small size, selectable markers, and autonomous replication enable insertion of foreign genes for expression.",
+        "workedSolution": "Plasmids act as cloning vectors: their small size, selectable markers, and autonomous replication enable insertion of foreign genes for expression.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A14",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "When a living plant cell is placed in an intensely concentrated hypertonic sucrose solution, the protoplast shrinks away from the cell wall. What is this phenomenon called?",
+        "options": [
+          "A. Plasmolysis",
+          "B. Turgidity",
+          "C. Lysis",
+          "D. Mitosis"
+        ],
+        "correctAnswer": "A. Plasmolysis",
+        "hint": "Plasmolysis occurs when exosmosis withdraws water from the vacuole, causing the protoplast to contract away from the rigid cell wall.",
+        "workedSolution": "Plasmolysis occurs when exosmosis withdraws water from the vacuole, causing the protoplast to contract away from the rigid cell wall.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A15",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "In the fluid mosaic model of the eukaryotic plasma membrane, what is the role of cholesterol molecules intercalated among phospholipids?",
+        "options": [
+          "A. Regulating membrane fluidity: preventing membranes from freezing at low temperatures and restricting excessive fluidity at high temperatures",
+          "B. Storing starch granules for cellular respiration",
+          "C. Producing green pigment for the cell",
+          "D. Anchoring the cell to the earth's surface"
+        ],
+        "correctAnswer": "A. Regulating membrane fluidity: preventing membranes from freezing at low temperatures and restricting excessive fluidity at high temperatures",
+        "hint": "Cholesterol acts as a bidirectional membrane fluidity buffer, preventing crystallization in the cold and hindering excessive movement in heat.",
+        "workedSolution": "Cholesterol acts as a bidirectional membrane fluidity buffer, preventing crystallization in the cold and hindering excessive movement in heat.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A16",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does a suspension of green algae (*Chlorella*) generate bubbles of oxygen gas when placed in sunlight, while a suspension of non-photosynthetic yeast does not?",
+        "options": [
+          "A. *Chlorella* contains chloroplasts that split water molecules during photosynthetic photolysis; yeast lacks chloroplasts and respires heterotrophically",
+          "B. Yeast cells have no cell membrane",
+          "C. Algae contain mitochondria that generate oxygen",
+          "D. Yeast cells freeze under sunlight"
+        ],
+        "correctAnswer": "A. *Chlorella* contains chloroplasts that split water molecules during photosynthetic photolysis; yeast lacks chloroplasts and respires heterotrophically",
+        "hint": "*Chlorella* is a photosynthetic alga whose chloroplast thylakoids photolyze water into oxygen; heterotrophic yeast lacks chloroplasts.",
+        "workedSolution": "*Chlorella* is a photosynthetic alga whose chloroplast thylakoids photolyze water into oxygen; heterotrophic yeast lacks chloroplasts.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A17",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of the signal peptide sequence on a newly synthesizing protein targeted for the Rough Endoplasmic Reticulum?",
+        "options": [
+          "A. Directing the translating ribosome to dock onto the translocon channel of the RER membrane so the polypeptide enters the lumen",
+          "B. Digesting the protein immediately",
+          "C. Moving the protein into the vacuole",
+          "D. Converting the protein into a lipid"
+        ],
+        "correctAnswer": "A. Directing the translating ribosome to dock onto the translocon channel of the RER membrane so the polypeptide enters the lumen",
+        "hint": "The N-terminal signal peptide is recognized by the Signal Recognition Particle (SRP), docking the ribosome to the RER membrane.",
+        "workedSolution": "The N-terminal signal peptide is recognized by the Signal Recognition Particle (SRP), docking the ribosome to the RER membrane.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A18",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the structural role of the peptidoglycan mesh (murein) in preventing osmotic rupture in bacteria?",
+        "options": [
+          "A. Cross-linked glycan chains connected by peptide cross-bridges provide immense mechanical tensile strength against internal hydrostatic turgor pressure",
+          "B. It acts as an open sponge that lets all water escape",
+          "C. It destroys external water molecules chemically",
+          "D. It replaces the need for a plasma membrane"
+        ],
+        "correctAnswer": "A. Cross-linked glycan chains connected by peptide cross-bridges provide immense mechanical tensile strength against internal hydrostatic turgor pressure",
+        "hint": "The covalent lattice of repeating NAG-NAM disaccharides and peptide bridges prevents cell lysis from high intracellular turgor pressure.",
+        "workedSolution": "The covalent lattice of repeating NAG-NAM disaccharides and peptide bridges prevents cell lysis from high intracellular turgor pressure.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A19",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the removal of the cell nucleus from an *Amoeba* result in the cessation of cell division and eventual cell death within days?",
+        "options": [
+          "A. The nucleus houses the master DNA instructions; without ongoing transcription of mRNA, essential structural proteins and metabolic enzymes cannot be renewed",
+          "B. The cytoplasm immediately evaporates",
+          "C. The cell membrane turns into chitin",
+          "D. Mitochondria can only function inside the nucleus"
+        ],
+        "correctAnswer": "A. The nucleus houses the master DNA instructions; without ongoing transcription of mRNA, essential structural proteins and metabolic enzymes cannot be renewed",
+        "hint": "Enucleated cells cannot transcribe new mRNA; as existing proteins and enzymes degrade, metabolic breakdown and death follow.",
+        "workedSolution": "Enucleated cells cannot transcribe new mRNA; as existing proteins and enzymes degrade, metabolic breakdown and death follow.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A20",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do prokaryotic cyanobacteria perform oxygenic photosynthesis despite lacking membrane-bound chloroplast organelles?",
+        "options": [
+          "A. Their photosynthetic pigments and electron transport complexes are embedded within extensively folded internal thylakoid membranes in the cytoplasm",
+          "B. They absorb pre-made starch from surrounding water",
+          "C. They use their flagella to capture solar photons",
+          "D. They live inside plant roots to borrow chloroplasts"
+        ],
+        "correctAnswer": "A. Their photosynthetic pigments and electron transport complexes are embedded within extensively folded internal thylakoid membranes in the cytoplasm",
+        "hint": "Cyanobacteria contain lamellar thylakoid sheets within their cytoplasm that carry out light harvesting without a formal chloroplast organelle.",
+        "workedSolution": "Cyanobacteria contain lamellar thylakoid sheets within their cytoplasm that carry out light harvesting without a formal chloroplast organelle.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A21",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical cause of cell lysis when red blood cells are placed in an aqueous solution of 0.1% sodium chloride (hypotonic)?",
+        "options": [
+          "A. Water potential inside the cell is lower than outside, causing rapid osmotic influx of water that expands the flexible membrane beyond its elastic breaking point",
+          "B. Salt enters the cell and cuts the membrane",
+          "C. Hemoglobin turns into a gas and expands",
+          "D. The nucleus pushes through the cell wall"
+        ],
+        "correctAnswer": "A. Water potential inside the cell is lower than outside, causing rapid osmotic influx of water that expands the flexible membrane beyond its elastic breaking point",
+        "hint": "Net water influx down the water potential gradient distends the plasma membrane until hydrostatic tension exceeds membrane tensile strength, causing lysis.",
+        "workedSolution": "Net water influx down the water potential gradient distends the plasma membrane until hydrostatic tension exceeds membrane tensile strength, causing lysis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A22",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why do fungal infections in humans require more carefully targeted pharmaceutical drugs than bacterial infections?",
+        "options": [
+          "A. Fungi are eukaryotic organisms whose ribosomes, enzymes, and cellular machinery share deep biochemical similarities with human host cells",
+          "B. Fungi have no cell membrane",
+          "C. Fungi reproduce faster than light",
+          "D. Fungi are identical to human red blood cells"
+        ],
+        "correctAnswer": "A. Fungi are eukaryotic organisms whose ribosomes, enzymes, and cellular machinery share deep biochemical similarities with human host cells",
+        "hint": "Because both fungi and humans are eukaryotes, antifungals must exploit narrow differences (e.g., ergosterol vs. cholesterol) to avoid host toxicity.",
+        "workedSolution": "Because both fungi and humans are eukaryotes, antifungals must exploit narrow differences (e.g., ergosterol vs. cholesterol) to avoid host toxicity.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A23",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the role of the enzyme catalase located inside eukaryotic peroxisomes?",
+        "options": [
+          "A. Catalyzing the rapid decomposition of cytotoxic hydrogen peroxide: $2H_2O_2 \\rightarrow 2H_2O + O_2$",
+          "B. Synthesizing cellulose fibers for the cell wall",
+          "C. Replicating circular bacterial plasmids",
+          "D. Converting starch into glycogen"
+        ],
+        "correctAnswer": "A. Catalyzing the rapid decomposition of cytotoxic hydrogen peroxide: $2H_2O_2 \\rightarrow 2H_2O + O_2$",
+        "hint": "Catalase converts toxic hydrogen peroxide produced during beta-oxidation of fatty acids into water and oxygen.",
+        "workedSolution": "Catalase converts toxic hydrogen peroxide produced during beta-oxidation of fatty acids into water and oxygen.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A24",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do transport vesicles budding from the Rough Endoplasmic Reticulum recognize and fuse with the correct cis-cisternae of the Golgi apparatus?",
+        "options": [
+          "A. Complementary interaction between v-SNARE proteins on the vesicle and t-SNARE receptor proteins on the target Golgi membrane",
+          "B. Magnetic attraction between protons",
+          "C. Random collisions without any biochemical guidance",
+          "D. Centrioles guide them using cilia"
+        ],
+        "correctAnswer": "A. Complementary interaction between v-SNARE proteins on the vesicle and t-SNARE receptor proteins on the target Golgi membrane",
+        "hint": "Vesicle targeting is mediated by Rab GTPases and specific pairing between v-SNAREs and t-SNAREs, driving membrane fusion.",
+        "workedSolution": "Vesicle targeting is mediated by Rab GTPases and specific pairing between v-SNAREs and t-SNAREs, driving membrane fusion.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A25",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the inner membrane of a mitochondrion contain a high concentration of cardiolipin and show very low permeability to ions?",
+        "options": [
+          "A. To maintain an impermeable barrier that allows establishment of an electrochemical proton ($H^+$) gradient across the intermembrane space",
+          "B. To prevent glucose from entering the matrix",
+          "C. To allow DNA to escape into the cytoplasm",
+          "D. To give the mitochondrion a red color"
+        ],
+        "correctAnswer": "A. To maintain an impermeable barrier that allows establishment of an electrochemical proton ($H^+$) gradient across the intermembrane space",
+        "hint": "Low proton permeability ensures the electrochemical gradient generated by the electron transport chain drives ATP synthase.",
+        "workedSolution": "Low proton permeability ensures the electrochemical gradient generated by the electron transport chain drives ATP synthase.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A26",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary role of histone proteins in the eukaryotic cell nucleus?",
+        "options": [
+          "A. Acting as alkaline spools around which linear DNA winds to form nucleosomes, condensing genetic material into compact chromatin",
+          "B. Synthesizing lipid droplets for the smooth ER",
+          "C. Digesting bacterial invaders in lysosomes",
+          "D. Pumping sodium across the cell membrane"
+        ],
+        "correctAnswer": "A. Acting as alkaline spools around which linear DNA winds to form nucleosomes, condensing genetic material into compact chromatin",
+        "hint": "Basic histone octamers bind negatively charged DNA, packaging long linear genomes into chromatin and chromosomes.",
+        "workedSolution": "Basic histone octamers bind negatively charged DNA, packaging long linear genomes into chromatin and chromosomes.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A27",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are mature human red blood cells incapable of cellular repair, protein synthesis, or aerobic respiration?",
+        "options": [
+          "A. They lack a nucleus, ribosomes, and mitochondria, relying strictly on anaerobic glycolysis in the cytoplasm for basic energy",
+          "B. They are completely frozen",
+          "C. They are covered in a thick layer of cellulose",
+          "D. They are classified as prokaryotes"
+        ],
+        "correctAnswer": "A. They lack a nucleus, ribosomes, and mitochondria, relying strictly on anaerobic glycolysis in the cytoplasm for basic energy",
+        "hint": "Lacking a nucleus, ribosomes, and mitochondria, mature erythrocytes cannot transcribe mRNA, translate proteins, or undergo oxidative phosphorylation.",
+        "workedSolution": "Lacking a nucleus, ribosomes, and mitochondria, mature erythrocytes cannot transcribe mRNA, translate proteins, or undergo oxidative phosphorylation.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A28",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the structure of the plant cell wall accommodate intercellular communication between neighboring cells?",
+        "options": [
+          "A. Through microscopic cytoplasmic channels traversing the wall called plasmodesmata",
+          "B. By having the cell wall dissolve every morning",
+          "C. Through the pores of the contractile vacuole",
+          "D. By using external flagella"
+        ],
+        "correctAnswer": "A. Through microscopic cytoplasmic channels traversing the wall called plasmodesmata",
+        "hint": "Plasmodesmata are plasma-membrane-lined cytoplasmic bridges penetrating plant walls, enabling symplastic molecular exchange.",
+        "workedSolution": "Plasmodesmata are plasma-membrane-lined cytoplasmic bridges penetrating plant walls, enabling symplastic molecular exchange.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A29",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What mechanism enables certain pathogenic bacteria (like *Streptococcus pneumoniae*) to avoid destruction by human alveolar macrophages?",
+        "options": [
+          "A. Their thick polysaccharide capsule masks surface antigens and impairs phagocytic engulfment by macrophages",
+          "B. They inject lysosomes into human cells",
+          "C. They turn into eukaryotic plant cells",
+          "D. They build a cellulose cell wall"
+        ],
+        "correctAnswer": "A. Their thick polysaccharide capsule masks surface antigens and impairs phagocytic engulfment by macrophages",
+        "hint": "Smooth capsule layers reduce complement deposition and hinder macrophage Fc-receptor binding, inhibiting phagocytosis.",
+        "workedSolution": "Smooth capsule layers reduce complement deposition and hinder macrophage Fc-receptor binding, inhibiting phagocytosis.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A30",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What causes the green discoloration of bruised leaves when plant tissue cells are crushed mechanically?",
+        "options": [
+          "A. Chloroplast thylakoid membranes rupture, releasing chlorophyll pigment into the damaged cytoplasm and apoplast",
+          "B. The nucleus converts into green copper",
+          "C. Mitochondria turn into chloroplasts",
+          "D. Bacteria enter and produce green slime"
+        ],
+        "correctAnswer": "A. Chloroplast thylakoid membranes rupture, releasing chlorophyll pigment into the damaged cytoplasm and apoplast",
+        "hint": "Mechanical shear damages cell walls, membranes, and plastid envelopes, leaking chlorophyll and vacuolar fluids into crushed tissues.",
+        "workedSolution": "Mechanical shear damages cell walls, membranes, and plastid envelopes, leaking chlorophyll and vacuolar fluids into crushed tissues.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A31",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Which of the following cellular components is found in ALL three cellular classifications: prokaryotes, eukaryotic plant cells, and eukaryotic animal cells?",
+        "options": [
+          "A. Mitochondria",
+          "B. Plasma membrane, cytoplasm, and ribosomes",
+          "C. Cellulose cell wall",
+          "D. Nuclear envelope"
+        ],
+        "correctAnswer": "B. Plasma membrane, cytoplasm, and ribosomes",
+        "hint": "Every living cell is bounded by a plasma membrane, filled with cytosol (cytoplasm), and utilizes ribosomes to translate proteins.",
+        "workedSolution": "Every living cell is bounded by a plasma membrane, filled with cytosol (cytoplasm), and utilizes ribosomes to translate proteins.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A32",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do eukaryotic protozoans like *Paramecium* digest food particles captured in their oral groove?",
+        "options": [
+          "A. Food vacuoles fuse with primary lysosomes; hydrolytic enzymes break down contents, and wastes are expelled at the cytoproct (anal pore)",
+          "B. Food is pumped directly into the nucleus for digestion",
+          "C. Cilia cut food into atoms outside the cell",
+          "D. Food is stored permanently in the pellicle"
+        ],
+        "correctAnswer": "A. Food vacuoles fuse with primary lysosomes; hydrolytic enzymes break down contents, and wastes are expelled at the cytoproct (anal pore)",
+        "hint": "Phagocytic food vacuoles merge with lysosomes for acidic digestion; undigested residue is exocytosed at the cytoproct.",
+        "workedSolution": "Phagocytic food vacuoles merge with lysosomes for acidic digestion; undigested residue is exocytosed at the cytoproct.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A33",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does bacterial binary fission allow populations of *Escherichia coli* to double every 20 minutes under ideal conditions?",
+        "options": [
+          "A. The circular chromosome lacks complex nucleosomes and replicates bidirectionally while the cell elongates and cleaves with no mitotic phases",
+          "B. Bacteria produce thousands of eggs",
+          "C. The nucleus dissolves into ten cells",
+          "D. Bacteria do not replicate their DNA before dividing"
+        ],
+        "correctAnswer": "A. The circular chromosome lacks complex nucleosomes and replicates bidirectionally while the cell elongates and cleaves with no mitotic phases",
+        "hint": "Prokaryotic binary fission avoids mitotic phases, chromatin remodeling, and envelope disassembly, enabling rapid division cycles.",
+        "workedSolution": "Prokaryotic binary fission avoids mitotic phases, chromatin remodeling, and envelope disassembly, enabling rapid division cycles.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A34",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biological consequence of a mutation that permanently blocks the formation of septa in filamentous fungi?",
+        "options": [
+          "A. The fungus becomes a continuous, coenocytic (aseptate) multinucleated hypha with uninterrupted cytoplasmic streaming",
+          "B. The fungus stops growing completely and dissolves",
+          "C. The fungus transforms into an animal cell",
+          "D. Chitin disappears from the cell wall"
+        ],
+        "correctAnswer": "A. The fungus becomes a continuous, coenocytic (aseptate) multinucleated hypha with uninterrupted cytoplasmic streaming",
+        "hint": "Aseptate fungi (e.g., Zygomycetes) lack transverse cross-walls, resulting in coenocytic filaments with shared cytoplasm and multiple nuclei.",
+        "workedSolution": "Aseptate fungi (e.g., Zygomycetes) lack transverse cross-walls, resulting in coenocytic filaments with shared cytoplasm and multiple nuclei.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A35",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why are lysosomes in eukaryotic cells maintained at an acidic internal pH of approximately 4.5 to 5.0?",
+        "options": [
+          "A. Lysosomal acid hydrolases operate at peak catalytic efficiency in acidic conditions; this prevents autodigestion if a lysosome leaks into neutral cytosol (pH 7.2)",
+          "B. To freeze bacteria with acid",
+          "C. Because mitochondria pump sulfuric acid into them",
+          "D. To dissolve the cell wall from within"
+        ],
+        "correctAnswer": "A. Lysosomal acid hydrolases operate at peak catalytic efficiency in acidic conditions; this prevents autodigestion if a lysosome leaks into neutral cytosol (pH 7.2)",
+        "hint": "Vacuolar $H^+$-ATPases acidify the lysosomal lumen; acid hydrolases are inactive at neutral cytosolic pH, protecting the cell against leaks.",
+        "workedSolution": "Vacuolar $H^+$-ATPases acidify the lysosomal lumen; acid hydrolases are inactive at neutral cytosolic pH, protecting the cell against leaks.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A36",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do eukaryotic cells maintain directed vesicular trafficking between the Endoplasmic Reticulum, Golgi apparatus, and plasma membrane?",
+        "options": [
+          "A. Motor proteins (kinesin and dynein) hydrolyze ATP to walk vesicles along cytoskeletal microtubule tracks",
+          "B. Vesicles float randomly by brownian motion without control",
+          "C. Vacuoles push vesicles using water currents",
+          "D. The nucleus attracts vesicles using magnetism"
+        ],
+        "correctAnswer": "A. Motor proteins (kinesin and dynein) hydrolyze ATP to walk vesicles along cytoskeletal microtubule tracks",
+        "hint": "Microtubule molecular motors (plus-end-directed kinesins, minus-end-directed dyneins) transport vesicles to specific destination sites.",
+        "workedSolution": "Microtubule molecular motors (plus-end-directed kinesins, minus-end-directed dyneins) transport vesicles to specific destination sites.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A37",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the functional difference between the rough endoplasmic reticulum and the Golgi apparatus in the secretory pathway?",
+        "options": [
+          "A. RER synthesizes and initially folds polypeptide chains; Golgi apparatus modifies (e.g., glycosylates), sorts, and packages them into secretory vesicles",
+          "B. RER breaks down sugars; Golgi manufactures chlorophyll",
+          "C. RER stores glycogen; Golgi manufactures DNA",
+          "D. RER produces lipids; Golgi manufactures ribosomes"
+        ],
+        "correctAnswer": "A. RER synthesizes and initially folds polypeptide chains; Golgi apparatus modifies (e.g., glycosylates), sorts, and packages them into secretory vesicles",
+        "hint": "RER is the entry port for co-translational translocation; the Golgi apparatus sorts and post-translationally modifies proteins for targeting.",
+        "workedSolution": "RER is the entry port for co-translational translocation; the Golgi apparatus sorts and post-translationally modifies proteins for targeting.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A38",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the bacterial nucleoid not surrounded by a membrane, unlike the eukaryotic nucleus?",
+        "options": [
+          "A. Prokaryotes lack an internal endomembrane system; their genetic material is in direct contact with the cytosol",
+          "B. The nuclear membrane was dissolved by digestive enzymes",
+          "C. Bacteria have no DNA",
+          "D. The bacterial cell wall replaces the nuclear membrane"
+        ],
+        "correctAnswer": "A. Prokaryotes lack an internal endomembrane system; their genetic material is in direct contact with the cytosol",
+        "hint": "Prokaryotic evolutionary architecture lacks a nuclear envelope, allowing coupled transcription-translation in the cytosol.",
+        "workedSolution": "Prokaryotic evolutionary architecture lacks a nuclear envelope, allowing coupled transcription-translation in the cytosol.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A39",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the cell wall of a gram-positive bacterium differ structurally from that of a gram-negative bacterium?",
+        "options": [
+          "A. Gram-positive bacteria have a thick multilayered peptidoglycan wall with teichoic acids; gram-negative bacteria have a thin peptidoglycan layer enclosed by an outer LPS membrane",
+          "B. Gram-positive bacteria have a cellulose wall; gram-negative have a chitin wall",
+          "C. Gram-positive bacteria lack a plasma membrane",
+          "D. Gram-negative bacteria have no cell wall whatsoever"
+        ],
+        "correctAnswer": "A. Gram-positive bacteria have a thick multilayered peptidoglycan wall with teichoic acids; gram-negative bacteria have a thin peptidoglycan layer enclosed by an outer LPS membrane",
+        "hint": "Gram-positive walls have thick peptidoglycan (20–80 nm); gram-negative walls have thin peptidoglycan (2–7 nm) and an outer lipopolysaccharide membrane.",
+        "workedSolution": "Gram-positive walls have thick peptidoglycan (20–80 nm); gram-negative walls have thin peptidoglycan (2–7 nm) and an outer lipopolysaccharide membrane.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A40",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the primary function of the contractile ring composed of actin and myosin during eukaryotic animal cell cytokinesis?",
+        "options": [
+          "A. Constricting the plasma membrane inward to form a cleavage furrow that pinches the parent cell into two daughter cells",
+          "B. Building a cellulose cell plate across the equator",
+          "C. Replicating mitochondrial DNA",
+          "D. Moving chromosomes to the poles"
+        ],
+        "correctAnswer": "A. Constricting the plasma membrane inward to form a cleavage furrow that pinches the parent cell into two daughter cells",
+        "hint": "An actomyosin contractile ring constricts the equatorial cortex, furrowing and cleaving animal cells into two daughter cells.",
+        "workedSolution": "An actomyosin contractile ring constricts the equatorial cortex, furrowing and cleaving animal cells into two daughter cells.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A41",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is cytokinesis in plant cells accomplished by forming a cell plate rather than a cleavage furrow?",
+        "options": [
+          "A. The presence of the rigid outer cellulose cell wall prevents inward pinching; Golgi vesicles must fuse at the equator to build a new middle lamella and wall",
+          "B. Plant cells have no cell membrane",
+          "C. Plant cells do not divide",
+          "D. Animal cells have a cell wall that allows pinching"
+        ],
+        "correctAnswer": "A. The presence of the rigid outer cellulose cell wall prevents inward pinching; Golgi vesicles must fuse at the equator to build a new middle lamella and wall",
+        "hint": "Rigid plant cell walls prevent membrane furrowing; phragmoplast vesicles coalesce into a cell plate that matures into a dividing cross-wall.",
+        "workedSolution": "Rigid plant cell walls prevent membrane furrowing; phragmoplast vesicles coalesce into a cell plate that matures into a dividing cross-wall.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A42",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the role of bacterial pili in the transfer of antibiotic resistance via conjugation?",
+        "options": [
+          "A. The pilus establishes physical contact between donor and recipient cells, depolymerizing to draw the cells together for plasmid transfer",
+          "B. The pilus injects antibiotic drugs into human cells",
+          "C. The pilus acts as a swimming tail",
+          "D. The pilus digests foreign white blood cells"
+        ],
+        "correctAnswer": "A. The pilus establishes physical contact between donor and recipient cells, depolymerizing to draw the cells together for plasmid transfer",
+        "hint": "Conjugative F-pili tether recipient cells, retracting to form a mating junction that transfers single-stranded plasmid DNA.",
+        "workedSolution": "Conjugative F-pili tether recipient cells, retracting to form a mating junction that transfers single-stranded plasmid DNA.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A43",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does the enzyme reverse transcriptase play a critical role in the life cycle of retroviral akaryotes (like HIV)?",
+        "options": [
+          "A. It transcribes single-stranded viral RNA into double-stranded DNA so it can integrate into the host eukaryotic genome",
+          "B. It manufactures a bacterial cell wall around the virus",
+          "C. It digests the host cell wall",
+          "D. It converts sunlight into glucose"
+        ],
+        "correctAnswer": "A. It transcribes single-stranded viral RNA into double-stranded DNA so it can integrate into the host eukaryotic genome",
+        "hint": "Retroviruses use reverse transcriptase (an RNA-dependent DNA polymerase) to reverse-transcribe RNA genomes into proviral DNA.",
+        "workedSolution": "Retroviruses use reverse transcriptase (an RNA-dependent DNA polymerase) to reverse-transcribe RNA genomes into proviral DNA.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A44",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do halophilic Archaea survive in hyper-saline salt lakes without undergoing severe plasmolysis and dehydration?",
+        "options": [
+          "A. They accumulate extremely high intracellular concentrations of potassium ions ($K^+$) to match or exceed external osmotic solute levels",
+          "B. They pump out all water from their cytoplasm",
+          "C. They convert surrounding salt into cellulose",
+          "D. They build a thick glass shell"
+        ],
+        "correctAnswer": "A. They accumulate extremely high intracellular concentrations of potassium ions ($K^+$) to match or exceed external osmotic solute levels",
+        "hint": "Halophiles balance hypertonic osmotic stress through the 'salt-in' strategy, concentrating intracellular potassium to prevent water loss.",
+        "workedSolution": "Halophiles balance hypertonic osmotic stress through the 'salt-in' strategy, concentrating intracellular potassium to prevent water loss.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A45",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the biochemical function of the enzyme lysozyme found in human tears, saliva, and mucus secretions?",
+        "options": [
+          "A. Cleaving glycosidic bonds between NAG and NAM in bacterial peptidoglycan walls, causing microbial lysis",
+          "B. Digesting dietary carbohydrates into starch",
+          "C. Breaking down human cell membranes",
+          "D. Replicating viral DNA"
+        ],
+        "correctAnswer": "A. Cleaving glycosidic bonds between NAG and NAM in bacterial peptidoglycan walls, causing microbial lysis",
+        "hint": "Lysozyme hydrolyzes beta-(1,4) bonds in bacterial murein, serving as an innate antimicrobial barrier on mucosal surfaces.",
+        "workedSolution": "Lysozyme hydrolyzes beta-(1,4) bonds in bacterial murein, serving as an innate antimicrobial barrier on mucosal surfaces.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A46",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why does unpasteurized raw milk sour rapidly when left at room temperature in warm tropical climates?",
+        "options": [
+          "A. Lactic acid bacteria (e.g., *Lactobacillus*) multiply and ferment lactose into lactic acid, lowering pH and curdling casein proteins",
+          "B. Water evaporates, leaving pure salt crystals",
+          "C. Yeast cells turn milk into vinegar",
+          "D. Plant cells grow inside the milk"
+        ],
+        "correctAnswer": "A. Lactic acid bacteria (e.g., *Lactobacillus*) multiply and ferment lactose into lactic acid, lowering pH and curdling casein proteins",
+        "hint": "Lactic acid fermentation reduces milk pH below the isoelectric point of casein (pH 4.6), causing coagulation and souring.",
+        "workedSolution": "Lactic acid fermentation reduces milk pH below the isoelectric point of casein (pH 4.6), causing coagulation and souring.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A47",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "What is the cellular function of the nucleoid-associated proteins (NAPs) in prokaryotes compared to histones in eukaryotes?",
+        "options": [
+          "A. NAPs bind and bend circular bacterial DNA to induce supercoiling and compaction without forming nucleosome octamers",
+          "B. NAPs build the bacterial flagellum",
+          "C. NAPs synthesize lipids for the capsule",
+          "D. NAPs destroy viral RNA"
+        ],
+        "correctAnswer": "A. NAPs bind and bend circular bacterial DNA to induce supercoiling and compaction without forming nucleosome octamers",
+        "hint": "Prokaryotic NAPs (like HU, IHF, H-NS) introduce loops and supercoils, compacting the bacterial chromosome into the nucleoid.",
+        "workedSolution": "Prokaryotic NAPs (like HU, IHF, H-NS) introduce loops and supercoils, compacting the bacterial chromosome into the nucleoid.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A48",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How do eukaryotic cells degrade damaged or non-functional mitochondria through autophagy?",
+        "options": [
+          "A. A double membrane encapsulates the defective mitochondrion into an autophagosome, which fuses with a lysosome for hydrolytic degradation",
+          "B. The mitochondrion is expelled through the cell wall",
+          "C. The nucleus absorbs the mitochondrion",
+          "D. Ribosomes digest the mitochondrion directly"
+        ],
+        "correctAnswer": "A. A double membrane encapsulates the defective mitochondrion into an autophagosome, which fuses with a lysosome for hydrolytic degradation",
+        "hint": "Mitophagy encloses depolarized mitochondria in autophagosomes; subsequent fusion with lysosomes degrades and recycles organellar components.",
+        "workedSolution": "Mitophagy encloses depolarized mitochondria in autophagosomes; subsequent fusion with lysosomes degrades and recycles organellar components.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A49",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "Why is the lipid A component of the lipopolysaccharide (LPS) outer membrane in gram-negative bacteria medically termed an endotoxin?",
+        "options": [
+          "A. When bacterial cells lyse, lipid A is released, triggering massive cytokine release, septic shock, and fever in human hosts",
+          "B. It dissolves human bones directly",
+          "C. It turns into an infectious virus",
+          "D. It destroys all red blood cells instantly"
+        ],
+        "correctAnswer": "A. When bacterial cells lyse, lipid A is released, triggering massive cytokine release, septic shock, and fever in human hosts",
+        "hint": "Lipid A binds TLR4 receptors on immune cells, triggering an inflammatory cytokine cascade that can precipitate septic shock.",
+        "workedSolution": "Lipid A binds TLR4 receptors on immune cells, triggering an inflammatory cytokine cascade that can precipitate septic shock.",
+        "points": 1
+      },
+      {
+        "id": "B8_CEL_A50",
+        "difficulty": "high",
+        "type": "objective",
+        "prompt": "How does the structure of the fungal mycelium maximize nutrient absorption from soil and decaying plant litter?",
+        "options": [
+          "A. An extensive branching network of microscopic filamentous hyphae provides an immense surface area-to-volume ratio for secreting enzymes and absorbing solutes",
+          "B. By building heavy wooden trunks like trees",
+          "C. By producing large animal muscles for running",
+          "D. By capturing sunlight using red chromoplasts"
+        ],
+        "correctAnswer": "A. An extensive branching network of microscopic filamentous hyphae provides an immense surface area-to-volume ratio for secreting enzymes and absorbing solutes",
+        "hint": "Slender branching hyphae maximize surface contact with the substrate, optimizing exoenzyme release and solute uptake.",
+        "workedSolution": "Slender branching hyphae maximize surface contact with the substrate, optimizing exoenzyme release and solute uptake.",
         "points": 1
       }
     ]
@@ -57721,15 +62698,33 @@ export const NACCA_JHS_SCIENCE_TOPICAL_UNITS: ScienceTopicalUnit[] = [
     "subStrandTitle": "Earth Science (The Hydrological Cycle & Water Conservation)",
     "order": 8,
     "notes": {
-      "summaryMarkdown": "### The Global Carbon Cycle & Atmospheric Equilibrium\n* **NaCCA Curriculum Code:** `B8.2.1.1`\n* **Core Competency:** Trace carbon movement through the biosphere, atmosphere, hydrosphere, and geosphere.\n\n#### 1. Carbon Sequestration & Release Pathways\nCarbon is the fundamental structural backbone of organic macromolecules.\n* **Carbon Removal Pathways (Carbon Sinks):**\n  * **Photosynthesis:** Terrestrial vegetation and marine phytoplankton absorb atmospheric $\\text{CO}_2$:\n    $$6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{Light, Chlorophyll}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$$\n  * **Oceanic Dissolution:** $\\text{CO}_2$ dissolves into surface waters forming carbonic acid ($\\text{H}_2\\text{CO}_3$) and marine carbonate sediments (mollusk shells, corals).\n* **Carbon Release Pathways (Carbon Sources):**\n  * **Cellular Respiration:** Aerobic respiration by plants, animals, and microbes:\n    $$\\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2 \\rightarrow 6\\text{CO}_2 + 6\\text{H}_2\\text{O} + \\text{ATP}$$\n  * **Decomposition:** Saprophytic bacteria and fungi break down dead biomass, releasing $\\text{CO}_2$ and $\\text{CH}_4$.\n  * **Fossil Fuel Combustion:** Burning coal, crude oil, and natural gas oxidized stored subterranean carbon deposits.\n  * **Volcanic Outgassing:** Thermal degassing of subducted carbonate rocks.",
+      "summaryMarkdown": "### The Carbon Cycle, Greenhouse Dynamics & Climate Change\n* **Curriculum Alignment:** NaCCA Common Core Programme (Ghana)\n* **Strand:** 2 — Cycles\n* **Sub-Strand:** Earth Science\n* **Grade Level:** Basic 8 (JHS 2)\n* **Content Standard:** `B8.2.1.1`: Demonstrate an understanding of the carbon cycle and evaluate its environmental significance.\n* **Indicators:**\n  * `B8.2.1.1.1`: Explain the process of the carbon cycle.\n  * `B8.2.1.1.2`: Describe the role of the carbon cycle in the environment.\n\n---\n\n### Module 1: Earth as a Closed System & The Carbon Cycle Concept\n\n#### 1. Earth as a Closed Thermodynamic System\nPlanet Earth and its enveloping atmosphere function essentially as a **closed physical system** with respect to matter. \n* While radiant solar energy flows continuously into the Earth system and radiates back into outer space as heat, physical matter (chemical elements such as carbon, nitrogen, oxygen, and hydrogen) **cannot enter or escape** the planet in significant quantities.\n* Therefore, the **total quantity of carbon atoms on Earth is fixed and constant**. \n* The carbon atoms existing today in the air, in human muscle, in a baobab tree, or locked within underground petroleum deposits are the very same atoms that formed part of prehistoric plants and dinosaurs hundreds of millions of years ago.\n\n#### 2. Planetary Distribution of Carbon Reservoirs\nCarbon is the fundamental elemental backbone of all organic life. It is distributed across four interconnected planetary spheres:\n1. **Biosphere:** Stored inside living organisms (proteins, carbohydrates, lipids, nucleic acids forming plant and animal tissues).\n2. **Atmosphere:** Exists primarily as a gas in the form of **carbon dioxide ($CO_2$)** (approximately 0.04% of air volume) and trace quantities of carbon monoxide ($CO$) and methane ($CH_4$).\n3. **Hydrosphere (Oceans, Lakes & Rivers):** Dissolved as bicarbonate ions ($HCO_3^-$), dissolved carbonic acid ($H_2CO_3$), and stored in the calcium carbonate ($CaCO_3$) shells of marine organisms.\n4. **Lithosphere (Earth's Crust & Rocks):** Locked within limestone rock strata, marble, carbonate minerals, and ancient fossilized organic deposits (coal, crude oil, bitumen, and natural gas).\n\n#### 3. Scientific Definition of the Carbon Cycle\n> **The Carbon Cycle** is defined as the continuous natural biogeochemical circulation and exchange of carbon in various chemical forms between the atmosphere, living organisms (biosphere), terrestrial soils/rocks (lithosphere), and aquatic water bodies (hydrosphere).\n\n<div class=\"my-4 flex flex-col items-center justify-center p-2 rounded-2xl bg-slate-950/60 border border-slate-800 shadow-md\">\n<svg width=\"760\" height=\"360\" viewBox=\"0 0 760 360\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"760\" height=\"360\" rx=\"8\" fill=\"#ffffff\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/><text x=\"380\" y=\"24\" font-family=\"sans-serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#0f172a\" text-anchor=\"middle\">THE BIOGEOCHEMICAL CARBON CYCLE (JHS 2)</text><g transform=\"translate(250, 42)\"><rect width=\"260\" height=\"45\" rx=\"6\" fill=\"#eff6ff\" stroke=\"#3b82f6\" stroke-width=\"1.4\"/><text x=\"130\" y=\"22\" font-family=\"sans-serif\" font-size=\"10\" font-weight=\"bold\" fill=\"#1e40af\" text-anchor=\"middle\">Atmospheric Carbon Dioxide (CO₂)</text><text x=\"130\" y=\"36\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#1e3a8a\" text-anchor=\"middle\">[Global Reservoir Pool]</text></g><g transform=\"translate(40, 160)\"><rect width=\"170\" height=\"80\" rx=\"6\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"1.4\"/><text x=\"85\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#166534\" text-anchor=\"middle\">Green Plants (Producers)</text><text x=\"85\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\" text-anchor=\"middle\">Photosynthesis fixes CO₂</text><text x=\"85\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#14532d\" text-anchor=\"middle\">Produces Organic Sugars</text></g><g transform=\"translate(290, 160)\"><rect width=\"180\" height=\"80\" rx=\"6\" fill=\"#fff7ed\" stroke=\"#ea580c\" stroke-width=\"1.4\"/><text x=\"90\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Animals (Consumers)</text><text x=\"90\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7c2d12\" text-anchor=\"middle\">Feeding transfers carbon</text><text x=\"90\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7c2d12\" text-anchor=\"middle\">Respiration releases CO₂</text></g><g transform=\"translate(545, 160)\"><rect width=\"175\" height=\"80\" rx=\"6\" fill=\"#fef2f2\" stroke=\"#ef4444\" stroke-width=\"1.4\"/><text x=\"87\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#991b1b\" text-anchor=\"middle\">Fossil Fuels &amp; Industry</text><text x=\"87\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\" text-anchor=\"middle\">Coal, Petroleum &amp; Gas</text><text x=\"87\" y=\"58\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#7f1d1d\" text-anchor=\"middle\">Combustion vents CO₂</text></g><g transform=\"translate(180, 275)\"><rect width=\"400\" height=\"65\" rx=\"6\" fill=\"#f8fafc\" stroke=\"#64748b\" stroke-width=\"1.4\"/><text x=\"200\" y=\"22\" font-family=\"sans-serif\" font-size=\"9.5\" font-weight=\"bold\" fill=\"#1e293b\" text-anchor=\"middle\">Decomposers &amp; Soil Organisms (Bacteria &amp; Fungi)</text><text x=\"200\" y=\"42\" font-family=\"sans-serif\" font-size=\"8\" fill=\"#334155\" text-anchor=\"middle\">Decomposes dead biomass into humus, fossil deposits, and CO₂ gas</text></g><path d=\"M 320 87 L 125 160\" fill=\"none\" stroke=\"#16a34a\" stroke-width=\"2\"/><polygon points=\"125,160 134,154 130,163\" fill=\"#16a34a\"/><text x=\"190\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#166534\">Photosynthesis (Removal)</text><path d=\"M 145 160 L 340 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><polygon points=\"340,87 331,91 334,83\" fill=\"#dc2626\"/><text x=\"220\" y=\"145\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#b91c1c\">Plant Respiration</text><path d=\"M 210 200 L 290 200\" fill=\"none\" stroke=\"#ea580c\" stroke-width=\"2\"/><polygon points=\"290,200 282,196 282,204\" fill=\"#ea580c\"/><text x=\"250\" y=\"192\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#9a3412\" text-anchor=\"middle\">Feeding</text><path d=\"M 380 160 L 380 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"1.8\"/><polygon points=\"380,87 376,95 384,95\" fill=\"#dc2626\"/><text x=\"385\" y=\"125\" font-family=\"sans-serif\" font-size=\"7\" font-weight=\"bold\" fill=\"#b91c1c\">Animal Respiration</text><path d=\"M 630 160 L 480 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"2\"/><polygon points=\"480,87 489,90 486,98\" fill=\"#dc2626\"/><text x=\"570\" y=\"115\" font-family=\"sans-serif\" font-size=\"7.5\" font-weight=\"bold\" fill=\"#b91c1c\">Combustion</text><path d=\"M 125 240 L 230 275\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.5\"/><polygon points=\"230,275 221,272 225,264\" fill=\"#64748b\"/><path d=\"M 380 240 L 380 275\" fill=\"none\" stroke=\"#64748b\" stroke-width=\"1.5\"/><polygon points=\"380,275 376,267 384,267\" fill=\"#64748b\"/><text x=\"300\" y=\"258\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#334155\">Death &amp; Waste</text><path d=\"M 510 275 L 430 87\" fill=\"none\" stroke=\"#dc2626\" stroke-width=\"1.5\" stroke-dasharray=\"3,3\"/><polygon points=\"430,87 433,96 439,90\" fill=\"#dc2626\"/><text x=\"485\" y=\"230\" font-family=\"sans-serif\" font-size=\"7\" fill=\"#b91c1c\">Decomposition Respiration</text></svg>\n<p class=\"text-xs font-semibold text-slate-400 mt-2 text-center\">Figure 1: The Biogeochemical Carbon Cycle — Pathways of Carbon Removal, Transfer, and Release</p>\n</div>\n\n---\n\n### Module 2: Core Biological & Physical Stages of the Carbon Cycle\n\nThe carbon cycle operates through four primary complementary processes: one major natural removal mechanism and three primary release pathways.\n\n#### 1. Photosynthesis — The Primary Carbon Removal Mechanism\n* **Role:** Photosynthesis is the **only major natural biological process** that extracts carbon dioxide directly from the atmospheric reservoir pool.\n* **Mechanism:** Green plants, autotrophic algae, and phytoplankton absorb carbon dioxide through microscopic leaf pores called **stomata**. Using radiant sunlight energy absorbed by the green pigment **chlorophyll**, plants chemically combine $CO_2$ with water ($H_2O$) absorbed from the soil by roots to synthesize energy-rich glucose sugar and release pure oxygen gas ($O_2$) as a vital byproduct.\n* **Balanced Chemical Word & Symbolic Equation:**\n  $$\\text{Carbon Dioxide} + \\text{Water} \\xrightarrow{\\text{Light energy, Chlorophyll}} \\text{Glucose} + \\text{Oxygen}$$\n  $$6CO_2 + 6H_2O \\xrightarrow{\\text{light, chlorophyll}} C_6H_{12}O_6 + 6O_2$$\n* **Ecological Significance:** Fixes gaseous inorganic carbon into solid organic biomass that forms the base of terrestrial and aquatic food chains.\n\n#### 2. Respiration — Biological Carbon Release\n* **Role:** Respiration is the metabolic oxidation of organic food substances within living cells to release biochemical energy (ATP) for vital life activities (movement, growth, active transport, reproduction).\n* **Mechanism:** Both autotrophic plants and heterotrophic animals break down glucose molecules in the presence of oxygen within their **mitochondria**. This catabolic reaction releases carbon dioxide and water vapor back into the ambient atmosphere:\n  $$\\text{Glucose} + \\text{Oxygen} \\longrightarrow \\text{Carbon Dioxide} + \\text{Water} + \\text{Energy (ATP)}$$\n  $$C_6H_{12}O_6 + 6O_2 \\longrightarrow 6CO_2 + 6H_2O + \\text{Energy}$$\n* **Plant vs. Animal Gas Exchange:** Plants release $CO_2$ continuously day and night through stomata during cellular respiration. Animals discharge $CO_2$ into the air via specialized respiratory organs (lungs, gills, spiracles, skin).\n\n#### 3. Decomposition & Decay — The Biological Recycling of Carbon\n* **Role:** Recycles carbon stored in dead plant matter, animal carcasses, shed leaves, and excretory wastes (dung, urine).\n* **Mechanism:**\n  * **Microbial Action:** Saprophytic bacteria and fungi (**decomposers**) secrete digestive hydrolytic enzymes onto dead biological tissues. As they respire aerobically or anaerobically, they break down complex carbohydrates and proteins, discharging carbon dioxide gas back into the air and returning organic carbon to the soil as nutrient-rich **humus**.\n  * **Fossil Fuel Genesis (Geological Sequestration):** Millions of years ago, vast swathes of prehistoric ferns, swamp vegetation, and plankton died and were rapidly buried beneath thick silt, sand, and mud in oxygen-poor environments. Deprived of oxygen, decomposers could not break down the tissues. Under immense tectonic pressure and geothermal heat over hundreds of millions of years, these buried organic deposits underwent slow chemical carbonization to become **fossil fuels**:\n    * Buried terrestrial vegetation $\\longrightarrow$ **Coal**\n    * Buried microscopic marine algae and plankton $\\longrightarrow$ **Crude Petroleum Oil & Natural Gas**\n\n#### 4. Combustion — Rapid Chemical Oxidation\n* **Role:** Chemical burning of organic biomass and fossilized hydrocarbon fuels in the presence of oxygen.\n* **Mechanism:**\n  * When wood, charcoal, bushfires, coal, petrol, diesel, or liquefied petroleum gas (LPG) are ignited, the carbon locked in their chemical bonds reacts vigorously with atmospheric oxygen to liberate thermal energy, releasing carbon dioxide ($CO_2$), water vapor, and soot particles.\n  * Incomplete combustion (when oxygen supply is restricted) releases toxic **carbon monoxide ($CO$)**, a lethal odorless gas that binds irreversibly to hemoglobin:\n    $$\\text{Hydrocarbon Fuel} + \\text{Oxygen} \\longrightarrow \\text{Carbon Dioxide} + \\text{Water} + \\text{Heat}$$\n    $$\\text{e.g., Methane Combustion: } CH_4 + 2O_2 \\longrightarrow CO_2 + 2H_2O + \\text{Heat}$$\n\n#### 5. Oceanic Carbon Sink Mechanics\nThe world's oceans constitute the **largest active carbon reservoir on Earth**, containing roughly 50 times more carbon than the atmosphere:\n* **Direct Dissolution:** Atmospheric $CO_2$ dissolves physically into surface ocean waters, reacting with water molecules to form weak carbonic acid ($H_2CO_3$), which dissociates into hydrogen ions ($H^+$) and bicarbonate ions ($HCO_3^-$).\n* **Biological Precipitation of Shells:** Marine organisms (clams, oysters, snails, corals, and microscopic foraminifera) absorb dissolved calcium ions and bicarbonate to precipitate hard external protective shells composed of **calcium carbonate ($CaCO_3$)**:\n  $$Ca^{2+} + 2HCO_3^- \\longrightarrow CaCO_3 \\downarrow + CO_2 + H_2O$$\n* **Sedimentary Rock Formation:** When marine creatures die, their calcified shells sink to the ocean floor. Over millions of years, vast beds of sediment undergo cementation and compaction (lithification) to form **limestone and chalk** sedimentary rocks, locking away planetary carbon for millions of years.\n\n---\n\n### Module 3: Ecological Disruption, The Greenhouse Effect & Global Warming\n\n#### 1. Anthropogenic (Human) Disruptions to the Carbon Cycle\nFor millennia, the natural rates of carbon removal (photosynthesis and oceanic dissolution) were in dynamic equilibrium with carbon release (respiration and natural decomposition). However, since the dawn of the Industrial Revolution (circa 1750), accelerated human industrial activities have severely unbalanced this cycle:\n\n| Human Activity | Environmental Mechanism | Consequence on Carbon Balance |\n| :--- | :--- | :--- |\n| **Combustion of Fossil Fuels** | Burning coal in power plants, petrol/diesel in motor vehicles, and natural gas in factories. | Injects over 36 billion metric tons of ancient geologically locked carbon into the atmospheric pool every year. |\n| **Deforestation & Bush Burning** | Indiscriminate felling of tropical rainforests for timber, slash-and-burn farming, and urban expansion. | Drastically reduces the global photosynthetic leaf canopy available to remove $CO_2$, while burning tree trunks vents stored biomass carbon directly into the sky. |\n| **Industrial Cement Manufacturing** | Thermal decomposition of limestone rocks (calcium carbonate) inside industrial kilns ($CaCO_3 \\rightarrow CaO + CO_2$). | Releases enormous process-driven volumes of gaseous $CO_2$ independent of fuel burning. |\n| **Ruminant Livestock Breeding** | Commercial cattle, sheep, and goat ranching for beef and milk. | Microbial fermentation inside ruminant digestive tracts (enteric fermentation) produces large volumes of **methane ($CH_4$)**, a greenhouse gas 28 times more potent than $CO_2$. |\n\n#### 2. The Physics of the Greenhouse Effect\n* **The Natural Greenhouse Effect (Beneficial):**\n  * The Sun radiates high-energy, short-wavelength solar ultraviolet and visible light through the Earth's atmosphere.\n  * The Earth's surface absorbs this shortwave radiation, warms up, and re-emits the energy upward as low-energy, long-wavelength **infrared radiation (thermal heat)**.\n  * Naturally occurring atmospheric gases known as **greenhouse gases**—principally water vapor ($H_2O$), carbon dioxide ($CO_2$), methane ($CH_4$), and nitrous oxide ($N_2O$)—absorb a portion of this escaping infrared heat and re-radiate it in all directions, including back toward the Earth's surface.\n  * **Without this natural greenhouse blanket, Earth's average surface temperature would plunge to approximately $-18^\\circ\\text{C}$**, freezing all oceans and making biological life impossible.\n* **The Enhanced Greenhouse Effect (Harmful Anthropogenic Warming):**\n  * Rapid accumulation of human-generated $CO_2$ and $CH_4$ thickens this insulating atmospheric gas layer.\n  * As a consequence, far less infrared heat escapes into outer space; excess thermal energy is trapped within the lower troposphere, leading directly to **Global Warming**.\n\n#### 3. Dangerous Ecological & Economic Impacts of Global Warming\n1. **Rising Planetary Temperatures:** Sustained increases in average global surface and atmospheric temperatures, generating more frequent, prolonged, and lethal heatwaves.\n2. **Polar Ice Cap Melting & Glacier Retreat:** Accelerated thermal melting of continental ice sheets in Greenland, Antarctica, and mountain glaciers, releasing freshwater volumes into the seas.\n3. **Sea-Level Rise & Coastal Submersion:**\n   * Caused by two synergistic physical factors: (1) runoff meltwater from land ice, and (2) **thermal expansion of seawater** (as water warms, its physical volume expands).\n   * Result: Severe coastal erosion, saltwater intrusion into agricultural freshwater aquifers, and submergence of low-lying coastal communities (e.g., Keta and Ada along Ghana's coastline).\n4. **Ocean Acidification:**\n   * Excess atmospheric $CO_2$ dissolving in seawater forms excessive carbonic acid, driving down the natural alkaline pH of ocean water.\n   * Ocean acidification consumes available carbonate ions, dissolving coral reef skeletons and preventing shellfish, oysters, and crabs from building protective shells, triggering marine ecosystem collapse.\n5. **Extreme Climatic Destabilization:** Severe and prolonged agricultural droughts in the Sahel and savanna belts, unpredictable rainy seasons, intense tropical storms, catastrophic flooding, and widespread crop failures threatening food security.\n\n---\n\n### Module 4: Practical Environmental Solutions & Carbon Management\n\nTo restore atmospheric carbon equilibrium and halt runaway climate change, human society must adopt coordinated technological, agricultural, and behavioral interventions:\n\n#### 1. Afforestation and Reforestation\n* **Afforestation:** Planting new forests on barren land that historically had no tree cover.\n* **Reforestation:** Replanting trees on deforested or clear-cut land.\n* **Carbon Sequestration:** Fast-growing trees act as long-term biological carbon sinks, absorbing massive volumes of $CO_2$ via photosynthesis and locking carbon into woody cellulose trunks, roots, and soil for centuries. Programs like Ghana's *\"Green Ghana Day\"* represent vital national contributions.\n\n#### 2. Accelerating Transition to Renewable Energy Sources\n* Phasing out fossil-fueled thermal power stations in favor of zero-emission clean energy alternatives:\n  * **Solar Photovoltaic Energy:** Harnessing Ghana's abundant tropical solar irradiance to generate electricity without burning hydrocarbons.\n  * **Hydroelectric Power:** Generating clean energy from flowing rivers (e.g., Akosombo and Bui hydroelectric dams).\n  * **Wind & Biomass Energy:** Deploying coastal wind turbines and biogas digestors.\n\n#### 3. Clean Domestic Fuel Substitution\n* Halting the widespread harvesting of wood for firewood and charcoal burning in rural and urban households.\n* Promoting adoption of **Liquefied Petroleum Gas (LPG)** and solar cookers. While LPG is a hydrocarbon, it burns with vastly higher thermodynamic efficiency and produces minimal soot and toxic carbon monoxide compared to wood fuel.\n\n#### 4. Sustainable Climate-Smart Agriculture\n* **Agroforestry:** Integrating nitrogen-fixing trees and fruit trees within crop farms to retain soil moisture and sequester carbon.\n* **Conservation Tillage:** Avoiding deep mechanical ploughing that exposes buried soil humus to oxidation and bacterial decomposition into $CO_2$.\n* **Organic Composting:** Recycling crop residues and manure into organic compost instead of setting bushfires to clear farmlands.\n\n#### 5. Efficient Waste Management & Resource Recycling\n* Stopping open burning of municipal rubbish and electronic waste (e.g., at Agbogbloshie).\n* Establishing sanitary landfills equipped with methane capture pipes to collect biogas for electricity generation.\n* Recycling plastics, scrap metals, glass, and paper to lower industrial manufacturing energy requirements.\n\n#### 6. Energy Efficiency & Conservation Habits\n* Replacing energy-wasting incandescent filament bulbs with modern **LED (Light Emitting Diode)** and CFL lighting.\n* Turning off electrical appliances, air conditioners, and fans when not in use.\n* Utilizing public transit, carpooling, or walking to curtail automobile exhaust emissions.\n\n---\n\n### Core Comparative Summary: Natural Carbon Balance vs. Human Disruption\n\n| Feature / Metric | Natural Undisturbed Carbon Cycle | Modern Anthropogenically Disrupted Cycle |\n| :--- | :--- | :--- |\n| **Atmospheric $CO_2$ Concentration** | Stable (~280 parts per million for 10,000 years) | Surging rapidly (>420 parts per million and rising) |\n| **Carbon Influx vs. Efflux** | Balanced: Photosynthesis removal equals respiration and decay release | Unbalanced: Release far outstrips photosynthetic absorption capacity |\n| **Rate of Fossil Carbon Movement**| Millions of years to form and remain sequestered deep underground | Millions of tons mined and combusted in hours |\n| **Primary Climate Outcome** | Stable planetary climate with mild seasonal variations | Global warming, polar ice melt, rising seas, extreme droughts, and floods |\n| **Oceanic Condition** | Moderately alkaline waters supporting rich coral and shellfish reefs | Ocean acidification dissolving carbonate shells and bleaching corals |\n",
       "keyTerms": []
     },
     "sampleWorkedProblems": [
       {
-        "id": "ex_b8_s3_1",
-        "questionPrompt": "Demonstrate chemically how photosynthesis and aerobic cellular respiration form a complementary closed loop in the carbon cycle.",
-        "stepByStepSolution": "Step 1: Write photosynthesis equation: 6CO2 + 6H2O + Light Energy -> C6H12O6 (glucose) + 6O2. Carbon dioxide is absorbed from the atmosphere and fixed into organic carbohydrate biomass.\nStep 2: Write respiration equation: C6H12O6 + 6O2 -> 6CO2 + 6H2O + Energy (ATP). Heterotrophs and autotrophs oxidize glucose to yield metabolic energy, returning CO2 to the atmosphere.\nStep 3: Conclude complementarity: The products of photosynthesis (glucose and oxygen) serve directly as the reactants for cellular respiration, while the waste products of respiration (carbon dioxide and water) serve as the essential raw materials for photosynthesis.",
-        "examinerTip": "Examiner Tip: Notice that the two equations are the exact mathematical and chemical reverse of each other."
+        "id": "WE_B8_CARB_01",
+        "questionPrompt": "A carbon atom currently exists as part of a carbon dioxide ($CO_2$) molecule in the atmosphere over a Ghanaian maize farm. Describe the sequential biogeochemical pathway through which this exact carbon atom could:\n(a) Become incorporated into the muscle tissue of a domestic goat.\n(b) Be converted into an underground fossil fuel.\n(c) Be discharged back into the atmosphere.",
+        "stepByStepSolution": "Step 1: Atmospheric Extraction into Plant Biomass (Photosynthesis) — The atmospheric $CO_2$ molecule diffuses into a maize leaf through open stomata. Inside the leaf's mesophyll cells, chloroplasts use solar energy trapped by chlorophyll to combine the carbon dioxide with water, synthesizing a glucose molecule ($C_6H_{12}O_6$). The plant then converts this glucose into starch and cellulose forming the maize grain.\nStep 2: Transfer to Herbivore Muscle Tissue (Feeding & Assimilation) — A domestic goat feeds on the ripe maize plant. In the goat's digestive tract, digestive enzymes hydrolyze the maize starch into glucose, which is absorbed into the bloodstream and assimilated into protein and glycogen inside skeletal muscle cells.\nStep 3: Conversion into Fossil Deposit (Geological Sequestration) — If organic plant and animal remains are buried under anaerobic swamp sediments, prevented from decomposing, and subjected to intense geological pressure and geothermal heat over millions of years, the organic carbon carbonizes into crude oil or coal.\nStep 4: Return to the Atmosphere (Respiration or Combustion) — Alternatively, the goat oxidizes glucose during aerobic cellular respiration in its mitochondria, venting $CO_2$ back out through its lungs into the air. If the carbon became fossil fuel, human extraction and combustion in a diesel engine would rapidly oxidize it back into gaseous $CO_2$.",
+        "examinerTip": "Examiner Tip: In BECE questions tracing biogeochemical cycles, always clearly name the physiological or chemical processes at each transfer: Photosynthesis (entry) → Feeding/Assimilation (transfer) → Respiration/Combustion (return)."
+      },
+      {
+        "id": "WE_B8_CARB_02",
+        "questionPrompt": "A student wrote in a science essay: 'The greenhouse effect is an environmental poison caused by human factories and should be 100% eliminated from planet Earth.'\n(a) Critically evaluate this student's statement and explain why it is scientifically flawed.\n(b) Clearly distinguish between the natural greenhouse effect and the enhanced greenhouse effect.",
+        "stepByStepSolution": "Step 1: Evaluate the Scientific Flaw — The student's claim is completely incorrect. The natural greenhouse effect is not a poison; it is an indispensable natural thermal insulation mechanism. Without greenhouse gases trapping outgoing infrared heat, Earth's average surface temperature would plummet to approximately -18°C, freezing all water bodies and making life impossible.\nStep 2: Define the Natural Greenhouse Effect — The natural greenhouse effect is the normal physical trapping of thermal infrared radiation by baseline atmospheric greenhouse gases (principally water vapor, natural carbon dioxide, and methane) that keeps the Earth's average surface temperature at a hospitable +15°C.\nStep 3: Define the Enhanced Greenhouse Effect (Global Warming) — The enhanced greenhouse effect is the unnatural, excessive trapping of outgoing infrared heat caused by human activities (burning fossil fuels, deforestation, cement manufacture) injecting massive surplus quantities of $CO_2$ and $CH_4$ into the atmosphere, causing mean global temperatures to rise dangerously.",
+        "examinerTip": "Examiner Tip: Always emphasize that the greenhouse effect is a natural, life-sustaining physical phenomenon; it is only the human-caused 'enhanced' greenhouse effect that produces global warming and climate change."
+      },
+      {
+        "id": "WE_B8_CARB_03",
+        "questionPrompt": "The world's oceans absorb approximately 25% of all human-generated $CO_2$ emissions each year.\n(a) Explain how marine shellfish and coral reefs utilize dissolved carbon to construct their physical skeletons.\n(b) Explain the chemical process of ocean acidification and state two devastating consequences it poses to marine life.",
+        "stepByStepSolution": "Step 1: Mechanism of Shell Formation — Marine shellfish (oysters, clams, snails) and reef-building corals absorb dissolved calcium ions ($Ca^{2+}$) and bicarbonate ions ($HCO_3^-$) from seawater. Through biological calcification, they precipitate insoluble solid calcium carbonate ($CaCO_3$), forming rigid, durable protective shells and limestone reef skeletons.\nStep 2: Chemical Mechanism of Ocean Acidification — When excess atmospheric $CO_2$ dissolves into ocean surface waters, it reacts with water molecules to form carbonic acid ($H_2CO_3$): $CO_2 + H_2O \\rightarrow H_2CO_3$. Carbonic acid dissociates into hydrogen ions ($H^+$) and bicarbonate ($HCO_3^-$). The elevated surge of free $H^+$ ions lowers the natural pH of seawater, making it more acidic.\nStep 3: State Two Consequences to Marine Life — (1) The free $H^+$ ions react with available carbonate ions, depleting the raw building blocks shellfish need to build shells. (2) Highly acidic seawater directly dissolves the existing fragile calcium carbonate shells of young oysters, snails, and coral reefs, causing coral bleaching and triggering marine food web collapse.",
+        "examinerTip": "Examiner Tip: Chemical equations in ocean science carry high marks: remember that dissolving $CO_2$ yields carbonic acid ($H_2CO_3$), which liberates $H^+$ ions to decrease pH."
+      },
+      {
+        "id": "WE_B8_CARB_04",
+        "questionPrompt": "A peri-urban community in Ghana relies heavily on charcoal for cooking, burns municipal garbage in open pits, and has suffered severe deforestation due to illegal chainsaw logging. As a youth science environmental ambassador, formulate a 4-point practical scientific plan to reduce the community's net carbon footprint.",
+        "stepByStepSolution": "Step 1: Implement Community Afforestation & Reforestation — Organize community tree-planting days (planting fast-growing indigenous and nitrogen-fixing trees such as Cassia and Mahogany) around deforested areas, riverbanks, and school compounds. These trees will actively sequester atmospheric $CO_2$ through continuous photosynthesis.\nStep 2: Transition from Charcoal to LPG and Efficient Cookstoves — Facilitate access to the national LPG promotion program to replace wood charcoal with clean-burning Liquefied Petroleum Gas (LPG) or subsidized improved institutional cookstoves, dramatically halting tree felling for firewood.\nStep 3: End Open Refuse Burning via Composting and Recycling — Ban the open-air burning of municipal refuse (which vents thick smoke, soot, and $CO_2$). Separate biodegradable kitchen/market wastes to create organic compost for local vegetable farming, and sort plastics and cans for commercial recycling.\nStep 4: Deploy Solar Lighting and Energy Conservation Habits — Install standalone solar-powered streetlights along main roads and replace high-wattage incandescent filament light bulbs in residential homes with energy-efficient LED bulbs.",
+        "examinerTip": "Examiner Tip: When answering environmental mitigation questions, always state the scientific justification (e.g., 'planting trees absorbs $CO_2$ via photosynthesis', 'clean LPG prevents tree cutting', 'LEDs lower electricity demand')."
       }
     ],
     "drillQuestions": [
