@@ -41,7 +41,9 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
 
 const ASSESSMENT_TYPES = [
-    'Class Exercise (CA)', 
+    'Mock Exam (100%)',
+    'Mock Exam',
+'Class Exercise (CA)', 
     'Homework (CA)', 
     'Project (CA)', 
     'Mid-Term (CA)', 
@@ -1958,7 +1960,19 @@ export default function GradebookPage() {
                         {/* Presets */}
                         <div className="space-y-1.5">
                             <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Quick Presets</Label>
-                            <div className="grid grid-cols-3 gap-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => { setCustomCaInput(0); setCustomExamInput(100); }}
+                                    className={`rounded-xl text-xs font-bold h-11 ${
+                                        customCaInput === 0 && customExamInput === 100 
+                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-2 ring-indigo-500' 
+                                            : 'border-amber-300 bg-amber-50/60 text-amber-900 hover:bg-amber-100'
+                                    }`}
+                                >
+                                    🎯 0% CA / 100% Mock
+                                </Button>
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -2070,24 +2084,60 @@ export default function GradebookPage() {
 
             {/* Column Max Scores Configuration Modal */}
             <Dialog open={isMaxScoresModalOpen} onOpenChange={setIsMaxScoresModalOpen}>
-                <DialogContent className="sm:max-w-[480px] rounded-[2rem] border-0 shadow-2xl p-6">
+                <DialogContent className="sm:max-w-[500px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
                     <DialogHeader className="border-b border-slate-100 pb-4">
                         <DialogTitle className="flex items-center gap-2 text-slate-900 font-black text-xl">
                             <Sliders className="h-5 w-5 text-indigo-600" /> Column Max Scores
                         </DialogTitle>
-                        <DialogDescription className="text-slate-400 text-xs">
-                            Configure the maximum achievable score for each assessment component in the matrix.
+                        <DialogDescription className="text-slate-500 text-xs">
+                            Configure the maximum achievable score for each assessment component. To record a pure 100% Mock Exam, you can set CA components to 0 and Terminal Exam to 100.
                         </DialogDescription>
                     </DialogHeader>
+
+                    {/* Quick 1-Click Presets */}
+                    <div className="pt-2 pb-1">
+                        <Label className="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Quick Configuration Presets</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    setMatrixMaxScores({ classTest: 0, homework: 0, project: 0, midTerm: 0, exam: 100 });
+                                    setCaWeight(0);
+                                    setExamWeight(100);
+                                    setCustomCaInput(0);
+                                    setCustomExamInput(100);
+                                    toast({ title: "Mock Exam Mode Activated 🎯", description: "CA components set to 0 and Exam set to 100%." });
+                                }}
+                                className="h-10 text-xs font-bold rounded-xl border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                            >
+                                🎯 100% Mock / Exam Only
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                    setMatrixMaxScores({ classTest: 20, homework: 20, project: 20, midTerm: 40, exam: 100 });
+                                    toast({ title: "Standard Defaults Restored", description: "Set to 20 / 20 / 20 / 40 / 100." });
+                                }}
+                                className="h-10 text-xs font-bold rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100"
+                            >
+                                🔄 Standard NaCCA (20/40/100)
+                            </Button>
+                        </div>
+                    </div>
 
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-3">
                         <div className="space-y-1.5">
                             <Label className="text-xs font-bold text-slate-700">Class Test Max</Label>
                             <Input 
                                 type="number" 
-                                min="1" 
+                                min="0" 
                                 value={matrixMaxScores.classTest} 
-                                onChange={e => setMatrixMaxScores(prev => ({ ...prev, classTest: Number(e.target.value) || 20 }))}
+                                onChange={e => {
+                                    const v = e.target.value;
+                                    setMatrixMaxScores(prev => ({ ...prev, classTest: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                }}
                                 className="h-10 rounded-xl font-bold text-center border-slate-200"
                             />
                         </div>
@@ -2095,9 +2145,12 @@ export default function GradebookPage() {
                             <Label className="text-xs font-bold text-slate-700">Homework Max</Label>
                             <Input 
                                 type="number" 
-                                min="1" 
+                                min="0" 
                                 value={matrixMaxScores.homework} 
-                                onChange={e => setMatrixMaxScores(prev => ({ ...prev, homework: Number(e.target.value) || 20 }))}
+                                onChange={e => {
+                                    const v = e.target.value;
+                                    setMatrixMaxScores(prev => ({ ...prev, homework: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                }}
                                 className="h-10 rounded-xl font-bold text-center border-slate-200"
                             />
                         </div>
@@ -2105,9 +2158,12 @@ export default function GradebookPage() {
                             <Label className="text-xs font-bold text-slate-700">Project / CW Max</Label>
                             <Input 
                                 type="number" 
-                                min="1" 
+                                min="0" 
                                 value={matrixMaxScores.project} 
-                                onChange={e => setMatrixMaxScores(prev => ({ ...prev, project: Number(e.target.value) || 20 }))}
+                                onChange={e => {
+                                    const v = e.target.value;
+                                    setMatrixMaxScores(prev => ({ ...prev, project: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                }}
                                 className="h-10 rounded-xl font-bold text-center border-slate-200"
                             />
                         </div>
@@ -2115,9 +2171,12 @@ export default function GradebookPage() {
                             <Label className="text-xs font-bold text-slate-700">Mid-Term Max</Label>
                             <Input 
                                 type="number" 
-                                min="1" 
+                                min="0" 
                                 value={matrixMaxScores.midTerm} 
-                                onChange={e => setMatrixMaxScores(prev => ({ ...prev, midTerm: Number(e.target.value) || 40 }))}
+                                onChange={e => {
+                                    const v = e.target.value;
+                                    setMatrixMaxScores(prev => ({ ...prev, midTerm: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                }}
                                 className="h-10 rounded-xl font-bold text-center border-slate-200"
                             />
                         </div>
@@ -2127,7 +2186,10 @@ export default function GradebookPage() {
                                 type="number" 
                                 min="1" 
                                 value={matrixMaxScores.exam} 
-                                onChange={e => setMatrixMaxScores(prev => ({ ...prev, exam: Number(e.target.value) || 100 }))}
+                                onChange={e => {
+                                    const v = e.target.value;
+                                    setMatrixMaxScores(prev => ({ ...prev, exam: v === '' ? 100 : Math.max(1, Number(v)) }));
+                                }}
                                 className="h-10 rounded-xl font-bold text-center border-slate-200"
                             />
                         </div>
@@ -2137,9 +2199,9 @@ export default function GradebookPage() {
                         <Button 
                             onClick={() => {
                                 setIsMaxScoresModalOpen(false);
-                                toast({ title: "Max Scores Updated", description: "Column scaling refreshed." });
+                                toast({ title: "Max Scores Updated ✅", description: `Exam Max: ${matrixMaxScores.exam}, CA Max: ${matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm}` });
                             }} 
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold h-10"
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold h-10 shadow-sm"
                         >
                             Done
                         </Button>
