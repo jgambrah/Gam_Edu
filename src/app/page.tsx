@@ -1,4 +1,5 @@
 'use client';
+import { trackGoogleLeadConversion } from '@/lib/gtag';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -132,18 +133,11 @@ export default function LandingAndDemoPage() {
         console.warn("submitSchoolLead warning:", res.error);
       }
 
-      // 2. Fire Google Ads Conversion Tag
-      if (typeof window !== 'undefined' && (window as any).gtag) {
-        try {
-          (window as any).gtag('event', 'generate_lead', {
-            event_category: 'Demo_Request',
-            event_label: schoolName.trim(),
-            value: 1.0,
-          });
-        } catch (gtagErr) {
-          console.warn("gtag trigger error:", gtagErr);
-        }
-      }
+      // 2. Fire Google Ads Conversion Tag for Leads
+      trackGoogleLeadConversion({
+        schoolName: schoolName.trim(),
+        value: 1.0,
+      });
 
       setIsLeadSubmitted(true);
       toast({

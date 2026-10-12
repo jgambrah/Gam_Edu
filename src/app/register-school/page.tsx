@@ -1,5 +1,6 @@
 
 'use client';
+import { trackGoogleLeadConversion } from '@/lib/gtag';
 
 import { useState } from 'react';
 import { submitSchoolLead } from '@/app/actions/leads';
@@ -22,6 +23,10 @@ export default function RegisterSchoolPage() {
     const result = await submitSchoolLead(formData);
 
     if (result.success) {
+      trackGoogleLeadConversion({
+        schoolName: (formData.get('schoolName') as string) || undefined,
+        value: 1.0,
+      });
       setSuccess(true);
     } else {
       alert("Something went wrong. Please try again.");
