@@ -11,7 +11,7 @@ import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
 interface MathRendererProps {
-  content: string;
+  content: any;
   className?: string;
 }
 
@@ -49,7 +49,26 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
   const processed = useMemo(() => {
     if (!content) return '';
 
-    let text = content;
+    let text = '';
+    if (typeof content === 'string') {
+      text = content;
+    } else if (typeof content === 'object' && content !== null) {
+      if ((content as any).description) {
+        text = (content as any).stepTitle 
+          ? `**${(content as any).stepTitle}:** ${(content as any).description}`
+          : (content as any).description;
+      } else if ((content as any).text) {
+        text = (content as any).text;
+      } else {
+        try {
+          text = JSON.stringify(content);
+        } catch {
+          text = String(content);
+        }
+      }
+    } else {
+      text = String(content);
+    }
 
     // Defensive normalization: Ensure display math ($) enclosing LaTeX environments (e.g. \begin{aligned})
     // are placed on their own lines. In remark-math, non-newline tokens following $ on the first line

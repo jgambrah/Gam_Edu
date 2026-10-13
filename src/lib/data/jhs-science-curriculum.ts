@@ -7951,7 +7951,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.481Z"
+    "updatedAt": "2026-10-13T14:08:01.514Z"
   },
   {
     "id": "sci_strand1_cells",
@@ -15850,7 +15850,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.482Z"
+    "updatedAt": "2026-10-13T14:08:01.515Z"
   },
   {
     "id": "sci_strand2_earth_cycles",
@@ -21521,7 +21521,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.483Z"
+    "updatedAt": "2026-10-13T14:08:01.515Z"
   },
   {
     "id": "sci_strand2_life_cycles",
@@ -26795,7 +26795,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.483Z"
+    "updatedAt": "2026-10-13T14:08:01.516Z"
   },
   {
     "id": "sci_strand2_crop_production",
@@ -32074,7 +32074,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.483Z"
+    "updatedAt": "2026-10-13T14:08:01.516Z"
   },
   {
     "id": "sci_strand2_animal_production",
@@ -37351,7 +37351,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.483Z"
+    "updatedAt": "2026-10-13T14:08:01.516Z"
   },
   {
     "id": "sci_strand3_human_body",
@@ -42631,7 +42631,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.483Z"
+    "updatedAt": "2026-10-13T14:08:01.516Z"
   },
   {
     "id": "sci_strand3_solar_system",
@@ -47907,7 +47907,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.483Z"
+    "updatedAt": "2026-10-13T14:08:01.516Z"
   },
   {
     "id": "sci_strand3_ecosystems",
@@ -53175,7 +53175,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand3_farming_systems",
@@ -58467,7 +58467,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand4_energy_waves",
@@ -63795,7 +63795,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand4_electricity",
@@ -69146,7 +69146,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand4_forces_mechanics",
@@ -74543,7 +74543,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand4_agricultural_tools",
@@ -77296,7 +77296,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand5_waste_management",
@@ -82634,7 +82634,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.517Z"
   },
   {
     "id": "sci_strand5_human_health",
@@ -87938,7 +87938,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.518Z"
   },
   {
     "id": "sci_strand5_science_industry",
@@ -93243,7 +93243,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.518Z"
   },
   {
     "id": "sci_strand5_climate_change",
@@ -98528,7 +98528,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.518Z"
   },
   {
     "id": "sci_strand5_soil_science",
@@ -103820,7 +103820,7 @@ export const NACCA_JHS_SCIENCE_19_HUBS: TopicalLabDocument[] = [
         }
       }
     },
-    "updatedAt": "2026-10-13T13:23:50.484Z"
+    "updatedAt": "2026-10-13T14:08:01.518Z"
   }
 ];
 

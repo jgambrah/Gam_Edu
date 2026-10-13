@@ -879,17 +879,29 @@ export function TopicalLabRunner({
                               Step-by-Step Breakdown:
                             </span>
                             {Array.isArray(example.steps) && example.steps.length > 0 ? (
-                              <ol className="space-y-2 pl-1">
-                                {example.steps.map((step: string, stepIdx: number) => (
-                                  <li key={stepIdx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                                    <span className="w-5 h-5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                                      {stepIdx + 1}
-                                    </span>
-                                    <div className="flex-1">
-                                      <MathRenderer content={step} />
-                                    </div>
-                                  </li>
-                                ))}
+                              <ol className="space-y-3 pl-1">
+                                {example.steps.map((step: any, stepIdx: number) => {
+                                  const isObj = typeof step === 'object' && step !== null;
+                                  const stepNum = isObj && step.stepNumber ? step.stepNumber : stepIdx + 1;
+                                  const title = isObj && step.stepTitle ? step.stepTitle : null;
+                                  const desc = isObj ? (step.description || step.text || JSON.stringify(step)) : step;
+
+                                  return (
+                                    <li key={stepIdx} className="flex items-start gap-3 text-xs sm:text-sm text-slate-300">
+                                      <span className="w-6 h-6 rounded-full bg-slate-800 text-indigo-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 border border-slate-700/60">
+                                        {stepNum}
+                                      </span>
+                                      <div className="flex-1 space-y-1">
+                                        {title && (
+                                          <div className="font-bold text-white text-xs sm:text-sm">
+                                            {title}
+                                          </div>
+                                        )}
+                                        <MathRenderer content={desc} />
+                                      </div>
+                                    </li>
+                                  );
+                                })}
                               </ol>
                             ) : (example as any).solution ? (
                               <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 text-xs sm:text-sm text-slate-300 leading-relaxed">

@@ -12,11 +12,18 @@ export type TopicalLabLevelKey = 'b7' | 'b8' | 'b9' | 'jhs1' | 'jhs2' | 'jhs3';
 
 export type TopicalPracticeDifficulty = 'low' | 'medium' | 'hard';
 
+export interface WorkedExampleStep {
+  stepNumber?: number;
+  stepTitle?: string;
+  description?: string;
+  [key: string]: any;
+}
+
 export interface WorkedExample {
   id: string;
   title: string;
   problem: string;
-  steps: string[];
+  steps: (string | WorkedExampleStep)[];
   finalAnswer: string;
   diagramSvg?: string;
 }
