@@ -269,7 +269,8 @@ service cloud.firestore {
 
     match /staff/{staffId} {
       allow get, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(staffId);
+      allow create, update: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == request.resource.data.schoolId || !('schoolId' in request.resource.data))) || isOwner(staffId);
+      allow delete: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == resource.data.schoolId || !('schoolId' in resource.data) || resource.data.schoolId == null || resource.data.schoolId == ''));
       match /payroll/{configId} {
         allow read, write: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == getUserSchoolId()); // Or enforce school settings check
       }
@@ -289,7 +290,8 @@ service cloud.firestore {
 
     match /parents/{parentId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId) || isOwner(parentId);
+      allow create, update: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == request.resource.data.schoolId || !('schoolId' in request.resource.data))) || isOwner(parentId);
+      allow delete: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == resource.data.schoolId || !('schoolId' in resource.data) || resource.data.schoolId == null || resource.data.schoolId == ''));
     }
 
     // =========================================================
@@ -368,17 +370,20 @@ service cloud.firestore {
 
      match /classes/{classId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /subjects/{subjectId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /subjects/{subjectId}/assessments/{assessmentId} {
         allow read, list: if isSignedIn();
-        allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+        allow create, update: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+        allow delete: if isSuperAdmin() || isAdmin() || isTeacher();
     }
 
     match /assessments/{assessmentId} {
@@ -400,22 +405,26 @@ service cloud.firestore {
 
     match /timetables/{timetableId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /rooms/{roomId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /timeSlots/{timeSlotId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /school_calendar/{eventId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /attendance/{attendanceId} {
@@ -467,12 +476,14 @@ service cloud.firestore {
         parentOwnsStudent(resource.data.studentId)
       )));
       allow list: if isSignedIn();
-      allow write: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /report_card_remarks/{id} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /assignments/{assignmentId} {
@@ -532,7 +543,8 @@ service cloud.firestore {
 
     match /learning_materials/{materialId} {
       allow read, list: if isSignedIn();
-      allow write: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow create, update: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || isAdmin() || isTeacher();
     }
 
     match /behavioral_records/{recordId} {
@@ -1084,7 +1096,8 @@ service cloud.firestore {
     match /think_tank_responses/{responseId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update, delete: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
 
     match /scratch_assets/{assetId} {
