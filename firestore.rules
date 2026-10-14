@@ -44,30 +44,30 @@ service cloud.firestore {
     }
 
     function getUserSchoolId() {
-      return (request.auth.token != null && request.auth.token.schoolId != null)
+      return (request.auth.token != null && 'schoolId' in request.auth.token && request.auth.token.schoolId != null)
         ? request.auth.token.schoolId
         : (request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" || (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com")
            ? "oHr3BrGdK2eS5MQ5zmZU"
-           : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-              ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
-              : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
-                ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
-                : (exists(/databases/$(database)/documents/students/$(request.auth.uid))
+           : (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && ('schoolId' in get(/databases/$(database)/documents/staff/$(request.auth.uid)).data)
+              ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.schoolId
+              : (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && ('schoolId' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
+                ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId
+                : (exists(/databases/$(database)/documents/students/$(request.auth.uid)) && ('schoolId' in get(/databases/$(database)/documents/students/$(request.auth.uid)).data)
                    ? get(/databases/$(database)/documents/students/$(request.auth.uid)).data.schoolId
-                   : (exists(/databases/$(database)/documents/parents/$(request.auth.uid))
+                   : (exists(/databases/$(database)/documents/parents/$(request.auth.uid)) && ('schoolId' in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data)
                       ? get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.schoolId
                       : '')))));
     }
 
     function getUserRole() {
-      return (request.auth.token != null && request.auth.token.role != null)
+      return (request.auth.token != null && 'role' in request.auth.token && request.auth.token.role != null)
         ? request.auth.token.role
         : (request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" || (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com")
            ? "Director"
-           : (exists(/databases/$(database)/documents/users/$(request.auth.uid))
-              ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
-              : (exists(/databases/$(database)/documents/staff/$(request.auth.uid))
-                ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
+           : (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && ('role' in get(/databases/$(database)/documents/staff/$(request.auth.uid)).data)
+              ? get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role
+              : (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && ('role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
+                ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
                 : '')));
     }
 
@@ -76,6 +76,12 @@ service cloud.firestore {
         isSuperAdmin() ||
         request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" ||
         (request.auth.token != null && request.auth.token.email == "atampokaadongo@gmail.com") ||
+        (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) && 
+         ('role' in get(/databases/$(database)/documents/staff/$(request.auth.uid)).data) &&
+         get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin', 'Principal', 'Headmaster', 'Headmistress', 'Head Teacher', 'Registrar', 'Admissions', 'Owner']) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         ('role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin', 'Principal', 'Headmaster', 'Headmistress', 'Head Teacher', 'Registrar', 'Admissions', 'Owner']) ||
         getUserRole() in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin', 'Principal', 'Headmaster', 'Headmistress', 'Head Teacher', 'Registrar', 'Admissions', 'Owner']
       );
     }
@@ -270,7 +276,7 @@ service cloud.firestore {
     match /staff/{staffId} {
       allow get, list: if isSignedIn();
       allow create, update: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == request.resource.data.schoolId || !('schoolId' in request.resource.data))) || isOwner(staffId);
-      allow delete: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == resource.data.schoolId || !('schoolId' in resource.data) || resource.data.schoolId == null || resource.data.schoolId == ''));
+      allow delete: if isSuperAdmin() || isAdmin();
       match /payroll/{configId} {
         allow read, write: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == getUserSchoolId()); // Or enforce school settings check
       }
@@ -291,7 +297,7 @@ service cloud.firestore {
     match /parents/{parentId} {
       allow read, list: if isSignedIn();
       allow create, update: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == request.resource.data.schoolId || !('schoolId' in request.resource.data))) || isOwner(parentId);
-      allow delete: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == resource.data.schoolId || !('schoolId' in resource.data) || resource.data.schoolId == null || resource.data.schoolId == ''));
+      allow delete: if isSuperAdmin() || isAdmin();
     }
 
     // =========================================================
