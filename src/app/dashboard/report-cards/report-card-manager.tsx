@@ -215,12 +215,50 @@ export default function ReportCardManager() {
     [firestore, schoolId, role]);
     const { data: timetable } = useCollection<any>(timetableQuery);
 
+    const subjectsQuery = useMemoFirebase(() => 
+        (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId]);
+    const { data: subjects } = useCollection<any>(subjectsQuery);
+
     const visibleClasses = useMemo(() => {
         if (!classes) return [];
         if (role?.toLowerCase() !== 'teacher') return classes;
-        const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
-        return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
-    }, [classes, timetable, role, user?.uid]);
+
+        const isClassTeacher = (c: any) => 
+            c.teacherId === user?.uid || 
+            (Array.isArray(c.teacherIds) && c.teacherIds.includes(user?.uid));
+
+        const timetableClassIds = timetable
+            ?.filter((t: any) => t.teacherId === user?.uid)
+            .map((t: any) => t.classId) || [];
+
+        const teacherSubjects = subjects?.filter((s: any) => 
+            Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)
+        ) || [];
+
+        let teachesAllCohorts = false;
+        const subjectClassIds: string[] = [];
+
+        teacherSubjects.forEach((s: any) => {
+            if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
+                s.targetClasses.forEach((cid: string) => {
+                    if (cid && !subjectClassIds.includes(cid)) {
+                        subjectClassIds.push(cid);
+                    }
+                });
+            } else {
+                teachesAllCohorts = true;
+            }
+        });
+
+        return classes.filter((c: any) => 
+            isClassTeacher(c) || 
+            timetableClassIds.includes(c.id) || 
+            teachesAllCohorts || 
+            subjectClassIds.includes(c.id) ||
+            subjectClassIds.some((cid: string) => cid.toLowerCase() === (c.name || '').toLowerCase())
+        );
+    }, [classes, subjects, timetable, role, user?.uid]);
 
     // Class access guard
     useEffect(() => {
@@ -249,9 +287,7 @@ export default function ReportCardManager() {
         (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, 
     [firestore, schoolId]));
 
-    const { data: subjects } = useCollection<any>(useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
-    [firestore, schoolId]));
+// subjects fetched above
     
     const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => 
         (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 

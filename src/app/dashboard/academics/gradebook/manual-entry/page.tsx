@@ -193,12 +193,49 @@ export default function GradebookPage() {
     [firestore, schoolId]);
     const { data: timetable } = useCollection<any>(timetableQuery);
 
+    const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+    const { data: subjects } = useCollection<any>(subjectsQuery);
+
     const visibleClasses = useMemo(() => {
         if (!classes) return [];
         if (role !== 'Teacher') return classes;
-        const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
-        return classes.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
-    }, [classes, timetable, role, user?.uid]);
+
+        const isClassTeacher = (c: any) => 
+            c.teacherId === user?.uid || 
+            (Array.isArray(c.teacherIds) && c.teacherIds.includes(user?.uid));
+
+        const timetableClassIds = timetable
+            ?.filter((t: any) => t.teacherId === user?.uid)
+            .map((t: any) => t.classId) || [];
+
+        // Classes for subjects assigned to this teacher
+        const teacherSubjects = subjects?.filter((s: any) => 
+            Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)
+        ) || [];
+
+        let teachesAllCohorts = false;
+        const subjectClassIds: string[] = [];
+
+        teacherSubjects.forEach((s: any) => {
+            if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
+                s.targetClasses.forEach((cid: string) => {
+                    if (cid && !subjectClassIds.includes(cid)) {
+                        subjectClassIds.push(cid);
+                    }
+                });
+            } else {
+                teachesAllCohorts = true;
+            }
+        });
+
+        return classes.filter((c: any) => 
+            isClassTeacher(c) || 
+            timetableClassIds.includes(c.id) || 
+            teachesAllCohorts || 
+            subjectClassIds.includes(c.id) ||
+            subjectClassIds.some((cid: string) => cid.toLowerCase() === (c.name || '').toLowerCase())
+        );
+    }, [classes, subjects, timetable, role, user?.uid]);
 
     // Class access guard
     useEffect(() => {
@@ -216,9 +253,6 @@ export default function GradebookPage() {
             }
         }
     }, [classId, role, visibleClasses, isLoadingClasses, toast]);
-
-    const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: subjects } = useCollection<any>(subjectsQuery);
 
     const visibleSubjects = useMemo(() => {
         if (!subjects || subjects.length === 0) return [];
@@ -239,7 +273,12 @@ export default function GradebookPage() {
 
         const assignedSubjects = subjects.filter((s: any) => {
             if (s.id && teacherTimetableSubjectIds.includes(s.id)) return true;
-            if (Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)) return true;
+            if (Array.isArray(s.teacherIds) && s.teacherIds.includes(user?.uid)) {
+                if (Array.isArray(s.targetClasses) && s.targetClasses.length > 0) {
+                    return s.targetClasses.includes(classId) || s.targetClasses.some((tc: string) => tc.toLowerCase() === (selectedClass?.name || '').toLowerCase());
+                }
+                return true;
+            }
             return false;
         });
 
