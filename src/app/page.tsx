@@ -1,5 +1,5 @@
 'use client';
-import { trackGoogleLeadConversion } from '@/lib/gtag';
+import { trackGoogleLeadConversion, trackGoogleCallConversion } from '@/lib/gtag';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -693,6 +693,7 @@ export default function LandingAndDemoPage() {
                     <div className="flex flex-wrap items-center justify-center gap-2">
                       <a
                         href="tel:+233244750903"
+                        onClick={() => trackGoogleCallConversion("tel:+233244750903")}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-bold border border-slate-700 transition-colors"
                       >
                         <Phone className="h-3 w-3 text-amber-400" />
@@ -747,7 +748,7 @@ export default function LandingAndDemoPage() {
             <div className="flex items-center gap-4 text-slate-400 font-medium">
               <span>Accra • Kumasi • Takoradi</span>
               <span>•</span>
-              <a href="tel:+233244750903" className="hover:text-white transition-colors">
+              <a href="tel:+233244750903" onClick={() => trackGoogleCallConversion("tel:+233244750903")} className="hover:text-white transition-colors">
                 +233 24 475 0903
               </a>
               <span>•</span>
