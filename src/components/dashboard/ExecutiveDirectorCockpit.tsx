@@ -210,8 +210,7 @@ export function ExecutiveDirectorCockpit({
     // Count reflects verified transactions logged today across till and direct receipts
     const count = Math.max(
       Number(unifiedMetrics.todayCount) || 0,
-      Number(openTillsTransactionsCount) || 0,
-      total > 0 ? 1 : 0
+      Number(openTillsTransactionsCount) || 0
     );
 
     return {
@@ -1383,7 +1382,11 @@ export function ExecutiveDirectorCockpit({
                     {todayCashCollected.total > 0 ? (
                       <div className="flex items-center justify-between text-slate-500">
                         <span>Logged Receipts Today:</span>
-                        <span className="font-semibold text-slate-800">{todayCashCollected.count} transaction{todayCashCollected.count === 1 ? '' : 's'}</span>
+                        <span className="font-semibold text-slate-800">
+                          {todayCashCollected.count > 0
+                            ? `${todayCashCollected.count} transaction${todayCashCollected.count === 1 ? '' : 's'}`
+                            : 'Syncing…'}
+                        </span>
                       </div>
                     ) : (
                       <div className="flex items-center justify-between text-slate-500">

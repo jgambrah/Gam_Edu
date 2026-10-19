@@ -3639,7 +3639,7 @@ function DirectorDashboard({
     const rawSummaryToday = Number(summaryCollectedToday ?? 0);
     const finalSummaryToday = isSummaryToday ? rawSummaryToday : 0;
     return Math.max(clientTotal, finalSummaryToday, openTillsCash || 0);
-  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, dashboardSummary?.lastUpdated, startOfToday, openTillsCash]);
+  }, [payments, summaryCollectedToday, dashboardSummary?.financials?.lastPaymentAt, startOfToday, openTillsCash]);
 
   const classSizes = useMemo(() => {
     if (!classes || !students) return [];
@@ -12258,39 +12258,20 @@ export default function DashboardClient() {
         return;
       }
 
+      // Only till sessions that STARTED today can represent "today's" collections.
+      // A till opened on a previous day (left open overnight, or closed/submitted today) holds
+      // takings from earlier days and would otherwise show up as phantom "Collected Today" cash.
+      const dateOpened = safeParseDate(t.dateOpened);
+      if (!dateOpened || dateOpened < startOfToday) return;
+      if (t.status !== 'Open' && t.status !== 'PendingApproval' && t.status !== 'Closed') return;
+
       const openingFloat = Number(t.openingBalance || 0);
       const grossDrawer = Number(t.actualCashCounted ?? t.closingBalance ?? t.expectedBalance ?? t.currentBalance ?? 0);
       const netCollected = Math.max(0, grossDrawer - openingFloat);
       const txCount = Number(t.transactionCount || (t.transactions && Array.isArray(t.transactions) ? t.transactions.length : 0));
 
-      // 1. If the till is actively Open, it is the physical live register currently active at the counter
-      if (t.status === 'Open') {
-        totalCash += netCollected;
-        totalTxCount += txCount;
-        return;
-      }
-
-      // 2. If PendingApproval, it is today's cashier audit report submitted for Director review
-      const dateOpened = safeParseDate(t.dateOpened);
-      const dateClosed = safeParseDate(t.dateClosed);
-      if (t.status === 'PendingApproval') {
-        const isToday = (dateClosed && dateClosed >= startOfToday) || (dateOpened && dateOpened >= startOfToday);
-        if (isToday) {
-          totalCash += netCollected;
-          totalTxCount += txCount;
-        }
-        return;
-      }
-
-      // 3. If Closed, only include if closed today
-      if (t.status === 'Closed') {
-        const isClosedToday = !!(dateClosed && dateClosed >= startOfToday);
-        if (isClosedToday) {
-          totalCash += netCollected;
-          totalTxCount += txCount;
-        }
-        return;
-      }
+      totalCash += netCollected;
+      totalTxCount += txCount;
     });
 
     return { openTillsCash: totalCash, openTillsTransactionsCount: totalTxCount };
