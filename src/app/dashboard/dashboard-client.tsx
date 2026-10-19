@@ -5593,7 +5593,7 @@ function AccountantDashboard({
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="Outstanding Debt" value={`GH₵${Math.round(stats.totalOutstanding).toLocaleString()}`} subtitle={stats.credits > 0 ? `Gross, all terms · less GH₵${Math.round(stats.credits).toLocaleString()} credits = GH₵${Math.round(Math.max(0, stats.totalOutstanding - stats.credits)).toLocaleString()} net` : 'All unpaid bills, all terms'} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
                 <StatCard title={stats.revenueIsThisYear ? 'Collected This Year' : 'Total Collections'} value={`GH₵${Math.round(stats.totalRevenue).toLocaleString()}`} subtitle={stats.revenueIsThisYear ? `Paid on ${currentYear} bills` : 'All payments recorded'} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
-                <StatCard title="Active Students" value={students && students.length > 0 ? activeStudentCount : (dashboardSummary?.studentCount?.active || 0)} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Active Students" value={financialsMode === 'full' && students && students.length > 0 ? activeStudentCount : (dashboardSummary?.studentCount?.active ?? activeStudentCount)} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
                 <StatCard title="Vouchers Awaiting Approval" value={pendingVoucherCount === null ? '—' : pendingVoucherCount} icon={Receipt} link="/dashboard/finance/payment-vouchers" isLoading={isLoading} color="text-indigo-600" />
             </div>
 
@@ -5722,7 +5722,7 @@ function AccountantDashboard({
                                                     <div key={cat.name} className="space-y-1">
                                                         <div className="flex justify-between text-xs">
                                                             <span className="font-semibold text-slate-700">{cat.name}</span>
-                                                            <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
+                                                            <span className={cn("font-bold font-mono", textColor)}>{(Number(cat.billed) || 0) - (Number(cat.waived) || 0) > 0 ? `${cat.rate.toFixed(1)}% of this year paid` : 'Not billed this year'} · {cat.outstanding > 0 ? `GH₵${Math.round(cat.outstanding).toLocaleString()} owed (all terms)` : 'Settled'}</span>
                                                         </div>
                                                         <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                                                             <div 
@@ -12072,6 +12072,10 @@ export default function DashboardClient() {
   // Cost Guard: On-Demand financial records via one-time getDocs (0 background listener reads)
   const [financialsMode, setFinancialsMode] = useState<'on-demand' | 'full' | 'loaded'>('on-demand');
   const [onDemandRecords, setOnDemandRecords] = useState<any[]>([]);
+  // The dashboard normally reads at most 150 students (cost guard). When the full ledger is loaded, the
+  // whole student list is loaded with it — otherwise every bill of a student outside those 150 was
+  // dropped from the totals (the Accountant dashboard showed about half the school's debt).
+  const [ledgerStudents, setLedgerStudents] = useState<any[] | null>(null);
   const [loadingOnDemandRecords, setLoadingOnDemandRecords] = useState(false);
 
   const loadFinancialsOnDemand = useCallback(async () => {
@@ -12084,8 +12088,12 @@ export default function DashboardClient() {
         collection(firestore, 'financialRecords'),
         where('schoolId', '==', schoolId)
       );
-      const snap = await getDocs(q);
+      const [snap, studentSnap] = await Promise.all([
+        getDocs(q),
+        getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId))),
+      ]);
       const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter((r: any) => r.isArchived !== true);
+      setLedgerStudents(studentSnap.docs.map(d => ({ id: d.id, ...d.data() })));
       setOnDemandRecords(list);
       setFinancialsMode('full');
     } catch (err) {
@@ -12503,7 +12511,7 @@ export default function DashboardClient() {
       activeTab={directorActiveTab}
       setActiveTab={setDirectorActiveTab}
       // ─── Legacy props with safe empty defaults (drill-down still possible via navigation) ───
-      students={students ?? []}
+      students={ledgerStudents ?? students ?? []}
       staff={staff ?? []}
       classes={classes ?? []}
       financialRecords={records ?? []}
@@ -12524,7 +12532,7 @@ export default function DashboardClient() {
       openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
       onLoadFinancials={loadFinancialsOnDemand}
-      onSwitchOnDemand={() => { setOnDemandRecords([]); setFinancialsMode('on-demand'); }}
+      onSwitchOnDemand={() => { setOnDemandRecords([]); setLedgerStudents(null); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingOnDemandRecords}
     />;
   }
@@ -12534,7 +12542,7 @@ export default function DashboardClient() {
       activeTab={adminActiveTab} 
       setActiveTab={setAdminActiveTab} 
       profile={profile} 
-      students={students ?? []} 
+      students={ledgerStudents ?? students ?? []} 
       staff={staff ?? []} 
       classes={classes ?? []} 
       announcements={announcements ?? []} 
@@ -12569,7 +12577,7 @@ export default function DashboardClient() {
       openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
       onLoadFinancials={loadFinancialsOnDemand}
-      onSwitchOnDemand={() => { setOnDemandRecords([]); setFinancialsMode('on-demand'); }}
+      onSwitchOnDemand={() => { setOnDemandRecords([]); setLedgerStudents(null); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingAllRecords}
     />;
   }
@@ -12585,7 +12593,7 @@ export default function DashboardClient() {
   if (role === 'Accountant') {
     return <AccountantDashboard 
       profile={profile} 
-      students={students ?? []} 
+      students={ledgerStudents ?? students ?? []} 
       classes={classes ?? []} 
       records={records ?? []} 
       tills={tills ?? []} 
@@ -12594,7 +12602,7 @@ export default function DashboardClient() {
       schoolSettings={schoolSettings} 
       financialsMode={financialsMode}
       onLoadFinancials={loadFinancialsOnDemand}
-      onSwitchOnDemand={() => { setOnDemandRecords([]); setFinancialsMode('on-demand'); }}
+      onSwitchOnDemand={() => { setOnDemandRecords([]); setLedgerStudents(null); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingAllRecords}
       dashboardSummary={dashboardSummary}
     />;

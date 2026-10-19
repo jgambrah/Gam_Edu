@@ -5622,7 +5622,7 @@ export default function AccountsPage() {
                                                         <div key={cat.name} className="space-y-1">
                                                             <div className="flex justify-between text-xs">
                                                                 <span className="font-semibold text-slate-700">{cat.name}</span>
-                                                                <span className={cn("font-bold font-mono", textColor)}>{cat.rate.toFixed(1)}% ({cat.outstanding > 0 ? `GH₵${cat.outstanding.toFixed(0)} owed` : 'Settled'})</span>
+                                                                <span className={cn("font-bold font-mono", textColor)}>{(Number(cat.billed) || 0) - (Number(cat.waived) || 0) > 0 ? `${cat.rate.toFixed(1)}% of this year paid` : 'Not billed this year'} · {cat.outstanding > 0 ? `GH₵${Math.round(cat.outstanding).toLocaleString()} owed (all terms)` : 'Settled'}</span>
                                                             </div>
                                                             <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                                                                 <div 

@@ -198,9 +198,12 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     else if (typeLower.includes('pta')) catKey = 'PTA Levy';
 
     if (categoryMap[catKey]) {
-      categoryMap[catKey].billed += billed;
-      categoryMap[catKey].paid += paid;
-      categoryMap[catKey].waived += waiver;
+      // Per-fee rates use this academic year's bills (like the overall rate); "owed" covers all terms.
+      if (!currentAcademicYear || recordYearKey(r) === currentAcademicYear) {
+        categoryMap[catKey].billed += billed;
+        categoryMap[catKey].paid += paid;
+        categoryMap[catKey].waived += waiver;
+      }
       if (balance > 0.01) categoryMap[catKey].owed += balance;
     }
     billPaidTotal += paid;

@@ -30,7 +30,17 @@ const schoolArg = args.includes('--school') ? args[args.indexOf('--school') + 1]
   for (const id of ids) {
     try {
       await recalculateSchoolFinancials(id);
-      console.log(`Rebuilt ${id}`);
+      const sum = (await admin.firestore().collection('dashboard_summaries').doc(id).get()).data() || {};
+      const fin = sum.financials || {};
+      const da = sum.debtAging || {};
+      const gross = ['current', 'age30', 'age60', 'age90'].reduce((t, k) => t + (Number(da[k]) || 0), 0);
+      console.log(`\nRebuilt ${id}  current year: ${fin.currentAcademicYear || '(not set in School Profile)'}`);
+      console.log(`  debt GH₵${gross.toFixed(2)}  credits GH₵${(Number(da.overpayments) || 0).toFixed(2)}  rate this year ${fin.collectionRate}%`);
+      // Billing per academic year: if this term's fees appear under last year (or "unknown"), the bills were
+      // created before School Profile was switched to the new year, and the collection rate will look wrong.
+      Object.entries(fin.yearBills || {}).sort().forEach(([y, v]) => {
+        console.log(`    ${y.padEnd(10)} billed ${Number(v.billed).toFixed(2).padStart(12)}  paid ${Number(v.paid).toFixed(2).padStart(12)}  waived ${Number(v.waived).toFixed(2).padStart(10)}`);
+      });
     } catch (e) {
       console.error(`Failed ${id}:`, e.message);
     }
