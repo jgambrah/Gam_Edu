@@ -342,6 +342,8 @@ export function computeFinancialMetrics({
   // Filter financial records by campus, term, and academic year
   const filteredRecords = financialRecords.filter((r: any) => {
     if (r.status === 'Pending Reversal') return false;
+    // Archived by a term rollover: the remaining balance lives on the Brought Forward record instead.
+    if (r.isArchived === true) return false;
     if (allStudentIds.size > 0 && r.studentId && !allStudentIds.has(r.studentId) && students.length > 0) return false;
     if (campusId && !isCampusMatch(r.campusId, campusId)) return false;
     if (termId && r.termId && r.termId !== termId) return false;
@@ -352,6 +354,8 @@ export function computeFinancialMetrics({
   // Filter payments by term, academic year, campus
   const filteredPayments = payments.filter((p: any) => {
     if (p.status === 'Reversed' || p.status === 'Cancelled' || p.status === 'Pending Reversal') return false;
+    // Credit carried over from a closed term is not new cash.
+    if (p.isCarryForward === true) return false;
     if (allStudentIds.size > 0 && p.studentId && !allStudentIds.has(p.studentId) && students.length > 0) return false;
     if (campusId && !isCampusMatch(p.campusId, campusId)) return false;
     if (termId && p.termId && p.termId !== termId) return false;

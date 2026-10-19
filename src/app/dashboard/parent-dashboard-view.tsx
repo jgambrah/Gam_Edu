@@ -32,7 +32,7 @@ import { BADGE_CATALOG } from '@/lib/achievement-utils';
 export function ParentDashboard({ 
   profile, 
   children = [], 
-  financials = [], 
+  financials: allFinancials = [], 
   announcements = [], 
   isLoading, 
   schoolSettings,
@@ -51,6 +51,8 @@ export function ParentDashboard({
   quizAttempts = []
 }: any) {
     const displayName = profile?.firstName || 'Parent';
+    // Bills from a closed term are archived; their remaining balance is on the Brought Forward record.
+    const financials = useMemo(() => (allFinancials || []).filter((r: any) => r?.isArchived !== true), [allFinancials]);
     const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'attendance' | 'academics' | 'examination' | 'assignments' | 'financials' | 'notices' | 'canteen' | 'satisfaction'>('overview');
     const [academicTrendView, setAcademicTrendView] = useState<'improvement' | 'decline' | 'subject-comparison' | 'class-comparison'>('improvement');
 

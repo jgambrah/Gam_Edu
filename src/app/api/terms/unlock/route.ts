@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requestTermUnlock } from '../../../../../functions/src/term-management';
+import { requireSchoolAdmin, AuthError } from '@/lib/admin-guard';
 
 function formatErrorMessage(error: any): { message: string; statusCode: number } {
   const errMsg = String(error?.message || error || '');
@@ -53,17 +54,22 @@ export async function POST(req: Request) {
       );
     }
 
+    const adminUser = await requireSchoolAdmin(req, schoolId);
+
     const result = await requestTermUnlock({
       schoolId,
       termId,
       requestedDurationHours,
       reason,
-      requestedBy,
+      requestedBy: adminUser.name || requestedBy,
       updateRawRecords: Boolean(updateRawRecords),
     });
 
     return NextResponse.json(result);
   } catch (error: any) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('API /api/terms/unlock Error:', error);
     const { message, statusCode } = formatErrorMessage(error);
     return NextResponse.json(

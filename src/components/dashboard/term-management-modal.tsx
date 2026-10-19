@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Unlock, AlertTriangle, Clock, ShieldAlert, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useUser } from '@/firebase';
 
 interface TermManagementModalProps {
   schoolId: string;
@@ -25,6 +26,7 @@ export function TermManagementModal({
   const [reason, setReason] = useState('');
   const [durationHours, setDurationHours] = useState(24);
   const { toast } = useToast();
+  const { user } = useUser();
 
   const handleConfirmUnlock = async () => {
     if (!reason.trim()) {
@@ -38,9 +40,11 @@ export function TermManagementModal({
 
     setLoading(true);
     try {
+      if (!user) throw new Error('You are not signed in.');
+      const token = await user.getIdToken();
       const res = await fetch('/api/terms/unlock', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           schoolId,
           termId: currentTermId,

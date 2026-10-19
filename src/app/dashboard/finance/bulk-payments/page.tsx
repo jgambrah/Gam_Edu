@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { termStampOfRecord } from '@/lib/term';
 import { format, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -323,7 +324,8 @@ export default function BulkDailyReceiptsPage() {
                     studentId: bill.studentId,
                     description: finalDescription,
                     notes: 'Bulk Daily Receipting',
-                    tillId: activeTill.id
+                    tillId: activeTill.id,
+                    ...(() => { const st = termStampOfRecord(bill); return st ? { termId: st.termId, academicYear: st.academicYear } : {}; })(),
                 });
 
                 batch.set(tillTransRef, {

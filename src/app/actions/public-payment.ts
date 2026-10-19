@@ -32,6 +32,9 @@ export async function getPublicInvoiceDetails(recordId: string) {
     const recordDoc = await db.collection('financialRecords').doc(recordId).get();
     if (!recordDoc.exists) return { success: false, error: "Invoice not found." };
     const recordData = recordDoc.data();
+    if (recordData?.isArchived === true) {
+        return { success: false, error: "This bill belongs to a closed term. Its balance was carried into the current term; please use the latest bill." };
+    }
 
     // 2. Fetch School Settings for Branding & Paystack Keys
     const schoolDoc = await db.collection('schoolSettings').doc(recordData?.schoolId).get();

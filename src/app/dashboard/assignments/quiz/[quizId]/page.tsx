@@ -27,6 +27,7 @@ import { triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
 import { BlockMath, InlineMath } from 'react-katex';
+import { submitQuizAttemptAction } from '@/app/actions/quiz-submit';
 
 function MathText({ text }: { text: string }) {
   const [mounted, setMounted] = useState(false);
@@ -188,15 +189,11 @@ export default function QuizPage() {
     setSubmitted(true);
     
     try {
-        const attemptData = {
-            quizId: quiz.id,
-            studentId: user.uid,
-            score: currentScore,
-            total: quiz.questions.length,
-            completedAt: serverTimestamp(),
-            schoolId: schoolId,
-        };
-        await addDoc(collection(firestore, 'quizAttempts'), attemptData);
+        // Graded and saved on the server (students can no longer write their own marks).
+        const res = await submitQuizAttemptAction(await user.getIdToken(), quiz.id, Object.fromEntries(Object.entries(answers).map(([k, v]) => [String(k), v])));
+        if (!res.ok) throw new Error(res.error);
+        currentScore = res.score;
+        setScore(res.score);
 
         // Trigger gamification badge updates (0 extra reads)
         try {
@@ -209,49 +206,6 @@ export default function QuizPage() {
           console.error("Error triggering student badge event:", badgeErr);
         }
 
-        // Auto Gradebook integration entry!
-        if ((quiz as any).gradable && (quiz as any).subjectId) {
-          try {
-            let term = 'First Term';
-            let academicYear = '2024-2025';
-            try {
-              const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId));
-              if (settingsSnap.exists()) {
-                const settingsData = settingsSnap.data();
-                if (settingsData.term) term = settingsData.term;
-                if (settingsData.academicYear) academicYear = settingsData.academicYear;
-              }
-            } catch (err) {
-              console.error("Error fetching schoolSettings:", err);
-            }
-
-            const studentName = student ? `${student.firstName} ${student.lastName}`.trim() : user.displayName || 'Student';
-            const maxScoreBasis = 100;
-            const pctScore = quiz.questions.length > 0 ? Math.round((currentScore / quiz.questions.length) * 100) : 0;
-
-            const assessmentRef = doc(collection(firestore, 'assessments'));
-            await setDoc(assessmentRef, {
-              studentId: user.uid,
-              studentName: studentName,
-              classId: quiz.classId,
-              subjectId: (quiz as any).subjectId,
-              schoolId: schoolId,
-              teacherId: quiz.teacherId || '',
-              term: term,
-              academicYear: academicYear,
-              assessmentType: (quiz as any).assessmentType || 'Class Exercise (CA)',
-              score: pctScore, 
-              maxScore: maxScoreBasis,
-              teacherRemark: `AI Quiz completed: ${currentScore}/${quiz.questions.length} questions correct.`,
-              createdAt: serverTimestamp(),
-              assessmentDate: serverTimestamp(),
-              quizId: quiz.id
-            });
-          } catch (assessErr) {
-            console.error("Error writing gradebook assessment entry:", assessErr);
-          }
-        }
-
         confetti({
             particleCount: 150,
             spread: 70,
@@ -262,9 +216,9 @@ export default function QuizPage() {
           title: 'Quiz Submitted!',
           description: `You scored ${currentScore} out of ${quiz.questions.length}.`,
         });
-    } catch (e) {
+    } catch (e: any) {
         console.error(e);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not save your attempt.' });
+        toast({ variant: 'destructive', title: 'Error', description: e?.message || 'Could not save your attempt.' });
     } finally {
         setIsSubmitting(false);
     }

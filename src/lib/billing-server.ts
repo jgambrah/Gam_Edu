@@ -1,6 +1,21 @@
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { format, startOfDay } from 'date-fns';
 import { applyHeldCreditAfterBillingServer } from '@/lib/credit-allocation-server';
+import { currentTermFromProfile, type TermStamp } from '@/lib/term';
+
+/** Reads the school's current term from the school profile. Returns null if it isn't set. Never throws. */
+export async function fetchCurrentTermStampServer(db: FirebaseFirestore.Firestore, schoolId: string): Promise<TermStamp | null> {
+  try {
+    const snap = await db.collection('schools').doc(schoolId).get();
+    const stamp = currentTermFromProfile(snap.exists ? snap.data() : null);
+    if (stamp) return stamp;
+    const settings = await db.collection('schoolSettings').doc(schoolId).get();
+    return currentTermFromProfile(settings.exists ? settings.data() : null);
+  } catch (e) {
+    console.warn('Could not read current term (server); bill will be stamped by the backfill instead:', e);
+    return null;
+  }
+}
 
 const DAILY_RATES = {
   CANTEEN: 0.00,
@@ -22,7 +37,8 @@ export async function billStudentForAttendanceServer(
   student: any,
   attendanceDate: Date,
   schoolId: string,
-  providedRates?: { canteen: number; transport: number }
+  providedRates?: { canteen: number; transport: number },
+  termStamp?: TermStamp | null
 ): Promise<BillingResult> {
   try {
     if (!student || !student.uid || !schoolId) {
@@ -61,25 +77,50 @@ export async function billStudentForAttendanceServer(
     const batch = db.batch();
     let totalBilled = 0;
     const billedServices: string[] = [];
+    // Every new bill carries termId + academicYear + term (see src/lib/term.ts).
+    const stamp = termStamp === undefined ? await fetchCurrentTermStampServer(db, schoolId) : termStamp;
+    const termFields = stamp ? { ...stamp, isArchived: false } : { isArchived: false };
 
     // SAFETY: never overwrite a bill that already exists for this day (a repeat scan used to reset a
     // paid bill back to amountPaid 0 / Unpaid). If the check itself fails, billing continues as before.
     const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
     const transportRecordId = `transport-${student.uid}-${dateStr}`;
     const alreadyBilled = new Set<string>();
+    // Bills voided by an earlier absence correction are restored (not skipped, not overwritten).
+    const voided = new Map<string, any>();
     try {
       const [cSnap, tSnap] = await db.getAll(
         db.collection('financialRecords').doc(canteenRecordId),
         db.collection('financialRecords').doc(transportRecordId)
       );
-      if (cSnap.exists) alreadyBilled.add(canteenRecordId);
-      if (tSnap.exists) alreadyBilled.add(transportRecordId);
+      for (const s of [cSnap, tSnap]) {
+        if (!s.exists) continue;
+        if ((s.data() as any)?.voided) voided.set(s.id, s.data());
+        else alreadyBilled.add(s.id);
+      }
     } catch (checkErr) {
       console.warn('Existing-bill check failed (server); continuing with billing:', checkErr);
     }
 
+    const restoreVoided = (prev: any, rate: number) => {
+      const paid = Number(prev?.amountPaid) || 0;
+      const waiver = Number(prev?.originalWaiverAmount ?? prev?.waiverAmount) || 0;
+      return {
+        billedAmount: rate,
+        waiverAmount: waiver,
+        voided: false,
+        voidReason: null,
+        restoredAt: FieldValue.serverTimestamp(),
+        status: rate - paid - waiver <= 0.001 ? 'Paid' : 'Unpaid',
+      };
+    };
+
     // 3. Process Canteen Bill (Using Deterministic ID)
-    if (shouldBillCanteen && canteenRate > 0 && !alreadyBilled.has(canteenRecordId)) {
+    if (shouldBillCanteen && canteenRate > 0 && voided.has(canteenRecordId)) {
+      batch.update(db.collection('financialRecords').doc(canteenRecordId), restoreVoided(voided.get(canteenRecordId), canteenRate));
+      totalBilled += canteenRate;
+      billedServices.push('Canteen');
+    } else if (shouldBillCanteen && canteenRate > 0 && !alreadyBilled.has(canteenRecordId)) {
       const canteenRef = db.collection('financialRecords').doc(canteenRecordId);
       
       batch.set(canteenRef, {
@@ -95,13 +136,18 @@ export async function billStudentForAttendanceServer(
         dueDate: Timestamp.fromDate(normalizedDate),
         createdAt: FieldValue.serverTimestamp(),
         schoolId: schoolId,
+        ...termFields,
       }, { merge: true });
       totalBilled += canteenRate;
       billedServices.push('Canteen');
     }
 
     // 4. Process Transport Bill (Using Deterministic ID)
-    if (isDailyTransportSubscriber && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
+    if (isDailyTransportSubscriber && transportRate > 0 && voided.has(transportRecordId)) {
+      batch.update(db.collection('financialRecords').doc(transportRecordId), restoreVoided(voided.get(transportRecordId), transportRate));
+      totalBilled += transportRate;
+      billedServices.push('Transport');
+    } else if (isDailyTransportSubscriber && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
       const transportRef = db.collection('financialRecords').doc(transportRecordId);
       
       batch.set(transportRef, {
@@ -117,6 +163,7 @@ export async function billStudentForAttendanceServer(
         dueDate: Timestamp.fromDate(normalizedDate),
         createdAt: FieldValue.serverTimestamp(),
         schoolId: schoolId,
+        ...termFields,
       }, { merge: true });
       totalBilled += transportRate;
       billedServices.push('Transport');
@@ -184,6 +231,8 @@ export async function billMultipleStudentsServer(
     });
   });
 
+  const termStamp = await fetchCurrentTermStampServer(db, schoolId);
+
   let successful = 0;
   let failed = 0;
   let totalBilled = 0;
@@ -206,7 +255,7 @@ export async function billMultipleStudentsServer(
     const result = await billStudentForAttendanceServer(db, student, attendanceDate, schoolId, { 
       canteen: studentCanteenRate, 
       transport: transportRate 
-    });
+    }, termStamp);
     
     if (result.success) {
       if (result.amountBilled > 0) {

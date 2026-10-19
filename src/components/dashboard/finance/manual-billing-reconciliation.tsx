@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { fetchCurrentTermStamp } from '@/lib/billing';
 
 interface MissingBillItem {
     id: string; // Unique ID (e.g. canteen-studentID-date)
@@ -175,6 +176,8 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
         const batch = writeBatch(firestore);
         
         const itemsToProcess = missingBills.filter(item => selectedItems.includes(item.id));
+        const currentTerm = await fetchCurrentTermStamp(firestore, schoolId);
+        const termFields = currentTerm ? { ...currentTerm, isArchived: false } : { isArchived: false };
         
         itemsToProcess.forEach(item => {
             const cleanId = item.id.substring(0, item.id.lastIndexOf('-'));
@@ -190,6 +193,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 dueDate: Timestamp.fromDate(startOfDay(date)),
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
+                ...termFields,
                 schoolId: schoolId,
             }, { merge: true });
         });

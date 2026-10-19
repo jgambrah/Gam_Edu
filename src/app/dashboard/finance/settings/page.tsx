@@ -36,6 +36,7 @@ import { FirestorePermissionError } from '@/firebase/errors';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Class, Student } from '@/lib/types';
 import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
+import { fetchCurrentTermStamp } from '@/lib/billing';
 
 const canteenRateSchema = z.object({
     pricingModel: z.enum(['Flat', 'Class-Based']),
@@ -597,7 +598,11 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                 return;
             }
             
-            const billingBatch = writeBatch(firestore);
+            // Planned new bills. Existing bills are never overwritten (that used to reset paid bills to
+            // amountPaid 0, and could re-open bills archived by a term rollover).
+            const planned: { ref: any; data: Record<string, any> }[] = [];
+            const currentTerm = await fetchCurrentTermStamp(firestore, schoolId);
+            const termFields = currentTerm ? { ...currentTerm, isArchived: false } : { isArchived: false };
             
             for (const attendanceDoc of recordsToProcess) {
                 const record = attendanceDoc.data();
@@ -619,7 +624,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                     if (studentCanteenRate > 0) {
                         const canteenRecordId = `canteen-${record.studentId}-${dateKey}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', canteenRecordId);
-                        billingBatch.set(financialRecordRef, {
+                        planned.push({ ref: financialRecordRef, data: {
                             billedAmount: Number(studentCanteenRate),
                             studentId: record.studentId, 
                             studentName: record.studentName, 
@@ -631,7 +636,8 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                             createdAt: serverTimestamp(), 
                             amountPaid: 0, 
                             schoolId,
-                        }, { merge: true });
+                            ...termFields,
+                        } });
                     }
                 }
 
@@ -642,7 +648,7 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                         const transportRecordId = `transport-${record.studentId}-${dateKey}`;
                         const financialRecordRef = doc(firestore, 'financialRecords', transportRecordId);
                         
-                        billingBatch.set(financialRecordRef, {
+                        planned.push({ ref: financialRecordRef, data: {
                             billedAmount: Number(specificTransportRate),
                             studentId: record.studentId, 
                             studentName: record.studentName, 
@@ -654,13 +660,24 @@ function RetrospectiveBilling({ schoolId }: { schoolId: string }) {
                             createdAt: serverTimestamp(), 
                             amountPaid: 0, 
                             schoolId,
-                        }, { merge: true });
+                            ...termFields,
+                        } });
                     }
                 }
             }
 
-            await billingBatch.commit();
-            toast({ title: 'Success!', description: `Reprocessed billing for ${recordsToProcess.length} records.` });
+            const toCreate: typeof planned = [];
+            for (let i = 0; i < planned.length; i += 100) {
+                const slice = planned.slice(i, i + 100);
+                const snaps = await Promise.all(slice.map(p => getDoc(p.ref)));
+                snaps.forEach((snap, idx) => { if (!snap.exists()) toCreate.push(slice[idx]); });
+            }
+            for (let i = 0; i < toCreate.length; i += 400) {
+                const billingBatch = writeBatch(firestore);
+                toCreate.slice(i, i + 400).forEach(p => billingBatch.set(p.ref, p.data));
+                await billingBatch.commit();
+            }
+            toast({ title: 'Success!', description: `Created ${toCreate.length} missing bill(s) from ${recordsToProcess.length} attendance records. ${planned.length - toCreate.length} already existed and were left unchanged.` });
             
             await logAuditEvent({
                 firestore,
@@ -809,11 +826,7 @@ export default function FinancialSettingsPage() {
                </div>
                <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
                <div>
-                 <TermRolloverModal
-                   schoolId={schoolId}
-                   currentTermId={canteenSettings?.termId || 'Current Term'}
-                   nextTermId={canteenSettings?.nextTermId || 'Next Term'}
-                 />
+                 <TermRolloverModal schoolId={schoolId} />
                </div>
             </div>
           </div>

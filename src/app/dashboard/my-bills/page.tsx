@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GenerateReceipt } from '../accounts/generate-receipt';
+import { compareTermIds, stampFromTermId } from '@/lib/term';
 
 function BillPaymentsList({ record }: { record: FinancialRecord }) {
     const firestore = useFirestore();
@@ -85,7 +86,22 @@ function StudentBillView({ studentId }: { studentId: string }) {
             orderBy('createdAt', 'desc')
         );
     }, [firestore, studentId, schoolId]);
-    const { data: records, isLoading } = useCollection<FinancialRecord>(recordsQuery);
+    const { data: allRecords, isLoading } = useCollection<FinancialRecord>(recordsQuery);
+
+    // Current view = open records only. Bills from a closed term are archived; whatever was left on them
+    // is already on the "Arrears/Credit Brought Forward" record, so showing both would double the debt.
+    const [viewTermId, setViewTermId] = useState<string | null>(null);
+    const closedTerms = useMemo(() => {
+        const ids = Array.from(new Set((allRecords || []).map(r => (r as any).closedInTermId).filter(Boolean))) as string[];
+        return ids.sort((a, b) => compareTermIds(b, a)).map(id => {
+            const st = stampFromTermId(id);
+            return { termId: id, label: st ? `${st.term} ${st.academicYear}` : id };
+        });
+    }, [allRecords]);
+    const records = useMemo(() => {
+        if (!allRecords) return allRecords;
+        return allRecords.filter(r => viewTermId ? (r as any).closedInTermId === viewTermId : (r as any).isArchived !== true);
+    }, [allRecords, viewTermId]);
 
     const { data: student } = useDoc<Student>(useMemoFirebase(() => firestore && studentId ? doc(firestore, 'students', studentId) : null, [firestore, studentId]));
 
@@ -302,12 +318,35 @@ function StudentBillView({ studentId }: { studentId: string }) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-indigo-650" /></div>;
     }
     
+    const termPicker = closedTerms.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+            <span className="font-bold text-slate-500 uppercase tracking-wider">Showing:</span>
+            <select
+                className="border border-slate-200 rounded-lg px-2 py-1.5 bg-white font-semibold text-slate-800"
+                value={viewTermId || 'current'}
+                onChange={e => setViewTermId(e.target.value === 'current' ? null : e.target.value)}
+            >
+                <option value="current">Current term</option>
+                {closedTerms.map(t => <option key={t.termId} value={t.termId}>{t.label} (closed)</option>)}
+            </select>
+            {viewTermId && (
+                <span className="text-slate-500">Closed term, for reference. Any balance left was carried into the current term.</span>
+            )}
+        </div>
+    ) : null;
+
     if (!records || records.length === 0) {
-        return <p className="text-center text-slate-400 p-8 italic font-black uppercase tracking-widest text-xs">No billing history found.</p>;
+        return (
+            <div className="space-y-4">
+                {termPicker}
+                <p className="text-center text-slate-400 p-8 italic font-black uppercase tracking-widest text-xs">No billing history found.</p>
+            </div>
+        );
     }
 
     return (
         <Tabs defaultValue="insights" className="w-full space-y-6">
+            {termPicker}
             <TabsList className="grid w-full grid-cols-3 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/50 backdrop-blur-sm max-w-lg mx-auto">
                 <TabsTrigger value="insights" className="rounded-xl font-black text-xs uppercase tracking-wider py-2.5">
                     Insights
@@ -588,7 +627,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
                                                             )}
 
                                                             {/* Paystack Online Payment */}
-                                                            {role === 'Parent' && schoolSettings?.enablePaystack && schoolSettings?.paystackPubKey && balance > 0.01 && (
+                                                            {role === 'Parent' && schoolSettings?.enablePaystack && schoolSettings?.paystackPubKey && balance > 0.01 && !(rec as any).isArchived && (
                                                                 <PaystackButton
                                                                     className="bg-emerald-500 hover:bg-emerald-605 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 shadow-md shadow-emerald-100/50 flex items-center gap-1 h-8 cursor-pointer"
                                                                     email={user?.email || 'parent@school.com'}

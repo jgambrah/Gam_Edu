@@ -33,7 +33,7 @@ import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { StudentDisplay } from '@/components/student-display';
-import { billMultipleStudents } from '@/lib/billing';
+import { billMultipleStudents, reverseDailyBillsForAbsence } from '@/lib/billing';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { notifyParents } from '@/app/actions/notifications';
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
@@ -287,8 +287,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         setBillingProgress("Saving attendance...");
         
         try {
-            const batch = writeBatch(firestore);
             const dateStr = format(selectedDate, 'yyyy-MM-dd');
+            // A day that belongs to a closed term is read-only (its attendance was summarised when the term closed).
+            const closedCheck = await getDoc(doc(firestore, 'attendance', `${schoolId}_${selectedClassId}_${dateStr}`));
+            if (closedCheck.exists() && (closedCheck.data() as any)?.isArchived === true) {
+                toast({ variant: 'destructive', title: 'Term closed', description: 'This date belongs to a closed term, so its attendance can no longer be changed.' });
+                setIsLoading(false);
+                setBillingProgress(null);
+                return;
+            }
+            const batch = writeBatch(firestore);
             
             // 1. Prepare aggregated metrics & student map
             const studentsMap: Record<string, any> = {};
@@ -333,13 +341,9 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     updatedBy: user?.uid
                 }, { merge: true });
 
-                // Overwrite / Marking correction: delete canteen and transport bills if changed to Absent or Excused
-                if (record.status === 'Absent' || record.status === 'Excused') {
-                    const canteenBillId = `canteen-${record.studentId}-${dateStr}`;
-                    const transportBillId = `transport-${record.studentId}-${dateStr}`;
-                    batch.delete(doc(firestore, 'financialRecords', canteenBillId));
-                    batch.delete(doc(firestore, 'financialRecords', transportBillId));
-                }
+                // Overwrite / Marking correction: canteen and transport bills for students changed to Absent or
+                // Excused are reversed AFTER the attendance commit (see below), never inside this batch, so a
+                // paid bill can never block attendance from saving.
             });
 
             // 2. Primary aggregated attendance document: attendance/${schoolId}_${classId}_${dateStr}
@@ -384,6 +388,17 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }, { merge: true });
 
             await batch.commit();
+
+            // Absence corrections: unpaid daily bills are removed; already-paid ones are voided and the money
+            // becomes account credit. Best-effort — never fails the attendance save.
+            const absentRecords = data.records.filter(r => r.status === 'Absent' || r.status === 'Excused');
+            if (absentRecords.length > 0) {
+                await Promise.all(absentRecords.map(r => {
+                    const st: any = students.find(s => s.uid === r.studentId) || { uid: r.studentId };
+                    return reverseDailyBillsForAbsence(firestore, schoolId, st, dateStr);
+                }));
+            }
+
             setHasExistingRecords(true);
             setCanteenSyncedMeals(canteenMealsCount);
             setLastSavedTime(format(new Date(), 'h:mm a'));
@@ -500,7 +515,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 ? `🚨 *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, was marked *ABSENT* today at ${timeStr}. Please contact the school if you are unaware of this.`
                                 : `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, arrived *LATE* to school today at ${timeStr}.`;
 
-                            sendSchoolWhatsApp(schoolId, matchedParentPhone, message)
+                            (user ? user.getIdToken() : Promise.resolve(undefined)).then(token => sendSchoolWhatsApp(schoolId, matchedParentPhone, message, token))
                                 .then(async () => {
                                     await setDoc(queueDocRef, { queueStatus: "sent", sentAt: serverTimestamp() }, { merge: true });
                                 })

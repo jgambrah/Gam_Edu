@@ -33,12 +33,13 @@ export default function ReportSigningPortal() {
     const q = query(
       collection(firestore, "report-cards"),
       where("schoolId", "==", schoolId),
-      where("status", "==", "Draft"),
-      where("isArchived", "!=", true)
+      where("status", "==", "Draft")
+      // isArchived is filtered in memory below: a `!= true` query silently drops every report card that has
+      // no isArchived field at all (i.e. almost all of them).
     );
 
     const unsubscribe = onSnapshot(q, (snap) => {
-      setReports(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setReports(snap.docs.map(d => ({ id: d.id, ...d.data() })).filter((r: any) => r.isArchived !== true));
       setLoading(false);
     });
 

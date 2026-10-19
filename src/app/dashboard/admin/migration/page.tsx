@@ -24,6 +24,7 @@ import {
 import { extractStudentsFromText } from '@/ai/flows/extract-students-flow';
 import type { Class, Subject, Student, FinancialRecord } from '@/lib/types';
 import { generateNextStudentId } from '@/lib/student-utils';
+import { fetchCurrentTermStamp } from '@/lib/billing';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
@@ -404,6 +405,9 @@ export default function MigrationHubPage() {
 
       let batch = writeBatch(firestore);
       let batchCount = 0;
+      // Opening balances belong to the term that is open when they are imported.
+      const currentTerm = await fetchCurrentTermStamp(firestore, schoolId);
+      const termFields = currentTerm ? { ...currentTerm, isArchived: false } : { isArchived: false };
 
       for (let i = 0; i < balanceCsvData.length; i++) {
         const row = balanceCsvData[i];
@@ -462,6 +466,7 @@ export default function MigrationHubPage() {
               dueDate: serverTimestamp(),
               createdAt: serverTimestamp(),
               schoolId: schoolId,
+              ...termFields,
             });
             successCount++;
             batchCount++;

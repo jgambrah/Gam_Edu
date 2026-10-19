@@ -31,7 +31,7 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
-import { billStudentForAttendance } from '@/lib/billing';
+import { billMultipleStudents, reverseDailyBillsForAbsence } from '@/lib/billing';
 
 export function TeacherDashboardView({ 
     profile, 
@@ -422,14 +422,12 @@ export function TeacherDashboardView({
             }, { merge: true });
 
             if (newStatus === 'Absent') {
-                const canteenBillId = `canteen-${student.uid}-${dateStr}`;
-                const transportBillId = `transport-${student.uid}-${dateStr}`;
-                const batch = writeBatch(firestore);
-                batch.delete(doc(firestore, 'financialRecords', canteenBillId));
-                batch.delete(doc(firestore, 'financialRecords', transportBillId));
-                await batch.commit();
+                // Unpaid bills are removed; paid ones are voided and the money becomes credit. Never throws.
+                await reverseDailyBillsForAbsence(firestore, schoolId, student, dateStr);
             } else {
-                await billStudentForAttendance(firestore, student, new Date(), schoolId);
+                // billMultipleStudents resolves the school's canteen/transport rates (calling
+                // billStudentForAttendance without rates billed GHS 0).
+                await billMultipleStudents(firestore, [student], new Date(), schoolId);
             }
 
             toast({ 

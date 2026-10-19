@@ -1,8 +1,10 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { executeTermFinancialRollover } from './financial-rollover';
-import { summarizeTermAttendance, lockTermReportCards } from './dashboard-aggregators';
+import { reconcileCorrectedTerm } from './financial-rollover';
+import { currentTermFromProfile, nextTermStamp, stampFromTermId } from './term-utils';
+import { recalculateSchoolFinancials } from './dashboard-aggregators';
+import { relockAcademicTerm } from './academic-rollover';
 
 if (!getApps().length) initializeApp();
 const db = getFirestore();
@@ -11,10 +13,12 @@ const db = getFirestore();
  * enforceTermRolloverSafetyNet
  *
  * Daily Cloud Scheduler task (runs at 00:00 UTC) implementing:
- * 1. 21-Day Safety Net for term rollovers.
+ * 1. Term-rollover REMINDERS after the term end date (Day 0, +7, +14, +21 and weekly after).
+ *    The rollover itself is never automatic: an administrator runs it from Finance Settings
+ *    (dry run first, then confirm).
  * 2. Automated Re-Lock & Re-Summarization when 24h correction unlock windows expire.
  */
-export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => {
+export const enforceTermRolloverSafetyNet = onSchedule({ schedule: '0 0 * * *', timeoutSeconds: 540, memory: '1GiB' }, async () => {
   const now = new Date();
   const todayMs = now.getTime();
 
@@ -48,9 +52,9 @@ export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => 
   for (const schoolDoc of schoolsSnap.docs) {
     const s = schoolDoc.data();
     const schoolId = schoolDoc.id;
-    const currentTermId = s.currentTermId || s.termId;
-    const nextTermId = s.nextTermId || `${currentTermId}-next`;
-    const vacationDateVal = s.vacationDate || s.termEndDate;
+    const currentTerm = currentTermFromProfile(s);
+    const currentTermId = currentTerm?.termId || '';
+    const vacationDateVal = s.termEndDate || s.vacationDate;
 
     // ── CHECK 1: EXPIRED UNLOCKED TERMS (Automated Re-Lock & Re-Summarization) ──
     try {
@@ -68,14 +72,16 @@ export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => 
         if (expiresMs > 0 && todayMs >= expiresMs) {
           console.log(`[TERM RE-LOCK] Correction window expired for school ${schoolId}, term ${unlockedTermId}. Re-locking & re-summarizing...`);
 
-          // 1. Re-run attendance summarization
-          await summarizeTermAttendance(schoolId, unlockedTermId);
+          // 1-2. Re-archive the term's academic records and refresh attendance summaries / frozen report cards
+          //      (only if the term had been academically closed).
+          await relockAcademicTerm(schoolId, unlockedTermId, 'Auto re-lock');
 
-          // 2. Re-run academic report card locking
-          await lockTermReportCards(schoolId, unlockedTermId);
-
-          // 3. Re-run financial rollover to update itemized arrears deterministically
-          await executeTermFinancialRollover(schoolId, unlockedTermId, nextTermId);
+          // 3. Post any balance change made during the correction window into the CURRENT term as an
+          //    adjustment, and re-archive the corrected bills. (Never re-runs the rollover, which would
+          //    sweep the current term's bills.)
+          if (stampFromTermId(unlockedTermId)) {
+            await reconcileCorrectedTerm(schoolId, unlockedTermId, 'Auto re-lock');
+          }
 
           // 4. Update term metadata to re-locked status
           await tDoc.ref.set({
@@ -105,8 +111,8 @@ export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => 
       console.warn(`[TERM RE-LOCK CHECK WARNING] Error processing unlocked terms for school ${schoolId}:`, unlockedErr);
     }
 
-    // ── CHECK 2: 21-DAY AUTO-SAFETY NET ROLLOVER ──
-    if (!vacationDateVal || !currentTermId) continue;
+    // ── CHECK 2: ROLLOVER REMINDERS (no automatic rollover) ──
+    if (!vacationDateVal || !currentTerm) continue;
 
     let vacationMs = 0;
     if (typeof vacationDateVal.toMillis === 'function') {
@@ -115,51 +121,42 @@ export const enforceTermRolloverSafetyNet = onSchedule('0 0 * * *', async () => 
       vacationMs = new Date(vacationDateVal).getTime();
     }
 
-    if (isNaN(vacationMs) || vacationMs > todayMs) continue; // Vacation hasn't arrived yet
+    if (isNaN(vacationMs) || vacationMs > todayMs) continue; // Term hasn't ended yet
+
+    // Already closed? The rollover records the closed term id and moves the profile to the next term.
+    const alreadyRolledOver =
+      (Array.isArray(s.rolledOverTermIds) && s.rolledOverTermIds.includes(currentTermId)) ||
+      s.lastRolledOverTermId === currentTermId;
+    if (alreadyRolledOver) continue;
 
     const daysSinceVacation = Math.floor((todayMs - vacationMs) / (1000 * 60 * 60 * 24));
+    const isReminderDay = daysSinceVacation === 0 || daysSinceVacation === 7 || daysSinceVacation === 14 ||
+      (daysSinceVacation >= 21 && (daysSinceVacation - 21) % 7 === 0);
+    if (!isReminderDay) continue;
 
-    // Day 0: Soft-scope active pointers to next term pointer if not already done
-    if (daysSinceVacation >= 0 && !s.softScopedPointer) {
-      await db.collection('schoolSettings').doc(schoolId).set({
-        softScopedPointer: true,
-        activeQueryTermId: nextTermId,
-        updatedAt: FieldValue.serverTimestamp(),
-      }, { merge: true });
-    }
+    const next = nextTermStamp(currentTerm);
+    const notifId = `rollover_reminder_${schoolId}_${currentTermId}_day${daysSinceVacation}`;
+    await db.collection('notifications').doc(notifId).set({
+      id: notifId,
+      schoolId,
+      type: 'rollover_reminder',
+      title: daysSinceVacation >= 21 ? 'Term rollover overdue' : 'Term rollover reminder',
+      message: `${currentTerm.term} ${currentTerm.academicYear} ended ${daysSinceVacation} day(s) ago. ` +
+        `Go to Finance Settings → End of Term, review the dry run, then close the term to carry balances into ${next.term} ${next.academicYear}. ` +
+        `Nothing is rolled over automatically.`,
+      read: false,
+      createdAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
+  }
 
-    // Day +7 & Day +14: In-app & email notification reminders
-    if (daysSinceVacation === 7 || daysSinceVacation === 14) {
-      const notifId = `rollover_reminder_${schoolId}_day${daysSinceVacation}`;
-      await db.collection('notifications').doc(notifId).set({
-        id: notifId,
-        schoolId,
-        type: 'rollover_reminder',
-        title: `Term Rollover Reminder (Day +${daysSinceVacation})`,
-        message: `Vacation date was ${daysSinceVacation} days ago. Please review and confirm your end-of-term financial rollover in Admin Settings. Automatic archiving will execute at Day +21.`,
-        read: false,
-        createdAt: FieldValue.serverTimestamp(),
-      }, { merge: true });
-    }
-
-    // Day +21 (Hard Stop): Automated Cloud Function executes the final archiving script
-    if (daysSinceVacation >= 21 && s.termStatus !== 'Archived') {
-      try {
-        console.log(`[SAFETY NET DAY +21] Executing automated financial rollover for school: ${schoolId}`);
-        await executeTermFinancialRollover(schoolId, currentTermId, nextTermId);
-
-        await db.collection('notifications').doc(`rollover_auto_${schoolId}`).set({
-          id: `rollover_auto_${schoolId}`,
-          schoolId,
-          type: 'rollover_executed',
-          title: 'Automated 21-Day Term Rollover Completed',
-          message: 'The 21-day safety net executed end-of-term financial archiving and carried forward itemized student balances.',
-          read: false,
-          createdAt: FieldValue.serverTimestamp(),
-        }, { merge: true });
-      } catch (err) {
-        console.error(`[SAFETY NET ERROR] Automated rollover failed for school ${schoolId}:`, err);
-      }
+  // ── NIGHTLY FULL REBUILD OF FINANCIAL DASHBOARD SUMMARIES ──
+  // Live updates are incremental (cheap); this once-a-day rebuild recomputes everything exactly
+  // (debt aging, categories, collection rate, month rollover) and removes any drift.
+  for (const schoolDoc of schoolsSnap.docs) {
+    try {
+      await recalculateSchoolFinancials(schoolDoc.id);
+    } catch (rebuildErr) {
+      console.error(`[NIGHTLY REBUILD] Failed for school ${schoolDoc.id}:`, rebuildErr);
     }
   }
 });

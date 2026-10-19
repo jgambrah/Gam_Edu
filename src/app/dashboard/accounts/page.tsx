@@ -48,6 +48,28 @@ import { GenerateReceipt } from './generate-receipt';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { billStudentForAttendance } from '@/lib/billing';
+import { makeTermStamp, termStampOfRecord, currentTermFromProfile, stampFromTermId, compareTermIds } from '@/lib/term';
+
+/** termId (+ isArchived:false) for a new bill. academicYear/term are written by the caller as before. */
+const billTermFields = (academicYear?: string, term?: string) => {
+    const st = makeTermStamp(academicYear, term);
+    return st ? { termId: st.termId, isArchived: false } : { isArchived: false };
+};
+/**
+ * Which records a ledger shows.
+ *  - Current (viewTermId null): every record that is still open (not archived). After a rollover this is the
+ *    new term's bills plus its Arrears/Credit Brought Forward — never the archived originals, so no debt
+ *    is counted twice.
+ *  - A closed term: exactly the records archived by that term's rollover (read-only).
+ */
+const isVisibleInLedger = (r: any, viewTermId?: string | null) =>
+    viewTermId ? r?.closedInTermId === viewTermId : r?.isArchived !== true;
+
+/** A payment is stamped with the term of the bill it pays. */
+const paymentTermFields = (bill: any) => {
+    const st = termStampOfRecord(bill);
+    return st ? { termId: st.termId, academicYear: st.academicYear } : {};
+};
 import { ManualBillingReconciliation } from '@/components/dashboard/finance/manual-billing-reconciliation';
 import { TargetedBillingPurgeTool } from '@/components/dashboard/finance/TargetedBillingPurgeTool';
 import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
@@ -220,6 +242,10 @@ function EditRecordDialog({
             }
             if (resolvedTerm) {
                 rawPayload.term = resolvedTerm;
+            }
+            const editStamp = makeTermStamp(resolvedAcademicYear, resolvedTerm);
+            if (editStamp) {
+                rawPayload.termId = editStamp.termId;
             }
 
             // Sanitize payload to strip any undefined values before calling updateDoc
@@ -407,6 +433,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                     schoolId: schoolId || record.schoolId || '',
                     tillId: activeTill ? activeTill.id : '',
                     status: 'Completed',
+                    ...paymentTermFields(record),
                     isReversal: true,
                     reversedReceiptId: payment.id
                 });
@@ -671,7 +698,8 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded,
                     createdAt: serverTimestamp(),
                     schoolId: schoolId,
                     academicYear: normalizeAcademicYear(academicYear) || getDefaultAcademicYear(),
-                    term: term || 'Term 1'
+                    term: term || 'Term 1',
+                    ...billTermFields(normalizeAcademicYear(academicYear) || getDefaultAcademicYear(), term || 'Term 1')
                 }, { merge: true });
                 
                 billedCount++;
@@ -918,7 +946,8 @@ function FinancialRecordForm({ setOpen, students, classes, schoolId, onRecordAdd
           dueDate: Timestamp.fromDate(values.dueDate || new Date()), 
           schoolId: schoolId,
           academicYear: normalizeAcademicYear(values.academicYear || academicYear) || getDefaultAcademicYear(),
-          term: values.term || term || 'Term 1'
+          term: values.term || term || 'Term 1',
+          ...billTermFields(normalizeAcademicYear(values.academicYear || academicYear) || getDefaultAcademicYear(), values.term || term || 'Term 1')
       };
       await addDoc(collection(firestore, 'financialRecords'), newRecord);
       toast({ title: 'Success', description: isOpeningBalance ? 'Opening balance recorded.' : 'Bill added.' });
@@ -1131,7 +1160,8 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
                 dueDate: Timestamp.fromDate(values.dueDate),
                 schoolId: schoolId,
                 academicYear: resolvedAcademicYear,
-                term: resolvedTerm
+                term: resolvedTerm,
+                ...billTermFields(resolvedAcademicYear, resolvedTerm)
             });
         });
         await batch.commit();
@@ -1424,6 +1454,7 @@ function TermlyTransportForm({ setOpen, classes, students, schoolId, onRecordsAd
             academicYear: normalizeAcademicYear(values.academicYear),
             term: values.term,
             schoolId: schoolId,
+            ...billTermFields(values.academicYear, values.term),
           }, { merge: true });
 
           billedCount++;
@@ -1730,6 +1761,7 @@ function TermlyCanteenForm({ setOpen, classes, students, schoolId, onRecordsAdde
             academicYear: normalizeAcademicYear(values.academicYear),
             term: values.term,
             schoolId: schoolId,
+            ...billTermFields(values.academicYear, values.term),
           }, { merge: true });
 
           billedCount++;
@@ -2035,6 +2067,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                         description: isSource ? paymentDescription : (target.description || paymentDescription),
                         receiptNo: receiptId,
                         receiptTotal: values.amount,
+                        ...paymentTermFields(target),
                         ...(isSource ? {} : { allocatedFromRecordId: record.id, isAllocation: true }),
                     });
                 }
@@ -2264,7 +2297,8 @@ function StudentLedgerDetail({
     onReverseTransaction,
     onRecordsLoaded,
     onLoadingChange,
-    effectiveAcademicYear
+    effectiveAcademicYear,
+    viewTermId = null
 }: { 
     student: Student; 
     records?: FinancialRecord[] | null; 
@@ -2277,7 +2311,10 @@ function StudentLedgerDetail({
     onRecordsLoaded?: (studentKey: string, records: FinancialRecord[]) => void;
     onLoadingChange?: (loading: boolean) => void;
     effectiveAcademicYear?: string;
+    /** null = current open ledger; a term id = that closed term, read-only. */
+    viewTermId?: string | null;
 }) {
+    const isClosedTermView = Boolean(viewTermId);
     const firestore = useFirestore();
     const { user } = useUser();
     const { schoolId } = useCurrentSchool();
@@ -2350,8 +2387,8 @@ function StudentLedgerDetail({
         const map = new Map<string, FinancialRecord>();
         (records || []).filter(isStudentRecord).forEach(r => map.set(r.id, r));
         (studentArchiveRecords || []).filter(isStudentRecord).forEach(r => map.set(r.id, r));
-        return Array.from(map.values());
-    }, [student, records, studentArchiveRecords]);
+        return Array.from(map.values()).filter(r => isVisibleInLedger(r, viewTermId));
+    }, [student, records, studentArchiveRecords, viewTermId]);
 
     // Ledger date for a bill = its due date (what the filter button advertises), falling back to creation date.
     const getLedgerDate = (rec: FinancialRecord): Date | null => {
@@ -2520,10 +2557,17 @@ function StudentLedgerDetail({
                     Full Archive ({studentArchiveRecords.length} records)
                   </Badge>
                 )}
+                {!isClosedTermView && (
                 <Button variant="secondary" size="sm" onClick={handleManualServiceBill} disabled={isBilling} className="bg-orange-50 text-orange-700 border-orange-200">
                     {isBilling ? <Loader2 className="h-4 w-4 animate-spin mr-2"/> : <Utensils className="h-4 w-4 mr-2"/>}
                     Bill Today's Services
                 </Button>
+                )}
+                {isClosedTermView && (
+                  <Badge variant="outline" className="text-[10px] bg-slate-100 text-slate-700 border-slate-300">
+                    Closed term · read-only
+                  </Badge>
+                )}
                 {student && (<GenerateStatement student={student} records={filteredRecords} dateRange={dateRange} summary={overallSummary} />)}
               </div>
           </div>
@@ -2655,11 +2699,12 @@ function StudentLedgerDetail({
                                               <DropdownMenu>
                                                   <DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4"/></Button></DropdownMenuTrigger>
                                                   <DropdownMenuContent>
-                                                      <DropdownMenuItem onClick={() => onRecordPayment(rec)}><DollarSign className="mr-2 h-4 w-4"/> Record Payment</DropdownMenuItem>
-                                                      <DropdownMenuItem onClick={() => onApplyWaiver(rec)} disabled={balance <= 0}><FileCog className="mr-2 h-4 w-4"/> Apply Waiver</DropdownMenuItem>
-                                                      <DropdownMenuItem onClick={() => onEditRecord(rec)}><Edit className="mr-2 h-4 w-4"/> Edit Record</DropdownMenuItem>
+                                                      {/* Archived (closed-term) records are read-only: their balance now lives on the Brought Forward record. */}
+                                                      <DropdownMenuItem onClick={() => onRecordPayment(rec)} disabled={(rec as any).isArchived === true}><DollarSign className="mr-2 h-4 w-4"/> Record Payment</DropdownMenuItem>
+                                                      <DropdownMenuItem onClick={() => onApplyWaiver(rec)} disabled={balance <= 0 || (rec as any).isArchived === true}><FileCog className="mr-2 h-4 w-4"/> Apply Waiver</DropdownMenuItem>
+                                                      <DropdownMenuItem onClick={() => onEditRecord(rec)} disabled={(rec as any).isArchived === true}><Edit className="mr-2 h-4 w-4"/> Edit Record</DropdownMenuItem>
                                                       <DropdownMenuSeparator />
-                                                      <DropdownMenuItem onClick={() => onReverseTransaction(rec)} className="text-red-600"><RefreshCw className="mr-2 h-4 w-4"/> Request Reversal</DropdownMenuItem>
+                                                      <DropdownMenuItem onClick={() => onReverseTransaction(rec)} disabled={(rec as any).isArchived === true} className="text-red-600"><RefreshCw className="mr-2 h-4 w-4"/> Request Reversal</DropdownMenuItem>
                                                       <DropdownMenuSeparator />
                                                       <Dialog>
                                                           <DialogTrigger asChild><DropdownMenuItem onSelect={(e) => e.preventDefault()}><Receipt className="mr-2 h-4 w-4"/> Print Full Receipt</DropdownMenuItem></DialogTrigger>
@@ -3790,6 +3835,9 @@ export default function AccountsPage() {
 
   // Active term detection (supports currentTermId, currentTerm, or term)
   const detectedActiveTerm = useMemo(() => {
+    // The School Profile term ("First Term" + academic year) is the source of truth.
+    const fromProfile = currentTermFromProfile(schoolProfile) || currentTermFromProfile(schoolSettings);
+    if (fromProfile) return fromProfile.term;
     return (
       schoolSettings?.currentTermId ||
       schoolSettings?.currentTerm ||
@@ -3803,6 +3851,8 @@ export default function AccountsPage() {
 
   // Active academic year detection & selection (supports multi-year auditing)
   const detectedActiveAcademicYear = useMemo(() => {
+    const fromProfile = currentTermFromProfile(schoolProfile) || currentTermFromProfile(schoolSettings);
+    if (fromProfile) return fromProfile.academicYear;
     const fromSettings = (
       schoolSettings?.academicYear ||
       schoolSettings?.activeAcademicYear ||
@@ -3865,6 +3915,24 @@ export default function AccountsPage() {
   const [isRolloverModalOpen, setIsRolloverModalOpen] = useState<boolean>(false);
   const activeTerm = detectedActiveTerm;
 
+  // Term view: null = the current (open) ledger; otherwise a closed term, shown read-only.
+  const [viewTermId, setViewTermId] = useState<string | null>(null);
+  const closedTerms = useMemo(() => {
+    const ids: string[] = Array.from(new Set([
+      ...((schoolSettings?.rolledOverTermIds as string[]) || []),
+      ...((schoolProfile?.rolledOverTermIds as string[]) || []),
+    ])).filter(id => Boolean(stampFromTermId(id)));
+    return ids.sort((a, b) => compareTermIds(b, a)).map(id => {
+      const st = stampFromTermId(id)!;
+      return { termId: id, label: `${st.term} ${st.academicYear}`, academicYear: st.academicYear };
+    });
+  }, [schoolSettings, schoolProfile]);
+  const viewedClosedTerm = useMemo(() => closedTerms.find(t => t.termId === viewTermId) || null, [closedTerms, viewTermId]);
+  const currentTermLabel = useMemo(() => {
+    const st = currentTermFromProfile(schoolProfile) || currentTermFromProfile(schoolSettings);
+    return st ? `${st.term} ${st.academicYear}` : 'Current term';
+  }, [schoolProfile, schoolSettings]);
+
   // Ledger mode: 'on-demand' (fast, cashier flow with 0 upfront reads) or 'full-school' (loads scoped records for school-wide auditing)
   const [ledgerMode, setLedgerMode] = useState<'on-demand' | 'full-school'>('on-demand');
   const [cachedStudentRecords, setCachedStudentRecords] = useState<Record<string, FinancialRecord[]>>({});
@@ -3890,16 +3958,25 @@ export default function AccountsPage() {
     return [yr, withSlash, withSpacesHyphen, withSpacesSlash, effectiveAcademicYear].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
   }, [effectiveAcademicYear]);
 
-  const yearRecordsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school') ? query(
+  const yearRecordsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school' && !viewTermId) ? query(
     collection(firestore, 'financialRecords'),
     where('schoolId', '==', schoolId),
     where('academicYear', 'in', yearVariations)
-  ) : null, [firestore, schoolId, ledgerMode, yearVariations]);
+  ) : null, [firestore, schoolId, ledgerMode, yearVariations, viewTermId]);
   const { data: yearRecords, isLoading: isLoadingYearRecords, forceRefetch: refetchYear } = useCollection<FinancialRecord>(yearRecordsQuery);
+
+  // A closed term: exactly the bills its rollover archived (read-only view).
+  const closedTermQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school' && viewTermId) ? query(
+    collection(firestore, 'financialRecords'),
+    where('schoolId', '==', schoolId),
+    where('closedInTermId', '==', viewTermId)
+  ) : null, [firestore, schoolId, ledgerMode, viewTermId]);
+  const { data: closedTermRecords, isLoading: isLoadingClosedTerm } = useCollection<FinancialRecord>(closedTermQuery);
 
   // Deduplicated unified dataset from Tier 1 and Tier 2
   const records = useMemo(() => {
     if (ledgerMode !== 'full-school') return null;
+    if (viewTermId) return (closedTermRecords || []).filter(r => isVisibleInLedger(r, viewTermId));
     const map = new Map<string, FinancialRecord>();
     (yearRecords || []).forEach(r => {
       if (r.id) map.set(r.id, r);
@@ -3907,10 +3984,10 @@ export default function AccountsPage() {
     (unpaidRecords || []).forEach(r => {
       if (r.id) map.set(r.id, r);
     });
-    return Array.from(map.values());
-  }, [ledgerMode, yearRecords, unpaidRecords]);
+    return Array.from(map.values()).filter(r => isVisibleInLedger(r, null));
+  }, [ledgerMode, yearRecords, unpaidRecords, viewTermId, closedTermRecords]);
 
-  const isLoadingRecords = isLoadingUnpaidRecords || isLoadingYearRecords;
+  const isLoadingRecords = viewTermId ? isLoadingClosedTerm : (isLoadingUnpaidRecords || isLoadingYearRecords);
   const isLedgerLoaded = Boolean(ledgerMode === 'full-school' && !isLoadingRecords && records);
 
   const forceRefetch = useCallback(() => {
@@ -4517,9 +4594,9 @@ export default function AccountsPage() {
         });
       });
 
-      // Pull from on-demand cached records if available
+      // Pull from on-demand cached records if available (only those visible in the selected term view)
       sKeys.forEach(k => {
-        (cachedStudentRecords[k] || []).forEach(r => {
+        (cachedStudentRecords[k] || []).filter(r => isVisibleInLedger(r, viewTermId)).forEach(r => {
           const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
           if (!seenIds.has(recKey)) {
             seenIds.add(recKey);
@@ -4573,7 +4650,7 @@ export default function AccountsPage() {
       if (!a.isLoaded && b.isLoaded) return 1;
       return b.balance - a.balance;
     });
-  }, [records, students, cachedStudentRecords, effectiveAcademicYear]);
+  }, [records, students, cachedStudentRecords, effectiveAcademicYear, viewTermId]);
 
   const filteredStudentsWithBills = useMemo(() => {
     return studentFinancials.filter(sf => {
@@ -4779,6 +4856,7 @@ export default function AccountsPage() {
                 description: `Reversal of Receipt #${p.id}`,
                 schoolId: schoolId || record.schoolId || '',
                 status: 'Completed',
+                ...paymentTermFields(record),
                 isReversal: true,
                 reversedReceiptId: p.id
             });
@@ -6283,6 +6361,31 @@ export default function AccountsPage() {
                                 </div>
                                 
                                 <div className="flex items-center gap-2 flex-wrap">
+                                    {/* Term view: current open ledger, or a closed term (read-only) */}
+                                    <Select
+                                        value={viewTermId || 'current'}
+                                        onValueChange={(v) => {
+                                            if (v === 'current') {
+                                                setViewTermId(null);
+                                                setSelectedAcademicYear(activeAcademicYear);
+                                            } else {
+                                                setViewTermId(v);
+                                                const t = closedTerms.find(ct => ct.termId === v);
+                                                if (t) setSelectedAcademicYear(t.academicYear);
+                                            }
+                                        }}
+                                    >
+                                        <SelectTrigger className="h-9 text-xs w-[190px] bg-emerald-50/40 border-emerald-200 text-emerald-950 font-medium">
+                                            <SelectValue placeholder="Term" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="current" className="text-xs font-medium">{currentTermLabel} (Current)</SelectItem>
+                                            {closedTerms.map(t => (
+                                                <SelectItem key={t.termId} value={t.termId} className="text-xs font-medium">{t.label} (Closed)</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+
                                     {/* Academic Year Selector (Multi-Year Auditing & History) */}
                                     <Select value={selectedAcademicYear || activeAcademicYear} onValueChange={(v) => setSelectedAcademicYear(v)}>
                                         <SelectTrigger className="h-9 text-xs w-[145px] bg-indigo-50/40 border-indigo-200 text-indigo-950 font-medium">
@@ -6364,8 +6467,21 @@ export default function AccountsPage() {
                             </div>
                         </div>
 
+                        {/* Closed-term banner */}
+                        {viewedClosedTerm && (
+                            <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-slate-100 border border-slate-300 rounded-xl text-xs text-slate-900 shadow-2xs">
+                                <div>
+                                    <span className="font-bold">Closed term: {viewedClosedTerm.label}.</span>{' '}
+                                    These bills are archived and read-only. Any balance left on them was carried into the next term as Arrears or Credit Brought Forward, so it is not owed twice.
+                                </div>
+                                <Button size="sm" variant="outline" onClick={() => { setViewTermId(null); setSelectedAcademicYear(activeAcademicYear); }} className="h-8 text-xs font-semibold bg-white shrink-0">
+                                    Back to {currentTermLabel}
+                                </Button>
+                            </div>
+                        )}
+
                         {/* Historical Audit Alert Banner */}
-                        {selectedAcademicYear && selectedAcademicYear !== activeAcademicYear && (
+                        {!viewTermId && selectedAcademicYear && selectedAcademicYear !== activeAcademicYear && (
                             <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-amber-50/90 border border-amber-200 rounded-xl text-xs text-amber-950 shadow-2xs animate-in fade-in">
                                 <div className="flex items-center gap-2.5">
                                     <div className="p-1.5 rounded-lg bg-amber-100 text-amber-700">
@@ -6476,6 +6592,7 @@ export default function AccountsPage() {
                                                                 records={sRecords} 
                                                                 cachedRecords={cachedStudentRecords[sKey] || cachedStudentRecords[student.id || ''] || cachedStudentRecords[student.uid || '']}
                                                                 globalDateRange={globalDateRange}
+                                                                viewTermId={viewTermId}
                                                                 onLoadingChange={(loading) => {
                                                                     if (!loading && loadingStudentKey === sKey) {
                                                                         setLoadingStudentKey(null);

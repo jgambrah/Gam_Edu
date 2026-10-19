@@ -11,6 +11,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import type { FinancialRecord } from '@/lib/types';
+import { termStampOfRecord } from '@/lib/term';
 
 /**
  * Credit allocation helpers.
@@ -179,6 +180,9 @@ export async function reallocateExistingOverpayments(params: {
             receiptNo: p.id,
             allocatedFromRecordId: src.id,
             isAllocation: true,
+            // Credit carried over from a closed term is not new cash: keep it out of collections.
+            ...((p as any).isCarryForward ? { isCarryForward: true } : {}),
+            ...(() => { const st = termStampOfRecord(t); return st ? { termId: st.termId, academicYear: st.academicYear } : {}; })(),
           }, { merge: true });
         }
         // Remaining `toCover` (legacy payments with no payment docs) is moved via amountPaid only.

@@ -1,4 +1,5 @@
 import { FieldValue } from 'firebase-admin/firestore';
+import { termStampOfRecord } from '@/lib/term';
 
 /**
  * Server (admin SDK) version of the held-credit application used after biometric attendance billing.
@@ -109,6 +110,9 @@ export async function applyHeldCreditAfterBillingServer(db: FirebaseFirestore.Fi
               receiptNo: p.id,
               allocatedFromRecordId: src.id,
               isAllocation: true,
+              // Credit carried over from a closed term is not new cash: keep it out of collections.
+              ...(p.isCarryForward ? { isCarryForward: true } : {}),
+              ...(() => { const st = termStampOfRecord(t); return st ? { termId: st.termId, academicYear: st.academicYear } : {}; })(),
             }, { merge: true });
           }
           const tPaid = round2((Number(t.amountPaid) || 0) + chunk);

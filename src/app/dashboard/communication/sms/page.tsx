@@ -501,7 +501,7 @@ export default function BulkSMSPage() {
             .replace(/\{school_name\}/gi, schoolName);
 
           try {
-            const res = await sendSchoolWhatsApp(schoolId, phone, personalMsg);
+            const res = await sendSchoolWhatsApp(schoolId, phone, personalMsg, await user?.getIdToken());
             if (res.success) {
               count++;
               setBroadcastLogs(prev => [...prev, `[SUCCESS] WhatsApp delivered to ${name} (${phone})`]);

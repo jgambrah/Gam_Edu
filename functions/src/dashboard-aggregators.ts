@@ -59,44 +59,51 @@ function classifyCategory(item: any): 'tuition' | 'canteen' | 'transport' | 'boa
   return 'tuition';
 }
 
-/** Helper to recalculate financial metrics for a school considering active students */
-async function recalculateSchoolFinancials(schoolId: string, eventTermId?: string): Promise<void> {
-  // Fetch active students first (excluding archived students)
-  let studentsQuery = db.collection('students')
+/**
+ * Full recompute of a school's financial summary. EXPENSIVE (reads every bill and payment), so it is
+ * only run by the nightly scheduler / manual rebuilds. Live writes use the incremental triggers below.
+ * `_eventTermId` is accepted for backward compatibility but no longer narrows the totals (bills are not
+ * stamped with termId, so filtering by it produced partial totals that overwrote the summary).
+ */
+export async function recalculateSchoolFinancials(schoolId: string, _eventTermId?: string): Promise<void> {
+  // Fetch students; filter archived/inactive in memory. (A `where('isArchived','!=',true)` query silently
+  // drops every document that has no isArchived field at all — i.e. most students, bills and payments.)
+  const studentsSnap = await db.collection('students')
     .where('schoolId', '==', schoolId)
-    .where('isArchived', '!=', true);
-  
-  const studentsSnap = await studentsQuery.get();
+    .get();
   
   const activeStudentIds = new Set<string>();
   studentsSnap.forEach(sDoc => {
     const s = sDoc.data();
+    if (s.isArchived === true) return;
     if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
       activeStudentIds.add(sDoc.id);
+      if (s.uid) activeStudentIds.add(s.uid);
     }
   });
 
-  // Build scoped query for active financial records
-  let recordsQuery = db.collection('financialRecords')
+  const recordsSnapRaw = await db.collection('financialRecords')
     .where('schoolId', '==', schoolId)
-    .where('isArchived', '!=', true);
+    .get();
+  const recordDocs = recordsSnapRaw.docs.filter(d => d.data().isArchived !== true);
+  const snap = { forEach: (fn: (d: FirebaseFirestore.QueryDocumentSnapshot) => void) => recordDocs.forEach(fn) };
 
-  if (eventTermId) {
-    recordsQuery = recordsQuery.where('termId', '==', eventTermId);
-  }
-
-  const snap = await recordsQuery.get();
-
-  // Build scoped query for active payments via collectionGroup
-  let paymentsQuery = db.collectionGroup('payments')
+  const paymentsSnapRaw = await db.collectionGroup('payments')
     .where('schoolId', '==', schoolId)
-    .where('isArchived', '!=', true);
-
-  if (eventTermId) {
-    paymentsQuery = paymentsQuery.where('termId', '==', eventTermId);
-  }
-
-  const paymentsSnap = await paymentsQuery.get();
+    .get();
+  // Payments on bills archived by a term rollover belong to a closed term, and carried-forward credit is
+  // not new cash — neither counts towards current collections.
+  const archivedRecordIds = new Set(recordsSnapRaw.docs.filter(d => d.data().isArchived === true).map(d => d.id));
+  const paymentDocs = paymentsSnapRaw.docs.filter(d => {
+    const p = d.data();
+    if (p.isArchived === true || p.isCarryForward === true) return false;
+    const parentId = d.ref.parent.parent?.id;
+    return !(parentId && archivedRecordIds.has(parentId));
+  });
+  const paymentsSnap = { docs: paymentDocs };
+  // Bills that have itemised payment docs must not ALSO be counted through their amountPaid field.
+  const recordsWithPaymentDocs = new Set<string>();
+  paymentDocs.forEach(d => { const parentId = d.ref.parent.parent?.id; if (parentId) recordsWithPaymentDocs.add(parentId); });
 
   let tillsTransactionsSnap: any;
   try {
@@ -269,6 +276,7 @@ async function recalculateSchoolFinancials(schoolId: string, eventTermId?: strin
 
   snap.forEach(doc => {
     const r = doc.data();
+    if (recordsWithPaymentDocs.has(doc.id)) return; // already counted via its payment docs
     if (r.payments && Array.isArray(r.payments) && r.payments.length > 0) {
       r.payments.forEach((p: any) => processItem(p, p.id || doc.id));
     } else if (r.amountPaid && Number(r.amountPaid) > 0) {
@@ -377,9 +385,8 @@ export const onStudentWrite = onDocumentWritten(
       'studentCount.withdrawn': FieldValue.increment(withdrawnDelta),
     }, { merge: true });
 
-    if (activeDelta !== 0) {
-      await recalculateSchoolFinancials(schoolId);
-    }
+    // Financial totals are no longer fully recomputed on every enrolment change (a bulk import of N
+    // students used to trigger N whole-school recomputes); the nightly rebuild picks this up.
   }
 );
 
@@ -449,7 +456,43 @@ export const onAttendanceWrite = onDocumentWritten(
   }
 );
 
-// ── TRIGGER 3: Financial Records ──────────────────────────────────────────────
+// ── Incremental financial helpers ────────────────────────────────────────────────
+// Each bill / payment write applies only the DIFFERENCE between its before and after state using
+// FieldValue.increment — zero reads per write. The nightly rebuild (term-safety-net) recomputes
+// everything exactly (aging, categories, collection rate) and removes any drift.
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+function debtKey(r: any): 'tuition' | 'canteen' | 'transport' | 'other' {
+  const t = String(r?.type || r?.category || '').toLowerCase();
+  if (t.includes('tuition')) return 'tuition';
+  if (t.includes('canteen')) return 'canteen';
+  if (t.includes('transport')) return 'transport';
+  return 'other';
+}
+
+function recordContribution(r: any): { billed: number; outstanding: number; key: string } {
+  if (!r || r.isArchived === true || r.status === 'Pending Reversal') return { billed: 0, outstanding: 0, key: 'other' };
+  const billed = Number(r.billedAmount ?? r.amount ?? 0) || 0;
+  const balance = billed - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+  return { billed, outstanding: balance > 0.01 ? balance : 0, key: debtKey(r) };
+}
+
+function streamKey(p: any): 'tuition' | 'canteen' | 'transport' | 'auxiliary' {
+  const c = classifyCategory(p);
+  return c === 'tuition' || c === 'canteen' || c === 'transport' ? c : 'auxiliary';
+}
+
+function paymentContribution(p: any): { amount: number; ms: number; stream: string } | null {
+  if (!p || p.isArchived === true || p.isCarryForward === true) return null;
+  if (p.status === 'Reversed' || p.status === 'Cancelled' || p.status === 'Pending Reversal') return null;
+  const amount = Number(p.amount) || Number(p.amountPaid) || Number(p.totalAmount) || 0;
+  if (amount <= 0) return null;
+  const dv = p.paidAt || p.createdAt || p.date || p.timestamp;
+  const ms = dv ? (dv.toMillis?.() ?? new Date(dv).getTime()) : 0;
+  return { amount, ms: isNaN(ms) ? 0 : ms, stream: streamKey(p) };
+}
+
+// ── TRIGGER 3: Financial Records (incremental) ──────────────────────────────────────
 export const onFinancialRecordWrite = onDocumentWritten(
   'financialRecords/{recordId}',
   async (event) => {
@@ -458,12 +501,35 @@ export const onFinancialRecordWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
-    const termId: string | undefined = after?.termId ?? before?.termId;
-    await recalculateSchoolFinancials(schoolId, termId);
+    const b = recordContribution(before);
+    const a = recordContribution(after);
+    const billedDelta = round2(a.billed - b.billed);
+    const outstandingDelta = round2(a.outstanding - b.outstanding);
+
+    const streamDebts: Record<string, number> = {};
+    if (b.outstanding) streamDebts[b.key] = round2((streamDebts[b.key] || 0) - b.outstanding);
+    if (a.outstanding) streamDebts[a.key] = round2((streamDebts[a.key] || 0) + a.outstanding);
+    const debtEntries = Object.entries(streamDebts).filter(([, v]) => Math.abs(v) > 0.001);
+
+    if (Math.abs(billedDelta) < 0.001 && Math.abs(outstandingDelta) < 0.001 && debtEntries.length === 0) return;
+
+    const financials: Record<string, any> = {
+      totalBilled: FieldValue.increment(billedDelta),
+      totalOutstanding: FieldValue.increment(outstandingDelta),
+    };
+    if (debtEntries.length) {
+      financials.streamDebts = Object.fromEntries(debtEntries.map(([k, v]) => [k, FieldValue.increment(v)]));
+    }
+
+    await SUMMARY(schoolId).set({
+      schoolId,
+      lastUpdated: FieldValue.serverTimestamp(),
+      financials,
+    }, { merge: true });
   }
 );
 
-// ── TRIGGER 3.5: Payments Subcollection ─────────────────────────────────────────
+// ── TRIGGER 3.5: Payments Subcollection (incremental) ───────────────────────────────
 export const onPaymentSubcollectionWrite = onDocumentWritten(
   'financialRecords/{recordId}/payments/{paymentId}',
   async (event) => {
@@ -472,8 +538,51 @@ export const onPaymentSubcollectionWrite = onDocumentWritten(
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
 
-    const termId: string | undefined = after?.termId ?? before?.termId;
-    await recalculateSchoolFinancials(schoolId, termId);
+    const b = paymentContribution(before);
+    const a = paymentContribution(after);
+    if (!a && !b) return;
+
+    const todayMs = todayStartMs();
+    const monthStart = new Date();
+    monthStart.setUTCDate(1);
+    monthStart.setUTCHours(0, 0, 0, 0);
+    const monthMs = monthStart.getTime();
+
+    const amt = (c: typeof a) => (c ? c.amount : 0);
+    const inWindow = (c: typeof a, from: number) => (c && c.ms >= from ? c.amount : 0);
+
+    const revenueDelta = round2(amt(a) - amt(b));
+    const todayDelta = round2(inWindow(a, todayMs) - inWindow(b, todayMs));
+    const monthDelta = round2(inWindow(a, monthMs) - inWindow(b, monthMs));
+
+    const streams: Record<string, number> = {};
+    if (b) streams[b.stream] = round2((streams[b.stream] || 0) - b.amount);
+    if (a) streams[a.stream] = round2((streams[a.stream] || 0) + a.amount);
+    const streamEntries = Object.entries(streams).filter(([, v]) => Math.abs(v) > 0.001);
+
+    const isNewRealPayment = !before && !!a && !after?.isAllocation;
+    if (Math.abs(revenueDelta) < 0.001 && streamEntries.length === 0 && !isNewRealPayment) return;
+
+    const financials: Record<string, any> = {
+      totalRevenue: FieldValue.increment(revenueDelta),
+      totalCollectedThisTerm: FieldValue.increment(revenueDelta),
+      totalCollectedThisYear: FieldValue.increment(revenueDelta),
+      totalCollectedToday: FieldValue.increment(todayDelta),
+      totalCollectedThisMonth: FieldValue.increment(monthDelta),
+    };
+    if (streamEntries.length) {
+      financials.streamBreakdown = Object.fromEntries(streamEntries.map(([k, v]) => [k, FieldValue.increment(v)]));
+    }
+    if (isNewRealPayment && a && a.ms >= todayMs) {
+      financials.lastPaymentAmount = a.amount;
+      financials.lastPaymentAt = after?.paidAt || after?.createdAt || FieldValue.serverTimestamp();
+    }
+
+    await SUMMARY(schoolId).set({
+      schoolId,
+      lastUpdated: FieldValue.serverTimestamp(),
+      financials,
+    }, { merge: true });
   }
 );
 

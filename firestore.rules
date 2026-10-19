@@ -108,6 +108,15 @@ service cloud.firestore {
     }
     function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
 
+    // A record archived when its term was closed is read-only, except for administrators.
+    function notArchivedOrAdmin() {
+      return resource == null || resource.data.get('isArchived', false) != true || isAdmin();
+    }
+    // Academic marks: teachers / staff / admins only. Quiz marks are graded and written by the server.
+    function canCreateAssessment() {
+      return isTeacher() || isAdmin();
+    }
+
     function isFinanceStaff() { 
       return isAdmin() || getUserRole() in [
         'Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
@@ -244,6 +253,21 @@ service cloud.firestore {
       allow write: if false; // Server-side only via Cloud Functions
     }
 
+
+    // Payment / messaging credentials and rollover run records: server (admin SDK) only.
+    // No browser — not even an administrator — can read or write these.
+    match /schoolSecrets/{schoolId} {
+      allow read, write: if false;
+    }
+    match /paystackEvents/{reference} {
+      allow read, write: if false;
+    }
+    match /termRollovers/{runId} {
+      allow read, write: if false;
+      match /{document=**} {
+        allow read, write: if false;
+      }
+    }
 
     match /schoolSettings/{docId} {
       allow read, get, list: if isSignedIn();
@@ -394,14 +418,16 @@ service cloud.firestore {
 
     match /assessments/{assessmentId} {
         allow read, get, list: if isSignedIn();
-        allow create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow create: if canCreateAssessment();
+        allow update: if (isTeacher() || isAdmin()) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
     }
 
     match /{path=**}/assessments/{assessmentId} {
         allow read, get, list: if isSignedIn();
-        allow create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow create: if canCreateAssessment();
+        allow update: if (isTeacher() || isAdmin()) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
     }
 
     match /{path=**}/liveSessions/{sessionId} {
@@ -434,10 +460,16 @@ service cloud.firestore {
     }
 
     match /attendance/{attendanceId} {
-      allow read, get, list, write, create, update, delete: if isSignedIn();
+      allow read, get, list: if isSignedIn();
+      // Marked by teachers / staff (biometric scans are written by the server). Parents and students cannot
+      // write attendance, and days in a closed term are read-only except for administrators.
+      allow create: if isTeacher() || isStaff() || isAdmin();
+      allow update: if (isTeacher() || isStaff() || isAdmin()) && notArchivedOrAdmin();
+      allow delete: if (isTeacher() || isStaff() || isAdmin()) && notArchivedOrAdmin();
 
       match /{document=**} {
-        allow read, get, list, write, create, update, delete: if isSignedIn();
+        allow read, get, list: if isSignedIn();
+        allow write: if isTeacher() || isStaff() || isAdmin();
       }
     }
 
@@ -482,8 +514,9 @@ service cloud.firestore {
         parentOwnsStudent(resource.data.studentId)
       )));
       allow list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId && notArchivedOrAdmin());
+      allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
     }
 
     match /report_card_remarks/{id} {
@@ -531,14 +564,16 @@ service cloud.firestore {
 
     match /quizAttempts/{attemptId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn();
+      // Students' attempts are graded and saved by the server (submitQuizAttemptAction).
+      allow create, update: if isTeacher() || isAdmin();
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /assessments/{assessmentId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if canCreateAssessment();
+      allow update: if (isTeacher() || isAdmin()) && notArchivedOrAdmin();
+      allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
     }
 
     match /lesson-plans/{planId} {
@@ -555,8 +590,9 @@ service cloud.firestore {
 
     match /behavioral_records/{recordId} {
       allow read, list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
+      allow create: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
+      allow update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId && notArchivedOrAdmin());
+      allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId && notArchivedOrAdmin());
     }
 
     // =========================================================
@@ -587,18 +623,44 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
+    // ── FINANCIAL RECORDS (bills) ──────────────────────────────────────────────
+    // Read: any signed-in user (parents/students view their own bills in the portal).
+    // Write: school staff only (teachers included — attendance-linked billing runs in their session).
+    // Archived records (closed terms) are read-only except for administrators, and are never deletable.
+    // Server code (Admin SDK: biometric billing, payment webhooks, Cloud Functions) bypasses these rules.
+    function isUnpaidDailyBill(data) {
+      return data.type in ['Canteen Fee (Daily)', 'Transport Fee (Daily)']
+        && (data.get('amountPaid', 0) == 0)
+        && (data.get('waiverAmount', 0) == 0)
+        && data.get('isArchived', false) != true;
+    }
+
     match /financialRecords/{recordId} {
-      allow read, list, write, create, update, delete: if isSignedIn();
+      allow read, list: if isSignedIn();
+      allow create: if isFinanceStaff();
+      allow update: if isFinanceStaff()
+        && (resource.data.get('isArchived', false) != true || isAdmin());
+      // Deleting a non-existent bill is a no-op (attendance corrections delete "just in case").
+      // Staff may only remove an UNPAID daily canteen/transport bill (student re-marked absent).
+      // Anything else requires an administrator, and archived records can never be deleted.
+      allow delete: if isFinanceStaff() && (
+        resource == null ||
+        isUnpaidDailyBill(resource.data) ||
+        (isAdmin() && resource.data.get('isArchived', false) != true)
+      );
+
       match /payments/{paymentId} {
-        allow read, list, write, create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow read, list: if isSignedIn();
+        allow create, update: if isFinanceStaff();
+        allow delete: if false; // receipts are permanent; use reversals instead
       }
     }
 
-    // Collection Group rule for payments
+    // Collection Group rule for payments (dashboard live feed / sync)
     match /{path=**}/payments/{paymentId} {
-      allow read, list, write, create, update: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow read, list: if isSignedIn();
+      allow create, update: if isFinanceStaff();
+      allow delete: if false;
     }
 
     match /reversalLogs/{logId} {

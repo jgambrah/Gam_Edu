@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { NotificationService } from '@/lib/notification-service';
+import { termStampOfRecord } from '@/lib/term';
+import { getSchoolSecrets } from '@/lib/school-secrets';
 
 /**
  * Initializes and returns the Firebase Admin App instance.
@@ -65,9 +67,7 @@ export async function POST(req: NextRequest) {
         const db = getFirestore(adminApp);
 
         // 2. Fetch the specific School's Secret Key from Firestore (Tenant isolation)
-        const schoolSettingsSnap = await db.collection('schoolSettings').doc(schoolId).get();
-        const schoolSettings = schoolSettingsSnap.data();
-        const secret = schoolSettings?.paystackSecKey;
+        const secret = (await getSchoolSecrets(db, schoolId)).paystackSecKey;
 
         if (!secret) {
           console.error(`Webhook failed: No secret key found for school ${schoolId}`);
@@ -84,13 +84,32 @@ export async function POST(req: NextRequest) {
         }
 
         // 4. Securely process the payment in a database Transaction
-        const recordRef = db.collection('financialRecords').doc(recordId);
-        const paymentRef = db.collection(`financialRecords/${recordId}/payments`).doc();
+        const originalRef = db.collection('financialRecords').doc(recordId);
         const onlineTillRef = db.collection('tills').doc(`online-${schoolId}`); 
-        
-        await db.runTransaction(async (t) => {
-          const recordDoc = await t.get(recordRef);
-          if (!recordDoc.exists) throw new Error("Financial record not found");
+        // Paystack retries webhooks: one event per payment reference, recorded once.
+        const eventRef = db.collection('paystackEvents').doc(String(data.reference));
+
+        const alreadyProcessed = await db.runTransaction(async (t) => {
+          const eventSnap = await t.get(eventRef);
+          if (eventSnap.exists) return true;
+
+          const originalDoc = await t.get(originalRef);
+          if (!originalDoc.exists) throw new Error("Financial record not found");
+
+          // A bill archived by a term rollover no longer carries the balance: pay its Arrears (or Credit)
+          // Brought Forward record in the new term instead, so the payment reduces what is actually owed.
+          let recordRef = originalRef;
+          let recordDoc = originalDoc;
+          const orig: any = originalDoc.data();
+          if (orig?.schoolId && orig.schoolId !== schoolId) throw new Error("Bill does not belong to this school");
+          if (orig?.isArchived === true && orig?.carriedForwardToTermId && orig?.studentId) {
+            const abfRef = db.collection('financialRecords').doc(`abf_${orig.studentId}_${orig.carriedForwardToTermId}`);
+            const cbfRef = db.collection('financialRecords').doc(`cbf_${orig.studentId}_${orig.carriedForwardToTermId}`);
+            const [abfSnap, cbfSnap] = await Promise.all([t.get(abfRef), t.get(cbfRef)]);
+            if (abfSnap.exists) { recordRef = abfRef; recordDoc = abfSnap; }
+            else if (cbfSnap.exists) { recordRef = cbfRef; recordDoc = cbfSnap; }
+          }
+          const paymentRef = recordRef.collection('payments').doc(`ONLINE-${String(data.reference).replace(/[^A-Za-z0-9_-]/g, '')}`);
           
           const recordData = recordDoc.data();
           const currentPaid = recordData?.amountPaid || 0;
@@ -119,7 +138,8 @@ export async function POST(req: NextRequest) {
               schoolId: schoolId,
               studentId: studentId,
               reference: data.reference,
-              notes: 'Processed via secure Paystack gateway.'
+              notes: 'Processed via secure Paystack gateway.',
+              ...(() => { const st = termStampOfRecord(recordData); return st ? { termId: st.termId, academicYear: st.academicYear } : {}; })(),
           });
 
           // C. Ensure institutional "Online Till" exists and increment balance
@@ -143,7 +163,19 @@ export async function POST(req: NextRequest) {
               status: 'Completed',
               schoolId: schoolId
           });
+
+          t.set(eventRef, {
+              reference: data.reference, type: 'school_fee_payment', schoolId, studentId,
+              requestedRecordId: recordId, appliedToRecordId: recordRef.id, amount: amountFromPaystack,
+              processedAt: new Date(),
+          });
+          return false;
         });
+
+        if (alreadyProcessed) {
+          console.log(`Webhook: payment ${data.reference} was already recorded; ignoring repeat delivery.`);
+          return NextResponse.json({ status: 'already_processed' }, { status: 200 });
+        }
 
         // E. Send DM notification to parents asynchronously
         try {
@@ -251,9 +283,7 @@ export async function POST(req: NextRequest) {
         const db = getFirestore(adminApp);
 
         // Fetch School's Secret Key
-        const schoolSettingsSnap = await db.collection('schoolSettings').doc(schoolId).get();
-        const schoolSettings = schoolSettingsSnap.data();
-        const secret = schoolSettings?.paystackSecKey;
+        const secret = (await getSchoolSecrets(db, schoolId)).paystackSecKey;
 
         if (!secret) {
           console.error(`Webhook failed: No secret key found for school ${schoolId}`);
@@ -280,9 +310,11 @@ export async function POST(req: NextRequest) {
         const amountFromPaystack = data.amount / 100;
 
         // Perform Wallet Topup in a transaction
+        const walletEventRef = db.collection('paystackEvents').doc(String(data.reference));
         const transactionResult = await db.runTransaction(async (t) => {
           const walletRef = db.collection('student_wallets').doc(studentId);
-          const walletSnap = await t.get(walletRef);
+          const [walletEventSnap, walletSnap] = await Promise.all([t.get(walletEventRef), t.get(walletRef)]);
+          if (walletEventSnap.exists) return { balance: walletSnap.data()?.balance || 0, duplicate: true };
 
           let currentBalance = 0;
           if (walletSnap.exists) {
@@ -313,9 +345,14 @@ export async function POST(req: NextRequest) {
             recordedByName: parentName || 'Parent Online',
             timestamp: new Date(),
           });
+          t.set(walletEventRef, { reference: data.reference, type: 'wallet_topup', schoolId, studentId, amount: amountFromPaystack, processedAt: new Date() });
 
-          return { balance: newBalance };
+          return { balance: newBalance, duplicate: false };
         });
+        if ((transactionResult as any).duplicate) {
+          console.log(`Webhook: wallet top-up ${data.reference} was already recorded; ignoring repeat delivery.`);
+          return NextResponse.json({ status: 'already_processed' }, { status: 200 });
+        }
 
         // Trigger Wallet Event Notification
         try {

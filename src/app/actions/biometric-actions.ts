@@ -6,7 +6,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { format, startOfDay } from 'date-fns';
 import { notifyParents } from './notifications';
-import { sendSchoolWhatsApp } from './whatsapp';
+import { sendSchoolWhatsAppServer } from '@/lib/whatsapp-server';
 import { billMultipleStudentsServer } from '@/lib/billing-server';
 
 function getAdminApp() {
@@ -296,7 +296,7 @@ export async function processBiometricScans(
         if (parent.phone) {
           const timeStr = format(scanTime, 'h:mm a');
           const message = `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${studentName}*, arrived *LATE* to school via biometric check-in today at ${timeStr}.`;
-          whatsappTasks.push(sendSchoolWhatsApp(schoolId, parent.phone, message));
+          whatsappTasks.push(sendSchoolWhatsAppServer(db, schoolId, parent.phone, message));
         }
       }
     }

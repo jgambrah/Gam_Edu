@@ -7,6 +7,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { logAuditEvent } from '@/lib/audit';
+import { getSchoolSecretStatusAction, saveSchoolSecretsAction, type SecretStatus } from '@/app/actions/school-secrets';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -130,6 +131,8 @@ export default function SchoolProfilePage() {
   // Fee Collection States (BYOG)
   const [paystackPubKey, setPaystackPubKey] = useState('');
   const [paystackSecKey, setPaystackSecKey] = useState('');
+  // Masked status of keys held in the server-only store, e.g. { smsApiKey: '••••1a2b' }.
+  const [secretStatus, setSecretStatus] = useState<SecretStatus | null>(null);
   const [enablePaystack, setEnablePaystack] = useState(false);
   const [enableTransflow, setEnableTransflow] = useState(false);
   const [shopTillMode, setShopTillMode] = useState<'cashier' | 'main' | 'disabled'>('cashier');
@@ -208,17 +211,14 @@ export default function SchoolProfilePage() {
         setTrackStaffOnWeekends(profile.trackStaffOnWeekends === true);
         setVacationMode(profile.vacationMode === true);
 
-        setWaInstanceId(profile.waInstanceId || '');
-        setWaToken(profile.waToken || '');
+        // Keys are never loaded into the browser; only their saved status (see secretStatus below).
         setEnableWhatsApp(profile.enableWhatsApp === true);
 
         setEnableSms(profile.enableSms === true);
         setSmsProvider(profile.smsProvider || 'arkesel');
-        setSmsApiKey(profile.smsApiKey || '');
         setSmsSenderId(profile.smsSenderId || '');
 
         setPaystackPubKey(profile.paystackPubKey || '');
-        setPaystackSecKey(profile.paystackSecKey || '');
         setEnablePaystack(profile.enablePaystack === true);
         setEnableTransflow(profile.enableTransflow === true);
         setShopTillMode(profile.shopTillMode || 'cashier');
@@ -277,6 +277,19 @@ export default function SchoolProfilePage() {
   }, [profile]);
 
   const canManage = role === 'Director' || user?.email === 'jamesgambrah@gmail.com';
+
+  useEffect(() => {
+    let active = true;
+    if (!user || !schoolId || !canManage) return;
+    user.getIdToken()
+      .then(token => getSchoolSecretStatusAction(token, schoolId))
+      .then(res => { if (active && res.ok) setSecretStatus(res.status); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [user, schoolId, canManage]);
+
+  const savedHint = (field: keyof SecretStatus, fallback: string) =>
+    secretStatus?.[field] ? `Saved ${secretStatus[field]} (leave blank to keep, type to replace)` : fallback;
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -366,15 +379,11 @@ export default function SchoolProfilePage() {
             schoolCloseTime,
             trackStaffOnWeekends,
             vacationMode,
-            waInstanceId,
-            waToken,
             enableWhatsApp,
             enableSms,
             smsProvider,
-            smsApiKey,
             smsSenderId,
             paystackPubKey,
-            paystackSecKey,
             enablePaystack,
             enableTransflow,
             shopTillMode,
@@ -403,6 +412,19 @@ export default function SchoolProfilePage() {
             details: `Updated school settings: name="${name}", caWeight=${caWeight}%, examWeight=${examWeight}%`
         });
         
+        // Keys go to the server-only store. This also moves any keys still held in the old (public)
+        // locations for this school and removes them from there.
+        if (user) {
+            const idToken = await user.getIdToken();
+            const res = await saveSchoolSecretsAction(idToken, schoolId, { waInstanceId, waToken, smsApiKey, paystackSecKey });
+            if (res.ok) {
+                setSecretStatus(res.status);
+                setWaInstanceId(''); setWaToken(''); setSmsApiKey(''); setPaystackSecKey('');
+            } else {
+                toast({ variant: 'destructive', title: 'Keys not saved', description: res.error });
+            }
+        }
+
         toast({ title: "Settings Saved", description: "School profile updated successfully." });
     } catch (error: any) {
         console.error(error);
@@ -702,7 +724,7 @@ export default function SchoolProfilePage() {
                                         <Input 
                                             value={waInstanceId} 
                                             onChange={e => setWaInstanceId(e.target.value)} 
-                                            placeholder="e.g. instance8372" 
+                                            placeholder={savedHint('waInstanceId', 'e.g. instance8372')} 
                                             className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
                                         />
                                     </div>
@@ -712,7 +734,7 @@ export default function SchoolProfilePage() {
                                             type="password" 
                                             value={waToken} 
                                             onChange={e => setWaToken(e.target.value)} 
-                                            placeholder="e.g. 1a2b3c4d5e..." 
+                                            placeholder={savedHint('waToken', 'e.g. 1a2b3c4d5e...')} 
                                             className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
                                         />
                                     </div>
@@ -769,7 +791,7 @@ export default function SchoolProfilePage() {
                                               type="password" 
                                               value={smsApiKey} 
                                               onChange={e => setSmsApiKey(e.target.value)} 
-                                              placeholder="Paste your provider's API key here" 
+                                              placeholder={savedHint('smsApiKey', "Paste your provider's API key here")} 
                                               className="border-2 bg-white rounded-xl h-11 font-mono text-xs" 
                                             />
                                         </div>
@@ -858,7 +880,7 @@ export default function SchoolProfilePage() {
                                                         type="password" 
                                                         value={paystackSecKey} 
                                                         onChange={e => setPaystackSecKey(e.target.value)} 
-                                                        placeholder="sk_live_..." 
+                                                        placeholder={savedHint('paystackSecKey', 'sk_live_...')} 
                                                         className="bg-white border-green-200 focus-visible:ring-green-500" 
                                                     />
                                                 </div>

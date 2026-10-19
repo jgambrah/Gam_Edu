@@ -6,9 +6,12 @@ import ReportCardManager from './report-card-manager';
 import StudentParentReportCardView from './student-parent-view';
 import { useRole } from '@/context/role-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AcademicCloseModal } from '@/components/dashboard/academic-close-modal';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 
 function ReportCardsPageContent() {
   const { role, loading } = useRole();
+  const { schoolId } = useCurrentSchool();
 
   if (loading) {
     return (
@@ -39,7 +42,17 @@ function ReportCardsPageContent() {
     );
   }
 
-  return <ReportCardManager />;
+  const isAdmin = ['administrator', 'director'].includes(role?.toLowerCase() || '');
+  return (
+    <>
+      {isAdmin && schoolId && (
+        <div className="flex justify-end px-4 pt-4">
+          <AcademicCloseModal schoolId={schoolId} />
+        </div>
+      )}
+      <ReportCardManager />
+    </>
+  );
 }
 
 export default function ReportCardsPage() {

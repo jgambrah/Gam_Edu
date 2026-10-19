@@ -3405,6 +3405,7 @@ function DirectorDashboard({
       recordsSnap.docs.forEach((d) => {
         const r = d.data();
         if (r.status === 'Pending Reversal') return;
+        if (r.isArchived === true) return; // closed term: balance is on the Brought Forward record
         
         // Exclude inactive / withdrawn / graduated students
         if (r.studentId && activeStudentIds.size > 0 && !activeStudentIds.has(r.studentId)) {
@@ -10865,7 +10866,7 @@ function StudentDashboard({ profile }: any) {
 
     const outstandingBalance = useMemo(() => {
         if (!studentBills || studentBills.length === 0) return 0;
-        return studentBills.reduce((sum: number, b: any) => {
+        return studentBills.filter((b: any) => b?.isArchived !== true).reduce((sum: number, b: any) => {
             if (b.status === 'Paid') return sum;
             const due = (b.billedAmount || 0) - (b.amountPaid || 0) - (b.waiverAmount || 0);
             return sum + Math.max(0, due);

@@ -1,6 +1,7 @@
 ﻿'use server';
 
 import { getAdminDb, getAdminAuth, FieldValue } from '@/lib/firebaseAdmin';
+import { getSchoolSecrets } from '@/lib/school-secrets';
 
 /**
  * Resolves SMS settings by checking schoolSettings and falling back to the schools collection.
@@ -26,6 +27,15 @@ async function resolveSchoolSMSSettings(db: any, schoolId: string) {
     }
   }
 
+  // The API key lives in the server-only secret store (legacy locations are read as a fallback).
+  const secrets = await getSchoolSecrets(db, schoolId);
+  if (secrets.smsApiKey) settings = { ...settings, smsApiKey: secrets.smsApiKey };
+  if (!settings.smsSenderId && !settings.senderId) {
+    const schoolDoc = await db.collection('schools').doc(schoolId).get();
+    const schoolData = schoolDoc.exists ? schoolDoc.data() || {} : {};
+    settings = { ...schoolData, ...settings, smsSenderId: schoolData.smsSenderId || schoolData.senderId || schoolData.smsSender };
+  }
+
   // Treat as enabled if credentials exist unless explicitly turned off
   const isEnabled = settings.enableSms !== false && Boolean(settings.smsApiKey) && Boolean(settings.smsSenderId);
   const provider = (settings.smsProvider || 'arkesel').toLowerCase();
@@ -36,7 +46,8 @@ async function resolveSchoolSMSSettings(db: any, schoolId: string) {
     senderId: settings.smsSenderId,
     provider,
     schoolName: settings.name || 'School',
-    rawSettings: settings
+    // Never hand the secret back to callers through rawSettings.
+    rawSettings: { ...settings, smsApiKey: undefined, arkeselApiKey: undefined, paystackSecKey: undefined, waToken: undefined, waInstanceId: undefined }
   };
 }
 
