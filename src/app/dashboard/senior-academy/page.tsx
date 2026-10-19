@@ -25,46 +25,7 @@ import { AssignmentMonitorView } from '@/components/academy/director/AssignmentM
 import { ExamDisclaimerTooltip, PlatformExamFooterNotice } from '@/components/exam/ExamDisclaimerNotice';
 import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } from '@/lib/services/curriculumService';
 import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
-import { SET_BECE_MOCK_1_SCIENCE_P1, SET_BECE_MOCK_1_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-132';
-import { SET_BECE_MOCK_2_SCIENCE_P1, SET_BECE_MOCK_2_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-133';
-import { SET_BECE_MOCK_3_SCIENCE_P1, SET_BECE_MOCK_3_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-134';
-import { SET_BECE_MOCK_4_SCIENCE_P1, SET_BECE_MOCK_4_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-135';
-import { SET_BECE_MOCK_5_SCIENCE_P1, SET_BECE_MOCK_5_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-136';
-import { SET_BECE_MOCK_6_SCIENCE_P1, SET_BECE_MOCK_6_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-137';
-import { SET_BECE_MOCK_7_SCIENCE_P1, SET_BECE_MOCK_7_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-138';
-import { SET_BECE_MOCK_8_SCIENCE_P1, SET_BECE_MOCK_8_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-139';
-import { SET_BECE_MOCK_9_SCIENCE_P1, SET_BECE_MOCK_9_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-140';
-import { SET_BECE_MOCK_10_SCIENCE_P1, SET_BECE_MOCK_10_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-141';
-import { SET_BECE_MOCK_11_SCIENCE_P1, SET_BECE_MOCK_11_SCIENCE_P2 } from '@/lib/data/jhs-curriculum-set-142';
-import { SET_BECE_MOCK_1_ENGLISH_P1, SET_BECE_MOCK_1_ENGLISH_P2 } from '@/lib/data/bece-english-mock-1';
-import { SET_BECE_MOCK_2_ENGLISH_P1, SET_BECE_MOCK_2_ENGLISH_P2 } from '@/lib/data/bece-english-mock-2';
-import { SET_BECE_MOCK_3_ENGLISH_P1, SET_BECE_MOCK_3_ENGLISH_P2 } from '@/lib/data/bece-english-mock-3';
-import { SET_BECE_MOCK_4_ENGLISH_P1, SET_BECE_MOCK_4_ENGLISH_P2 } from '@/lib/data/bece-english-mock-4';
-import { SET_BECE_MOCK_5_ENGLISH_P1, SET_BECE_MOCK_5_ENGLISH_P2 } from '@/lib/data/bece-english-mock-5';
-import { SET_BECE_MOCK_6_ENGLISH_P1, SET_BECE_MOCK_6_ENGLISH_P2 } from '@/lib/data/bece-english-mock-6';
-import { SET_BECE_MOCK_7_ENGLISH_P1, SET_BECE_MOCK_7_ENGLISH_P2 } from '@/lib/data/bece-english-mock-7';
-import { SET_BECE_MOCK_8_ENGLISH_P1, SET_BECE_MOCK_8_ENGLISH_P2 } from '@/lib/data/bece-english-mock-8';
-import { SET_BECE_MOCK_9_ENGLISH_P1, SET_BECE_MOCK_9_ENGLISH_P2 } from '@/lib/data/bece-english-mock-9';
-import { SET_BECE_MOCK_10_ENGLISH_P1, SET_BECE_MOCK_10_ENGLISH_P2 } from '@/lib/data/bece-english-mock-10';
-import { SET_BECE_MOCK_11_ENGLISH_P1, SET_BECE_MOCK_11_ENGLISH_P2 } from '@/lib/data/bece-english-mock-11';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
-import { SET_BECE_2013_MATH_P1, SET_BECE_2013_MATH_P2 } from '@/lib/data/bece-math-2013';
-import { SET_BECE_2014_MATH_P1, SET_BECE_2014_MATH_P2 } from '@/lib/data/bece-math-2014';
-import { SET_BECE_2015_MATH_P1, SET_BECE_2015_MATH_P2 } from '@/lib/data/bece-math-2015';
-import { SET_BECE_2016_MATH_P1, SET_BECE_2016_MATH_P2 } from '@/lib/data/bece-math-2016';
-import { SET_BECE_2017_MATH_P1, SET_BECE_2017_MATH_P2 } from '@/lib/data/bece-math-2017';
-import { SET_BECE_2018_MATH_P1, SET_BECE_2018_MATH_P2 } from '@/lib/data/bece-math-2018';
-import { SET_BECE_MOCK_1_MATH_P1, SET_BECE_MOCK_1_MATH_P2 } from '@/lib/data/bece-math-mock-1';
-import { SET_BECE_MOCK_2_MATH_P1, SET_BECE_MOCK_2_MATH_P2 } from '@/lib/data/bece-math-mock-2';
-import { SET_BECE_MOCK_3_MATH_P1, SET_BECE_MOCK_3_MATH_P2, SET_BECE_MOCK_3_MATH_COMPLETE } from '@/lib/data/bece-math-mock-3';
-import { SET_BECE_MOCK_4_MATH_P1, SET_BECE_MOCK_4_MATH_P2, SET_BECE_MOCK_4_MATH_COMPLETE } from '@/lib/data/bece-math-mock-4';
-import { SET_BECE_MOCK_5_MATH_P1, SET_BECE_MOCK_5_MATH_P2, SET_BECE_MOCK_5_MATH_COMPLETE } from '@/lib/data/bece-math-mock-5';
-import { SET_BECE_MOCK_6_MATH_P1, SET_BECE_MOCK_6_MATH_P2, SET_BECE_MOCK_6_MATH_COMPLETE } from '@/lib/data/bece-math-mock-6';
-import { SET_BECE_MOCK_7_MATH_P1, SET_BECE_MOCK_7_MATH_P2 } from '@/lib/data/bece-math-mock-7';
-import { SET_BECE_MOCK_8_MATH_P1, SET_BECE_MOCK_8_MATH_P2 } from '@/lib/data/bece-math-mock-8';
-import { SET_BECE_MOCK_9_MATH_P1, SET_BECE_MOCK_9_MATH_P2 } from '@/lib/data/bece-math-mock-9';
-import { SET_BECE_MOCK_10_MATH_P1, SET_BECE_MOCK_10_MATH_P2 } from '@/lib/data/bece-math-mock-10';
-import { SET_BECE_MOCK_11_MATH_P1, SET_BECE_MOCK_11_MATH_P2 } from '@/lib/data/bece-math-mock-11';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -114,6 +75,48 @@ const cleanLatex = (formula: string = "") => {
 };
 
 // --- ROBUST MATH RENDERER ---
+
+// ── BECE past papers & mock exams: loaded on demand ─────────────────────────────────────────────────
+// These ~4 MB of question data used to be bundled into the page, so every visit downloaded all of them.
+// They are now fetched only when a student opens an exam (each group is its own small download, cached
+// by the browser afterwards). Seeded Firestore copies are still preferred where the loader checks them.
+/* eslint-disable prefer-const */
+let SET_BECE_MOCK_1_SCIENCE_P1: any, SET_BECE_MOCK_1_SCIENCE_P2: any, SET_BECE_MOCK_2_SCIENCE_P1: any, SET_BECE_MOCK_2_SCIENCE_P2: any, SET_BECE_MOCK_3_SCIENCE_P1: any, SET_BECE_MOCK_3_SCIENCE_P2: any, SET_BECE_MOCK_4_SCIENCE_P1: any, SET_BECE_MOCK_4_SCIENCE_P2: any, SET_BECE_MOCK_5_SCIENCE_P1: any, SET_BECE_MOCK_5_SCIENCE_P2: any, SET_BECE_MOCK_6_SCIENCE_P1: any, SET_BECE_MOCK_6_SCIENCE_P2: any, SET_BECE_MOCK_7_SCIENCE_P1: any, SET_BECE_MOCK_7_SCIENCE_P2: any, SET_BECE_MOCK_8_SCIENCE_P1: any, SET_BECE_MOCK_8_SCIENCE_P2: any, SET_BECE_MOCK_9_SCIENCE_P1: any, SET_BECE_MOCK_9_SCIENCE_P2: any, SET_BECE_MOCK_10_SCIENCE_P1: any, SET_BECE_MOCK_10_SCIENCE_P2: any, SET_BECE_MOCK_11_SCIENCE_P1: any, SET_BECE_MOCK_11_SCIENCE_P2: any, SET_BECE_MOCK_1_ENGLISH_P1: any, SET_BECE_MOCK_1_ENGLISH_P2: any, SET_BECE_MOCK_2_ENGLISH_P1: any, SET_BECE_MOCK_2_ENGLISH_P2: any, SET_BECE_MOCK_3_ENGLISH_P1: any, SET_BECE_MOCK_3_ENGLISH_P2: any, SET_BECE_MOCK_4_ENGLISH_P1: any, SET_BECE_MOCK_4_ENGLISH_P2: any, SET_BECE_MOCK_5_ENGLISH_P1: any, SET_BECE_MOCK_5_ENGLISH_P2: any, SET_BECE_MOCK_6_ENGLISH_P1: any, SET_BECE_MOCK_6_ENGLISH_P2: any, SET_BECE_MOCK_7_ENGLISH_P1: any, SET_BECE_MOCK_7_ENGLISH_P2: any, SET_BECE_MOCK_8_ENGLISH_P1: any, SET_BECE_MOCK_8_ENGLISH_P2: any, SET_BECE_MOCK_9_ENGLISH_P1: any, SET_BECE_MOCK_9_ENGLISH_P2: any, SET_BECE_MOCK_10_ENGLISH_P1: any, SET_BECE_MOCK_10_ENGLISH_P2: any, SET_BECE_MOCK_11_ENGLISH_P1: any, SET_BECE_MOCK_11_ENGLISH_P2: any, SET_BECE_2013_MATH_P1: any, SET_BECE_2013_MATH_P2: any, SET_BECE_2014_MATH_P1: any, SET_BECE_2014_MATH_P2: any, SET_BECE_2015_MATH_P1: any, SET_BECE_2015_MATH_P2: any, SET_BECE_2016_MATH_P1: any, SET_BECE_2016_MATH_P2: any, SET_BECE_2017_MATH_P1: any, SET_BECE_2017_MATH_P2: any, SET_BECE_2018_MATH_P1: any, SET_BECE_2018_MATH_P2: any, SET_BECE_MOCK_1_MATH_P1: any, SET_BECE_MOCK_1_MATH_P2: any, SET_BECE_MOCK_2_MATH_P1: any, SET_BECE_MOCK_2_MATH_P2: any, SET_BECE_MOCK_3_MATH_P1: any, SET_BECE_MOCK_3_MATH_P2: any, SET_BECE_MOCK_3_MATH_COMPLETE: any, SET_BECE_MOCK_4_MATH_P1: any, SET_BECE_MOCK_4_MATH_P2: any, SET_BECE_MOCK_4_MATH_COMPLETE: any, SET_BECE_MOCK_5_MATH_P1: any, SET_BECE_MOCK_5_MATH_P2: any, SET_BECE_MOCK_5_MATH_COMPLETE: any, SET_BECE_MOCK_6_MATH_P1: any, SET_BECE_MOCK_6_MATH_P2: any, SET_BECE_MOCK_6_MATH_COMPLETE: any, SET_BECE_MOCK_7_MATH_P1: any, SET_BECE_MOCK_7_MATH_P2: any, SET_BECE_MOCK_8_MATH_P1: any, SET_BECE_MOCK_8_MATH_P2: any, SET_BECE_MOCK_9_MATH_P1: any, SET_BECE_MOCK_9_MATH_P2: any, SET_BECE_MOCK_10_MATH_P1: any, SET_BECE_MOCK_10_MATH_P2: any, SET_BECE_MOCK_11_MATH_P1: any, SET_BECE_MOCK_11_MATH_P2: any;
+const EXAM_DATA_GROUPS: Record<string, () => Promise<void>> = {
+    math_past: async () => { const m: any[] = await Promise.all([import('@/lib/data/bece-math-2013'), import('@/lib/data/bece-math-2014'), import('@/lib/data/bece-math-2015'), import('@/lib/data/bece-math-2016'), import('@/lib/data/bece-math-2017'), import('@/lib/data/bece-math-2018')]); SET_BECE_2013_MATH_P1 = m[0].SET_BECE_2013_MATH_P1; SET_BECE_2013_MATH_P2 = m[0].SET_BECE_2013_MATH_P2; SET_BECE_2014_MATH_P1 = m[1].SET_BECE_2014_MATH_P1; SET_BECE_2014_MATH_P2 = m[1].SET_BECE_2014_MATH_P2; SET_BECE_2015_MATH_P1 = m[2].SET_BECE_2015_MATH_P1; SET_BECE_2015_MATH_P2 = m[2].SET_BECE_2015_MATH_P2; SET_BECE_2016_MATH_P1 = m[3].SET_BECE_2016_MATH_P1; SET_BECE_2016_MATH_P2 = m[3].SET_BECE_2016_MATH_P2; SET_BECE_2017_MATH_P1 = m[4].SET_BECE_2017_MATH_P1; SET_BECE_2017_MATH_P2 = m[4].SET_BECE_2017_MATH_P2; SET_BECE_2018_MATH_P1 = m[5].SET_BECE_2018_MATH_P1; SET_BECE_2018_MATH_P2 = m[5].SET_BECE_2018_MATH_P2; },
+    math_mock: async () => { const m: any[] = await Promise.all([import('@/lib/data/bece-math-mock-1'), import('@/lib/data/bece-math-mock-2'), import('@/lib/data/bece-math-mock-3'), import('@/lib/data/bece-math-mock-4'), import('@/lib/data/bece-math-mock-5'), import('@/lib/data/bece-math-mock-6'), import('@/lib/data/bece-math-mock-7'), import('@/lib/data/bece-math-mock-8'), import('@/lib/data/bece-math-mock-9'), import('@/lib/data/bece-math-mock-10'), import('@/lib/data/bece-math-mock-11')]); SET_BECE_MOCK_1_MATH_P1 = m[0].SET_BECE_MOCK_1_MATH_P1; SET_BECE_MOCK_1_MATH_P2 = m[0].SET_BECE_MOCK_1_MATH_P2; SET_BECE_MOCK_2_MATH_P1 = m[1].SET_BECE_MOCK_2_MATH_P1; SET_BECE_MOCK_2_MATH_P2 = m[1].SET_BECE_MOCK_2_MATH_P2; SET_BECE_MOCK_3_MATH_P1 = m[2].SET_BECE_MOCK_3_MATH_P1; SET_BECE_MOCK_3_MATH_P2 = m[2].SET_BECE_MOCK_3_MATH_P2; SET_BECE_MOCK_3_MATH_COMPLETE = m[2].SET_BECE_MOCK_3_MATH_COMPLETE; SET_BECE_MOCK_4_MATH_P1 = m[3].SET_BECE_MOCK_4_MATH_P1; SET_BECE_MOCK_4_MATH_P2 = m[3].SET_BECE_MOCK_4_MATH_P2; SET_BECE_MOCK_4_MATH_COMPLETE = m[3].SET_BECE_MOCK_4_MATH_COMPLETE; SET_BECE_MOCK_5_MATH_P1 = m[4].SET_BECE_MOCK_5_MATH_P1; SET_BECE_MOCK_5_MATH_P2 = m[4].SET_BECE_MOCK_5_MATH_P2; SET_BECE_MOCK_5_MATH_COMPLETE = m[4].SET_BECE_MOCK_5_MATH_COMPLETE; SET_BECE_MOCK_6_MATH_P1 = m[5].SET_BECE_MOCK_6_MATH_P1; SET_BECE_MOCK_6_MATH_P2 = m[5].SET_BECE_MOCK_6_MATH_P2; SET_BECE_MOCK_6_MATH_COMPLETE = m[5].SET_BECE_MOCK_6_MATH_COMPLETE; SET_BECE_MOCK_7_MATH_P1 = m[6].SET_BECE_MOCK_7_MATH_P1; SET_BECE_MOCK_7_MATH_P2 = m[6].SET_BECE_MOCK_7_MATH_P2; SET_BECE_MOCK_8_MATH_P1 = m[7].SET_BECE_MOCK_8_MATH_P1; SET_BECE_MOCK_8_MATH_P2 = m[7].SET_BECE_MOCK_8_MATH_P2; SET_BECE_MOCK_9_MATH_P1 = m[8].SET_BECE_MOCK_9_MATH_P1; SET_BECE_MOCK_9_MATH_P2 = m[8].SET_BECE_MOCK_9_MATH_P2; SET_BECE_MOCK_10_MATH_P1 = m[9].SET_BECE_MOCK_10_MATH_P1; SET_BECE_MOCK_10_MATH_P2 = m[9].SET_BECE_MOCK_10_MATH_P2; SET_BECE_MOCK_11_MATH_P1 = m[10].SET_BECE_MOCK_11_MATH_P1; SET_BECE_MOCK_11_MATH_P2 = m[10].SET_BECE_MOCK_11_MATH_P2; },
+    english_mock: async () => { const m: any[] = await Promise.all([import('@/lib/data/bece-english-mock-1'), import('@/lib/data/bece-english-mock-2'), import('@/lib/data/bece-english-mock-3'), import('@/lib/data/bece-english-mock-4'), import('@/lib/data/bece-english-mock-5'), import('@/lib/data/bece-english-mock-6'), import('@/lib/data/bece-english-mock-7'), import('@/lib/data/bece-english-mock-8'), import('@/lib/data/bece-english-mock-9'), import('@/lib/data/bece-english-mock-10'), import('@/lib/data/bece-english-mock-11')]); SET_BECE_MOCK_1_ENGLISH_P1 = m[0].SET_BECE_MOCK_1_ENGLISH_P1; SET_BECE_MOCK_1_ENGLISH_P2 = m[0].SET_BECE_MOCK_1_ENGLISH_P2; SET_BECE_MOCK_2_ENGLISH_P1 = m[1].SET_BECE_MOCK_2_ENGLISH_P1; SET_BECE_MOCK_2_ENGLISH_P2 = m[1].SET_BECE_MOCK_2_ENGLISH_P2; SET_BECE_MOCK_3_ENGLISH_P1 = m[2].SET_BECE_MOCK_3_ENGLISH_P1; SET_BECE_MOCK_3_ENGLISH_P2 = m[2].SET_BECE_MOCK_3_ENGLISH_P2; SET_BECE_MOCK_4_ENGLISH_P1 = m[3].SET_BECE_MOCK_4_ENGLISH_P1; SET_BECE_MOCK_4_ENGLISH_P2 = m[3].SET_BECE_MOCK_4_ENGLISH_P2; SET_BECE_MOCK_5_ENGLISH_P1 = m[4].SET_BECE_MOCK_5_ENGLISH_P1; SET_BECE_MOCK_5_ENGLISH_P2 = m[4].SET_BECE_MOCK_5_ENGLISH_P2; SET_BECE_MOCK_6_ENGLISH_P1 = m[5].SET_BECE_MOCK_6_ENGLISH_P1; SET_BECE_MOCK_6_ENGLISH_P2 = m[5].SET_BECE_MOCK_6_ENGLISH_P2; SET_BECE_MOCK_7_ENGLISH_P1 = m[6].SET_BECE_MOCK_7_ENGLISH_P1; SET_BECE_MOCK_7_ENGLISH_P2 = m[6].SET_BECE_MOCK_7_ENGLISH_P2; SET_BECE_MOCK_8_ENGLISH_P1 = m[7].SET_BECE_MOCK_8_ENGLISH_P1; SET_BECE_MOCK_8_ENGLISH_P2 = m[7].SET_BECE_MOCK_8_ENGLISH_P2; SET_BECE_MOCK_9_ENGLISH_P1 = m[8].SET_BECE_MOCK_9_ENGLISH_P1; SET_BECE_MOCK_9_ENGLISH_P2 = m[8].SET_BECE_MOCK_9_ENGLISH_P2; SET_BECE_MOCK_10_ENGLISH_P1 = m[9].SET_BECE_MOCK_10_ENGLISH_P1; SET_BECE_MOCK_10_ENGLISH_P2 = m[9].SET_BECE_MOCK_10_ENGLISH_P2; SET_BECE_MOCK_11_ENGLISH_P1 = m[10].SET_BECE_MOCK_11_ENGLISH_P1; SET_BECE_MOCK_11_ENGLISH_P2 = m[10].SET_BECE_MOCK_11_ENGLISH_P2; },
+    science_mock: async () => { const m: any[] = await Promise.all([import('@/lib/data/jhs-curriculum-set-132'), import('@/lib/data/jhs-curriculum-set-133'), import('@/lib/data/jhs-curriculum-set-134'), import('@/lib/data/jhs-curriculum-set-135'), import('@/lib/data/jhs-curriculum-set-136'), import('@/lib/data/jhs-curriculum-set-137'), import('@/lib/data/jhs-curriculum-set-138'), import('@/lib/data/jhs-curriculum-set-139'), import('@/lib/data/jhs-curriculum-set-140'), import('@/lib/data/jhs-curriculum-set-141'), import('@/lib/data/jhs-curriculum-set-142')]); SET_BECE_MOCK_1_SCIENCE_P1 = m[0].SET_BECE_MOCK_1_SCIENCE_P1; SET_BECE_MOCK_1_SCIENCE_P2 = m[0].SET_BECE_MOCK_1_SCIENCE_P2; SET_BECE_MOCK_2_SCIENCE_P1 = m[1].SET_BECE_MOCK_2_SCIENCE_P1; SET_BECE_MOCK_2_SCIENCE_P2 = m[1].SET_BECE_MOCK_2_SCIENCE_P2; SET_BECE_MOCK_3_SCIENCE_P1 = m[2].SET_BECE_MOCK_3_SCIENCE_P1; SET_BECE_MOCK_3_SCIENCE_P2 = m[2].SET_BECE_MOCK_3_SCIENCE_P2; SET_BECE_MOCK_4_SCIENCE_P1 = m[3].SET_BECE_MOCK_4_SCIENCE_P1; SET_BECE_MOCK_4_SCIENCE_P2 = m[3].SET_BECE_MOCK_4_SCIENCE_P2; SET_BECE_MOCK_5_SCIENCE_P1 = m[4].SET_BECE_MOCK_5_SCIENCE_P1; SET_BECE_MOCK_5_SCIENCE_P2 = m[4].SET_BECE_MOCK_5_SCIENCE_P2; SET_BECE_MOCK_6_SCIENCE_P1 = m[5].SET_BECE_MOCK_6_SCIENCE_P1; SET_BECE_MOCK_6_SCIENCE_P2 = m[5].SET_BECE_MOCK_6_SCIENCE_P2; SET_BECE_MOCK_7_SCIENCE_P1 = m[6].SET_BECE_MOCK_7_SCIENCE_P1; SET_BECE_MOCK_7_SCIENCE_P2 = m[6].SET_BECE_MOCK_7_SCIENCE_P2; SET_BECE_MOCK_8_SCIENCE_P1 = m[7].SET_BECE_MOCK_8_SCIENCE_P1; SET_BECE_MOCK_8_SCIENCE_P2 = m[7].SET_BECE_MOCK_8_SCIENCE_P2; SET_BECE_MOCK_9_SCIENCE_P1 = m[8].SET_BECE_MOCK_9_SCIENCE_P1; SET_BECE_MOCK_9_SCIENCE_P2 = m[8].SET_BECE_MOCK_9_SCIENCE_P2; SET_BECE_MOCK_10_SCIENCE_P1 = m[9].SET_BECE_MOCK_10_SCIENCE_P1; SET_BECE_MOCK_10_SCIENCE_P2 = m[9].SET_BECE_MOCK_10_SCIENCE_P2; SET_BECE_MOCK_11_SCIENCE_P1 = m[10].SET_BECE_MOCK_11_SCIENCE_P1; SET_BECE_MOCK_11_SCIENCE_P2 = m[10].SET_BECE_MOCK_11_SCIENCE_P2; },
+};
+const loadedExamGroups = new Map<string, Promise<void>>();
+function loadExamGroup(g: string): Promise<void> {
+    if (!loadedExamGroups.has(g)) {
+        const p = EXAM_DATA_GROUPS[g]().catch(err => { loadedExamGroups.delete(g); throw err; });
+        loadedExamGroups.set(g, p);
+    }
+    return loadedExamGroups.get(g)!;
+}
+/** Loads the exam data a module may need before the (unchanged) loader below reads it. */
+async function ensureExamDataFor(mod: any, subject?: string): Promise<void> {
+    const text = `${mod?.setId || ''} ${mod?.title || ''} ${mod?.subject || ''} ${mod?.topicId || ''} ${mod?.kind || ''}`.toLowerCase();
+    const isMock = !!mod?.isMock || text.includes('mock');
+    const isPastPaper = /bece_20|jhs-math-20|bece_past_papers|past_paper|exam_series/.test(text) || !!mod?.year;
+    if (!isMock && !isPastPaper) return; // topical labs come from Firestore
+    const subj = `${text} ${subject || ''}`;
+    const isMath = subj.includes('math');
+    const isEnglish = subj.includes('english');
+    const isScience = subj.includes('science');
+    const wanted: string[] = [];
+    if (isMock) {
+        if (isMath) wanted.push('math_mock');
+        if (isEnglish) wanted.push('english_mock');
+        if (isScience) wanted.push('science_mock');
+        if (wanted.length === 0) wanted.push('math_mock', 'english_mock', 'science_mock');
+    }
+    if (isPastPaper && (isMath || (!isEnglish && !isScience))) wanted.push('math_past');
+    await Promise.all(Array.from(new Set(wanted)).map(loadExamGroup));
+}
+
 function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
   const [mounted, setMounted] = useState(false);
 
@@ -6072,7 +6075,10 @@ function EnglishMastery({
     const storiesQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_stories'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: library } = useCollection<any>(storiesQuery);
+    const { data: allStories } = useCollection<any>(storiesQuery);
+    const { schoolId: viewerSchoolIdEn } = useCurrentSchool();
+    // Shared question bank (no schoolId) + this school's own teacher-made content only.
+    const library = useMemo(() => (allStories || []).filter((d: any) => !d.schoolId || d.schoolId === viewerSchoolIdEn), [allStories, viewerSchoolIdEn]);
 
     // Folder Logic for English with default curriculum strands
     const folderStructure = useMemo(() => {
@@ -7002,7 +7008,10 @@ function MathLab({
     const mathQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_math'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: dbProblems, isLoading } = useCollection<any>(mathQuery);
+    const { data: allProblems, isLoading } = useCollection<any>(mathQuery);
+    const { schoolId: viewerSchoolIdMath } = useCurrentSchool();
+    // Shared question bank (no schoolId) + this school's own teacher-made content only.
+    const dbProblems = useMemo(() => (allProblems || []).filter((d: any) => !d.schoolId || d.schoolId === viewerSchoolIdMath), [allProblems, viewerSchoolIdMath]);
 
     const folderStructure = useMemo(() => {
         const structure: Record<string, Record<string, any[]>> = {};
@@ -8393,6 +8402,13 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
         setActiveQuestionSet(null);
+        try {
+            await ensureExamDataFor(mod, subject);
+        } catch (loadErr) {
+            console.error('[senior-academy] Could not load exam data:', loadErr);
+            toast({ variant: 'destructive', title: 'Could not open this paper', description: 'Check your internet connection and try again.' });
+            return;
+        }
 
         // Instant Zero-Latency Loader for 2013 Mathematics Paper 1
                                                                 if (
@@ -10261,7 +10277,10 @@ function DiscoveryLab({
     const labQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'senior_labs'), orderBy('createdAt', 'desc')) : null, 
     [firestore]);
-    const { data: dbLabs, isLoading } = useCollection<any>(labQuery);
+    const { data: allLabs, isLoading } = useCollection<any>(labQuery);
+    const { schoolId: viewerSchoolIdLab } = useCurrentSchool();
+    // Shared question bank (no schoolId) + this school's own teacher-made content only.
+    const dbLabs = useMemo(() => (allLabs || []).filter((d: any) => !d.schoolId || d.schoolId === viewerSchoolIdLab), [allLabs, viewerSchoolIdLab]);
 
     const folderStructure = useMemo(() => {
         const structure: Record<string, Record<string, any[]>> = {};
@@ -10760,6 +10779,8 @@ function AdminConsole({
 }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { user } = useUser();
+    const { schoolId } = useCurrentSchool();
     const [creationMode, setCreationMode] = useState<'ai' | 'manual'>('ai');
     const [loading, setLoading] = useState(false);
 
@@ -10808,16 +10829,25 @@ function AdminConsole({
             instructions: systemInstructions 
         };
 
+        if (!user || !schoolId) { setLoading(false); toast({ variant: 'destructive', title: 'Sign in required' }); return; }
+        const auth = { idToken: await user.getIdToken(), schoolId };
         let res;
-        if (activeSubject === 'math') res = await generateSeniorMath(context);
-        else if (activeSubject === 'english') res = await generateSeniorEnglish(context);
-        else res = await generateSeniorLab(context);
+        if (activeSubject === 'math') res = await generateSeniorMath(context, auth);
+        else if (activeSubject === 'english') res = await generateSeniorEnglish(context, auth);
+        else res = await generateSeniorLab(context, auth);
+        if (!res.success) {
+            toast({ variant: 'destructive', title: 'AI generation failed', description: (res as any).error || 'Please try again.' });
+        }
 
         if (res.success && res.data) {
             await addDoc(collection(firestore!, activeSubject === 'math' ? 'senior_math' : activeSubject === 'english' ? 'senior_stories' : 'senior_labs'), {
                 ...res.data,
                 gradeLevel: activeGrade, 
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                // Teacher content belongs to this school only (the shared bank has no schoolId).
+                schoolId,
+                createdBy: user?.uid || null,
+                source: 'ai',
             });
             toast({ title: 'AI Success', description: `Added to ${activeGrade} library.` });
             onContentAdded();
@@ -10834,10 +10864,15 @@ function AdminConsole({
         setLoading(true);
         try {
             const colName = activeSubject === 'math' ? 'senior_math' : activeSubject === 'english' ? 'senior_stories' : 'senior_labs';
+            if (!schoolId) throw new Error('No school selected');
             await addDoc(collection(firestore!, colName), {
                 ...manualData,
                 gradeLevel: manualData.gradeLevel || activeGrade,
-                createdAt: serverTimestamp()
+                createdAt: serverTimestamp(),
+                // Teacher content belongs to this school only (the shared bank has no schoolId).
+                schoolId,
+                createdBy: user?.uid || null,
+                source: 'manual',
             });
             toast({ title: "Saved", description: "Manual entry added to the folders." });
             onContentAdded();
@@ -11211,7 +11246,7 @@ function SeniorAcademyPageContent() {
 
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
-    const aiCredits = schoolData?.aiCredits ?? 810;
+    const aiCredits = Number(schoolData?.aiCreditBalance ?? schoolData?.aiCredits ?? 0);
     
     const { user } = useUser();
     const { data: studentRecord } = useCollection<Student>(
@@ -11220,15 +11255,9 @@ function SeniorAcademyPageContent() {
     const studentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user?.uid;
 
     // Memoize forceRefetch to prevent re-creation on every render
-    const { forceRefetch: forceMath } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_math') : null, [firestore]));
-    const { forceRefetch: forceEnglish } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_stories') : null, [firestore]));
-    const { forceRefetch: forceScience } = useCollection(useMemoFirebase(() => firestore ? collection(firestore, 'senior_labs') : null, [firestore]));
-
-    const handleContentUpdate = useCallback(() => {
-        forceMath();
-        forceEnglish();
-        forceScience();
-    }, [forceMath, forceEnglish, forceScience]);
+    // The Maths / English / Science panels listen live, so new content appears by itself. (Three extra
+    // listeners on the whole collections used to be opened here just to "refresh" — removed to save reads.)
+    const handleContentUpdate = useCallback(() => {}, []);
     
     return (
         <div className="p-4 sm:p-6 bg-slate-950 text-slate-100 rounded-3xl min-h-screen relative overflow-hidden border border-slate-900 shadow-2xl">
@@ -11239,7 +11268,7 @@ function SeniorAcademyPageContent() {
             <SectionHeroBanner
                 title="Senior Academy"
                 subtitle="Curriculum mastery laboratory, instant resource search, and standardized exam variant series."
-                eyebrow="SUNNY SIDE ACADEMY • ACADEMICS"
+                eyebrow={`${(schoolData?.name || 'Your School').toUpperCase()} • ACADEMICS`}
                 badge={{
                     label: "DUAL-TRACK LIVE",
                     variant: "success",

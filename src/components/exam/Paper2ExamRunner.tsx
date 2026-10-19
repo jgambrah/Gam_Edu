@@ -37,6 +37,7 @@ import { cn } from '@/lib/utils';
 import { CurriculumQuestionSet } from '@/lib/global-curriculum-types';
 import { MathRenderer } from '@/components/curriculum/MathRenderer';
 import { ActiveExamHeaderDisclaimer } from './ExamDisclaimerNotice';
+import { authFetch } from '@/lib/auth-fetch';
 
 // Universal defensive normalization helper
 export function toSafeArray<T = any>(val: any): T[] {
@@ -504,7 +505,7 @@ export function Paper2ExamRunner({
       }
 
       // 2. Post to AI evaluation endpoint
-      const response = await fetch('/api/grade-paper2', {
+      const response = await authFetch('/api/grade-paper2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

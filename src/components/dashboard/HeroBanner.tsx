@@ -22,7 +22,7 @@ export function HeroBanner({
 }: HeroBannerProps) {
   return (
     <SectionHeroBanner
-      eyebrow={`SUNNY SIDE ACADEMY • ${tag}`}
+      eyebrow={tag}
       title={title}
       subtitle={description}
       icon={icon}

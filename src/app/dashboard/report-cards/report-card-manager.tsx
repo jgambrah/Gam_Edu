@@ -776,7 +776,7 @@ export default function ReportCardManager() {
                 studentPresentDays,
                 totalClassDays,
                 id: `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`,
-                schoolName: (schoolProfile?.name || 'SUNNY SIDE ACADEMY')
+                schoolName: (schoolProfile?.name || '')
                     .replace(/\bACADMY\b/gi, 'ACADEMY')
                     .replace(/SUNNY\s+SIDE\s+ACADMY/gi, 'SUNNY SIDE ACADEMY'),
                 schoolMotto: schoolProfile?.motto,

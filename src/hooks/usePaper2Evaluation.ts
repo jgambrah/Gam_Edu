@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { toSafeArray } from '@/components/exam/Paper2ExamRunner';
+import { authFetch } from '@/lib/auth-fetch';
 
 export function usePaper2Evaluation() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,7 +122,7 @@ export function usePaper2Evaluation() {
       }
 
       // 3. Post to evaluation endpoint
-      const response = await fetch('/api/grade-paper2', {
+      const response = await authFetch('/api/grade-paper2', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { adminDb, FieldValue } from '@/lib/firebaseAdmin';
+import { adminDb, adminAuth, FieldValue } from '@/lib/firebaseAdmin';
 import { GoogleGenAI, Type } from '@google/genai';
 import { ensureArray } from '@/lib/utils';
 import { SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
@@ -54,26 +54,72 @@ const STATIC_THEORY_SETS: Record<string, any> = {
 const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_GENAI_API_KEY || process.env.GOOGLE_API_KEY || '';
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
-export async function POST(req: Request) {
+const SUPER_ADMIN_UIDS = new Set(['L4oE5XWweKRYrhtIXn6hB8IDHBC2', 'gZxe3nMbGcQhNgEzkwEZwDBnkFR2', '7GVi5qCxC4YDnjKkjVwSjAYtQz73']);
+const SUPER_ADMIN_EMAILS = new Set(['jamesgambrah@gmail.com', 'atampokaadongo@gmail.com']);
+
+/** The signed-in caller and the school whose credits pay for the review (never taken on trust from the browser). */
+async function resolveCaller(req: Request, requestedSchoolId?: string) {
+  const header = req.headers.get('Authorization') || '';
+  if (!header.startsWith('Bearer ')) return { error: 'Please sign in again to submit for AI review.', status: 401 } as const;
+  let decoded: any;
   try {
-    const { schoolId, examId, answers, assignmentId, studentId, studentName, studentClass } = await req.json();
+    decoded = await adminAuth.verifyIdToken(header.slice(7));
+  } catch {
+    return { error: 'Your session has expired. Please sign in again.', status: 401 } as const;
+  }
+  const uid: string = decoded.uid;
+  const isSuper = SUPER_ADMIN_UIDS.has(uid) || SUPER_ADMIN_EMAILS.has(String(decoded.email || '').toLowerCase());
+
+  const [studentSnap, userSnap, staffSnap] = await Promise.all([
+    adminDb.collection('students').where('uid', '==', uid).limit(3).get(),
+    adminDb.collection('users').doc(uid).get(),
+    adminDb.collection('staff').doc(uid).get(),
+  ]);
+  const schools = new Set<string>();
+  studentSnap.docs.forEach(d => { const s = d.data()?.schoolId; if (s) schools.add(s); });
+  [userSnap, staffSnap].forEach(snap => { const s = snap.exists ? (snap.data() as any)?.schoolId : null; if (s) schools.add(s); });
+
+  let schoolId: string | undefined;
+  if (requestedSchoolId && requestedSchoolId !== 'demo-school' && (isSuper || schools.has(requestedSchoolId))) schoolId = requestedSchoolId;
+  else if (!requestedSchoolId || requestedSchoolId === 'demo-school' || schools.size > 0) schoolId = Array.from(schools)[0];
+  if (requestedSchoolId && requestedSchoolId !== 'demo-school' && schoolId !== requestedSchoolId && !isSuper) {
+    return { error: 'You can only use your own school\'s AI credits.', status: 403 } as const;
+  }
+  if (!schoolId) return { error: 'Your account is not linked to a school, so AI review is not available.', status: 403 } as const;
+  const isStudent = studentSnap.size > 0 && !staffSnap.exists;
+  return { uid, schoolId, isStudent } as const;
+}
+
+export async function POST(req: Request) {
+  // Set once credits have been taken, so they can be refunded if no AI review happens.
+  let charged: { schoolId: string; amount: number; examId: string } | null = null;
+  try {
+    const body = await req.json();
+    const { examId, answers, assignmentId, studentName, studentClass } = body;
 
     if (!examId || !answers) {
       return NextResponse.json({ error: 'Missing required parameters (examId, answers).' }, { status: 400 });
     }
 
-    const effectiveSchoolId = schoolId || 'demo-school';
+    // Every AI review is paid for by the caller's own school: no anonymous or free ("demo-school") reviews.
+    const caller = await resolveCaller(req, body.schoolId);
+    if ('error' in caller) {
+      return NextResponse.json({ error: caller.error }, { status: caller.status });
+    }
+    const effectiveSchoolId = caller.schoolId;
+    // A student can only submit for themselves.
+    const studentId = caller.isStudent ? caller.uid : (body.studentId || caller.uid);
     const costPerExam = 2; // 2 credits per Paper 2 AI evaluation session
 
-    // 1. Check and deduct credits transactionally in Firestore if valid school
-    if (effectiveSchoolId !== 'demo-school') {
+    // 1. Check and deduct credits transactionally in Firestore
+    {
       try {
         const schoolRef = adminDb.collection('schools').doc(effectiveSchoolId);
 
         await adminDb.runTransaction(async (transaction) => {
           const schoolDoc = await transaction.get(schoolRef);
           if (!schoolDoc.exists) {
-            return; // Gracefully continue if demo school doc does not exist
+            throw new Error('SCHOOL_NOT_FOUND');
           }
 
           const schoolData = schoolDoc.data();
@@ -100,6 +146,7 @@ export async function POST(req: Request) {
             timestamp: FieldValue.serverTimestamp()
           });
         });
+        charged = { schoolId: effectiveSchoolId, amount: costPerExam, examId: String(examId) };
       } catch (err: any) {
         if (err.message === 'INSUFFICIENT_CREDITS') {
           return NextResponse.json(
@@ -110,7 +157,12 @@ export async function POST(req: Request) {
             { status: 402 }
           );
         }
-        console.warn('[grade-paper2] Warning during credit transaction check:', err.message);
+        if (err.message === 'SCHOOL_NOT_FOUND') {
+          return NextResponse.json({ error: 'School not found.' }, { status: 404 });
+        }
+        // Never review for free when the charge could not be made.
+        console.error('[grade-paper2] Credit transaction failed:', err.message);
+        return NextResponse.json({ error: 'Could not charge AI credits right now. Please try again.' }, { status: 503 });
       }
     }
 
@@ -252,6 +304,7 @@ export async function POST(req: Request) {
 
     // 4. Evaluate each answer using AI Examiner or calibrated WAEC/NaCCA rubric
     const gradedResults: any[] = [];
+    let aiEvaluations = 0; // reviews actually done by the AI (refund if none)
 
     for (const item of normalizedAnswers) {
       const qNum = item.questionNumber;
@@ -409,6 +462,7 @@ export async function POST(req: Request) {
 
           const rawJson = response.text?.trim() || '{}';
           evaluation = JSON.parse(rawJson);
+          aiEvaluations++;
           evaluation.awardedMarks = Math.min(Math.max(0, Number(evaluation.awardedMarks) || 0), maxMarks);
           evaluation.maxMarks = maxMarks;
         } catch (genErr: any) {
@@ -553,7 +607,13 @@ export async function POST(req: Request) {
     }
 
     // Record submission if part of assignment
-    if (assignmentId && studentId && effectiveSchoolId !== 'demo-school') {
+    // Charged but the AI produced no review (offline / not configured): refund, the heuristic score is free.
+    if (charged && aiEvaluations === 0) {
+      await refundCredits(charged, 'AI review unavailable');
+      charged = null;
+    }
+
+    if (assignmentId && studentId) {
       try {
         const totalAwarded = gradedResults.reduce((sum, r) => sum + (r.evaluation?.awardedMarks ?? 0), 0);
         const totalMax = gradedResults.reduce((sum, r) => sum + (r.evaluation?.maxMarks ?? 30), 0) || 1;
@@ -609,9 +669,27 @@ export async function POST(req: Request) {
 
   } catch (err: any) {
     console.error('[grade-paper2] Execution failed:', err);
+    if (charged) await refundCredits(charged, 'Evaluation failed');
     return NextResponse.json(
       { error: err.message || 'Internal evaluation failed.' },
       { status: 500 }
     );
+  }
+}
+
+async function refundCredits(c: { schoolId: string; amount: number; examId: string }, reason: string) {
+  try {
+    const schoolRef = adminDb.collection('schools').doc(c.schoolId);
+    await adminDb.runTransaction(async (t) => {
+      const snap = await t.get(schoolRef);
+      const bal = Number(snap.data()?.aiCreditBalance ?? snap.data()?.aiCredits ?? 0);
+      t.update(schoolRef, { aiCreditBalance: bal + c.amount, aiCredits: bal + c.amount });
+      t.set(adminDb.collection(`schools/${c.schoolId}/credit_transactions`).doc(), {
+        amount: c.amount, type: 'PAPER_2_AI_GRADING_REFUND', examId: c.examId, reason,
+        balanceAfter: bal + c.amount, timestamp: FieldValue.serverTimestamp(),
+      });
+    });
+  } catch (e: any) {
+    console.error('[grade-paper2] Refund failed:', e?.message);
   }
 }

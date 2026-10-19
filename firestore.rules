@@ -996,18 +996,57 @@ service cloud.firestore {
     }
 
     match /senior_stories/{id} {
-      allow read, list: if true;
-      allow write: if isTeacher() || isAdmin();
+      // Shared question bank = documents with no schoolId (managed by the platform team only).
+      // Teacher content carries the school's id and can only be changed by that school's teachers/admins.
+      allow read, list: if isSignedIn();
+      allow create: if isSuperAdmin() || ((isTeacher() || isAdmin()) && request.resource.data.get('schoolId', '') == getUserSchoolId());
+      allow update: if isSuperAdmin() || (
+        (isTeacher() || isAdmin())
+        && resource.data.get('schoolId', '') != ''
+        && resource.data.get('schoolId', '') == getUserSchoolId()
+        && request.resource.data.get('schoolId', '') == resource.data.get('schoolId', '')
+      );
+      allow delete: if isSuperAdmin() || (
+        (isTeacher() || isAdmin())
+        && resource.data.get('schoolId', '') != ''
+        && resource.data.get('schoolId', '') == getUserSchoolId()
+      );
     }
 
     match /senior_math/{id} {
-      allow read, list: if true;
-      allow write: if isTeacher() || isAdmin();
+      // Shared question bank = documents with no schoolId (managed by the platform team only).
+      // Teacher content carries the school's id and can only be changed by that school's teachers/admins.
+      allow read, list: if isSignedIn();
+      allow create: if isSuperAdmin() || ((isTeacher() || isAdmin()) && request.resource.data.get('schoolId', '') == getUserSchoolId());
+      allow update: if isSuperAdmin() || (
+        (isTeacher() || isAdmin())
+        && resource.data.get('schoolId', '') != ''
+        && resource.data.get('schoolId', '') == getUserSchoolId()
+        && request.resource.data.get('schoolId', '') == resource.data.get('schoolId', '')
+      );
+      allow delete: if isSuperAdmin() || (
+        (isTeacher() || isAdmin())
+        && resource.data.get('schoolId', '') != ''
+        && resource.data.get('schoolId', '') == getUserSchoolId()
+      );
     }
 
     match /senior_labs/{id} {
-      allow read, list: if true;
-      allow write: if isTeacher() || isAdmin();
+      // Shared question bank = documents with no schoolId (managed by the platform team only).
+      // Teacher content carries the school's id and can only be changed by that school's teachers/admins.
+      allow read, list: if isSignedIn();
+      allow create: if isSuperAdmin() || ((isTeacher() || isAdmin()) && request.resource.data.get('schoolId', '') == getUserSchoolId());
+      allow update: if isSuperAdmin() || (
+        (isTeacher() || isAdmin())
+        && resource.data.get('schoolId', '') != ''
+        && resource.data.get('schoolId', '') == getUserSchoolId()
+        && request.resource.data.get('schoolId', '') == resource.data.get('schoolId', '')
+      );
+      allow delete: if isSuperAdmin() || (
+        (isTeacher() || isAdmin())
+        && resource.data.get('schoolId', '') != ''
+        && resource.data.get('schoolId', '') == getUserSchoolId()
+      );
     }
 
     match /curriculum/{gradeId} {

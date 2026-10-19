@@ -2,6 +2,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
+import { verifySchoolStaffToken, AuthError } from '@/lib/admin-guard';
 
 // --- SHARED STUDENT CATEGORIES ---
 const StudentCategory = z.enum([
@@ -18,6 +19,20 @@ const AIContextSchema = z.object({
   instructions: z.string().optional(),
 });
 
+/** Who may generate content, and who pays: a teacher/admin of the school, 2 credits per item. */
+const SENIOR_GENERATION_COST = 2;
+type GenerationAuth = { idToken: string; schoolId: string };
+async function authorizeAndCharge(auth: GenerationAuth | undefined): Promise<string | null> {
+  if (!auth?.idToken || !auth?.schoolId) return 'Please sign in again.';
+  try {
+    await verifySchoolStaffToken(auth.idToken, auth.schoolId);
+  } catch (e: any) {
+    return e instanceof AuthError ? e.message : 'Not authorised.';
+  }
+  const credit = await checkAndSpendCredits(auth.schoolId, SENIOR_GENERATION_COST);
+  return credit.success ? null : (credit.error || 'Insufficient AI credits.');
+}
+
 // --- 1. ENGLISH MASTERY ---
 const EnglishSchema = z.object({
   title: z.string(),
@@ -30,7 +45,9 @@ const EnglishSchema = z.object({
   })).length(3),
 });
 
-export async function generateSeniorEnglish(context: z.infer<typeof AIContextSchema>) {
+export async function generateSeniorEnglish(context: z.infer<typeof AIContextSchema>, auth?: GenerationAuth) {
+  const denied = await authorizeAndCharge(auth);
+  if (denied) return { success: false, error: denied };
   try {
     const prompt = `Generate a grade-appropriate literary passage for a student in ${context.gradeLevel}.
     Topic: "${context.topic}"
@@ -54,7 +71,9 @@ const MathSchema = z.object({
     answer: z.string(),
 });
 
-export async function generateSeniorMath(context: z.infer<typeof AIContextSchema>) {
+export async function generateSeniorMath(context: z.infer<typeof AIContextSchema>, auth?: GenerationAuth) {
+  const denied = await authorizeAndCharge(auth);
+  if (denied) return { success: false, error: denied };
   try {
     const prompt = `Act as a Math Professor for ${context.gradeLevel} students.
     Generate a question about: ${context.topic}.
@@ -81,7 +100,9 @@ const LabSchema = z.object({
     explanation: z.string(),
 });
 
-export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>) {
+export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>, auth?: GenerationAuth) {
+  const denied = await authorizeAndCharge(auth);
+  if (denied) return { success: false, error: denied };
   try {
     const prompt = `Design a science lab for ${context.gradeLevel} students.
     Topic: "${context.topic}"

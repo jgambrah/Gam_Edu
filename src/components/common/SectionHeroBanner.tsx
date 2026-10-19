@@ -51,7 +51,7 @@ export interface SectionHeroBannerProps {
 export function SectionHeroBanner({
   title,
   subtitle,
-  eyebrow = "SUNNY SIDE ACADEMY • DIRECTOR SUITE",
+  eyebrow = "DIRECTOR SUITE",
   badge,
   breadcrumbs,
   actions,

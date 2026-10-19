@@ -39,7 +39,7 @@ export function ExecutiveCockpitHeader({
   onExportPdf,
   title = "Executive Director Cockpit",
   subtitle = "Real-time institutional telemetry, financial velocity & executive action desk",
-  eyebrow = "SUNNY SIDE ACADEMY • DIRECTOR SUITE",
+  eyebrow = "DIRECTOR SUITE",
   stats,
   children
 }: ExecutiveCockpitHeaderProps) {
