@@ -5571,7 +5571,7 @@ function AccountantDashboard({
                                 ) : (
                                     <>
                                         <Layers3 className="h-3.5 w-3.5" />
-                                        <span>Load Full Ledger On-Demand</span>
+                                        <span>Open Student Billing (full ledger)</span>
                                     </>
                                 )}
                             </Button>
@@ -5701,7 +5701,7 @@ function AccountantDashboard({
                                     <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider">Fee Stream Performance</h4>
                                     {categoryCollections.length === 0 ? (
                                         <div className="p-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200 text-center space-y-2">
-                                            <p className="text-xs text-slate-500">Itemized fee stream audit is paused in on-demand mode.</p>
+                                            <p className="text-xs text-slate-500">Per-fee figures appear here after tonight's summary rebuild. The itemised ledger is in Student Billing.</p>
                                             <Button 
                                                 size="sm" 
                                                 variant="outline" 
@@ -5710,7 +5710,7 @@ function AccountantDashboard({
                                                 className="h-7 text-xs text-emerald-700 border-emerald-300 hover:bg-emerald-50 font-bold cursor-pointer"
                                             >
                                                 {isLoadingFinancials ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <Layers3 className="h-3 w-3 mr-1" />}
-                                                Load Fee Streams
+                                                Open Student Billing
                                             </Button>
                                         </div>
                                     ) : (
@@ -5766,7 +5766,7 @@ function AccountantDashboard({
                                         ) : (
                                             <>
                                                 <Layers3 className="h-3.5 w-3.5" />
-                                                <span>Load Full Ledger On-Demand</span>
+                                                <span>Open Student Billing (full ledger)</span>
                                             </>
                                         )}
                                     </Button>
@@ -5945,7 +5945,7 @@ function AccountantDashboard({
                                         ) : (
                                             <>
                                                 <Layers3 className="h-3.5 w-3.5" />
-                                                <span>Load Full Ledger On-Demand</span>
+                                                <span>Open Student Billing (full ledger)</span>
                                             </>
                                         )}
                                     </Button>
@@ -12078,6 +12078,15 @@ export default function DashboardClient() {
   const [ledgerStudents, setLedgerStudents] = useState<any[] | null>(null);
   const [loadingOnDemandRecords, setLoadingOnDemandRecords] = useState(false);
 
+  const ledgerRouter = useRouter();
+  // Cost guard: dashboards never download the whole ledger (it is every bill since the school started —
+  // tens of thousands of reads per click). They show the server summary (1 read); the itemised ledger lives
+  // in Accounts > Student Billing, which has its own daily load limit. The loader below is kept, unused,
+  // in case a school ever needs it again.
+  const openStudentBilling = useCallback(() => {
+    ledgerRouter.push('/dashboard/accounts');
+  }, [ledgerRouter]);
+
   const loadFinancialsOnDemand = useCallback(async () => {
     if (!firestore || !schoolId || loadingOnDemandRecords) return;
     setLoadingOnDemandRecords(true);
@@ -12531,7 +12540,7 @@ export default function DashboardClient() {
       openTillsCash={openTillsCash}
       openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
-      onLoadFinancials={loadFinancialsOnDemand}
+      onLoadFinancials={openStudentBilling}
       onSwitchOnDemand={() => { setOnDemandRecords([]); setLedgerStudents(null); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingOnDemandRecords}
     />;
@@ -12576,7 +12585,7 @@ export default function DashboardClient() {
       openTillsCash={openTillsCash}
       openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
-      onLoadFinancials={loadFinancialsOnDemand}
+      onLoadFinancials={openStudentBilling}
       onSwitchOnDemand={() => { setOnDemandRecords([]); setLedgerStudents(null); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingAllRecords}
     />;
@@ -12601,7 +12610,7 @@ export default function DashboardClient() {
       isLoading={loadingStudents || (financialsMode === 'full' && loadingRecords) || loadingTills} 
       schoolSettings={schoolSettings} 
       financialsMode={financialsMode}
-      onLoadFinancials={loadFinancialsOnDemand}
+      onLoadFinancials={openStudentBilling}
       onSwitchOnDemand={() => { setOnDemandRecords([]); setLedgerStudents(null); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingAllRecords}
       dashboardSummary={dashboardSummary}

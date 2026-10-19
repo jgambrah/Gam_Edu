@@ -945,9 +945,7 @@ export function ExecutiveDirectorCockpit({
   const handleAgingClick = (range: string) => {
     setSelectedAgingCategory(range);
     setActiveDrawer('arrears');
-    if (financialsMode === 'on-demand' && (!financialRecords || financialRecords.length === 0)) {
-      onLoadFinancials?.();
-    }
+    // Clicking a tier only filters; it no longer downloads the whole ledger (that is in Student Billing).
   };
 
   return (
@@ -1196,7 +1194,7 @@ export function ExecutiveDirectorCockpit({
                         ) : (
                           <>
                             <Banknote className="h-3.5 w-3.5" />
-                            <span>Load Full Arrears & Financial Ledger</span>
+                            <span>Open Student Billing (full ledger)</span>
                           </>
                         )}
                       </Button>
@@ -1250,7 +1248,7 @@ export function ExecutiveDirectorCockpit({
                       ))
                     ) : (
                       <div className="p-4 text-center text-xs text-slate-500 font-bold bg-slate-50 rounded-xl">
-                        {financialsMode === 'on-demand' ? 'Click "Load Full Arrears" above to view individual student account records.' : `No active student fee arrears matching ${selectedAgingCategory || '60 days overdue'} in school records.`}
+                        {financialsMode === 'on-demand' ? 'Open Student Billing to see each student\'s account.' : `No active student fee arrears matching ${selectedAgingCategory || '60 days overdue'} in school records.`}
                       </div>
                     )}
                   </div>
