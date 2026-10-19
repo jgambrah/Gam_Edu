@@ -74,7 +74,7 @@ export default function StudentsV3Page() {
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchool } = useCurrentSchool();
   const { summary: dashboardSummary } = useDashboardSummary(adminSchoolId);
-  const schoolName = profile?.schoolName || "Sunny Side Academy";
+  const schoolName = profile?.schoolName || '';
 
   // Data State
   const [students, setStudents] = useState<Student[]>([]);

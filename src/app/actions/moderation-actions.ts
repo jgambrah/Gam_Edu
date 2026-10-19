@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ const ModerationResultSchema = z.object({
 });
 
 export async function moderateMessageAction(messageText: string) {
+  await requireSignedInAction();
   try {
     const prompt = `
       You are an AI Safety Assistant for a school messaging platform. Your job is to moderate student direct messages.

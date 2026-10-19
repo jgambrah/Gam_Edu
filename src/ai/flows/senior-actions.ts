@@ -1,8 +1,10 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { verifySchoolStaffToken, AuthError } from '@/lib/admin-guard';
+import { spendSchoolCredits } from '@/lib/credits-server';
 
 // --- SHARED STUDENT CATEGORIES ---
 const StudentCategory = z.enum([
@@ -29,7 +31,7 @@ async function authorizeAndCharge(auth: GenerationAuth | undefined): Promise<str
   } catch (e: any) {
     return e instanceof AuthError ? e.message : 'Not authorised.';
   }
-  const credit = await checkAndSpendCredits(auth.schoolId, SENIOR_GENERATION_COST);
+  const credit = await spendSchoolCredits(auth.schoolId, SENIOR_GENERATION_COST);
   return credit.success ? null : (credit.error || 'Insufficient AI credits.');
 }
 
@@ -46,6 +48,7 @@ const EnglishSchema = z.object({
 });
 
 export async function generateSeniorEnglish(context: z.infer<typeof AIContextSchema>, auth?: GenerationAuth) {
+  await requireSignedInAction();
   const denied = await authorizeAndCharge(auth);
   if (denied) return { success: false, error: denied };
   try {
@@ -72,6 +75,7 @@ const MathSchema = z.object({
 });
 
 export async function generateSeniorMath(context: z.infer<typeof AIContextSchema>, auth?: GenerationAuth) {
+  await requireSignedInAction();
   const denied = await authorizeAndCharge(auth);
   if (denied) return { success: false, error: denied };
   try {
@@ -101,6 +105,7 @@ const LabSchema = z.object({
 });
 
 export async function generateSeniorLab(context: z.infer<typeof AIContextSchema>, auth?: GenerationAuth) {
+  await requireSignedInAction();
   const denied = await authorizeAndCharge(auth);
   if (denied) return { success: false, error: denied };
   try {
@@ -131,6 +136,7 @@ export async function getPythonTutorHelp(context: {
   question: string,
   schoolId: string
 }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(context.schoolId, 1);
     if (!creditResult.success) {

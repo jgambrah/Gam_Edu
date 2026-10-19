@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating a daily science fact.
  */
@@ -27,6 +28,7 @@ const generateDailyFactPrompt = ai.definePrompt({
 });
 
 export async function generateDailyFact(): Promise<GenerateDailyFactOutput> {
+  await requireSignedInAction();
   const { output } = await generateDailyFactPrompt(undefined, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

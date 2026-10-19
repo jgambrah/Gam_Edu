@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { checkAndSpendCredits } from './credits';
@@ -19,6 +20,7 @@ export async function generateReportCommentAction(
   role: 'Teacher' | 'Headmaster',
   term: string
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   // 1. Check Credits (Cost: 1 credit per comment)

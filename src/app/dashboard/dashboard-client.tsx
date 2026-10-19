@@ -1531,6 +1531,7 @@ function AdminDashboard({
           <div className="space-y-8 animate-in fade-in duration-300">
             <ExecutiveDirectorCockpit
               profile={profile}
+              aiCreditBalance={Number(schoolData?.aiCredits ?? schoolData?.aiCreditBalance ?? 0)}
               students={students}
               staff={staff}
               classes={classes}
@@ -3851,7 +3852,7 @@ function DirectorDashboard({
           },
         };
         const banner = tabBanners[activeTab] || tabBanners.overview;
-        const schoolName = schoolData?.name || profile?.schoolName || "Sunny Side Academy";
+        const schoolName = schoolData?.name || profile?.schoolName || '';
 
         return (
           <div className="space-y-4">
@@ -4072,6 +4073,7 @@ function DirectorDashboard({
           <div className="space-y-8 animate-in fade-in duration-300">
             <ExecutiveDirectorCockpit
               profile={profile}
+              aiCreditBalance={Number(schoolData?.aiCredits ?? schoolData?.aiCreditBalance ?? 0)}
               campuses={availableCampuses}
               selectedCampus={selectedCampus}
               onSelectCampus={setSelectedCampus}

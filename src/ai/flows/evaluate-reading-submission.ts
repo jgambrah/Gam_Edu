@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -30,6 +31,7 @@ const FeedbackSchema = z.object({
 });
 
 export async function evaluateReadingSubmissionAction(input: EvaluationInput) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 5);
     if (!creditResult.success) {

@@ -106,7 +106,7 @@ const QUICK_SMS_TEMPLATES = [
 export default function BulkSMSPage() {
   const { user } = useUser();
   const { profile } = useRole();
-  const schoolName = profile?.schoolName || 'Sunny Side Academy';
+  const schoolName = profile?.schoolName || '';
   const { schoolId } = useCurrentSchool();
   const firestore = useFirestore();
   const { toast } = useToast();

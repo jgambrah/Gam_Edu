@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating practice problems for various subjects.
  */
@@ -49,6 +50,7 @@ For each question, you must:
 
 
 export async function generatePracticeProblems(input: GeneratePracticeProblemsInput): Promise<GeneratePracticeProblemsOutput> {
+  await requireSignedInAction();
   const { output } = await prompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

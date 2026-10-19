@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 /**
  * @fileOverview Summarizes school notices for parents, focusing on events and deadlines.
@@ -43,6 +44,7 @@ School Announcements: {{{announcements}}}`,
 export async function summarizeSchoolNotices(
   input: SummarizeSchoolNoticesInput
 ): Promise<SummarizeSchoolNoticesOutput> {
+  await requireSignedInAction();
   const { output } = await summarizeSchoolNoticesPrompt(input);
   return output!;
 }

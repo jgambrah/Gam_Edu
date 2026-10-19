@@ -123,7 +123,7 @@ export async function POST(req: Request) {
           }
 
           const schoolData = schoolDoc.data();
-          const currentBalance = schoolData?.aiCreditBalance ?? schoolData?.aiCredits ?? 0;
+          const currentBalance = schoolData?.aiCredits ?? schoolData?.aiCreditBalance ?? 0;
 
           if (currentBalance < costPerExam) {
             throw new Error('INSUFFICIENT_CREDITS');
@@ -682,7 +682,7 @@ async function refundCredits(c: { schoolId: string; amount: number; examId: stri
     const schoolRef = adminDb.collection('schools').doc(c.schoolId);
     await adminDb.runTransaction(async (t) => {
       const snap = await t.get(schoolRef);
-      const bal = Number(snap.data()?.aiCreditBalance ?? snap.data()?.aiCredits ?? 0);
+      const bal = Number(snap.data()?.aiCredits ?? snap.data()?.aiCreditBalance ?? 0);
       t.update(schoolRef, { aiCreditBalance: bal + c.amount, aiCredits: bal + c.amount });
       t.set(adminDb.collection(`schools/${c.schoolId}/credit_transactions`).doc(), {
         amount: c.amount, type: 'PAPER_2_AI_GRADING_REFUND', examId: c.examId, reason,

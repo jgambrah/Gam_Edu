@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { checkAndSpendCredits } from './credits';
@@ -19,6 +20,7 @@ export async function generateClassInsightsAction(
   scoresData: { studentName: string; score: number | '' }[],
   maxScore: number
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   // 1. Check Credits (Cost: 5 credits per analysis)
@@ -73,6 +75,7 @@ export async function generateBudgetInsightsAction(
   term: string,
   budgetItemsData: { accountCode: string; accountName: string; accountType: 'Revenue' | 'Expense'; budgetedAmount: number; actual: number; variance: number; percent: number }[]
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   // 1. Check Credits (Cost: 5 credits per analysis)
@@ -120,6 +123,7 @@ export async function generateStaffAppraisalAction(
   staffName: string,
   metrics: { teaching: number; punctuality: number; engagement: number; professionalism: number; }
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   const creditRes = await checkAndSpendCredits(schoolId, 5);
@@ -190,6 +194,7 @@ export async function generateSchoolExecutiveBriefingAction(
     announcementsCount: number;
   }
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   // Cost: 5 credits per executive briefing analysis
@@ -238,6 +243,7 @@ export async function generateLessonEnhancementsAction(
   activities: string,
   materials: string
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   // 1. Check Credits (Cost: 2 credits per analysis)
@@ -286,6 +292,7 @@ export async function generateStudentAlertSupportAction(
   details: string,
   actionType: 'notification' | 'remediation'
 ) {
+  await requireSignedInAction();
   if (!schoolId) return { success: false, error: "School ID missing" };
 
   const creditRes = await checkAndSpendCredits(schoolId, 1);
@@ -335,5 +342,42 @@ export async function generateStudentAlertSupportAction(
   }
 }
 
+/**
+ * Director cockpit "AI Auditor": answers one question about the school from the numbers on the dashboard.
+ * Cost: 1 credit per question. Only members of the school can spend its credits (see checkAndSpendCredits).
+ */
+export async function answerExecutiveQuestionAction(
+  schoolId: string,
+  schoolName: string,
+  question: string,
+  snapshot: Record<string, unknown>
+) {
+  await requireSignedInAction();
+  if (!schoolId) return { success: false, error: "School ID missing" };
+  const q = String(question || '').trim().slice(0, 500);
+  if (!q) return { success: false, error: "Please type a question." };
 
+  const creditRes = await checkAndSpendCredits(schoolId, 1);
+  if (!creditRes.success) return { success: false, error: creditRes.error || "Not enough AI credits." };
 
+  try {
+    const prompt = `
+      You are the executive assistant to the director of "${String(schoolName || 'the school').slice(0, 120)}", a school in Ghana.
+      Answer the director's question using ONLY the figures below (today's records from the school's dashboard).
+      If the figures do not contain the answer, say so plainly and suggest which page of the app would have it.
+      Never invent numbers. Use Ghana cedis (GH₵). Keep it under 120 words, plain text, no markdown headings.
+
+      Figures:
+      ${JSON.stringify(snapshot ?? {}, null, 2).slice(0, 6000)}
+
+      Director's question: ${q}
+    `;
+    const response = await ai.generate({ model: 'googleai/gemini-3-flash-preview', prompt });
+    const text = response.text;
+    if (!text) throw new Error("AI Service returned an empty response.");
+    return { success: true, text: text.trim() };
+  } catch (e: any) {
+    console.error("Executive question error:", e);
+    return { success: false, error: "The AI service could not answer right now. Please try again." };
+  }
+}

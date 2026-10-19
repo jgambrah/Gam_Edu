@@ -39,7 +39,10 @@ export interface ExecutiveAIAuditorDrawerProps {
       atRiskCount: number;
     };
     highArrearsCount?: number;
+    highArrearsOverdueSum?: number;
     pendingStaffCheckins?: number;
+    topPerformingSubject?: string;
+    topPerformingScore?: number | string;
   };
 }
 
@@ -170,10 +173,10 @@ export function ExecutiveAIAuditorDrawer({
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-amber-400 animate-pulse" />
                 <span className="text-xs font-bold text-indigo-200 uppercase tracking-wider">
-                  Proactive Daily Executive Briefing
+                  Daily Briefing
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 font-medium">Live Audit Active</span>
+              <span className="text-[10px] text-slate-400 font-medium">From today&apos;s records</span>
             </div>
 
             <div className="space-y-2 text-xs">
@@ -183,10 +186,12 @@ export function ExecutiveAIAuditorDrawer({
                   <span className="flex items-center gap-1.5">
                     <AlertTriangle className="h-3.5 w-3.5" /> Finance Alert
                   </span>
-                  <Badge className="bg-red-950 text-red-300 border-red-800 text-[9px] px-1 py-0">Critical</Badge>
+                  {(telemetry.highArrearsCount ?? 0) > 0 && <Badge className="bg-red-950 text-red-300 border-red-800 text-[9px] px-1 py-0">Attention</Badge>}
                 </div>
                 <p className="text-[11px] text-slate-300 leading-snug">
-                  3 critical financial accounts require attention (&gt;60d overdue, GH₵ 94.5k sum).
+                  {(telemetry.highArrearsCount ?? 0) > 0
+                    ? `${telemetry.highArrearsCount} account${telemetry.highArrearsCount === 1 ? '' : 's'} more than 60 days overdue (GH₵ ${Math.round(Number(telemetry.highArrearsOverdueSum) || 0).toLocaleString()} in total).`
+                    : 'No accounts are more than 60 days overdue.'}
                 </p>
                 <button 
                   onClick={() => onOpenDraftTemplate('arrears')}
@@ -202,10 +207,12 @@ export function ExecutiveAIAuditorDrawer({
                   <span className="flex items-center gap-1.5">
                     <Award className="h-3.5 w-3.5" /> Academic Outperformer
                   </span>
-                  <Badge className="bg-emerald-950 text-emerald-300 border-emerald-800 text-[9px] px-1 py-0">+12.4%</Badge>
+                  {telemetry.topPerformingScore ? <Badge className="bg-emerald-950 text-emerald-300 border-emerald-800 text-[9px] px-1 py-0">{telemetry.topPerformingScore}%</Badge> : null}
                 </div>
                 <p className="text-[11px] text-slate-300 leading-snug">
-                  Grade 6 Science outperforming target benchmark by +12.4% (avg API 94.2%).
+                  {telemetry.topPerformingSubject
+                    ? `${telemetry.topPerformingSubject} has the highest average in recent assessments${telemetry.topPerformingScore ? ` (${telemetry.topPerformingScore}%)` : ''}.`
+                    : 'Not enough recent assessment results yet.'}
                 </p>
                 <button 
                   onClick={() => onOpenDraftTemplate('academic')}
@@ -224,7 +231,7 @@ export function ExecutiveAIAuditorDrawer({
                   <Badge className="bg-amber-950 text-amber-300 border-amber-800 text-[9px] px-1 py-0">Pending</Badge>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-snug">
-                  {telemetry.pendingStaffCheckins ?? telemetry.staff?.pendingCheckins ?? 21} staff check-ins pending morning assembly verification.
+                  {telemetry.pendingStaffCheckins ?? telemetry.staff?.pendingCheckins ?? 0} staff check-ins pending morning assembly verification.
                 </p>
                 <button 
                   onClick={() => onOpenDraftTemplate('staff')}
@@ -304,7 +311,7 @@ export function ExecutiveAIAuditorDrawer({
           {/* AI Input Form */}
           <div className="flex items-center gap-2">
             <Input
-              placeholder="Ask Dr. GAM AI Auditor..."
+              placeholder="Ask about your school (1 AI credit per answer)…"
               value={aiPrompt}
               onChange={(e) => setAiPrompt(e.target.value)}
               onKeyDown={(e) => {
@@ -326,7 +333,7 @@ export function ExecutiveAIAuditorDrawer({
           </div>
 
           <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5">
-            <span>Press Enter to send • 5 credits per deep query</span>
+            <span>Press Enter to send • instant answers from your school records (no credits used)</span>
             <button 
               type="button"
               onClick={onClose}

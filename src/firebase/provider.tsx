@@ -3,7 +3,7 @@
 import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
-import { Auth, User, onAuthStateChanged } from 'firebase/auth';
+import { Auth, User, onAuthStateChanged, onIdTokenChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 // This interface defines the shape of the context's value.
@@ -49,6 +49,36 @@ export const FirebaseProvider: React.FC<{ children: ReactNode, firebaseApp: Fire
       }
     );
     // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [auth]);
+
+  // Keep the server's sign-in cookie in step with this browser's Firebase user, so server actions
+  // (AI tools, credit spending, notifications…) can check who is calling them. See /api/auth/session.
+  useEffect(() => {
+    if (!auth) return;
+    let lastSynced: string | null = null;
+    const unsubscribe = onIdTokenChanged(auth, async (u) => {
+      try {
+        if (!u) {
+          if (lastSynced !== '') {
+            lastSynced = '';
+            await fetch('/api/auth/session', { method: 'DELETE', credentials: 'same-origin' });
+          }
+          return;
+        }
+        const idToken = await u.getIdToken();
+        if (idToken === lastSynced) return;
+        lastSynced = idToken;
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ idToken }),
+        });
+      } catch (err) {
+        console.warn('FirebaseProvider: could not refresh server session', err);
+      }
+    });
     return () => unsubscribe();
   }, [auth]);
 

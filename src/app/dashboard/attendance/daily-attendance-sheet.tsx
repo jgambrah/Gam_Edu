@@ -21,13 +21,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles, CheckCheck, RotateCcw, UtensilsCrossed } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
-import { format, startOfDay, differenceInDays } from 'date-fns';
+import { format, startOfDay, differenceInDays, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, where, getDocs, getDoc, writeBatch, doc, serverTimestamp, Timestamp, setDoc } from 'firebase/firestore';
 import { type Student, type AttendanceRecord, type Class } from '@/lib/types';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Input } from '@/components/ui/input';
 import { useRole } from '@/context/role-context';
 import { Label } from '@/components/ui/label';
@@ -59,6 +58,13 @@ type AttendanceFormData = z.infer<typeof attendanceFormSchema>;
 
 import { useOfflineSync } from '@/hooks/use-offline-sync';
 
+const STATUS_OPTIONS = [
+    { value: 'Present' as const, icon: Check, selectedClass: 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-500/20 shadow-emerald-100' },
+    { value: 'Late' as const, icon: Clock, selectedClass: 'border-amber-500 bg-amber-50 text-amber-700 font-bold ring-2 ring-amber-500/20 shadow-amber-100' },
+    { value: 'Absent' as const, icon: X, selectedClass: 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-500/20 shadow-rose-100' },
+    { value: 'Excused' as const, icon: FileText, selectedClass: 'border-slate-500 bg-slate-100 text-slate-700 font-bold ring-2 ring-slate-400/20 shadow-slate-100' },
+];
+
 export function DailyAttendanceSheet({ classId: propClassId }: { classId?: string }) {
     const { saveOfflineAttendance, isOnline } = useOfflineSync();
     const { user } = useUser();
@@ -73,6 +79,32 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    // While the teacher is on "today", keep following today: a tab or installed app left open overnight used
+    // to keep yesterday's date (and so yesterday's marks) the next morning. Picking another date stops this.
+    const followTodayRef = useRef(true);
+    const pickDate = useCallback((d: Date) => {
+        followTodayRef.current = isSameDay(d, new Date());
+        setSelectedDate(d);
+    }, []);
+    useEffect(() => {
+        const rollToToday = () => {
+            if (!followTodayRef.current) return;
+            setSelectedDate(prev => (isSameDay(prev, new Date()) ? prev : new Date()));
+        };
+        rollToToday();
+        const timer = setInterval(rollToToday, 60_000);
+        const onVisible = () => { if (document.visibilityState === 'visible') rollToToday(); };
+        document.addEventListener('visibilitychange', onVisible);
+        window.addEventListener('focus', rollToToday);
+        return () => {
+            clearInterval(timer);
+            document.removeEventListener('visibilitychange', onVisible);
+            window.removeEventListener('focus', rollToToday);
+        };
+    }, []);
+    // Which class + date the roster on screen was loaded for. The roster is reloaded only when this changes,
+    // never because unrelated data refreshed (that reload used to undo a teacher's changes mid-marking).
+    const loadedKeyRef = useRef<string>('');
     
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
     const [hasExistingRecords, setHasExistingRecords] = useState(false);
@@ -234,6 +266,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             setStudentsLoaded(true);
         } catch (error) {
             console.error(error);
+            loadedKeyRef.current = ''; // allow a retry
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to load data.' });
         } finally {
             setIsLoading(false);
@@ -254,9 +287,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                     return;
                 }
             }
+            const key = `${schoolId}|${selectedClassId}|${format(selectedDate, 'yyyy-MM-dd')}`;
+            if (loadedKeyRef.current === key) return;
+            loadedKeyRef.current = key;
             handleLoadStudents();
         }
-    }, [selectedClassId, selectedDate, handleLoadStudents, role, visibleClasses, isLoadingClasses, toast]);
+    }, [selectedClassId, selectedDate, handleLoadStudents, role, visibleClasses, isLoadingClasses, toast, schoolId]);
     
     async function onSubmit(data: AttendanceFormData) {
         if (!firestore || !schoolId) {
@@ -694,7 +730,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0 border border-slate-150 rounded-2xl shadow-lg">
-                                <Calendar mode="single" selected={selectedDate} onSelect={(d) => d && setSelectedDate(d)} initialFocus className="rounded-2xl" />
+                                <Calendar mode="single" selected={selectedDate} onSelect={(d) => d && pickDate(d)} initialFocus className="rounded-2xl" />
                             </PopoverContent>
                         </Popover>
                     </div>
@@ -881,73 +917,33 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                                                 render={({ field: formField }) => (
                                                     <FormItem className="space-y-0">
                                                         <FormControl>
-                                                            <RadioGroup 
-                                                                onValueChange={formField.onChange} 
-                                                                defaultValue={formField.value} 
-                                                                value={formField.value}
-                                                                className="flex flex-wrap gap-2.5"
-                                                                disabled={isLocked}
-                                                            >
-                                                                <div 
-                                                                    onClick={() => !isLocked && formField.onChange('Present')}
-                                                                    className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
-                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
-                                                                        formField.value === 'Present' 
-                                                                            ? 'border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-500/20 shadow-emerald-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500'
-                                                                    )}
-                                                                >
-                                                                    <RadioGroupItem value="Present" id={`p-${index}`} className="sr-only" />
-                                                                    <Check className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Present' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
-                                                                    <span className="text-xs">Present</span>
-                                                                </div>
-                                                                
-                                                                <div 
-                                                                    onClick={() => !isLocked && formField.onChange('Late')}
-                                                                    className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
-                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
-                                                                        formField.value === 'Late' 
-                                                                            ? 'border-amber-500 bg-amber-50 text-amber-700 font-bold ring-2 ring-amber-500/20 shadow-amber-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500'
-                                                                    )}
-                                                                >
-                                                                    <RadioGroupItem value="Late" id={`l-${index}`} className="sr-only" />
-                                                                    <Clock className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Late' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
-                                                                    <span className="text-xs">Late</span>
-                                                                </div>
-
-                                                                <div 
-                                                                    onClick={() => !isLocked && formField.onChange('Absent')}
-                                                                    className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
-                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
-                                                                        formField.value === 'Absent' 
-                                                                            ? 'border-rose-500 bg-rose-50 text-rose-700 font-bold ring-2 ring-rose-500/20 shadow-rose-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500'
-                                                                    )}
-                                                                >
-                                                                    <RadioGroupItem value="Absent" id={`a-${index}`} className="sr-only" />
-                                                                    <X className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Absent' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
-                                                                    <span className="text-xs">Absent</span>
-                                                                </div>
-
-                                                                <div 
-                                                                    onClick={() => !isLocked && formField.onChange('Excused')}
-                                                                    className={cn(
-                                                                        "flex items-center space-x-2 border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200",
-                                                                        isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
-                                                                        formField.value === 'Excused' 
-                                                                            ? 'border-slate-500 bg-slate-100 text-slate-700 font-bold ring-2 ring-slate-400/20 shadow-slate-100' 
-                                                                            : 'bg-white border-slate-200 text-slate-500'
-                                                                    )}
-                                                                >
-                                                                    <RadioGroupItem value="Excused" id={`e-${index}`} className="sr-only" />
-                                                                    <FileText className={cn("h-3.5 w-3.5 mr-1 transition-all duration-200", formField.value === 'Excused' ? "scale-100 opacity-100" : "scale-0 opacity-0 w-0 mr-0")} />
-                                                                    <span className="text-xs">Excused</span>
-                                                                </div>
-                                                            </RadioGroup>
+                                                            <div role="radiogroup" aria-label="Attendance status" className="flex flex-wrap gap-2.5">
+                                                                {STATUS_OPTIONS.map(opt => {
+                                                                    const Icon = opt.icon;
+                                                                    const selected = formField.value === opt.value;
+                                                                    return (
+                                                                        <button
+                                                                            key={opt.value}
+                                                                            type="button"
+                                                                            role="radio"
+                                                                            aria-checked={selected}
+                                                                            disabled={isLocked}
+                                                                            onClick={() => {
+                                                                                if (isLocked) return;
+                                                                                form.setValue(`records.${index}.status`, opt.value, { shouldDirty: true, shouldTouch: true });
+                                                                            }}
+                                                                            className={cn(
+                                                                                "flex items-center border-2 px-3.5 py-1.5 rounded-full select-none shadow-sm transition-all duration-200 text-xs",
+                                                                                isLocked ? "cursor-not-allowed opacity-65" : "cursor-pointer hover:border-slate-300 hover:bg-slate-50",
+                                                                                selected ? opt.selectedClass : 'bg-white border-slate-200 text-slate-500'
+                                                                            )}
+                                                                        >
+                                                                            <Icon className={cn("h-3.5 w-3.5 transition-all duration-200", selected ? "mr-1 scale-100 opacity-100" : "scale-0 opacity-0 w-0")} />
+                                                                            <span>{opt.value}</span>
+                                                                        </button>
+                                                                    );
+                                                                })}
+                                                            </div>
                                                         </FormControl>
                                                     </FormItem>
                                                 )}

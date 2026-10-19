@@ -5,9 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
+import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { Assessment, ReportCardComment, ReportCard, Subject } from '@/lib/types';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, doc } from 'firebase/firestore';
 import { useMemo } from 'react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
@@ -42,6 +42,8 @@ function calculateStudentGradeForSubject(studentId: string, subjectId: string, a
 export function StudentReportCard({ student, term, year }: { student: Student, term: string, year: string }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
+    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolDoc } = useDoc<any>(schoolRef);
 
     // Fetch all assessments for the student
     const assessmentsQuery = useMemoFirebase(
@@ -99,7 +101,7 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
             <div className='flex items-center justify-center print:justify-start gap-4'>
                 <AppLogo className="h-12 w-12 text-primary" />
                 <div>
-                    <CardTitle className="text-3xl">SunnySide High School</CardTitle>
+                    <CardTitle className="text-3xl">{schoolDoc?.name || ''}</CardTitle>
                     <p className="text-muted-foreground">Student Report Card - {year}</p>
                 </div>
             </div>

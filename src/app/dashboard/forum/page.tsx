@@ -339,7 +339,7 @@ export default function ForumPage() {
     const [isCreateOpen, setCreateOpen] = useState(false);
     const [isParentNewPostOpen, setIsParentNewPostOpen] = useState(false);
 
-    const schoolName = profile?.schoolName || 'Sunny Side Academy';
+    const schoolName = profile?.schoolName || '';
   
     const threadsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId) return null;

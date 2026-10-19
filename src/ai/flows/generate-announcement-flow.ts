@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating school announcements.
  */
@@ -37,6 +38,7 @@ Instructions:
 });
 
 export async function generateAnnouncement(input: GenerateAnnouncementInput): Promise<GenerateAnnouncementOutput> {
+  await requireSignedInAction();
   const { output } = await generateAnnouncementPrompt(input, { model: 'googleai/gemini-3-flash-preview' });
   return output!;
 }

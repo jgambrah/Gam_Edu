@@ -30,7 +30,7 @@ export default function ClassStoriesPage() {
   const { data: classes } = useCollection<Class>(classesQuery);
 
   const canCreate = role === 'Director' || role === 'Administrator' || role === 'Teacher';
-  const schoolName = profile?.schoolName || "Sunny Side Academy";
+  const schoolName = profile?.schoolName || '';
 
   const handleTabChange = (tab: 'all' | 'class' | 'school') => {
     setActiveStoryTab(tab);

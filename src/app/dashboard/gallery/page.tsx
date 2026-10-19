@@ -75,7 +75,7 @@ export default function GalleryPage() {
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
 
-  const schoolName = profile?.schoolName || "Sunny Side Academy";
+  const schoolName = profile?.schoolName || '';
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');

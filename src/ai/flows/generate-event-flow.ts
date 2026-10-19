@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating school calendar events from key points.
  */
@@ -34,6 +35,7 @@ Instructions:
 });
 
 export async function generateEvent(input: GenerateEventInput): Promise<GenerateEventOutput> {
+  await requireSignedInAction();
   const { output } = await generateEventPrompt(input);
   return output!;
 }

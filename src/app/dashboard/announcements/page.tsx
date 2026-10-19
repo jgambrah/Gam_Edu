@@ -290,7 +290,7 @@ export default function AnnouncementsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const canManage = role ? ['Administrator', 'Director'].includes(role) : false;
-  const schoolName = profile?.schoolName || "Sunny Side Academy";
+  const schoolName = profile?.schoolName || '';
 
   const announcementsQuery = useMemoFirebase(() => {
       if (!firestore || !schoolId) return null; 

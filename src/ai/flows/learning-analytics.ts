@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -28,6 +29,7 @@ const AnalysisOutputSchema = z.object({
 });
 
 export async function generateLearningInsights(input: { classData: any[], schoolId: string }) {
+  await requireSignedInAction();
   try {
     // Note: The credit check is now done on the client-side *before* calling this.
     // However, keeping a server-side check is a good security practice.

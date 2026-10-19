@@ -278,7 +278,7 @@ export const HTMLReportCard = ({
 
             {/* Footer */}
             <div className="absolute bottom-4 left-0 right-0 text-center text-[10px] text-gray-400">
-                Generated via Sunnyside Student Information System
+                Generated via GAM Edu
             </div>
         </div>
     );

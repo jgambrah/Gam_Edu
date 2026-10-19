@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, doc, getDoc } from 'firebase/firestore';
 import { Assignment, Quiz, Student, StudentSubmission, QuizAttempt } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -59,8 +59,20 @@ function MathText({ text }: { text: string }) {
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-function QuizItem({ quiz, getClassName }: { quiz: Quiz; getClassName: (id: string) => string }) {
+function QuizItem({ quiz: rawQuiz, getClassName }: { quiz: Quiz; getClassName: (id: string) => string }) {
   const [isExpanded, setExpanded] = useState(false);
+  const firestore = useFirestore();
+  // Answers are kept in quizKeys/{quizId} (hidden from students); load them when the teacher opens the quiz.
+  const [keys, setKeys] = useState<{ correctAnswer: string; explanation: string }[] | null>(null);
+  useEffect(() => {
+    if (!isExpanded || keys || !firestore || !rawQuiz?.id) return;
+    getDoc(doc(firestore, 'quizKeys', rawQuiz.id))
+      .then(snap => { if (snap.exists()) setKeys(((snap.data() as any)?.keys) || []); })
+      .catch(() => { /* older quizzes keep their answers on the quiz itself */ });
+  }, [isExpanded, keys, firestore, rawQuiz?.id]);
+  const quiz = useMemo(() => (keys
+    ? { ...rawQuiz, questions: (rawQuiz.questions || []).map((q: any, i: number) => ({ ...q, correctAnswer: q.correctAnswer ?? keys[i]?.correctAnswer, explanation: q.explanation ?? keys[i]?.explanation })) }
+    : rawQuiz) as Quiz, [rawQuiz, keys]);
 
   return (
     <Card className="border border-slate-105 bg-white hover:shadow-md transition-all duration-300 rounded-2xl p-5 group">

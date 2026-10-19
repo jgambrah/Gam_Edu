@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   AlertCircle, AlertTriangle, ArrowUpRight, Award, Banknote, Bell, 
   BookOpen, BrainCircuit, CheckCircle2, ChevronRight, Clock, 
@@ -19,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytics';
 import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
 import { ExecutiveAIAuditorDrawer } from './ExecutiveAIAuditorDrawer';
+import { answerExecutiveQuestionAction } from '@/app/actions/insights-ai';
 
 export function ExecutiveDirectorCockpit({
   profile,
@@ -37,7 +39,7 @@ export function ExecutiveDirectorCockpit({
   attendance = [],
   todayPresentCount,
   activeStudentsCount,
-  studentTeacherRatio = 20.3,
+  studentTeacherRatio,
   academicTidbits = {},
   todayTeacherAttendance = { present: [], absent: [], late: [] },
   behaviorStats = { positive: 0, infractions: 0, recent: [] },
@@ -53,8 +55,10 @@ export function ExecutiveDirectorCockpit({
   onLoadFinancials,
   onSwitchOnDemand,
   isLoadingFinancials = false,
+  aiCreditBalance = 0,
 }: any) {
   const { toast } = useToast();
+  const router = useRouter();
 
   const isAdministrator = profile?.role === 'Administrator' || profile?.role === 'Admin';
   const isDirectorOrSuper = profile?.role === 'Director' || profile?.email?.toLowerCase() === 'jamesgambrah@gmail.com';
@@ -580,7 +584,7 @@ export function ExecutiveDirectorCockpit({
   const enrolledStudentCount = totalActiveStudents || dashboardSummary?.studentCount?.active || dashboardSummary?.studentCount?.total || students?.length || 0;
   const dynamicStudentTeacherRatio = (activeFacultyCount > 0 && enrolledStudentCount > 0)
     ? `${(enrolledStudentCount / activeFacultyCount).toFixed(1)}:1`
-    : (studentTeacherRatio ? `${studentTeacherRatio}:1` : "20.3:1");
+    : (studentTeacherRatio ? `${studentTeacherRatio}:1` : '—');
 
   const lessThan30Bucket = telemetry.lessThan30Bucket;
   const summaryOutstanding = Number(dashboardSummary?.financials?.totalOutstanding || unifiedMetrics?.grossReceivables || 0);
@@ -710,8 +714,8 @@ export function ExecutiveDirectorCockpit({
       safetyTag = `Safeguarding: 100% Clear`;
       safetyColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
     } else {
-      safetyDesc = `0 critical safety breaches reported this week. 1 minor medical room visit logged & resolved (Kofi A. - Grade 2).`;
-      safetyTag = `Safeguarding: 100% Clear`;
+      safetyDesc = `No behaviour or incident records have been logged yet.`;
+      safetyTag = `Safeguarding: No records`;
       safetyColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
     }
 
@@ -755,11 +759,12 @@ export function ExecutiveDirectorCockpit({
   const [isSendingAnnouncement, setIsSendingAnnouncement] = useState(false);
   const [showDebtDetailsToggle, setShowDebtDetailsToggle] = useState<'net' | 'gross'>('net');
 
-  // AI Auditor Assistant State (Unified AI Credits Source of Truth: 815)
+  // Assistant state. The credit figure is the school's real balance (passed in from the school record).
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
   const [isAiDrawerPinned, setIsAiDrawerPinned] = useState(false);
   const [aiPrompt, setAiPrompt] = useState('');
-  const [aiCredits, setAiCredits] = useState(815);
+  const [creditsSpentHere, setCreditsSpentHere] = useState(0);
+  const aiCredits = Math.max(0, (Number(aiCreditBalance) || 0) - creditsSpentHere);
   const [isAiAuditing, setIsAiAuditing] = useState(false);
 
   // Dynamic AI Auditor Initial Greeting (Synchronized with Unified Telemetry)
@@ -783,54 +788,58 @@ export function ExecutiveDirectorCockpit({
     });
   }, [initialAiGreeting]);
 
-  // Enrollment Dynamics Data (Dynamically baseline & scale relative to active enrolled roster)
-  const baseEnrolled = enrolledStudentCount || 253;
-  const enrollmentData = [
-    { month: 'Sep', enrolled: Math.round(baseEnrolled * 0.90), target: Math.round(baseEnrolled * 0.92) },
-    { month: 'Oct', enrolled: Math.round(baseEnrolled * 0.93), target: Math.round(baseEnrolled * 0.94) },
-    { month: 'Nov', enrolled: Math.round(baseEnrolled * 0.95), target: Math.round(baseEnrolled * 0.96) },
-    { month: 'Dec', enrolled: Math.round(baseEnrolled * 0.97), target: Math.round(baseEnrolled * 0.98) },
-    { month: 'Jan', enrolled: Math.round(baseEnrolled * 0.99), target: baseEnrolled },
-    { month: 'Feb', enrolled: baseEnrolled, target: Math.round(baseEnrolled * 1.02) },
-  ];
+  // Enrollment Dynamics: built from the students' own admission/creation dates (end-of-month head count for
+  // the last six months). Students without a date are counted from the start. No invented targets.
+  const enrollmentData = useMemo(() => {
+    const list: any[] = Array.isArray(students) ? students : [];
+    const toMs = (v: any): number => {
+      if (!v) return 0;
+      if (typeof v?.toMillis === 'function') return v.toMillis();
+      if (typeof v?.seconds === 'number') return v.seconds * 1000;
+      const t = new Date(v).getTime();
+      return isNaN(t) ? 0 : t;
+    };
+    const dates = list.map(st => toMs(st?.admissionDate || st?.dateOfAdmission || st?.enrollmentDate || st?.createdAt));
+    const now = new Date();
+    const rows: { month: string; enrolled: number }[] = [];
+    for (let k = 5; k >= 0; k--) {
+      const end = new Date(now.getFullYear(), now.getMonth() - k + 1, 1).getTime();
+      const label = new Date(now.getFullYear(), now.getMonth() - k, 1).toLocaleString('en-GB', { month: 'short' });
+      rows.push({ month: label, enrolled: dates.filter(d => d === 0 || d < end).length });
+    }
+    if (rows.length && enrolledStudentCount && rows[rows.length - 1].enrolled === 0) rows[rows.length - 1].enrolled = Number(enrolledStudentCount) || 0;
+    return rows;
+  }, [students, enrolledStudentCount]);
 
   // Quick Action Handlers
+  // Quick actions open the page where the message is actually sent. (They used to show "sent" messages
+  // without sending anything.)
   const handleSendStaffReminders = () => {
-    toast({
-      title: "Staff Reminders Dispatched",
-      description: `SMS check-in reminders sent to ${telemetry.pendingStaffCheckins} unchecked staff members.`,
-    });
     setActiveDrawer(null);
+    toast({ title: 'Opening SMS', description: `Choose the ${telemetry.pendingStaffCheckins} staff members who have not checked in and send the reminder.` });
+    router.push('/dashboard/communication/sms');
   };
 
   const handleIssueArrearsNotice = () => {
-    toast({
-      title: "Arrears Notices Sent",
-      description: `Automated fee reminder SMS and emails dispatched for ${telemetry.highArrearsCount} parent accounts with debt > 60 days.`,
-    });
     setActiveDrawer(null);
+    toast({ title: 'Opening SMS', description: `Select the parents with overdue balances (${telemetry.highArrearsCount} accounts) and send the reminder.` });
+    router.push('/dashboard/communication/sms');
   };
 
   const handleReorderStock = () => {
-    toast({
-      title: "Pantry Requisition Created",
-      description: "Requisition order generated for low pantry stock items.",
-    });
     setActiveDrawer(null);
+    toast({ title: 'Opening Inventory', description: 'Restock the low items from the inventory page.' });
+    router.push('/dashboard/inventory');
   };
 
   const handleBroadcastAnnouncement = (e: React.FormEvent) => {
     e.preventDefault();
     if (!announcementText.trim()) return;
-    setIsSendingAnnouncement(true);
-    setTimeout(() => {
-      setIsSendingAnnouncement(false);
-      setAnnouncementText('');
-      toast({
-        title: "Executive Announcement Broadcasted",
-        description: "Announcement successfully published to all staff, teachers, and parents.",
-      });
-    }, 600);
+    try { sessionStorage.setItem('gam_announcement_draft', announcementText.trim()); } catch { /* ignore */ }
+    try { navigator.clipboard?.writeText(announcementText.trim()); } catch { /* ignore */ }
+    setAnnouncementText('');
+    toast({ title: 'Opening Announcements', description: 'Your text is copied — paste it and publish it to staff and parents.' });
+    router.push('/dashboard/announcements');
   };
 
   const handleOpenDraftTemplate = (type: 'arrears' | 'staff' | 'academic') => {
@@ -839,7 +848,7 @@ export function ExecutiveDirectorCockpit({
         title: "Executive Fee Arrears Collection Notice",
         recipient: `All Parents with Arrears > 60 Days (${telemetry.highArrearsCount} Accounts)`,
         subject: "URGENT: GAM Edu Tuition Fee Balance Settlement Notice",
-        body: `Dear Parent/Guardian,\n\nOur financial records indicate an outstanding tuition balance of GH₵ ${Math.round(telemetry.highArrearsOverdueSum).toLocaleString()} across overdue student accounts. We kindly request that you settle all overdue tuition fees on or before Friday to prevent academic portal restriction.\n\nPayments can be made securely via the GAM Edu Parent Portal or Mobile Money Gateway.\n\nThank you for your prompt cooperation.\n\nExecutive Director's Office\nGAM Edu International Schools`
+        body: `Dear Parent/Guardian,\n\nOur financial records indicate an outstanding tuition balance of GH₵ ${Math.round(telemetry.highArrearsOverdueSum).toLocaleString()} across overdue student accounts. We kindly request that you settle all overdue tuition fees on or before Friday to prevent academic portal restriction.\n\nPayments can be made securely via the GAM Edu Parent Portal or Mobile Money Gateway.\n\nThank you for your prompt cooperation.\n\nExecutive Director's Office\n${telemetry.schoolName || ''}`
       });
     } else if (type === 'staff') {
       setAiDraftTemplate({
@@ -851,14 +860,14 @@ export function ExecutiveDirectorCockpit({
     } else {
       setAiDraftTemplate({
         title: "Academic Excellence Commendation Letter",
-        recipient: "Grade 6 Science Department Faculty",
-        subject: "COMMENDATION: Outstanding Academic Target Achievement (+12.4%)",
-        body: "Dear Science Department Team,\n\nWe congratulate you on achieving an exceptional 94.2% average API score in the recent Term 2 assessments, outperforming our school target by +12.4%.\n\nYour dedication to academic excellence sets a benchmark for the entire institution.\n\nWarm regards,\nExecutive Director"
+        recipient: telemetry.topPerformingSubject ? `${telemetry.topPerformingSubject} Teachers` : "[Department] Teachers",
+        subject: "COMMENDATION: Outstanding Academic Achievement",
+        body: `Dear ${telemetry.topPerformingSubject || '[Department]'} Team,\n\nWe congratulate you on achieving ${telemetry.topPerformingScore ? `an average score of ${telemetry.topPerformingScore}%` : 'excellent results'} in the recent assessments.\n\nYour dedication to academic excellence sets a benchmark for the entire institution.\n\nWarm regards,\nExecutive Director`
       });
     }
   };
 
-  const handleAiAuditQuery = (queryText?: string) => {
+  const handleAiAuditQuery = async (queryText?: string) => {
     const textToQuery = queryText || aiPrompt;
     if (!textToQuery.trim() || isAiAuditing) return;
 
@@ -866,30 +875,80 @@ export function ExecutiveDirectorCockpit({
     setAiPrompt('');
     setIsAiAuditing(true);
 
-    setTimeout(() => {
-      setIsAiAuditing(false);
-      setAiCredits(prev => Math.max(0, prev - 1));
-      
+    // Quick summary built from the school's live records on this page (used when the AI is unavailable).
+    const instantSummary = (): string => {
+
       const queryLower = textToQuery.toLowerCase();
       let reply = "";
 
       if (queryLower.includes('academic') || queryLower.includes('gap') || queryLower.includes('grade') || queryLower.includes('score')) {
-        reply = `Academic Audit Analysis: ${telemetry.highestAcademicGapGrade} currently has the highest academic gap at ${telemetry.highestAcademicGapValue} below the 92% benchmark (class avg: 81%). Conversely, ${telemetry.topPerformingSubject} leads with an impressive ${telemetry.topPerformingScore}% average score (+12.4% vs target). Remedial support sessions are active for target students.`;
+        reply = `Academic Audit Analysis: ${telemetry.highestAcademicGapGrade} currently has the highest academic gap at ${telemetry.highestAcademicGapValue} below the 92% benchmark. ${telemetry.topPerformingSubject} leads with a ${telemetry.topPerformingScore}% average score.`;
       } else if (queryLower.includes('notice') || queryLower.includes('draft') || queryLower.includes('arrears') || queryLower.includes('remind')) {
         reply = `I have drafted an official executive fee collection notice for ${telemetry.highArrearsCount} parent accounts with overdue balances > 60 days (GH₵ ${Math.round(telemetry.highArrearsOverdueSum / 1000)}k total). You can open and edit the template directly below for instant WhatsApp/SMS dispatch.`;
         handleOpenDraftTemplate('arrears');
       } else if (queryLower.includes('cash flow') || queryLower.includes('financial') || queryLower.includes('revenue') || queryLower.includes('inflow')) {
-        reply = `Projected net cash inflow for next month is GH₵ 48,500 based on recurring tuition installment schedules and canteen requisitions. Financial collection rate currently stands at ${telemetry.financials.collectionRate}%. Total collected revenue this term is GH₵ ${Math.round(telemetry.financials.totalRevenue).toLocaleString()} against a billed target of GH₵ ${Math.round(telemetry.financials.totalBilled).toLocaleString()}.`;
+        reply = `Financial collection rate currently stands at ${telemetry.financials.collectionRate}%. Total collected revenue this term is GH₵ ${Math.round(telemetry.financials.totalRevenue).toLocaleString()} against a billed target of GH₵ ${Math.round(telemetry.financials.totalBilled).toLocaleString()}.`;
       } else if (queryLower.includes('staff') || queryLower.includes('attendance') || queryLower.includes('check-in') || queryLower.includes('punctuality')) {
         reply = `Faculty attendance analysis: Punctuality rate is at ${telemetry.attendancePunctuality}% over the last 30 days. Today ${telemetry.pendingStaffCheckins} staff check-ins are pending morning assembly verification.`;
       } else if (queryLower.includes('enrollment') || queryLower.includes('student')) {
-        reply = `Enrollment Dynamics: Total enrolled students stand at ${students.length || 487} across 14 classes, maintaining a 100% compliant student-to-teacher ratio of ${studentTeacherRatio || '20.3:1'}.`;
+        reply = `Enrollment: ${students.length} students across ${classes.length} classes, with a student-to-teacher ratio of ${dynamicStudentTeacherRatio}.`;
       } else {
-        reply = `Based on current ledger and attendance analysis, operational health remains strong. Tuition collection is projected to hit 82% by month end if high-arrears notices are dispatched today, and ${telemetry.pendingStaffCheckins} staff check-ins are pending verification.`;
+        reply = `From today's records: fee collection is at ${telemetry.financials.collectionRate}%, ${telemetry.highArrearsCount} parent accounts are more than 60 days overdue, and ${telemetry.pendingStaffCheckins} staff check-ins are pending. Ask about academics, fees, staff attendance or enrolment for details.`;
       }
 
-      setAiChatHistory(prev => [...prev, { role: 'assistant', text: reply }]);
-    }, 800);
+      return reply;
+    };
+
+    // Drafting a notice or memo opens the editable template straight away (free, no AI needed).
+    const lower = textToQuery.toLowerCase();
+    if (/\b(draft|notice|memo|letter)\b/.test(lower)) {
+      const kind: 'arrears' | 'staff' | 'academic' =
+        /staff|punctual|check-in|memo/.test(lower) ? 'staff' : /commend|academic|subject|teacher/.test(lower) ? 'academic' : 'arrears';
+      handleOpenDraftTemplate(kind);
+      setIsAiAuditing(false);
+      setAiChatHistory(prev => [...prev, { role: 'assistant', text: 'I have opened the template with your school\'s figures filled in. Edit it, then copy it to the SMS page to send.' }]);
+      return;
+    }
+
+    // The real AI answer (1 credit). Falls back to the quick summary, clearly labelled, if it cannot run.
+    const schoolIdForAi = profile?.schoolId || schoolProfile?.id || schoolProfile?.schoolId || '';
+    let reply = '';
+    try {
+      const snapshot = {
+        studentsOnRoll: enrolledStudentCount,
+        classes: Array.isArray(classes) ? classes.length : 0,
+        staff: activeFacultyCount,
+        studentTeacherRatio: dynamicStudentTeacherRatio,
+        financials: showFinancials ? {
+          collectedThisTerm: Math.round(Number(telemetry.financials?.totalRevenue) || 0),
+          billedThisTerm: Math.round(Number(telemetry.financials?.totalBilled) || 0),
+          collectionRatePercent: telemetry.financials?.collectionRate,
+          accountsOver60DaysOverdue: telemetry.highArrearsCount,
+          amountOver60DaysOverdue: Math.round(Number(telemetry.highArrearsOverdueSum) || 0),
+        } : 'not available to this user',
+        academics: {
+          averageScorePercent: telemetry.academics?.avgScore,
+          studentsAtRisk: telemetry.academics?.atRiskCount,
+          topSubject: telemetry.topPerformingSubject,
+          topSubjectScore: telemetry.topPerformingScore,
+          classWithLargestGap: telemetry.highestAcademicGapGrade,
+        },
+        staffAttendance: { pendingCheckInsToday: telemetry.pendingStaffCheckins, punctualityPercent30Days: telemetry.attendancePunctuality },
+      };
+      const res: any = schoolIdForAi
+        ? await answerExecutiveQuestionAction(schoolIdForAi, telemetry.schoolName || '', textToQuery, snapshot)
+        : { success: false, error: 'School not found.' };
+      if (res?.success && res.text) {
+        reply = res.text;
+        setCreditsSpentHere(n => n + 1);
+      } else {
+        reply = `${instantSummary()}\n\n(Quick summary from today's records — the AI could not answer: ${res?.error || 'unavailable'}.)`;
+      }
+    } catch {
+      reply = `${instantSummary()}\n\n(Quick summary from today's records — the AI is unavailable right now.)`;
+    }
+    setIsAiAuditing(false);
+    setAiChatHistory(prev => [...prev, { role: 'assistant', text: reply }]);
   };
 
   const handleAgingClick = (range: string) => {
@@ -914,7 +973,7 @@ export function ExecutiveDirectorCockpit({
               Action Center
             </h3>
             <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 border border-rose-100">
-              2 Urgent
+              {[telemetry.pendingStaffCheckins > 0, showFinancials && telemetry.highArrearsCount > 0].filter(Boolean).length} Urgent
             </span>
           </div>
 
@@ -977,10 +1036,8 @@ export function ExecutiveDirectorCockpit({
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => {
-                    toast({
-                      title: "Lead Teachers Alerted",
-                      description: "Notification sent to Department Heads & Lead Teachers.",
-                    });
+                    handleSendStaffReminders();
+                    setActiveActionModal(null);
                   }}
                   className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
                 >
@@ -989,10 +1046,7 @@ export function ExecutiveDirectorCockpit({
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => {
-                    toast({
-                      title: "Inspection Alert Dispatched",
-                      description: "Official attendance verification alert sent to Vice Principal.",
-                    });
+                    handleSendStaffReminders();
                   }}
                   className="font-medium text-rose-600 hover:bg-rose-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
                 >
@@ -1040,10 +1094,8 @@ export function ExecutiveDirectorCockpit({
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => {
-                    toast({
-                      title: "SMS Reminders Dispatched",
-                      description: "Direct SMS collection notices sent to primary parent contacts.",
-                    });
+                    handleIssueArrearsNotice();
+                    setActiveActionModal(null);
                   }}
                   className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
                 >
@@ -1415,16 +1467,17 @@ export function ExecutiveDirectorCockpit({
             </div>
             <div className="mt-2 space-y-1.5">
               <div className="flex items-baseline justify-between gap-1">
-                <h3 className="text-2xl font-bold text-slate-900">{academicTidbits.avgScore || 81}%</h3>
-                <Sparkline points={[76, 78, 77, 80, 81]} color="#6366f1" />
+                <h3 className="text-2xl font-bold text-slate-900">{academicTidbits.avgScore ? `${academicTidbits.avgScore}%` : '—'}</h3>
               </div>
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-semibold text-indigo-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-0.5" /> +2.1% Δ vs last month
+                  <TrendingUp className="h-3 w-3 mr-0.5" /> From recent assessments
                 </span>
-                <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
-                  Gap: -11%
-                </Badge>
+                {academicTidbits.avgScore ? (
+                  <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
+                    Gap: {Math.round(Number(academicTidbits.avgScore) - 92)}%
+                  </Badge>
+                ) : null}
               </div>
               <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
                 <div className="flex items-center justify-between font-medium text-slate-600">
@@ -1433,7 +1486,7 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Lead Subject:</span>
-                  <span className="font-semibold text-indigo-700">Grade 6 Science (94.2%)</span>
+                  <span className="font-semibold text-indigo-700">{telemetry.topPerformingSubject ? `${telemetry.topPerformingSubject} (${telemetry.topPerformingScore}%)` : '—'}</span>
                 </div>
               </div>
             </div>
@@ -1586,16 +1639,16 @@ export function ExecutiveDirectorCockpit({
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-indigo-50 rounded-xl text-indigo-900 font-medium">
                     <span>Overall Average API Score</span>
-                    <span className="font-black text-lg">{academicTidbits.avgScore || 81}%</span>
+                    <span className="font-black text-lg">{academicTidbits.avgScore ? `${academicTidbits.avgScore}%` : '—'}</span>
                   </div>
                   <div className="space-y-2 text-xs">
                     <div className="flex justify-between items-center py-1 border-b border-slate-100">
                       <span className="text-slate-600 font-medium">Top Performing Subject</span>
-                      <span className="font-bold text-emerald-600">{academicTidbits.topSubject || "Mathematics"}</span>
+                      <span className="font-bold text-emerald-600">{academicTidbits.topSubject || '—'}</span>
                     </div>
                     <div className="flex justify-between items-center py-1 border-b border-slate-100">
                       <span className="text-slate-600 font-medium">Passing Rate Benchmark</span>
-                      <span className="font-bold text-indigo-600">{academicTidbits.passingRate || 88}%</span>
+                      <span className="font-bold text-indigo-600">{academicTidbits.passingRate ? `${academicTidbits.passingRate}%` : '—'}</span>
                     </div>
                     <div className="flex justify-between items-center py-1 border-b border-slate-100">
                       <span className="text-slate-600 font-medium">Students at Academic Risk (&lt;50%)</span>
@@ -1877,7 +1930,7 @@ export function ExecutiveDirectorCockpit({
         <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold text-slate-900">Enrollment Dynamics</CardTitle>
-            <CardDescription className="text-xs text-slate-500 font-medium">Monthly student growth vs intake target</CardDescription>
+            <CardDescription className="text-xs text-slate-500 font-medium">Students on roll at the end of each month (from admission dates)</CardDescription>
           </CardHeader>
           <CardContent className="pt-2">
             <div className="h-48 min-h-[160px] w-full">
@@ -1891,16 +1944,15 @@ export function ExecutiveDirectorCockpit({
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="month" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} domain={[200, 'auto']} />
+                  <YAxis tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} allowDecimals={false} domain={[0, 'auto']} />
                   <Tooltip contentStyle={{ backgroundColor: '#0f172a', borderRadius: '12px', color: '#fff', fontSize: '11px', border: 'none' }} />
-                  <Area type="monotone" dataKey="target" name="Intake Target" stroke="#cbd5e1" strokeDasharray="3 3" fill="none" strokeWidth={2} isAnimationActive={false} />
                   <Area type="monotone" dataKey="enrolled" name="Enrolled Students" stroke="#4f46e5" fill="url(#enrollmentGrad)" strokeWidth={2.5} isAnimationActive={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
             <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100">
-              <span className="text-slate-500 font-medium">Retention Rate</span>
-              <span className="font-bold text-emerald-600">98.2%</span>
+              <span className="text-slate-500 font-medium">Students on roll now</span>
+              <span className="font-bold text-emerald-600">{(enrolledStudentCount || (Array.isArray(students) ? students.length : 0)).toLocaleString()}</span>
             </div>
           </CardContent>
         </Card>
@@ -1939,7 +1991,7 @@ export function ExecutiveDirectorCockpit({
                 <>
                   <Button 
                     variant="outline"
-                    onClick={() => toast({ title: "Financial Summary Exported", description: "Ledger report downloaded as PDF." })}
+                    onClick={() => { toast({ title: 'Opening Accounts', description: 'Use the export button on the Accounts page to download the ledger.' }); router.push('/dashboard/accounts'); }}
                     className="bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700 font-semibold text-xs rounded-xl justify-start"
                   >
                     <Download className="h-4 w-4 text-emerald-600 mr-2" /> Export Ledger Summary
@@ -1955,7 +2007,7 @@ export function ExecutiveDirectorCockpit({
 
                   <Button 
                     variant="outline"
-                    onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
+                    onClick={() => { toast({ title: 'Opening SMS', description: 'Choose the staff to call and send the message.' }); router.push('/dashboard/communication/sms'); }}
                     className="bg-rose-50 hover:bg-rose-100/90 border-rose-200 text-rose-700 font-semibold text-xs rounded-xl justify-start shadow-2xs transition-colors hover:border-rose-300"
                   >
                     <AlertTriangle className="h-4 w-4 text-rose-600 mr-2 shrink-0" /> Emergency Staff Call
@@ -1981,7 +2033,7 @@ export function ExecutiveDirectorCockpit({
 
                   <Button 
                     variant="outline"
-                    onClick={() => toast({ title: "Meeting Scheduled", description: "Calendar invite sent to all department heads." })}
+                    onClick={() => { toast({ title: 'Opening SMS', description: 'Choose the staff to call and send the message.' }); router.push('/dashboard/communication/sms'); }}
                     className="bg-rose-50 hover:bg-rose-100/90 border-rose-200 text-rose-700 font-semibold text-xs rounded-xl justify-start shadow-2xs transition-colors hover:border-rose-300"
                   >
                     <AlertTriangle className="h-4 w-4 text-rose-600 mr-2 shrink-0" /> Emergency Staff Call
@@ -2202,29 +2254,30 @@ export function ExecutiveDirectorCockpit({
             <div className="pt-4 border-t border-slate-100 space-y-2">
               <Button 
                 onClick={() => {
-                  toast({
-                    title: "1-Click Executive Notice Dispatched",
-                    description: `Memo successfully sent to ${aiDraftTemplate.recipient} via WhatsApp & SMS.`,
-                  });
+                  // Nothing is sent from here: the text is copied and the SMS page opens, where the director
+                  // picks the recipients and sends it for real.
+                  const text = aiDraftTemplate.body || '';
+                  try { navigator.clipboard?.writeText(text); } catch { /* ignore */ }
+                  try { sessionStorage.setItem('gam_sms_draft', text); } catch { /* ignore */ }
+                  toast({ title: 'Notice copied', description: `Paste it on the SMS page and choose: ${aiDraftTemplate.recipient}.` });
                   setAiDraftTemplate(null);
+                  router.push('/dashboard/communication/sms');
                 }}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs py-3 cursor-pointer"
               >
-                <Send className="h-4 w-4 mr-2" /> Dispatch Notice via WhatsApp & SMS
+                <Send className="h-4 w-4 mr-2" /> Copy & Open SMS to Send
               </Button>
 
               <Button 
                 variant="outline"
                 onClick={() => {
-                  toast({
-                    title: "Letterhead PDF Exported",
-                    description: "Official executive notice formatted to letterhead PDF.",
-                  });
-                  setAiDraftTemplate(null);
+                  const text = `${aiDraftTemplate.subject || ''}\n\n${aiDraftTemplate.body || ''}`;
+                  try { navigator.clipboard?.writeText(text); } catch { /* ignore */ }
+                  toast({ title: 'Notice copied', description: 'Paste it into your letterhead document.' });
                 }}
                 className="w-full border-slate-200 hover:bg-slate-50 font-semibold text-slate-700 rounded-xl text-xs py-2.5 cursor-pointer"
               >
-                <Download className="h-4 w-4 mr-2" /> Export Letterhead PDF
+                <Download className="h-4 w-4 mr-2" /> Copy Text for Letterhead
               </Button>
             </div>
 

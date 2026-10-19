@@ -2,3 +2,4 @@ export { onStudentWrite, onAttendanceWrite, onFinancialRecordWrite, onPaymentSub
 export { executeTermFinancialRollover } from './financial-rollover';
 export { requestTermUnlock } from './term-management';
 export { enforceTermRolloverSafetyNet } from './term-safety-net';
+export { quizAnswerVault } from './quiz-answer-vault';

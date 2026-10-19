@@ -13,7 +13,10 @@ export async function submitQuizAttemptAction(
   idToken: string,
   quizId: string,
   answers: Record<string, string>
-): Promise<{ ok: true; score: number; total: number } | { ok: false; error: string }> {
+): Promise<
+  | { ok: true; score: number; total: number; review: { correctAnswer: string; explanation: string }[]; firstAttempt: boolean }
+  | { ok: false; error: string }
+> {
   try {
     if (!idToken || !quizId) return { ok: false, error: 'Missing quiz or sign-in.' };
     let uid: string;
@@ -44,8 +47,26 @@ export async function submitQuizAttemptAction(
       return { ok: false, error: 'This quiz has not started yet.' };
     }
 
+    // Answers live in quizKeys/{quizId} (moved there by the quizAnswerVault function so students cannot
+    // read them); older quizzes that have not been moved yet still carry them on the quiz itself.
+    const keySnap = await db.collection('quizKeys').doc(quizId).get();
+    const keys: any[] = keySnap.exists && Array.isArray((keySnap.data() as any)?.keys) ? (keySnap.data() as any).keys : [];
+    const questions: any[] = (Array.isArray(quiz.questions) ? quiz.questions : []).map((q: any, i: number) => ({
+      ...q,
+      correctAnswer: q?.correctAnswer ?? keys[i]?.correctAnswer ?? '',
+      explanation: q?.explanation ?? keys[i]?.explanation ?? '',
+    }));
+
+    // Only the first attempt counts towards the gradebook (answers are shown after submitting, so a
+    // retake would otherwise always score 100%). Later attempts are still saved as practice.
+    const previous = await db.collection('quizAttempts')
+      .where('quizId', '==', quizId)
+      .where('studentId', '==', uid)
+      .limit(1)
+      .get();
+    const firstAttempt = previous.empty;
+
     // Same grading as before (moved from the browser).
-    const questions: any[] = Array.isArray(quiz.questions) ? quiz.questions : [];
     let score = 0;
     questions.forEach((q, index) => {
       const raw = answers?.[String(index)] ?? '';
@@ -69,9 +90,10 @@ export async function submitQuizAttemptAction(
       completedAt: FieldValue.serverTimestamp(),
       schoolId: effectiveSchoolId,
       gradedOnServer: true,
+      countsForGrade: firstAttempt,
     });
 
-    if (quiz.gradable && quiz.subjectId && effectiveSchoolId) {
+    if (firstAttempt && quiz.gradable && quiz.subjectId && effectiveSchoolId) {
       const [schoolProfileSnap, settingsSnap] = await Promise.all([
         db.collection('schools').doc(effectiveSchoolId).get(),
         db.collection('schoolSettings').doc(effectiveSchoolId).get(),
@@ -101,7 +123,8 @@ export async function submitQuizAttemptAction(
     }
 
     await batch.commit();
-    return { ok: true, score, total };
+    const review = questions.map(q => ({ correctAnswer: String(q.correctAnswer || ''), explanation: String(q.explanation || '') }));
+    return { ok: true, score, total, review, firstAttempt };
   } catch (e: any) {
     console.error('submitQuizAttemptAction failed:', e?.message);
     return { ok: false, error: 'Could not save your attempt. Please try again.' };

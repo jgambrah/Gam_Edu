@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
@@ -56,6 +57,7 @@ RULES FOR QUESTION GENERATION:
 });
 
 export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
+  await requireSignedInAction();
   if (input.schoolId) {
     const cost = 10; // Flat cost of 10 credits for quiz/assignment generation
     const creditResult = await checkAndSpendCredits(input.schoolId, cost);

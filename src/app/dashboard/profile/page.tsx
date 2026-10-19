@@ -24,7 +24,7 @@ export default function MyProfilePage() {
   const { toast } = useToast();
 
   const isStaff = role && role !== 'Student' && role !== 'Parent';
-  const schoolName = profile?.schoolName || "Sunny Side Academy";
+  const schoolName = profile?.schoolName || '';
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isEditingPhone, setIsEditingPhone] = useState(false);

@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview Dr. GAM - The Intelligent Campus Assistant.
  * 
@@ -102,6 +103,7 @@ const campusAssistantFlow = ai.defineFlow(
 
 // --- EXPORTED ACTION ---
 export async function campusAssistant(input: CampusAssistantInput): Promise<CampusAssistantOutput> {
+  await requireSignedInAction();
   try {
     return await campusAssistantFlow(input);
   } catch (error: any) {

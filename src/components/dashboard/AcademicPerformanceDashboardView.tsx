@@ -396,13 +396,17 @@ export function AcademicPerformanceDashboardView({
     setSelectedAtRiskStudent(student);
   };
 
+  // Opens the SMS page to actually send the alert (this used to say "dispatched" without sending anything).
   const handleDispatchParentSms = () => {
     if (!selectedAtRiskStudent) return;
+    const text = `Dear Parent, ${schoolData?.name || 'The school'} requests a conference regarding ${selectedAtRiskStudent.name} (${selectedAtRiskStudent.class}). Current academic average: ${selectedAtRiskStudent.average}.`;
+    try { navigator.clipboard?.writeText(text); } catch { /* ignore */ }
     toast({
-      title: "Parent Alert Dispatched",
-      description: `SMS notification dispatched to parents of ${selectedAtRiskStudent.name} (${selectedAtRiskStudent.class}).`,
+      title: "Opening SMS",
+      description: `The message is copied. Paste it and send it to the parents of ${selectedAtRiskStudent.name}.`,
     });
     setSelectedAtRiskStudent(null);
+    if (typeof window !== 'undefined') window.location.href = '/dashboard/communication/sms';
   };
 
   const handleRecommendRemediation = (student: any) => {
@@ -758,7 +762,7 @@ export function AcademicPerformanceDashboardView({
 
             <div className="pt-3 space-y-4 text-xs">
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 leading-relaxed font-mono text-[11px]">
-                "Dear Parent, Sunny Side Academy Academic Directorate requests an urgent conference regarding {selectedAtRiskStudent.name} ({selectedAtRiskStudent.class}). Current overall academic average stands at {selectedAtRiskStudent.average} with low performance in {selectedAtRiskStudent.subjects}. Remediation classes scheduled."
+                "Dear Parent, {schoolData?.name || 'The school'} Academic Directorate requests an urgent conference regarding {selectedAtRiskStudent.name} ({selectedAtRiskStudent.class}). Current overall academic average stands at {selectedAtRiskStudent.average} with low performance in {selectedAtRiskStudent.subjects}. Remediation classes scheduled."
               </div>
 
               <div className="flex gap-2">

@@ -2,6 +2,7 @@
 
 import { Resend } from 'resend';
 import { getAdminDb, FieldValue } from '@/lib/firebaseAdmin';
+import { getSessionUser } from '@/lib/session-guard';
 
 export type SubmitLeadParams = {
   schoolName: string;
@@ -133,6 +134,12 @@ export async function submitSchoolLead(input: FormData | SubmitLeadParams) {
 }
 
 export async function sendSchoolCredentialsEmail(email: string, name: string, schoolName: string, password: string) {
+  // Public endpoint: only platform super admins may send portal credentials from our domain.
+  const caller = await getSessionUser();
+  if (!caller?.isSuperAdmin) {
+    console.warn('sendSchoolCredentialsEmail refused: caller is not a super admin.');
+    return;
+  }
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.warn("RESEND_API_KEY missing, skipping credentials email.");

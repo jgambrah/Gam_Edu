@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -16,6 +17,7 @@ const MathLessonSchema = z.object({
 export type GeneratedMathLesson = z.infer<typeof MathLessonSchema>;
 
 export async function generateMathLessonAction(input: { topic: string, grade: string, schoolId: string }): Promise<{ success: boolean; data?: GeneratedMathLesson, error?: string }> {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 3);
     if (!creditResult.success) {

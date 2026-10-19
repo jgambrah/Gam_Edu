@@ -136,8 +136,8 @@ service cloud.firestore {
     // =========================================================
 
     match /global_curriculum/{document=**} {
-      // Grant read-only access for all students, visitors and users
-      allow read, list: if true;
+      // The shared question bank: readable by any signed-in user of any school (not by anonymous visitors).
+      allow read, list: if isSignedIn();
 
       // Restrict all write, update, and delete access to platform super-admins only
       allow write, create, update, delete: if request.auth != null && (
@@ -306,9 +306,30 @@ service cloud.firestore {
       }
     }
 
+    // Fields only school staff (or the server) may change on a student record. XP and badges are awarded
+    // by the server (src/app/actions/gamification.ts); identity, class, school and billing fields by staff.
+    function studentProtectedFields() {
+      return ['totalPoints', 'earnedBadges', 'attendanceStreak', 'quizStreak90', 'booksReadCount', 'stemCount',
+              'xpEarnedToday', 'xpEarnedDay', 'lastGamificationUpdate',
+              'schoolId', 'classId', 'uid', 'studentId', 'enrollmentStatus', 'status', 'parentId', 'parentIds',
+              'isSponsored', 'sponsorId', 'sponsorName', 'biometricId', 'usesBusService', 'usesCanteen',
+              'transportBillingModel', 'canteenBillingMode', 'isArchived'];
+    }
+    function isStaffOfStudentSchool() {
+      return (isAdmin() || isTeacher())
+        && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId());
+    }
+
     match /students/{studentId} {
       allow read, get, list: if true; // Public verified portfolio view & all users
-      allow write, create, update: if isSignedIn();
+      allow create: if isSignedIn();
+      // Staff of the student's school can edit everything; anyone else signed in (the student, a parent,
+      // older screens) can still save other fields but cannot touch XP/badges or identity/billing fields.
+      allow update: if isSignedIn() && (
+        isSuperAdmin() ||
+        isStaffOfStudentSchool() ||
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(studentProtectedFields())
+      );
       allow delete: if isSuperAdmin() || isAdmin();
 
       match /timeline/{eventId} {
@@ -547,9 +568,16 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
+    // Answer keys (moved out of quizzes by the quizAnswerVault function): teachers/admins of the school only.
+    match /quizKeys/{quizId} {
+      allow read: if isSuperAdmin() || ((isTeacher() || isAdmin()) && resource.data.get('schoolId', '') == getUserSchoolId());
+      allow write: if false;
+    }
+
     match /quizzes/{quizId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn();
+      // Only teachers/admins create or edit quizzes (students could previously rewrite the questions/answers).
+      allow create, update: if isSuperAdmin() || isTeacher() || isAdmin();
       allow delete: if isSignedIn() && (
         isSuperAdmin() ||
         isAdmin() ||

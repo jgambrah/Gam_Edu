@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -18,6 +19,7 @@ const ChatInputSchema = z.object({
 });
 
 export async function chatWithAiTutor(input: z.infer<typeof ChatInputSchema>) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {

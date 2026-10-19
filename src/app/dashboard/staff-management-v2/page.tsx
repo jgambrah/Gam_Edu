@@ -70,7 +70,7 @@ export default function StaffManagementPage() {
   const { profile } = useRole();
   const { toast } = useToast();
   const { schoolId: adminSchoolId, loading: isLoadingSchoolId } = useCurrentSchool();
-  const schoolName = profile?.schoolName || "Sunny Side Academy";
+  const schoolName = profile?.schoolName || '';
 
   // ── state ──────────────────────────────────────────────────────────────────
   const [staff, setStaff] = useState<StaffMember[]>([]);

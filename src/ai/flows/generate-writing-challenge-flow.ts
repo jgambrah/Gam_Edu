@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating writing challenges.
  */
@@ -38,6 +39,7 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 export async function generateWritingChallenge(
   input: GenerateWritingChallengeInput & { schoolId: string }
 ): Promise<{ success: boolean; data?: GenerateWritingChallengeOutput; error?: string }> {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 5);
     if (!creditResult.success) {

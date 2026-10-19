@@ -841,7 +841,7 @@ function AdminApplicationDashboard() {
         );
     };
 
-    const schoolName = profile?.schoolName || schoolData?.name || "Sunny Side Academy";
+    const schoolName = profile?.schoolName || schoolData?.name || '';
 
     const handleExportIntakeLogs = () => {
         if (!applications || applications.length === 0) {

@@ -96,25 +96,44 @@ function loadExamGroup(g: string): Promise<void> {
     }
     return loadedExamGroups.get(g)!;
 }
-/** Loads the exam data a module may need before the (unchanged) loader below reads it. */
-async function ensureExamDataFor(mod: any, subject?: string): Promise<void> {
-    const text = `${mod?.setId || ''} ${mod?.title || ''} ${mod?.subject || ''} ${mod?.topicId || ''} ${mod?.kind || ''}`.toLowerCase();
-    const isMock = !!mod?.isMock || text.includes('mock');
-    const isPastPaper = /bece_20|jhs-math-20|bece_past_papers|past_paper|exam_series/.test(text) || !!mod?.year;
-    if (!isMock && !isPastPaper) return; // topical labs come from Firestore
-    const subj = `${text} ${subject || ''}`;
-    const isMath = subj.includes('math');
-    const isEnglish = subj.includes('english');
-    const isScience = subj.includes('science');
+/** Loads the bundled copy of a paper's data (used only when the shared bank in Firestore does not have it). */
+async function ensureExamDataFor(mod: any, subject: string | undefined, kind: 'past' | 'mock'): Promise<void> {
+    const text = `${mod?.setId || ''} ${mod?.title || ''} ${mod?.subject || ''} ${mod?.topicId || ''} ${subject || ''}`.toLowerCase();
+    const isMath = text.includes('math');
+    const isEnglish = text.includes('english');
+    const isScience = text.includes('science');
     const wanted: string[] = [];
-    if (isMock) {
+    if (kind === 'past') {
+        wanted.push('math_past');
+    } else {
         if (isMath) wanted.push('math_mock');
         if (isEnglish) wanted.push('english_mock');
         if (isScience) wanted.push('science_mock');
         if (wanted.length === 0) wanted.push('math_mock', 'english_mock', 'science_mock');
     }
-    if (isPastPaper && (isMath || (!isEnglish && !isScience))) wanted.push('math_past');
     await Promise.all(Array.from(new Set(wanted)).map(loadExamGroup));
+}
+
+/** BECE Mathematics past paper (2013–2018) a module points to, e.g. "bece_2017_math_p2"; null otherwise. */
+function mathPastPaperId(mod: any, subject?: string): string | null {
+    const id = String(mod?.setId || '');
+    let m = id.match(/^jhs-math-(\d{4})-paper([12])$/) || id.match(/^bece_(\d{4})_math_p([12])$/);
+    if (!m) {
+        const generic = id.match(/^bece_(\d{4})_p([12])$/);
+        if (generic && (mod?.subject === 'Mathematics' || subject === 'math')) m = generic;
+    }
+    if (!m) return null;
+    const year = Number(m[1]);
+    if (year < 2013 || year > 2018) return null;
+    return `bece_${year}_math_p${m[2]}`;
+}
+
+/** Question-bank documents may hold the paper as a JSON string (Firestore cannot store nested arrays). */
+function decodeBankDoc(data: any): any {
+    if (data && typeof data.json === 'string') {
+        try { return JSON.parse(data.json); } catch { return data; }
+    }
+    return data;
 }
 
 function SafeMath({ formula, block = true }: { formula: string, block?: boolean }) {
@@ -8402,12 +8421,32 @@ const ENGLISH_MOCK_SUITES: MockSuiteItem[] = [
     const handleLaunchModule = async (mod: any) => {
         setProblem(null);
         setActiveQuestionSet(null);
-        try {
-            await ensureExamDataFor(mod, subject);
-        } catch (loadErr) {
-            console.error('[senior-academy] Could not load exam data:', loadErr);
-            toast({ variant: 'destructive', title: 'Could not open this paper', description: 'Check your internet connection and try again.' });
-            return;
+
+        // BECE Mathematics past papers: one read from the shared question bank; the bundled copy is only
+        // downloaded when the bank does not have the paper yet.
+        const pastPaperId = mathPastPaperId(mod, subject);
+        if (pastPaperId) {
+            const [, yr, pn] = pastPaperId.match(/^bece_(\d{4})_math_p([12])$/) || [];
+            if (firestore) {
+                try {
+                    const snap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/mathematics/past_papers/${pastPaperId}`));
+                    if (snap.exists()) {
+                        setActiveTopicMeta({ title: mod.title || `BECE ${yr} Mathematics Paper ${pn}`, topicId: 'bece_past_papers' });
+                        setActiveQuestionSet(decodeBankDoc(snap.data()));
+                        setIsLoadingSet(false);
+                        return;
+                    }
+                } catch (bankErr) {
+                    console.warn('[senior-academy] Question bank read failed, using bundled copy:', bankErr);
+                }
+            }
+            try {
+                await ensureExamDataFor(mod, subject, 'past');
+            } catch (loadErr) {
+                console.error('[senior-academy] Could not load exam data:', loadErr);
+                toast({ variant: 'destructive', title: 'Could not open this paper', description: 'Check your internet connection and try again.' });
+                return;
+            }
         }
 
         // Instant Zero-Latency Loader for 2013 Mathematics Paper 1
@@ -8562,7 +8601,7 @@ if (
                                 mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/mathematics/mock_exams/${cleanMockId}`));
                             }
                             if (mockSnap.exists()) {
-                                const mData = mockSnap.data();
+                                const mData = decodeBankDoc(mockSnap.data());
                                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                                 pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
                             }
@@ -8572,14 +8611,14 @@ if (
                                 mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/english/mock_exams/${cleanMockId}`));
                             }
                             if (mockSnap.exists()) {
-                                const mData = mockSnap.data();
+                                const mData = decodeBankDoc(mockSnap.data());
                                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                                 pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
                             }
                         } else {
                             const mockSnap = await getDoc(doc(firestore, `global_curriculum/jhs/subjects/science/mock_exams/${cleanMockId}`));
                             if (mockSnap.exists()) {
-                                const mData = mockSnap.data();
+                                const mData = decodeBankDoc(mockSnap.data());
                                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                                 pData = isP2 ? (mData.paper2 || mData) : (mData.paper1 || mData);
                             }
@@ -8591,6 +8630,7 @@ if (
                 
                 // Robust fallback to bundled data
                 if (!pData) {
+                    await ensureExamDataFor(mod, subject, 'mock');
                     const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                     if (isMathMock) {
                         const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
@@ -8689,6 +8729,13 @@ if (
                 }
             } catch (mockErr) {
                 console.error('[senior-academy] Error activating mock exam:', mockErr);
+                try {
+                    await ensureExamDataFor(mod, subject, 'mock');
+                } catch {
+                    toast({ variant: 'destructive', title: 'Could not open this paper', description: 'Check your internet connection and try again.' });
+                    setIsLoadingSet(false);
+                    return;
+                }
                 const isP2 = mod.paperType === 2 || (mod.setId && mod.setId.includes('_p2'));
                 if (isMathMock) {
                     const isMock11 = mod.setId?.includes('mock_11') || mod.title?.toLowerCase().includes('mock 11');
@@ -11246,7 +11293,7 @@ function SeniorAcademyPageContent() {
 
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
-    const aiCredits = Number(schoolData?.aiCreditBalance ?? schoolData?.aiCredits ?? 0);
+    const aiCredits = Number(schoolData?.aiCredits ?? schoolData?.aiCreditBalance ?? 0);
     
     const { user } = useUser();
     const { data: studentRecord } = useCollection<Student>(

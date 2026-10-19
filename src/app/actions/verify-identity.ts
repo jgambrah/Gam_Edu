@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -9,6 +10,7 @@ const IdentitySchema = z.object({
 });
 
 export async function verifyStaffIdentityAction(profilePicBase64: string, liveSelfieBase64: string) {
+  await requireSignedInAction();
   try {
     // Strip the "data:image/jpeg;base64," prefix if present for robust processing
     const cleanProfilePic = profilePicBase64.includes(',') ? profilePicBase64.split(',')[1] : profilePicBase64;

@@ -1,9 +1,11 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit'; 
 import { checkAndSpendCredits } from '@/app/actions/credits';
 
 export async function generateScienceFactAction(schoolId: string, topic?: string) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 2); // Cost: 2 credits
     if (!creditResult.success) {

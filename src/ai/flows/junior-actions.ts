@@ -1,5 +1,6 @@
 
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -19,6 +20,7 @@ const JuniorStorySchema = z.object({
 });
 
 export async function generateJuniorStory(input: { topic: string; context?: string; wordCount?: number; schoolId: string; }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 3);
     if (!creditResult.success) {
@@ -65,6 +67,7 @@ const JuniorScienceSchema = z.object({
 });
 
 export async function generateJuniorScience(input: { topic: string; schoolId: string; }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
@@ -99,6 +102,7 @@ const WordDetailSchema = z.object({
 });
 
 export async function generateWordDetails(input: { word: string; schoolId: string; }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
@@ -147,6 +151,7 @@ const TTSInputSchema = z.object({
 });
 
 export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
+  await requireSignedInAction();
     try {
         const creditResult = await checkAndSpendCredits(input.schoolId, 1);
         if (!creditResult.success) {
@@ -179,6 +184,7 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 
 // --- IMAGE GENERATION ACTION ---
 export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
+  await requireSignedInAction();
     try {
       const creditResult = await checkAndSpendCredits(input.schoolId, 5);
       if (!creditResult.success) {
@@ -201,6 +207,7 @@ export const generateLessonImageAction = async (input: { prompt: string; schoolI
 
 // --- HANDWRITING ASSESSMENT ACTION ---
 export async function assessHandwritingAction(input: { imageDataUri: string; targetCharacter: string, schoolId: string; }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 3);
     if (!creditResult.success) {
@@ -233,6 +240,7 @@ export async function assessHandwritingAction(input: { imageDataUri: string; tar
 const LifeSkillEntrySchema = z.any(); // Flexible schema for varied outputs
 
 export async function generateLifeSkillEntry(input: { topic: string; category: string; schoolId: string; }) {
+  await requireSignedInAction();
   const { topic, category, schoolId } = input;
   
   const creditResult = await checkAndSpendCredits(schoolId, 2);
@@ -292,6 +300,7 @@ export async function generateLifeSkillEntry(input: { topic: string; category: s
 
 // --- RHYME GENERATOR ---
 export async function generateRhyme(input: { topic: string; schoolId: string; }): Promise<{ success: boolean; error?: string; rhyme: string; }> {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
@@ -317,6 +326,7 @@ const SkillDetailSchema = z.object({
 });
 
 export async function generateSkillDetails(input: { skill: string; schoolId: string }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 1);
     if (!creditResult.success) {
@@ -350,6 +360,7 @@ const PhonicsWorldEntrySchema = z.object({
     icon: z.string(),
 });
 export async function generatePhonicsWorldEntry(topic: string, category: string, schoolId: string) {
+  await requireSignedInAction();
     try {
         const creditResult = await checkAndSpendCredits(schoolId, 2);
         if (!creditResult.success) {
@@ -380,6 +391,7 @@ const MathWorldEntrySchema = z.object({
     icon: z.string(),
 });
 export async function generateMathWorldEntry(topic: string, category: string, schoolId: string) {
+  await requireSignedInAction();
     try {
         const creditResult = await checkAndSpendCredits(schoolId, 2);
         if (!creditResult.success) {
@@ -414,6 +426,7 @@ const ScienceWorldEntrySchema = z.object({
 });
 
 export async function generateScienceWorldEntry(topic: string, category: string, schoolId: string) {
+  await requireSignedInAction();
     try {
         const creditResult = await checkAndSpendCredits(schoolId, 2);
         if (!creditResult.success) {
@@ -450,6 +463,7 @@ const IncompleteSentenceSchema = z.object({
 });
 
 export async function generateIncompleteSentenceAction(topic: string, category: string, schoolId: string) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 2);
     if (!creditResult.success) {
@@ -489,6 +503,7 @@ const MathWordProblemSchema = z.object({
 });
 
 export async function generateMathWordProblemAction(topic: string, schoolId: string) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 2);
     if (!creditResult.success) {

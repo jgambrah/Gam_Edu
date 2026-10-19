@@ -3,6 +3,7 @@
 
 import { ai } from '@/ai/genkit';
 import { GoogleGenAI } from '@google/genai';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 /**
  * Generates an image using a Google AI model via Genkit.
@@ -10,6 +11,12 @@ import { GoogleGenAI } from '@google/genai';
  * @returns A promise that resolves to the data URL of the generated image or null.
  */
 export const generateLessonImage = async (prompt: string): Promise<string | null> => {
+  // Server actions are public endpoints: only signed-in users may run the (paid) image model.
+  try {
+    await requireSignedInAction();
+  } catch {
+    return null;
+  }
   try {
     const { media } = await ai.generate({
       model: 'googleai/imagen-4.0-fast-generate-001',
@@ -29,6 +36,8 @@ export const generateLessonImage = async (prompt: string): Promise<string | null
  * This token is used on the client-side to connect securely without referrer restriction issues.
  */
 export const createLiveAuthToken = async (): Promise<string> => {
+  // Only signed-in users may open a (paid) live AI session.
+  await requireSignedInAction();
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not configured on the server.");

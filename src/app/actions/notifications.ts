@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { getMessaging } from 'firebase-admin/messaging';
 import { getFirestore } from 'firebase-admin/firestore';
@@ -31,6 +32,7 @@ function getAdminApp() {
  * @param url - The dashboard URL to open when the notification is tapped.
  */
 export async function notifyParents(studentIds: string[], title: string, body: string, url: string) {
+  await requireSignedInAction();
   if (!studentIds || studentIds.length === 0) {
     return { success: false, error: 'No students provided for notification.' };
   }
@@ -102,6 +104,7 @@ export async function notifyParents(studentIds: string[], title: string, body: s
  * @param url - The dashboard URL to open when the notification is tapped.
  */
 export async function notifyStaffByUidAction(staffUids: string[], title: string, body: string, url: string) {
+  await requireSignedInAction();
   if (!staffUids || staffUids.length === 0) {
     return { success: true };
   }

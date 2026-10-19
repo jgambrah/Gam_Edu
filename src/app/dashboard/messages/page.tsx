@@ -930,7 +930,7 @@ function playNotificationSound() {
 export default function MessagesPage() {
     const { user } = useUser();
     const { role, profile } = useRole();
-    const schoolName = profile?.schoolName || 'Sunny Side Academy';
+    const schoolName = profile?.schoolName || '';
     const firestore = useFirestore();
     const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
     const { toast } = useToast();

@@ -1,5 +1,6 @@
 
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -13,6 +14,7 @@ export async function recommendClassPlacementAction(
     student: { name: string; age: number; gender: string; desiredGrade: string },
     availableClasses: { id: string; name: string; capacity: number; currentStudents: number }[]
 ) {
+  await requireSignedInAction();
   try {
     const prompt = `
       You are a School Admission Administrator AI.

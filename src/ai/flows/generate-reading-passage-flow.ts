@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating reading passages with questions.
  */
@@ -51,6 +52,7 @@ import { checkAndSpendCredits } from '@/app/actions/credits';
 export async function generateReadingPassage(
   input: GenerateReadingPassageInput & { schoolId: string }
 ): Promise<{ success: boolean; data?: GenerateReadingPassageOutput; error?: string }> {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 5);
     if (!creditResult.success) {

@@ -1,5 +1,6 @@
 
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -25,6 +26,7 @@ export async function generateScienceQuestionAction(input: {
   grade: string; 
   count: number; 
 }) {
+  await requireSignedInAction();
   try {
     const prompt = `
       Generate ${input.count} unique ${input.difficulty} level multiple-choice science questions about "${input.topic}".

@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ArrowLeft, CheckCircle, AlertCircle, Sparkles, Clock } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
@@ -90,6 +90,14 @@ export default function QuizPage() {
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [score, setScore] = useState<number | null>(null);
+  // Correct answers arrive from the server only after submitting (students cannot read them before).
+  const [review, setReview] = useState<{ correctAnswer: string; explanation: string }[] | null>(null);
+  const displayQuestions = useMemo(
+    () => (quiz?.questions || []).map((q: any, i: number) => (review && review[i])
+      ? { ...q, correctAnswer: review[i].correctAnswer, explanation: review[i].explanation || q.explanation }
+      : q),
+    [quiz, review]
+  );
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [timeUntilStart, setTimeUntilStart] = useState<number | null>(null);
 
@@ -172,20 +180,6 @@ export default function QuizPage() {
     setIsSubmitting(true);
 
     let currentScore = 0;
-    quiz.questions.forEach((q, index) => {
-      const studentAns = (answers[index] || '').trim().toLowerCase();
-      const correctAns = (q.correctAnswer || '').trim().toLowerCase();
-      
-      const isCorrect = q.type === 'written'
-        ? (studentAns === correctAns || (correctAns.includes(studentAns) && studentAns.length > 2))
-        : (answers[index] === q.correctAnswer);
-
-      if (isCorrect) {
-        currentScore++;
-      }
-    });
-
-    setScore(currentScore);
     setSubmitted(true);
     
     try {
@@ -194,6 +188,10 @@ export default function QuizPage() {
         if (!res.ok) throw new Error(res.error);
         currentScore = res.score;
         setScore(res.score);
+        setReview(res.review || null);
+        if (res.firstAttempt === false) {
+          toast({ title: 'Practice attempt', description: 'Only your first attempt counts towards your grade.' });
+        }
 
         // Trigger gamification badge updates (0 extra reads)
         try {
@@ -374,7 +372,7 @@ export default function QuizPage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-8 pt-8 px-8">
-          {quiz.questions.map((q, index) => {
+          {displayQuestions.map((q: any, index: number) => {
             const studentAns = (answers[index] || '').trim().toLowerCase();
             const correctAns = (q.correctAnswer || '').trim().toLowerCase();
             const isCorrect = q.type === 'written'
@@ -428,7 +426,7 @@ export default function QuizPage() {
                       value={answers[index] || ''}
                       className="space-y-3"
                     >
-                      {q.options?.map((option, i) => {
+                      {q.options?.map((option: string, i: number) => {
                         const isSelected = answers[index] === option;
                         const isCorrectAnswer = option === q.correctAnswer;
                         

@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ const ReconciliationSchema = z.object({
 });
 
 export async function autoReconcileFlow(bankLines: BankTx[], ledgerLines: InternalTx[], schoolId: string) {
+  await requireSignedInAction();
   try {
     // We strictly verify the inputs aren't empty
     if (bankLines.length === 0 || ledgerLines.length === 0) {

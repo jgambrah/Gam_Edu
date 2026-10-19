@@ -30,7 +30,7 @@ export interface SectionHeroBannerProps {
   title: string;
   /** Explanatory subtitle or institutional descriptor */
   subtitle?: string;
-  /** Eyebrow tag preceding title, defaults to "SUNNY SIDE ACADEMY • DIRECTOR SUITE" */
+  /** Eyebrow tag preceding title, defaults to "DIRECTOR SUITE" */
   eyebrow?: React.ReactNode;
   /** Status badge indicating system state, telemetry, or active term */
   badge?: SectionHeroBadge;

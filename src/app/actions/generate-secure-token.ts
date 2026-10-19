@@ -4,6 +4,7 @@
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 import jwt from 'jsonwebtoken';
+import { requireSignedIn } from '@/lib/session-guard';
 
 // --- HELPER: Fixes Vercel Key Formatting Issues ---
 const formatPrivateKey = (key: string) => {
@@ -37,6 +38,9 @@ function getAdminApp(): App {
 }
 
 export async function generateSecureToken(uid: string): Promise<string> {
+  // Only the signed-in user may get a sign-in token for themselves.
+  const caller = await requireSignedIn();
+  if (caller.uid !== uid) throw new Error('You can only request a token for your own account.');
   const adminApp = getAdminApp();
   const auth = getAuth(adminApp);
   

@@ -1,5 +1,6 @@
 
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -20,6 +21,7 @@ const DebateInputSchema = z.object({
 });
 
 export async function generateDebateResponse(input: z.infer<typeof DebateInputSchema>) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
@@ -70,6 +72,7 @@ const EvaluationSchema = z.object({
 });
 
 export async function evaluateDebateAction(history: z.infer<typeof MessageSchema>[], schoolId: string) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(schoolId, 2);
     if (!creditResult.success) {

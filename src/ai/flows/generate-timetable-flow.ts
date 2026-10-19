@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -30,6 +31,7 @@ const TimetableOutputSchema = z.object({
  * state (scheduledCounts) across sequential calls.
  */
 export async function generateTimetable(input: any) {
+  await requireSignedInAction();
   console.log("🚀 AI Timetable Generation Started (Iterative Mode)...");
 
   try {

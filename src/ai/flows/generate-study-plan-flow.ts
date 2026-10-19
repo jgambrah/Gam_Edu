@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 /**
  * @fileOverview An AI agent for generating a personalized study plan.
  */
@@ -52,6 +53,7 @@ RULES:
 });
 
 export async function generateStudyPlan(input: GenerateStudyPlanInput): Promise<GenerateStudyPlanOutput> {
+  await requireSignedInAction();
   const { output } = await generateStudyPlanPrompt(input);
   return output!;
 }

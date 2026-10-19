@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -23,6 +24,7 @@ async function callAi(prompt: string, schema: any) {
 // --- ACTIONS ---
 
 export async function generateDailyParadox(input: { targetGroup: string; schoolId: string; }) {
+  await requireSignedInAction();
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
         throw new Error(creditResult.error || "Insufficient AI credits.");
@@ -49,6 +51,7 @@ export async function generateDailyParadox(input: { targetGroup: string; schoolI
 }
 
 export async function generateDetectiveCase(input: { targetGroup: string; schoolId: string; }) {
+  await requireSignedInAction();
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
         throw new Error(creditResult.error || "Insufficient AI credits.");
@@ -77,6 +80,7 @@ export async function generateDetectiveCase(input: { targetGroup: string; school
 }
 
 export async function generateDebateTopic(input: { targetGroup: string; schoolId: string; topic: string; }) {
+  await requireSignedInAction();
   try {
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
@@ -100,6 +104,7 @@ export async function generateDebateTopic(input: { targetGroup: string; schoolId
 }
 
 export async function generateTriviaQuiz(input: { targetGroup: string; category: string; schoolId: string }) {
+  await requireSignedInAction();
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
     if (!creditResult.success) {
         throw new Error(creditResult.error || "Insufficient AI credits.");

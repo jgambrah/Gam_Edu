@@ -1,4 +1,5 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
@@ -11,6 +12,7 @@ const StudentListSchema = z.array(z.object({
 }));
 
 export async function extractStudentsFromText(text: string) {
+  await requireSignedInAction();
   try {
     const prompt = `
       You are a data extraction assistant for a school management system.

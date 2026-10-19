@@ -1,8 +1,10 @@
 'use server';
+import { requireSignedInAction } from '@/lib/session-guard';
 
 import { ai } from '@/ai/genkit';
 
 export async function generateSMSDraftAction(topic: string, tone: 'formal' | 'urgent' | 'friendly') {
+  await requireSignedInAction();
   try {
     const prompt = `
       Write a short SMS message for a school sending to parents.
