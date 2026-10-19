@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
+import { currentTermFromProfile, termStampOfRecord, normalizeYear } from '@/lib/term';
+import { computeLedgerFigures, summaryGrossDebt, summaryCredits, summaryYearPerformance, activeStudentKeySet } from '@/lib/finance-summary';
 import StudentLearningResourcesView from './StudentLearningResourcesView';
 import { AssignedRemoteTaskBanner } from '@/components/curriculum/AssignedRemoteTaskBanner';
 import StudentTimetableView from './StudentTimetableView';
@@ -15,7 +17,7 @@ import { StaffDirectoryDashboardView } from '@/components/dashboard/StaffDirecto
 import { useUser, useFirestore, useMemoFirebase, useDoc, useCollection, useFirebase } from '@/firebase';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { useRole } from '@/context/role-context';
-import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc , onSnapshot } from 'firebase/firestore';
+import { collection, collectionGroup, query, where, orderBy, limit, doc, setDoc, serverTimestamp, getDocs, addDoc, getDoc, writeBatch, deleteDoc, Timestamp, updateDoc , onSnapshot, getCountFromServer } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Banknote, Loader2, RefreshCw, Zap, BarChart3, Layers3,
   Bell, FileText, ChevronRight, Megaphone, CalendarCheck,
@@ -987,13 +989,14 @@ function AdminDashboard({
     if (dashboardSummary?.academics?.avgScorePercent !== undefined) {
       return {
         avgScore: dashboardSummary.academics.avgScorePercent,
-        passingRate: dashboardSummary.academics.passingRatePercent ?? 88,
-        topSubject: (dashboardSummary.academics as any)?.topSubject || "General Academics",
+        passingRate: dashboardSummary.academics.passingRatePercent ?? 0,
+        topSubject: (dashboardSummary.academics as any)?.topSubject || "",
         totalAssessments: dashboardSummary.academics.pendingAssessments ?? 0
       };
     }
     if (!recentAssessments || recentAssessments.length === 0) {
-      return { avgScore: 82, passingRate: 88, topSubject: "Mathematics", totalAssessments: 0 };
+      // No marks yet: show nothing rather than invented results.
+      return { avgScore: 0, passingRate: 0, topSubject: "", totalAssessments: 0 };
     }
     let totalPct = 0;
     let count = 0;
@@ -1017,17 +1020,23 @@ function AdminDashboard({
       }
     });
 
-    const avgScore = count > 0 ? Math.round(totalPct / count) : 82;
-    const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 88;
+    const avgScore = count > 0 ? Math.round(totalPct / count) : 0;
+    const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 0;
     const passingRateCapped = Math.min(passingRate, 100);
 
-    let topSubject = "Mathematics";
+    let topSubject = "";
     let bestAvg = 0;
+    let weakestSubject = "";
+    let worstAvg = Infinity;
     Object.entries(subjects).forEach(([sub, data]) => {
       const avg = data.total / data.count;
       if (avg > bestAvg) {
         bestAvg = avg;
         topSubject = sub;
+      }
+      if (avg < worstAvg) {
+        worstAvg = avg;
+        weakestSubject = sub;
       }
     });
 
@@ -1035,6 +1044,9 @@ function AdminDashboard({
       avgScore,
       passingRate: passingRateCapped,
       topSubject,
+      topSubjectScore: topSubject ? Math.round(bestAvg) : 0,
+      weakestSubject,
+      weakestScore: weakestSubject ? Math.round(worstAvg) : null,
       totalAssessments: count
     };
   }, [dashboardSummary, syncedAcademicData, recentAssessments]);
@@ -3213,13 +3225,14 @@ function DirectorDashboard({
     if (dashboardSummary?.academics?.avgScorePercent !== undefined) {
       return {
         avgScore: dashboardSummary.academics.avgScorePercent,
-        passingRate: dashboardSummary.academics.passingRatePercent ?? 88,
-        topSubject: (dashboardSummary.academics as any)?.topSubject || "General Academics",
+        passingRate: dashboardSummary.academics.passingRatePercent ?? 0,
+        topSubject: (dashboardSummary.academics as any)?.topSubject || "",
         totalAssessments: dashboardSummary.academics.pendingAssessments ?? 0
       };
     }
     if (!recentAssessments || recentAssessments.length === 0) {
-      return { avgScore: 82, passingRate: 88, topSubject: "Mathematics", totalAssessments: 0 };
+      // No marks yet: show nothing rather than invented results.
+      return { avgScore: 0, passingRate: 0, topSubject: "", totalAssessments: 0 };
     }
     let totalPct = 0;
     let count = 0;
@@ -3243,17 +3256,23 @@ function DirectorDashboard({
       }
     });
 
-    const avgScore = count > 0 ? Math.round(totalPct / count) : 82;
-    const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 88;
+    const avgScore = count > 0 ? Math.round(totalPct / count) : 0;
+    const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 0;
     const passingRateCapped = Math.min(passingRate, 100);
 
-    let topSubject = "Mathematics";
+    let topSubject = "";
     let bestAvg = 0;
+    let weakestSubject = "";
+    let worstAvg = Infinity;
     Object.entries(subjects).forEach(([sub, data]) => {
       const avg = data.total / data.count;
       if (avg > bestAvg) {
         bestAvg = avg;
         topSubject = sub;
+      }
+      if (avg < worstAvg) {
+        worstAvg = avg;
+        weakestSubject = sub;
       }
     });
 
@@ -3261,6 +3280,9 @@ function DirectorDashboard({
       avgScore,
       passingRate: passingRateCapped,
       topSubject,
+      topSubjectScore: topSubject ? Math.round(bestAvg) : 0,
+      weakestSubject,
+      weakestScore: weakestSubject ? Math.round(worstAvg) : null,
       totalAssessments: count
     };
   }, [dashboardSummary, syncedAcademicData, recentAssessments]);
@@ -3453,7 +3475,11 @@ function DirectorDashboard({
         totalPaid = dashboardSummary.financials.totalRevenue;
       }
 
-      const collectionRate = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : (dashboardSummary?.financials?.collectionRate ?? 73);
+      // paid ÷ (billed − waivers), the same formula as the Accounts page; no invented fallback figure.
+      const collectibleBilled = totalBilled - totalWaivers;
+      const collectionRate = collectibleBilled > 0
+        ? Math.min(100, Math.round((totalPaid / collectibleBilled) * 1000) / 10)
+        : (dashboardSummary?.financials?.collectionRate ?? 0);
 
       const computed = {
         totalOutstanding,
@@ -5198,6 +5224,20 @@ function AccountantDashboard({
 
     const displayName = profile?.firstName || user?.displayName?.split(' ')[0] || 'Accountant';
 
+    // Same rule as Accounts > Student Billing: active (or no status) and not archived.
+    const activeStudentCount = useMemo(() => (students || []).filter((s: any) => (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) && s.isArchived !== true).length, [students]);
+
+    // Payment vouchers waiting for a director's override (one count query, no documents downloaded).
+    const [pendingVoucherCount, setPendingVoucherCount] = useState<number | null>(null);
+    useEffect(() => {
+        if (!firestore || !schoolId) return;
+        let cancelled = false;
+        getCountFromServer(query(collection(firestore, 'paymentVouchers'), where('schoolId', '==', schoolId), where('status', '==', 'Awaiting Override')))
+            .then(snap => { if (!cancelled) setPendingVoucherCount(snap.data().count); })
+            .catch(() => { if (!cancelled) setPendingVoucherCount(null); });
+        return () => { cancelled = true; };
+    }, [firestore, schoolId]);
+
     const handleOpenTill = useCallback(async () => {
         if (!user || !schoolId || !firestore) return;
         setIsOpeningTill(true);
@@ -5226,183 +5266,97 @@ function AccountantDashboard({
 
     const activeTill = useMemo(() => tills?.find((t: any) => t.status === 'Open'), [tills]);
 
+    // One set of rules for every finance screen (see src/lib/finance-summary.ts):
+    //  - with the ledger loaded: the same calculation as Accounts > Student Billing ("All-Time Ledger");
+    //  - otherwise: the server summary, read the same way the Director dashboard reads it.
+    const currentYear = useMemo(() => currentTermFromProfile(schoolSettings)?.academicYear
+        || (dashboardSummary as any)?.financials?.currentAcademicYear || '', [schoolSettings, dashboardSummary]);
+    const hasLedger = Boolean(records && records.length > 0);
+    const ledger = useMemo(() => hasLedger
+        ? computeLedgerFigures(records, students, currentYear, (r: any) => termStampOfRecord(r)?.academicYear || normalizeYear(r?.academicYear))
+        : null, [hasLedger, records, students, currentYear]);
+    const yearPerf = useMemo(() => summaryYearPerformance(dashboardSummary, currentYear), [dashboardSummary, currentYear]);
+
     const stats = useMemo(() => {
-        const hasRecords = records && records.length > 0;
-
-        if (!hasRecords) {
-            const sumFin = dashboardSummary?.financials;
-            const streamDebts = (sumFin as any)?.streamDebts;
-            const streamBreakdown = sumFin?.streamBreakdown;
-
-            return { 
-                totalOutstanding: sumFin?.totalOutstanding ?? 0, 
-                totalRevenue: sumFin?.totalRevenue ?? 0, 
-                outstandingTuition: streamDebts?.tuition ?? 0, 
-                outstandingCanteen: streamDebts?.canteen ?? 0, 
-                outstandingTransport: streamDebts?.transport ?? 0, 
-                otherDebt: streamDebts?.other ?? 0, 
-                revenueByType: streamBreakdown ? [
-                    { name: 'Tuition', value: streamBreakdown.tuition || 0 },
-                    { name: 'Canteen', value: streamBreakdown.canteen || 0 },
-                    { name: 'Transport', value: streamBreakdown.transport || 0 },
-                    { name: 'Auxiliary', value: streamBreakdown.auxiliary || 0 }
-                ].filter((s: any) => s.value > 0).sort((a: any, b: any) => b.value - a.value) : [], 
-                totalBilled: sumFin?.totalBilled ?? 0 
+        if (ledger) {
+            return {
+                totalOutstanding: ledger.gross,
+                credits: ledger.credits,
+                totalRevenue: ledger.performance.paid,
+                revenueIsThisYear: Boolean(currentYear),
+                outstandingTuition: ledger.streams.tuition as number | null,
+                outstandingCanteen: ledger.streams.canteen as number | null,
+                outstandingTransport: ledger.streams.transport as number | null,
+                otherDebt: ledger.streams.other as number | null,
+                revenueByType: [] as { name: string; value: number }[],
+                totalBilled: ledger.performance.billed,
             };
         }
-        
-        // Unified Logic: Filter by Active Students and ignore Pending Reversals
-        const activeStudents = students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
-        const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
-        const activeRecords = records.filter((r: any) => 
-            activeStudentIds.has(r.studentId) && 
-            r.status !== 'Pending Reversal'
-        );
-
-        let totalBilled = 0;
-        let totalPaid = 0;
-        let totalWaivers = 0;
-        let outstandingTuition = 0;
-        let outstandingCanteen = 0;
-        let outstandingTransport = 0;
-        let otherDebt = 0;
-        const types: Record<string, number> = {};
-
-        activeRecords.forEach((r: any) => {
-            const billed = Number(r.billedAmount) || 0;
-            const paid = Number(r.amountPaid) || 0;
-            const waiver = Number(r.waiverAmount) || 0;
-            const balance = billed - paid - waiver;
-            
-            totalBilled += billed;
-            totalPaid += paid;
-            totalWaivers += waiver;
-
-            if (paid > 0) {
-                const type = r.type || 'Other';
-                types[type] = (types[type] || 0) + paid;
-            }
-
-            if (balance > 0) {
-                const typeLower = (r.type || '').toLowerCase();
-                if (typeLower.includes('tuition')) outstandingTuition += balance;
-                else if (typeLower.includes('canteen')) outstandingCanteen += balance;
-                else if (typeLower.includes('transport')) outstandingTransport += balance;
-                else otherDebt += balance;
-            }
-        });
-
-        const revenueByType = Object.entries(types).map(([name, value]) => ({ name, value }))
-            .sort((a, b) => b.value - a.value)
-            .slice(0, 5);
-
-        const totalOutstanding = outstandingTuition + outstandingCanteen + outstandingTransport + otherDebt;
-
-        return { 
-            totalOutstanding, 
-            totalRevenue: totalPaid, 
-            outstandingTuition,
-            outstandingCanteen,
-            outstandingTransport,
-            otherDebt,
-            revenueByType,
-            totalBilled
+        const sumFin: any = dashboardSummary?.financials;
+        const streamDebts = sumFin?.streamDebts;
+        const streamBreakdown = sumFin?.streamBreakdown;
+        const catOwed = (name: string): number | null => {
+            const c = Array.isArray(sumFin?.categoryCollections) ? sumFin.categoryCollections.find((x: any) => x.name === name) : null;
+            return c ? Number(c.outstanding) || 0 : null;
         };
-    }, [records, students, dashboardSummary]);
+        const streamOrNull = (k: string, catName: string): number | null =>
+            streamDebts && streamDebts[k] !== undefined ? Math.max(0, Number(streamDebts[k]) || 0) : catOwed(catName);
+        return {
+            totalOutstanding: summaryGrossDebt(dashboardSummary) ?? 0,
+            credits: summaryCredits(dashboardSummary),
+            totalRevenue: yearPerf ? yearPerf.paid : (sumFin?.totalRevenue ?? 0),
+            revenueIsThisYear: Boolean(yearPerf),
+            outstandingTuition: streamOrNull('tuition', 'Tuition'),
+            outstandingCanteen: streamOrNull('canteen', 'Canteen'),
+            outstandingTransport: streamOrNull('transport', 'Transport'),
+            otherDebt: streamOrNull('other', 'Other'),
+            revenueByType: streamBreakdown ? [
+                { name: 'Tuition', value: streamBreakdown.tuition || 0 },
+                { name: 'Canteen', value: streamBreakdown.canteen || 0 },
+                { name: 'Transport', value: streamBreakdown.transport || 0 },
+                { name: 'Auxiliary', value: streamBreakdown.auxiliary || 0 }
+            ].filter((x: any) => x.value > 0).sort((a: any, b: any) => b.value - a.value) : [],
+            totalBilled: yearPerf ? yearPerf.billed : (sumFin?.totalBilled ?? 0),
+        };
+    }, [ledger, dashboardSummary, yearPerf, currentYear]);
 
-    const collectionRate = useMemo(() => {
-        if (!records || records.length === 0) {
-            return dashboardSummary?.financials?.collectionRate ?? 0;
-        }
-        const billed = stats.totalBilled;
-        return billed > 0 ? (stats.totalRevenue / billed) * 105 : 100; // Match visually or default
-    }, [stats, records, dashboardSummary]);
-
+    // paid ÷ (billed − waivers) on this academic year's bills — the same rate as Accounts > Student Billing.
+    // (The ledger-mode figure used to be multiplied by 105 "to match visually".)
     const displayCollectionRate = useMemo(() => {
-        if (!records || records.length === 0) {
-            return dashboardSummary?.financials?.collectionRate ?? 0;
-        }
-        const billed = stats.totalBilled;
-        return billed > 0 ? (stats.totalRevenue / billed) * 100 : 100;
-    }, [stats, records, dashboardSummary]);
+        if (ledger) return ledger.performance.rate;
+        if (yearPerf) return yearPerf.rate;
+        return Number(dashboardSummary?.financials?.collectionRate ?? 0);
+    }, [ledger, yearPerf, dashboardSummary]);
+    const collectionRate = displayCollectionRate;
 
     const categoryCollections = useMemo(() => {
-        if (!records || records.length === 0) {
-            const sumFin = dashboardSummary?.financials;
-            if ((sumFin as any)?.categoryCollections && Array.isArray((sumFin as any).categoryCollections) && (sumFin as any).categoryCollections.length > 0) {
-                return (sumFin as any).categoryCollections;
-            }
-            if (sumFin?.streamBreakdown) {
-                const sb = sumFin.streamBreakdown;
-                const sd = (sumFin as any)?.streamDebts || {};
-                const makeCat = (name: string, paid: number, outstanding: number) => {
-                    const billed = paid + outstanding;
-                    const rate = billed > 0 ? (paid / billed) * 100 : (paid > 0 ? 100 : 0);
-                    return { name, billed, paid, waived: 0, outstanding, rate };
-                };
-                return [
-                    makeCat('Tuition', sb.tuition || 0, sd.tuition || 0),
-                    makeCat('Canteen', sb.canteen || 0, sd.canteen || 0),
-                    makeCat('Transport', sb.transport || 0, sd.transport || 0),
-                    makeCat('PTA Levy', 0, 0),
-                    makeCat('Other', sb.auxiliary || 0, sd.other || 0),
-                ];
-            }
-            return [];
-        }
-        if (!students) return [];
-        
-        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
-        const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
-        const activeRecords = records.filter((r: any) => activeStudentIds.has(r.studentId) && r.status !== 'Pending Reversal');
-        
-        const categories: Record<string, { billed: number, paid: number, waived: number }> = {
-            'Tuition': { billed: 0, paid: 0, waived: 0 },
-            'Canteen': { billed: 0, paid: 0, waived: 0 },
-            'Transport': { billed: 0, paid: 0, waived: 0 },
-            'PTA Levy': { billed: 0, paid: 0, waived: 0 },
-            'Other': { billed: 0, paid: 0, waived: 0 }
-        };
-        
-        activeRecords.forEach((r: any) => {
-            const type = (r.type || '').toLowerCase();
-            let cat = 'Other';
-            if (type.includes('tuition')) cat = 'Tuition';
-            else if (type.includes('canteen')) cat = 'Canteen';
-            else if (type.includes('transport')) cat = 'Transport';
-            else if (type.includes('pta')) cat = 'PTA Levy';
-            
-            categories[cat].billed += Number(r.billedAmount) || 0;
-            categories[cat].paid += Number(r.amountPaid) || 0;
-            categories[cat].waived += Number(r.waiverAmount) || 0;
-        });
-        
-        return Object.entries(categories).map(([name, statsData]) => {
-            const netBilled = statsData.billed - statsData.waived;
-            const rate = netBilled > 0 ? (statsData.paid / netBilled) * 100 : 100;
-            return {
-                name,
-                billed: statsData.billed,
-                paid: statsData.paid,
-                waived: statsData.waived,
-                outstanding: Math.max(0, netBilled - statsData.paid),
-                rate
-            };
-        });
-    }, [records, students, dashboardSummary]);
+        if (ledger) return ledger.categories;
+        const sumFin: any = dashboardSummary?.financials;
+        if (Array.isArray(sumFin?.categoryCollections) && sumFin.categoryCollections.length > 0) return sumFin.categoryCollections;
+        return [];
+    }, [ledger, dashboardSummary]);
+
+    const studentKeyOf = useCallback((s: any) => [s.id, s.uid, s.studentId, s.admissionNo, s.admissionNumber].filter(Boolean).map(String), []);
 
     const studentFinancials = useMemo(() => {
         if (!records || !students) return [];
         
-        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+        const activeStudents = students.filter((s: any) => (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) && s.isArchived !== true);
         const recordsByStudent: Record<string, any[]> = {};
         records.forEach((r: any) => { 
+            if (r.isArchived === true) return;
             if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = []; 
             recordsByStudent[r.studentId].push(r); 
         });
         
         return activeStudents.map((student: any) => {
-            const studentRecords = recordsByStudent[student.uid] || [];
+            // A student's bills may be keyed by their uid, record id or admission number.
+            const seen = new Set<string>();
+            const studentRecords: any[] = [];
+            studentKeyOf(student).forEach((k: string) => (recordsByStudent[k] || []).forEach((r: any) => {
+                const id = r.id || `${k}-${r.billedAmount}-${r.description}`;
+                if (!seen.has(id)) { seen.add(id); studentRecords.push(r); }
+            }));
             const activeRecords = studentRecords.filter((r: any) => r.status !== 'Pending Reversal');
             const totalBilled = activeRecords.reduce((acc: number, r: any) => acc + (Number(r.billedAmount) || 0), 0);
             const totalPaid = activeRecords.reduce((acc: number, r: any) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
@@ -5412,7 +5366,7 @@ function AccountantDashboard({
                 records: studentRecords 
             };
         }).sort((a: any, b: any) => b.balance - a.balance);
-    }, [records, students]);
+    }, [records, students, studentKeyOf]);
 
     const topDebtors = useMemo(() => {
         const actualThreshold = Number(schoolSettings?.highArrearsThreshold) || 10000;
@@ -5478,70 +5432,27 @@ function AccountantDashboard({
     }, [firestore, schoolId, toast]);
 
     const debtAgingStats = useMemo(() => {
-        if (!records || records.length === 0) {
-            const da = (dashboardSummary as any)?.debtAging;
-            if (da) {
-                const current = Number(da.current) || 0;
-                const age30 = Number(da.age30) || 0;
-                const age60 = Number(da.age60) || 0;
-                const age90 = Number(da.age90) || 0;
-                const overpayments = Number(da.overpayments) || 0;
-                const total = current + age30 + age60 + age90 - overpayments;
-                const grossTotal = current + age30 + age60 + age90;
-                return { current, age30, age60, age90, total, overpayments, grossTotal };
-            }
-            return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
+        if (ledger) {
+            const { current, age30, age60, age90 } = ledger.aging;
+            return { current, age30, age60, age90, total: ledger.net, overpayments: ledger.credits, grossTotal: ledger.gross };
         }
-        if (!students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
-        
-        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
-        const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
-        const today = startOfDay(new Date());
-
-        let current = 0;
-        let age30 = 0;
-        let age60 = 0;
-        let age90 = 0;
-        let overpayments = 0;
-
-        records.forEach((r: any) => {
-            if (!activeStudentIds.has(r.studentId) || r.status === 'Pending Reversal') return;
-            
-            const billed = Number(r.billedAmount) || 0;
-            const paid = Number(r.amountPaid) || 0;
-            const waiver = Number(r.waiverAmount) || 0;
-            const balance = billed - paid - waiver;
-
-            if (balance < 0) {
-                overpayments += Math.abs(balance);
-                return;
-            }
-            if (balance <= 0.01) return;
-
-            const dueDate = r.dueDate?.toDate ? r.dueDate.toDate() : new Date(r.dueDate);
-            const diffTime = today.getTime() - startOfDay(dueDate).getTime();
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays <= 0) {
-                current += balance;
-            } else if (diffDays <= 30) {
-                age30 += balance;
-            } else if (diffDays <= 60) {
-                age60 += balance;
-            } else {
-                age90 += balance;
-            }
-        });
-
-        const total = current + age30 + age60 + age90 - overpayments;
-        const grossTotal = current + age30 + age60 + age90;
-        return { current, age30, age60, age90, total, overpayments, grossTotal };
-    }, [records, students, dashboardSummary]);
+        const da = (dashboardSummary as any)?.debtAging;
+        if (da) {
+            const current = Number(da.current) || 0;
+            const age30 = Number(da.age30) || 0;
+            const age60 = Number(da.age60) || 0;
+            const age90 = (Number(da.age90) || 0) + (Number(da.over90) || 0);
+            const overpayments = Number(da.overpayments) || 0;
+            const grossTotal = current + age30 + age60 + age90;
+            return { current, age30, age60, age90, total: Math.max(0, grossTotal - overpayments), overpayments, grossTotal };
+        }
+        return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
+    }, [ledger, dashboardSummary]);
 
     const classCollectionsStats = useMemo(() => {
         if (!records || !students || !classes) return [];
 
-        const activeStudents = students.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+        const activeStudents = students.filter((s: any) => (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) && s.isArchived !== true);
         const studentsByClass: Record<string, any[]> = {};
         activeStudents.forEach((s: any) => {
             if (!studentsByClass[s.classId]) studentsByClass[s.classId] = [];
@@ -5560,19 +5471,27 @@ function AccountantDashboard({
             let totalPaid = 0;
             let totalWaivers = 0;
 
+            let owed = 0;
             classStudents.forEach((s: any) => {
-                const studentRecs = recordsByStudent[s.uid] || [];
-                studentRecs.forEach((r: any) => {
-                    if (r.status === 'Pending Reversal') return;
+                const seen = new Set<string>();
+                studentKeyOf(s).forEach((k: string) => (recordsByStudent[k] || []).forEach((r: any) => {
+                    if (r.status === 'Pending Reversal' || r.isArchived === true) return;
+                    const id = r.id || `${k}-${r.billedAmount}-${r.description}`;
+                    if (seen.has(id)) return;
+                    seen.add(id);
+                    const bal = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+                    if (bal > 0.01) owed += bal; // every open bill, like the debt figures
+                    const ry = termStampOfRecord(r)?.academicYear || normalizeYear(r?.academicYear);
+                    if (currentYear && ry !== currentYear) return; // the rate uses this year's bills only
                     totalBilled += Number(r.billedAmount) || 0;
                     totalPaid += Number(r.amountPaid) || 0;
                     totalWaivers += Number(r.waiverAmount) || 0;
-                });
+                }));
             });
 
             const netBilled = totalBilled - totalWaivers;
-            const outstanding = netBilled - totalPaid;
-            const rate = netBilled > 0 ? (totalPaid / netBilled) * 100 : 100;
+            const outstanding = owed;
+            const rate = netBilled > 0 ? Math.min(100, (totalPaid / netBilled) * 100) : (owed > 0.01 ? 0 : 100);
 
             return {
                 classId: c.id,
@@ -5585,7 +5504,7 @@ function AccountantDashboard({
                 rate
             };
         }).sort((a: any, b: any) => b.rate - a.rate);
-    }, [records, students, classes]);
+    }, [records, students, classes, studentKeyOf, currentYear]);
 
     return (
         <div className="space-y-6">
@@ -5672,10 +5591,10 @@ function AccountantDashboard({
             </Card>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <StatCard title="Outstanding Debt" value={`GH₵${Math.round(stats.totalOutstanding).toLocaleString()}`} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
-                <StatCard title="Total Collections" value={`GH₵${Math.round(stats.totalRevenue).toLocaleString()}`} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
-                <StatCard title="Active Students" value={dashboardSummary?.studentCount?.active || students?.filter((s:any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).length || 0} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
-                <StatCard title="Payment Vouchers" value="--" icon={Receipt} link="/dashboard/finance/payment-vouchers" isLoading={isLoading} color="text-indigo-600" />
+                <StatCard title="Outstanding Debt" value={`GH₵${Math.round(stats.totalOutstanding).toLocaleString()}`} subtitle={stats.credits > 0 ? `Gross, all terms · less GH₵${Math.round(stats.credits).toLocaleString()} credits = GH₵${Math.round(Math.max(0, stats.totalOutstanding - stats.credits)).toLocaleString()} net` : 'All unpaid bills, all terms'} icon={AlertCircle} link="/dashboard/accounts" isLoading={isLoading} color="text-rose-600" />
+                <StatCard title={stats.revenueIsThisYear ? 'Collected This Year' : 'Total Collections'} value={`GH₵${Math.round(stats.totalRevenue).toLocaleString()}`} subtitle={stats.revenueIsThisYear ? `Paid on ${currentYear} bills` : 'All payments recorded'} icon={CheckCircle2} link="/dashboard/reports/financials" isLoading={isLoading} color="text-emerald-600" />
+                <StatCard title="Active Students" value={students && students.length > 0 ? activeStudentCount : (dashboardSummary?.studentCount?.active || 0)} icon={Users} link="/dashboard/students-v3" isLoading={isLoading} color="text-blue-600" />
+                <StatCard title="Vouchers Awaiting Approval" value={pendingVoucherCount === null ? '—' : pendingVoucherCount} icon={Receipt} link="/dashboard/finance/payment-vouchers" isLoading={isLoading} color="text-indigo-600" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -5712,7 +5631,7 @@ function AccountantDashboard({
                                     <BookOpen className="h-4 w-4 text-rose-500" />
                                   </CardHeader>
                                   <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{stats.outstandingTuition.toFixed(2)}</div>
+                                    <div className="text-lg font-bold text-slate-800">{stats.outstandingTuition === null ? '—' : `GH₵${stats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</div>
                                   </CardContent>
                                 </Card>
                                 <Card className="border-l-4 border-l-orange-500 bg-slate-50/20 shadow-none">
@@ -5721,7 +5640,7 @@ function AccountantDashboard({
                                     <Utensils className="h-4 w-4 text-orange-500" />
                                   </CardHeader>
                                   <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{stats.outstandingCanteen.toFixed(2)}</div>
+                                    <div className="text-lg font-bold text-slate-800">{stats.outstandingCanteen === null ? '—' : `GH₵${stats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</div>
                                   </CardContent>
                                 </Card>
                                 <Card className="border-l-4 border-l-amber-500 bg-slate-50/20 shadow-none">
@@ -5730,7 +5649,7 @@ function AccountantDashboard({
                                     <BusIcon className="h-4 w-4 text-amber-500" />
                                   </CardHeader>
                                   <CardContent className="p-4 pt-1">
-                                    <div className="text-lg font-bold text-slate-800">GH₵{stats.outstandingTransport.toFixed(2)}</div>
+                                    <div className="text-lg font-bold text-slate-800">{stats.outstandingTransport === null ? '—' : `GH₵${stats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}</div>
                                   </CardContent>
                                 </Card>
                             </div>
@@ -12159,15 +12078,16 @@ export default function DashboardClient() {
     if (!firestore || !schoolId || loadingOnDemandRecords) return;
     setLoadingOnDemandRecords(true);
     try {
+      // Every bill of the school (archived ones dropped), so the totals match Accounts > Student Billing and
+      // the server summary. It used to load only the first 250 bills, so "full ledger" totals were partial.
       const q = query(
         collection(firestore, 'financialRecords'),
-        where('schoolId', '==', schoolId),
-        limit(250)
+        where('schoolId', '==', schoolId)
       );
       const snap = await getDocs(q);
-      const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const list = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter((r: any) => r.isArchived !== true);
       setOnDemandRecords(list);
-      setFinancialsMode('loaded');
+      setFinancialsMode('full');
     } catch (err) {
       console.error('Error loading on-demand financial records:', err);
     } finally {
@@ -12648,8 +12568,8 @@ export default function DashboardClient() {
       openTillsCash={openTillsCash}
       openTillsTransactionsCount={openTillsTransactionsCount}
       financialsMode={financialsMode}
-      onLoadFinancials={() => setFinancialsMode('full')}
-      onSwitchOnDemand={() => setFinancialsMode('on-demand')}
+      onLoadFinancials={loadFinancialsOnDemand}
+      onSwitchOnDemand={() => { setOnDemandRecords([]); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingAllRecords}
     />;
   }
@@ -12673,8 +12593,8 @@ export default function DashboardClient() {
       isLoading={loadingStudents || (financialsMode === 'full' && loadingRecords) || loadingTills} 
       schoolSettings={schoolSettings} 
       financialsMode={financialsMode}
-      onLoadFinancials={() => setFinancialsMode('full')}
-      onSwitchOnDemand={() => setFinancialsMode('on-demand')}
+      onLoadFinancials={loadFinancialsOnDemand}
+      onSwitchOnDemand={() => { setOnDemandRecords([]); setFinancialsMode('on-demand'); }}
       isLoadingFinancials={loadingAllRecords}
       dashboardSummary={dashboardSummary}
     />;

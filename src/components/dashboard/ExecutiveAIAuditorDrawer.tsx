@@ -186,11 +186,11 @@ export function ExecutiveAIAuditorDrawer({
                   <span className="flex items-center gap-1.5">
                     <AlertTriangle className="h-3.5 w-3.5" /> Finance Alert
                   </span>
-                  {(telemetry.highArrearsCount ?? 0) > 0 && <Badge className="bg-red-950 text-red-300 border-red-800 text-[9px] px-1 py-0">Attention</Badge>}
+                  {(Number(telemetry.highArrearsOverdueSum) || 0) > 0 && <Badge className="bg-red-950 text-red-300 border-red-800 text-[9px] px-1 py-0">Attention</Badge>}
                 </div>
                 <p className="text-[11px] text-slate-300 leading-snug">
-                  {(telemetry.highArrearsCount ?? 0) > 0
-                    ? `${telemetry.highArrearsCount} account${telemetry.highArrearsCount === 1 ? '' : 's'} more than 60 days overdue (GH₵ ${Math.round(Number(telemetry.highArrearsOverdueSum) || 0).toLocaleString()} in total).`
+                  {(Number(telemetry.highArrearsOverdueSum) || 0) > 0
+                    ? `GH₵ ${Math.round(Number(telemetry.highArrearsOverdueSum) || 0).toLocaleString()} is more than 60 days overdue${(telemetry.highArrearsCount ?? 0) > 0 ? ` (${telemetry.highArrearsCount} student${telemetry.highArrearsCount === 1 ? '' : 's'})` : ''}.`
                     : 'No accounts are more than 60 days overdue.'}
                 </p>
                 <button 

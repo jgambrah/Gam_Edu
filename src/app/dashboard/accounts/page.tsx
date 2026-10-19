@@ -49,6 +49,7 @@ import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatem
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { billStudentForAttendance } from '@/lib/billing';
 import { makeTermStamp, termStampOfRecord, currentTermFromProfile, stampFromTermId, compareTermIds } from '@/lib/term';
+import { summaryGrossDebt, summaryCredits, summaryYearPerformance } from '@/lib/finance-summary';
 
 /** termId (+ isArchived:false) for a new bill. academicYear/term are written by the caller as before. */
 const billTermFields = (academicYear?: string, term?: string) => {
@@ -64,6 +65,23 @@ const billTermFields = (academicYear?: string, term?: string) => {
  */
 const isVisibleInLedger = (r: any, viewTermId?: string | null) =>
     viewTermId ? r?.closedInTermId === viewTermId : r?.isArchived !== true;
+
+/** A balance carried into the current term by the rollover (or entered as an opening balance). */
+const isCarriedIntoTerm = (r: any) =>
+    r?.isCarryForward === true || r?.isOpeningBalance === true || r?.category === 'Arrears' ||
+    /brought forward|arrears/i.test(`${r?.title || ''} ${r?.description || ''}`);
+
+/** A bill's date in ms (due date, else creation date); 0 when it has none. */
+const recordDateMs = (r: any): number => {
+    const toMs = (v: any) => {
+        if (!v) return 0;
+        if (typeof v?.toMillis === 'function') return v.toMillis();
+        if (typeof v?.seconds === 'number') return v.seconds * 1000;
+        const t = new Date(v).getTime();
+        return isNaN(t) ? 0 : t;
+    };
+    return Math.max(toMs(r?.dueDate), toMs(r?.createdAt));
+};
 
 /** A payment is stamped with the term of the bill it pays. */
 const paymentTermFields = (bill: any) => {
@@ -3943,11 +3961,15 @@ export default function AccountsPage() {
   // Tier 1: All active unsettled debts/arrears across entire school history (ensures zero debt is lost)
   // Tier 2: All transactions for the selected academic year (bills, payments, receipts, fee streams)
   // -------------------------------------------------------------------------------------------------
-  const unpaidDebtsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school') ? query(
+  // The full ledger loads EVERY bill of the school (archived ones are dropped in memory), so its totals match
+  // the Director dashboard, which is computed from the same set on the server. The old two-query load
+  // (status Unpaid/Overdue + this year's bills) missed older bills marked 'Partially Paid' or 'Pending' that
+  // still had a balance, and every older over-paid bill (parents' credit), so debts and credits came out
+  // lower here than on the Director dashboard.
+  const unpaidDebtsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school' && !viewTermId) ? query(
     collection(firestore, 'financialRecords'),
-    where('schoolId', '==', schoolId),
-    where('status', 'in', ['Unpaid', 'Overdue', 'Pending Reversal'])
-  ) : null, [firestore, schoolId, ledgerMode]);
+    where('schoolId', '==', schoolId)
+  ) : null, [firestore, schoolId, ledgerMode, viewTermId]);
   const { data: unpaidRecords, isLoading: isLoadingUnpaidRecords, forceRefetch: refetchUnpaid } = useCollection<FinancialRecord>(unpaidDebtsQuery);
 
   const yearVariations = useMemo(() => {
@@ -3958,11 +3980,8 @@ export default function AccountsPage() {
     return [yr, withSlash, withSpacesHyphen, withSpacesSlash, effectiveAcademicYear].filter((v, i, a) => Boolean(v) && a.indexOf(v) === i);
   }, [effectiveAcademicYear]);
 
-  const yearRecordsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school' && !viewTermId) ? query(
-    collection(firestore, 'financialRecords'),
-    where('schoolId', '==', schoolId),
-    where('academicYear', 'in', yearVariations)
-  ) : null, [firestore, schoolId, ledgerMode, yearVariations, viewTermId]);
+  // Not needed any more: the query above already loads every bill (kept as a no-op so nothing else changes).
+  const yearRecordsQuery = useMemoFirebase(() => null as any, [firestore, schoolId, ledgerMode, yearVariations, viewTermId]);
   const { data: yearRecords, isLoading: isLoadingYearRecords, forceRefetch: refetchYear } = useCollection<FinancialRecord>(yearRecordsQuery);
 
   // A closed term: exactly the bills its rollover archived (read-only view).
@@ -4100,11 +4119,13 @@ export default function AccountsPage() {
     const fin = (dashboardSummary as any)?.financials || {};
     const aging = (dashboardSummary as any)?.debtAging || {};
 
-    const rawGross = fin.totalOutstanding ?? null;
-    const rawCredits = fin.advancePayments ?? fin.overpayments ?? aging.overpayments ?? null;
-    const rawCollected = fin.totalRevenue ?? fin.totalCollectedThisTerm ?? null;
-    const rawRate = fin.collectionRate ?? null;
-    const rawBilled = fin.totalBilled ?? null;
+    // Read the server summary exactly like the Director and Accountant dashboards (src/lib/finance-summary).
+    const yp = summaryYearPerformance(dashboardSummary, effectiveAcademicYear);
+    const rawGross = summaryGrossDebt(dashboardSummary);
+    const rawCredits = (aging.overpayments ?? fin.advancePayments ?? fin.overpayments ?? null) !== null ? summaryCredits(dashboardSummary) : null;
+    const rawCollected = yp ? yp.paid : (fin.totalRevenue ?? fin.totalCollectedThisTerm ?? null);
+    const rawRate = yp ? yp.rate : (fin.collectionRate ?? null);
+    const rawBilled = yp ? yp.billed : (fin.totalBilled ?? null);
 
     const hasData = rawGross !== null || rawCollected !== null || rawRate !== null;
 
@@ -4135,7 +4156,7 @@ export default function AccountsPage() {
       totalBilled: rawBilled !== null ? Number(rawBilled) : (totalGross + totalColl),
       streamDebts
     };
-  }, [dashboardSummary]);
+  }, [dashboardSummary, effectiveAcademicYear]);
 
   const waiverRequestsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'waiverRequests'), where('schoolId', '==', schoolId), where('status', '==', 'Pending')) : null, [firestore, schoolId]);
   const { data: pendingWaivers, forceRefetch: refetchWaivers } = useCollection<any>(waiverRequestsQuery);
@@ -4187,7 +4208,8 @@ export default function AccountsPage() {
   
   const students = useMemo(() => {
       if (!rawStudents) return [];
-      return rawStudents.filter(s => s.enrollmentStatus === 'Active' || !s.enrollmentStatus);
+      // Same rule as the Director dashboard summary: active (or no status) and not archived.
+      return rawStudents.filter(s => (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) && (s as any).isArchived !== true);
   }, [rawStudents]);
 
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
@@ -4368,6 +4390,11 @@ export default function AccountsPage() {
 
   const isLoading = isLoadingRecords || isLoadingStudents;
 
+  const activeTermStamp = useMemo(
+    () => currentTermFromProfile(schoolProfile) || currentTermFromProfile(schoolSettings),
+    [schoolProfile, schoolSettings]
+  );
+
   const advisoryActiveRecords = useMemo(() => {
     if (!isLedgerLoaded || !records || !students) return [];
     const activeStudentIds = new Set(
@@ -4375,37 +4402,66 @@ export default function AccountsPage() {
         .flatMap(s => [s.uid, s.id, s.studentId, (s as any).admissionNo, (s as any).admissionNumber])
         .filter(Boolean)
     );
-    const currentTermId = (schoolSettings?.currentTerm || schoolSettings?.term || '').toString().toLowerCase();
+    // "Current Term Only" compares canonical term ids (e.g. "2026-2027_T1"). The old text match compared
+    // "first term" with ids like "2026-2027_t1" (never equal, so stamped bills vanished) and matched every
+    // year's "First Term" (so last year's first-term bills were counted as this term's).
+    const termStartMs = (() => {
+      const raw = schoolProfile?.termStartDate || schoolSettings?.termStartDate;
+      const t = raw ? new Date(`${raw}T00:00:00`).getTime() : NaN;
+      return isNaN(t) ? 0 : t;
+    })();
 
     return records.filter(r => {
       if (r.status === 'Pending Reversal') return false;
       if (activeStudentIds.size > 0 && r.studentId && !activeStudentIds.has(r.studentId)) return false;
-      if (advisoryScope === 'current-term' && currentTermId) {
-        // Always preserve Opening Balance / Arrears Brought Forward records in current-term advisory scope
-        if (r.category === 'Arrears' || r.isOpeningBalance === true || (r.title || '').toLowerCase().includes('arrears')) {
-          return true;
-        }
-        const rTermId = ((r as any).termId || '').toString().toLowerCase();
-        const rTerm = (r.term || '').toString().toLowerCase();
-        if (rTermId && !rTermId.includes(currentTermId) && !currentTermId.includes(rTermId)) return false;
-        if (rTerm && !rTerm.includes(currentTermId) && !currentTermId.includes(rTerm)) return false;
+      if (advisoryScope === 'current-term' && activeTermStamp) {
+        // Balances carried into this term (Arrears / Credit Brought Forward, opening balances) belong to it.
+        if (isCarriedIntoTerm(r)) return true;
+        const st = termStampOfRecord(r);
+        if (st) return st.termId === activeTermStamp.termId;
+        // No term on the bill (older daily charges): use its date when the term start date is known.
+        if (!termStartMs) return true;
+        return recordDateMs(r) >= termStartMs;
       }
       return true;
     });
-  }, [isLedgerLoaded, records, students, advisoryScope, schoolSettings]);
+  }, [isLedgerLoaded, records, students, advisoryScope, schoolSettings, schoolProfile, activeTermStamp]);
+
+  // Collection performance (revenue, billed, collection rate, per-fee rates) is measured on ONE consistent set
+  // of bills: this term's (Current Term Only) or this academic year's (All-Time). Open bills from earlier
+  // years are still in the debt figures, but not in the rate: their fully-paid siblings are not loaded, so
+  // including them made the rate look worse than it is.
+  const performanceRecords = useMemo(() => {
+    if (advisoryScope === 'current-term') return advisoryActiveRecords;
+    const year = normalizeAcademicYear(effectiveAcademicYear) || activeTermStamp?.academicYear || normalizeAcademicYear(activeAcademicYear);
+    if (!year) return advisoryActiveRecords;
+    return advisoryActiveRecords.filter(r => {
+      const st = termStampOfRecord(r);
+      const ry = st?.academicYear || normalizeAcademicYear((r as any).academicYear);
+      return ry === year;
+    });
+  }, [advisoryActiveRecords, advisoryScope, activeTermStamp, activeAcademicYear, effectiveAcademicYear]);
 
   const dashboardStats = useMemo(() => {
     if (isLedgerLoaded && advisoryActiveRecords.length > 0) {
-      let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0;
-      let advancePayments = 0;
+      let totalPaid = 0, outstandingTuition = 0, outstandingCanteen = 0, outstandingTransport = 0, otherDebt = 0, totalBilled = 0, totalWaived = 0;
+      let advancePayments = 0, earlierYearsDebt = 0;
+      const inPerformance = new Set(performanceRecords);
 
+      // Revenue and billing come from the performance set (this term / this academic year) ...
+      for (const record of performanceRecords) {
+          totalPaid += Number(record.amountPaid) || 0;
+          totalBilled += Number(record.billedAmount) || 0;
+          totalWaived += Number(record.waiverAmount) || 0;
+      }
+
+      // ... debts and credits from every open bill in scope (including older years' unpaid bills).
       for (const record of advisoryActiveRecords) {
           const billed = Number(record.billedAmount) || 0;
           const paid = Number(record.amountPaid) || 0;
           const waiver = Number(record.waiverAmount) || 0;
           const balance = billed - paid - waiver;
-          totalPaid += paid;
-          totalBilled += billed;
+          if (balance > 0.01 && !inPerformance.has(record)) earlierYearsDebt += balance;
           
           if (balance > 0.01) {
               const type = (record.type || '').toLowerCase();
@@ -4429,7 +4485,9 @@ export default function AccountsPage() {
           outstandingCanteen, 
           outstandingTransport, 
           otherDebt,
-          totalBilled
+          totalBilled,
+          totalWaived,
+          earlierYearsDebt
       };
     }
 
@@ -4443,7 +4501,9 @@ export default function AccountsPage() {
         outstandingCanteen: preAggregatedBilling.streamDebts.canteen || 0, 
         outstandingTransport: preAggregatedBilling.streamDebts.transport || 0, 
         otherDebt: preAggregatedBilling.streamDebts.other || 0, 
-        totalBilled: preAggregatedBilling.totalBilled 
+        totalBilled: preAggregatedBilling.totalBilled,
+        totalWaived: 0,
+        earlierYearsDebt: 0
       };
     }
 
@@ -4456,9 +4516,11 @@ export default function AccountsPage() {
       outstandingCanteen: 0, 
       outstandingTransport: 0, 
       otherDebt: 0, 
-      totalBilled: 0 
+      totalBilled: 0,
+      totalWaived: 0,
+      earlierYearsDebt: 0
     };
-  }, [isLedgerLoaded, advisoryActiveRecords, preAggregatedBilling]);
+  }, [isLedgerLoaded, advisoryActiveRecords, performanceRecords, preAggregatedBilling]);
 
   const hasDisplayStats = isLedgerLoaded || preAggregatedBilling.hasData;
 
@@ -4515,6 +4577,7 @@ export default function AccountsPage() {
       studentsByClass[s.classId].push(s);
     });
 
+    const performanceSet = new Set(performanceRecords);
     const recordsByStudent: Record<string, FinancialRecord[]> = {};
     advisoryActiveRecords.forEach(r => {
       if (!recordsByStudent[r.studentId]) recordsByStudent[r.studentId] = [];
@@ -4526,6 +4589,7 @@ export default function AccountsPage() {
       let totalBilled = 0;
       let totalPaid = 0;
       let totalWaivers = 0;
+      let owed = 0;
 
       classStudents.forEach(s => {
         const sKeys = [s.id, s.uid, s.studentId, (s as any).admissionNo, (s as any).admissionNumber].filter(Boolean);
@@ -4535,17 +4599,21 @@ export default function AccountsPage() {
             const recKey = r.id || `${r.studentId}-${r.billedAmount}-${(r as any).date || (r as any).dueDate || ''}`;
             if (!seenIds.has(recKey)) {
               seenIds.add(recKey);
-              totalBilled += Number(r.billedAmount) || 0;
-              totalPaid += Number(r.amountPaid) || 0;
-              totalWaivers += Number(r.waiverAmount) || 0;
+              const bal = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+              if (bal > 0.01) owed += bal; // every open bill, like the debt cards
+              if (performanceSet.has(r)) { // the rate uses the same bills as the overall gauge
+                totalBilled += Number(r.billedAmount) || 0;
+                totalPaid += Number(r.amountPaid) || 0;
+                totalWaivers += Number(r.waiverAmount) || 0;
+              }
             }
           });
         });
       });
 
       const netBilled = totalBilled - totalWaivers;
-      const outstanding = netBilled - totalPaid;
-      const rate = netBilled > 0 ? (totalPaid / netBilled) * 100 : 100;
+      const outstanding = owed;
+      const rate = netBilled > 0 ? Math.min(100, (totalPaid / netBilled) * 100) : (owed > 0.01 ? 0 : 100);
 
       return {
         classId: c.id,
@@ -4558,7 +4626,7 @@ export default function AccountsPage() {
         rate
       };
     }).sort((a, b) => b.rate - a.rate); // default sort by collection rate descending
-  }, [advisoryActiveRecords, students, classes]);
+  }, [advisoryActiveRecords, performanceRecords, students, classes]);
 
   const studentFinancials = useMemo(() => {
     if (!students) return [];
@@ -4691,8 +4759,9 @@ export default function AccountsPage() {
 
   const collectionRate = useMemo(() => {
     if (isLedgerLoaded) {
-      const billed = dashboardStats.totalBilled;
-      return billed > 0 ? (dashboardStats.totalRevenue / billed) * 100 : 100;
+      // Same formula as the per-fee rates: paid ÷ (billed − waivers). Waived amounts are not collectible.
+      const collectible = dashboardStats.totalBilled - (dashboardStats.totalWaived || 0);
+      return collectible > 0 ? Math.min(100, (dashboardStats.totalRevenue / collectible) * 100) : (dashboardStats.totalOutstanding > 0.01 ? 0 : 100);
     }
     if (preAggregatedBilling.hasData && preAggregatedBilling.overallCollectionRate !== null) {
       return preAggregatedBilling.overallCollectionRate;
@@ -4703,40 +4772,49 @@ export default function AccountsPage() {
   const categoryCollections = useMemo(() => {
     if (!isLedgerLoaded || !advisoryActiveRecords.length) return [];
     
-    const categories: Record<string, { billed: number, paid: number, waived: number }> = {
-        'Tuition': { billed: 0, paid: 0, waived: 0 },
-        'Canteen': { billed: 0, paid: 0, waived: 0 },
-        'Transport': { billed: 0, paid: 0, waived: 0 },
-        'PTA Levy': { billed: 0, paid: 0, waived: 0 },
-        'Other': { billed: 0, paid: 0, waived: 0 }
+    const categories: Record<string, { billed: number, paid: number, waived: number, owed: number }> = {
+        'Tuition': { billed: 0, paid: 0, waived: 0, owed: 0 },
+        'Canteen': { billed: 0, paid: 0, waived: 0, owed: 0 },
+        'Transport': { billed: 0, paid: 0, waived: 0, owed: 0 },
+        'PTA Levy': { billed: 0, paid: 0, waived: 0, owed: 0 },
+        'Other': { billed: 0, paid: 0, waived: 0, owed: 0 }
+    };
+    const catOf = (r: any) => {
+        const type = (r.type || '').toLowerCase();
+        if (type.includes('tuition')) return 'Tuition';
+        if (type.includes('canteen')) return 'Canteen';
+        if (type.includes('transport')) return 'Transport';
+        if (type.includes('pta')) return 'PTA Levy';
+        return 'Other';
     };
     
-    advisoryActiveRecords.forEach(r => {
-        const type = (r.type || '').toLowerCase();
-        let cat = 'Other';
-        if (type.includes('tuition')) cat = 'Tuition';
-        else if (type.includes('canteen')) cat = 'Canteen';
-        else if (type.includes('transport')) cat = 'Transport';
-        else if (type.includes('pta')) cat = 'PTA Levy';
-        
+    // Rates: the same bills as the overall gauge.
+    performanceRecords.forEach(r => {
+        const cat = catOf(r);
         categories[cat].billed += Number(r.billedAmount) || 0;
         categories[cat].paid += Number(r.amountPaid) || 0;
         categories[cat].waived += Number(r.waiverAmount) || 0;
     });
+    // Amount owed: the same figure as the debt cards (each bill's unpaid balance; overpayments are shown
+    // separately as Advance Credits instead of being netted against one fee's debt).
+    advisoryActiveRecords.forEach(r => {
+        const bal = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+        if (bal > 0.01) categories[catOf(r)].owed += bal;
+    });
     
     return Object.entries(categories).map(([name, stats]) => {
         const netBilled = stats.billed - stats.waived;
-        const rate = netBilled > 0 ? (stats.paid / netBilled) * 100 : 100;
+        const rate = netBilled > 0 ? Math.min(100, (stats.paid / netBilled) * 100) : (stats.owed > 0.01 ? 0 : 100);
         return {
             name,
             billed: stats.billed,
             paid: stats.paid,
             waived: stats.waived,
-            outstanding: Math.max(0, netBilled - stats.paid),
+            outstanding: stats.owed,
             rate
         };
     });
-  }, [isLedgerLoaded, advisoryActiveRecords]);
+  }, [isLedgerLoaded, advisoryActiveRecords, performanceRecords]);
 
   const effectiveCategoryCollections = useMemo(() => {
     if (isLedgerLoaded && categoryCollections.length > 0) {
@@ -5259,6 +5337,11 @@ export default function AccountsPage() {
                                             <div className="text-lg font-black text-rose-600">
                                                 {hasDisplayStats ? `GH₵${dashboardStats.totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
+                                            {hasDisplayStats && (dashboardStats.earlierYearsDebt || 0) > 0.01 && (
+                                                <p className="text-[9px] text-slate-500 font-medium mt-0.5">
+                                                    incl. GH₵{(dashboardStats.earlierYearsDebt || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} from earlier years
+                                                </p>
+                                            )}
                                         </CardContent>
                                     </Card>
 
@@ -5296,7 +5379,7 @@ export default function AccountsPage() {
                                         <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <div>
                                                 <CardTitle className="text-[10px] font-bold text-muted-foreground uppercase">Total Revenue</CardTitle>
-                                                <p className="text-[9px] text-slate-400 font-medium">Paid to date ({advisoryScope === 'current-term' ? 'Term' : 'All-time'})</p>
+                                                <p className="text-[9px] text-slate-400 font-medium">Collected on {advisoryScope === 'current-term' ? "this term's" : "this academic year's"} bills</p>
                                             </div>
                                             <DollarSign className="h-4 w-4 text-indigo-500" />
                                         </CardHeader>

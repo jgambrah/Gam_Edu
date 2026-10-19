@@ -110,7 +110,7 @@ export function buildExecutiveTelemetry(options: BuildTelemetryOptions): Executi
     students = [],
     activeStudentsCount,
     todayPresentCount,
-    attendanceRate = 96.4,
+    attendanceRate = 0,
     academicTidbits,
     atRiskStudentsList = [],
   } = options;
@@ -157,13 +157,17 @@ export function buildExecutiveTelemetry(options: BuildTelemetryOptions): Executi
   const age90Bucket = resolvedAging?.age90 ?? unifiedMetrics?.debtAgingStats?.age90 ?? 0;
   const over90Bucket = resolvedAging?.over90 ?? unifiedMetrics?.debtAgingStats?.over90 ?? 0;
 
-  const overdue60PlusCount = resolvedAging?.accountCounts?.overdue60Plus ?? unifiedMetrics?.debtAgingStats?.accountCounts?.overdue60Plus ?? 0;
-  const overdue60PlusSum = age60Bucket + age90Bucket + over90Bucket;
+  // Estimated counts (a split of unpaid bills, not students) are never reported as a number of accounts.
+  const overdue60PlusCount = resolvedAging?.accountCounts?.__estimated
+    ? 0
+    : (resolvedAging?.accountCounts?.overdue60Plus ?? unifiedMetrics?.debtAgingStats?.accountCounts?.overdue60Plus ?? 0);
+  const overdue60PlusSum = age90Bucket + over90Bucket; // age90 = more than 60 days overdue
 
   const revenueByType = unifiedMetrics?.revenueByType || financials?.revenueByType || [];
 
   // 3. Staff & Faculty Attendance Resolution (Single Authoritative Source)
-  const totalStaffCount = staff.length || 25;
+  // Real figures only: no invented staff numbers, punctuality or academic results.
+  const totalStaffCount = staff.length || 0;
   const absentStaffList = Array.isArray(todayTeacherAttendance?.absent) ? todayTeacherAttendance.absent : [];
   
   // Authoritative pending checkins: use actual absent staff list if available
@@ -171,13 +175,15 @@ export function buildExecutiveTelemetry(options: BuildTelemetryOptions): Executi
     ? absentStaffList.length
     : (todayTeacherAttendance && Array.isArray(todayTeacherAttendance.present) && todayTeacherAttendance.present.length > 0
         ? Math.max(0, totalStaffCount - todayTeacherAttendance.present.length)
-        : Math.round(totalStaffCount * 0.1));
+        : 0);
 
   const presentStaffCount = Array.isArray(todayTeacherAttendance?.present)
     ? todayTeacherAttendance.present.length
     : Math.max(0, totalStaffCount - pendingCheckins);
 
-  const staffPunctuality = 96.4;
+  const staffPunctuality = totalStaffCount > 0 && Array.isArray(todayTeacherAttendance?.present)
+    ? Math.round((todayTeacherAttendance.present.length / totalStaffCount) * 1000) / 10
+    : 0;
 
   // 4. Students & Enrollment Resolution
   const totalActiveStudents = activeStudentsCount !== undefined && activeStudentsCount > 0
@@ -190,12 +196,13 @@ export function buildExecutiveTelemetry(options: BuildTelemetryOptions): Executi
 
   const dynamicAttendanceRate = totalActiveStudents > 0
     ? Number(((studentPresentCount / totalActiveStudents) * 100).toFixed(1))
-    : Number(attendanceRate || 96.4);
+    : Number(attendanceRate || 0);
 
   // 5. Academic Metrics Resolution
-  const avgScore = Number(academicTidbits?.avgScore ?? 81);
-  const passingRate = Number(academicTidbits?.passingRate ?? 88);
-  const topSubject = String(academicTidbits?.topSubject ?? 'General Academics');
+  const avgScore = Number(academicTidbits?.avgScore ?? 0);
+  const passingRate = Number(academicTidbits?.passingRate ?? 0);
+  const topSubject = String(academicTidbits?.topSubject ?? '');
+  const topSubjectScore = Number(academicTidbits?.topSubjectScore ?? academicTidbits?.topScore ?? 0);
   const atRiskCount = atRiskStudentsList.length;
 
   return {
@@ -236,10 +243,10 @@ export function buildExecutiveTelemetry(options: BuildTelemetryOptions): Executi
       passingRate,
       topSubject,
       atRiskCount,
-      highestAcademicGapGrade: 'Grade 4 Mathematics',
-      highestAcademicGapValue: '-11%',
-      topPerformingSubject: topSubject.includes('Science') ? topSubject : 'Grade 6 Science',
-      topPerformingScore: 94.2,
+      highestAcademicGapGrade: String(academicTidbits?.weakestSubject ?? academicTidbits?.lowestSubject ?? ''),
+      highestAcademicGapValue: academicTidbits?.weakestScore != null ? `${academicTidbits.weakestScore}%` : '',
+      topPerformingSubject: topSubject,
+      topPerformingScore: topSubjectScore,
       atRiskStudents: atRiskStudentsList,
     },
   };

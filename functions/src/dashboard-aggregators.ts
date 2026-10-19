@@ -1,6 +1,7 @@
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { termStampOfRecord, currentTermFromProfile, normalizeYear } from './term-utils';
 
 if (!getApps().length) initializeApp();
 const db = getFirestore();
@@ -77,8 +78,8 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     const s = sDoc.data();
     if (s.isArchived === true) return;
     if (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) {
-      activeStudentIds.add(sDoc.id);
-      if (s.uid) activeStudentIds.add(s.uid);
+      // Same identifiers the Accounts page matches bills on (some older bills use the admission number).
+      [sDoc.id, s.uid, s.studentId, s.admissionNo, s.admissionNumber].forEach(k => { if (k) activeStudentIds.add(String(k)); });
     }
   });
 
@@ -150,13 +151,25 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
   let outstandingTransport = 0;
   let otherDebt = 0;
 
-  const categoryMap: Record<string, { billed: number; paid: number; waived: number }> = {
-    'Tuition': { billed: 0, paid: 0, waived: 0 },
-    'Canteen': { billed: 0, paid: 0, waived: 0 },
-    'Transport': { billed: 0, paid: 0, waived: 0 },
-    'PTA Levy': { billed: 0, paid: 0, waived: 0 },
-    'Other': { billed: 0, paid: 0, waived: 0 },
+  const categoryMap: Record<string, { billed: number; paid: number; waived: number; owed: number }> = {
+    'Tuition': { billed: 0, paid: 0, waived: 0, owed: 0 },
+    'Canteen': { billed: 0, paid: 0, waived: 0, owed: 0 },
+    'Transport': { billed: 0, paid: 0, waived: 0, owed: 0 },
+    'PTA Levy': { billed: 0, paid: 0, waived: 0, owed: 0 },
+    'Other': { billed: 0, paid: 0, waived: 0, owed: 0 },
   };
+  let billPaidTotal = 0;
+  let billWaivedTotal = 0;
+  // Billing per academic year ({ "2026-2027": { billed, paid, waived } }). The dashboards measure collection
+  // performance on the CURRENT academic year's bills, exactly like Accounts > Student Billing; older years'
+  // unpaid bills still count in the debt figures.
+  const yearBills: Record<string, { billed: number; paid: number; waived: number }> = {};
+  const [schoolProfileSnap, schoolSettingsSnap] = await Promise.all([
+    db.collection('schools').doc(schoolId).get(),
+    db.collection('schoolSettings').doc(schoolId).get(),
+  ]);
+  const currentStamp = currentTermFromProfile(schoolProfileSnap.data()) || currentTermFromProfile(schoolSettingsSnap.data());
+  const currentAcademicYear = currentStamp?.academicYear || '';
 
   const todayMs = todayStartMs();
   const monthStart = new Date();
@@ -188,7 +201,15 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
       categoryMap[catKey].billed += billed;
       categoryMap[catKey].paid += paid;
       categoryMap[catKey].waived += waiver;
+      if (balance > 0.01) categoryMap[catKey].owed += balance;
     }
+    billPaidTotal += paid;
+    billWaivedTotal += waiver;
+    const yk = recordYearKey(r);
+    if (!yearBills[yk]) yearBills[yk] = { billed: 0, paid: 0, waived: 0 };
+    yearBills[yk].billed += billed;
+    yearBills[yk].paid += paid;
+    yearBills[yk].waived += waiver;
 
     if (balance < 0) {
       overpayments += Math.abs(balance);
@@ -204,20 +225,16 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     else if (typeLower.includes('transport')) outstandingTransport += balance;
     else otherDebt += balance;
 
-    // Debt aging buckets
-    const dueTs = r.dueDate as FirebaseFirestore.Timestamp | undefined;
-    const dueMs = dueTs?.toMillis?.() ?? (r.dueDate ? new Date(r.dueDate).getTime() : todayMs);
-    const diffTime = today.getTime() - dueMs;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
+    // Debt aging buckets (shared rule with the incremental trigger and the Accounts page)
     const accountId = String(r.studentId || r.studentUid || r.accountId || r.studentName || '').trim();
-    if (diffDays <= 0) {
+    const bucket = agingBucket(r);
+    if (bucket === 'current') {
       current += balance;
       if (accountId) currentAccounts.add(accountId);
-    } else if (diffDays <= 30) {
+    } else if (bucket === 'age30') {
       age30 += balance;
       if (accountId) age30Accounts.add(accountId);
-    } else if (diffDays <= 60) {
+    } else if (bucket === 'age60') {
       age60 += balance;
       if (accountId) age60Accounts.add(accountId);
     } else {
@@ -289,9 +306,18 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     }
   });
 
-  const collectionRate = totalBilled > 0 
-    ? Math.round((totalRevenue / totalBilled) * 100) 
-    : 0;
+  // Collection rate = paid on bills ÷ (billed − waivers), the same formula as the per-fee rates and the
+  // Accounts page. (It used to divide ALL money received — including till sales that are not bill payments —
+  // by gross billing, which ignored waivers and mixed in non-bill income.)
+  const rateOf = (billed: number, paid: number, waived: number) =>
+    billed - waived > 0 ? Math.min(100, Math.round((paid / (billed - waived)) * 1000) / 10) : 0;
+  const cy = currentAcademicYear ? yearBills[currentAcademicYear] : undefined;
+  // This academic year's rate (same as the Accounts page); all-time rate if the year is not set.
+  const collectionRate = cy ? rateOf(cy.billed, cy.paid, cy.waived) : rateOf(totalBilled, billPaidTotal, billWaivedTotal);
+  const collectionRateAllTime = rateOf(totalBilled, billPaidTotal, billWaivedTotal);
+  const round2y = (n: number) => Math.round(n * 100) / 100;
+  const yearBillsOut = Object.fromEntries(Object.entries(yearBills).map(([k, v]) =>
+    [k, { billed: round2y(v.billed), paid: round2y(v.paid), waived: round2y(v.waived) }]));
 
   await SUMMARY(schoolId).set({
     schoolId,
@@ -305,6 +331,9 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
       totalBilled,
       totalRevenue,
       collectionRate,
+      collectionRateAllTime,
+      currentAcademicYear,
+      yearBills: yearBillsOut,
       arrearsCount,
       lastPaymentAmount,
       lastPaymentAt,
@@ -322,23 +351,27 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
       },
       categoryCollections: Object.entries(categoryMap).map(([name, catStats]) => {
         const netBilled = catStats.billed - catStats.waived;
-        const rate = netBilled > 0 ? (catStats.paid / netBilled) * 100 : 100;
+        const rate = netBilled > 0 ? Math.min(100, (catStats.paid / netBilled) * 100) : (catStats.owed > 0.01 ? 0 : 100);
         return {
           name,
           billed: catStats.billed,
           paid: catStats.paid,
           waived: catStats.waived,
-          outstanding: Math.max(0, netBilled - catStats.paid),
+          // Unpaid balances of this fee (matches streamDebts); overpayments are reported as advance credits.
+          outstanding: catStats.owed,
           rate,
         };
       }),
     },
     debtAging: {
+      // Buckets (same as the Accounts page): current = not yet due, age30 = 1–30 days overdue,
+      // age60 = 31–60, age90 = more than 60 days overdue.
       current,
       age30,
       age60,
       age90,
       overpayments,
+      rebuiltAt: FieldValue.serverTimestamp(),
       accountCounts: {
         current: currentAccounts.size,
         age30: age30Accounts.size,
@@ -347,7 +380,7 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
         age90: age90Accounts.size,
         over90: 0,
         totalOverdue: new Set([...age30Accounts, ...age60Accounts, ...age90Accounts]).size,
-        overdue60Plus: new Set([...age60Accounts, ...age90Accounts]).size,
+        overdue60Plus: age90Accounts.size, // age90 = more than 60 days overdue
       }
     }
   }, { merge: true });
@@ -456,6 +489,12 @@ export const onAttendanceWrite = onDocumentWritten(
   }
 );
 
+/** Academic-year key of a bill (term stamp, else its academicYear field); 'unknown' when it has none. */
+function recordYearKey(r: any): string {
+  const st = termStampOfRecord(r);
+  return st?.academicYear || normalizeYear(r?.academicYear) || 'unknown';
+}
+
 // ── Incremental financial helpers ────────────────────────────────────────────────
 // Each bill / payment write applies only the DIFFERENCE between its before and after state using
 // FieldValue.increment — zero reads per write. The nightly rebuild (term-safety-net) recomputes
@@ -470,11 +509,44 @@ function debtKey(r: any): 'tuition' | 'canteen' | 'transport' | 'other' {
   return 'other';
 }
 
-function recordContribution(r: any): { billed: number; outstanding: number; key: string } {
-  if (!r || r.isArchived === true || r.status === 'Pending Reversal') return { billed: 0, outstanding: 0, key: 'other' };
+function anyMs(v: any): number {
+  if (!v) return 0;
+  if (typeof v?.toMillis === 'function') return v.toMillis();
+  if (typeof v?.seconds === 'number') return v.seconds * 1000;
+  if (typeof v?._seconds === 'number') return v._seconds * 1000;
+  const t = new Date(v).getTime();
+  return isNaN(t) ? 0 : t;
+}
+
+/** Same rule as the Accounts page: due date, else bill date, else creation date; none = not yet due. */
+function agingBucket(r: any): 'current' | 'age30' | 'age60' | 'age90' {
+  const due = anyMs(r?.dueDate) || anyMs(r?.date) || anyMs(r?.createdAt);
+  if (!due) return 'current';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const d = new Date(due);
+  d.setHours(0, 0, 0, 0);
+  const days = Math.round((today.getTime() - d.getTime()) / (1000 * 60 * 60 * 24));
+  if (days <= 0) return 'current';
+  if (days <= 30) return 'age30';
+  if (days <= 60) return 'age60';
+  return 'age90';
+}
+
+function recordContribution(r: any): { billed: number; outstanding: number; overpaid: number; key: string; bucket: string; paid: number; waived: number; year: string } {
+  if (!r || r.isArchived === true || r.status === 'Pending Reversal') return { billed: 0, outstanding: 0, overpaid: 0, key: 'other', bucket: 'current', paid: 0, waived: 0, year: 'unknown' };
   const billed = Number(r.billedAmount ?? r.amount ?? 0) || 0;
   const balance = billed - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
-  return { billed, outstanding: balance > 0.01 ? balance : 0, key: debtKey(r) };
+  return {
+    billed,
+    outstanding: balance > 0.01 ? balance : 0,
+    overpaid: balance < 0 ? -balance : 0,
+    key: debtKey(r),
+    bucket: agingBucket(r),
+    paid: Number(r.amountPaid) || 0,
+    waived: Number(r.waiverAmount) || 0,
+    year: recordYearKey(r),
+  };
 }
 
 function streamKey(p: any): 'tuition' | 'canteen' | 'transport' | 'auxiliary' {
@@ -511,7 +583,17 @@ export const onFinancialRecordWrite = onDocumentWritten(
     if (a.outstanding) streamDebts[a.key] = round2((streamDebts[a.key] || 0) + a.outstanding);
     const debtEntries = Object.entries(streamDebts).filter(([, v]) => Math.abs(v) > 0.001);
 
-    if (Math.abs(billedDelta) < 0.001 && Math.abs(outstandingDelta) < 0.001 && debtEntries.length === 0) return;
+    // Keep the aging buckets and credit total in step too, so the Director dashboard matches the Accounts
+    // page during the day (the nightly rebuild re-buckets bills as they age).
+    const aging: Record<string, number> = {};
+    if (b.outstanding) aging[b.bucket] = round2((aging[b.bucket] || 0) - b.outstanding);
+    if (a.outstanding) aging[a.bucket] = round2((aging[a.bucket] || 0) + a.outstanding);
+    const overpaidDelta = round2(a.overpaid - b.overpaid);
+    const agingEntries = Object.entries(aging).filter(([, v]) => Math.abs(v) > 0.001);
+
+    const paidOrWaivedChanged = Math.abs(a.paid - b.paid) > 0.001 || Math.abs(a.waived - b.waived) > 0.001 || a.year !== b.year;
+    if (Math.abs(billedDelta) < 0.001 && Math.abs(outstandingDelta) < 0.001 && debtEntries.length === 0
+      && agingEntries.length === 0 && Math.abs(overpaidDelta) < 0.001 && !paidOrWaivedChanged) return;
 
     const financials: Record<string, any> = {
       totalBilled: FieldValue.increment(billedDelta),
@@ -520,11 +602,32 @@ export const onFinancialRecordWrite = onDocumentWritten(
     if (debtEntries.length) {
       financials.streamDebts = Object.fromEntries(debtEntries.map(([k, v]) => [k, FieldValue.increment(v)]));
     }
+    const debtAging: Record<string, any> = Object.fromEntries(agingEntries.map(([k, v]) => [k, FieldValue.increment(v)]));
+    // Per-year billing totals (used for the collection rate), keyed by each bill's own academic year.
+    const yb: Record<string, Record<string, number>> = {};
+    const addYear = (c: typeof a, sign: number) => {
+      if (!c.billed && !c.paid && !c.waived) return;
+      const y = (yb[c.year] = yb[c.year] || { billed: 0, paid: 0, waived: 0 });
+      y.billed = round2(y.billed + sign * c.billed);
+      y.paid = round2(y.paid + sign * c.paid);
+      y.waived = round2(y.waived + sign * c.waived);
+    };
+    addYear(b, -1);
+    addYear(a, 1);
+    const yearBillsInc: Record<string, any> = {};
+    Object.entries(yb).forEach(([year, v]) => {
+      const inc: Record<string, any> = {};
+      (['billed', 'paid', 'waived'] as const).forEach(f => { if (Math.abs(v[f]) > 0.001) inc[f] = FieldValue.increment(v[f]); });
+      if (Object.keys(inc).length) yearBillsInc[year] = inc;
+    });
+    if (Object.keys(yearBillsInc).length) financials.yearBills = yearBillsInc;
+    if (Math.abs(overpaidDelta) >= 0.001) debtAging.overpayments = FieldValue.increment(overpaidDelta);
 
     await SUMMARY(schoolId).set({
       schoolId,
       lastUpdated: FieldValue.serverTimestamp(),
       financials,
+      ...(Object.keys(debtAging).length ? { debtAging } : {}),
     }, { merge: true });
   }
 );

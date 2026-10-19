@@ -21,6 +21,8 @@ import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytic
 import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
 import { ExecutiveAIAuditorDrawer } from './ExecutiveAIAuditorDrawer';
 import { answerExecutiveQuestionAction } from '@/app/actions/insights-ai';
+import { summaryYearPerformance } from '@/lib/finance-summary';
+import { currentTermFromProfile } from '@/lib/term';
 
 export function ExecutiveDirectorCockpit({
   profile,
@@ -179,9 +181,11 @@ export function ExecutiveDirectorCockpit({
 
     if (dashboardSummary?.financials) {
       const f = dashboardSummary.financials;
-      const totalBilled = f.totalBilled || unifiedMetrics.totalBilled || 0;
-      const totalRevenue = f.totalRevenue || f.totalCollectedThisTerm || unifiedMetrics.collectedThisTerm || unifiedMetrics.totalRevenue || 0;
-      const collectionRate = f.collectionRate !== undefined ? f.collectionRate : (totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0);
+      // This academic year's bills, the same basis as Accounts > Student Billing and the Accountant dashboard.
+      const yp = summaryYearPerformance(dashboardSummary, currentTermFromProfile(schoolProfile)?.academicYear);
+      const totalBilled = yp ? yp.billed : (f.totalBilled || unifiedMetrics.totalBilled || 0);
+      const totalRevenue = yp ? yp.paid : (f.totalRevenue || f.totalCollectedThisTerm || unifiedMetrics.collectedThisTerm || unifiedMetrics.totalRevenue || 0);
+      const collectionRate = yp ? yp.rate : (f.collectionRate !== undefined ? f.collectionRate : (totalBilled > 0 ? Math.round((totalRevenue / totalBilled) * 100) : 0));
       return {
         totalBilled,
         totalRevenue,
@@ -195,7 +199,7 @@ export function ExecutiveDirectorCockpit({
       collectionRate: unifiedMetrics.collectionRate,
       collectedToday: unifiedMetrics.collectedToday,
     };
-  }, [dashboardSummary, unifiedMetrics, todayMidnight]);
+  }, [dashboardSummary, unifiedMetrics, todayMidnight, schoolProfile]);
 
   const todayCashCollected = useMemo(() => {
     const tillCash = Number(openTillsCash) || 0;
@@ -237,10 +241,10 @@ export function ExecutiveDirectorCockpit({
     const targetItems = rawRoster.filter((item: any) => {
       const days = Number(item.daysOverdue ?? 0);
       if (!selectedAgingCategory) return days > 60;
-      if (selectedAgingCategory === '< 30 Days') return days <= 30;
-      if (selectedAgingCategory === '30 - 60 Days') return days > 30 && days <= 60;
-      if (selectedAgingCategory === '60 - 90 Days') return days > 60 && days <= 90;
-      if (selectedAgingCategory === '> 90 Days') return days > 90;
+      if (selectedAgingCategory === 'Not yet due') return days <= 0;
+      if (selectedAgingCategory === '1 - 30 Days') return days > 0 && days <= 30;
+      if (selectedAgingCategory === '31 - 60 Days') return days > 30 && days <= 60;
+      if (selectedAgingCategory === 'Over 60 Days') return days > 60;
       return true;
     });
 
@@ -345,7 +349,9 @@ export function ExecutiveDirectorCockpit({
               { key: 'over90', val: da.over90 || 0 },
             ].filter(b => b.val > 0);
 
-            const estCounts: any = { current: 0, age30: 0, lessThan30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 };
+            // Rough split of the number of unpaid BILLS (not students) — only used for the arrears drawer
+            // heading; flagged so the aging tiers never show it as a student count.
+            const estCounts: any = { __estimated: true, current: 0, age30: 0, lessThan30: 0, age60: 0, age90: 0, over90: 0, totalOverdue: 0, overdue60Plus: 0 };
             let assigned = 0;
             positiveBuckets.forEach((b, i) => {
               if (i === positiveBuckets.length - 1) {
@@ -382,8 +388,9 @@ export function ExecutiveDirectorCockpit({
   const age60Bucket = resolvedAging.age60;
   const age90Bucket = resolvedAging.age90;
   const over90Bucket = resolvedAging.over90;
-  const overdue60PlusSum = age60Bucket + age90Bucket + over90Bucket;
-  const overdue60PlusCount = resolvedAging.accountCounts?.overdue60Plus || 0;
+  // "More than 60 days" = the age90 bucket (61+ days); age60 is 31–60 days and is not included.
+  const overdue60PlusSum = age90Bucket + over90Bucket;
+  const overdue60PlusCount = (resolvedAging.accountCounts as any)?.__estimated ? null : (resolvedAging.accountCounts?.overdue60Plus ?? null);
 
   // Reconciled Student Academic Risk Computation (Synchronized with Academic Performance Dashboard)
   const atRiskStudentsList = useMemo(() => {
@@ -591,43 +598,27 @@ export function ExecutiveDirectorCockpit({
   const rawGrossTotalDebt = telemetry.grossTotalDebt;
   const grossTotalDebt = rawGrossTotalDebt > 0 ? rawGrossTotalDebt : summaryOutstanding;
   const advancePaymentsCredit = telemetry.advancePaymentsCredit;
-  const netOutstandingDebt = telemetry.netOutstandingDebt > 0 ? telemetry.netOutstandingDebt : grossTotalDebt;
+  const netOutstandingDebt = rawGrossTotalDebt > 0 ? telemetry.netOutstandingDebt : Math.max(0, grossTotalDebt - (advancePaymentsCredit || 0));
+  // When the aging figures were last rebuilt from every bill (nightly, or by the rebuild script).
+  const agingAsOf = (() => {
+    const t: any = (dashboardSummary as any)?.debtAging?.rebuiltAt;
+    const ms = t?.toMillis?.() ?? (t?.seconds ? t.seconds * 1000 : 0);
+    return ms ? new Date(ms).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+  })();
 
   const grossDebtForPct = grossTotalDebt > 0 ? grossTotalDebt : 1;
+  // Same four tiers as Accounts > Student Billing > Debt Aging, from the same bills:
+  // not yet due · 1–30 days overdue · 31–60 days · more than 60 days.
+  // (The old tiers relabelled the "more than 60 days" bucket as "60 - 90 Days" and showed "> 90 Days" as 0.)
+  const agingCounts: any = resolvedAging.accountCounts || null;
+  const realCount = (n: any) => (agingCounts && agingCounts.__estimated !== true && typeof n === 'number' ? n : null);
   const agingData = [
-    { 
-      range: '< 30 Days', 
-      amount: lessThan30Bucket, 
-      percentage: Math.round((lessThan30Bucket / grossDebtForPct) * 100), 
-      color: '#3b82f6', 
-      label: 'Current & < 30 Days', 
-      accountCount: resolvedAging.accountCounts?.lessThan30 ?? ((resolvedAging.accountCounts?.current || 0) + (resolvedAging.accountCounts?.age30 || 0)) 
-    },
-    { 
-      range: '30 - 60 Days', 
-      amount: telemetry.age60Bucket, 
-      percentage: Math.round((telemetry.age60Bucket / grossDebtForPct) * 100), 
-      color: '#f59e0b', 
-      label: '30 - 60 Days Overdue', 
-      accountCount: resolvedAging.accountCounts?.age60 || 0 
-    },
-    { 
-      range: '60 - 90 Days', 
-      amount: telemetry.age90Bucket, 
-      percentage: Math.round((telemetry.age90Bucket / grossDebtForPct) * 100), 
-      color: '#f97316', 
-      label: '60 - 90 Days Overdue', 
-      accountCount: resolvedAging.accountCounts?.age90 || 0 
-    },
-    { 
-      range: '> 90 Days', 
-      amount: telemetry.over90Bucket, 
-      percentage: Math.round((telemetry.over90Bucket / grossDebtForPct) * 100), 
-      color: '#ef4444', 
-      label: 'Critical (> 90 Days)', 
-      accountCount: resolvedAging.accountCounts?.over90 || 0 
-    },
-  ];
+    { range: 'Not yet due', amount: resolvedAging.current || 0, color: '#3b82f6', label: 'Not yet due', accountCount: realCount(agingCounts?.current) },
+    { range: '1 - 30 Days', amount: resolvedAging.age30 || 0, color: '#f59e0b', label: '1 - 30 Days Overdue', accountCount: realCount(agingCounts?.age30) },
+    { range: '31 - 60 Days', amount: resolvedAging.age60 || 0, color: '#f97316', label: '31 - 60 Days Overdue', accountCount: realCount(agingCounts?.age60) },
+    { range: 'Over 60 Days', amount: (resolvedAging.age90 || 0) + (resolvedAging.over90 || 0), color: '#ef4444', label: 'More than 60 Days Overdue',
+      accountCount: realCount(agingCounts?.age90) },
+  ].map(t => ({ ...t, percentage: Math.round((t.amount / grossDebtForPct) * 100) }));
 
   // Inline Micro Sparkline SVG Component for KPI cards
   const Sparkline = ({ points, color = '#10b981' }: { points: number[]; color?: string }) => {
@@ -973,7 +964,7 @@ export function ExecutiveDirectorCockpit({
               Action Center
             </h3>
             <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-rose-50 text-rose-700 border border-rose-100">
-              {[telemetry.pendingStaffCheckins > 0, showFinancials && telemetry.highArrearsCount > 0].filter(Boolean).length} Urgent
+              {[telemetry.pendingStaffCheckins > 0, showFinancials && (Number(telemetry.highArrearsOverdueSum) || 0) > 0].filter(Boolean).length} Urgent
             </span>
           </div>
 
@@ -1064,7 +1055,7 @@ export function ExecutiveDirectorCockpit({
                 Tuition Arrears
               </span>
               <p className="text-xs text-slate-700 font-medium truncate">
-                GH₵ {Math.round(overdue60PlusSum).toLocaleString()} overdue across {overdue60PlusCount} accounts (&gt;60 days)
+                GH₵ {Math.round(overdue60PlusSum).toLocaleString()} overdue{overdue60PlusCount !== null ? ` across ${overdue60PlusCount} students` : ''} (&gt;60 days)
               </p>
             </div>
             <DropdownMenu>
@@ -1080,17 +1071,17 @@ export function ExecutiveDirectorCockpit({
                   className="font-medium text-slate-700 hover:bg-slate-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
                 >
                   <Send className="h-3.5 w-3.5 text-indigo-600 shrink-0" />
-                  <span>Dispatch All Notices ({overdue60PlusCount} Accounts)</span>
+                  <span>Dispatch All Notices{overdue60PlusCount !== null ? ` (${overdue60PlusCount} students)` : ''}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => {
-                    handleAgingClick('> 90 Days');
+                    handleAgingClick('Over 60 Days');
                     setActiveActionModal('arrears_action');
                   }}
                   className="font-medium text-red-600 hover:bg-red-50 rounded-lg p-2 cursor-pointer flex items-center gap-2"
                 >
                   <AlertTriangle className="h-3.5 w-3.5 text-red-600 shrink-0" />
-                  <span>Target Tier 4 Critical Only (&gt;90d)</span>
+                  <span>Target Most Overdue Only (&gt;60 days)</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
                   onClick={() => {
@@ -1782,15 +1773,14 @@ export function ExecutiveDirectorCockpit({
                 <div>
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Gross Debt (Tiers 1-4)</span>
-                    <span className="text-[9px] text-indigo-600 font-semibold">Term: GH₵{unifiedMetrics.grossReceivables.toLocaleString()}</span>
                   </div>
                   <p className="font-bold text-slate-900 text-sm mt-0.5">GH₵ {grossTotalDebt.toLocaleString()}</p>
-                  <span className="text-[10px] text-slate-500 font-medium">All-time aging buckets sum</span>
+                  <span className="text-[10px] text-slate-500 font-medium">All unpaid bills, all terms{agingAsOf ? ` · as of ${agingAsOf}` : ''}</span>
                 </div>
                 <div>
                   <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">Less: Advance Payments / Credits</span>
                   <p className="font-bold text-emerald-600 text-sm mt-0.5">(GH₵ {advancePaymentsCredit.toLocaleString()})</p>
-                  <span className="text-[10px] text-emerald-700 font-medium">Tuition deposits & overpayments</span>
+                  <span className="text-[10px] text-emerald-700 font-medium">Overpayments & advance deposits</span>
                 </div>
                 <div className="sm:border-l sm:border-slate-200 sm:pl-3">
                   <span className="text-[10px] uppercase font-bold text-red-600 tracking-wider">Net Outstanding Arrears</span>
@@ -1817,7 +1807,7 @@ export function ExecutiveDirectorCockpit({
                         selectedAgingCategory === item.range ? "brightness-110 ring-2 ring-indigo-500 z-10" : ""
                       )}
                       style={{ width: `${item.percentage}%`, backgroundColor: item.color }}
-                      title={`${item.range}: GH₵ ${item.amount.toLocaleString()} (${item.percentage}%) • ${item.accountCount} Accounts`}
+                      title={`${item.range}: GH₵ ${item.amount.toLocaleString()} (${item.percentage}%)${item.accountCount !== null ? ` • ${item.accountCount} students` : ''}`}
                     />
                   ))}
                 </div>
@@ -1848,9 +1838,11 @@ export function ExecutiveDirectorCockpit({
                     <div className="border-t border-slate-200/60 my-1.5" />
                     <div className="flex items-center justify-between gap-1">
                       <p className="text-xs font-bold text-slate-900">GH₵ {item.amount.toLocaleString()}</p>
-                      <span className="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md shrink-0">
-                        {item.accountCount} Accs
-                      </span>
+                      {item.accountCount !== null && (
+                        <span className="text-[9px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-md shrink-0">
+                          {item.accountCount} {item.accountCount === 1 ? 'student' : 'students'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}

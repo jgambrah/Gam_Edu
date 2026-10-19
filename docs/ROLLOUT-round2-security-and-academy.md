@@ -33,6 +33,11 @@ Every step can be repeated safely.
    `npx tsx scripts/seed-question-bank.ts` (report), then `npx tsx scripts/seed-question-bank.ts --apply`.
    Papers already in the bank are left alone unless you add `--force`.
 
+7. **Refresh the Director dashboard figures now** (otherwise they update at midnight):
+   `cd functions && npm run build && node rebuild-dashboard-summaries.js`
+   Then Accounts > Student Billing (Load School Ledger, "All-Time Ledger") and the Director dashboard's
+   receivables panel show the same gross debt, credits, net and aging tiers.
+
 ## If something goes wrong
 - AI tools say "session expired" for everyone: check that the Vercel environment has `FIREBASE_PROJECT_ID`,
   `FIREBASE_CLIENT_EMAIL` and `FIREBASE_PRIVATE_KEY` (the cookie needs them). Roll back the web app if needed.
