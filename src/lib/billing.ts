@@ -4,6 +4,7 @@ import { doc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query,
 import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
 import { format, startOfDay } from 'date-fns';
+import { applyHeldCreditAfterBilling } from '@/lib/credit-allocation';
 
 // Default rates are now 0 to ensure we only bill what is explicitly set in school settings
 const DAILY_RATES = {
@@ -71,9 +72,28 @@ export async function billStudentForAttendance(
     let totalBilled = 0;
     const billedServices: string[] = [];
 
-    // 3. Process Canteen Bill (Using Deterministic ID)
+    // SAFETY: never overwrite a bill that already exists for this day. Re-running billing (e.g. the
+    // "Bill Today's Services" button) used to reset an already-paid bill back to amountPaid 0 / Unpaid.
+    // When the caller pre-fetched today's bill IDs we trust that set (no extra reads); otherwise we check.
     const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
-    if (shouldBillCanteen && canteenRate > 0 && (!existingBillIds || !existingBillIds.has(canteenRecordId))) {
+    const transportRecordId = `transport-${student.uid}-${dateStr}`;
+    const alreadyBilled = new Set<string>(existingBillIds ? Array.from(existingBillIds) : []);
+    if (!existingBillIds) {
+      try {
+        const [cSnap, tSnap] = await Promise.all([
+          getDoc(doc(firestore, 'financialRecords', canteenRecordId)),
+          getDoc(doc(firestore, 'financialRecords', transportRecordId)),
+        ]);
+        if (cSnap.exists()) alreadyBilled.add(canteenRecordId);
+        if (tSnap.exists()) alreadyBilled.add(transportRecordId);
+      } catch (checkErr) {
+        // Never block billing because of the safety check.
+        console.warn('Existing-bill check failed; continuing with billing:', checkErr);
+      }
+    }
+
+    // 3. Process Canteen Bill (Using Deterministic ID)
+    if (shouldBillCanteen && canteenRate > 0 && !alreadyBilled.has(canteenRecordId)) {
         const canteenRef = doc(firestore, 'financialRecords', canteenRecordId);
         
         batch.set(canteenRef, {
@@ -95,8 +115,7 @@ export async function billStudentForAttendance(
     }
 
     // 4. Process Transport Bill (Using Deterministic ID)
-    const transportRecordId = `transport-${student.uid}-${dateStr}`;
-    if (isDailyTransportSubscriber && transportRate > 0 && (!existingBillIds || !existingBillIds.has(transportRecordId))) {
+    if (isDailyTransportSubscriber && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
         
         batch.set(transportRef, {
@@ -119,9 +138,11 @@ export async function billStudentForAttendance(
 
     if (billedServices.length > 0) {
         await batch.commit();
+        // Apply any credit the student is holding (e.g. prepaid the week). Never throws.
+        const credited = await applyHeldCreditAfterBilling(firestore, schoolId, student);
         return {
             success: true,
-            message: `Billed GHS ${totalBilled.toFixed(2)} for ${billedServices.join(' and ')}`,
+            message: `Billed GHS ${totalBilled.toFixed(2)} for ${billedServices.join(' and ')}${credited > 0 ? ` (GHS ${credited.toFixed(2)} paid from credit)` : ''}`,
             amountBilled: totalBilled
         };
     }
@@ -194,7 +215,7 @@ export async function billMultipleStudents(
 
   // 3. Fetch existing bills for this date and school to avoid overwriting them
   const normalizedDate = startOfDay(attendanceDate);
-  const existingBillIds = new Set<string>();
+  let existingBillIds: Set<string> | undefined = new Set<string>();
   try {
       const billsQuery = query(
           collection(firestore, 'financialRecords'),
@@ -202,9 +223,10 @@ export async function billMultipleStudents(
           where('dueDate', '==', Timestamp.fromDate(normalizedDate))
       );
       const billsSnap = await getDocs(billsQuery);
-      billsSnap.docs.forEach(d => existingBillIds.add(d.id));
+      billsSnap.docs.forEach(d => existingBillIds!.add(d.id));
   } catch (err) {
-      console.warn("Could not fetch existing daily bills:", err);
+      console.warn("Could not fetch existing daily bills; checking per student instead:", err);
+      existingBillIds = undefined; // forces a per-student existence check so paid bills are never overwritten
   }
 
   let successful = 0;

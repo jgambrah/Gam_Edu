@@ -55,6 +55,7 @@ import { StudentSearchInput } from '@/components/student-search';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { normalizeAcademicYear, getAcademicYearStart, isPriorAcademicYear, isSameAcademicYear, getDefaultAcademicYear } from '@/lib/financials';
+import { fetchStudentRecords, orderAllocationTargets, planAllocation, reallocateExistingOverpayments, recordBalance, setStudentCreditMarker } from '@/lib/credit-allocation';
 
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
@@ -1968,7 +1969,6 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             }
 
             const receiptId = await generateNextReceiptId(firestore, schoolId);
-            const paymentDocRef = doc(firestore, 'financialRecords', record.id, 'payments', receiptId);
             const paymentDescription = values.customDescription?.trim() || record.description || 'School Fees Payment';
             
             const paymentData = { 
@@ -1986,32 +1986,78 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             };
             const recordRef = doc(firestore, 'financialRecords', record.id);
             let updatedAmountPaid = (record.amountPaid || 0) + values.amount;
+
+            // If the payment exceeds this bill's balance, gather the student's other unpaid bills so the
+            // surplus is applied to them instead of sitting as a hidden credit on this one bill.
+            const currentBalance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
+            let allocationCandidates: any[] = [];
+            if (values.amount - Math.max(0, currentBalance) > 0.009) {
+                const studentRecs = await fetchStudentRecords(firestore, schoolId, [record.studentId, (record as any).studentUid].filter(Boolean));
+                allocationCandidates = orderAllocationTargets(studentRecs, record).slice(0, 100);
+            }
+            const allocatedTo: { description: string; portion: number }[] = [];
+            let leftoverCredit = 0;
             
             await runTransaction(firestore, async (transaction) => {
                 const freshRecordDoc = await transaction.get(recordRef);
                 if (!freshRecordDoc.exists) {
                     throw new Error("Financial record not found.");
                 }
-                const freshData = freshRecordDoc.data();
-                const currentAmountPaid = freshData?.amountPaid || 0;
-                const newAmountPaid = currentAmountPaid + values.amount;
-                updatedAmountPaid = newAmountPaid;
-                const isFullyPaid = (record.billedAmount - newAmountPaid - (record.waiverAmount || 0)) <= 0.001;
+                const freshData: any = { id: record.id, ...freshRecordDoc.data() };
+                const candidateRefs = allocationCandidates.map(c => doc(firestore, 'financialRecords', c.id));
+                const candidateSnaps = await Promise.all(candidateRefs.map(r => transaction.get(r)));
+                const candidatesFresh = candidateSnaps.filter(s => s.exists()).map(s => ({ id: s.id, ...(s.data() as any) }));
 
-                transaction.update(recordRef, { 
-                    amountPaid: newAmountPaid, 
-                    status: isFullyPaid ? 'Paid' : 'Unpaid', 
-                    lastPaymentDate: serverTimestamp(),
-                    paymentNarration: paymentDescription
-                });
+                const plan = planAllocation(values.amount, freshData, candidatesFresh);
+
+                for (const { recordId, portion } of plan) {
+                    const isSource = recordId === record.id;
+                    const target: any = isSource ? freshData : candidatesFresh.find(c => c.id === recordId);
+                    if (!target) continue;
+                    const newAmountPaid = (Number(target.amountPaid) || 0) + portion;
+                    const isFullyPaid = ((Number(target.billedAmount) || 0) - newAmountPaid - (Number(target.waiverAmount) || 0)) <= 0.001;
+                    if (isSource) {
+                        updatedAmountPaid = newAmountPaid;
+                        leftoverCredit = Math.max(0, newAmountPaid + (Number(target.waiverAmount) || 0) - (Number(target.billedAmount) || 0)) - Math.max(0, (Number(target.amountPaid) || 0) + (Number(target.waiverAmount) || 0) - (Number(target.billedAmount) || 0));
+                    }
+                    else allocatedTo.push({ description: target.description || target.type || 'Bill', portion });
+
+                    transaction.update(doc(firestore, 'financialRecords', recordId), { 
+                        amountPaid: newAmountPaid, 
+                        status: isFullyPaid ? 'Paid' : (target.status === 'Overdue' ? 'Overdue' : 'Unpaid'), 
+                        lastPaymentDate: serverTimestamp(),
+                        paymentNarration: paymentDescription
+                    });
+                    // One payment doc per bill (same receipt number) so per-bill history & reversals stay accurate.
+                    transaction.set(doc(firestore, 'financialRecords', recordId, 'payments', receiptId), {
+                        ...paymentData,
+                        amount: portion,
+                        description: isSource ? paymentDescription : (target.description || paymentDescription),
+                        receiptNo: receiptId,
+                        receiptTotal: values.amount,
+                        ...(isSource ? {} : { allocatedFromRecordId: record.id, isAllocation: true }),
+                    });
+                }
                 
                 if (values.method === 'Cash' && activeTill) {
                     const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
                     transaction.set(tillTransRef, { amount: values.amount, studentName: record.studentName, timestamp: serverTimestamp(), type: 'Payment', description: `Cash: ${paymentDescription} (Receipt: ${receiptId})`, status: 'Completed', schoolId: schoolId });
                     transaction.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(values.amount) });
                 }
-                transaction.set(paymentDocRef, paymentData);
             });
+
+            // Payment left money over with no bill to absorb it (e.g. prepaid the week): mark the student as
+            // holding credit so the next daily canteen/transport bills are paid from it automatically.
+            if (leftoverCredit > 0.009 && record.studentId) {
+                try {
+                    await updateDoc(doc(firestore, 'students', record.studentId), {
+                        hasAccountCredit: true,
+                        accountCreditBalance: increment(Math.round(leftoverCredit * 100) / 100),
+                    });
+                } catch (markErr) {
+                    console.warn('Could not mark student credit:', markErr);
+                }
+            }
 
             // Send DM and SMS payment notification to parent(s) asynchronously
             const targetStudentId = record.studentId || (record as any).studentDocId || (record as any).student_id;
@@ -2075,7 +2121,13 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 });
             }
 
-            toast({ title: 'Payment Logged', description: `Receipt ${receiptId} generated.` });
+            const allocatedTotal = allocatedTo.reduce((s, a) => s + a.portion, 0);
+            toast({
+                title: 'Payment Logged',
+                description: allocatedTotal > 0
+                    ? `Receipt ${receiptId} generated. Surplus GH₵${allocatedTotal.toFixed(2)} applied to ${allocatedTo.length} other unpaid bill${allocatedTo.length === 1 ? '' : 's'}.`
+                    : `Receipt ${receiptId} generated.`,
+            });
             onUpdate(); setOpen(false);
         } catch (e: any) {
             toast({ variant: 'destructive', title: 'Payment Failed', description: e.message });
@@ -2301,15 +2353,28 @@ function StudentLedgerDetail({
         return Array.from(map.values());
     }, [student, records, studentArchiveRecords]);
 
+    // Ledger date for a bill = its due date (what the filter button advertises), falling back to creation date.
+    const getLedgerDate = (rec: FinancialRecord): Date | null => {
+        const raw: any = rec.dueDate || rec.createdAt;
+        if (!raw) return null;
+        if (typeof raw.toDate === 'function') return raw.toDate();
+        if (typeof raw.seconds === 'number') return new Date(raw.seconds * 1000);
+        const d = new Date(raw);
+        return isNaN(d.getTime()) ? null : d;
+    };
+    const ledgerSortKey = (rec: FinancialRecord) => getLedgerDate(rec)?.getTime() || 0;
+
     const filteredRecords = useMemo(() => {
         if (!effectiveRecords) return [];
-        if (!dateRange || !dateRange.from) return [...effectiveRecords].sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        if (!dateRange || !dateRange.from) return [...effectiveRecords].sort((a,b) => ledgerSortKey(b) - ledgerSortKey(a));
         const fromDate = startOfDay(dateRange.from);
         const toDate = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
         return effectiveRecords.filter(rec => { 
-            const recDate = rec.createdAt?.toDate ? rec.createdAt.toDate() : new Date(); 
+            const recDate = getLedgerDate(rec);
+            // Undated legacy records can't be placed in a period — keep them visible so nothing is hidden.
+            if (!recDate) return true;
             return recDate >= fromDate && recDate <= toDate; 
-        }).sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        }).sort((a,b) => ledgerSortKey(b) - ledgerSortKey(a));
     }, [effectiveRecords, dateRange]);
 
     const overallSummary = useMemo(() => {
@@ -2319,13 +2384,19 @@ function StudentLedgerDetail({
         return { totalBilled, totalPaid, balance: totalBilled - totalPaid };
     }, [effectiveRecords]);
 
-    // 4-Part Precision Breakdown: Arrears Brought Forward + Current Year Bills - Current Year Paid = Net Due
+    // 4-Part Breakdown for the selected period:
+    //   Balance B/F (prior years, arrears, and anything due before the period)
+    // + Billed in period - Paid/waived against those bills = Net Outstanding at period end.
+    // Bills due AFTER the period are reported separately so the boxes always reconcile to Total Balance.
     const detailedLedgerKPIs = useMemo(() => {
         const activeRecords = effectiveRecords.filter(r => r.status !== 'Pending Reversal');
+        const fromDate = dateRange?.from ? startOfDay(dateRange.from) : null;
+        const toDate = dateRange?.from ? (dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from)) : null;
         
         let balanceBroughtForward = 0;
         let currentPeriodBilled = 0;
         let currentPeriodPaid = 0;
+        let billedAfterPeriod = 0;
 
         activeRecords.forEach(r => {
             const isPastDebt = (
@@ -2334,14 +2405,18 @@ function StudentLedgerDetail({
                 (r.title || '').toLowerCase().includes('arrears') ||
                 (r.type === 'Other' && (r.description || '').toLowerCase().includes('opening balance')) ||
                 (r.type === 'Other' && (r.description || '').toLowerCase().includes('arrears')) ||
-                (effectiveAcademicYear && r.academicYear && isPriorAcademicYear(r.academicYear, effectiveAcademicYear) && (r.status === 'Unpaid' || r.status === 'Overdue'))
+                // Prior-year bills are always brought forward (paid ones contribute 0, credits reduce B/F).
+                (effectiveAcademicYear && r.academicYear && isPriorAcademicYear(r.academicYear, effectiveAcademicYear))
             );
 
             const billed = Number(r.billedAmount) || 0;
             const paid = (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0);
+            const recDate = getLedgerDate(r);
 
-            if (isPastDebt) {
+            if (isPastDebt || (fromDate && recDate && recDate < fromDate)) {
                 balanceBroughtForward += (billed - paid);
+            } else if (toDate && recDate && recDate > toDate) {
+                billedAfterPeriod += (billed - paid);
             } else {
                 currentPeriodBilled += billed;
                 currentPeriodPaid += paid;
@@ -2351,12 +2426,46 @@ function StudentLedgerDetail({
         const netOutstanding = balanceBroughtForward + currentPeriodBilled - currentPeriodPaid;
 
         return {
-            balanceBroughtForward: Math.max(0, balanceBroughtForward),
+            balanceBroughtForward,
             currentPeriodBilled,
             currentPeriodPaid,
-            netOutstanding
+            netOutstanding,
+            billedAfterPeriod,
         };
-    }, [effectiveRecords, effectiveAcademicYear]);
+    }, [effectiveRecords, effectiveAcademicYear, dateRange]);
+
+    // Bills carrying more payment than they were billed for, while other bills are still unpaid.
+    const overpaymentRepair = useMemo(() => {
+        const active = effectiveRecords.filter(r => r.status !== 'Pending Reversal' && !(r as any).isArchived);
+        const surplus = active.reduce((s, r) => { const b = recordBalance(r); return b < -0.009 ? s - b : s; }, 0);
+        const unpaid = active.reduce((s, r) => { const b = recordBalance(r); return b > 0.009 ? s + b : s; }, 0);
+        return { surplus, unpaid, applicable: Math.min(surplus, unpaid) };
+    }, [effectiveRecords]);
+    const [isReallocating, setIsReallocating] = useState(false);
+
+    const handleReallocateOverpayments = async () => {
+        if (!firestore || !schoolId || !student || isReallocating) return;
+        const amt = overpaymentRepair.applicable.toFixed(2);
+        if (!window.confirm(overpaymentRepair.applicable > 0.009
+            ? `Apply GH₵${amt} of surplus payments to this student's unpaid bills, and hold any remainder as credit for upcoming bills?\n\nSame fee type is settled first, then the oldest bills. Total balance does not change — only which bills show as paid.`
+            : `Hold GH₵${overpaymentRepair.surplus.toFixed(2)} as credit? It will be applied automatically as new daily bills are created.`)) return;
+        setIsReallocating(true);
+        try {
+            const keys = [student.id, student.uid, student.studentId, (student as any).admissionNo, (student as any).admissionNumber].filter(Boolean) as string[];
+            const res = await reallocateExistingOverpayments({ firestore, schoolId, studentKeys: keys, performedBy: user?.displayName || user?.email || 'Staff' });
+            await setStudentCreditMarker(firestore, student.id || student.uid, res.remainingCredit);
+            toast({
+                title: 'Overpayments Applied',
+                description: `${res.moved > 0 ? `GH₵${res.moved.toFixed(2)} moved onto unpaid bills. ` : ''}${res.remainingCredit > 0.009 ? `GH₵${res.remainingCredit.toFixed(2)} held as credit for upcoming bills.` : res.moved > 0 ? '' : 'Nothing to reallocate.'}`,
+            });
+            await handleLoadStudentArchive();
+        } catch (e: any) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Reallocation Failed', description: e.message });
+        } finally {
+            setIsReallocating(false);
+        }
+    };
 
     const handleManualServiceBill = async () => {
         if (!firestore || !schoolId || isBilling) return;
@@ -2422,21 +2531,21 @@ function StudentLedgerDetail({
           {/* Precision 4-Part Ledger Breakdown Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3 bg-slate-50/80 border border-slate-200/80 rounded-xl">
               <div className="p-3 bg-white border border-amber-100 rounded-lg shadow-2xs">
-                  <p className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">Arrears Brought Fwd</p>
+                  <p className="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">{dateRange?.from ? 'Balance B/F' : 'Arrears Brought Fwd'}</p>
                   <p className="text-base sm:text-lg font-black text-amber-600 mt-1">
-                      GH₵ {detailedLedgerKPIs.balanceBroughtForward.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      GH₵ {Math.abs(detailedLedgerKPIs.balanceBroughtForward).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{detailedLedgerKPIs.balanceBroughtForward < -0.009 ? ' (CR)' : ''}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">Prior terms unpaid</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{dateRange?.from ? `Prior years + due before ${format(dateRange.from, 'dd MMM yy')}` : 'Prior years / opening arrears'}</p>
               </div>
               <div className="p-3 bg-white border border-blue-100 rounded-lg shadow-2xs">
-                  <p className="text-[11px] font-semibold text-blue-800 uppercase tracking-wider">Current Period Billed</p>
+                  <p className="text-[11px] font-semibold text-blue-800 uppercase tracking-wider">{dateRange?.from ? 'Billed This Period' : 'Current Year Billed'}</p>
                   <p className="text-base sm:text-lg font-black text-blue-600 mt-1">
                       GH₵ {detailedLedgerKPIs.currentPeriodBilled.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{effectiveAcademicYear || 'Current Year'} fees</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{dateRange?.from ? `${format(dateRange.from, 'dd MMM')} – ${format(dateRange.to || dateRange.from, 'dd MMM yy')}` : `${effectiveAcademicYear || 'Current Year'} fees`}</p>
               </div>
               <div className="p-3 bg-white border border-emerald-100 rounded-lg shadow-2xs">
-                  <p className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">Current Period Paid</p>
+                  <p className="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">{dateRange?.from ? 'Paid On These Bills' : 'Current Year Paid'}</p>
                   <p className="text-base sm:text-lg font-black text-emerald-600 mt-1">
                       GH₵ {detailedLedgerKPIs.currentPeriodPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </p>
@@ -2447,14 +2556,44 @@ function StudentLedgerDetail({
                   detailedLedgerKPIs.netOutstanding > 0 ? "border-rose-200 bg-rose-50/20" : "border-emerald-100"
               )}>
                   <p className={cn("text-[11px] font-semibold uppercase tracking-wider", detailedLedgerKPIs.netOutstanding > 0 ? "text-rose-800" : "text-emerald-800")}>
-                      Net Outstanding Due
+                      {dateRange?.from ? 'Outstanding at Period End' : 'Net Outstanding Due'}
                   </p>
                   <p className={cn("text-base sm:text-lg font-black mt-1", detailedLedgerKPIs.netOutstanding > 0 ? "text-rose-600" : "text-emerald-600")}>
-                      GH₵ {detailedLedgerKPIs.netOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      GH₵ {Math.abs(detailedLedgerKPIs.netOutstanding).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}{detailedLedgerKPIs.netOutstanding < -0.009 ? ' (CR)' : ''}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{detailedLedgerKPIs.netOutstanding > 0 ? 'Actionable balance' : 'Fully settled'}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">
+                      {Math.abs(detailedLedgerKPIs.billedAfterPeriod) > 0.009
+                          ? `+ GH₵${detailedLedgerKPIs.billedAfterPeriod.toFixed(2)} due after period = GH₵${(detailedLedgerKPIs.netOutstanding + detailedLedgerKPIs.billedAfterPeriod).toFixed(2)} total`
+                          : detailedLedgerKPIs.netOutstanding > 0 ? 'Actionable balance' : detailedLedgerKPIs.netOutstanding < -0.009 ? 'Credit on account' : 'Fully settled'}
+                  </p>
               </div>
           </div>
+
+          {(overpaymentRepair.applicable > 0.009 || (overpaymentRepair.surplus > 0.009 && !(student as any)?.hasAccountCredit)) && (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
+                  <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                      <span>
+                          <strong>GH₵{overpaymentRepair.surplus.toFixed(2)}</strong> has been paid in excess on some bills.
+                          {overpaymentRepair.applicable > 0.009
+                              ? ` Applying it will settle GH₵${overpaymentRepair.applicable.toFixed(2)} of unpaid bills`
+                              : ' There are no unpaid bills right now'}
+                          {overpaymentRepair.surplus - overpaymentRepair.applicable > 0.009 ? ` and hold GH₵${(overpaymentRepair.surplus - overpaymentRepair.applicable).toFixed(2)} as credit for upcoming daily bills` : ''}. The total balance stays the same.
+                      </span>
+                  </div>
+                  <Button
+                      id="apply-overpayments-btn"
+                      size="sm"
+                      variant="outline"
+                      onClick={handleReallocateOverpayments}
+                      disabled={isReallocating}
+                      className="h-8 text-xs font-semibold bg-white border-amber-300 text-amber-900 hover:bg-amber-100 shrink-0"
+                  >
+                      {isReallocating ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <ArrowRightLeft className="h-3.5 w-3.5 mr-1.5" />}
+                      {overpaymentRepair.applicable > 0.009 ? 'Apply Overpayments to Unpaid Bills' : 'Hold Credit for Upcoming Bills'}
+                  </Button>
+              </div>
+          )}
 
           <div className="overflow-x-auto w-full border rounded-md bg-white">
               <Table>

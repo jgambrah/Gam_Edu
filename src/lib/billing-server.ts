@@ -1,5 +1,6 @@
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { format, startOfDay } from 'date-fns';
+import { applyHeldCreditAfterBillingServer } from '@/lib/credit-allocation-server';
 
 const DAILY_RATES = {
   CANTEEN: 0.00,
@@ -61,9 +62,24 @@ export async function billStudentForAttendanceServer(
     let totalBilled = 0;
     const billedServices: string[] = [];
 
+    // SAFETY: never overwrite a bill that already exists for this day (a repeat scan used to reset a
+    // paid bill back to amountPaid 0 / Unpaid). If the check itself fails, billing continues as before.
+    const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+    const transportRecordId = `transport-${student.uid}-${dateStr}`;
+    const alreadyBilled = new Set<string>();
+    try {
+      const [cSnap, tSnap] = await db.getAll(
+        db.collection('financialRecords').doc(canteenRecordId),
+        db.collection('financialRecords').doc(transportRecordId)
+      );
+      if (cSnap.exists) alreadyBilled.add(canteenRecordId);
+      if (tSnap.exists) alreadyBilled.add(transportRecordId);
+    } catch (checkErr) {
+      console.warn('Existing-bill check failed (server); continuing with billing:', checkErr);
+    }
+
     // 3. Process Canteen Bill (Using Deterministic ID)
-    if (shouldBillCanteen && canteenRate > 0) {
-      const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+    if (shouldBillCanteen && canteenRate > 0 && !alreadyBilled.has(canteenRecordId)) {
       const canteenRef = db.collection('financialRecords').doc(canteenRecordId);
       
       batch.set(canteenRef, {
@@ -85,8 +101,7 @@ export async function billStudentForAttendanceServer(
     }
 
     // 4. Process Transport Bill (Using Deterministic ID)
-    if (isDailyTransportSubscriber && transportRate > 0) {
-      const transportRecordId = `transport-${student.uid}-${dateStr}`;
+    if (isDailyTransportSubscriber && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
       const transportRef = db.collection('financialRecords').doc(transportRecordId);
       
       batch.set(transportRef, {
@@ -109,9 +124,11 @@ export async function billStudentForAttendanceServer(
 
     if (billedServices.length > 0) {
       await batch.commit();
+      // Apply any credit the student is holding (e.g. prepaid the week). Never throws.
+      const credited = await applyHeldCreditAfterBillingServer(db, schoolId, student);
       return {
         success: true,
-        message: `Billed GHS ${totalBilled.toFixed(2)} for ${billedServices.join(' and ')}`,
+        message: `Billed GHS ${totalBilled.toFixed(2)} for ${billedServices.join(' and ')}${credited > 0 ? ` (GHS ${credited.toFixed(2)} paid from credit)` : ''}`,
         amountBilled: totalBilled
       };
     }
