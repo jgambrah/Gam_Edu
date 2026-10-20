@@ -1,10 +1,12 @@
 'use client';
 
+import { approveWaiverRequest } from '@/lib/waiver-approval';
 import Link from 'next/link';
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase'; 
 import { useRole } from '@/context/role-context';
-import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc, runTransaction, limit } from 'firebase/firestore';
+import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc, runTransaction, limit, arrayUnion } from 'firebase/firestore';
+import { standardStatus, billBalance, reversiblePayments, round2 as round2Money } from '@/lib/bill-actions';
 import { format, isPast, startOfDay, endOfDay, startOfMonth, isAfter, isToday, differenceInDays } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
@@ -93,6 +95,7 @@ import { TargetedBillingPurgeTool } from '@/components/dashboard/finance/Targete
 import { TermRolloverModal } from '@/components/dashboard/term-rollover-modal';
 import { StudentSearchInput } from '@/components/student-search';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
+import { getPublicInvoiceDetails } from '@/app/actions/public-payment';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { normalizeAcademicYear, getAcademicYearStart, isPriorAcademicYear, isSameAcademicYear, getDefaultAcademicYear } from '@/lib/financials';
 import { fetchStudentRecords, orderAllocationTargets, planAllocation, reallocateExistingOverpayments, recordBalance, setStudentCreditMarker } from '@/lib/credit-allocation';
@@ -117,20 +120,44 @@ function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: Financ
 
     async function onSubmit(values: z.infer<typeof applyWaiverSchema>) {
         if (!firestore || !record.id) return;
+        const amount = round2Money(values.amount);
+        // A waiver can only reduce what is still owed — never create a credit.
+        if (amount > balance + 0.009) {
+            toast({ variant: 'destructive', title: 'Waiver too large', description: `Only GH₵${balance.toFixed(2)} is outstanding on this bill.` });
+            return;
+        }
         setIsSubmitting(true);
         try {
+            const byName = profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : (user?.displayName || 'Director');
             if (role === 'Director') {
                 const recordRef = doc(firestore, 'financialRecords', record.id);
-                const newWaiverAmount = (record.waiverAmount || 0) + values.amount;
-                const isFullySettled = (record.billedAmount - (record.amountPaid || 0) - newWaiverAmount) <= 0.01;
-                
-                await updateDoc(recordRef, {
-                    waiverAmount: newWaiverAmount,
-                    waiverReason: values.reason,
-                    status: isFullySettled ? 'Paid' : record.status
+                // Re-read the bill inside a transaction so a payment or another waiver made meanwhile is not lost.
+                await runTransaction(firestore, async (tx) => {
+                    const snap = await tx.get(recordRef);
+                    if (!snap.exists()) throw new Error('Bill not found.');
+                    const r: any = snap.data();
+                    if (r.isArchived === true) throw new Error('This bill belongs to a closed term.');
+                    const outstanding = billBalance(r);
+                    if (amount > outstanding + 0.009) throw new Error(`Only GH₵${outstanding.toFixed(2)} is outstanding now.`);
+                    const newWaiverAmount = round2Money((Number(r.waiverAmount) || 0) + amount);
+                    tx.update(recordRef, {
+                        waiverAmount: newWaiverAmount,
+                        waiverReason: values.reason,
+                        status: standardStatus(Number(r.billedAmount) || 0, Number(r.amountPaid) || 0, newWaiverAmount, r.status),
+                        waiverHistory: arrayUnion({ amount, reason: values.reason, by: user?.uid || '', byName, at: new Date().toISOString(), approval: 'Director (direct)' }),
+                    });
+                    tx.set(doc(collection(firestore, 'auditLogs')), {
+                        schoolId: r.schoolId || '',
+                        userName: byName,
+                        userId: user?.uid || null,
+                        action: 'APPLY_WAIVER',
+                        details: `Waived GH₵${amount.toFixed(2)} on "${r.description || 'bill'}" for ${r.studentName || 'student'}. Reason: ${values.reason}`,
+                        recordId: record.id,
+                        timestamp: serverTimestamp(),
+                    });
                 });
                 
-                toast({ title: 'Waiver Applied Directly', description: `GH₵${values.amount.toFixed(2)} waived.` });
+                toast({ title: 'Waiver Applied Directly', description: `GH₵${amount.toFixed(2)} waived.` });
             } else {
                 await addDoc(collection(firestore, 'waiverRequests'), {
                     studentId: record.studentId,
@@ -220,7 +247,11 @@ function EditRecordDialog({
 }) {
     const firestore = useFirestore();
     const { toast } = useToast();
+    const { role, profile } = useRole();
+    const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const canReduceBills = role === 'Director' || role === 'Administrator';
+    const initialDue = record.dueDate?.toDate ? record.dueDate.toDate() : new Date(record.dueDate);
     
     const form = useForm<z.infer<typeof financialRecordSchema>>({
         resolver: zodResolver(financialRecordSchema),
@@ -229,7 +260,7 @@ function EditRecordDialog({
             type: record.type as any,
             description: record.description,
             billedAmount: record.billedAmount,
-            dueDate: record.dueDate?.toDate ? record.dueDate.toDate() : new Date(record.dueDate),
+            dueDate: isNaN(initialDue.getTime()) ? new Date() : initialDue,
             academicYear: record.academicYear || activeAcademicYear || undefined,
             term: record.term || undefined
         }
@@ -237,10 +268,21 @@ function EditRecordDialog({
 
     async function onSubmit(values: z.infer<typeof financialRecordSchema>) {
         if (!firestore || !record.id) return;
+        const newBilled = round2Money(values.billedAmount);
+        const oldBilled = round2Money(record.billedAmount);
+        // Lowering a bill is a write-off: only the Director/Administrator may do it here. Others use
+        // "Apply Waiver", which needs the Director's approval and is recorded.
+        if (newBilled < oldBilled - 0.009 && !canReduceBills) {
+            toast({ variant: 'destructive', title: 'Use Apply Waiver instead', description: 'Reducing a bill needs the Director\'s approval. Use "Apply Waiver" so the reduction is approved and recorded.' });
+            return;
+        }
+        if (newBilled < round2Money((record.amountPaid || 0) + (record.waiverAmount || 0)) - 0.009) {
+            const ok = typeof window === 'undefined' || window.confirm(`The new amount (GH₵${newBilled.toFixed(2)}) is less than what has already been paid and waived. The difference will become the student's credit. Continue?`);
+            if (!ok) return;
+        }
         setIsSubmitting(true);
         try {
             const recordRef = doc(firestore, 'financialRecords', record.id);
-            const isFullyPaid = (values.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0)) <= 0.01;
             
             // Retain academicYear and term, prioritizing existing record or active academic year
             const resolvedAcademicYear = values.academicYear || record.academicYear || activeAcademicYear;
@@ -249,9 +291,8 @@ function EditRecordDialog({
             const rawPayload: Record<string, any> = {
                 type: values.type,
                 description: values.description,
-                billedAmount: values.billedAmount,
+                billedAmount: newBilled,
                 dueDate: Timestamp.fromDate(values.dueDate),
-                status: isFullyPaid ? 'Paid' : 'Unpaid',
                 updatedAt: serverTimestamp(),
             };
 
@@ -271,7 +312,34 @@ function EditRecordDialog({
                 Object.entries(rawPayload).filter(([_, v]) => v !== undefined)
             );
             
-            await updateDoc(recordRef, sanitizedPayload);
+            const editorName = profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Staff');
+            // Re-read inside a transaction: status follows the CURRENT payments/waivers (keeps "Overdue"),
+            // and every change is kept in editHistory + the audit log.
+            await runTransaction(firestore, async (tx) => {
+                const snap = await tx.get(recordRef);
+                if (!snap.exists()) throw new Error('Bill not found.');
+                const cur: any = snap.data();
+                if (cur.isArchived === true) throw new Error('This bill belongs to a closed term and cannot be edited.');
+                const changes: Record<string, any> = {};
+                (['type', 'description', 'billedAmount'] as const).forEach(k => { if (cur[k] !== sanitizedPayload[k]) changes[k] = { from: cur[k] ?? null, to: sanitizedPayload[k] ?? null }; });
+                tx.update(recordRef, {
+                    ...sanitizedPayload,
+                    status: standardStatus(newBilled, Number(cur.amountPaid) || 0, Number(cur.waiverAmount) || 0, cur.status),
+                    ...(cur.originalBilledAmount === undefined && cur.billedAmount !== newBilled ? { originalBilledAmount: cur.billedAmount } : {}),
+                    editHistory: arrayUnion({ at: new Date().toISOString(), by: user?.uid || '', byName: editorName, changes }),
+                });
+                if (Object.keys(changes).length) {
+                    tx.set(doc(collection(firestore, 'auditLogs')), {
+                        schoolId: cur.schoolId || '',
+                        userName: editorName,
+                        userId: user?.uid || null,
+                        action: 'EDIT_BILL',
+                        details: `Edited "${cur.description || 'bill'}" for ${cur.studentName || 'student'}: ` + Object.entries(changes).map(([k, v]: any) => `${k} ${v.from} → ${v.to}`).join('; '),
+                        recordId: record.id,
+                        timestamp: serverTimestamp(),
+                    });
+                }
+            });
             
             toast({ title: 'Bill Updated' });
             onUpdate();
@@ -374,7 +442,9 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
             try {
                 const querySnap = await getDocs(collection(firestore, 'financialRecords', record.id, 'payments'));
                 const list = querySnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PaymentTransaction));
-                setPayments(list);
+                // Only active receipts can be reversed (not ones already reversed, the "-REV" entries, or
+                // credit brought forward from a closed term).
+                setPayments(reversiblePayments(list as any[]) as PaymentTransaction[]);
             } catch (e) {
                 console.error("Failed to fetch payments for reversal check:", e);
             } finally {
@@ -390,6 +460,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
         
         const openTime = activeTill.dateOpened?.toMillis ? activeTill.dateOpened.toMillis() : activeTill.dateOpened?.seconds ? activeTill.dateOpened.seconds * 1000 : 0;
         if (!openTime) return false;
+        if (payments.length === 0) return false; // nothing to reverse
 
         // If there are payments, check if all were logged under the current active till
         return payments.every(p => {
@@ -405,10 +476,15 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
         if (!firestore || !record.id || !reason.trim()) return;
         setIsSubmitting(true);
         try {
+            if (payments.length === 0) {
+                throw new Error('There are no receipts on this bill to reverse. To cancel a wrong charge, edit the bill or ask the Director to delete it.');
+            }
             await updateDoc(doc(firestore, 'financialRecords', record.id), {
                 status: 'Pending Reversal',
+                statusBeforeReversal: record.status || null, // restored if the request is rejected
                 reversalReason: reason,
-                reversalRequestedAt: serverTimestamp()
+                reversalRequestedAt: serverTimestamp(),
+                reversalRequestedBy: user?.displayName || user?.email || ''
             });
             toast({ title: 'Reversal Requested', description: 'Administrator will review this request.' });
             onUpdate();
@@ -457,7 +533,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                 });
                 
                 // 2. If Cash and activeTill, write negative reversal transaction and adjust drawer cash balance
-                if (payment.method === 'Cash' && activeTill) {
+                if (payment.method === 'Cash' && activeTill && (!payment.tillId || payment.tillId === activeTill.id)) {
                     const tillTransRef = doc(collection(firestore, `tills/${activeTill.id}/transactions`));
                     batch.set(tillTransRef, {
                         amount: -payment.amount,
@@ -478,22 +554,16 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
             
             // 3. Reset the parent record charge to unpaid/partially paid instead of deleting it
             const recordRef = doc(firestore, 'financialRecords', record.id);
-            const totalReversed = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
-            const newAmountPaid = Math.max(0, (record.amountPaid || 0) - totalReversed);
-            const totalCredited = newAmountPaid + (record.waiverAmount || 0);
-            
-            let newStatus: 'Paid' | 'Partially Paid' | 'Unpaid' = 'Unpaid';
-            if (totalCredited >= record.billedAmount) {
-                newStatus = 'Paid';
-            } else if (totalCredited > 0) {
-                newStatus = 'Partially Paid';
-            }
+            const totalReversed = round2Money(payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0));
+            const newAmountPaid = round2Money(Math.max(0, (record.amountPaid || 0) - totalReversed));
+            const newStatus = standardStatus(record.billedAmount, newAmountPaid, record.waiverAmount || 0, (record as any).statusBeforeReversal);
             
             batch.update(recordRef, {
                 amountPaid: newAmountPaid,
                 status: newStatus,
                 reversalReason: deleteField(),
-                reversalRequestedAt: deleteField()
+                reversalRequestedAt: deleteField(),
+                statusBeforeReversal: deleteField()
             });
 
             // 4. Log the reversal to a permanent audit collection
@@ -589,22 +659,6 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
                                 </p>
                             </div>
                             
-                            {/* Diagnostic Debug Block */}
-                            <div className="bg-red-50/50 p-3 rounded-xl border border-red-100 text-[10px] font-mono space-y-1 my-2">
-                                <p className="font-bold text-red-800">Diagnostics:</p>
-                                <p>Till Open: {activeTill?.dateOpened?.toDate ? activeTill.dateOpened.toDate().toLocaleString() : 'N/A'}</p>
-                                <p>Till ID: {activeTill?.id || 'None'}</p>
-                                <p>Payments found: {payments.length}</p>
-                                {payments.map((p, idx) => (
-                                    <div key={p.id} className="border-t border-red-100 pt-1 mt-1">
-                                        <p>Payment #{idx + 1}: {p.id} - GH₵{p.amount}</p>
-                                        <p>Payment Till ID: {p.tillId || 'none'}</p>
-                                        <p>Paid At: {p.paidAt?.toDate ? p.paidAt.toDate().toLocaleString() : p.paidAt?.seconds ? new Date(p.paidAt.seconds * 1000).toLocaleString() : 'N/A'}</p>
-                                        <p>Eligible: {String((p.tillId && activeTill && p.tillId === activeTill.id) || (p.paidAt && activeTill?.dateOpened && (p.paidAt.toDate ? p.paidAt.toDate().getTime() : p.paidAt.seconds * 1000) >= (activeTill.dateOpened.toDate ? activeTill.dateOpened.toDate().getTime() : activeTill.dateOpened.seconds * 1000)))}</p>
-                                    </div>
-                                ))}
-                            </div>
-
                             <div className="space-y-2">
                                 <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider">Reason for Reversal</Label>
                                 <Textarea value={reason} onChange={e => setReason(e.target.value)} placeholder="Explain why this transaction needs to be reversed..." className="min-h-[100px] text-sm" />
@@ -2745,16 +2799,25 @@ function StudentLedgerDetail({
                                                       <DropdownMenuItem 
                                                           disabled={balance <= 0.01}
                                                           onClick={async () => {
-                                                              const parentQ = query(collection(firestore!, 'parents'), where('schoolId', '==', schoolId), where('studentIds', 'array-contains', rec.studentId));
+                                                              // 1. Don't send a link that cannot work: online payment must be enabled for the school.
+                                                              const check = await getPublicInvoiceDetails(rec.id);
+                                                              if (!check.success) {
+                                                                  return toast({ variant: 'destructive', title: "Payment link not available", description: check.error || 'Online payment is not set up for this school.' });
+                                                              }
+                                                              // 2. Find the parent by any of the student's ids (bills may use the uid or the record id).
+                                                              const keys = Array.from(new Set([rec.studentId, student.id, student.uid, student.studentId].filter(Boolean))).slice(0, 10) as string[];
+                                                              const parentQ = query(collection(firestore!, 'parents'), where('schoolId', '==', schoolId), where('studentIds', 'array-contains-any', keys));
                                                               const pSnap = await getDocs(parentQ);
-                                                              if (pSnap.empty || !pSnap.docs[0].data().phone) {
+                                                              const parentDoc = pSnap.docs.find(d => d.data().phone);
+                                                              if (!parentDoc) {
                                                                   return toast({ variant: 'destructive', title: "No Parent Phone Found" });
                                                               }
-                                                              
-                                                              const phone = pSnap.docs[0].data().phone;
-                                                              const link = `https://gam-it-service.app/pay/${rec.id}`;
+                                                              const phone = parentDoc.data().phone;
+                                                              const origin = typeof window !== 'undefined' ? window.location.origin : 'https://gam-it-service.app';
+                                                              const link = `${origin}/pay/${rec.id}`;
                                                               const msg = `Dear Parent, you have an outstanding bill of GHS ${balance.toFixed(2)} for ${rec.studentName} (${rec.description}). Please pay securely here: ${link} - GAM Edu`;
-                                                              
+                                                              // 3. SMS costs money: confirm before sending.
+                                                              if (typeof window !== 'undefined' && !window.confirm(`Send this SMS to ${phone}?\n\n${msg}`)) return;
                                                               toast({ title: "Sending SMS...", description: "Please wait." });
                                                               const idToken = await user?.getIdToken();
                                                               const result = await sendSchoolSMSAction(schoolId!, phone, msg, idToken);
@@ -4988,7 +5051,13 @@ export default function AccountsPage() {
         
         // 1. Fetch payments from subcollection, mark them reversed, and add negative reversal transactions
         const querySnap = await getDocs(collection(firestore, 'financialRecords', record.id, 'payments'));
-        const paymentsList = querySnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PaymentTransaction));
+        // Only active receipts (never ones already reversed, "-REV" entries or credit brought forward).
+        const paymentsList = reversiblePayments(querySnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as PaymentTransaction)) as any[]) as PaymentTransaction[];
+        if (paymentsList.length === 0) {
+            throw new Error('This bill has no receipts left to reverse. Reject the request instead.');
+        }
+        const freshSnap = await getDoc(doc(firestore, 'financialRecords', record.id));
+        const fresh: any = freshSnap.exists() ? freshSnap.data() : record;
         
         for (const p of paymentsList) {
             // Update original payment to mark as Reversed
@@ -5020,22 +5089,16 @@ export default function AccountsPage() {
         
         // 2. Reset parent record charge status and amountPaid
         const recordRef = doc(firestore, 'financialRecords', record.id);
-        const totalReversed = paymentsList.reduce((sum, p) => sum + (p.amount || 0), 0);
-        const newAmountPaid = Math.max(0, (record.amountPaid || 0) - totalReversed);
-        const totalCredited = newAmountPaid + (record.waiverAmount || 0);
-        
-        let newStatus: 'Paid' | 'Partially Paid' | 'Unpaid' = 'Unpaid';
-        if (totalCredited >= record.billedAmount) {
-            newStatus = 'Paid';
-        } else if (totalCredited > 0) {
-            newStatus = 'Partially Paid';
-        }
-        
+        const totalReversed = round2Money(paymentsList.reduce((sum, p) => sum + (Number(p.amount) || 0), 0));
+        const newAmountPaid = round2Money(Math.max(0, (Number(fresh.amountPaid) || 0) - totalReversed));
+        const newStatus = standardStatus(Number(fresh.billedAmount) || 0, newAmountPaid, Number(fresh.waiverAmount) || 0, fresh.statusBeforeReversal);
+
         batch.update(recordRef, {
             amountPaid: newAmountPaid,
             status: newStatus,
             reversalReason: deleteField(),
-            reversalRequestedAt: deleteField()
+            reversalRequestedAt: deleteField(),
+            statusBeforeReversal: deleteField()
         });
 
         // 3. Log the reversal to a permanent audit collection
@@ -5072,7 +5135,16 @@ export default function AccountsPage() {
     if (!firestore || isProcessingReversal) return;
     setIsProcessingReversal(record.id);
     try {
-        await updateDoc(doc(firestore, 'financialRecords', record.id), { status: 'Rejected Reversal' });
+        // The bill goes back to normal (its debt counts again). The old 'Rejected Reversal' status made the
+        // bill drop out of debt totals for good.
+        const snap = await getDoc(doc(firestore, 'financialRecords', record.id));
+        const cur: any = snap.exists() ? snap.data() : record;
+        await updateDoc(doc(firestore, 'financialRecords', record.id), {
+            status: standardStatus(Number(cur.billedAmount) || 0, Number(cur.amountPaid) || 0, Number(cur.waiverAmount) || 0, cur.statusBeforeReversal),
+            reversalRejectedAt: serverTimestamp(),
+            reversalRejectedBy: user?.displayName || user?.email || 'Director',
+            statusBeforeReversal: deleteField()
+        });
         toast({ title: "Reversal Rejected", description: "The bill remains active on the student's ledger." });
         refetchPendingReversals();
         forceRefetch();
@@ -5090,38 +5162,11 @@ export default function AccountsPage() {
     if (!firestore || isProcessingWaiver) return;
     setIsProcessingWaiver(req.id);
     try {
-        const batch = writeBatch(firestore);
-
-        const requestRef = doc(firestore, 'waiverRequests', req.id);
-        batch.update(requestRef, {
-            status: 'Approved',
-            approvedBy: user?.uid || 'system',
-            approvedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
-            approvedAt: serverTimestamp()
+        const waived = await approveWaiverRequest(firestore, req, {
+            uid: user?.uid,
+            name: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
         });
-
-        const recordRef = doc(firestore, 'financialRecords', req.recordId);
-        const newWaiverAmount = (req.currentWaiverAmount || 0) + req.requestedAmount;
-        const isFullySettled = (req.billedAmount - (req.amountPaid || 0) - newWaiverAmount) <= 0.01;
-
-        batch.update(recordRef, {
-            waiverAmount: newWaiverAmount,
-            waiverReason: req.reason,
-            status: isFullySettled ? 'Paid' : 'Partially Paid'
-        });
-
-        const logRef = doc(collection(firestore, 'auditLogs'));
-        batch.set(logRef, {
-            schoolId: req.schoolId || schoolId || '',
-            userName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
-            action: 'APPROVE_WAIVER',
-            details: `Approved waiver of GH₵${req.requestedAmount.toFixed(2)} for student ${req.studentName} on invoice ${req.recordDescription}. Reason: ${req.reason}`,
-            timestamp: serverTimestamp(),
-            userId: user?.uid || null
-        });
-
-        await batch.commit();
-        toast({ title: "Waiver Approved", description: `GH₵${req.requestedAmount.toFixed(2)} waiver has been applied successfully.` });
+        toast({ title: "Waiver Approved", description: `GH₵${waived.toFixed(2)} waiver has been applied successfully.` });
         combinedRefetch();
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Approval Failed", description: e.message });

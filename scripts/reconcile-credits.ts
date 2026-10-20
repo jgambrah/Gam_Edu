@@ -123,7 +123,20 @@ async function run(schoolId: string) {
   });
   if (dups.length > 15) console.log(`  … and ${dups.length - 15} more`);
 
+  // Bills left with non-standard statuses by older versions of the app ('Rejected Reversal' made the bill drop
+  // out of balances; 'Partially Paid' was missed by some lists). Reset them to Paid / Unpaid / Overdue.
+  const oddStatus = recSnap.docs.filter(d => ['Rejected Reversal', 'Partially Paid', 'Partial'].includes((d.data() as any).status) && (d.data() as any).isArchived !== true);
+  console.log(`Bills with an old non-standard status (Rejected Reversal / Partially Paid): ${oddStatus.length}${oddStatus.length ? ' — reset to Paid/Unpaid with --apply' : ''}`);
+
   if (!APPLY) return;
+  for (let i = 0; i < oddStatus.length; i += 400) {
+    const batch = db.batch();
+    oddStatus.slice(i, i + 400).forEach(d => {
+      const r: any = d.data();
+      batch.update(d.ref, { status: bal(r) <= 0.009 ? 'Paid' : 'Unpaid', statusNormalizedFrom: r.status });
+    });
+    await batch.commit();
+  }
   let moved = 0;
   for (const e of withCredit) {
     if (e.debt <= 0.009) {

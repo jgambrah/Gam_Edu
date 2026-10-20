@@ -685,11 +685,22 @@ service cloud.firestore {
         && data.get('isArchived', false) != true;
     }
 
+    // Waivers are a write-off: only administrators/directors may change waiverAmount. Two automatic
+    // exceptions used by attendance billing: voiding an absent day's bill (billed and waiver set to 0) and
+    // restoring it (waiver set back to the saved originalWaiverAmount).
+    function waiverChangeAllowed() {
+      return request.resource.data.get('waiverAmount', 0) == resource.data.get('waiverAmount', 0)
+        || (request.resource.data.get('billedAmount', 0) == 0 && request.resource.data.get('waiverAmount', 0) == 0)
+        || request.resource.data.get('waiverAmount', 0) == resource.data.get('originalWaiverAmount', -1)
+        || isAdmin();
+    }
+
     match /financialRecords/{recordId} {
       allow read, list: if isSignedIn();
       allow create: if isFinanceStaff();
       allow update: if isFinanceStaff()
-        && (resource.data.get('isArchived', false) != true || isAdmin());
+        && (resource.data.get('isArchived', false) != true || isAdmin())
+        && waiverChangeAllowed();
       // Deleting a non-existent bill is a no-op (attendance corrections delete "just in case").
       // Staff may only remove an UNPAID daily canteen/transport bill (student re-marked absent).
       // Anything else requires an administrator, and archived records can never be deleted.

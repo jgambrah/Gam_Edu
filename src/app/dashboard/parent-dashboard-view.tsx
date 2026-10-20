@@ -195,7 +195,8 @@ export function ParentDashboard({
     const totalOutstanding = useMemo(() => {
         if (!financials) return 0;
         return financials.reduce((sum: number, r: any) => {
-            if (r.status === 'Pending Reversal' || r.status === 'Rejected Reversal') return sum;
+            // A rejected reversal leaves the bill owed as normal; only a reversal still pending is set aside.
+            if (r.status === 'Pending Reversal') return sum;
             const balance = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
             return sum + Math.max(0, balance);
         }, 0);

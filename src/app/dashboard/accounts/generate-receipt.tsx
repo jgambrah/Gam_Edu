@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Receipt, Download, Loader2, Printer } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDoc, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { doc, query, collection, where } from 'firebase/firestore';
+import { doc, query, collection, where, limit } from 'firebase/firestore';
 import { FinancialRecord, Student, PaymentTransaction } from '@/lib/types';
 import { PaymentReceipt } from './payment-receipt';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -48,38 +48,52 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
     const [loading, setLoading] = useState(false);
     const [logoBase64, setLogoBase64] = useState<string>('');
     const [layoutStyle, setLayoutStyle] = useState<'standard' | 'plain' | 'thermal'>('standard');
+    // Nothing is read until the receipt is actually opened. (Every payment row shows a receipt button;
+    // before, each one immediately read the school settings, the student AND all of the student's bills.)
+    const [open, setOpen] = useState(false);
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
     const printRef = useRef<HTMLDivElement>(null);
 
     // FETCH BRANDING FROM PUBLIC PATH
     const schoolProfileRef = useMemoFirebase(
-        () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
-        [firestore, schoolId]
+        () => (open && firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null,
+        [open, firestore, schoolId]
     );
     const { data: schoolProfile, isLoading: isLoadingProfile } = useDoc(schoolProfileRef);
 
     const studentRef = useMemoFirebase(
-        () => (firestore && transaction.studentId) ? doc(firestore, 'students', transaction.studentId) : null,
-        [firestore, transaction.studentId]
+        () => (open && firestore && transaction.studentId) ? doc(firestore, 'students', transaction.studentId) : null,
+        [open, firestore, transaction.studentId]
     );
-    const { data: student, isLoading: isLoadingStudent } = useDoc<Student>(studentRef);
+    const { data: studentById, isLoading: isLoadingStudentById } = useDoc<Student>(studentRef);
+    // Bills often store the student's login uid rather than the student document id: look that up too.
+    const studentByUidQuery = useMemoFirebase(
+        () => (open && firestore && schoolId && transaction.studentId && !isLoadingStudentById && !studentById)
+            ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', '==', transaction.studentId), limit(1))
+            : null,
+        [open, firestore, schoolId, transaction.studentId, isLoadingStudentById, studentById]
+    );
+    const { data: studentsByUid, isLoading: isLoadingStudentByUid } = useCollection<Student>(studentByUidQuery);
+    const student = studentById || (studentsByUid && studentsByUid[0]) || null;
+    const isLoadingStudent = isLoadingStudentById || (!studentById && isLoadingStudentByUid);
 
     // NEW: Fetch all records for the student to calculate total balance
     const allRecordsQuery = useMemoFirebase(() => 
-        (firestore && transaction.studentId && schoolId) ? 
+        (open && firestore && transaction.studentId && schoolId) ? 
         query(collection(firestore, 'financialRecords'), 
               where('schoolId', '==', schoolId),
               where('studentId', '==', transaction.studentId)) : null,
-        [firestore, transaction.studentId, schoolId]
+        [open, firestore, transaction.studentId, schoolId]
     );
     const { data: allRecords, isLoading: isLoadingAllRecords } = useCollection<FinancialRecord>(allRecordsQuery);
 
     const totalBalance = useMemo(() => {
         if (!allRecords) return 0;
         return allRecords.reduce((acc, r) => {
-            // Skip pending reversals in balance calculation
-            if (r.status === 'Pending Reversal') return acc;
+            // Skip pending reversals, and bills archived by a term close (their balance is already on the
+            // Arrears/Credit Brought Forward bill — counting both doubled the balance on receipts).
+            if (r.status === 'Pending Reversal' || (r as any).isArchived === true) return acc;
             return acc + (r.billedAmount - (r.amountPaid || 0) - (r.waiverAmount || 0));
         }, 0);
     }, [allRecords]);
@@ -242,7 +256,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
     );
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {triggerButton}
             </DialogTrigger>

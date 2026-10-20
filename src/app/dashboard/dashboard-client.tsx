@@ -1,5 +1,6 @@
 'use client';
 
+import { approveWaiverRequest } from '@/lib/waiver-approval';
 import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
 import { currentTermFromProfile, termStampOfRecord, normalizeYear } from '@/lib/term';
 import { computeLedgerFigures, summaryGrossDebt, summaryCredits, summaryYearPerformance, activeStudentKeySet } from '@/lib/finance-summary';
@@ -2840,38 +2841,11 @@ function DirectorDashboard({
     if (!firestore || !schoolId || isProcessingWaiver) return;
     setIsProcessingWaiver(true);
     try {
-      const batch = writeBatch(firestore);
-
-      const requestRef = doc(firestore, 'waiverRequests', req.id);
-      batch.update(requestRef, {
-        status: 'Approved',
-        approvedBy: user?.uid || '',
-        approvedByName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
-        approvedAt: serverTimestamp()
+      const waived = await approveWaiverRequest(firestore, req, {
+        uid: user?.uid,
+        name: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
       });
-
-      const recordRef = doc(firestore, 'financialRecords', req.recordId);
-      const newWaiverAmount = (req.currentWaiverAmount || 0) + req.requestedAmount;
-      const isFullySettled = (req.billedAmount - (req.amountPaid || 0) - newWaiverAmount) <= 0.01;
-
-      batch.update(recordRef, {
-        waiverAmount: newWaiverAmount,
-        waiverReason: req.reason,
-        status: isFullySettled ? 'Paid' : 'Partially Paid'
-      });
-
-      const logRef = doc(collection(firestore, 'auditLogs'));
-      batch.set(logRef, {
-        schoolId: req.schoolId || schoolId || '',
-        userName: profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Director',
-        action: 'APPROVE_WAIVER',
-        details: `Approved waiver of GH₵${req.requestedAmount.toFixed(2)} for student ${req.studentName} on invoice ${req.recordDescription}. Reason: ${req.reason}`,
-        timestamp: serverTimestamp(),
-        userId: user?.uid || null
-      });
-
-      await batch.commit();
-      toast({ title: 'Waiver Approved', description: `GH₵${req.requestedAmount.toFixed(2)} waiver has been applied successfully.` });
+      toast({ title: 'Waiver Approved', description: `GH₵${waived.toFixed(2)} waiver has been applied successfully.` });
     } catch (err: any) {
       console.error(err);
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to approve waiver request: ' + err.message });
@@ -9342,7 +9316,8 @@ function OldParentDashboard({
     const totalOutstanding = useMemo(() => {
         if (!financials) return 0;
         return financials.reduce((sum: number, r: any) => {
-            if (r.status === 'Pending Reversal' || r.status === 'Rejected Reversal') return sum;
+            // A rejected reversal leaves the bill owed as normal; only a reversal still pending is set aside.
+            if (r.status === 'Pending Reversal') return sum;
             const balance = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
             return sum + Math.max(0, balance);
         }, 0);
