@@ -63,16 +63,19 @@ export function AiQuizGenerator() {
       return null;
     }
     
+    // Only THIS school's classes. (Directors used to read every class of every school on the platform —
+    // a large read and other schools' data.)
+    if (!schoolId) return null;
     if (role === 'Administrator' || role === 'Director') {
-      return collection(firestore!, 'classes');
+      return query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId));
     }
     
     if (role === 'Teacher') {
-      return query(collection(firestore!, 'classes'), where('teacherId', '==', user.uid));
+      return query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId), where('teacherId', '==', user.uid));
     }
     
     return null;
-  }, [firestore, user, role]);
+  }, [firestore, user, role, schoolId]);
   
   const { data: classes, isLoading: classesLoading, error: classesError } = useCollection<Class>(classesQuery);
 
@@ -132,6 +135,8 @@ export function AiQuizGenerator() {
     const quizData = {
       ...generatedQuiz,
       classId: selectedClassId,
+      // Pupils only see quizzes of their own school — a quiz saved without it never appeared for them.
+      schoolId,
       teacherId: user.uid,
       topic: form.getValues('topic'),
       forGradeLevel: form.getValues('forGradeLevel'),

@@ -28,7 +28,8 @@ import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, serverTimestamp, query, where, doc, getDoc } from 'firebase/firestore'; 
+import { collection, addDoc, serverTimestamp, query, where, doc, getDoc, getDocs } from 'firebase/firestore';
+import { useOnceQuery } from '@/lib/firestore-once'; 
 import { behavioralRecordSchema, Student } from '@/lib/types';
 import { TimelineService } from '@/lib/timeline-service';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,12 +46,14 @@ export function BehavioralRecordForm() {
   const { schoolId } = useCurrentSchool();
   const [open, setOpen] = useState(false);
 
-  const studentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    return query(collection(firestore!, 'students'), where('schoolId', '==', schoolId));
-  }, [firestore, schoolId]);
-  
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+  // READ COST: the student list is read once per session (was: re-read in full every time the form opened).
+  const { data: students, isLoading: isLoadingStudents } = useOnceQuery<Student>(
+    (firestore && schoolId) ? `beh:students:${schoolId}` : null,
+    async () => {
+      const snap = await getDocs(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId)));
+      return snap.docs.map(d => ({ ...(d.data() as any), id: d.id, uid: (d.data() as any).uid || d.id })) as Student[];
+    }
+  );
 
   const sortedStudents = useMemo(() => {
     if (!students) return [];

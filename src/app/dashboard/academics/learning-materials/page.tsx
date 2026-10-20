@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, query, where, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Class, Student, LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,7 +33,7 @@ import {
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getAuth } from 'firebase/auth';
-import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 import { generateQuiz } from '@/ai/flows/generate-quiz-flow';
@@ -89,6 +90,7 @@ function MaterialForm({
   const { toast } = useToast();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
   const [formTab, setFormTab] = useState<'info' | 'resources' | 'quiz'>('info');
 
@@ -117,13 +119,30 @@ function MaterialForm({
     toast({ title: "Video Added", description: "Successfully added video reference link." });
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const fakeUrl = URL.createObjectURL(file); 
-      const type = file.type.includes('pdf') ? 'PDF' : file.type.includes('spreadsheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.csv') ? 'Spreadsheet' : 'Document';
-      setAttachments([...attachments, { name: file.name, url: fakeUrl, type: type as any }]);
-      toast({ title: "File Selected", description: `Added document: ${file.name}.` });
+  // Files are uploaded to the school's storage and saved as a real link. (Before, only a temporary "blob:" link
+  // that worked in the uploader's own browser tab was saved — pupils and other teachers got a broken link.)
+  const MAX_FILE_BYTES = 25 * 1024 * 1024;
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!schoolId) { toast({ variant: 'destructive', title: 'Error', description: 'School not found. Please refresh.' }); return; }
+    if (file.size > MAX_FILE_BYTES) { toast({ variant: 'destructive', title: 'File Too Large', description: 'Please choose a file smaller than 25 MB.' }); return; }
+    const type = file.type.includes('pdf') ? 'PDF' : file.type.includes('spreadsheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.csv') ? 'Spreadsheet' : 'Document';
+    setIsUploadingFile(true);
+    try {
+      const safeName = file.name.replace(/[^A-Za-z0-9._-]+/g, '_').slice(-80);
+      const path = `schools/${schoolId}/learning_materials/${classId || 'general'}/${Date.now()}-${safeName}`;
+      const fileRef = storageRef(getStorage(), path);
+      await uploadBytes(fileRef, file, { contentType: file.type || 'application/octet-stream' });
+      const url = await getDownloadURL(fileRef);
+      setAttachments(prev => [...prev, { name: file.name, url, type: type as any, storagePath: path } as any]);
+      toast({ title: "File Uploaded", description: `${file.name} is attached. Remember to save the folder.` });
+    } catch (err: any) {
+      console.error('Material upload failed:', err);
+      toast({ variant: 'destructive', title: 'Upload Failed', description: 'Could not upload the file. Check your connection and try again.' });
+    } finally {
+      setIsUploadingFile(false);
     }
   };
   
@@ -210,8 +229,11 @@ function MaterialForm({
         return;
     }
 
+    if (isUploadingFile) {
+        toast({ variant: 'destructive', title: 'Upload In Progress', description: 'Please wait for the file to finish uploading.' });
+        return;
+    }
     setIsSubmitting(true);
-
     try {
       const dataToSave: any = {
         strand: "STRAND 1: CORE ACADEMICS",
@@ -221,7 +243,8 @@ function MaterialForm({
         classId,
         subject,
         videoLinks: videos,
-        attachments: attachments,
+        // Temporary browser links ("blob:") can never be opened by anyone else — they are not saved.
+        attachments: attachments.filter(a => !String(a?.url || '').startsWith('blob:')),
         practiceQuestions: questions,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
@@ -229,17 +252,18 @@ function MaterialForm({
       };
 
       if (materialToEdit) {
-        await updateDocumentNonBlocking(doc(firestore, 'learning_materials', materialToEdit.id), dataToSave);
+        await updateDoc(doc(firestore, 'learning_materials', materialToEdit.id), dataToSave);
         toast({ title: 'Topic Folder Saved', description: 'Your learning materials have been updated.' });
       } else {
         dataToSave.createdAt = serverTimestamp();
         dataToSave.courseId = `material-${subject.replace(/\s+/g, '-').toLowerCase()}`;
-        await addDocumentNonBlocking(collection(firestore, 'learning_materials'), dataToSave);
+        await addDoc(collection(firestore, 'learning_materials'), dataToSave);
         toast({ title: 'Topic Folder Saved', description: 'Your new learning materials folder has been created.' });
       }
+      setIsSubmitting(false);
       setOpen(false);
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Failed to save.' });
+      toast({ variant: 'destructive', title: 'Error', description: error?.code === 'permission-denied' ? 'Your account is not allowed to save learning materials.' : 'Failed to save.' });
       setIsSubmitting(false); 
     }
   };
@@ -355,9 +379,9 @@ function MaterialForm({
                     </h4>
                     <div className="border border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 p-4 rounded-lg text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-50 relative">
                       <UploadCloud className="h-8 w-8 text-slate-400 mb-2" />
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">Click to select files to attach</p>
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">{isUploadingFile ? 'Uploading… please wait' : 'Click to select a file to attach (max 25 MB)'}</p>
                       <p className="text-[10px] text-slate-400 mt-0.5">Supports PDF, Documents, and Spreadsheets</p>
-                      <Input type="file" onChange={handleFileUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      <Input type="file" onChange={handleFileUpload} disabled={isUploadingFile} className="absolute inset-0 opacity-0 cursor-pointer" />
                     </div>
                   </div>
 
@@ -837,7 +861,8 @@ export default function LearningMaterialsPage() {
   const subjectsList = useMemo(() => {
     const fallbackSubjects = [ "English Language", "French", "Ghanaian Language", "I.C.T", "Integrated Science", "Mathematics", "R.M.E", "Social Studies" ];
     const dbSubjects = subjectsData ? subjectsData.map(s => s.name) : [];
-    return Array.from(new Set([...fallbackSubjects, ...dbSubjects])).sort();
+    // Use the school's own subjects; the generic list is only a fallback for a school with none set up.
+    return Array.from(new Set(dbSubjects.length > 0 ? dbSubjects : fallbackSubjects)).sort();
   }, [subjectsData]);
 
   // 4. Materials Query (loads all class materials to aggregate counts)
@@ -878,7 +903,6 @@ export default function LearningMaterialsPage() {
         if (selectedTopicId === id) {
           setSelectedTopicId('');
         }
-        forceRefetchMaterials();
     } catch (e) { toast({ variant: "destructive", title: "Error" }); }
   };
 
@@ -1448,10 +1472,15 @@ export default function LearningMaterialsPage() {
                       <div className="space-y-3">
                         {activeTopic.attachments && activeTopic.attachments.length > 0 ? (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {activeTopic.attachments.map((file, i) => (
+                            {activeTopic.attachments.map((file, i) => String(file.url || '').startsWith('blob:') ? (
+                              <div key={i} className="flex items-center gap-3 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
+                                <MaterialIcon type={file.type} />
+                                <span className="truncate"><strong>{file.name}</strong> — this file was never uploaded (saved before uploads worked). Please ask the teacher to attach it again.</span>
+                              </div>
+                            ) : (
                               <a 
                                 key={i} 
-                                href={file.url} 
+                                href={file.url}  
                                 target="_blank" 
                                 rel="noreferrer" 
                                 className="flex items-center justify-between p-3.5 bg-white border border-slate-200/60 rounded-xl hover:bg-slate-50 hover:border-purple-300 shadow-sm transition-all duration-200"

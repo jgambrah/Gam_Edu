@@ -22,7 +22,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
-import { collection, query, orderBy, where, doc, getDoc, setDoc, getDocs, limit } from 'firebase/firestore';
+import { collection, query, orderBy, where, doc, getDoc, setDoc, getDocs, limit, getCountFromServer } from 'firebase/firestore';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { Assessment, BehavioralRecord, Student, Class } from '@/lib/types';
 import { format } from 'date-fns';
@@ -73,6 +73,7 @@ export interface BehavioralSnapshotItem {
 }
 
 export interface AssessmentRecordsSnapshotDoc {
+  statsVersion?: number;
   id: string;
   schoolId: string;
   updatedAt: string;
@@ -115,7 +116,8 @@ export default function AssessmentsPage() {
     const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
-    const aiCredits = schoolData?.aiCredits ?? 810;
+    // Real balance only — never a made-up number while the school document loads.
+    const aiCredits: number | null = typeof schoolData?.aiCredits === 'number' ? schoolData.aiCredits : null;
     const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
 
     useEffect(() => {
@@ -195,18 +197,14 @@ export default function AssessmentsPage() {
     const { data: subjects, isLoading: isLoadingSubjects } = useCollection<any>(subjectsQuery);
 
     // 6. Fetch students roster (Only when in live/class mode, bypassed in snapshot/idle to save hundreds of reads)
-    const studentsQuery = useMemoFirebase(
-        () => (firestore && schoolId && isStaffRole && (loadMode === 'live' || loadMode === 'class')) ? query(
-            collection(firestore, 'students'),
-            where('schoolId', '==', schoolId)
-        ) : null,
-        [firestore, schoolId, isStaffRole, loadMode]
-    );
-    const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+    // READ COST: the whole school's student list is no longer read here — marks and behaviour records carry the
+    // pupil's name and class already (it cost one read per pupil every time "Live" or a class was loaded).
+    const students: Student[] | null = null;
+    const isLoadingStudents = false;
     
     const studentMap = useMemo(() => {
         if (!students) return new Map<string, string>();
-        return new Map(students.map(s => [s.uid, `${s.firstName} ${s.lastName}`]));
+        return new Map((students as Student[]).map(s => [s.uid, `${s.firstName} ${s.lastName}`]));
     }, [students]);
 
     const classMap = useMemo(() => {
@@ -221,8 +219,19 @@ export default function AssessmentsPage() {
 
     const studentClassMap = useMemo(() => {
         if (!students || !classMap) return new Map<string, string>();
-        return new Map(students.map(s => [s.uid, classMap.get(s.classId) || '']));
+        return new Map((students as Student[]).map(s => [s.uid, classMap.get(s.classId) || '']));
     }, [students, classMap]);
+
+    // Real totals via COUNT aggregations (billed ~1 read per 1,000 matching records).
+    const realRecordCounts = async () => {
+      const count = async (q: any) => { try { return (await getCountFromServer(q)).data().count; } catch { return 0; } };
+      const [totalGraded, totalIncidents, infractions] = await Promise.all([
+        count(query(collection(firestore!, 'assessments'), where('schoolId', '==', schoolId))),
+        count(query(collection(firestore!, 'behavioral_records'), where('schoolId', '==', schoolId))),
+        count(query(collection(firestore!, 'behavioral_records'), where('schoolId', '==', schoolId), where('incidentType', 'in', ['Infraction', 'Disciplinary Action']))),
+      ]);
+      return { totalGraded, totalIncidents, infractions };
+    };
 
     // Snapshot compiler: runs once on demand or re-sync to pack all historical records into 1 document
     const handleRecompileSnapshot = async () => {
@@ -251,11 +260,15 @@ export default function AssessmentsPage() {
           return (a.score / a.maxScore) >= 0.8;
         }).length;
 
-        const infractions = behavDocs.filter(r => r.incidentType === 'Infraction' || r.incidentType === 'Disciplinary Action').length;
-
-        const prevTotal = snapshot?.stats?.totalGraded || 0;
-        const totalGraded = Math.max(assessDocs.length, prevTotal, 5667);
-        const highScores = Math.max(high, snapshot?.stats?.highScores || 3889);
+        // REAL figures. (Before, the snapshot was stamped with invented numbers — at least 5,667 grades and 3,889
+        // high scores — whatever the school actually had.) Totals come from COUNT aggregations (about 1 read per
+        // 1,000 records); the 80%+ share is measured on the latest marks loaded below.
+        const counts = await realRecordCounts();
+        const totalGraded = counts.totalGraded;
+        const highScores = assessDocs.length > 0 && counts.totalGraded > 0
+            ? Math.round((high / assessDocs.length) * counts.totalGraded)
+            : high;
+        const infractions = counts.infractions;
 
         const snapshotDocId = `${schoolId}`;
         const snapshotPayload: AssessmentRecordsSnapshotDoc = {
@@ -266,10 +279,11 @@ export default function AssessmentsPage() {
           term,
           stats: {
             totalGraded,
-            totalIncidents: Math.max(behavDocs.length, snapshot?.stats?.totalIncidents || 0),
+            totalIncidents: counts.totalIncidents,
             highScores,
-            infractions: Math.max(infractions, snapshot?.stats?.infractions || 0)
+            infractions,
           },
+          statsVersion: 2,
           assessments: assessDocs.map(a => ({
             id: a.id,
             studentId: a.studentId || '',
@@ -324,6 +338,20 @@ export default function AssessmentsPage() {
         const snap = await getDoc(snapRef);
         if (snap.exists()) {
           const data = snap.data() as AssessmentRecordsSnapshotDoc;
+          if ((data as any).statsVersion !== 2) {
+            // Saved by the old compiler, whose totals were partly invented: replace them with real counts once.
+            const counts = await realRecordCounts();
+            const list = data.assessments || [];
+            const highInSample = list.filter((a: any) => a?.maxScore && (a.score / a.maxScore) >= 0.8).length;
+            data.stats = {
+              totalGraded: counts.totalGraded,
+              totalIncidents: counts.totalIncidents,
+              infractions: counts.infractions,
+              highScores: list.length > 0 ? Math.round((highInSample / list.length) * counts.totalGraded) : 0,
+            };
+            (data as any).statsVersion = 2;
+            setDoc(snapRef, { stats: data.stats, statsVersion: 2 }, { merge: true }).catch(() => {});
+          }
           setSnapshot(data);
           setLoadMode('snapshot');
           toast({
@@ -486,7 +514,7 @@ export default function AssessmentsPage() {
               actions={
                 <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
                   <span className="text-amber-400">⚡</span>
-                  <span>{aiCredits} AI Credits</span>
+                  <span>{aiCredits === null ? '…' : aiCredits.toLocaleString()} AI Credits</span>
                 </div>
               }
             />

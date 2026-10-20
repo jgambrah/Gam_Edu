@@ -4,6 +4,7 @@ import { requireSignedInAction } from '@/lib/session-guard';
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { checkAndSpendCredits } from '@/app/actions/credits';
+import { refundSchoolCredits } from '@/lib/credits-server';
 
 const GenerateQuizInputSchema = z.object({
   topic: z.string().describe('The topic for the quiz.'),
@@ -58,18 +59,29 @@ RULES FOR QUESTION GENERATION:
 
 export async function generateQuiz(input: GenerateQuizInput): Promise<GenerateQuizOutput> {
   await requireSignedInAction();
+  const cost = 10; // Flat cost of 10 credits for quiz/assignment generation
+  let charged = false;
   if (input.schoolId) {
-    const cost = 10; // Flat cost of 10 credits for quiz/assignment generation
     const creditResult = await checkAndSpendCredits(input.schoolId, cost);
     if (!creditResult.success) {
       throw new Error(creditResult.error || 'Insufficient AI credits.');
     }
+    charged = true;
   }
 
   const resolvedInput = {
     ...input,
     questionType: input.questionType || 'mcq',
   };
-  const { output } = await generateQuizPrompt(resolvedInput, { model: 'googleai/gemini-3-flash-preview' });
-  return output!;
+  try {
+    const { output } = await generateQuizPrompt(resolvedInput, { model: 'googleai/gemini-3-flash-preview' });
+    if (!output || !Array.isArray((output as any).questions) || (output as any).questions.length === 0) {
+      throw new Error('The AI did not return any questions. Please try again.');
+    }
+    return output;
+  } catch (err) {
+    // Charged but nothing was produced: give the credits back.
+    if (charged && input.schoolId) await refundSchoolCredits(input.schoolId, cost);
+    throw err;
+  }
 }
