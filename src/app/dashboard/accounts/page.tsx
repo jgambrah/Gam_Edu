@@ -4563,6 +4563,8 @@ export default function AccountsPage() {
   }, [isLedgerLoaded, advisoryActiveRecords, performanceRecords, preAggregatedBilling]);
 
   const hasDisplayStats = isLedgerLoaded || preAggregatedBilling.hasData;
+  // Per-fee debts are in the server summary too (1 read), so they show without loading the full ledger.
+  const hasStreamSummary = !isLedgerLoaded && Boolean((dashboardSummary as any)?.financials?.streamDebts);
 
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
@@ -4673,14 +4675,17 @@ export default function AccountsPage() {
   // balances and put the highest debts first. A student's full ledger is still read only when opened.
   const [balanceIndex, setBalanceIndex] = useState<{ byStudent?: Record<string, { debt?: number; credit?: number }>; updatedAt?: any } | null>(null);
   const [loadingBalanceIndex, setLoadingBalanceIndex] = useState(false);
+  const [balanceIndexIssue, setBalanceIndexIssue] = useState<'missing' | 'denied' | null>(null);
   const loadBalanceIndex = useCallback(async () => {
     if (!firestore || !schoolId) return;
     setLoadingBalanceIndex(true);
     try {
       const snap = await getDoc(doc(firestore, 'studentBalances', schoolId));
       setBalanceIndex(snap.exists() ? (snap.data() as any) : null);
-    } catch {
+      setBalanceIndexIssue(snap.exists() ? null : 'missing');
+    } catch (e: any) {
       setBalanceIndex(null); // no access or not built yet: the list falls back to "View Ledger & Balance"
+      setBalanceIndexIssue(String(e?.code || e?.message || '').includes('permission') ? 'denied' : 'missing');
     } finally {
       setLoadingBalanceIndex(false);
     }
@@ -5472,12 +5477,12 @@ export default function AccountsPage() {
                                             <BookOpen className="h-3.5 w-3.5 text-blue-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            {isLedgerLoaded ? (
+                                            {(isLedgerLoaded || hasStreamSummary) ? (
                                                 <>
                                                     <div className="text-base font-bold text-slate-800 font-mono">
                                                         GH₵{dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                     </div>
-                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{isLedgerLoaded ? 'Calculated from ledger' : 'From server summary (1 read)'}</p>
                                                 </>
                                             ) : (
                                                 <>
@@ -5500,12 +5505,12 @@ export default function AccountsPage() {
                                             <Utensils className="h-3.5 w-3.5 text-orange-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            {isLedgerLoaded ? (
+                                            {(isLedgerLoaded || hasStreamSummary) ? (
                                                 <>
                                                     <div className="text-base font-bold text-slate-800 font-mono">
                                                         GH₵{dashboardStats.outstandingCanteen.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                     </div>
-                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{isLedgerLoaded ? 'Calculated from ledger' : 'From server summary (1 read)'}</p>
                                                 </>
                                             ) : (
                                                 <>
@@ -5528,12 +5533,12 @@ export default function AccountsPage() {
                                             <BusIcon className="h-3.5 w-3.5 text-amber-500" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            {isLedgerLoaded ? (
+                                            {(isLedgerLoaded || hasStreamSummary) ? (
                                                 <>
                                                     <div className="text-base font-bold text-slate-800 font-mono">
                                                         GH₵{dashboardStats.outstandingTransport.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                     </div>
-                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{isLedgerLoaded ? 'Calculated from ledger' : 'From server summary (1 read)'}</p>
                                                 </>
                                             ) : (
                                                 <>
@@ -5556,12 +5561,12 @@ export default function AccountsPage() {
                                             <HandCoins className="h-3.5 w-3.5 text-slate-400" />
                                         </CardHeader>
                                         <CardContent className="p-3 pt-1">
-                                            {isLedgerLoaded ? (
+                                            {(isLedgerLoaded || hasStreamSummary) ? (
                                                 <>
                                                     <div className="text-base font-bold text-slate-800 font-mono">
                                                         GH₵{dashboardStats.otherDebt.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                     </div>
-                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">Calculated from ledger</p>
+                                                    <p className="text-[10px] text-slate-400 font-medium mt-0.5">{isLedgerLoaded ? 'Calculated from ledger' : 'From server summary (1 read)'}</p>
                                                 </>
                                             ) : (
                                                 <>
@@ -6458,7 +6463,9 @@ export default function AccountsPage() {
                                         <span className="font-semibold text-slate-800">On-Demand Cashier Mode:</span> Searching or clicking any student loads only their ledger on-demand (~15–30 reads).
                                         {!viewTermId && (balanceIndex
                                             ? <> Balances for all students come from one summary (1 read), highest debt first{balanceIndexUpdated ? ` · updated ${balanceIndexUpdated.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}.</>
-                                            : <> Balances appear here after tonight's summary rebuild.</>)}
+                                            : balanceIndexIssue === 'denied'
+                                                ? <> Balances are not available to this account yet (database rules not deployed, or your role is not a finance role).</>
+                                                : <> Balances will appear once the balance summary has been built (run the summary rebuild once after deploying).</>)}
                                     </p>
                                     {!viewTermId && (
                                         <Button variant="ghost" size="sm" onClick={() => { loadBalanceIndex(); loadRoster(); }} disabled={loadingBalanceIndex} className="h-7 px-2 text-[11px] text-indigo-700 shrink-0">

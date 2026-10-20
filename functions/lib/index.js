@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.quizAnswerVault = exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
 var dashboard_aggregators_1 = require("./dashboard-aggregators");
 Object.defineProperty(exports, "onStudentWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onStudentWrite; } });
 Object.defineProperty(exports, "onAttendanceWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onAttendanceWrite; } });
@@ -18,4 +18,6 @@ var term_management_1 = require("./term-management");
 Object.defineProperty(exports, "requestTermUnlock", { enumerable: true, get: function () { return term_management_1.requestTermUnlock; } });
 var term_safety_net_1 = require("./term-safety-net");
 Object.defineProperty(exports, "enforceTermRolloverSafetyNet", { enumerable: true, get: function () { return term_safety_net_1.enforceTermRolloverSafetyNet; } });
+var quiz_answer_vault_1 = require("./quiz-answer-vault");
+Object.defineProperty(exports, "quizAnswerVault", { enumerable: true, get: function () { return quiz_answer_vault_1.quizAnswerVault; } });
 //# sourceMappingURL=index.js.map

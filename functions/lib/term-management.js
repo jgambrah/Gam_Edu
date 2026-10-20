@@ -106,25 +106,16 @@ async function requestTermUnlock(params) {
     // 3. Optional chunked background mutation across raw records if explicitly requested
     if (updateRawRecords) {
         try {
-            const collectionsToUnlock = ['attendance', 'assessments', 'report-cards', 'financialRecords'];
+            // Only records closed by THIS term's rollover / academic close (exact match — the old fuzzy text match
+            // also unlocked every record that had no term at all).
+            const collectionsToUnlock = ['attendance', 'assessments', 'report-cards', 'behavioral_records', 'financialRecords'];
             const docUpdates = [];
             for (const colName of collectionsToUnlock) {
                 const snap = await db.collection(colName)
                     .where('schoolId', '==', schoolId)
+                    .where('closedInTermId', '==', termId)
                     .get();
-                snap.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const docTerm = data.termId || data.term || '';
-                    if (docTerm === termId ||
-                        docTerm.toLowerCase() === termId.toLowerCase() ||
-                        docTerm.toLowerCase().includes(termId.toLowerCase()) ||
-                        termId.toLowerCase().includes(docTerm.toLowerCase())) {
-                        docUpdates.push({
-                            ref: docSnap.ref,
-                            data: { isArchived: false, unlockedForCorrection: true }
-                        });
-                    }
-                });
+                snap.forEach(docSnap => docUpdates.push({ ref: docSnap.ref, data: { isArchived: false, unlockedForCorrection: true } }));
             }
             if (docUpdates.length > 0) {
                 rawRecordsUpdated = await commitUpdatesInChunks(db, docUpdates, 400);
