@@ -112,7 +112,11 @@ export function StaffDirectoryDashboardView({
 
     try {
       const idToken = await auth?.currentUser?.getIdToken();
-      const res = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName, phone }, sId, idToken);
+      // One-off temporary password (was "password123" for every account); must be changed at first sign-in.
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      const rnd = new Uint32Array(8); crypto.getRandomValues(rnd);
+      const tempPassword = 'Gam-' + Array.from(rnd, b => chars[b % chars.length]).join('');
+      const res = await createNewUser(email, tempPassword, newStaffRole, { firstName, lastName, phone }, sId, idToken);
       if ('error' in res) throw new Error(res.error);
 
       if (res.uid && phone) {
@@ -126,7 +130,8 @@ export function StaffDirectoryDashboardView({
 
       toast({
         title: "Staff Account Created",
-        description: `${firstName} ${lastName} added with mobile ${phone || 'N/A'}.`
+        description: `${firstName} ${lastName} added. Temporary password: ${tempPassword} — share it privately; they must change it at first sign-in.`,
+        duration: 60000
       });
       setIsAddStaffOpen(false);
     } catch (err: any) {

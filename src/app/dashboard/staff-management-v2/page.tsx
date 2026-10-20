@@ -9,6 +9,16 @@ import { collection, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query,
 import { UserRole, STAFF_ROLES } from '@/lib/types';
 import { createNewUser } from '@/app/actions/create-user';
 import { adminResetUserPassword } from '@/app/actions/admin-reset-password';
+import { deactivateStaffAccount } from '@/app/actions/staff-admin';
+
+/** A one-off temporary password (the staff member must change it at first sign-in). Before, every new account
+ *  and every reset used "password123" — with predictable school e-mail addresses, anyone could sign in first. */
+function makeTempPassword(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  const bytes = new Uint32Array(8);
+  (globalThis.crypto || (window as any).crypto).getRandomValues(bytes);
+  return 'Gam-' + Array.from(bytes, b => chars[b % chars.length]).join('');
+}
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 
@@ -82,7 +92,8 @@ export default function StaffManagementPage() {
 
   // Password Reset State
   const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
-  const [newTempPassword, setNewTempPassword] = useState('password123');
+  const [newTempPassword, setNewTempPassword] = useState('');
+  const [createdCredentials, setCreatedCredentials] = useState<{ name: string; email: string; password: string } | null>(null);
   const [isResetting, setIsResetting] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -152,7 +163,8 @@ export default function StaffManagementPage() {
 
     try {
       const idToken = await auth?.currentUser?.getIdToken();
-      const result = await createNewUser(email, 'password123', newStaffRole, { firstName, lastName, phone }, adminSchoolId, idToken);
+      const tempPassword = makeTempPassword();
+      const result = await createNewUser(email, tempPassword, newStaffRole, { firstName, lastName, phone }, adminSchoolId, idToken);
       if ('error' in result) throw new Error(result.error);
 
       if (result.uid && phone) {
@@ -173,6 +185,7 @@ export default function StaffManagementPage() {
       });
 
       toast({ title: 'Staff added', description: `${firstName} ${lastName} has been created.` });
+      setCreatedCredentials({ name: `${firstName} ${lastName}`, email, password: tempPassword });
       setIsAddOpen(false);
       loadData();
     } catch (error: any) {
@@ -245,11 +258,15 @@ export default function StaffManagementPage() {
 
   // ── delete staff ───────────────────────────────────────────────────────────
   const handleDelete = async (id: string) => {
-    if (!firestore || !confirm('Delete this staff member? This cannot be undone.')) return;
+    if (!firestore || !confirm('Remove this staff member? Their sign-in will be disabled and they will lose all access to the school.')) return;
     const staffObj = staff.find(m => m.id === id);
     const staffName = staffObj ? `${staffObj.firstName} ${staffObj.lastName}` : `Staff UID ${id}`;
     try {
-      await deleteDoc(doc(firestore, 'staff', id));
+      // Server-side: disables the sign-in, ends their sessions and removes their staff role everywhere
+      // (deleting only the staff record used to leave them signed in with their old role).
+      const idToken = await auth?.currentUser?.getIdToken();
+      const res = await deactivateStaffAccount(staffObj?.uid || id, idToken);
+      if (!res.success) throw new Error(res.error || 'Could not remove staff member.');
 
       await logAuditEvent({
         firestore,
@@ -424,7 +441,7 @@ export default function StaffManagementPage() {
                             </TableCell>
                             <TableCell className="text-right py-4 px-6">
                                 <div className="flex justify-end gap-1.5">
-                                    <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(member)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
+                                    <Button variant="ghost" size="sm" onClick={() => { setNewTempPassword(makeTempPassword()); setResetPasswordUser(member); }} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
                                         <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
                                     </Button>
                                     <Button variant="ghost" size="sm" onClick={() => setEditingStaff(member)} className="h-8.5 w-8.5 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg">
@@ -621,6 +638,26 @@ export default function StaffManagementPage() {
                       Force Password Reset
                   </Button>
               </div>
+          </DialogContent>
+      </Dialog>
+      {/* One-time display of a new account's temporary password */}
+      <Dialog open={!!createdCredentials} onOpenChange={(open) => !open && setCreatedCredentials(null)}>
+          <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                  <DialogTitle>Account created — share these details</DialogTitle>
+                  <DialogDescription>
+                      Give these to {createdCredentials?.name} privately. They will be asked to choose their own password at first sign-in.
+                      This password is shown only once.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-2 rounded-xl border bg-slate-50 p-4 font-mono text-sm">
+                  <div><span className="text-slate-500">Email:</span> {createdCredentials?.email}</div>
+                  <div><span className="text-slate-500">Temporary password:</span> <strong>{createdCredentials?.password}</strong></div>
+              </div>
+              <DialogFooter>
+                  <Button variant="outline" onClick={() => { try { navigator.clipboard.writeText(`Email: ${createdCredentials?.email}\nTemporary password: ${createdCredentials?.password}`); toast({ title: 'Copied' }); } catch {} }}>Copy</Button>
+                  <Button onClick={() => setCreatedCredentials(null)}>Done</Button>
+              </DialogFooter>
           </DialogContent>
       </Dialog>
     </div>

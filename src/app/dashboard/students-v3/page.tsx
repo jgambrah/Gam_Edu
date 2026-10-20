@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc, useAuth } from '@/firebase';
 import { logAuditEvent } from '@/lib/audit';
@@ -19,6 +19,8 @@ import {
   where,
   deleteField,
   arrayUnion,
+  getCountFromServer,
+  increment,
   arrayRemove
 } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -52,6 +54,20 @@ import { TimelineService } from '@/lib/timeline-service';
 import { StudentJourneyTimeline } from '@/components/StudentJourneyTimeline';
 import { useDashboardSummary } from '@/hooks/use-dashboard-summary';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
+
+// Fields never copied into the shared directory snapshot (secrets / device tokens are not directory data).
+const SNAPSHOT_PRIVATE_FIELDS = ['password', 'tempPassword', 'fcmTokens', 'pushTokens', 'notificationTokens', 'apiKey'];
+function stripPrivate<T extends Record<string, any>>(o: T): T {
+  if (!o || typeof o !== 'object') return o;
+  const copy: any = { ...o };
+  SNAPSHOT_PRIVATE_FIELDS.forEach(k => { delete copy[k]; });
+  return copy;
+}
+// A Firestore document holds at most 1 MiB; keep a margin.
+const SNAPSHOT_MAX_BYTES = 950_000;
+function approxBytes(v: any): number {
+  try { return new Blob([JSON.stringify(v)]).size; } catch { return JSON.stringify(v || '').length; }
+}
 
 export interface StudentDirectorySnapshotDoc {
   id: string;
@@ -248,25 +264,29 @@ export default function StudentsV3Page() {
         schoolId: adminSchoolId,
         updatedAt: new Date().toISOString(),
         studentCount: studentList.length,
-        students: studentList,
+        students: studentList.map(stripPrivate),
         classes: classList,
         hostelAllocations: allocationList,
-        parentMap: pMap,
-        parents: parentList
+        parentMap: Object.fromEntries(Object.entries(pMap).map(([k, v]) => [k, stripPrivate(v)])),
+        parents: parentList.map(stripPrivate)
       };
-
       const snapRef = doc(firestore, 'student_directory_snapshots', snapshotDocId);
       try {
+        // Too big for one document: say so, instead of failing silently and re-reading everything on every load.
+        if (approxBytes(snapshotPayload) > SNAPSHOT_MAX_BYTES) throw new Error('snapshot-too-large');
         await setDoc(snapRef, snapshotPayload, { merge: true });
         toast({ 
           title: "1-Read Snapshot Compiled & Saved 📦", 
           description: `Consolidated ${studentList.length} student records into 1 document for future instant, 1-read loads.` 
         });
-      } catch (cacheErr) {
+      } catch (cacheErr: any) {
         console.warn("Snapshot cache write notice (live data will be used):", cacheErr);
         toast({ 
+          variant: cacheErr?.message === 'snapshot-too-large' ? 'destructive' : undefined,
           title: "Student Records Loaded 🎓", 
-          description: `Loaded ${studentList.length} students directly from database.` 
+          description: cacheErr?.message === 'snapshot-too-large'
+            ? `Loaded ${studentList.length} students directly. The list is too large to save as a 1-read snapshot, so each load reads the records directly — please tell support.`
+            : `Loaded ${studentList.length} students directly from database.`
         });
       }
 
@@ -317,10 +337,24 @@ export default function StudentsV3Page() {
         setActiveSnapshot(data);
         setHasLoadedStudents(true);
         setStatusMsg("Ready");
-        toast({ 
-          title: "1-Read Student Directory Loaded! 📦", 
-          description: `Retrieved ${data.students?.length || 0} student profiles in a single document read.` 
-        });
+        // Freshness check (1 read): students admitted or removed on other pages since the snapshot was saved.
+        let liveCount: number | null = null;
+        try {
+          liveCount = (await getCountFromServer(query(collection(firestore, 'students'), where('schoolId', '==', adminSchoolId)))).data().count;
+        } catch { /* count unavailable — skip the check */ }
+        const savedCount = data.students?.length || 0;
+        if (liveCount !== null && liveCount !== savedCount) {
+          toast({
+            variant: 'destructive',
+            title: "Saved list is out of date",
+            description: `The database has ${liveCount} students but the saved list has ${savedCount}. Press "Re-sync Snapshot" to refresh it.`
+          });
+        } else {
+          toast({ 
+            title: "1-Read Student Directory Loaded! 📦", 
+            description: `Retrieved ${savedCount} student profiles in a single document read.${data.updatedAt ? ` Saved ${new Date(data.updatedAt).toLocaleString()}.` : ''}` 
+          });
+        }
       } else {
         // Snapshot not yet compiled, compile it once and save for all future reads
         await handleRecompileStudentSnapshot();
@@ -339,6 +373,38 @@ export default function StudentsV3Page() {
   }, [firestore, adminSchoolId, isUserLoading, toast, handleRecompileStudentSnapshot]);
 
   const loadData = handleRecompileStudentSnapshot;
+
+  // --- KEEP THE SNAPSHOT CURRENT WITHOUT RE-READING ---
+  // Edits on this page update the list on screen and then save the snapshot from it: 1 write, 0 reads.
+  // (Before, every edit, archive or admission re-read EVERY student, parent, class and hostel record.)
+  const [snapshotDirtyTick, setSnapshotDirtyTick] = useState(0);
+  const snapshotDirtyRef = useRef(false);
+  const markSnapshotDirty = useCallback(() => { snapshotDirtyRef.current = true; setSnapshotDirtyTick(t => t + 1); }, []);
+  useEffect(() => {
+    if (!snapshotDirtyRef.current || !hasLoadedStudents || !firestore || !adminSchoolId) return;
+    const timer = setTimeout(async () => {
+      snapshotDirtyRef.current = false;
+      const payload: StudentDirectorySnapshotDoc = {
+        id: adminSchoolId,
+        schoolId: adminSchoolId,
+        updatedAt: new Date().toISOString(),
+        studentCount: students.length,
+        students: students.map(stripPrivate),
+        classes,
+        hostelAllocations,
+        parentMap: Object.fromEntries(Object.entries(parentMap).map(([k, v]) => [k, stripPrivate(v)])),
+        parents: parentsList.map(stripPrivate),
+      };
+      if (approxBytes(payload) > SNAPSHOT_MAX_BYTES) return;
+      try {
+        await setDoc(doc(firestore, 'student_directory_snapshots', adminSchoolId), payload);
+      } catch (err) {
+        console.warn('Directory snapshot not updated:', err);
+      }
+    }, 800);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshotDirtyTick, students, parentsList, parentMap]);
 
   const ensureParentsLoaded = useCallback(async () => {
     if (!firestore || !adminSchoolId) return;
@@ -422,6 +488,7 @@ export default function StudentsV3Page() {
         return s;
       });
       setStudents(updatedStudents);
+      markSnapshotDirty();
 
       const updatedPMap = { ...parentMap };
       if (student.uid) updatedPMap[student.uid] = parentObj;
@@ -507,6 +574,7 @@ export default function StudentsV3Page() {
         return s;
       });
       setStudents(updatedStudents);
+      markSnapshotDirty();
 
       const updatedPMap = { ...parentMap };
       if (student.uid) delete updatedPMap[student.uid];
@@ -661,7 +729,8 @@ export default function StudentsV3Page() {
         });
 
         toast({ title: "Status Updated", description: `Student is now ${newStatus}.` });
-        loadData();
+        setStudents(prev => prev.map(s => (s.id === id ? { ...s, enrollmentStatus: newStatus } as any : s)));
+        markSnapshotDirty();
     } catch (error: any) {
         console.error(error);
         toast({ variant: 'destructive', title: "Error", description: error.message || "Failed to update status." });
@@ -787,7 +856,29 @@ export default function StudentsV3Page() {
           toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}.` });
           setIsAddOpen(false);
           setSelectedEnrollmentParentId('');
-          loadData(); 
+          // Add the new pupil to the list and the saved snapshot: 1 read (the new record), not a full re-read.
+          try {
+            const fresh = await getDoc(doc(firestore!, 'students', result.uid));
+            if (fresh.exists()) {
+              const newStudent = stripPrivate({ id: fresh.id, ...(fresh.data() as any) }) as Student;
+              if (hasLoadedStudents) {
+                setStudents(prev => [...prev.filter(s => s.id !== newStudent.id), newStudent]);
+                if (chosenParent) {
+                  setParentMap(prev => ({ ...prev, [result.uid]: chosenParent }));
+                  setParentsList(prev => prev.map((p: any) => p.id === chosenParent.id ? { ...p, studentIds: Array.from(new Set([...(p.studentIds || []), result.uid])) } : p));
+                }
+                markSnapshotDirty();
+              } else {
+                await updateDoc(doc(firestore!, 'student_directory_snapshots', adminSchoolId), {
+                  students: arrayUnion(newStudent),
+                  studentCount: increment(1),
+                  ...(chosenParent ? { [`parentMap.${result.uid}`]: stripPrivate(chosenParent) } : {}),
+                }).catch(() => { /* no snapshot yet — it is built on first load */ });
+              }
+            }
+          } catch (snapErr) {
+            console.warn('New student not added to the saved list:', snapErr);
+          }
       } catch (error: any) {
           toast({ variant: 'destructive', title: "Error", description: error.message });
       } finally {
@@ -869,8 +960,11 @@ export default function StudentsV3Page() {
         });
 
         toast({ title: "Updated", description: "Student profile saved." });
+        const localUpdate: any = { ...updateData, updatedAt: new Date().toISOString() };
+        if (statusChanged) localUpdate.enrollmentStatus = selectedStatus;
+        setStudents(prev => prev.map(s => (s.id === editingStudent.id ? { ...s, ...localUpdate } as any : s)));
+        markSnapshotDirty();
         setEditingStudent(null);
-        loadData();
     } catch (error: any) {
         console.error(error);
         toast({ variant: 'destructive', title: "Error", description: error.message });
@@ -1183,7 +1277,7 @@ export default function StudentsV3Page() {
                         </div>
                         <h3 className="text-2xl font-black text-slate-900 tracking-tight">Student Directory Generated in 1 Document Read</h3>
                         <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
-                            To prevent high Firestore read cost spikes and speed up loading across GAM Edu, full student records are retrieved in a single consolidated document read (<strong>1 read for all 253+ students</strong>).
+                            To prevent high Firestore read cost spikes and speed up loading across GAM Edu, full student records are retrieved in a single consolidated document read (<strong>1 read for all {dashboardSummary?.studentCount?.total ?? ''} students</strong>).
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center justify-center gap-3 pt-2">

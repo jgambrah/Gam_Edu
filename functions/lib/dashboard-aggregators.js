@@ -20,6 +20,14 @@ const SUMMARY = (schoolId) => db.collection('dashboard_summaries').doc(schoolId)
  * reading any bills. Kept current by the bill trigger below (no reads) and rebuilt exactly every night.
  */
 const BALANCES = (schoolId) => db.collection('studentBalances').doc(schoolId);
+/** Writes the whole balance index; drops the per-year/aging detail if a very large school would exceed 1 MiB. */
+async function writeBalanceIndex(schoolId, byStudent, extra) {
+    let data = byStudent;
+    if (Buffer.byteLength(JSON.stringify(data), 'utf8') > 900000) {
+        data = Object.fromEntries(Object.entries(byStudent).map(([k, v]) => [k, { debt: v.debt, credit: v.credit }]));
+    }
+    await BALANCES(schoolId).set(Object.assign({ schoolId, byStudent: data, updatedAt: firestore_2.FieldValue.serverTimestamp() }, extra));
+}
 /**
  * Student roster for Student Billing: studentRoster/{schoolId} = { students: { <docId>: {...billing fields} } }.
  * The page reads this ONE document instead of every student document (and instead of a live listener).
@@ -49,6 +57,18 @@ async function writeRoster(schoolId, docs) {
         return;
     }
     await ROSTER(schoolId).set({ schoolId, students, rebuiltAt: firestore_2.FieldValue.serverTimestamp(), updatedAt: firestore_2.FieldValue.serverTimestamp() });
+}
+const emptyIdx = () => ({ debt: 0, credit: 0, years: {}, aging: { c: 0, a30: 0, a60: 0, a90: 0 }, oldestDue: 0 });
+const AGING_KEY = { current: 'c', age30: 'a30', age60: 'a60', age90: 'a90' };
+function billDueMs(r) { return anyMs(r === null || r === void 0 ? void 0 : r.dueDate) || anyMs(r === null || r === void 0 ? void 0 : r.date) || anyMs(r === null || r === void 0 ? void 0 : r.createdAt); }
+function roundIdx(e) {
+    const r2 = (n) => Math.round(n * 100) / 100;
+    return {
+        debt: r2(e.debt), credit: r2(e.credit),
+        years: Object.fromEntries(Object.entries(e.years).map(([y, v]) => [y, { b: r2(v.b), p: r2(v.p), w: r2(v.w) }])),
+        aging: { c: r2(e.aging.c), a30: r2(e.aging.a30), a60: r2(e.aging.a60), a90: r2(e.aging.a90) },
+        oldestDue: e.oldestDue || 0,
+    };
 }
 /** Same balance the Student Billing ledger shows for a bill (billed − paid − waived). */
 function ledgerBalance(r) {
@@ -235,13 +255,22 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
         if (r.status === 'Pending Reversal')
             return;
         if (r.studentId) {
+            const e = (byStudent[String(r.studentId)] = byStudent[String(r.studentId)] || emptyIdx());
+            const yk0 = recordYearKey(r);
+            const yv = (e.years[yk0] = e.years[yk0] || { b: 0, p: 0, w: 0 });
+            yv.b += Number(r.billedAmount) || 0;
+            yv.p += Number(r.amountPaid) || 0;
+            yv.w += Number(r.waiverAmount) || 0;
             const lb = ledgerBalance(r);
-            if (Math.abs(lb) > 0.009) {
-                const e = (byStudent[String(r.studentId)] = byStudent[String(r.studentId)] || { debt: 0, credit: 0 });
-                if (lb > 0)
-                    e.debt += lb;
-                else
-                    e.credit -= lb;
+            if (lb > 0.009) {
+                e.debt += lb;
+                e.aging[AGING_KEY[agingBucket(r)]] += lb;
+                const due = billDueMs(r);
+                if (due && (!e.oldestDue || due < e.oldestDue))
+                    e.oldestDue = due;
+            }
+            else if (lb < -0.009) {
+                e.credit -= lb;
             }
         }
         if (r.studentId && !activeStudentIds.has(r.studentId) && activeStudentIds.size > 0)
@@ -469,13 +498,7 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
         }
     }, { merge: true });
     // Exact rebuild of the balance index (replaces the document, removing any drift).
-    const r2 = (n) => Math.round(n * 100) / 100;
-    await BALANCES(schoolId).set({
-        schoolId,
-        byStudent: Object.fromEntries(Object.entries(byStudent).map(([k, v]) => [k, { debt: r2(v.debt), credit: r2(v.credit) }])),
-        rebuiltAt: firestore_2.FieldValue.serverTimestamp(),
-        updatedAt: firestore_2.FieldValue.serverTimestamp(),
-    });
+    await writeBalanceIndex(schoolId, Object.fromEntries(Object.entries(byStudent).map(([k, v]) => [k, roundIdx(v)])), { rebuiltAt: firestore_2.FieldValue.serverTimestamp() });
     await writeRoster(schoolId, studentsSnap.docs);
 }
 /**
@@ -514,14 +537,22 @@ async function refreshOpenDebts(schoolId) {
     const streamDebts = { tuition: 0, canteen: 0, transport: 0, other: 0 };
     const owedByCat = { 'Tuition': 0, 'Canteen': 0, 'Transport': 0, 'PTA Levy': 0, 'Other': 0 };
     const debtByStudent = {};
+    const agingByStudent = {};
     unpaidSnap.forEach(d => {
         var _a, _b, _c, _d;
         const r = d.data();
         if (r.isArchived === true || r.status === 'Pending Reversal')
             return;
         const lb = ledgerBalance(r);
-        if (r.studentId && lb > 0.009)
-            debtByStudent[String(r.studentId)] = (debtByStudent[String(r.studentId)] || 0) + lb;
+        if (r.studentId && lb > 0.009) {
+            const k = String(r.studentId);
+            debtByStudent[k] = (debtByStudent[k] || 0) + lb;
+            const ag = (agingByStudent[k] = agingByStudent[k] || { c: 0, a30: 0, a60: 0, a90: 0, oldestDue: 0 });
+            ag[AGING_KEY[agingBucket(r)]] += lb;
+            const due = billDueMs(r);
+            if (due && (!ag.oldestDue || due < ag.oldestDue))
+                ag.oldestDue = due;
+        }
         if (r.studentId && !activeStudentIds.has(r.studentId) && activeStudentIds.size > 0)
             return;
         const billed = Number((_b = (_a = r.billedAmount) !== null && _a !== void 0 ? _a : r.amount) !== null && _b !== void 0 ? _b : 0);
@@ -579,13 +610,16 @@ async function refreshOpenDebts(schoolId) {
     const oldBy = (balancesSnap.data() || {}).byStudent || {};
     const byStudent = {};
     new Set([...Object.keys(oldBy), ...Object.keys(debtByStudent)]).forEach(k => {
-        var _a;
+        var _a, _b;
         const debt = r2(debtByStudent[k] || 0);
         const credit = r2(Number((_a = oldBy[k]) === null || _a === void 0 ? void 0 : _a.credit) || 0);
-        if (debt > 0.009 || credit > 0.009)
-            byStudent[k] = { debt, credit };
+        const years = ((_b = oldBy[k]) === null || _b === void 0 ? void 0 : _b.years) || {};
+        const ag = agingByStudent[k] || { c: 0, a30: 0, a60: 0, a90: 0, oldestDue: 0 };
+        if (debt > 0.009 || credit > 0.009 || Object.keys(years).length) {
+            byStudent[k] = { debt, credit, years, aging: { c: r2(ag.c), a30: r2(ag.a30), a60: r2(ag.a60), a90: r2(ag.a90) }, oldestDue: ag.oldestDue || 0 };
+        }
     });
-    await BALANCES(schoolId).set({ schoolId, byStudent, refreshedAt: firestore_2.FieldValue.serverTimestamp(), updatedAt: firestore_2.FieldValue.serverTimestamp() }, { merge: false });
+    await writeBalanceIndex(schoolId, byStudent, { refreshedAt: firestore_2.FieldValue.serverTimestamp() });
     await writeRoster(schoolId, studentsSnap.docs);
 }
 // ── TRIGGER 1: Students ────────────────────────────────────────────────────────
@@ -829,25 +863,60 @@ exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRe
     {
         const parts = (r) => {
             const lb = ledgerBalance(r);
-            return { sid: (r === null || r === void 0 ? void 0 : r.studentId) ? String(r.studentId) : '', debt: lb > 0 ? lb : 0, credit: lb < 0 ? -lb : 0 };
+            const live = !!r && r.isArchived !== true && r.status !== 'Pending Reversal';
+            return {
+                sid: (r === null || r === void 0 ? void 0 : r.studentId) ? String(r.studentId) : '', debt: lb > 0 ? lb : 0, credit: lb < 0 ? -lb : 0,
+                year: recordYearKey(r),
+                b: live ? Number(r.billedAmount) || 0 : 0, p: live ? Number(r.amountPaid) || 0 : 0, w: live ? Number(r.waiverAmount) || 0 : 0,
+            };
         };
         const pb = parts(before);
         const pa = parts(after);
         const inc = {};
         const add = (p, sign) => {
-            if (!p.sid || (!p.debt && !p.credit))
+            if (!p.sid)
                 return;
-            const e = (inc[p.sid] = inc[p.sid] || { debt: 0, credit: 0 });
+            const e = (inc[p.sid] = inc[p.sid] || { debt: 0, credit: 0, years: {} });
             e.debt = round2(e.debt + sign * p.debt);
             e.credit = round2(e.credit + sign * p.credit);
+            if (p.b || p.p || p.w) {
+                const y = (e.years[p.year] = e.years[p.year] || { b: 0, p: 0, w: 0 });
+                y.b = round2(y.b + sign * p.b);
+                y.p = round2(y.p + sign * p.p);
+                y.w = round2(y.w + sign * p.w);
+            }
         };
         add(pb, -1);
         add(pa, 1);
-        const changed = Object.entries(inc).filter(([, v]) => Math.abs(v.debt) > 0.001 || Math.abs(v.credit) > 0.001);
-        if (changed.length) {
+        const big = (n) => Math.abs(n) > 0.001;
+        const out = {};
+        Object.entries(inc).forEach(([k, v]) => {
+            const entry = {};
+            if (big(v.debt))
+                entry.debt = firestore_2.FieldValue.increment(v.debt);
+            if (big(v.credit))
+                entry.credit = firestore_2.FieldValue.increment(v.credit);
+            const yrs = {};
+            Object.entries(v.years).forEach(([y, t]) => {
+                const yi = {};
+                if (big(t.b))
+                    yi.b = firestore_2.FieldValue.increment(t.b);
+                if (big(t.p))
+                    yi.p = firestore_2.FieldValue.increment(t.p);
+                if (big(t.w))
+                    yi.w = firestore_2.FieldValue.increment(t.w);
+                if (Object.keys(yi).length)
+                    yrs[y] = yi;
+            });
+            if (Object.keys(yrs).length)
+                entry.years = yrs;
+            if (Object.keys(entry).length)
+                out[k] = entry;
+        });
+        if (Object.keys(out).length) {
             await BALANCES(schoolId).set({
                 schoolId,
-                byStudent: Object.fromEntries(changed.map(([k, v]) => [k, Object.assign(Object.assign({}, (Math.abs(v.debt) > 0.001 ? { debt: firestore_2.FieldValue.increment(v.debt) } : {})), (Math.abs(v.credit) > 0.001 ? { credit: firestore_2.FieldValue.increment(v.credit) } : {}))])),
+                byStudent: out,
                 updatedAt: firestore_2.FieldValue.serverTimestamp(),
             }, { merge: true }).catch(e => console.warn('[studentBalances] increment failed:', e === null || e === void 0 ? void 0 : e.message));
         }

@@ -316,13 +316,37 @@ service cloud.firestore {
 
      match /users/{userId} {
       allow read, get, list: if isSignedIn();
-      allow write: if isSignedIn() && (request.auth.uid == userId || isSuperAdmin() || isAdmin());
+      // A user may update their own profile but NOT give themselves a role or a school (before, any pupil or
+      // parent could set role "Director" here and become an administrator of any school). A role/school
+      // change by the user is accepted only when it matches their staff record (set by an administrator).
+      // Administrators can manage users of their own school only.
+      allow create, update: if isSignedIn() && (
+        isSuperAdmin() ||
+        (isAdmin() && (resource == null || resource.data.get('schoolId', '') in ['', getUserSchoolId()]))
+          && request.resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId() ||
+        (request.auth.uid == userId && selfUserAccessUnchanged(userId))
+      );
+      allow delete: if isSuperAdmin() || (isAdmin() && resource.data.get('schoolId', '') == getUserSchoolId());
+    }
+
+    function selfUserAccessUnchanged(userId) {
+      return (resource != null
+              && request.resource.data.get('role', '') == resource.data.get('role', '')
+              && request.resource.data.get('schoolId', '') == resource.data.get('schoolId', ''))
+        || (resource == null && request.resource.data.get('role', '') == '' && request.resource.data.get('schoolId', '') == '')
+        || (exists(/databases/$(database)/documents/staff/$(userId))
+            && get(/databases/$(database)/documents/staff/$(userId)).data.get('role', '') == request.resource.data.get('role', '')
+            && get(/databases/$(database)/documents/staff/$(userId)).data.get('schoolId', '') == request.resource.data.get('schoolId', ''));
     }
 
     match /staff/{staffId} {
       allow get, list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == request.resource.data.schoolId || !('schoolId' in request.resource.data))) || isOwner(staffId);
-      allow delete: if isSuperAdmin() || isAdmin();
+      // Staff may edit their own profile, but not their role, school or pay/status fields (before, any staff
+      // member could change their own role to "Director").
+      allow create, update: if isSuperAdmin() || (isAdmin() && (getUserSchoolId() == request.resource.data.schoolId || !('schoolId' in request.resource.data))) ||
+        (isOwner(staffId) && resource != null && !request.resource.data.diff(resource.data).affectedKeys().hasAny(
+          ['role', 'schoolId', 'isActive', 'permissions', 'salary', 'baseSalary', 'employmentStatus', 'isSuperAdmin', 'roles']));
+      allow delete: if isSuperAdmin() || (isAdmin() && resource.data.get('schoolId', '') == getUserSchoolId());
       match /payroll/{configId} {
         allow read, write: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == getUserSchoolId()); // Or enforce school settings check
       }
@@ -370,40 +394,53 @@ service cloud.firestore {
     // =========================================================
     // 4B. 1-READ OPTIMIZATION DIRECTORY & REPORT SNAPSHOTS
     // =========================================================
+    // Consolidated snapshot documents hold a whole school's pupils, parents (phones, health notes) or marks.
+    // Only that school's staff may open or rebuild them; their id is the school id, or starts with it + '_'.
+    // (Before, ANY signed-in user — any pupil or parent of any school — could read, list and overwrite them.)
+    function ownSchoolSnapshot(snapshotId) {
+      return isSuperAdmin() || (isStaff() && (snapshotId == getUserSchoolId() || snapshotId.matches('^' + getUserSchoolId() + '_.*')));
+    }
+
     match /student_directory_snapshots/{snapshotId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow get: if ownSchoolSnapshot(snapshotId);
+      allow list: if false;
+      allow create, update: if ownSchoolSnapshot(snapshotId);
+      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
     }
 
     match /parent_directory_snapshots/{snapshotId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow get: if ownSchoolSnapshot(snapshotId);
+      allow list: if false;
+      allow create, update: if ownSchoolSnapshot(snapshotId);
+      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
     }
 
     match /academic_report_snapshots/{snapshotId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow get: if ownSchoolSnapshot(snapshotId);
+      allow list: if false;
+      allow create, update: if ownSchoolSnapshot(snapshotId);
+      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
     }
 
     match /attendance_report_snapshots/{snapshotId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow get: if ownSchoolSnapshot(snapshotId);
+      allow list: if false;
+      allow create, update: if ownSchoolSnapshot(snapshotId);
+      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
     }
 
     match /learning_analytics_snapshots/{snapshotId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow get: if ownSchoolSnapshot(snapshotId);
+      allow list: if false;
+      allow create, update: if ownSchoolSnapshot(snapshotId);
+      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
     }
 
     match /assessment_records_snapshots/{snapshotId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isAdmin();
+      allow get: if ownSchoolSnapshot(snapshotId);
+      allow list: if false;
+      allow create, update: if ownSchoolSnapshot(snapshotId);
+      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
     }
 
     match /notifications/{notificationId} {
