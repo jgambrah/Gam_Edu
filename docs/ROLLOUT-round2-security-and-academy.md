@@ -57,7 +57,11 @@ Every script below only REPORTS unless you add `--apply`. Read the report before
     This also builds `studentBalances/{schoolId}`: Student Billing then shows every student's balance,
     highest debt first, for 1 read (kept current by the bill trigger, rebuilt exactly every night).
     Deploy the rules too (`firebase deploy --only firestore:rules`) — only administrators and finance staff
-    of the school can read it.
+    of the school can read it. It also builds `studentRoster/{schoolId}`, so Student Billing loads the
+    student list from one document instead of reading every student.
+12. **Deploy the new index** — `firebase deploy --only firestore:indexes` (financialRecords: schoolId + status).
+    The nightly job then reads only UNPAID bills on weekdays and does the full rebuild on Sundays. Until the
+    index finishes building (a few minutes), the nightly job simply falls back to the full rebuild.
 
 ## If something goes wrong
 - AI tools say "session expired" for everyone: check that the Vercel environment has `FIREBASE_PROJECT_ID`,

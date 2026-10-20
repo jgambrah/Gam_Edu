@@ -1,6 +1,6 @@
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore, FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { getFirestore, FieldValue, FieldPath, Timestamp } from 'firebase-admin/firestore';
 import { termStampOfRecord, currentTermFromProfile, normalizeYear } from './term-utils';
 
 if (!getApps().length) initializeApp();
@@ -16,6 +16,35 @@ const SUMMARY = (schoolId: string) =>
  * reading any bills. Kept current by the bill trigger below (no reads) and rebuilt exactly every night.
  */
 const BALANCES = (schoolId: string) => db.collection('studentBalances').doc(schoolId);
+
+/**
+ * Student roster for Student Billing: studentRoster/{schoolId} = { students: { <docId>: {...billing fields} } }.
+ * The page reads this ONE document instead of every student document (and instead of a live listener).
+ * Kept current by onStudentWrite (no reads) and rebuilt every night from the students already read.
+ */
+const ROSTER = (schoolId: string) => db.collection('studentRoster').doc(schoolId);
+const ROSTER_FIELDS = ['uid', 'studentId', 'admissionNo', 'admissionNumber', 'firstName', 'lastName', 'classId',
+  'enrollmentStatus', 'isArchived', 'photoURL', 'email', 'isSponsored', 'sponsorId', 'usesBusService',
+  'transportBillingModel', 'routeId', 'canteenBillingMode', 'usesCanteen', 'hasAccountCredit', 'accountCreditBalance'];
+function rosterEntry(s: any): Record<string, any> | null {
+  if (!s) return null;
+  const e: Record<string, any> = {};
+  ROSTER_FIELDS.forEach(f => { if (s[f] !== undefined && s[f] !== null && s[f] !== '') e[f] = s[f]; });
+  return e;
+}
+const ROSTER_MAX_BYTES = 900_000; // stay under Firestore's 1 MiB document limit
+
+async function writeRoster(schoolId: string, docs: FirebaseFirestore.QueryDocumentSnapshot[]): Promise<void> {
+  const students: Record<string, any> = {};
+  docs.forEach(d => { const e = rosterEntry(d.data()); if (e) students[d.id] = e; });
+  const size = Buffer.byteLength(JSON.stringify(students), 'utf8');
+  if (size > ROSTER_MAX_BYTES) {
+    // Too big for one document: the page keeps reading the students collection for this school.
+    await ROSTER(schoolId).set({ schoolId, tooLarge: true, rebuiltAt: FieldValue.serverTimestamp() });
+    return;
+  }
+  await ROSTER(schoolId).set({ schoolId, students, rebuiltAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() });
+}
 /** Same balance the Student Billing ledger shows for a bill (billed − paid − waived). */
 function ledgerBalance(r: any): number {
   if (!r || r.isArchived === true || r.status === 'Pending Reversal') return 0;
@@ -183,6 +212,8 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
   // performance on the CURRENT academic year's bills, exactly like Accounts > Student Billing; older years'
   // unpaid bills still count in the debt figures.
   const yearBills: Record<string, { billed: number; paid: number; waived: number }> = {};
+  // Same, per fee category ({ "2026-2027": { Tuition: {...}, Canteen: {...} } }) for the per-fee rates.
+  const yearCats: Record<string, Record<string, { billed: number; paid: number; waived: number }>> = {};
   const [schoolProfileSnap, schoolSettingsSnap] = await Promise.all([
     db.collection('schools').doc(schoolId).get(),
     db.collection('schoolSettings').doc(schoolId).get(),
@@ -242,6 +273,11 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     yearBills[yk].billed += billed;
     yearBills[yk].paid += paid;
     yearBills[yk].waived += waiver;
+    const yc = (yearCats[yk] = yearCats[yk] || {});
+    const yce = (yc[catKey] = yc[catKey] || { billed: 0, paid: 0, waived: 0 });
+    yce.billed += billed;
+    yce.paid += paid;
+    yce.waived += waiver;
 
     if (balance < 0) {
       overpayments += Math.abs(balance);
@@ -366,6 +402,8 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
       collectionRateAllTime,
       currentAcademicYear,
       yearBills: yearBillsOut,
+      yearCats: Object.fromEntries(Object.entries(yearCats).map(([y, cats]) => [y, Object.fromEntries(Object.entries(cats).map(([c, v]) =>
+        [c, { billed: round2y(v.billed), paid: round2y(v.paid), waived: round2y(v.waived) }]))])),
       arrearsCount,
       lastPaymentAmount,
       lastPaymentAt,
@@ -425,9 +463,114 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     rebuiltAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
+  await writeRoster(schoolId, studentsSnap.docs);
 }
 
 
+
+/**
+ * DAILY LIGHT REFRESH (much cheaper than the full rebuild): reads only the school's students and its
+ * UNPAID bills (status other than 'Paid') — no paid bills, no payments. Re-buckets debt aging as bills age,
+ * and refreshes debts, per-fee "owed", per-fee rates and the per-student debts from those bills. Everything
+ * else (collections, credits, billing totals per year) is kept current by the triggers. The full rebuild
+ * still runs weekly to remove any drift. Throws if the query cannot run (e.g. index not deployed yet);
+ * the scheduler then falls back to the full rebuild.
+ */
+export async function refreshOpenDebts(schoolId: string): Promise<void> {
+  const [studentsSnap, unpaidSnap, summarySnap, balancesSnap, profileSnap, settingsSnap] = await Promise.all([
+    db.collection('students').where('schoolId', '==', schoolId).get(),
+    db.collection('financialRecords').where('schoolId', '==', schoolId).where('status', '!=', 'Paid').get(),
+    SUMMARY(schoolId).get(),
+    BALANCES(schoolId).get(),
+    db.collection('schools').doc(schoolId).get(),
+    db.collection('schoolSettings').doc(schoolId).get(),
+  ]);
+  const summary: any = summarySnap.data() || {};
+  if (!summary.financials?.yearCats) throw new Error('No per-year totals yet — run the full rebuild first.');
+
+  const activeStudentIds = new Set<string>();
+  studentsSnap.forEach(sDoc => {
+    const st = sDoc.data();
+    if (st.isArchived === true) return;
+    if (st.enrollmentStatus === 'Active' || !st.enrollmentStatus) {
+      [sDoc.id, st.uid, st.studentId, st.admissionNo, st.admissionNumber].forEach(k => { if (k) activeStudentIds.add(String(k)); });
+    }
+  });
+
+  let current = 0, age30 = 0, age60 = 0, age90 = 0, totalOutstanding = 0, arrearsCount = 0;
+  const sets = { current: new Set<string>(), age30: new Set<string>(), age60: new Set<string>(), age90: new Set<string>() };
+  const streamDebts = { tuition: 0, canteen: 0, transport: 0, other: 0 };
+  const owedByCat: Record<string, number> = { 'Tuition': 0, 'Canteen': 0, 'Transport': 0, 'PTA Levy': 0, 'Other': 0 };
+  const debtByStudent: Record<string, number> = {};
+
+  unpaidSnap.forEach(d => {
+    const r: any = d.data();
+    if (r.isArchived === true || r.status === 'Pending Reversal') return;
+    const lb = ledgerBalance(r);
+    if (r.studentId && lb > 0.009) debtByStudent[String(r.studentId)] = (debtByStudent[String(r.studentId)] || 0) + lb;
+    if (r.studentId && !activeStudentIds.has(r.studentId) && activeStudentIds.size > 0) return;
+    const billed = Number(r.billedAmount ?? r.amount ?? 0);
+    const balance = billed - Number(r.amountPaid ?? 0) - Number(r.waiverAmount ?? 0);
+    if (balance <= 0.01) return;
+    totalOutstanding += balance;
+    arrearsCount++;
+    streamDebts[debtKey(r)] += balance;
+    owedByCat[feeCatOf(r)] += balance;
+    const acc = String(r.studentId || r.studentUid || r.accountId || r.studentName || '').trim();
+    const bucket = agingBucket(r);
+    if (bucket === 'current') current += balance; else if (bucket === 'age30') age30 += balance; else if (bucket === 'age60') age60 += balance; else age90 += balance;
+    if (acc) sets[bucket].add(acc);
+  });
+
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  const currentStamp = currentTermFromProfile(profileSnap.data()) || currentTermFromProfile(settingsSnap.data());
+  const currentAcademicYear = currentStamp?.academicYear || summary.financials?.currentAcademicYear || '';
+  const cats: Record<string, any> = (currentAcademicYear && summary.financials.yearCats[currentAcademicYear]) || {};
+  const categoryCollections = Object.keys(owedByCat).map(name => {
+    const v = cats[name] || { billed: 0, paid: 0, waived: 0 };
+    const nb = (Number(v.billed) || 0) - (Number(v.waived) || 0);
+    const owed = r2(owedByCat[name]);
+    return { name, billed: r2(Number(v.billed) || 0), paid: r2(Number(v.paid) || 0), waived: r2(Number(v.waived) || 0), outstanding: owed,
+      rate: nb > 0 ? Math.min(100, ((Number(v.paid) || 0) / nb) * 100) : (owed > 0.01 ? 0 : 100) };
+  });
+  const yb = currentAcademicYear ? summary.financials?.yearBills?.[currentAcademicYear] : null;
+  const collectible = yb ? (Number(yb.billed) || 0) - (Number(yb.waived) || 0) : 0;
+
+  await SUMMARY(schoolId).set({
+    schoolId,
+    lastUpdated: FieldValue.serverTimestamp(),
+    financials: {
+      totalOutstanding: r2(totalOutstanding),
+      arrearsCount,
+      streamDebts: { tuition: r2(streamDebts.tuition), canteen: r2(streamDebts.canteen), transport: r2(streamDebts.transport), other: r2(streamDebts.other) },
+      categoryCollections,
+      currentAcademicYear,
+      ...(yb ? { collectionRate: collectible > 0 ? Math.min(100, Math.round(((Number(yb.paid) || 0) / collectible) * 1000) / 10) : 0 } : {}),
+    },
+    debtAging: {
+      current: r2(current), age30: r2(age30), age60: r2(age60), age90: r2(age90),
+      rebuiltAt: FieldValue.serverTimestamp(),
+      accountCounts: {
+        current: sets.current.size, age30: sets.age30.size,
+        lessThan30: new Set([...sets.current, ...sets.age30]).size,
+        age60: sets.age60.size, age90: sets.age90.size, over90: 0,
+        totalOverdue: new Set([...sets.age30, ...sets.age60, ...sets.age90]).size,
+        overdue60Plus: sets.age90.size,
+      },
+    },
+  }, { merge: true });
+
+  // Per-student debts recomputed; credits (from over-paid bills, which are 'Paid') kept from the index.
+  const oldBy: Record<string, any> = (balancesSnap.data() || {}).byStudent || {};
+  const byStudent: Record<string, { debt: number; credit: number }> = {};
+  new Set([...Object.keys(oldBy), ...Object.keys(debtByStudent)]).forEach(k => {
+    const debt = r2(debtByStudent[k] || 0);
+    const credit = r2(Number(oldBy[k]?.credit) || 0);
+    if (debt > 0.009 || credit > 0.009) byStudent[k] = { debt, credit };
+  });
+  await BALANCES(schoolId).set({ schoolId, byStudent, refreshedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() }, { merge: false });
+  await writeRoster(schoolId, studentsSnap.docs);
+}
 
 // ── TRIGGER 1: Students ────────────────────────────────────────────────────────
 export const onStudentWrite = onDocumentWritten(
@@ -437,6 +580,29 @@ export const onStudentWrite = onDocumentWritten(
     const before = event.data?.before?.data();
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
+
+    // Keep the Student Billing roster in step (only when a field it shows changed; no reads).
+    try {
+      const id = event.params.studentId;
+      const eb = rosterEntry(before);
+      const ea = rosterEntry(after);
+      const oldSchool = before?.schoolId;
+      const newSchool = after?.schoolId;
+      if (oldSchool && oldSchool !== newSchool) {
+        await ROSTER(oldSchool).set({ students: { [id]: FieldValue.delete() }, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+      }
+      if (newSchool && ea && (JSON.stringify(eb) !== JSON.stringify(ea) || oldSchool !== newSchool)) {
+        // mergeFields replaces this student's whole entry (so cleared fields disappear) and nothing else.
+        await ROSTER(newSchool).set(
+          { students: { [id]: ea }, updatedAt: FieldValue.serverTimestamp() },
+          { mergeFields: [new FieldPath('students', id), 'updatedAt'] },
+        );
+      } else if (!after && oldSchool) {
+        await ROSTER(oldSchool).set({ students: { [id]: FieldValue.delete() }, updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+      }
+    } catch (rosterErr: any) {
+      console.warn('[studentRoster] update failed:', rosterErr?.message);
+    }
 
     const wasActive = !!(before && (before.enrollmentStatus === 'Active' || !before.enrollmentStatus));
     const isActive  = !!(after  && (after.enrollmentStatus  === 'Active' || !after.enrollmentStatus));
@@ -530,6 +696,16 @@ export const onAttendanceWrite = onDocumentWritten(
   }
 );
 
+/** Fee category used by the per-fee rates (same names as the Accounts page). */
+function feeCatOf(r: any): string {
+  const t = String(r?.type || r?.category || '').toLowerCase();
+  if (t.includes('tuition')) return 'Tuition';
+  if (t.includes('canteen')) return 'Canteen';
+  if (t.includes('transport')) return 'Transport';
+  if (t.includes('pta')) return 'PTA Levy';
+  return 'Other';
+}
+
 /** Academic-year key of a bill (term stamp, else its academicYear field); 'unknown' when it has none. */
 function recordYearKey(r: any): string {
   const st = termStampOfRecord(r);
@@ -574,8 +750,8 @@ function agingBucket(r: any): 'current' | 'age30' | 'age60' | 'age90' {
   return 'age90';
 }
 
-function recordContribution(r: any): { billed: number; outstanding: number; overpaid: number; key: string; bucket: string; paid: number; waived: number; year: string } {
-  if (!r || r.isArchived === true || r.status === 'Pending Reversal') return { billed: 0, outstanding: 0, overpaid: 0, key: 'other', bucket: 'current', paid: 0, waived: 0, year: 'unknown' };
+function recordContribution(r: any): { billed: number; outstanding: number; overpaid: number; key: string; bucket: string; paid: number; waived: number; year: string; cat: string } {
+  if (!r || r.isArchived === true || r.status === 'Pending Reversal') return { billed: 0, outstanding: 0, overpaid: 0, key: 'other', bucket: 'current', paid: 0, waived: 0, year: 'unknown', cat: 'Other' };
   const billed = Number(r.billedAmount ?? r.amount ?? 0) || 0;
   const balance = billed - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
   return {
@@ -587,6 +763,7 @@ function recordContribution(r: any): { billed: number; outstanding: number; over
     paid: Number(r.amountPaid) || 0,
     waived: Number(r.waiverAmount) || 0,
     year: recordYearKey(r),
+    cat: feeCatOf(r),
   };
 }
 
@@ -698,6 +875,25 @@ export const onFinancialRecordWrite = onDocumentWritten(
       if (Object.keys(inc).length) yearBillsInc[year] = inc;
     });
     if (Object.keys(yearBillsInc).length) financials.yearBills = yearBillsInc;
+    // Per-year, per-fee totals (for the per-fee collection rates between full rebuilds).
+    const ycInc: Record<string, Record<string, Record<string, any>>> = {};
+    const addCat = (c: typeof a, sign: number) => {
+      if (!c.billed && !c.paid && !c.waived) return;
+      const y = (ycInc[c.year] = ycInc[c.year] || {});
+      const e = (y[c.cat] = y[c.cat] || { billed: 0, paid: 0, waived: 0 });
+      e.billed = round2(e.billed + sign * c.billed);
+      e.paid = round2(e.paid + sign * c.paid);
+      e.waived = round2(e.waived + sign * c.waived);
+    };
+    addCat(b, -1);
+    addCat(a, 1);
+    const ycOut: Record<string, any> = {};
+    Object.entries(ycInc).forEach(([y, cats]) => Object.entries(cats).forEach(([c, v]) => {
+      const inc: Record<string, any> = {};
+      (['billed', 'paid', 'waived'] as const).forEach(f => { if (Math.abs(v[f]) > 0.001) inc[f] = FieldValue.increment(v[f]); });
+      if (Object.keys(inc).length) { ycOut[y] = ycOut[y] || {}; ycOut[y][c] = inc; }
+    }));
+    if (Object.keys(ycOut).length) financials.yearCats = ycOut;
     if (Math.abs(overpaidDelta) >= 0.001) debtAging.overpayments = FieldValue.increment(overpaidDelta);
 
     await SUMMARY(schoolId).set({

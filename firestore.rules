@@ -255,6 +255,16 @@ service cloud.firestore {
 
     // Per-student balances for Student Billing (one document per school, written only by Cloud Functions).
     // Readable by that school's administrators and finance staff.
+    match /studentRoster/{schoolId} {
+      allow get: if isSuperAdmin() || (
+        (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
+          'Cashier', 'cashier', 'Accounts Officer', 'accounts officer', 'Finance Officer', 'finance officer'])
+        && getUserSchoolId() == schoolId
+      );
+      allow list: if false;
+      allow write: if false;
+    }
+
     match /studentBalances/{schoolId} {
       allow get: if isSuperAdmin() || (
         (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',

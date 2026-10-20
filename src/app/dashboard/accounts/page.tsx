@@ -4215,8 +4215,33 @@ export default function AccountsPage() {
     forceRefetch();
   }, [ledgerMode, forceRefetch, dialogState.record, editingRecord, firestore, schoolId]);
   
-  const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(rawStudentsQuery);
+  // The student list comes from ONE roster document (studentRoster/{schoolId}, kept up to date by the server)
+  // instead of reading every student document through a live listener (which also re-read on every change).
+  // If the roster is not available yet (before the first rebuild, or a very large school), the page falls
+  // back to reading the students collection once, as before.
+  const [rosterStudents, setRosterStudents] = useState<Student[] | null>(null);
+  const [rosterChecked, setRosterChecked] = useState(false);
+  const loadRoster = useCallback(async () => {
+    if (!firestore || !schoolId) return;
+    try {
+      const snap = await getDoc(doc(firestore, 'studentRoster', schoolId));
+      const data: any = snap.exists() ? snap.data() : null;
+      if (data && !data.tooLarge && data.students && typeof data.students === 'object') {
+        setRosterStudents(Object.entries(data.students).map(([id, v]: [string, any]) => ({ id, schoolId, ...v } as Student)));
+      } else {
+        setRosterStudents(null);
+      }
+    } catch {
+      setRosterStudents(null);
+    } finally {
+      setRosterChecked(true);
+    }
+  }, [firestore, schoolId]);
+  useEffect(() => { loadRoster(); }, [loadRoster]);
+  const rawStudentsQuery = useMemoFirebase(() => (firestore && schoolId && rosterChecked && !rosterStudents) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, rosterChecked, rosterStudents]);
+  const { data: queriedStudents, isLoading: isLoadingQueriedStudents } = useCollection<Student>(rawStudentsQuery);
+  const rawStudents = rosterStudents ?? queriedStudents;
+  const isLoadingStudents = !rosterChecked || (!rosterStudents && isLoadingQueriedStudents);
 
   const sponsorsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'sponsors'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: sponsorsList, forceRefetch: refetchSponsors } = useCollection<any>(sponsorsQuery);
@@ -6436,7 +6461,7 @@ export default function AccountsPage() {
                                             : <> Balances appear here after tonight's summary rebuild.</>)}
                                     </p>
                                     {!viewTermId && (
-                                        <Button variant="ghost" size="sm" onClick={loadBalanceIndex} disabled={loadingBalanceIndex} className="h-7 px-2 text-[11px] text-indigo-700 shrink-0">
+                                        <Button variant="ghost" size="sm" onClick={() => { loadBalanceIndex(); loadRoster(); }} disabled={loadingBalanceIndex} className="h-7 px-2 text-[11px] text-indigo-700 shrink-0">
                                             {loadingBalanceIndex ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Refresh balances'}
                                         </Button>
                                     )}

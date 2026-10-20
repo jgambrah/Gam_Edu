@@ -3,7 +3,7 @@ import { initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import { reconcileCorrectedTerm } from './financial-rollover';
 import { currentTermFromProfile, nextTermStamp, stampFromTermId } from './term-utils';
-import { recalculateSchoolFinancials } from './dashboard-aggregators';
+import { recalculateSchoolFinancials, refreshOpenDebts } from './dashboard-aggregators';
 import { relockAcademicTerm } from './academic-rollover';
 
 if (!getApps().length) initializeApp();
@@ -30,6 +30,8 @@ export const enforceTermRolloverSafetyNet = onSchedule({ schedule: '0 0 * * *', 
       summariesSnap.forEach(docSnap => {
         batch.update(docSnap.ref, {
           'financials.totalCollectedToday': 0,
+          // New month: the month's collections start again (the weekly full rebuild no longer does this daily).
+          ...(new Date().getUTCDate() === 1 ? { 'financials.totalCollectedThisMonth': 0 } : {}),
           'attendance.totalPresent': 0,
           'attendance.totalAbsent': 0,
           'attendance.totalLate': 0,
@@ -149,12 +151,23 @@ export const enforceTermRolloverSafetyNet = onSchedule({ schedule: '0 0 * * *', 
     }, { merge: true });
   }
 
-  // ── NIGHTLY FULL REBUILD OF FINANCIAL DASHBOARD SUMMARIES ──
-  // Live updates are incremental (cheap); this once-a-day rebuild recomputes everything exactly
-  // (debt aging, categories, collection rate, month rollover) and removes any drift.
+  // ── NIGHTLY FINANCIAL SUMMARY UPKEEP (read-cost aware) ──
+  // Live figures are kept current by the triggers (no reads). Each night only UNPAID bills are read to
+  // re-bucket debt aging as bills get older (refreshOpenDebts). The FULL rebuild — every open bill and every
+  // payment — runs once a week (Sunday) to remove any drift, or whenever the light refresh cannot run.
+  const isFullRebuildDay = new Date().getUTCDay() === 0;
   for (const schoolDoc of schoolsSnap.docs) {
     try {
-      await recalculateSchoolFinancials(schoolDoc.id);
+      if (isFullRebuildDay) {
+        await recalculateSchoolFinancials(schoolDoc.id);
+      } else {
+        try {
+          await refreshOpenDebts(schoolDoc.id);
+        } catch (lightErr: any) {
+          console.warn(`[NIGHTLY REFRESH] Light refresh not possible for ${schoolDoc.id} (${lightErr?.message}); running full rebuild.`);
+          await recalculateSchoolFinancials(schoolDoc.id);
+        }
+      }
     } catch (rebuildErr) {
       console.error(`[NIGHTLY REBUILD] Failed for school ${schoolDoc.id}:`, rebuildErr);
     }
