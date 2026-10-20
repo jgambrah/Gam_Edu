@@ -8,7 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { AssignmentSubmissionDialog } from './assignment-submission-dialog';
 import { setDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +37,9 @@ export default function StudentAssignmentsView() {
 
   const [isSubmissionDialogOpen, setSubmissionDialogOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadTargetRef = useRef<Assignment | null>(null);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   // 1. Get the student's data
   const studentQuery = useMemoFirebase(() => 
@@ -77,32 +81,60 @@ export default function StudentAssignmentsView() {
   // Combined loading state
   const isLoading = isUserLoading || isStudentLoading || areAssignmentsLoading || areQuizzesLoading;
 
-  const handleFileUpload = async (assignment: Assignment) => {
-    if (!user || !student || !firestore || !schoolId) return;
-    
-    const submission: Omit<StudentSubmission, 'id'> = {
-      assignmentId: assignment.id,
-      studentId: user.uid,
-      studentName: `${student.firstName} ${student.lastName}`,
-      submissionType: 'file',
-      content: 'placeholder-file.pdf',
-      submittedAt: new Date(),
-      status: new Date() > toDateSafe(assignment.dueDate) ? 'Late' : 'Submitted',
-      // @ts-ignore
-      schoolId: schoolId,
-    };
+  // "Upload Work File" used to record a submission called "placeholder-file.pdf" without asking for a file at
+  // all — the student saw "successfully submitted" while nothing reached the teacher. It now opens a file
+  // picker, uploads the file to the school's storage and saves the link with the submission.
+  const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+  const handleFileUpload = (assignment: Assignment) => {
+    uploadTargetRef.current = assignment;
+    fileInputRef.current?.click();
+  };
+  const onFileChosen = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    const assignment = uploadTargetRef.current;
+    if (!file || !assignment || !user || !student || !firestore || !schoolId) return;
+    if (file.size > MAX_UPLOAD_BYTES) {
+      toast({ variant: 'destructive', title: 'File Too Large', description: 'Please upload a file smaller than 10 MB.' });
+      return;
+    }
+    setUploadingId(assignment.id);
     try {
-        const newDocRef = doc(collection(firestore, 'submissions'));
-        await setDoc(newDocRef, submission);
-        toast({ title: 'Success', description: 'Your file has been successfully submitted.' });
-    } catch(error) {
-        console.error("File submission error:", error);
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not submit file.' });
+      const safeName = file.name.replace(/[^A-Za-z0-9._-]+/g, '_').slice(-80);
+      const path = `schools/${schoolId}/submissions/${assignment.id}/${user.uid}/${Date.now()}-${safeName}`;
+      const fileRef = storageRef(getStorage(), path);
+      await uploadBytes(fileRef, file, { contentType: file.type || 'application/octet-stream' });
+      const url = await getDownloadURL(fileRef);
+      const submission: any = {
+        assignmentId: assignment.id,
+        studentId: user.uid,
+        studentName: `${student.firstName} ${student.lastName}`,
+        submissionType: 'file',
+        content: url,
+        fileName: file.name,
+        storagePath: path,
+        submittedAt: new Date(),
+        status: new Date() > toDateSafe(assignment.dueDate) ? 'Late' : 'Submitted',
+        schoolId: schoolId,
+      };
+      // One submission per student per assignment (a second upload replaces the first until it is graded).
+      await setDoc(doc(firestore, 'submissions', `${assignment.id}_${user.uid}`), submission);
+      toast({ title: 'Work Submitted', description: `"${file.name}" was uploaded and sent to your teacher.` });
+    } catch (error: any) {
+      console.error('File submission error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Upload Failed',
+        description: error?.code === 'storage/unauthorized'
+          ? 'File uploads are not enabled for your account yet. Please use "Write Response" instead and tell your teacher.'
+          : 'Could not upload your file. Check your connection and try again, or use "Write Response".',
+      });
+    } finally {
+      setUploadingId(null);
     }
   };
 
-  const openTextSubmission = (assignment: Assignment) => {
-    setSelectedAssignment(assignment);
+  const openTextSubmission = (assignment: Assignment) => {    setSelectedAssignment(assignment);
     setSubmissionDialogOpen(true);
   };
   
@@ -137,6 +169,8 @@ export default function StudentAssignmentsView() {
 
   return (
     <div className="space-y-6">
+      <input ref={fileInputRef} type="file" className="hidden" onChange={onFileChosen}
+        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.heic,.zip" />
       <SectionHeroBanner
         title="Assignments & Quizzes"
         subtitle="Publish coursework, distribute digital tests, review automated grading, and set submission deadlines."
@@ -365,9 +399,10 @@ export default function StudentAssignmentsView() {
                                           <Button 
                                             size="sm" 
                                             onClick={() => handleFileUpload(item as Assignment)} 
+                                            disabled={uploadingId === (item as Assignment).id}
                                             className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold h-10 px-4 text-xs transition shadow-md shadow-blue-500/10 active:scale-98"
                                           >
-                                              <FileUp className="mr-2 h-4 w-4" /> Upload Work File
+                                              {uploadingId === (item as Assignment).id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileUp className="mr-2 h-4 w-4" />} Upload Work File
                                           </Button>
                                           <Button 
                                             size="sm" 

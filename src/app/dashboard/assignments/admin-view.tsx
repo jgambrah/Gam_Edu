@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { classSizes, submissionRate, quizAverage, quizCount, newestFirst } from '@/lib/coursework-stats';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Assignment, Student, StudentSubmission, QuizAttempt } from '@/lib/types';
@@ -36,63 +37,39 @@ export default function AdminAssignmentsView() {
   );
   const { data: assignments, isLoading: isLoadingAssignments } = useCollection<Assignment>(assignmentsQuery);
 
-  const submissionsQuery = useMemoFirebase(
-    () => (schoolId && firestore) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
-  const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<StudentSubmission>(submissionsQuery);
-
-  const quizAttemptsQuery = useMemoFirebase(
-    () => (schoolId && firestore) ? query(collection(firestore, 'quizAttempts'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
-  const { data: quizAttempts, isLoading: isLoadingAttempts } = useCollection<QuizAttempt>(quizAttemptsQuery);
-
-  const studentsQuery = useMemoFirebase(
-    () => (schoolId && firestore) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+  // READ COST: the three figures below come from COUNT/SUM aggregations (a few reads), not from live copies of
+  // every submission, quiz attempt and student in the school.
+  const [stats, setStats] = useState<{ rate: number | null; avg: number | null; quizzes: number | null } | null>(null);
+  const RATE_SAMPLE = 30;
+  useEffect(() => {
+    if (!firestore || !schoolId || !assignments) return;
+    let alive = true;
+    (async () => {
+      const recent = newestFirst(assignments).slice(0, RATE_SAMPLE) as any[];
+      const sizes = await classSizes(firestore, schoolId, recent.map(a => a.classId), true);
+      const [rate, avg, quizzes] = await Promise.all([
+        submissionRate(firestore, schoolId, recent, sizes),
+        quizAverage(firestore, schoolId),
+        quizCount(firestore, schoolId),
+      ]);
+      if (alive) setStats({ rate, avg, quizzes });
+    })().catch(e => { console.warn('Coursework stats unavailable', e); if (alive) setStats({ rate: null, avg: null, quizzes: null }); });
+    return () => { alive = false; };
+  }, [firestore, schoolId, assignments]);
+  const isLoadingSubmissions = !stats;
+  const isLoadingStudents = !stats;
+  const isLoadingAttempts = !stats;
 
   const sortedAssignments = useMemo(() => {
     if (!assignments) return [];
     return [...assignments].sort((a, b) => (b.createdAt?.toDate?.()?.getTime() || 0) - (a.createdAt?.toDate?.()?.getTime() || 0));
   }, [assignments]);
 
-  const isLoading = isLoadingSchool || isLoadingAssignments || isLoadingSubmissions || isLoadingAttempts || isLoadingStudents;
+  const isLoading = isLoadingSchool || isLoadingAssignments;
 
   // Statistics
-  const avgSubmissionRate = useMemo(() => {
-    if (!assignments || !students || !submissions || assignments.length === 0) return 0;
-    let totalExpected = 0;
-    let totalActual = 0;
-
-    assignments.forEach((assign) => {
-      const classStudentsCount = students.filter(
-        (s) => s.classId === assign.classId && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
-      ).length;
-
-      const assignmentSubmissionsCount = submissions.filter(
-        (sub) => sub.assignmentId === assign.id
-      ).length;
-
-      totalExpected += classStudentsCount;
-      totalActual += assignmentSubmissionsCount;
-    });
-
-    if (totalExpected === 0) return 0;
-    return Math.round((totalActual / totalExpected) * 100);
-  }, [assignments, students, submissions]);
-
-  const courseAverageGrade = useMemo(() => {
-    if (!quizAttempts || quizAttempts.length === 0) return 0;
-
-    const totalPct = quizAttempts.reduce(
-      (sum, attempt) => sum + (attempt.score / (attempt.total || 5)) * 100,
-      0
-    );
-    return Math.round(totalPct / quizAttempts.length);
-  }, [quizAttempts]);
+  const avgSubmissionRate = stats?.rate ?? null;
+  const courseAverageGrade = stats?.avg ?? null;
 
   const activeAssignmentsCount = assignments?.length || 0;
 
@@ -174,7 +151,7 @@ export default function AdminAssignmentsView() {
           </div>
           <div className="mt-3">
             <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">{activeAssignmentsCount}</h3>
-            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Active catalog courses</p>
+            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">{stats?.quizzes != null ? `plus ${stats.quizzes} quiz${stats.quizzes === 1 ? '' : 'zes'}` : 'Coursework assignments'}</p>
           </div>
         </Card>
 
@@ -187,30 +164,32 @@ export default function AdminAssignmentsView() {
             <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
               {isLoadingSubmissions || isLoadingStudents ? (
                 <Skeleton className="h-6 w-12" />
-              ) : (
+              ) : avgSubmissionRate !== null ? (
                 `${avgSubmissionRate}%`
+              ) : (
+                '—'
               )}
             </h3>
-            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Timely response averages</p>
+            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Submissions received (latest {RATE_SAMPLE} assignments)</p>
           </div>
         </Card>
 
         <Card className="border border-slate-100 bg-white/70 backdrop-blur-sm shadow-sm rounded-2xl p-5 hover:shadow-md transition-all duration-300">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Course Average Grade</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Average Quiz Score</span>
             <div className="p-2 bg-purple-50 text-purple-600 rounded-xl"><GraduationCap className="h-4 w-4" /></div>
           </div>
           <div className="mt-3">
             <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
               {isLoadingAttempts ? (
                 <Skeleton className="h-6 w-12" />
-              ) : courseAverageGrade > 0 ? (
+              ) : courseAverageGrade !== null ? (
                 `${courseAverageGrade}%`
               ) : (
                 '—'
               )}
             </h3>
-            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Class evaluation index</p>
+            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Average quiz score (first attempts only)</p>
           </div>
         </Card>
       </div>

@@ -1753,6 +1753,20 @@
           "order": "ASCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "attendance",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "schoolId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "dateStr",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

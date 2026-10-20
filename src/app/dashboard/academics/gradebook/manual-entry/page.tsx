@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, getDocs } from 'firebase/firestore';
+import { useOnceQuery, invalidateOnceCache } from '@/lib/firestore-once';
+import { buildTermId } from '@/lib/term';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -38,7 +40,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { DEFAULT_GRADING_SYSTEM, getGradeFromScale } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
+import { isTermMatch, isYearMatch, academicYearVariants } from '@/lib/academic-match';
 
 const ASSESSMENT_TYPES = [
     'Mock Exam (100%)',
@@ -69,6 +71,58 @@ interface FillTarget {
     colId?: string;
     label: string;
     max: number;
+}
+
+// ---- Gradebook save helpers -------------------------------------------------------------------------
+
+/** Collects writes and commits them in batches of 450 (Firestore allows 500 per batch), so large classes save. */
+class ChunkedWriter {
+    private ops: Array<{ kind: 'set'; ref: any; data: any; merge: boolean } | { kind: 'delete'; ref: any }> = [];
+    constructor(private firestore: any) {}
+    set(ref: any, data: any, opts?: { merge?: boolean }) { this.ops.push({ kind: 'set', ref, data, merge: !!opts?.merge }); }
+    delete(ref: any) { this.ops.push({ kind: 'delete', ref }); }
+    get size() { return this.ops.length; }
+    async commit() {
+        for (let i = 0; i < this.ops.length; i += 450) {
+            const batch = writeBatch(this.firestore);
+            this.ops.slice(i, i + 450).forEach(op => {
+                if (op.kind === 'delete') batch.delete(op.ref);
+                else if (op.merge) batch.set(op.ref, op.data, { merge: true });
+                else batch.set(op.ref, op.data);
+            });
+            await batch.commit();
+        }
+    }
+}
+
+/** Which matrix column a saved mark belongs to (same rules the screen uses to display it). */
+function matrixSlotOf(a: any): string {
+    const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
+    // Mock exams are not part of the terminal SBA matrix: never shown in, or overwritten by, the Exam column.
+    if (combined.includes('mock')) return 'other';
+    if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) return 'ex';
+    if (combined.includes('mid')) return 'mt';
+    if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) return 'project';
+    if (combined.includes('home') || combined.includes('hw')) return 'hw';
+    return `test:${(a.assessmentName || 'test 1').toLowerCase()}`;
+}
+
+const CANONICAL_MATRIX_NAMES = new Set(['homework', 'project', 'mid-term', 'end of term exam']);
+
+/**
+ * Order marks so that, when a student has more than one record in the same column (e.g. an old "Exam" and the
+ * matrix's "End of Term Exam"), the matrix's own record comes LAST — the one shown and the one a save edits.
+ */
+function orderForMatrix<T extends { assessmentName?: string }>(list: T[]): T[] {
+    const rank = (a: any) => (CANONICAL_MATRIX_NAMES.has(String(a.assessmentName || '').toLowerCase()) ? 1 : 0);
+    return list.map((a, i) => ({ a, i })).sort((x, y) => rank(x.a) - rank(y.a) || x.i - y.i).map(x => x.a);
+}
+
+function friendlySaveError(error: any): string {
+    if (error?.code === 'permission-denied') {
+        return 'Your account is not allowed to change some of these marks (for example a closed term). Nothing was saved — ask an administrator.';
+    }
+    return error?.message || 'Could not save the marks. Please try again.';
 }
 
 export default function GradebookPage() {
@@ -133,10 +187,11 @@ export default function GradebookPage() {
     const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
 
     const schoolSettingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
-    const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
+    const { data: schoolSettings, isLoading: settingsLoading } = useDoc<any>(schoolSettingsRef);
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
-    const aiCredits = schoolData?.aiCredits ?? 810;
+    // Real balance only — never show a made-up number while the school document loads.
+    const aiCredits: number | null = typeof schoolData?.aiCredits === 'number' ? schoolData.aiCredits : null;
 
     useEffect(() => {
         if (schoolSettings) {
@@ -154,8 +209,16 @@ export default function GradebookPage() {
     }, [assessmentType]);
 
     // Data Fetching: Classes
-    const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<any>(classesQuery);
+    // READ COST: classes, subjects, timetable slots, students and marks are read ONCE (no live listeners) and
+    // remembered for the session, so switching class/subject back and forth or re-opening the page is free.
+    const readAll = useCallback(async (q: any) => {
+        const snap = await getDocs(q);
+        return snap.docs.map((d: any) => ({ ...(d.data() as any), id: d.id }));
+    }, []);
+    const { data: classes, isLoading: isLoadingClasses } = useOnceQuery<any>(
+        (firestore && schoolId) ? `gb:classes:${schoolId}` : null,
+        () => readAll(query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)))
+    );
 
     const selectedClass = useMemo(() => {
         return classes?.find((c: any) => c.id === classId);
@@ -186,15 +249,16 @@ export default function GradebookPage() {
         }
     }, [selectedClass, schoolSettings]);
 
-    const timetableQuery = useMemoFirebase(() => 
-      (firestore && schoolId)
-        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
-        : null, 
-    [firestore, schoolId]);
-    const { data: timetable } = useCollection<any>(timetableQuery);
-
-    const subjectsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-    const { data: subjects } = useCollection<any>(subjectsQuery);
+    // Timetable slots are only used to work out a TEACHER's classes/subjects, so only a teacher reads them,
+    // and only their own slots (was: every slot of the whole school, for every user).
+    const { data: timetable } = useOnceQuery<any>(
+        (firestore && schoolId && user?.uid && role === 'Teacher') ? `gb:timetable:${schoolId}:${user.uid}` : null,
+        () => readAll(query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user!.uid)))
+    );
+    const { data: subjects } = useOnceQuery<any>(
+        (firestore && schoolId) ? `gb:subjects:${schoolId}` : null,
+        () => readAll(query(collection(firestore!, 'subjects'), where('schoolId', '==', schoolId)))
+    );
 
     const visibleClasses = useMemo(() => {
         if (!classes) return [];
@@ -296,16 +360,10 @@ export default function GradebookPage() {
         }
     }, [classId, visibleSubjects, subjectId]);
 
-    const studentsQuery = useMemoFirebase(() => 
-        (firestore && schoolId && classId) 
-            ? query(
-                collection(firestore, 'students'), 
-                where('schoolId', '==', schoolId), 
-                where('classId', '==', classId)
-            ) 
-            : null, 
-    [firestore, schoolId, classId]);
-    const { data: rawStudents, isLoading: loadingStudents } = useCollection<any>(studentsQuery);
+    const { data: rawStudents, isLoading: loadingStudents } = useOnceQuery<any>(
+        (firestore && schoolId && classId) ? `gb:students:${schoolId}:${classId}` : null,
+        () => readAll(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)))
+    );
 
     const students = useMemo(() => {
         if (!rawStudents) return [];
@@ -316,18 +374,35 @@ export default function GradebookPage() {
         );
     }, [rawStudents]);
 
-    // Fetch Existing Assessments for Batch Management (flexible term & year matching)
-    const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !classId || !subjectId) return null;
-        return query(
-            collection(firestore, 'assessments'),
+    // Existing marks for this class + subject.
+    // READ COST: only the selected ACADEMIC YEAR is read (was: every mark ever recorded for the class + subject,
+    // growing every term, and re-read in full after every save). The term is then matched flexibly on the page.
+    // Waits for the school settings so the default year/term is known (no wasted read on a placeholder year).
+    const yearVariants = useMemo(() => academicYearVariants(academicYear), [academicYear]);
+    const assessmentsKey = (firestore && schoolId && classId && subjectId && !settingsLoading)
+        ? `gb:marks:${schoolId}:${classId}:${subjectId}:${yearVariants.join('|')}`
+        : null;
+    const {
+        data: allClassAssessments,
+        isLoading: loadingAssessments,
+        setData: setAssessmentsCache,
+        refresh: refreshAssessments,
+    } = useOnceQuery<any>(assessmentsKey, async () => {
+        const base = [
             where('schoolId', '==', schoolId),
             where('classId', '==', classId),
-            where('subjectId', '==', subjectId)
-        );
-    }, [firestore, schoolId, classId, subjectId]);
-
-    const { data: allClassAssessments, isLoading: loadingAssessments, forceRefetch: refetchAssessments } = useCollection<any>(assessmentsQuery);
+            where('subjectId', '==', subjectId),
+        ];
+        if (yearVariants.length > 0) {
+            try {
+                return await readAll(query(collection(firestore!, 'assessments'), ...base, where('academicYear', 'in', yearVariants)));
+            } catch (err: any) {
+                if (err?.code === 'permission-denied') throw err;
+                console.warn('Gradebook: year-filtered marks query failed, reading all marks for this class + subject instead.', err);
+            }
+        }
+        return readAll(query(collection(firestore!, 'assessments'), ...base));
+    });
 
     const rawAssessments = useMemo(() => {
         if (!allClassAssessments) return [];
@@ -340,6 +415,11 @@ export default function GradebookPage() {
         });
     }, [allClassAssessments, academicYear, term]);
 
+    // Closed (archived) terms are locked for teachers; administrators can still correct them.
+    const isAdminRole = ['admin', 'administrator', 'director', 'principal', 'headmaster', 'headmistress', 'head teacher', 'owner', 'super admin', 'superadmin']
+        .includes(String(role || '').toLowerCase());
+    const termLocked = !isAdminRole && rawAssessments.some((a: any) => a.isArchived === true);
+
     // Group assessments by type
     const groupedAssessments = useMemo(() => {
         if (!rawAssessments) return {};
@@ -351,74 +431,61 @@ export default function GradebookPage() {
         return groups;
     }, [rawAssessments]);
 
-    // Populate Matrix from existing rawAssessments, detecting multiple test columns dynamically
+    // Populate Matrix from existing marks. Uses the SAME column rules as the save (matrixSlotOf / orderForMatrix),
+    // so the mark shown in a cell is exactly the record a save edits or clears.
     useEffect(() => {
         if (!rawAssessments || rawAssessments.length === 0) {
             setMatrixScores({});
             return;
         }
+        const ordered = orderForMatrix(rawAssessments);
 
-        // Identify all unique test names under 'Class Exercise (CA)'
-        const testNamesSet = new Set<string>();
-        rawAssessments.forEach((a: any) => {
-            const type = (a.assessmentType || '').toLowerCase();
-            const name = (a.assessmentName || '').toLowerCase();
-            const combined = `${type} ${name}`;
-
-            if (!combined.includes('exam') && !combined.includes('mid') && !combined.includes('home') && !combined.includes('hw') && !combined.includes('proj')) {
-                testNamesSet.add(a.assessmentName || 'Test 1');
+        // Identify all unique test names (case-insensitive)
+        const testNames = new Map<string, string>();
+        ordered.forEach((a: any) => {
+            if (matrixSlotOf(a).startsWith('test:')) {
+                const name = a.assessmentName || 'Test 1';
+                if (!testNames.has(name.toLowerCase())) testNames.set(name.toLowerCase(), name);
             }
         });
-
         let activeTestCols = [...testColumns];
-        if (testNamesSet.size > 0) {
-            const sortedNames = Array.from(testNamesSet).sort();
-            activeTestCols = sortedNames.map((name, idx) => ({
-                id: `test_${idx + 1}`,
-                name
-            }));
+        if (testNames.size > 0) {
+            const sortedNames = Array.from(testNames.values()).sort();
+            activeTestCols = sortedNames.map((name, idx) => ({ id: `test_${idx + 1}`, name }));
             setTestColumns(activeTestCols);
         }
 
         const newMatrix: Record<string, MatrixStudentRow> = {};
-
-        rawAssessments.forEach((a: any) => {
+        const maxes: Partial<{ classTest: number; homework: number; project: number; midTerm: number; exam: number }> = {};
+        ordered.forEach((a: any) => {
             if (!a.studentId) return;
+            const slot = matrixSlotOf(a);
+            if (slot === 'other') return;
             if (!newMatrix[a.studentId]) {
                 newMatrix[a.studentId] = { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
             }
-
-            const type = (a.assessmentType || '').toLowerCase();
-            const name = (a.assessmentName || '').toLowerCase();
-            const combined = `${type} ${name}`;
-
-            if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) {
-                newMatrix[a.studentId].exam = a.score !== undefined && a.score !== null ? Number(a.score) : '';
-                if (a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
-                if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, exam: Number(a.maxScore) }));
-            } else if (combined.includes('mid')) {
-                newMatrix[a.studentId].midTerm = a.score !== undefined && a.score !== null ? Number(a.score) : '';
-                if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
-                if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, midTerm: Number(a.maxScore) }));
-            } else if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) {
-                newMatrix[a.studentId].project = a.score !== undefined && a.score !== null ? Number(a.score) : '';
-                if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
-                if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, project: Number(a.maxScore) }));
-            } else if (combined.includes('home') || combined.includes('hw')) {
-                newMatrix[a.studentId].homework = a.score !== undefined && a.score !== null ? Number(a.score) : '';
-                if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
-                if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, homework: Number(a.maxScore) }));
-            } else {
-                // Matched to Class Exercise / Test
-                const matchedCol = activeTestCols.find(c => c.name.toLowerCase() === (a.assessmentName || '').toLowerCase()) || activeTestCols[0];
-                const colId = matchedCol?.id || 'test_1';
-                newMatrix[a.studentId].tests[colId] = a.score !== undefined && a.score !== null ? Number(a.score) : '';
-                if (!newMatrix[a.studentId].remark && a.teacherRemark) newMatrix[a.studentId].remark = a.teacherRemark;
-                if (a.maxScore) setMatrixMaxScores(prev => ({ ...prev, classTest: Number(a.maxScore) }));
+            const row = newMatrix[a.studentId];
+            const val: number | '' = a.score !== undefined && a.score !== null && a.score !== '' ? Number(a.score) : '';
+            const max = a.maxScore ? Number(a.maxScore) : 0;
+            if (slot === 'ex') {
+                row.exam = val;
+                if (a.teacherRemark) row.remark = a.teacherRemark;
+                if (max) maxes.exam = max;
+                return;
+            }
+            if (!row.remark && a.teacherRemark) row.remark = a.teacherRemark;
+            if (slot === 'mt') { row.midTerm = val; if (max) maxes.midTerm = max; }
+            else if (slot === 'project') { row.project = val; if (max) maxes.project = max; }
+            else if (slot === 'hw') { row.homework = val; if (max) maxes.homework = max; }
+            else {
+                const matchedCol = activeTestCols.find(c => c.name.toLowerCase() === (a.assessmentName || 'test 1').toLowerCase()) || activeTestCols[0];
+                row.tests[matchedCol?.id || 'test_1'] = val;
+                if (max) maxes.classTest = max;
             }
         });
-
+        if (Object.keys(maxes).length > 0) setMatrixMaxScores(prev => ({ ...prev, ...maxes }));
         setMatrixScores(newMatrix);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [rawAssessments]);
 
     // Populate Single-Batch mode fields when target assessment changes
@@ -728,179 +795,110 @@ export default function GradebookPage() {
             }
         }
 
+        if (termLocked) {
+            toast({ variant: 'destructive', title: "Term Closed", description: "This term has been closed, so its marks are locked. Ask an administrator to make corrections." });
+            return;
+        }
+        const hasNegative = (students || []).some((s: any) => {
+            const row = matrixScores[s.uid];
+            if (!row) return false;
+            const vals = [...Object.values(row.tests || {}), row.homework, row.project, row.midTerm, row.exam];
+            return vals.some(v => typeof v === 'number' && v < 0);
+        });
+        if (hasNegative) {
+            toast({ variant: 'destructive', title: "Invalid Score", description: "Scores cannot be negative." });
+            return;
+        }
+
         setIsSaving(true);
         try {
-            const batch = writeBatch(firestore);
+            const writer = new ChunkedWriter(firestore);
             const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
             const className = selectedClass?.name || 'Class';
+            const termId = buildTermId(academicYear, term);
             const updatedStudentIds: string[] = [];
-            let totalSavedRecords = 0;
+            const upserts: Record<string, any> = {};
+            const toDelete: string[] = [];
+            let created = 0, changed = 0;
 
-            // Map existing assessments by studentId and normalized category/name
-            const existingMap: Record<string, { tests: Record<string, any>; hw?: any; project?: any; mt?: any; ex?: any }> = {};
-            rawAssessments?.forEach((a: any) => {
+            // Existing marks of this term, per student and per matrix slot (same classification as the screen).
+            const existing: Record<string, Record<string, any[]>> = {};
+            orderForMatrix(rawAssessments).forEach((a: any) => {
                 if (!a.studentId) return;
-                if (!existingMap[a.studentId]) existingMap[a.studentId] = { tests: {} };
-                const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
-                
-                if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) {
-                    existingMap[a.studentId].ex = a;
-                } else if (combined.includes('mid')) {
-                    existingMap[a.studentId].mt = a;
-                } else if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) {
-                    existingMap[a.studentId].project = a;
-                } else if (combined.includes('home') || combined.includes('hw')) {
-                    existingMap[a.studentId].hw = a;
-                } else {
-                    const testKey = (a.assessmentName || 'test 1').toLowerCase();
-                    existingMap[a.studentId].tests[testKey] = a;
-                }
+                const key = matrixSlotOf(a);
+                if (!existing[a.studentId]) existing[a.studentId] = {};
+                if (!existing[a.studentId][key]) existing[a.studentId][key] = [];
+                existing[a.studentId][key].push(a);
             });
 
-            students?.forEach((s: any) => {
+            (students || []).forEach((s: any) => {
                 const row = matrixScores[s.uid];
                 if (!row) return;
-
-                const hasTestScore = Object.values(row.tests || {}).some(v => v !== '' && typeof v === 'number');
-                const hasData = hasTestScore || row.homework !== '' || row.project !== '' || row.midTerm !== '' || row.exam !== '';
-                if (!hasData) return;
-
                 const studentName = `${s.firstName || ''} ${s.lastName || ''}`.trim();
-                let studentHadWrites = false;
+                const remark = row.remark || '';
+                const mine = existing[s.uid] || {};
+                const testKeys = Object.keys(mine).filter(k => k.startsWith('test:'));
 
-                // 1. Dynamic Tests (Individual records persisted for each test column)
+                const slots: { key: string; value: number | ''; type: string; name: string; max: number }[] = [];
                 testColumns.forEach((tc) => {
-                    const testVal = row.tests?.[tc.id];
-                    if (testVal !== '' && typeof testVal === 'number') {
-                        const existingDoc = existingMap[s.uid]?.tests[tc.name.toLowerCase()] || (testColumns.length === 1 ? Object.values(existingMap[s.uid]?.tests || {})[0] : undefined);
-                        const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
-                        batch.set(ref, {
-                            studentId: s.uid,
-                            studentName,
-                            classId,
-                            subjectId,
-                            schoolId,
-                            teacherId: user.uid,
-                            term,
-                            academicYear,
-                            assessmentType: 'Class Exercise (CA)',
-                            assessmentName: tc.name,
-                            score: Number(testVal),
-                            maxScore: Number(matrixMaxScores.classTest),
-                            teacherRemark: row.remark || '',
-                            createdAt: serverTimestamp(),
-                            assessmentDate: serverTimestamp()
-                        });
-                        studentHadWrites = true;
-                        totalSavedRecords++;
+                    let key = `test:${tc.name.toLowerCase()}`;
+                    if (!mine[key] && testColumns.length === 1 && testKeys.length > 0) key = testKeys[0];
+                    slots.push({ key, value: row.tests?.[tc.id] ?? '', type: 'Class Exercise (CA)', name: tc.name, max: matrixMaxScores.classTest });
+                });
+                slots.push({ key: 'hw', value: row.homework, type: 'Homework (CA)', name: 'Homework', max: matrixMaxScores.homework });
+                slots.push({ key: 'project', value: row.project, type: 'Project (CA)', name: 'Project', max: matrixMaxScores.project });
+                slots.push({ key: 'mt', value: row.midTerm, type: 'Mid-Term (CA)', name: 'Mid-Term', max: matrixMaxScores.midTerm });
+                slots.push({ key: 'ex', value: row.exam, type: 'End of Term Exam (Exam)', name: 'End of Term Exam', max: matrixMaxScores.exam });
+
+                let studentChanged = false;
+                slots.forEach((slot) => {
+                    const docs = mine[slot.key] || [];
+                    // The screen shows the LAST record of a slot, so that is the one edited or cleared.
+                    const keep = docs.length > 0 ? docs[docs.length - 1] : undefined;
+                    const hasValue = typeof slot.value === 'number' && !isNaN(slot.value);
+                    if (!hasValue) {
+                        // A mark that was saved before and has now been cleared is removed.
+                        if (keep) { toDelete.push(keep.id); studentChanged = true; }
+                        return;
                     }
+                    const score = Number(slot.value);
+                    const maxScoreVal = Number(slot.max);
+                    if (keep && Number(keep.score) === score && Number(keep.maxScore) === maxScoreVal && (keep.teacherRemark || '') === remark) {
+                        return; // unchanged — no write, no timeline entry, no parent notification
+                    }
+                    const fields: any = {
+                        studentId: s.uid,
+                        studentName,
+                        classId,
+                        subjectId,
+                        schoolId,
+                        teacherId: user.uid,
+                        term,
+                        academicYear,
+                        assessmentType: slot.type,
+                        assessmentName: slot.name,
+                        score,
+                        maxScore: maxScoreVal,
+                        teacherRemark: remark,
+                    };
+                    if (termId) fields.termId = termId;
+                    if (keep) {
+                        // Update in place: same document id, original createdAt kept.
+                        writer.set(doc(firestore, 'assessments', keep.id), { ...fields, updatedAt: serverTimestamp() }, { merge: true });
+                        upserts[keep.id] = { ...keep, ...fields, updatedAt: new Date() };
+                        changed++;
+                    } else {
+                        const ref = doc(collection(firestore, 'assessments'));
+                        writer.set(ref, { ...fields, createdAt: serverTimestamp(), assessmentDate: serverTimestamp() });
+                        upserts[ref.id] = { ...fields, createdAt: new Date(), assessmentDate: new Date() };
+                        created++;
+                    }
+                    studentChanged = true;
                 });
 
-                // 2. Homework
-                if (row.homework !== '' && typeof row.homework === 'number') {
-                    const existingDoc = existingMap[s.uid]?.hw;
-                    const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
-                    batch.set(ref, {
-                        studentId: s.uid,
-                        studentName,
-                        classId,
-                        subjectId,
-                        schoolId,
-                        teacherId: user.uid,
-                        term,
-                        academicYear,
-                        assessmentType: 'Homework (CA)',
-                        assessmentName: 'Homework',
-                        score: Number(row.homework),
-                        maxScore: Number(matrixMaxScores.homework),
-                        teacherRemark: row.remark || '',
-                        createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp()
-                    });
-                    studentHadWrites = true;
-                    totalSavedRecords++;
-                }
-
-                // 3. Project / Practical (Restored)
-                if (row.project !== '' && typeof row.project === 'number') {
-                    const existingDoc = existingMap[s.uid]?.project;
-                    const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
-                    batch.set(ref, {
-                        studentId: s.uid,
-                        studentName,
-                        classId,
-                        subjectId,
-                        schoolId,
-                        teacherId: user.uid,
-                        term,
-                        academicYear,
-                        assessmentType: 'Project (CA)',
-                        assessmentName: 'Project',
-                        score: Number(row.project),
-                        maxScore: Number(matrixMaxScores.project),
-                        teacherRemark: row.remark || '',
-                        createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp()
-                    });
-                    studentHadWrites = true;
-                    totalSavedRecords++;
-                }
-
-                // 4. Mid-Term
-                if (row.midTerm !== '' && typeof row.midTerm === 'number') {
-                    const existingDoc = existingMap[s.uid]?.mt;
-                    const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
-                    batch.set(ref, {
-                        studentId: s.uid,
-                        studentName,
-                        classId,
-                        subjectId,
-                        schoolId,
-                        teacherId: user.uid,
-                        term,
-                        academicYear,
-                        assessmentType: 'Mid-Term (CA)',
-                        assessmentName: 'Mid-Term',
-                        score: Number(row.midTerm),
-                        maxScore: Number(matrixMaxScores.midTerm),
-                        teacherRemark: row.remark || '',
-                        createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp()
-                    });
-                    studentHadWrites = true;
-                    totalSavedRecords++;
-                }
-
-                // 5. Exam
-                if (row.exam !== '' && typeof row.exam === 'number') {
-                    const existingDoc = existingMap[s.uid]?.ex;
-                    const ref = existingDoc ? doc(firestore, 'assessments', existingDoc.id) : doc(collection(firestore, 'assessments'));
-                    batch.set(ref, {
-                        studentId: s.uid,
-                        studentName,
-                        classId,
-                        subjectId,
-                        schoolId,
-                        teacherId: user.uid,
-                        term,
-                        academicYear,
-                        assessmentType: 'End of Term Exam (Exam)',
-                        assessmentName: 'End of Term Exam',
-                        score: Number(row.exam),
-                        maxScore: Number(matrixMaxScores.exam),
-                        teacherRemark: row.remark || '',
-                        createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp()
-                    });
-                    studentHadWrites = true;
-                    totalSavedRecords++;
-                }
-
-                if (studentHadWrites) {
+                if (studentChanged) {
                     updatedStudentIds.push(s.uid);
-
-                    // Timeline log
-                    TimelineService.logEventBatch(firestore, batch, {
+                    TimelineService.logEventBatch(firestore, writer, {
                         studentId: s.uid,
                         title: `Graded: Terminal Matrix (${subjectName})`,
                         description: `SBA & Exam recorded. Exam: ${row.exam !== '' ? row.exam + '/' + matrixMaxScores.exam : 'N/A'}. Remark: "${row.remark || 'Good'}"`,
@@ -927,18 +925,28 @@ export default function GradebookPage() {
                 }
             });
 
-            if (totalSavedRecords === 0) {
-                toast({ variant: 'destructive', title: "No Marks Entered", description: "Please enter at least one score in the matrix before saving." });
-                setIsSaving(false);
+            if (updatedStudentIds.length === 0) {
+                const anyMarks = (students || []).some((s: any) => {
+                    const row = matrixScores[s.uid];
+                    return row && (Object.values(row.tests || {}).some(v => typeof v === 'number') || [row.homework, row.project, row.midTerm, row.exam].some(v => typeof v === 'number'));
+                });
+                toast(anyMarks
+                    ? { title: "Nothing to Save", description: "All marks are already saved — nothing has changed." }
+                    : { variant: 'destructive', title: "No Marks Entered", description: "Please enter at least one score in the matrix before saving." });
                 return;
             }
 
-            await batch.commit();
+            await writer.commit();
+            const deleted = await commitDeletes(toDelete);
+            applyLocalChanges(upserts, deleted.ok ? toDelete : []);
 
             toast({
                 title: "Terminal Matrix Saved Successfully! 🎉",
-                description: `Persisted ${totalSavedRecords} assessment entries for ${updatedStudentIds.length} students.`
+                description: `Saved changes for ${updatedStudentIds.length} student(s): ${created} new mark(s), ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} cleared` : ''}.`
             });
+            if (!deleted.ok) {
+                toast({ variant: 'destructive', title: "Cleared Marks Not Removed", description: deleted.message });
+            }
 
             notifyParents(
                 updatedStudentIds,
@@ -946,20 +954,54 @@ export default function GradebookPage() {
                 `Terminal grades for ${subjectName} have been recorded. Tap to view your child's updated report card.`,
                 "/dashboard/my-grades"
             ).catch(err => console.error("Notification failed silently:", err));
-
-            if (refetchAssessments) refetchAssessments();
-
         } catch (error: any) {
             console.error("Save Matrix Error:", error);
-            toast({ variant: 'destructive', title: "Database Error", description: error.message });
+            toast({ variant: 'destructive', title: "Database Error", description: friendlySaveError(error) });
         } finally {
             setIsSaving(false);
         }
     };
 
+    // Removes marks (separately from the main save, so a missing delete permission never blocks saving).
+    const commitDeletes = async (ids: string[]): Promise<{ ok: boolean; message?: string }> => {
+        if (!firestore || ids.length === 0) return { ok: true };
+        try {
+            const writer = new ChunkedWriter(firestore);
+            ids.forEach(id => writer.delete(doc(firestore, 'assessments', id)));
+            await writer.commit();
+            return { ok: true };
+        } catch (err: any) {
+            console.error('Gradebook delete failed:', err);
+            return {
+                ok: false,
+                message: err?.code === 'permission-denied'
+                    ? `${ids.length} cleared mark(s) could not be removed with your account. Ask an administrator to remove them.`
+                    : `${ids.length} cleared mark(s) could not be removed: ${err?.message || 'unknown error'}`
+            };
+        }
+    };
+
+    // Keep the screen's copy of the marks in step with what was just saved — no re-read of the whole class.
+    const applyLocalChanges = (upserts: Record<string, any>, deletedIds: string[]) => {
+        const del = new Set(deletedIds);
+        // Report cards compiled later in this session must see the new marks.
+        if (schoolId && classId) invalidateOnceCache(`rc:marks:${schoolId}:${classId}:`);
+        setAssessmentsCache((prev: any[]) => {
+            const map = new Map<string, any>((prev || []).map((a: any) => [a.id, a]));
+            del.forEach(id => map.delete(id));
+            Object.entries(upserts).forEach(([id, d]) => map.set(id, { ...(map.get(id) || {}), ...d, id }));
+            return Array.from(map.values());
+        });
+    };
+
     // SAVE SINGLE BATCH ENTRY (Classic mode)
     const handleSaveSingleBatch = async () => {
         if (!firestore || !user || !schoolId || !classId || !subjectId) return;
+
+        if (termLocked) {
+            toast({ variant: 'destructive', title: "Term Closed", description: "This term has been closed, so its marks are locked. Ask an administrator to make corrections." });
+            return;
+        }
 
         const parsedMaxScore = Number(maxScore);
         if (isNaN(parsedMaxScore) || parsedMaxScore <= 0) {
@@ -967,108 +1009,144 @@ export default function GradebookPage() {
             return;
         }
 
-        const invalidEntry = Object.entries(singleScores).find(([_, score]) => score !== '' && score !== null && !isNaN(Number(score)) && Number(score) > parsedMaxScore);
+        const invalidEntry = Object.entries(singleScores).find(([_, score]) => score !== '' && score !== null && !isNaN(Number(score)) && (Number(score) > parsedMaxScore || Number(score) < 0));
         if (invalidEntry) {
             const invalidStudent = students?.find(s => s.uid === invalidEntry[0]);
             const studentName = invalidStudent ? `${invalidStudent.firstName} ${invalidStudent.lastName}`.trim() : 'A student';
-            toast({ 
-                variant: 'destructive', 
-                title: "Score Exceeds Maximum", 
-                description: `${studentName}'s score (${invalidEntry[1]}) exceeds the Maximum Score (${parsedMaxScore}).` 
+            toast({
+                variant: 'destructive',
+                title: "Invalid Score",
+                description: Number(invalidEntry[1]) < 0
+                    ? `${studentName}'s score cannot be negative.`
+                    : `${studentName}'s score (${invalidEntry[1]}) exceeds the Maximum Score (${parsedMaxScore}).`
             });
             return;
         }
 
         setIsSaving(true);
         try {
-            const batch = writeBatch(firestore);
+            const writer = new ChunkedWriter(firestore);
             const targetName = assessmentName || assessmentType;
-            const existingDocs = rawAssessments?.filter((a: any) => (a.assessmentName || a.assessmentType) === targetName) || [];
-            existingDocs.forEach((docData: any) => {
-                const ref = doc(firestore, 'assessments', docData.id);
-                batch.delete(ref);
-            });
+            const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
+            const className = selectedClass?.name || null;
+            const termId = buildTermId(academicYear, term);
+            const upserts: Record<string, any> = {};
+            const toDelete: string[] = [];
+            const updatedStudentIds: string[] = [];
+            const notifyIds: string[] = [];
+            let created = 0, changed = 0;
 
-            let count = 0;
-            const updatedStudentIds: string[] = []; 
+            // This term's existing records of this assessment, per student.
+            const existingByStudent: Record<string, any[]> = {};
+            rawAssessments
+                .filter((a: any) => (a.assessmentName || a.assessmentType) === targetName && a.studentId)
+                .forEach((a: any) => {
+                    if (!existingByStudent[a.studentId]) existingByStudent[a.studentId] = [];
+                    existingByStudent[a.studentId].push(a);
+                });
 
-            Object.entries(singleScores).forEach(([studentId, score]) => {
-                if (score !== '' && score !== null && !isNaN(Number(score))) {
-                    const student = students?.find(s => s.uid === studentId);
-                    const studentName = `${student?.firstName || ''} ${student?.lastName || ''}`.trim();
-                    const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
-                    const className = selectedClass?.name || null;
-                    
-                    const newAssessmentRef = doc(collection(firestore, 'assessments'));
-                    batch.set(newAssessmentRef, {
-                        studentId,
-                        studentName,
-                        classId,
-                        subjectId,
-                        schoolId, 
-                        teacherId: user.uid,
-                        term,
-                        academicYear,
-                        assessmentType,
-                        assessmentName: assessmentName || assessmentType,
-                        score: Number(score),
-                        maxScore: Number(maxScore),
-                        teacherRemark: singleRemarks[studentId] || "", 
-                        createdAt: serverTimestamp(),
-                        assessmentDate: serverTimestamp()
-                    });
-
-                    TimelineService.logEventBatch(firestore, batch, {
-                        studentId,
-                        title: `Graded: ${assessmentType}`,
-                        description: `Scored ${score}/${maxScore} in ${subjectName}.${singleRemarks[studentId] ? ' Remark: "' + singleRemarks[studentId] + '"' : ''}`,
-                        category: 'academic',
-                        academicYear,
-                        term,
-                        classId,
-                        className,
-                        schoolId,
-                        recordedBy: user.displayName || 'Teacher',
-                        recordedById: user.uid,
-                        metadata: {
-                            score: Number(score),
-                            maxScore: Number(maxScore),
-                            subjectId,
-                            subjectName,
-                            assessmentType,
-                            remark: singleRemarks[studentId] || ''
-                        },
-                        date: new Date()
-                    });
-
-                    count++;
-                    updatedStudentIds.push(studentId);
+            const studentIds = new Set<string>([...Object.keys(singleScores), ...Object.keys(existingByStudent)]);
+            studentIds.forEach((studentId) => {
+                const raw = singleScores[studentId];
+                const docs = existingByStudent[studentId] || [];
+                const keep = docs.length > 0 ? docs[docs.length - 1] : undefined;
+                // True duplicates (same student, same assessment name, same term) are tidied up.
+                docs.slice(0, -1).forEach((d: any) => toDelete.push(d.id));
+                const hasValue = raw !== '' && raw !== null && raw !== undefined && !isNaN(Number(raw));
+                if (!hasValue) {
+                    // Only remove a saved mark when the teacher actually cleared it on screen.
+                    if (keep && studentId in singleScores) { toDelete.push(keep.id); updatedStudentIds.push(studentId); }
+                    return;
                 }
+                const score = Number(raw);
+                const remark = singleRemarks[studentId] || '';
+                if (keep && Number(keep.score) === score && Number(keep.maxScore) === parsedMaxScore && (keep.teacherRemark || '') === remark) {
+                    return; // unchanged
+                }
+                const student = students?.find(s => s.uid === studentId);
+                const studentName = student
+                    ? `${student.firstName || ''} ${student.lastName || ''}`.trim()
+                    : (keep?.studentName || '');
+                const fields: any = {
+                    studentId,
+                    studentName,
+                    classId,
+                    subjectId,
+                    schoolId,
+                    teacherId: user.uid,
+                    term,
+                    academicYear,
+                    assessmentType,
+                    assessmentName: targetName,
+                    score,
+                    maxScore: parsedMaxScore,
+                    teacherRemark: remark,
+                };
+                if (termId) fields.termId = termId;
+                if (keep) {
+                    writer.set(doc(firestore, 'assessments', keep.id), { ...fields, updatedAt: serverTimestamp() }, { merge: true });
+                    upserts[keep.id] = { ...keep, ...fields, updatedAt: new Date() };
+                    changed++;
+                } else {
+                    const ref = doc(collection(firestore, 'assessments'));
+                    writer.set(ref, { ...fields, createdAt: serverTimestamp(), assessmentDate: serverTimestamp() });
+                    upserts[ref.id] = { ...fields, createdAt: new Date(), assessmentDate: new Date() };
+                    created++;
+                }
+                TimelineService.logEventBatch(firestore, writer, {
+                    studentId,
+                    title: `Graded: ${assessmentType}`,
+                    description: `Scored ${score}/${parsedMaxScore} in ${subjectName}.${remark ? ' Remark: "' + remark + '"' : ''}`,
+                    category: 'academic',
+                    academicYear,
+                    term,
+                    classId,
+                    className,
+                    schoolId,
+                    recordedBy: user.displayName || 'Teacher',
+                    recordedById: user.uid,
+                    metadata: {
+                        score,
+                        maxScore: parsedMaxScore,
+                        subjectId,
+                        subjectName,
+                        assessmentType,
+                        remark
+                    },
+                    date: new Date()
+                });
+                updatedStudentIds.push(studentId);
+                notifyIds.push(studentId);
             });
 
-            if (count === 0) {
-                toast({ variant: 'destructive', title: "No Data", description: "You have not entered any valid scores to save." });
-                setIsSaving(false);
+            if (writer.size === 0 && toDelete.length === 0) {
+                const anyScores = Object.values(singleScores).some(v => v !== '' && v !== null && !isNaN(Number(v)));
+                toast(anyScores
+                    ? { title: "Nothing to Save", description: "All marks are already saved — nothing has changed." }
+                    : { variant: 'destructive', title: "No Data", description: "You have not entered any valid scores to save." });
                 return;
             }
 
-            await batch.commit();
-            toast({ title: "Scores Saved Successfully! 🎉", description: `Recorded marks for ${count} students.` });
-            
-            notifyParents(
-                updatedStudentIds,
-                "New Grades Posted 📊",
-                `New ${assessmentType} marks have been entered. Tap to view your child's live grades.`,
-                "/dashboard/my-grades"
-            ).catch(err => console.error("Notification failed silently:", err));
+            if (writer.size > 0) await writer.commit();
+            const deleted = await commitDeletes(toDelete);
+            applyLocalChanges(upserts, deleted.ok ? toDelete : []);
 
-            setSingleScores({});
-            setSingleRemarks({});
-            if (refetchAssessments) refetchAssessments();
+            toast({ title: "Scores Saved Successfully! 🎉", description: `${created} new mark(s), ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} removed` : ''}.` });
+            if (!deleted.ok) {
+                toast({ variant: 'destructive', title: "Some Marks Not Removed", description: deleted.message });
+            }
 
+            if (notifyIds.length > 0) {
+                notifyParents(
+                    notifyIds,
+                    "New Grades Posted 📊",
+                    `New ${assessmentType} marks have been entered. Tap to view your child's live grades.`,
+                    "/dashboard/my-grades"
+                ).catch(err => console.error("Notification failed silently:", err));
+            }
         } catch (error: any) {
             console.error("Save Batch Error:", error);
-            toast({ variant: 'destructive', title: "Database Error", description: error.message });
+            toast({ variant: 'destructive', title: "Database Error", description: friendlySaveError(error) });
         } finally {
             setIsSaving(false);
         }
@@ -1076,24 +1154,22 @@ export default function GradebookPage() {
 
     const handleDeleteBatch = async (typeToDelete: string) => {
         if (!firestore) return;
-
+        if (termLocked) {
+            toast({ variant: 'destructive', title: "Term Closed", description: "This term has been closed, so its marks are locked. Ask an administrator to make corrections." });
+            return;
+        }
+        const docsToDelete = groupedAssessments[typeToDelete] || [];
+        if (docsToDelete.length === 0) return;
         setIsSaving(true);
         try {
-            const batch = writeBatch(firestore);
-            const docsToDelete = groupedAssessments[typeToDelete];
-            
-            docsToDelete.forEach(docData => {
-                const ref = doc(firestore, 'assessments', docData.id);
-                batch.delete(ref);
-            });
-
-            await batch.commit();
-            toast({ title: "Batch Removed 🗑️", description: `Successfully deleted ${docsToDelete.length} records for ${typeToDelete}.` });
-            if (refetchAssessments) refetchAssessments();
-
-        } catch (error: any) {
-            console.error(error);
-            toast({ variant: 'destructive', title: "Deletion Failed", description: "Failed to erase batch records." });
+            const ids = docsToDelete.map((d: any) => d.id);
+            const res = await commitDeletes(ids);
+            if (!res.ok) {
+                toast({ variant: 'destructive', title: "Deletion Failed", description: res.message });
+                return;
+            }
+            applyLocalChanges({}, ids);
+            toast({ title: "Batch Removed 🗑️", description: `Successfully deleted ${ids.length} records for ${typeToDelete}.` });
         } finally {
             setIsSaving(false);
         }
@@ -1179,7 +1255,7 @@ export default function GradebookPage() {
                   {role !== 'Student' && role !== 'Parent' && (
                     <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
                       <span className="text-amber-400">⚡</span>
-                      <span>{aiCredits} AI Credits</span>
+                      <span>{aiCredits === null ? '…' : aiCredits.toLocaleString()} AI Credits</span>
                     </div>
                   )}
                 </div>
@@ -1898,6 +1974,22 @@ export default function GradebookPage() {
                                     <History className="h-5 w-5 text-orange-600"/> Recorded Batches in Ledger
                                 </CardTitle>
                                 <CardDescription className="text-orange-950/50">Edit individual marks or erase batch entries if needed.</CardDescription>
+                                <div className="pt-2 flex flex-wrap items-center gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 rounded-xl text-xs font-semibold border-orange-200 text-orange-800"
+                                        disabled={!assessmentsKey || loadingAssessments || isSaving}
+                                        onClick={() => refreshAssessments()}
+                                        title="Marks are loaded once to save cost. Reload if another teacher has just entered marks for this class and subject."
+                                    >
+                                        <History className="mr-1.5 h-3.5 w-3.5" /> Reload marks
+                                    </Button>
+                                    {termLocked && (
+                                        <span className="text-xs font-semibold text-rose-700">This term is closed — marks are locked for teachers.</span>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent className="p-6">
                                 {loadingAssessments ? (

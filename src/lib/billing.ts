@@ -1,6 +1,6 @@
 'use client';
 
-import { doc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query, where, getDocs, documentId } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
 import { format, startOfDay } from 'date-fns';
@@ -329,19 +329,18 @@ export async function billMultipleStudents(
   let existingBillIds: Set<string> | undefined = new Set<string>();
   const voidedBills = new Map<string, any>();
   try {
-      // Small batches (quick toggles) check each student's two bills directly instead of reading every
-      // daily bill in the school for the date.
-      if (students.length <= 5) throw new Error('small-batch');
-      const billsQuery = query(
-          collection(firestore, 'financialRecords'),
-          where('schoolId', '==', schoolId),
-          where('dueDate', '==', Timestamp.fromDate(normalizedDate))
-      );
-      const billsSnap = await getDocs(billsQuery);
-      billsSnap.docs.forEach(d => {
-          if ((d.data() as any)?.voided) voidedBills.set(d.id, d.data());
-          else existingBillIds!.add(d.id);
-      });
+      // READ COST: look up exactly this list's daily bills by their (deterministic) ids, 30 at a time — only
+      // bills that exist are read. (Was: every bill of the WHOLE SCHOOL due that day, read again for every
+      // class whose attendance was saved.)
+      const dateStr = format(normalizedDate, 'yyyy-MM-dd');
+      const ids = students.flatMap(st => st?.uid ? [`canteen-${st.uid}-${dateStr}`, `transport-${st.uid}-${dateStr}`] : []);
+      for (let i = 0; i < ids.length; i += 30) {
+          const snap = await getDocs(query(collection(firestore, 'financialRecords'), where(documentId(), 'in', ids.slice(i, i + 30))));
+          snap.docs.forEach(d => {
+              if ((d.data() as any)?.voided) voidedBills.set(d.id, d.data());
+              else existingBillIds!.add(d.id);
+          });
+      }
   } catch (err: any) {
       if (err?.message !== 'small-batch') console.warn("Could not fetch existing daily bills; checking per student instead:", err);
       existingBillIds = undefined; // forces a per-student existence check so paid bills are never overwritten

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { classSizes, submissionRate, quizAverage, newestFirst } from '@/lib/coursework-stats';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, doc, getDoc } from 'firebase/firestore';
 import { Assignment, Quiz, Student, StudentSubmission, QuizAttempt } from '@/lib/types';
@@ -232,23 +233,27 @@ export default function TeacherAssignmentsView() {
   );
   const { data: quizzes, isLoading: isLoadingQuizzes } = useCollection<Quiz>(quizzesQuery);
 
-  const submissionsQuery = useMemoFirebase(
-    () => (schoolId && firestore) ? query(collection(firestore, 'submissions'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
-  const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<StudentSubmission>(submissionsQuery);
-
-  const quizAttemptsQuery = useMemoFirebase(
-    () => (schoolId && firestore) ? query(collection(firestore, 'quizAttempts'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
-  const { data: quizAttempts, isLoading: isLoadingAttempts } = useCollection<QuizAttempt>(quizAttemptsQuery);
-
-  const studentsQuery = useMemoFirebase(
-    () => (schoolId && firestore) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]
-  );
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+  // READ COST: completion and quiz averages come from COUNT/SUM aggregations over THIS teacher's own
+  // assignments and quizzes (a few reads) — not from live copies of every submission, quiz attempt and student
+  // of the whole school.
+  const [stats, setStats] = useState<{ rate: number | null; avg: number | null } | null>(null);
+  useEffect(() => {
+    if (!firestore || !schoolId || !assignments || !quizzes) return;
+    let alive = true;
+    (async () => {
+      const recent = newestFirst(assignments).slice(0, 30) as any[];
+      const sizes = await classSizes(firestore, schoolId, recent.map(a => a.classId), false);
+      const [rate, avg] = await Promise.all([
+        submissionRate(firestore, schoolId, recent, sizes),
+        quizAverage(firestore, schoolId, newestFirst(quizzes).slice(0, 60).map(q => q.id)),
+      ]);
+      if (alive) setStats({ rate, avg });
+    })().catch(e => { console.warn('Coursework stats unavailable', e); if (alive) setStats({ rate: null, avg: null }); });
+    return () => { alive = false; };
+  }, [firestore, schoolId, assignments, quizzes]);
+  const isLoadingSubmissions = !stats;
+  const isLoadingStudents = !stats;
+  const isLoadingAttempts = !stats;
 
   const sortedAssignments = useMemo(() => {
     if (!assignments) return [];
@@ -259,41 +264,8 @@ export default function TeacherAssignmentsView() {
   const activeQuizzesCount = quizzes?.length || 0;
 
   // Dynamic statistics calculations
-  const avgCompletionRate = useMemo(() => {
-    if (!assignments || !students || !submissions || assignments.length === 0) return 0;
-    let totalExpected = 0;
-    let totalActual = 0;
-
-    assignments.forEach((assign) => {
-      const classStudentsCount = students.filter(
-        (s) => s.classId === assign.classId && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
-      ).length;
-
-      const assignmentSubmissionsCount = submissions.filter(
-        (sub) => sub.assignmentId === assign.id
-      ).length;
-
-      totalExpected += classStudentsCount;
-      totalActual += assignmentSubmissionsCount;
-    });
-
-    if (totalExpected === 0) return 0;
-    return Math.round((totalActual / totalExpected) * 100);
-  }, [assignments, students, submissions]);
-
-  const quizPerformanceAvg = useMemo(() => {
-    if (!quizzes || !quizAttempts || quizzes.length === 0) return 0;
-    const teacherQuizIds = new Set(quizzes.map((q) => q.id));
-    const teacherAttempts = quizAttempts.filter((a) => teacherQuizIds.has(a.quizId));
-
-    if (teacherAttempts.length === 0) return 0;
-
-    const totalPct = teacherAttempts.reduce(
-      (sum, attempt) => sum + (attempt.score / (attempt.total || 5)) * 100,
-      0
-    );
-    return Math.round(totalPct / teacherAttempts.length);
-  }, [quizzes, quizAttempts]);
+  const avgCompletionRate = stats?.rate ?? null;
+  const quizPerformanceAvg = stats?.avg ?? null;
 
     if (showRemoteMonitor) {
     return (
@@ -431,8 +403,10 @@ export default function TeacherAssignmentsView() {
             <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
               {isLoadingSubmissions || isLoadingStudents ? (
                 <Skeleton className="h-6 w-12" />
-              ) : (
+              ) : avgCompletionRate !== null ? (
                 `${avgCompletionRate}%`
+              ) : (
+                '—'
               )}
             </h3>
             <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Class submission rate</p>
@@ -448,13 +422,13 @@ export default function TeacherAssignmentsView() {
             <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">
               {isLoadingQuizzes || isLoadingAttempts ? (
                 <Skeleton className="h-6 w-12" />
-              ) : quizPerformanceAvg > 0 ? (
+              ) : quizPerformanceAvg !== null ? (
                 `${quizPerformanceAvg}%`
               ) : (
                 '—'
               )}
             </h3>
-            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Quiz performance average</p>
+            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Average quiz score (first attempts only)</p>
           </div>
         </Card>
       </div>

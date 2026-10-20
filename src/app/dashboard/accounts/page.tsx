@@ -4629,8 +4629,77 @@ export default function AccountsPage() {
   // Per-fee debts are in the server summary too (1 read), so they show without loading the full ledger.
   const hasStreamSummary = !isLedgerLoaded && Boolean((dashboardSummary as any)?.financials?.streamDebts);
 
+  // Every student's balance from ONE document (studentBalances/{schoolId}), kept up to date by the server.
+  // Opening Student Billing costs 1 read for all balances instead of reading any bills, so the list can show
+  // balances and put the highest debts first. A student's full ledger is still read only when opened.
+  const [balanceIndex, setBalanceIndex] = useState<{ byStudent?: Record<string, { debt?: number; credit?: number }>; updatedAt?: any } | null>(null);
+  const [loadingBalanceIndex, setLoadingBalanceIndex] = useState(false);
+  const [balanceIndexIssue, setBalanceIndexIssue] = useState<'missing' | 'denied' | null>(null);
+  const loadBalanceIndex = useCallback(async () => {
+    if (!firestore || !schoolId) return;
+    setLoadingBalanceIndex(true);
+    try {
+      const snap = await getDoc(doc(firestore, 'studentBalances', schoolId));
+      setBalanceIndex(snap.exists() ? (snap.data() as any) : null);
+      setBalanceIndexIssue(snap.exists() ? null : 'missing');
+    } catch (e: any) {
+      setBalanceIndex(null); // no access or not built yet: the list falls back to "View Ledger & Balance"
+      setBalanceIndexIssue(String(e?.code || e?.message || '').includes('permission') ? 'denied' : 'missing');
+    } finally {
+      setLoadingBalanceIndex(false);
+    }
+  }, [firestore, schoolId]);
+  useEffect(() => { loadBalanceIndex(); }, [loadBalanceIndex]);
+  const balanceIndexUpdated = useMemo(() => {
+    const t: any = balanceIndex?.updatedAt;
+    const ms = t?.toMillis?.() ?? (t?.seconds ? t.seconds * 1000 : 0);
+    return ms ? new Date(ms) : null;
+  }, [balanceIndex]);
+
+  // Per-student figures from the balance index (no bill reads): debt, credit, aging, oldest unpaid bill and
+  // this academic year's billed/paid/waived. Used by the aged-debt call list, debt aging and class pace
+  // when the full ledger has not been loaded.
+  const indexRows = useMemo(() => {
+    const map: any = balanceIndex?.byStudent;
+    if (!map || viewTermId || !students) return null;
+    const year = normalizeAcademicYear(effectiveAcademicYear) || activeTermStamp?.academicYear || '';
+    const now = Date.now();
+    return students.map(student => {
+      const keys = Array.from(new Set([student.id, student.uid, student.studentId, (student as any).admissionNo, (student as any).admissionNumber].filter(Boolean).map(String)));
+      let debt = 0, credit = 0, c = 0, a30 = 0, a60 = 0, a90 = 0, oldest = 0, yb = 0, yp = 0, yw = 0;
+      keys.forEach(k => {
+        const e = map[k];
+        if (!e) return;
+        debt += Number(e.debt) || 0;
+        credit += Number(e.credit) || 0;
+        c += Number(e.aging?.c) || 0; a30 += Number(e.aging?.a30) || 0; a60 += Number(e.aging?.a60) || 0; a90 += Number(e.aging?.a90) || 0;
+        if (e.oldestDue && (!oldest || e.oldestDue < oldest)) oldest = Number(e.oldestDue);
+        const y = year ? e.years?.[year] : null;
+        if (y) { yb += Number(y.b) || 0; yp += Number(y.p) || 0; yw += Number(y.w) || 0; }
+      });
+      // Aging is refreshed nightly; debt is live. New bills since then count as "not yet due", and if
+      // payments since then reduced the debt, the aged amounts are scaled down to match.
+      const aged = c + a30 + a60 + a90;
+      const scale = aged > debt && aged > 0 ? debt / aged : 1;
+      const aging = { current: c * scale + Math.max(0, debt - aged), age30: a30 * scale, age60: a60 * scale, age90: a90 * scale };
+      const oldestOverdueDays = oldest && debt > 0.01 ? Math.max(0, Math.floor((now - oldest) / 86400000)) : 0;
+      return { student, debt, credit, balance: Math.round((debt - credit) * 100) / 100, aging, oldestOverdueDays, yb, yp, yw };
+    });
+  }, [balanceIndex, viewTermId, students, effectiveAcademicYear, activeTermStamp]);
+
+  // The aged-debt list, debt aging and class pace work from the balance index too (no full ledger needed).
+  const advisoryAvailable = isLedgerLoaded || Boolean(indexRows);
+
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
+    if (!isLedgerLoaded && indexRows) {
+      const t = indexRows.reduce((acc, r) => {
+        acc.current += r.aging.current; acc.age30 += r.aging.age30; acc.age60 += r.aging.age60; acc.age90 += r.aging.age90; acc.overpayments += r.credit;
+        return acc;
+      }, { current: 0, age30: 0, age60: 0, age90: 0, overpayments: 0 });
+      const grossTotal = t.current + t.age30 + t.age60 + t.age90;
+      return { ...t, grossTotal, total: grossTotal - t.overpayments };
+    }
     if (!advisoryActiveRecords.length || !students) return { current: 0, age30: 0, age60: 0, age90: 0, total: 0, overpayments: 0, grossTotal: 0 };
     
     const today = startOfDay(new Date());
@@ -4670,10 +4739,27 @@ export default function AccountsPage() {
     const total = current + age30 + age60 + age90 - overpayments;
     const grossTotal = current + age30 + age60 + age90;
     return { current, age30, age60, age90, total, overpayments, grossTotal };
-  }, [advisoryActiveRecords, students]);
+  }, [advisoryActiveRecords, students, isLedgerLoaded, indexRows]);
 
   // --- CLASS COLLECTIONS PACE CALCULATION ---
   const classCollectionsStats = useMemo(() => {
+    if (!isLedgerLoaded && indexRows && classes) {
+      const byClass: Record<string, { n: number; b: number; p: number; w: number; owed: number }> = {};
+      indexRows.forEach(r => {
+        const cid = r.student.classId;
+        if (!cid) return;
+        const e = (byClass[cid] = byClass[cid] || { n: 0, b: 0, p: 0, w: 0, owed: 0 });
+        e.n++; e.b += r.yb; e.p += r.yp; e.w += r.yw; e.owed += r.debt;
+      });
+      return classes.map(c => {
+        const e = byClass[c.id] || { n: 0, b: 0, p: 0, w: 0, owed: 0 };
+        const netBilled = e.b - e.w;
+        return {
+          classId: c.id, className: c.name, studentCount: e.n, totalBilled: e.b, totalPaid: e.p, totalWaivers: e.w,
+          outstanding: e.owed, rate: netBilled > 0 ? Math.min(100, (e.p / netBilled) * 100) : (e.owed > 0.01 ? 0 : 100),
+        };
+      }).sort((a, b) => b.rate - a.rate);
+    }
     if (!advisoryActiveRecords.length || !students || !classes) return [];
 
     const studentsByClass: Record<string, Student[]> = {};
@@ -4731,34 +4817,8 @@ export default function AccountsPage() {
         rate
       };
     }).sort((a, b) => b.rate - a.rate); // default sort by collection rate descending
-  }, [advisoryActiveRecords, performanceRecords, students, classes]);
+  }, [advisoryActiveRecords, performanceRecords, students, classes, isLedgerLoaded, indexRows]);
 
-  // Every student's balance from ONE document (studentBalances/{schoolId}), kept up to date by the server.
-  // Opening Student Billing costs 1 read for all balances instead of reading any bills, so the list can show
-  // balances and put the highest debts first. A student's full ledger is still read only when opened.
-  const [balanceIndex, setBalanceIndex] = useState<{ byStudent?: Record<string, { debt?: number; credit?: number }>; updatedAt?: any } | null>(null);
-  const [loadingBalanceIndex, setLoadingBalanceIndex] = useState(false);
-  const [balanceIndexIssue, setBalanceIndexIssue] = useState<'missing' | 'denied' | null>(null);
-  const loadBalanceIndex = useCallback(async () => {
-    if (!firestore || !schoolId) return;
-    setLoadingBalanceIndex(true);
-    try {
-      const snap = await getDoc(doc(firestore, 'studentBalances', schoolId));
-      setBalanceIndex(snap.exists() ? (snap.data() as any) : null);
-      setBalanceIndexIssue(snap.exists() ? null : 'missing');
-    } catch (e: any) {
-      setBalanceIndex(null); // no access or not built yet: the list falls back to "View Ledger & Balance"
-      setBalanceIndexIssue(String(e?.code || e?.message || '').includes('permission') ? 'denied' : 'missing');
-    } finally {
-      setLoadingBalanceIndex(false);
-    }
-  }, [firestore, schoolId]);
-  useEffect(() => { loadBalanceIndex(); }, [loadBalanceIndex]);
-  const balanceIndexUpdated = useMemo(() => {
-    const t: any = balanceIndex?.updatedAt;
-    const ms = t?.toMillis?.() ?? (t?.seconds ? t.seconds * 1000 : 0);
-    return ms ? new Date(ms) : null;
-  }, [balanceIndex]);
 
   const studentFinancials = useMemo(() => {
     if (!students) return [];
@@ -4969,12 +5029,19 @@ export default function AccountsPage() {
 
   const [debtorSearchQuery, setDebtorSearchQuery] = useState('');
 
-  const allDebtorsList = useMemo(() => {
-      if (!isLedgerLoaded) return [];
+  const allDebtorsList = useMemo((): any[] => {
+      if (!isLedgerLoaded) {
+          // From the balance index: every student who owes, highest debt first (no bill reads).
+          if (!indexRows) return [];
+          return indexRows
+              .filter(r => r.balance > 0.01)
+              .map(r => ({ student: r.student, balance: r.balance, records: [] as FinancialRecord[], oldestOverdueDays: r.oldestOverdueDays }))
+              .sort((a, b) => b.balance - a.balance);
+      }
       return studentFinancials
           .filter(sf => sf.balance > 0.01)
           .sort((a, b) => b.balance - a.balance);
-  }, [isLedgerLoaded, studentFinancials]);
+  }, [isLedgerLoaded, studentFinancials, indexRows]);
 
   const topDebtors = useMemo(() => {
       if (!debtorSearchQuery.trim()) return allDebtorsList;
@@ -5368,19 +5435,19 @@ export default function AccountsPage() {
                                         </TabsTrigger>
                                         <TabsTrigger value="debtors" className="text-[11px] sm:text-xs px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                             <span>Aged Debt Call List</span>
-                                            {!isLedgerLoaded && (
+                                            {!advisoryAvailable && (
                                                 <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
                                             )}
                                         </TabsTrigger>
                                         <TabsTrigger value="aging" className="text-[11px] sm:text-xs px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                             <span>Debt Aging</span>
-                                            {!isLedgerLoaded && (
+                                            {!advisoryAvailable && (
                                                 <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
                                             )}
                                         </TabsTrigger>
                                         <TabsTrigger value="classPace" className="text-[11px] sm:text-xs px-3 py-1.5 rounded-md font-medium flex items-center gap-1 shrink-0 whitespace-nowrap">
                                             <span>Class Pace</span>
-                                            {!isLedgerLoaded && (
+                                            {!advisoryAvailable && (
                                                 <span className="text-[10px] text-indigo-600 font-bold ml-0.5" title="Requires on-demand full ledger load">⚡</span>
                                             )}
                                         </TabsTrigger>
@@ -5836,7 +5903,7 @@ export default function AccountsPage() {
                                         </Button>
                                     </Link>
                                 </div>
-                                {isLedgerLoaded && allDebtorsList.length > 0 && (
+                                {advisoryAvailable && allDebtorsList.length > 0 && (
                                     <div className="relative">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                                         <Input
@@ -5848,7 +5915,7 @@ export default function AccountsPage() {
                                     </div>
                                 )}
                                 
-                                {!isLedgerLoaded ? (
+                                {!advisoryAvailable ? (
                                     <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
                                         <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
                                             <Database className="h-6 w-6" />
@@ -5883,9 +5950,9 @@ export default function AccountsPage() {
                                     </div>
                                 ) : (
                                     <div className="grid gap-3 max-h-[520px] overflow-y-auto pr-1">
-                                        {topDebtors.map(({ student, balance, records: studentRecs }) => {
+                                        {topDebtors.map(({ student, balance, records: studentRecs, oldestOverdueDays }: any) => {
                                             const sKey = student.uid || student.id || student.studentId;
-                                            const overdueDays = getOldestOverdueDays(studentRecs);
+                                            const overdueDays = typeof oldestOverdueDays === 'number' ? oldestOverdueDays : getOldestOverdueDays(studentRecs);
                                             const isSending = sendingSMSStudentId === sKey;
                                             
                                             return (
@@ -5949,7 +6016,7 @@ export default function AccountsPage() {
                             </TabsContent>
                             
                             <TabsContent value="aging" className="mt-0">
-                                {!isLedgerLoaded ? (
+                                {!advisoryAvailable ? (
                                     <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
                                         <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
                                             <Clock className="h-6 w-6" />
@@ -6055,7 +6122,7 @@ export default function AccountsPage() {
                             </TabsContent>
                             
                             <TabsContent value="classPace" className="mt-0">
-                                {!isLedgerLoaded ? (
+                                {!advisoryAvailable ? (
                                     <div className="text-center py-12 px-4 border border-dashed rounded-xl bg-slate-50/50 flex flex-col items-center justify-center space-y-3">
                                         <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-200/70 flex items-center justify-center text-blue-600 shadow-xs">
                                             <Database className="h-6 w-6" />

@@ -3,7 +3,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useAuth, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, query, where, addDoc, serverTimestamp, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, query, where, addDoc, serverTimestamp, updateDoc, deleteDoc, getDocs, limit, writeBatch } from 'firebase/firestore';
+import { TEACHING_ROLES } from '@/lib/staff-roles';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -46,7 +47,8 @@ function SubjectForm({
   classes,
   initialData,
   onSuccess,
-  schoolId
+  schoolId,
+  existingNames = []
 }: {
   setOpen: (open: boolean) => void;
   allTeachers: Staff[];
@@ -54,6 +56,7 @@ function SubjectForm({
   initialData?: Subject;
   onSuccess: () => void;
   schoolId: string;
+  existingNames?: string[];
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -73,11 +76,16 @@ function SubjectForm({
 
   async function onSubmit(values: z.infer<typeof subjectSchema>) {
     if (!firestore || !schoolId) return;
+    values = { ...values, name: values.name.trim() };
+    if (existingNames.some(n => n.trim().toLowerCase() === values.name.toLowerCase())) {
+      toast({ variant: 'destructive', title: 'Name Already Used', description: `There is already a subject called "${values.name}".` });
+      return;
+    }
     setIsSubmitting(true);
     try {
       if (initialData) {
         const subjectRef = doc(firestore, 'subjects', initialData.id);
-        await updateDoc(subjectRef, values);
+        await updateDoc(subjectRef, { ...values, updatedAt: serverTimestamp() });
         toast({ title: 'Success', description: 'Subject updated successfully.' });
       } else {
         await addDoc(collection(firestore, 'subjects'), {
@@ -161,6 +169,19 @@ function SubjectForm({
                     <FormDescription className="text-[10px] text-slate-400">Select instructors authorized to teach this subject.</FormDescription>
                 </div>
                 <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto p-2 border border-slate-200 bg-slate-50/50 rounded-2xl">
+                    {/* Assigned ids that are not (or no longer) teaching staff — shown so they can be removed. */}
+                    {(Array.isArray(field.value) ? field.value : []).filter((id: string) => !allTeachers.some(t => t.uid === id)).map((id: string) => (
+                        <button
+                            type="button"
+                            key={`unknown-${id}`}
+                            onClick={() => field.onChange((field.value || []).filter((v: string) => v !== id))}
+                            className="flex items-center justify-between gap-2 p-2 rounded-xl border border-red-200 bg-red-50 text-red-700 text-[11px] font-bold"
+                            title={id}
+                        >
+                            <span className="truncate">Unknown / former staff member</span>
+                            <span className="uppercase text-[9px]">Remove ✕</span>
+                        </button>
+                    ))}
                     {allTeachers.map((teacher) => {
                         const currentValues = Array.isArray(field.value) ? field.value : [];
                         const isChecked = currentValues.includes(teacher.uid);
@@ -276,25 +297,24 @@ export default function SubjectsPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
-  const [refetchKey, setRefetchKey] = useState(0);
-
   const [isFormOpen, setFormOpen] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | undefined>(undefined);
   
   const canManage = role === 'Director' || role === 'Administrator';
 
-  const forceRefetch = useCallback(() => setRefetchKey(prev => prev + 1), []);
+  // The lists below are live, so there is nothing to re-read after a change (re-reading cost a read per document).
+  const forceRefetch = useCallback(() => {}, []);
 
   const subjectsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
     return query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId));
-  }, [firestore, refetchKey, schoolId]);
+  }, [firestore, schoolId]);
   const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
 
   const teachersQuery = useMemoFirebase(() => {
     if (!firestore || !canManage || !schoolId) return null;
-    return query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId));
-  }, [firestore, canManage, refetchKey, schoolId]);
+    return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', TEACHING_ROLES));
+  }, [firestore, canManage, schoolId]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection<Staff>(teachersQuery);
 
   const classesQuery = useMemoFirebase(() => 
@@ -309,11 +329,26 @@ export default function SubjectsPage() {
     if (!confirm("Are you sure you want to delete this subject? It will affect all existing timetable assignments.")) {
       return;
     }
-    if (!firestore) return;
+    if (!firestore || !schoolId) return;
     try {
+      // Report cards list subjects from this curriculum: deleting a subject that has marks would silently drop
+      // those marks from every report card (past terms included). One read to check.
+      const marks = await getDocs(query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('subjectId', '==', id), limit(1)));
+      if (!marks.empty) {
+        toast({ variant: 'destructive', title: 'Subject Has Marks', description: 'Marks have been recorded for this subject, so deleting it would remove it from report cards. Edit it instead (e.g. untick the classes that no longer take it).' });
+        return;
+      }
       await deleteDoc(doc(firestore, 'subjects', id));
+      // Its timetable lessons would otherwise stay on the timetable as "N/A".
+      try {
+        const lessons = await getDocs(query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId), where('subjectId', '==', id)));
+        for (let i = 0; i < lessons.docs.length; i += 450) {
+          const b = writeBatch(firestore);
+          lessons.docs.slice(i, i + 450).forEach(d => b.delete(d.ref));
+          await b.commit();
+        }
+      } catch (e) { console.warn('Subject deleted; its timetable lessons could not be removed.', e); }
       toast({ title: 'Subject Deleted', description: 'The subject has been successfully removed from curriculum.' });
-      forceRefetch();
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Error', description: error.message });
     }
@@ -337,7 +372,14 @@ export default function SubjectsPage() {
   const totalSubjects = subjects?.length || 0;
   const totalPeriods = subjects?.reduce((acc, s) => acc + (s.weeklyPeriods || 0), 0) || 0;
   const labSubjectsCount = subjects?.filter(s => s.requiresLab).length || 0;
-  const unassignedCount = subjects?.filter(s => !s.teacherIds || s.teacherIds.length === 0).length || 0;
+  // A subject counts as unassigned when none of its teachers is a current teaching staff member
+  // (assigned ids of removed staff used to show as "TBA" but count as assigned).
+  const isKnownTeacher = (id: string) => !canManage || !teachers || teachers.some(t => t.uid === id);
+  const hasRealTeacher = (s: Subject) => (s.teacherIds || []).some(isKnownTeacher);
+  const unassignedCount = subjects?.filter(s => !hasRealTeacher(s)).length || 0;
+  const classLabel = (cid: string) => classes?.find(c => c.id === cid)?.name
+    || classes?.find(c => String(c.name || '').toLowerCase() === String(cid || '').toLowerCase())?.name
+    || null;
 
   const getSubjectIcon = (name: string) => {
     const n = name.toLowerCase();
@@ -378,7 +420,7 @@ export default function SubjectsPage() {
             </div>
             <Button 
               variant="outline" 
-              onClick={forceRefetch} 
+              onClick={() => toast({ title: 'Up to date', description: 'Subjects update automatically — no need to sync.' })} 
               className="h-9 px-3 rounded-xl border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"
             >
               <RefreshCw className={cn("h-3.5 w-3.5 mr-1 text-slate-300", isLoading && "animate-spin")}/> Sync
@@ -417,7 +459,7 @@ export default function SubjectsPage() {
           </div>
           <div className="mt-3">
             <h3 className="text-2xl font-black text-slate-800 font-mono leading-none">{totalPeriods}</h3>
-            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Instructional hours weekly</p>
+            <p className="text-[10px] text-slate-400 mt-1.5 font-medium">Sum of all subjects' periods (per class taking every subject)</p>
           </div>
         </Card>
 
@@ -467,7 +509,7 @@ export default function SubjectsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sortedSubjects.map((subject) => {
-            const hasNoTeacher = !subject.teacherIds || subject.teacherIds.length === 0;
+            const hasNoTeacher = !hasRealTeacher(subject);
             const targetClasses = subject.targetClasses || [];
             const teacherIds = subject.teacherIds || [];
             return (
@@ -529,10 +571,10 @@ export default function SubjectsPage() {
                     <div className="flex flex-wrap gap-1">
                       {targetClasses.length > 0 ? (
                         targetClasses.map(cid => {
-                          const classObj = classes?.find(c => c.id === cid);
+                          const className = classLabel(cid);
                           return (
                             <Badge key={cid} variant="secondary" className="bg-slate-100 text-slate-600 text-[10px] font-bold py-0.5 px-2 rounded-lg border border-slate-200/30">
-                              {classObj ? classObj.name : 'Unknown Class'}
+                              {className || 'Deleted class'}
                             </Badge>
                           );
                         })
@@ -557,10 +599,10 @@ export default function SubjectsPage() {
                           return (
                             <div key={tid} className="flex items-center gap-2 bg-slate-50 border border-slate-150/40 rounded-xl p-1.5">
                               <div className="h-6 w-6 rounded bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-bold text-[8px] uppercase shrink-0">
-                                {teacher ? `${teacher.firstName[0]}${teacher.lastName[0]}` : 'TBA'}
+                                {teacher ? `${teacher.firstName?.[0] || ''}${teacher.lastName?.[0] || ''}` : (canManage ? '?' : 'T')}
                               </div>
                               <span className="text-[11px] font-bold text-slate-650 truncate">
-                                {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Assigned Instructor'}
+                                {teacher ? `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim() : (canManage ? 'Unknown / former staff — edit to remove' : 'Assigned teacher')}
                               </span>
                             </div>
                           );
@@ -601,6 +643,7 @@ export default function SubjectsPage() {
                 initialData={editingSubject}
                 onSuccess={forceRefetch}
                 schoolId={schoolId}
+                existingNames={(subjects || []).filter(s => s.id !== editingSubject?.id).map(s => s.name || '')}
             />
           )}
         </DialogContent>

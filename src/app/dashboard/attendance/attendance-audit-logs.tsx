@@ -108,22 +108,40 @@ export function AttendanceAuditLogs() {
             thresholdDate.setDate(thresholdDate.getDate() - 10);
             const startThreshold = startOfDay(thresholdDate);
 
-            // 2. Fetch all student attendance records from threshold
-            const attendanceSnap = await getDocs(query(
+            // 3. Group by classId and date (represented as YYYY-MM-DD)
+            const groupedRecords: { [key: string]: any[] } = {};
+            // 2. READ COST: read only the per-class DAILY SHEETS (one document per class per day, which already
+            //    hold every student's status) — not every individual student record (~25x more reads).
+            //    Falls back to the individual records if the sheet index is not deployed yet.
+            let usedSheets = false;
+            try {
+                const sheets = await getDocs(query(
+                    collection(firestore, 'attendance'),
+                    where('schoolId', '==', schoolId),
+                    where('dateStr', '>=', format(startThreshold, 'yyyy-MM-dd'))
+                ));
+                sheets.docs.forEach(d => {
+                    const a: any = d.data();
+                    if (a.isArchived === true || !a.classId || !a.dateStr || !a.studentsMap) return;
+                    groupedRecords[`${a.classId}_${a.dateStr}`] = Object.values(a.studentsMap).map((r: any) => ({
+                        ...r, updatedAt: a.updatedAt, updatedBy: a.updatedBy,
+                    }));
+                });
+                usedSheets = Object.keys(groupedRecords).length > 0;
+            } catch (sheetErr) {
+                console.warn('Daily-sheet query unavailable, reading individual records instead.', sheetErr);
+            }
+            const attendanceSnap = usedSheets ? null : await getDocs(query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
                 where('date', '>=', startThreshold)
             ));
-
-            if (attendanceSnap.empty) {
+            if (!usedSheets && (!attendanceSnap || attendanceSnap.empty)) {
                 toast({ title: "No Historical Records", description: "No student attendance records were found from last week to sync." });
                 setIsSyncing(false);
                 return;
             }
-
-            // 3. Group by classId and date (represented as YYYY-MM-DD)
-            const groupedRecords: { [key: string]: any[] } = {};
-            attendanceSnap.docs.forEach(docSnap => {
+            (attendanceSnap?.docs || []).forEach(docSnap => {
                 const data = docSnap.data();
                 if (data.isArchived === true) return;
                 const classId = data.classId;

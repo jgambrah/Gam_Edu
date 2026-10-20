@@ -43,8 +43,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import { useFirestore, useMemoFirebase, useUser, errorEmitter, FirestorePermissionError, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
-import React, { useState, useMemo } from 'react';
-import { collection, doc, query, where, updateDoc, deleteDoc, addDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import React, { useState, useMemo, useCallback } from 'react';
+import { collection, doc, query, where, updateDoc, deleteDoc, addDoc, serverTimestamp, orderBy, getDocs, getDoc, writeBatch } from 'firebase/firestore';
+import { useOnceQuery, invalidateOnceCache } from '@/lib/firestore-once';
+import { TEACHING_ROLES } from '@/lib/staff-roles';
 import { Loader2, PlusCircle, User, Users, BookOpen, UserCircle, Trash2, ArrowLeft, CalendarCheck, Clock, ShieldCheck, ChevronRight, Edit, Baby, Venus, Mars, Home, GraduationCap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRole } from '@/context/role-context';
@@ -65,7 +67,7 @@ import { TimetableDisplay } from '../timetable/timetable-display';
 import { StudentDisplay } from '@/components/student-display';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 const classSchema = z.object({
@@ -79,7 +81,18 @@ const classSchema = z.object({
   examWeight: z.coerce.number().min(0).max(100).optional(),
 });
 
-function ClassDetailView({ 
+/** Counted on the roster / capacity: everyone except students who have left. */
+const LEFT_STATUSES = new Set(['inactive', 'withdrawn', 'graduated', 'transferred', 'alumni', 'dismissed', 'deceased']);
+function isOnRoll(s: any): boolean {
+    return !LEFT_STATUSES.has(String(s?.enrollmentStatus || '').toLowerCase()) && s?.isArchived !== true;
+}
+
+async function readAllDocs(q: any) {
+    const snap = await getDocs(q);
+    return snap.docs.map((d: any) => ({ ...(d.data() as any), id: d.id }));
+}
+
+function ClassDetailView({  
     selectedClass, 
     onBack, 
     students, 
@@ -100,15 +113,24 @@ function ClassDetailView({
     timeSlots: TimeSlot[],
     currentUserProfile: any
 }) {
-    // Filter for ACTIVE students in memory to handle legacy records with undefined status
+    const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
+    // READ COST: this class's students and lessons are read only when its workspace is opened, once per session
+    // (was: every student and every lesson of the whole school, kept live on the class list).
+    const { data: fullClassStudents } = useOnceQuery<any>(
+        (firestore && schoolId) ? `cls:class-students:${schoolId}:${selectedClass.id}` : null,
+        () => readAllDocs(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClass.id)))
+    );
+    const { data: classLessons } = useOnceQuery<any>(
+        (firestore && schoolId) ? `cls:class-tt:${schoolId}:${selectedClass.id}` : null,
+        () => readAllDocs(query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId), where('classId', '==', selectedClass.id)))
+    );
     const classStudents = useMemo(() => {
-        return students.filter(s => 
-            s.classId === selectedClass.id && 
-            (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
-        );
-    }, [students, selectedClass.id]);
-
-    const classTimetable = useMemo(() => timetable.filter(t => t.classId === selectedClass.id), [timetable, selectedClass.id]);
+        const source: any[] = fullClassStudents || students.filter(s => s.classId === selectedClass.id);
+        return source.filter(s => s.classId === selectedClass.id && isOnRoll(s))
+            .sort((a, b) => `${a.firstName || ''} ${a.lastName || ''}`.localeCompare(`${b.firstName || ''} ${b.lastName || ''}`));
+    }, [fullClassStudents, students, selectedClass.id]);
+    const classTimetable = useMemo(() => (classLessons || timetable.filter(t => t.classId === selectedClass.id)) as TimetableEntry[], [classLessons, timetable, selectedClass.id]);
     
     // Gender Statistics
     const stats = useMemo(() => {
@@ -199,7 +221,7 @@ function ClassDetailView({
                                     </TableHeader>
                                     <TableBody>
                                         {classStudents.map(student => (
-                                            <TableRow key={student.uid} className="hover:bg-indigo-50/10 transition-colors">
+                                            <TableRow key={student.uid || student.id} className="hover:bg-indigo-50/10 transition-colors">
                                                 <TableCell className="pl-8 py-4"><StudentDisplay student={student} variant="list" showAvatar /></TableCell>
                                                 <TableCell className="py-4">
                                                     <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full", student.gender === 'Male' ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-pink-50 text-pink-700 border-pink-200")}>
@@ -209,7 +231,7 @@ function ClassDetailView({
                                                 <TableCell className="text-slate-500 font-semibold text-sm py-4">{student.email || 'N/A'}</TableCell>
                                                 <TableCell className="pr-8 text-right py-4">
                                                     <Button variant="outline" size="sm" className="h-8 rounded-xl border-slate-200 font-bold text-xs uppercase text-slate-600" asChild>
-                                                        <a href={`/dashboard/students-v3?search=${student.firstName}`}>View Profile</a>
+                                                        <a href={`/dashboard/students-v3?search=${encodeURIComponent(`${student.firstName || ''} ${student.lastName || ''}`.trim())}`}>View Profile</a>
                                                     </Button>
                                                 </TableCell>
                                             </TableRow>
@@ -304,32 +326,27 @@ export default function AcademicsPageContent() {
   }, [firestore, schoolId, isStaff]);
   const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
   
-  // Guard teachers query to prevent permission errors
+  // Teachers / form tutors. Includes every teaching role (was: only staff whose role is exactly "Teacher",
+  // so a "Class Teacher" or "Head Teacher" assigned as tutor showed as "Not Assigned").
   const teachersQuery = useMemoFirebase(() => 
     (firestore && schoolId && canListStaff)
-      ? query(collection(firestore, 'staff'), where('role', '==', 'Teacher'), where('schoolId', '==', schoolId)) 
+      ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', TEACHING_ROLES)) 
       : null, 
   [firestore, schoolId, canListStaff]);
   const { data: teachers, isLoading: isLoadingTeachers } = useCollection(teachersQuery);
-
   const roomsQuery = useMemoFirebase(() => 
     (firestore && schoolId) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null,
   [firestore, schoolId]);
   const { data: rooms } = useCollection<Room>(roomsQuery);
 
-  const studentsQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isStaff)
-      ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) 
-      : null, 
-  [firestore, schoolId, isStaff]);
-  const { data: students, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
-
-  const timetableQuery = useMemoFirebase(() => 
-    (firestore && schoolId && isStaff)
-      ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
-      : null, 
-  [firestore, schoolId, isStaff]);
-  const { data: timetable, isLoading: isLoadingTimetable } = useCollection<TimetableEntry>(timetableQuery);
+  // READ COST — timetable: only a TEACHER needs lessons on the class list (to know which classes they teach),
+  // and only their own (was: every lesson of the school for every staff member). The class workspace reads
+  // its own class's lessons when opened.
+  const isTeacherRole = role === 'Teacher';
+  const { data: timetable, isLoading: isLoadingTimetable } = useOnceQuery<TimetableEntry>(
+    (firestore && schoolId && isTeacherRole && user?.uid) ? `cls:my-lessons:${schoolId}:${user.uid}` : null,
+    () => readAllDocs(query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user!.uid))) as any
+  );
 
   const subjectsQuery = useMemoFirebase(() => 
     (firestore && schoolId && isStaff)
@@ -386,21 +403,62 @@ export default function AcademicsPageContent() {
     );
   }, [classes, subjects, timetable, role, user?.uid]);
 
-  // Filter students to only those in the visible classes
-  const visibleStudents = useMemo(() => {
-    if (!students) return [];
-    if (role !== 'Teacher') return students;
-    const visibleClassIds = visibleClasses.map((c: any) => c.id);
-    return students.filter((s: any) => s.classId && visibleClassIds.includes(s.classId));
-  }, [students, visibleClasses, role]);
+  // READ COST — students (only needed for the capacity counts on the class cards):
+  //  - Directors / Administrators / Accountants: ONE read of the server-kept roster (studentRoster/{schoolId});
+  //  - teachers: only the students of the classes they can see;
+  //  - other staff (or if the roster is not built yet): the school's students, once per session.
+  // (was: every student of the school, kept live, for every staff member.)
+  const canReadRoster = role === 'Director' || role === 'Administrator' || role === 'Accountant';
+  const teacherClassIds = useMemo(() => visibleClasses.map((c: any) => c.id).sort(), [visibleClasses]);
+  const teacherReady = !isTeacherRole || (!!classes && !isLoadingTimetable && !!subjects);
+  const studentsKey = (!firestore || !schoolId || !isStaff || !teacherReady) ? null
+    : isTeacherRole ? `cls:students:${schoolId}:${teacherClassIds.join(',')}`
+    : `cls:students:${schoolId}:${canReadRoster ? 'roster' : 'all'}`;
+  const { data: students, isLoading: isLoadingStudents } = useOnceQuery<Student>(studentsKey, async () => {
+    if (isTeacherRole) {
+      const out: any[] = [];
+      for (let i = 0; i < teacherClassIds.length; i += 30) {
+        out.push(...await readAllDocs(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('classId', 'in', teacherClassIds.slice(i, i + 30)))));
+      }
+      return out as any;
+    }
+    if (canReadRoster) {
+      try {
+        const snap = await getDoc(doc(firestore!, 'studentRoster', schoolId!));
+        const d: any = snap.exists() ? snap.data() : null;
+        if (d?.students && !d.tooLarge) {
+          return Object.entries(d.students).map(([id, e]: [string, any]) => ({ ...e, id, uid: e.uid || id })) as any;
+        }
+      } catch (err) {
+        console.warn('Classes: roster not readable, reading students instead.', err);
+      }
+    }
+    return readAllDocs(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId))) as any;
+  });
+  const visibleStudents = useMemo(() => (students || []) as any[], [students]);
+  const onRollCountByClass = useMemo(() => {
+    const m = new Map<string, number>();
+    visibleStudents.forEach((s: any) => { if (s.classId && isOnRoll(s)) m.set(s.classId, (m.get(s.classId) || 0) + 1); });
+    return m;
+  }, [visibleStudents]);
 
   const onSubmit = async (values: z.infer<typeof classSchema>) => {
     if (!firestore || !schoolId) return;
+    const wanted = values.name.trim().toLowerCase();
+    const duplicate = (classes || []).find(c => c.id !== editingClass?.id && String(c.name || '').trim().toLowerCase() === wanted);
+    if (duplicate) {
+        toast({ variant: 'destructive', title: "Name Already Used", description: `There is already a class called "${duplicate.name}".` });
+        return;
+    }
+    if (hasCustomWeights && (Number(values.caWeight ?? 0) + Number(values.examWeight ?? 0)) !== 100) {
+        toast({ variant: 'destructive', title: "Check the Weights", description: "CA and Exam weights must add up to 100%." });
+        return;
+    }
     setIsSubmitting(true);
     try {
         // Normalize undefined fields to null for Firestore
         const normalizedValues = {
-            name: values.name,
+            name: values.name.trim(),
             description: values.description || null,
             teacherId: values.teacherId === 'unassigned' ? null : (values.teacherId || null),
             capacity: values.capacity,
@@ -411,7 +469,7 @@ export default function AcademicsPageContent() {
         };
 
         if (editingClass) {
-            updateDocumentNonBlocking(doc(firestore, 'classes', editingClass.id), {
+            await updateDoc(doc(firestore, 'classes', editingClass.id), {
                 ...normalizedValues,
                 updatedAt: serverTimestamp(),
             });
@@ -426,19 +484,49 @@ export default function AcademicsPageContent() {
         }
         setIsDialogOpen(false);
         form.reset();
-    } catch (e) {
-        toast({ variant: 'destructive', title: "Error", description: "Failed to save class." });
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: "Error", description: e?.code === 'permission-denied' ? "Your account is not allowed to change classes." : "Failed to save class." });
     } finally {
         setIsSubmitting(false);
     }
   };
 
   const handleDeleteClass = async (id: string) => {
+      if (!firestore || !schoolId) return;
+      // Students would be left pointing at a class that no longer exists (invisible on rosters, fees and reports).
+      let onRoll = onRollCountByClass.get(id) || 0;
+      if (onRoll === 0) {
+          try {
+              const snap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', id)));
+              onRoll = snap.docs.filter(d => isOnRoll(d.data())).length;
+          } catch { /* fall through with the count we have */ }
+      }
+      if (onRoll > 0) {
+          toast({ variant: "destructive", title: "Class Has Students", description: `Move the ${onRoll} student(s) in this class to another class before deleting it.` });
+          return;
+      }
       try {
-          await deleteDoc(doc(firestore!, 'classes', id));
+          await deleteDoc(doc(firestore, 'classes', id));
           toast({ title: "Class Deleted" });
       } catch (e) {
           toast({ variant: "destructive", title: "Delete Failed" });
+          return;
+      }
+      // Tidy up the class's timetable lessons and its own time slots (best effort).
+      try {
+          const [lessons, slots] = await Promise.all([
+              getDocs(query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId), where('classId', '==', id))),
+              getDocs(query(collection(firestore, 'timeSlots'), where('schoolId', '==', schoolId), where('classId', '==', id))),
+          ]);
+          const refs = [...lessons.docs, ...slots.docs].map(d => d.ref);
+          for (let i = 0; i < refs.length; i += 450) {
+              const b = writeBatch(firestore);
+              refs.slice(i, i + 450).forEach(r => b.delete(r));
+              await b.commit();
+          }
+          invalidateOnceCache(`cls:class-tt:${schoolId}:${id}`);
+      } catch (e) {
+          console.warn('Class deleted; its timetable entries could not be removed.', e);
       }
   };
 
@@ -675,10 +763,8 @@ export default function AcademicsPageContent() {
                 const classTeacher = teachers?.find(t => t.uid === c.teacherId) || 
                                    (profile && c.teacherId === profile.uid ? profile : null);
                 
-                const classStudents = visibleStudents.filter(s => 
-                    s.classId === c.id && 
-                    (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)
-                );
+                const onRollCount = onRollCountByClass.get(c.id) || 0;
+                const overCapacity = onRollCount > (c.capacity || 30);
 
                 return (
                   <Card 
@@ -707,7 +793,7 @@ export default function AcademicsPageContent() {
                                               <AlertDialogHeader>
                                                   <AlertDialogTitle className="text-lg font-black uppercase italic text-slate-800">Delete Class: {c.name}?</AlertDialogTitle>
                                                   <AlertDialogDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
-                                                      Are you sure you want to permanently delete this class? This will not delete students but they will lose their class assignment.
+                                                      Permanently delete this class and its timetable? A class that still has students cannot be deleted — move them first. Past report cards and bills keep the class name they were issued with.
                                                   </AlertDialogDescription>
                                               </AlertDialogHeader>
                                               <AlertDialogFooter>
@@ -737,12 +823,12 @@ export default function AcademicsPageContent() {
                         <div className="space-y-1.5">
                           <div className="flex justify-between text-xs font-bold text-slate-500 uppercase tracking-wide">
                             <span>Capacity</span>
-                            <span className="font-black text-slate-800">{classStudents.length} / {c.capacity || 30}</span>
+                            <span className={cn("font-black", overCapacity ? "text-red-600" : "text-slate-800")}>{isLoadingStudents ? '…' : onRollCount} / {c.capacity || 30}{overCapacity ? ' (over capacity)' : ''}</span>
                           </div>
                           <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                             <div 
                               className="h-full bg-gradient-to-r from-indigo-500 to-indigo-650 transition-all"
-                              style={{ width: `${Math.min(100, (classStudents.length / (c.capacity || 30)) * 100)}%` }}
+                              style={{ width: `${Math.min(100, (onRollCount / (c.capacity || 30)) * 100)}%`, ...(overCapacity ? { backgroundColor: '#dc2626' } : {}) }}
                             />
                           </div>
                         </div>
@@ -750,7 +836,7 @@ export default function AcademicsPageContent() {
                         <div className="space-y-2.5 pt-1">
                           <div className="flex items-center gap-2.5">
                               <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600 shrink-0"><User className="h-4 w-4"/></div>
-                              <span className="font-bold text-slate-700 text-xs">Tutor: <span className="font-semibold text-slate-500">{classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : 'Not Assigned'}</span></span>
+                              <span className="font-bold text-slate-700 text-xs">Tutor: <span className="font-semibold text-slate-500">{classTeacher ? `${classTeacher.firstName} ${classTeacher.lastName}` : (c.teacherId ? (canListStaff ? 'Assigned (not a teaching staff record)' : 'Assigned') : 'Not Assigned')}</span></span>
                           </div>
                           <div className="flex items-center gap-2.5">
                               <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600 shrink-0"><Home className="h-4 w-4"/></div>

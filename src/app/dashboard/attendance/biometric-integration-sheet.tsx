@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useFirestore, useUser, useMemoFirebase, useDoc, useCollection } from '@/firebase';
-import { doc, collection, query, where } from 'firebase/firestore';
+import { doc, collection, query, where, getDocs } from 'firebase/firestore';
+import { useOnceQuery } from '@/lib/firestore-once';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -77,17 +78,15 @@ export function BiometricIntegrationSheet() {
   }, [firestore, schoolId]);
   const { data: classes } = useCollection<Class>(classesQuery);
 
-  // Fetch active students for mapping
-  const studentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId) return null;
-    let q = query(
-      collection(firestore, 'students'),
-      where('schoolId', '==', schoolId),
-      where('enrollmentStatus', '==', 'Active')
-    );
-    return q;
-  }, [firestore, schoolId]);
-  const { data: rawStudents, isLoading: isLoadingStudents } = useCollection<Student>(studentsQuery);
+  // Active students for card mapping — read ONCE per session (was: a live listener on every active student of
+  // the school). After a mapping is saved the list is updated locally, with no re-read.
+  const { data: rawStudents, isLoading: isLoadingStudents, setData: setStudentsCache } = useOnceQuery<Student>(
+    (firestore && schoolId) ? `bio:students:${schoolId}` : null,
+    async () => {
+      const snap = await getDocs(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('enrollmentStatus', '==', 'Active')));
+      return snap.docs.map(d => ({ ...(d.data() as any), uid: (d.data() as any).uid || d.id, id: d.id })) as Student[];
+    }
+  );
 
   // Filter students based on search and class selection
   const filteredStudents = useMemo(() => {
@@ -235,6 +234,8 @@ export function BiometricIntegrationSheet() {
       const idToken = await user?.getIdToken();
       const res = await updateStudentBiometricId(schoolId, studentId, tempBiometricId, idToken);
       if (res.success) {
+        const cleanId = tempBiometricId.trim();
+        setStudentsCache(prev => prev.map(st => (st.uid === studentId || (st as any).id === studentId) ? ({ ...st, biometricId: cleanId } as any) : st));
         toast({ title: 'Mapping Saved', description: 'Student Card ID mapped successfully.' });
         setEditingStudentId(null);
       } else {

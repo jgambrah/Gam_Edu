@@ -25,6 +25,7 @@ import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { doc, updateDoc, setDoc, collection, serverTimestamp, getDoc } from 'firebase/firestore';
+import { buildTermId } from '@/lib/term';
 import { Assignment, gradeSubmissionSchema, StudentSubmission } from '@/lib/types';
 import { Loader2, FileUp } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -58,16 +59,25 @@ export function GradeSubmissionDialog({
     if (!firestore) return;
     setIsSubmitting(true);
     try {
+      const isPoints = !assignment.gradingType || assignment.gradingType === 'points';
+      const scoreVal = Number(values.grade);
+      if (isPoints && (values.grade === '' || isNaN(scoreVal) || scoreVal < 0 || scoreVal > 100)) {
+        toast({ variant: 'destructive', title: 'Check the Score', description: 'Enter a score from 0 to 100.' });
+        setIsSubmitting(false);
+        return;
+      }
       const submissionRef = doc(firestore!, 'submissions', submission.id);
       await updateDoc(submissionRef, {
         ...values,
         status: 'Graded',
+        gradedAt: serverTimestamp(),
       });
-      
-      // Auto Gradebook integration entry!
-      if (assignment.gradable && assignment.subjectId) {
-        let term = 'First Term';
-        let academicYear = '2024-2025';
+      // Gradebook entry — only for NUMERIC scores. A letter ("A") or Pass/Fail used to be saved to the gradebook
+      // as 0/100, pulling the pupil's SBA down.
+      let postedToGradebook = false;
+      if (assignment.gradable && assignment.subjectId && isPoints) {
+        let term = '';
+        let academicYear = '';
         try {
           const settingsSnap = await getDoc(doc(firestore, 'schoolSettings', (assignment as any).schoolId));
           if (settingsSnap.exists()) {
@@ -78,10 +88,12 @@ export function GradeSubmissionDialog({
         } catch (err) {
           console.error("Error fetching schoolSettings:", err);
         }
-
-        const scoreVal = Number(values.grade);
-        const assessmentRef = doc(collection(firestore, 'assessments'));
+        const termId = buildTermId(academicYear, term);
+        // One gradebook mark per pupil per assignment (re-grading updates it instead of adding another).
+        const assessmentRef = doc(firestore, 'assessments', `asg-${assignment.id}-${submission.studentId}`);
+        postedToGradebook = true;
         await setDoc(assessmentRef, {
+          ...(termId ? { termId } : {}),
           studentId: submission.studentId,
           studentName: submission.studentName,
           classId: assignment.classId,
@@ -91,7 +103,7 @@ export function GradeSubmissionDialog({
           term: term,
           academicYear: academicYear,
           assessmentType: assignment.assessmentType || 'Homework (CA)',
-          score: isNaN(scoreVal) ? 0 : scoreVal,
+          score: scoreVal,
           maxScore: 100, // default max score basis
           teacherRemark: values.teacherFeedback || "",
           createdAt: serverTimestamp(),
@@ -106,7 +118,9 @@ export function GradeSubmissionDialog({
 
       toast({
         title: 'Submission Graded',
-        description: `The submission from ${submission.studentName} has been graded and recorded in the gradebook.`,
+        description: postedToGradebook
+          ? `The submission from ${submission.studentName} has been graded and recorded in the gradebook.`
+          : `The submission from ${submission.studentName} has been graded.${assignment.gradable && !isPoints ? ' Letter and Pass/Fail grades are not added to the gradebook — enter a mark there if it should count.' : ''}`,
       });
       form.reset();
       setOpen(false);
@@ -174,7 +188,7 @@ export function GradeSubmissionDialog({
                   <FileUp className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-slate-800 truncate">{submission.content}</p>
+                  <p className="text-xs font-bold text-slate-800 truncate">{(submission as any).fileName || submission.content}</p>
                   <p className="text-[9px] text-slate-400 font-bold">Uploaded File Response</p>
                 </div>
               </div>
@@ -182,10 +196,11 @@ export function GradeSubmissionDialog({
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  toast({
-                    title: 'Downloading Submission (Simulated)',
-                    description: `Downloading ${submission.content} from school records.`,
-                  });
+                  if (/^https?:\/\//.test(String(submission.content || ''))) {
+                    window.open(submission.content, '_blank', 'noopener,noreferrer');
+                  } else {
+                    toast({ variant: 'destructive', title: 'No File Attached', description: 'This older submission was recorded without a file. Ask the pupil to upload it again.' });
+                  }
                 }}
                 className="border-slate-200 text-slate-700 hover:bg-slate-50 font-bold text-xs h-9 px-3 rounded-xl transition"
               >

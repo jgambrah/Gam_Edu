@@ -462,15 +462,15 @@ service cloud.firestore {
     match /assessments/{assessmentId} {
         allow read, get, list: if isSignedIn();
         allow create: if canCreateAssessment();
-        allow update: if (isTeacher() || isAdmin()) && notArchivedOrAdmin();
-        allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
+        allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
     }
 
     match /{path=**}/assessments/{assessmentId} {
         allow read, get, list: if isSignedIn();
         allow create: if canCreateAssessment();
-        allow update: if (isTeacher() || isAdmin()) && notArchivedOrAdmin();
-        allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
+        allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
     }
 
     match /{path=**}/liveSessions/{sessionId} {
@@ -586,7 +586,17 @@ service cloud.firestore {
 
     match /submissions/{submissionId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn();
+      // A pupil submits their own work (staff may submit for them).
+      allow create: if isSignedIn() && (request.resource.data.get('studentId', '') == request.auth.uid || isTeacher() || isAdmin());
+      // Only staff grade. A pupil may replace their own UNGRADED submission but can never set a grade,
+      // feedback or "Graded" status (before, any signed-in user could edit any submission, grade included).
+      allow update: if isSignedIn() && ((
+          resource.data.get('studentId', '') == request.auth.uid &&
+          resource.data.get('status', '') != 'Graded' &&
+          request.resource.data.get('studentId', '') == request.auth.uid &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['grade', 'teacherFeedback', 'gradedAt', 'assignmentId', 'schoolId']) &&
+          request.resource.data.get('status', '') in ['Submitted', 'Late']
+        ) || isTeacher() || isAdmin());
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
@@ -622,8 +632,8 @@ service cloud.firestore {
     match /assessments/{assessmentId} {
       allow read, get, list: if isSignedIn();
       allow create: if canCreateAssessment();
-      allow update: if (isTeacher() || isAdmin()) && notArchivedOrAdmin();
-      allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
+      allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
+      allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
     }
 
     match /lesson-plans/{planId} {

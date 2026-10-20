@@ -43,9 +43,11 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
   const [selectedSubmission, setSelectedSubmission] = useState<StudentSubmission | null>(null);
   const [isGrading, setIsGrading] = useState(false);
   
+  // READ COST: an assignment's submissions are read only when its card is opened (was: every card read its
+  // submissions as soon as the page loaded, i.e. every submission in the school for the director's view).
   const submissionsQuery = useMemoFirebase(() => 
-    (firestore && schoolId) ? query(collection(firestore!, 'submissions'), where('assignmentId', '==', assignment.id), where('schoolId', '==', schoolId)) : null, 
-    [firestore, schoolId, assignment.id]
+    (firestore && schoolId && isExpanded) ? query(collection(firestore!, 'submissions'), where('assignmentId', '==', assignment.id), where('schoolId', '==', schoolId)) : null, 
+    [firestore, schoolId, assignment.id, isExpanded]
   );
   const { data: submissions, isLoading } = useCollection<StudentSubmission>(submissionsQuery);
 
@@ -108,9 +110,15 @@ export function AssignmentSubmissionsList({ assignment, readOnly = false }: Assi
                       <TableCell>{sub.submittedAt ? (typeof (sub.submittedAt as any).toDate === 'function' ? format((sub.submittedAt as any).toDate(), 'PPp') : format(new Date(sub.submittedAt), 'PPp')) : 'N/A'}</TableCell>
                       <TableCell className="space-x-2">
                         {sub.submissionType === 'file' ? (
-                            <Button variant="outline" size="icon" disabled>
-                                <Download className="h-4 w-4" />
-                            </Button>
+                            /^https?:\/\//.test(String(sub.content || '')) ? (
+                              <Button variant="outline" size="icon" asChild title={(sub as any).fileName || 'Download'}>
+                                <a href={sub.content} target="_blank" rel="noopener noreferrer"><Download className="h-4 w-4" /></a>
+                              </Button>
+                            ) : (
+                              <Button variant="outline" size="icon" disabled title="No file was attached">
+                                  <Download className="h-4 w-4" />
+                              </Button>
+                            )
                         ) : (
                             <Button variant="outline" size="icon" disabled>
                                 <Eye className="h-4 w-4" />

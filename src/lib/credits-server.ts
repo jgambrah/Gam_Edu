@@ -29,3 +29,27 @@ export async function spendSchoolCredits(schoolId: string, cost: number): Promis
     return { success: false, error: error?.message || 'An unexpected error occurred during the transaction.' };
   }
 }
+
+
+/**
+ * Gives `amount` credits back to a school (server-only) — used when an AI job was charged but produced nothing.
+ * Never call this from a client-reachable action without having charged the same school first.
+ */
+export async function refundSchoolCredits(schoolId: string, amount: number): Promise<void> {
+  if (!schoolId || !Number.isFinite(amount) || amount <= 0 || amount > 500) return;
+  try {
+    const db = getAdminDb();
+    const schoolRef = db.collection('schools').doc(schoolId);
+    await db.runTransaction(async t => {
+      const doc = await t.get(schoolRef);
+      if (!doc.exists) return;
+      const data: any = doc.data() || {};
+      const current = Number(data.aiCredits ?? data.aiCreditBalance ?? 0);
+      const update: Record<string, number> = { aiCredits: current + amount };
+      if (data.aiCreditBalance !== undefined) update.aiCreditBalance = current + amount;
+      t.update(schoolRef, update);
+    });
+  } catch (error: any) {
+    console.error('Credit refund failed:', error?.message || error);
+  }
+}

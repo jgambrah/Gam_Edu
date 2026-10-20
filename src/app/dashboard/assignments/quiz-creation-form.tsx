@@ -74,7 +74,7 @@ import { useRole } from '@/context/role-context';
 export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void }) {
   const firestore = useFirestore();
   const { user } = useUser();
-  const { profile } = useRole();
+  const { profile, role } = useRole();
   const { toast } = useToast();
   const { schoolId: currentSchoolId } = useCurrentSchool();
   const schoolId = profile?.schoolId || currentSchoolId;
@@ -89,17 +89,19 @@ export function QuizCreationForm({ setOpen }: { setOpen: (open: boolean) => void
   const { data: allSchoolClasses } = useCollection<Class>(classesQuery);
 
   const timetableQuery = useMemoFirebase(() => 
-    (firestore && schoolId)
-      ? query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId)) 
+    (firestore && schoolId && user?.uid)
+      ? query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user!.uid))  
       : null, 
-    [firestore, schoolId]);
+    [firestore, schoolId, user?.uid]);
   const { data: timetable } = useCollection<any>(timetableQuery);
 
   const classes = useMemo(() => {
     if (!allSchoolClasses) return [];
+    // Directors / administrators can set a quiz for any class (they used to get an empty class list).
+    if (role && role !== 'Teacher') return allSchoolClasses;
     const subjectClassIds = timetable?.filter((t: any) => t.teacherId === user?.uid).map((t: any) => t.classId) || [];
     return allSchoolClasses.filter((c: any) => c.teacherId === user?.uid || subjectClassIds.includes(c.id));
-  }, [allSchoolClasses, timetable, user?.uid]);
+  }, [allSchoolClasses, timetable, user?.uid, role]);
 
   const subjectsQuery = useMemoFirebase(
     () => (firestore && schoolId) ? query(collection(firestore!, 'subjects'), where('schoolId', '==', schoolId)) : null,

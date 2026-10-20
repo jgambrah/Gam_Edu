@@ -105,6 +105,10 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     // Which class + date the roster on screen was loaded for. The roster is reloaded only when this changes,
     // never because unrelated data refreshed (that reload used to undo a teacher's changes mid-marking).
     const loadedKeyRef = useRef<string>('');
+    // Statuses as last SAVED for the loaded class + date (not the on-screen draft). Saving compares against this
+    // so parent alerts, badge points and bill corrections happen only for students whose status really changed
+    // — re-saving a sheet used to re-notify every parent and re-award every badge each time.
+    const savedStatusRef = useRef<Record<string, string>>({});
     
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
     const [hasExistingRecords, setHasExistingRecords] = useState(false);
@@ -129,10 +133,11 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const { data: classes, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
 
     const timetableQuery = useMemoFirebase(() => 
-      (firestore && schoolId && role?.toLowerCase() === 'teacher')
-        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
+      // Only a teacher needs lessons here, and only their own (was: every lesson of the school).
+      (firestore && schoolId && role?.toLowerCase() === 'teacher' && user?.uid)
+        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user.uid)) 
         : null, 
-    [firestore, schoolId, role]);
+    [firestore, schoolId, role, user?.uid]);
     const { data: timetable } = useCollection<any>(timetableQuery);
 
     const visibleClasses = useMemo(() => {
@@ -244,6 +249,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }
 
             setHasExistingRecords(foundExisting);
+            savedStatusRef.current = Object.fromEntries(Object.entries(existingRecordsMap).map(([id, r]) => [id, r?.status || '']));
 
             const formRecords = studentList.map(student => {
                 const savedStatus = draftRecordsMap?.[student.uid]?.status || existingRecordsMap[student.uid]?.status || 'Present';
@@ -424,10 +430,15 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }, { merge: true });
 
             await batch.commit();
-
+            const previouslySaved = savedStatusRef.current;
+            const changedRecords = data.records.filter(r => previouslySaved[r.studentId] !== r.status);
+            savedStatusRef.current = Object.fromEntries(data.records.map(r => [r.studentId, r.status]));
             // Absence corrections: unpaid daily bills are removed; already-paid ones are voided and the money
             // becomes account credit. Best-effort — never fails the attendance save.
-            const absentRecords = data.records.filter(r => r.status === 'Absent' || r.status === 'Excused');
+            // Only students who were not already saved as absent/excused can have a bill to correct (2 reads each).
+            const absentRecords = data.records.filter(r =>
+                (r.status === 'Absent' || r.status === 'Excused') &&
+                previouslySaved[r.studentId] !== 'Absent' && previouslySaved[r.studentId] !== 'Excused');
             if (absentRecords.length > 0) {
                 await Promise.all(absentRecords.map(r => {
                     const st: any = students.find(s => s.uid === r.studentId) || { uid: r.studentId };
@@ -449,8 +460,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 console.error("Failed to remove draft from sessionStorage", e);
             }
 
-            // Trigger gamification badge updates (0 extra reads)
-            data.records.forEach(record => {
+            // Trigger gamification badge updates — only for changed statuses (no points for re-saving)
+            changedRecords.forEach(record => {
                 if (record.status === 'Present') {
                     triggerStudentBadgeEvent(firestore, record.studentId, { type: 'ATTENDANCE_PRESENT' });
                 } else if (record.status === 'Absent' || record.status === 'Late') {
@@ -472,8 +483,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }
 
             // Notify parents via Push asynchronously
-            const gradedStudentIds = data.records.map(r => r.studentId);
-            notifyParents(
+            const gradedStudentIds = changedRecords.map(r => r.studentId);
+            if (gradedStudentIds.length > 0) notifyParents(
                 gradedStudentIds,
                 "Daily Attendance Recorded 📅",
                 "Your child's attendance for today has been updated. Tap to view details.",
@@ -481,7 +492,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             ).catch(err => console.error("Notification failed:", err));
 
             // --- ABSENCE NOTIFICATION QUEUE & DEDUPLICATED WHATSAPP ALERTS ---
-            const alertRecords = data.records.filter(r => r.status === 'Absent' || r.status === 'Late');
+            const alertRecords = changedRecords.filter(r => r.status === 'Absent' || r.status === 'Late');
             
             if (alertRecords.length > 0) {
                 const alertedStudentIds = alertRecords.map(r => r.studentId);

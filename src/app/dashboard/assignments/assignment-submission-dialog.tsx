@@ -23,7 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useUser, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
-import { addDoc, collection } from 'firebase/firestore';
+import { setDoc, doc } from 'firebase/firestore';
 import { Assignment, studentSubmissionSchema, StudentSubmission } from '@/lib/types';
 import { Loader2, FileUp } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -138,7 +138,8 @@ export function AssignmentSubmissionDialog({
         schoolId: schoolId,
       };
 
-      await addDoc(collection(firestore!, 'submissions'), submission);
+      // One submission per student per assignment (was: every click added another, inflating counts).
+      await setDoc(doc(firestore!, 'submissions', `${assignment.id}_${user.uid}`), submission);
       
       toast({
         title: 'Submission Successful',

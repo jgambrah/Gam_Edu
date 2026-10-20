@@ -57,10 +57,10 @@ export function AssignmentCreationForm({ setOpen }: AssignmentCreationFormProps)
   const { data: allSchoolClasses } = useCollection<any>(classesQuery);
 
   const timetableQuery = useMemoFirebase(() => 
-    (firestore && schoolId && role === 'Teacher')
-      ? query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId)) 
+    (firestore && schoolId && role === 'Teacher' && user?.uid)
+      ? query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user!.uid))  
       : null, 
-  [firestore, schoolId, role]);
+  [firestore, schoolId, role, user?.uid]);
   const { data: timetable } = useCollection<any>(timetableQuery);
 
   const subjectsQuery = useMemoFirebase(

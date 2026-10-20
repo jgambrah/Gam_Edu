@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
-import { useCollection, useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useFirestore, useMemoFirebase, useDoc, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { logAuditEvent } from '@/lib/audit';
-import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, updateDoc, Timestamp, writeBatch } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, updateDoc, Timestamp, writeBatch, documentId } from 'firebase/firestore';
+import { useOnceQuery, readOnceCached } from '@/lib/firestore-once';
 import { format, parseISO, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +37,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import ReportCardTemplate from './components/ReportCardTemplate';
 import { notifyParents } from '@/app/actions/notifications';
 import { generateReportCommentAction } from '@/app/actions/report-ai';
-import { isTermMatch, isYearMatch } from '@/app/dashboard/reports/academics/page';
+import { isTermMatch, isYearMatch, academicYearVariants, termVariants } from '@/lib/academic-match';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
@@ -59,6 +60,59 @@ async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
         console.error("❌ getBase64ImageFromUrl failed:", error.message);
         return "";
     }
+}
+
+/** Remarks that say the pupil should repeat / is not promoted ("not promoted", "will repeat", "cannot be promoted"). */
+function commentsSayRepeat(text: string): boolean {
+    return /\brepeat|\b(not|never|cannot|can't|won't|will not)\s+(be\s+)?promot/i.test(text || '');
+}
+/** Remarks that actually say the pupil is promoted (a "not promoted" remark does NOT count). */
+function commentsSayPromoted(text: string): boolean {
+    return /promot/i.test(text || '') && !commentsSayRepeat(text);
+}
+
+/**
+ * One subject's CA and Exam for one student — computed the SAME way as the Gradebook's Terminal SBA Matrix, so the
+ * report card shows the totals teachers saw when they entered marks:
+ *   - CA: marks of the same kind (e.g. Test 1, Test 2, Test 3) are AVERAGED first, then the kinds (tests, homework,
+ *     project, mid-term) are added and scaled to the CA weight.
+ *   - Exam: the end-of-term exam scaled to the exam weight. Mock exams only count when the subject has no
+ *     end-of-term exam this term (they are never added on top of it).
+ */
+function computeSubjectScore(items: any[], caWeight: number, examWeight: number): { ca: number; exam: number; total: number } | null {
+    if (!items || items.length === 0) return null;
+    const typeOf = (a: any) => String(a.assessmentType || '').toLowerCase();
+    const isExam = (a: any) => { const t = typeOf(a); return !t.includes('mid') && (t.includes('exam') || t.includes('term')); };
+    const isMock = (a: any) => `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase().includes('mock');
+    const num = (v: any, d: number) => { const n = Number(v); return isFinite(n) ? n : d; };
+
+    let exams = items.filter(isExam);
+    const terminal = exams.filter(a => !isMock(a));
+    if (terminal.length > 0) exams = terminal;
+
+    const groups: Record<string, { s: number[]; m: number[] }> = {};
+    items.filter(a => !isExam(a)).forEach(a => {
+        const c = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
+        const kind = c.includes('mid') ? 'mid'
+            : (c.includes('proj') || c.includes('group') || c.includes('practical')) ? 'project'
+            : (c.includes('home') || c.includes('hw')) ? 'hw'
+            : 'test';
+        if (!groups[kind]) groups[kind] = { s: [], m: [] };
+        groups[kind].s.push(num(a.score, 0));
+        groups[kind].m.push(num(a.maxScore, 100) || 100);
+    });
+    const mean = (xs: number[]) => xs.reduce((x, y) => x + y, 0) / xs.length;
+    let caScore = 0, caMax = 0;
+    Object.values(groups).forEach(g => { caScore += mean(g.s); caMax += mean(g.m); });
+    const rawCA = caMax > 0 ? Math.min((caScore / caMax) * caWeight, caWeight) : 0;
+
+    const exScore = exams.reduce((sum, a) => sum + num(a.score, 0), 0);
+    const exMax = exams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
+    const rawExam = exMax > 0 ? Math.min((exScore / exMax) * examWeight, examWeight) : 0;
+
+    const ca = Math.round(rawCA);
+    const exam = Math.round(rawExam);
+    return { ca, exam, total: Math.min(ca + exam, 100) };
 }
 
 function formatOrdinal(n: number): string {
@@ -202,23 +256,25 @@ export default function ReportCardManager() {
     const isTeacher = role?.toLowerCase() === 'teacher';
 
     // Data Fetching
-    const classesQuery = useMemoFirebase(() => {
-        if(!firestore || !user || !schoolId) return null;
-        return query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-    }, [firestore, user, schoolId]);
-    const { data: classes, isLoading: isLoadingClasses } = useCollection<any>(classesQuery);
-
-    const timetableQuery = useMemoFirebase(() => 
-      (firestore && schoolId && role?.toLowerCase() === 'teacher')
-        ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) 
-        : null, 
-    [firestore, schoolId, role]);
-    const { data: timetable } = useCollection<any>(timetableQuery);
-
-    const subjectsQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, 
-    [firestore, schoolId]);
-    const { data: subjects } = useCollection<any>(subjectsQuery);
+    // READ COST: everything below is read ONCE per browser session (no live listeners). Switching students,
+    // classes and terms back and forth, or re-opening the page, costs no further reads.
+    const readAll = useCallback(async (q: any) => {
+        const snap = await getDocs(q);
+        return snap.docs.map((d: any) => ({ ...(d.data() as any), id: d.id }));
+    }, []);
+    const { data: classes, isLoading: isLoadingClasses } = useOnceQuery<any>(
+        (firestore && user && schoolId) ? `rc:classes:${schoolId}` : null,
+        () => readAll(query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)))
+    );
+    // Only a teacher needs timetable slots, and only their own.
+    const { data: timetable } = useOnceQuery<any>(
+        (firestore && schoolId && user?.uid && role?.toLowerCase() === 'teacher') ? `rc:timetable:${schoolId}:${user.uid}` : null,
+        () => readAll(query(collection(firestore!, 'timetables'), where('schoolId', '==', schoolId), where('teacherId', '==', user!.uid)))
+    );
+    const { data: subjects } = useOnceQuery<any>(
+        (firestore && schoolId) ? `rc:subjects:${schoolId}` : null,
+        () => readAll(query(collection(firestore!, 'subjects'), where('schoolId', '==', schoolId)))
+    );
 
     const visibleClasses = useMemo(() => {
         if (!classes) return [];
@@ -279,17 +335,16 @@ export default function ReportCardManager() {
         }
     }, [classId, role, visibleClasses, isLoadingClasses, toast]);
 
-    const { data: students } = useCollection<any>(useMemoFirebase(() => 
-        (firestore && schoolId && classId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)) : null, 
-    [firestore, schoolId, classId]));
-
-    const { data: allSchoolStudents } = useCollection<any>(useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, 
-    [firestore, schoolId]));
+    const { data: students } = useOnceQuery<any>(
+        (firestore && schoolId && classId) ? `rc:students:${schoolId}:${classId}` : null,
+        () => readAll(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('classId', '==', classId)))
+    );
+    // (The whole school's student list is no longer read here — it cost one read per student in the school every
+    // time this page opened. Students who have since left this class are fetched individually further down.)
 
 // subjects fetched above
     
-    const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => 
+    const { data: schoolProfile, isLoading: profileLoading } = useDoc<any>(useMemoFirebase(() =>  
         (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
     [firestore, schoolId]));
 
@@ -307,25 +362,41 @@ export default function ReportCardManager() {
         }
     }, [schoolProfile]);
 
-    const reportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !classId) return null;
-        return query(
-            collection(firestore, 'report-cards'),
-            where('schoolId', '==', schoolId),
-            where('classId', '==', classId)
-        );
-    }, [firestore, schoolId, classId]);
-    const { data: rawReportCards } = useCollection<any>(reportCardsQuery);
+    // Report cards of this class for the selected ACADEMIC YEAR only (was: every report card the class ever had,
+    // read live and growing every term). Each record remembers which collection it came from.
+    const rcYearVariants = useMemo(() => academicYearVariants(academicYear), [academicYear]);
+    const readReportCards = useCallback(async (col: string) => {
+        const base = [where('schoolId', '==', schoolId), where('classId', '==', classId)];
+        let rows: any[];
+        try {
+            rows = rcYearVariants.length > 0
+                ? await readAll(query(collection(firestore!, col), ...base, where('academicYear', 'in', rcYearVariants)))
+                : await readAll(query(collection(firestore!, col), ...base));
+        } catch (err: any) {
+            if (err?.code === 'permission-denied') throw err;
+            console.warn(`Report cards: year-filtered read of ${col} failed, reading all of this class instead.`, err);
+            rows = await readAll(query(collection(firestore!, col), ...base));
+        }
+        return rows.map(r => ({ ...r, _col: col }));
+    }, [firestore, schoolId, classId, rcYearVariants, readAll]);
+    const rcKeyBase = (firestore && schoolId && classId && !profileLoading) ? `${schoolId}:${classId}:${rcYearVariants.join('|')}` : null;
+    const { data: rawReportCards, setData: setReportCardsCache } = useOnceQuery<any>(
+        rcKeyBase ? `rc:cards:${rcKeyBase}` : null,
+        () => readReportCards('report-cards')
+    );
+    const { data: rawTermReportCards } = useOnceQuery<any>(
+        rcKeyBase ? `rc:termcards:${rcKeyBase}` : null,
+        () => readReportCards('term_report_cards')
+    );
 
-    const termReportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !classId) return null;
-        return query(
-            collection(firestore, 'term_report_cards'),
-            where('schoolId', '==', schoolId),
-            where('classId', '==', classId)
-        );
-    }, [firestore, schoolId, classId]);
-    const { data: rawTermReportCards } = useCollection<any>(termReportCardsQuery);
+    /** Keep the loaded report cards in step with what this page just saved (no re-read). */
+    const upsertLocalReportCards = useCallback((updates: Array<{ id: string; data: any }>) => {
+        setReportCardsCache((prev: any[]) => {
+            const map = new Map<string, any>((prev || []).map((r: any) => [r.id, r]));
+            updates.forEach(({ id, data }) => map.set(id, { ...(map.get(id) || {}), ...data, id, _col: 'report-cards' }));
+            return Array.from(map.values());
+        });
+    }, [setReportCardsCache]);
 
     const classReportCards = useMemo(() => {
         const combined = [...(rawReportCards || []), ...(rawTermReportCards || [])];
@@ -356,8 +427,36 @@ export default function ReportCardManager() {
         return Array.from(reportMap.values());
     }, [rawReportCards, rawTermReportCards, academicYear, term]);
 
+    // Students who have a report card for this class/term but are no longer in it (e.g. promoted): fetch just
+    // those few by id (one read each, once) so their CURRENT class is known.
+    const missingReportStudentIds = useMemo(() => {
+        const inClass = new Set<string>();
+        (students || []).forEach((s: any) => { [s.uid, s.id, s.studentId].forEach(k => k && inClass.add(k)); });
+        const ids = new Set<string>();
+        classReportCards.forEach((rc: any) => {
+            const stuId = rc.studentId || rc.student?.uid || rc.student?.id;
+            if (stuId && !inClass.has(stuId)) ids.add(stuId);
+        });
+        return Array.from(ids).sort();
+    }, [students, classReportCards]);
+    const { data: formerStudents } = useOnceQuery<any>(
+        (firestore && schoolId && students && missingReportStudentIds.length > 0) ? `rc:former:${schoolId}:${missingReportStudentIds.join(',')}` : null,
+        async () => {
+            const out: any[] = [];
+            for (let i = 0; i < missingReportStudentIds.length; i += 30) {
+                const chunk = missingReportStudentIds.slice(i, i + 30);
+                try {
+                    out.push(...await readAll(query(collection(firestore!, 'students'), where(documentId(), 'in', chunk))));
+                } catch (err) {
+                    console.warn('Report cards: could not look up former class members', err);
+                }
+            }
+            return out;
+        }
+    );
+
     const activeStudents = useMemo(() => {
-        const sourceStudents = allSchoolStudents || students || [];
+        const sourceStudents = [...(students || []), ...(formerStudents || [])];
         if (sourceStudents.length === 0) return [];
 
         // 1. Students currently assigned to this class
@@ -398,7 +497,7 @@ export default function ReportCardManager() {
         const list = Array.from(studentMap.values());
         list.sort((a, b) => (a.firstName || '').localeCompare(b.firstName || ''));
         return list;
-    }, [allSchoolStudents, students, classId, classReportCards]);
+    }, [formerStudents, students, classId, classReportCards]);
 
     const targetStudent = useMemo(() => {
         if (!selectedStudentId || !activeStudents) return null;
@@ -465,12 +564,12 @@ export default function ReportCardManager() {
             return;
         }
         const reportId = `${selectedStudentId}_${academicYear.replace(/\//g, '-')}_${term.replace(/\s+/g, '')}`;
+        // The class's report cards for this year are already loaded — look the student's up there (no reads).
+        if (rawReportCards === null || rawTermReportCards === null) return;
         const fetchExisting = async () => {
-            const docRef = doc(firestore, 'report-cards', reportId);
-            let snap = await getDoc(docRef);
-            if (!snap.exists()) {
-                snap = await getDoc(doc(firestore, 'term_report_cards', reportId));
-            }
+            const found = [...(rawReportCards || []), ...(rawTermReportCards || [])].find((r: any) => r.id === reportId)
+                || classReportCards.find((r: any) => r.studentId === selectedStudentId);
+            const snap = { exists: () => !!found, data: () => (found || {}) as any };
 
             const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
             const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
@@ -494,11 +593,12 @@ export default function ReportCardManager() {
 
                 const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
                 const allComments = `${data.headmasterComment || ''} ${data.classTeacherComment || ''}`;
-                const commentsIndicatePromo = allComments.toLowerCase().includes('promot');
-
+                const commentsIndicatePromo = commentsSayPromoted(allComments);
                 // Auto-bind completed promotion decision if student was promoted or remarks state it
                 if (!decision || decision === '') {
-                    if (isPromoTerm || commentsIndicatePromo || targetPromotedClass) {
+                    // Default to "Promoted" only at the end of the year (or when the remarks say so) — never in the
+                    // first/second term, and never when the remarks say the pupil repeats.
+                    if ((isPromoTerm && !commentsSayRepeat(allComments)) || commentsIndicatePromo) {
                         decision = 'Promoted';
                         targetPromotedId = targetPromotedClass?.id || stu?.classId || '';
                     } else if (stu?.enrollmentStatus === 'Graduated') {
@@ -530,7 +630,7 @@ export default function ReportCardManager() {
                 const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
                 let decision: any = '';
                 let targetPromotedId = '';
-                if (isPromoTerm || targetPromotedClass) {
+                if (isPromoTerm) {
                     decision = 'Promoted';
                     targetPromotedId = targetPromotedClass?.id || (stu?.classId !== classId ? stu?.classId : '') || '';
                 } else if (stu?.enrollmentStatus === 'Graduated') {
@@ -541,17 +641,16 @@ export default function ReportCardManager() {
             }
         };
         fetchExisting();
-    }, [selectedStudentId, academicYear, term, firestore, schoolId, classId, classes, activeStudents, classSummary, isHistoricalCohort]);
+    }, [selectedStudentId, academicYear, term, firestore, schoolId, classId, classes, activeStudents, classSummary, isHistoricalCohort, rawReportCards, rawTermReportCards, classReportCards]);
 
     // Auto-populate promotion decision for historical or third-term reports reactively
     useEffect(() => {
         if (!classId || !classes || classes.length === 0) return;
         const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
         const allComments = `${headmasterComment || ''} ${classTeacherComment || ''}`;
-        const commentsIndicatePromo = allComments.toLowerCase().includes('promot');
-
+        const commentsIndicatePromo = commentsSayPromoted(allComments);
         if (!promotionDecision) {
-            if (isPromoTerm || commentsIndicatePromo) {
+            if ((isPromoTerm && !commentsSayRepeat(allComments)) || commentsIndicatePromo) {
                 const targetPromoted = getPromotedTargetClass(classId, classes, allComments, targetStudent, activeStudents);
                 if (targetPromoted) {
                     setPromotionDecision('Promoted');
@@ -582,17 +681,23 @@ export default function ReportCardManager() {
             const currentCaWeight = targetClass?.caWeight ?? CA_WEIGHT;
             const currentExamWeight = targetClass?.examWeight ?? EXAM_WEIGHT;
 
-            // 1. Fetch Assessments
-            const assessmentsRef = collection(firestore, 'assessments');
-            const qAssessments = query(
-                assessmentsRef, 
-                where('schoolId', '==', schoolId),
-                where('classId', '==', classId),
-                where('academicYear', '==', academicYear),
-                where('term', '==', term)
-            );
-            const assessmentSnap = await getDocs(qAssessments);
-            const allAssessments = assessmentSnap.docs.map(d => d.data());
+            // 1. This class's marks for the term — read ONCE per class/term per session and shared by every student
+            //    compiled (was: the whole class's marks read again for EACH student compiled).
+            //    Matches the usual spellings of the year and term ("2026/2027", "Term 1" …).
+            const yv = academicYearVariants(academicYear).slice(0, 3);
+            const tv = termVariants(term);
+            const allAssessments: any[] = await readOnceCached(`rc:marks:${schoolId}:${classId}:${academicYear}:${term}`, async () => {
+                const base = [where('schoolId', '==', schoolId), where('classId', '==', classId)];
+                try {
+                    if (yv.length > 0 && tv.length > 0 && yv.length * tv.length <= 30) {
+                        return await readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', 'in', yv), where('term', 'in', tv)));
+                    }
+                } catch (err: any) {
+                    if (err?.code === 'permission-denied') throw err;
+                    console.warn('Report cards: flexible marks query failed, using exact year/term.', err);
+                }
+                return readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', '==', academicYear), where('term', '==', term)));
+            }, { ttlMs: 5 * 60 * 1000 });
 
             // 2. Attendance Date Calculation
             const tStartStr = schoolProfile.termStartDate;
@@ -600,16 +705,18 @@ export default function ReportCardManager() {
             const tStartDate = typeof tStartStr === 'string' ? parseISO(tStartStr) : tStartStr.toDate();
             const tEndDate = typeof tEndStr === 'string' ? parseISO(tEndStr) : tEndStr.toDate();
 
-            const attendanceRef = collection(firestore, 'attendance');
-            const qAttendance = query(
-                attendanceRef,
-                where('schoolId', '==', schoolId),
-                where('classId', '==', classId),
-                where('date', '>=', Timestamp.fromDate(startOfDay(tStartDate))),
-                where('date', '<=', Timestamp.fromDate(endOfDay(tEndDate)))
+            // Attendance for the term — also read once per class/term per session (was: re-read for every student).
+            const allAttRecords: any[] = await readOnceCached(
+                `rc:att:${schoolId}:${classId}:${tStartDate.toISOString().slice(0, 10)}:${tEndDate.toISOString().slice(0, 10)}`,
+                () => readAll(query(
+                    collection(firestore, 'attendance'),
+                    where('schoolId', '==', schoolId),
+                    where('classId', '==', classId),
+                    where('date', '>=', Timestamp.fromDate(startOfDay(tStartDate))),
+                    where('date', '<=', Timestamp.fromDate(endOfDay(tEndDate)))
+                )),
+                { ttlMs: 5 * 60 * 1000 }
             );
-            const attSnap = await getDocs(qAttendance);
-            const allAttRecords = attSnap.docs.map(d => d.data());
 
             // 3. Attendance Ratios
             const uniqueDates = new Set(allAttRecords.map(r => 
@@ -630,31 +737,15 @@ export default function ReportCardManager() {
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
-                    const stuSubjAssessments = allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id);
-                    let total100 = 0;
-                    if (stuSubjAssessments.length > 0) {
-                        const cas = stuSubjAssessments.filter(a => {
-                            const t = (a.assessmentType || '').toLowerCase();
-                            const isMid = t.includes('mid');
-                            return isMid || (!t.includes('exam') && !t.includes('term'));
-                        });
-                        const rawCA = Math.min(cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight, currentCaWeight);
-                        
-                        const exams = stuSubjAssessments.filter(a => {
-                            const t = (a.assessmentType || '').toLowerCase();
-                            const isMid = t.includes('mid');
-                            return !isMid && (t.includes('exam') || t.includes('term'));
-                        });
-                        const rawExam = Math.min(exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight, currentExamWeight);
-                        
-                        const finalCA = Math.round(rawCA);
-                        const finalExam = Math.round(rawExam);
-                        total100 = Math.min(finalCA + finalExam, 100);
-                    }
-                    grandTotal += total100;
+                    const scored = computeSubjectScore(
+                        allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id),
+                        currentCaWeight, currentExamWeight
+                    );
+                    if (!scored) return; // no marks in this subject (e.g. an elective) — not counted in its average/position
+                    grandTotal += scored.total;
                     if (subjectStats[sub.id]) {
-                        subjectStats[sub.id].totalScores.push(total100);
-                        subjectStats[sub.id].sum += total100;
+                        subjectStats[sub.id].totalScores.push(scored.total);
+                        subjectStats[sub.id].sum += scored.total;
                     }
                 });
                 studentTotals[stu.uid] = grandTotal;
@@ -668,25 +759,14 @@ export default function ReportCardManager() {
             let myGrandTotal = 0;
             let subjectsTaken = 0;
             subjects?.forEach((sub: any) => {
-                const myAssessments = allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id);
-                if (myAssessments.length === 0) return;
-                const cas = myAssessments.filter(a => {
-                    const t = (a.assessmentType || '').toLowerCase();
-                    const isMid = t.includes('mid');
-                    return isMid || (!t.includes('exam') && !t.includes('term'));
-                });
-                const rawCA = Math.min(cas.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(cas.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentCaWeight, currentCaWeight);
-                
-                const exams = myAssessments.filter(a => {
-                    const t = (a.assessmentType || '').toLowerCase();
-                    const isMid = t.includes('mid');
-                    return !isMid && (t.includes('exam') || t.includes('term'));
-                });
-                const rawExam = Math.min(exams.reduce((sum, a) => sum + (a.score || 0), 0) / Math.max(exams.reduce((sum, a) => sum + (a.maxScore || 100), 0), 1) * currentExamWeight, currentExamWeight);
-                
-                const finalCA = Math.round(rawCA);
-                const finalExam = Math.round(rawExam);
-                const total100 = Math.min(finalCA + finalExam, 100);
+                const scored = computeSubjectScore(
+                    allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id),
+                    currentCaWeight, currentExamWeight
+                );
+                if (!scored) return;
+                const finalCA = scored.ca;
+                const finalExam = scored.exam;
+                const total100 = scored.total;
 
                 myGrandTotal += total100;
                 subjectsTaken++;
@@ -710,16 +790,19 @@ export default function ReportCardManager() {
             let classTeacherName = 'Class Teacher';
 
             if (classTeacherId) {
-                const teacherDoc = await getDoc(doc(firestore, 'staff', classTeacherId));
-                if (teacherDoc.exists()) {
-                    const tData = teacherDoc.data();
+                const [tData] = await readOnceCached(`rc:staff:${classTeacherId}`, async () => {
+                    const d = await getDoc(doc(firestore, 'staff', classTeacherId));
+                    return d.exists() ? [d.data()] : [];
+                });
+                if (tData) {
                     classTeacherSignatureUrl = tData.signatureBase64 || tData.signatureUrl || null;
                     classTeacherName = `${tData.firstName || ''} ${tData.lastName || ''}`.trim();
                 }
             }
-
-            const schoolDoc = await getDoc(doc(firestore, 'schools', schoolId));
-            const schoolData = schoolDoc.data();
+            const [schoolData] = await readOnceCached<any>(`rc:school:${schoolId}`, async () => {
+                const d = await getDoc(doc(firestore, 'schools', schoolId));
+                return d.exists() ? [d.data()] : [];
+            });
 
             const [logoB64, headmasterSigB64, teacherSigB64] = await Promise.all([
                 schoolProfile?.logoUrl ? getBase64ImageFromUrl(schoolProfile.logoUrl) : Promise.resolve(''),
@@ -740,10 +823,10 @@ export default function ReportCardManager() {
             let autoDecision = promotionDecision;
             let autoPromotedClassId = promotedToClassId;
             const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
-            const commentsIndicatePromo = `${headmasterComment || ''} ${classTeacherComment || ''}`.toLowerCase().includes('promot');
-
+            const remarksText = `${headmasterComment || ''} ${classTeacherComment || ''}`;
+            const commentsIndicatePromo = commentsSayPromoted(remarksText);
             if (!autoDecision || autoDecision === '') {
-                if (isPromoTerm || commentsIndicatePromo || targetPromotedClass) {
+                if ((isPromoTerm && !commentsSayRepeat(remarksText)) || commentsIndicatePromo) {
                     autoDecision = 'Promoted';
                     autoPromotedClassId = targetPromotedClass?.id || (targetStudent?.classId !== classId ? targetStudent?.classId : '') || '';
                     setPromotionDecision('Promoted');
@@ -842,6 +925,7 @@ export default function ReportCardManager() {
             
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
+            upsertLocalReportCards([{ id: processedReport.id, data: { ...dbFriendlyData, updatedAt: new Date() } }]);
             setProcessedReport(finalData);
             toast({ title: "Draft Report Saved" });
 
@@ -896,6 +980,7 @@ export default function ReportCardManager() {
 
             const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
             await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
+            upsertLocalReportCards([{ id: processedReport.id, data: { ...dbFriendlyData, status: 'Published', publishedAt: new Date(), updatedAt: new Date() } }]);
             setProcessedReport(finalData);
             toast({ title: "Report Card Signed & Published! 🎓", description: "Parents and students can now view the official transcript." });
             
@@ -925,23 +1010,32 @@ export default function ReportCardManager() {
             const headmasterName = schoolData?.headmasterName || 'Head of School';
             const headmasterSignatureUrl = schoolData?.headmasterSignatureUrl || null;
 
-            const batch = writeBatch(firestore);
             const studentIdsToNotify: string[] = [];
-
-            classSummary.drafts.forEach(({ student, report }) => {
-                const reportRef = doc(firestore, 'report-cards', report.id);
-                batch.update(reportRef, {
-                    status: 'Published',
-                    publishedAt: serverTimestamp(),
-                    headmasterName,
-                    headmasterSignatureUrl,
-                    headmasterSignedAt: serverTimestamp(),
-                    digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+            const localUpdates: Array<{ id: string; data: any }> = [];
+            const drafts = classSummary.drafts;
+            for (let i = 0; i < drafts.length; i += 450) {
+                const batch = writeBatch(firestore);
+                drafts.slice(i, i + 450).forEach(({ student, report }: any) => {
+                    // Older report cards live in "term_report_cards" — update them where they are
+                    // (updating the wrong collection failed the whole bulk publish).
+                    const reportRef = doc(firestore, report._col || 'report-cards', report.id);
+                    const fingerprint = `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+                    batch.update(reportRef, {
+                        status: 'Published',
+                        publishedAt: serverTimestamp(),
+                        headmasterName,
+                        headmasterSignatureUrl,
+                        headmasterSignedAt: serverTimestamp(),
+                        digitalFingerprint: fingerprint
+                    });
+                    if ((report._col || 'report-cards') === 'report-cards') {
+                        localUpdates.push({ id: report.id, data: { status: 'Published', publishedAt: new Date(), headmasterName, headmasterSignatureUrl, digitalFingerprint: fingerprint } });
+                    }
+                    studentIdsToNotify.push(student.uid || student.id || report.studentId);
                 });
-                studentIdsToNotify.push(student.uid);
-            });
-
-            await batch.commit();
+                await batch.commit();
+            }
+            upsertLocalReportCards(localUpdates);
             toast({ title: "Bulk Publish Successful! 🎉", description: `Released ${studentIdsToNotify.length} report cards.` });
             
             await logAuditEvent({
@@ -1144,7 +1238,7 @@ export default function ReportCardManager() {
                         targetStudent,
                         activeStudents
                     );
-                    if (targetPromotedClass || combinedComments.toLowerCase().includes('promot')) {
+                    if (commentsSayPromoted(combinedComments)) {
                         setPromotionDecision('Promoted');
                         if (targetPromotedClass) setPromotedToClassId(targetPromotedClass.id);
                     }

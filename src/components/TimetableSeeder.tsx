@@ -8,7 +8,7 @@ import { Loader2, Database, Clock } from 'lucide-react';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
 
-export default function TimetableSeeder() {
+export default function TimetableSeeder({ existingSlotCount = 0, existingRoomNames = [] }: { existingSlotCount?: number; existingRoomNames?: string[] }) {
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
@@ -19,10 +19,16 @@ export default function TimetableSeeder() {
         toast({ variant: 'destructive', title: "Configuration Error", description: "School ID not found. Please refresh." });
         return;
     }
+    // Only for a school with NO time slots yet: running it again would add a second, overlapping set of periods
+    // (and duplicate rooms) on top of the school's own schedule.
+    if (existingSlotCount > 0) {
+        toast({ variant: 'destructive', title: "Already Set Up", description: "This school already has time slots. Edit or delete them in the list below instead." });
+        return;
+    }
     setLoading(true);
-    
     try {
       const batch = writeBatch(firestore);
+      const haveRoom = new Set(existingRoomNames.map(n => String(n || '').trim().toLowerCase()));
 
       // 1. Create Standard Time Slots (Typical 8 AM - 1 PM day)
       const times = [
@@ -56,7 +62,7 @@ export default function TimetableSeeder() {
 
       // 2. Create Standard Rooms with schoolId stamp
       const rooms = ['Room 101', 'Room 102', 'Science Lab', 'Library', 'Field'];
-      rooms.forEach(roomName => {
+      rooms.filter(roomName => !haveRoom.has(roomName.toLowerCase())).forEach(roomName => {
           const ref = doc(collection(firestore, 'rooms'));
           batch.set(ref, { 
               name: roomName, 
@@ -83,12 +89,13 @@ export default function TimetableSeeder() {
         <Clock className="h-4 w-4"/> Timetable Setup
       </h3>
       <p className="text-sm text-blue-700 mb-3">
-        The system is currently using standard 10:15 AM breaks. Use this tool to reset your school to a standard 8:00 AM - 1:00 PM schedule. 
-        You can then edit any specific slot in the list below.
+        {existingSlotCount > 0
+          ? `Your school already has ${existingSlotCount} time slots — edit them in the list below. (The standard set can only be added to a school with no time slots.)`
+          : 'Quick start: create a standard 8:00 AM - 1:00 PM day (with a 10:15 AM break) and a few rooms. You can then edit any slot in the list below.'}
       </p>
-      <Button onClick={seedData} disabled={loading} className="bg-blue-600 hover:bg-blue-700 w-full">
+      <Button onClick={seedData} disabled={loading || existingSlotCount > 0} className="bg-blue-600 hover:bg-blue-700 w-full">
         {loading ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Database className="mr-2 h-4 w-4" />}
-        Reset to Standard Intervals
+        Create Standard Intervals
       </Button>
     </div>
   );

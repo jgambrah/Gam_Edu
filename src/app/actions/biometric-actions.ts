@@ -220,8 +220,10 @@ export async function processBiometricScans(
   const studentsToNotify: string[] = [];
   const whatsappTasks: Promise<any>[] = [];
 
-  const batch = db.batch();
-
+  // Writes are collected and committed in parts (a batch holds at most 500 writes).
+  const writes: Array<{ classId: string; fn: (b: FirebaseFirestore.WriteBatch) => void }> = [];
+  // Per class: the scanned students' statuses, to keep the class's daily sheet (aggregate document) in step.
+  const byClass = new Map<string, Record<string, { studentId: string; studentName: string; status: string; notes: string }>>();
   // Deduplicate incoming logs by biometricId to prevent multiple records for the same student on the same day
   const uniqueLogs = new Map<string, number>();
   logs.forEach(log => {
@@ -233,19 +235,25 @@ export async function processBiometricScans(
     }
   });
 
+  // 1. Find all scanned students at once, 30 card ids per query (was: one query per scan).
+  const studentByCard = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
+  const cardIds = Array.from(uniqueLogs.keys());
+  for (let i = 0; i < cardIds.length; i += 30) {
+    const snap = await db.collection('students')
+      .where('schoolId', '==', schoolId)
+      .where('biometricId', 'in', cardIds.slice(i, i + 30))
+      .get();
+    snap.docs.forEach(d => {
+      const data: any = d.data();
+      if (data.enrollmentStatus !== 'Active') return;
+      if (!studentByCard.has(String(data.biometricId))) studentByCard.set(String(data.biometricId), d);
+    });
+  }
+
   // Process each scan
   for (const [biometricId, scanTimestamp] of uniqueLogs.entries()) {
-    // 1. Find the student
-    const studentSnap = await db.collection('students')
-      .where('schoolId', '==', schoolId)
-      .where('biometricId', '==', biometricId)
-      .where('enrollmentStatus', '==', 'Active')
-      .limit(1)
-      .get();
-
-    if (studentSnap.empty) continue;
-
-    const studentDoc = studentSnap.docs[0];
+    const studentDoc = studentByCard.get(biometricId);
+    if (!studentDoc) continue;
     const studentData = studentDoc.data();
     studentData.uid = studentDoc.id; // ensure uid is set for billing helpers
 
@@ -266,8 +274,10 @@ export async function processBiometricScans(
     // 3. Formulate attendance document with deterministic ID
     const deterministicId = `att-${schoolId}-${classId}-${studentData.uid}-${dateStr}`;
     const attendanceRef = db.collection('attendance').doc(deterministicId);
-
-    batch.set(attendanceRef, {
+    const notes = `Biometric scan recorded at ${format(scanTime, 'pp')}`;
+    if (!byClass.has(classId)) byClass.set(classId, {});
+    byClass.get(classId)![studentData.uid] = { studentId: studentData.uid, studentName, status, notes };
+    writes.push({ classId, fn: b => b.set(attendanceRef, {
       studentId: studentData.uid,
       studentName: studentName,
       classId: classId,
@@ -277,8 +287,7 @@ export async function processBiometricScans(
       schoolId: schoolId,
       updatedAt: new Date(),
       updatedBy: 'biometric-system'
-    }, { merge: true });
-
+    }, { merge: true }) });
     studentsToBill.push(studentData);
     processedRecords.push(`${studentName} (${status})`);
     studentsToNotify.push(studentData.uid);
@@ -302,9 +311,48 @@ export async function processBiometricScans(
     }
   }
 
+  // Keep each class's daily sheet in step: when a teacher already saved the sheet for this date, the scanned
+  // students' entries and the counts are updated (otherwise the sheet kept showing the teacher's earlier
+  // marks and a re-save would undo the scans). Closed-term days are left untouched. One read per class.
+  const closedClasses = new Set<string>();
+  for (const [classId, scanned] of byClass.entries()) {
+    const aggRef = db.collection('attendance').doc(`${schoolId}_${classId}_${dateStr}`);
+    const aggSnap = await aggRef.get();
+    if (!aggSnap.exists) continue; // no sheet yet — the sheet reads the individual records instead
+    const agg: any = aggSnap.data() || {};
+    if (agg.isArchived === true) { closedClasses.add(classId); continue; }
+    const map: Record<string, any> = { ...(agg.studentsMap || {}) };
+    Object.values(scanned).forEach(r => {
+      const prev = map[r.studentId] || {};
+      map[r.studentId] = { ...prev, studentId: r.studentId, studentName: r.studentName, status: r.status, notes: r.notes,
+        canteenEligible: prev.usesCanteen !== 'false' };
+    });
+    const entries = Object.values(map) as any[];
+    const count = (st: string) => entries.filter(e => e.status === st).length;
+    writes.push({ classId, fn: b => b.set(aggRef, {
+      studentsMap: map,
+      presentCount: count('Present'),
+      lateCount: count('Late'),
+      absentCount: count('Absent'),
+      excusedCount: count('Excused'),
+      canteenMealsCount: entries.filter(e => (e.status === 'Present' || e.status === 'Late') && e.usesCanteen !== 'false').length,
+      updatedAt: new Date(),
+      updatedBy: 'biometric-system',
+    }, { merge: true }) });
+  }
+  // Scans for a class whose day belongs to a closed term are ignored (no attendance change, no billing).
+  const keptWrites = writes.filter(w => !closedClasses.has(w.classId));
+  const billable = studentsToBill.filter(st => !closedClasses.has(st.classId));
+  studentsToBill.length = 0;
+  studentsToBill.push(...billable);
+
   // Commit attendance records
   if (processedRecords.length > 0) {
-    await batch.commit();
+    for (let i = 0; i < keptWrites.length; i += 450) {
+      const b = db.batch();
+      keptWrites.slice(i, i + 450).forEach(w => w.fn(b));
+      await b.commit();
+    }
 
     // Trigger billing in a separate operation
     const billingResult = await billMultipleStudentsServer(db, studentsToBill, targetDate, schoolId);

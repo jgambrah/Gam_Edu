@@ -39,7 +39,8 @@ import TimetableSeeder from '@/components/TimetableSeeder';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { updateDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { findManualClash, slotsOverlap, toMinutes, timetableEntryId } from '@/lib/timetable-validate';
+import { TEACHING_ROLES } from '@/lib/staff-roles';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 type Teacher = { uid: string; firstName: string; lastName: string; role: string };
@@ -126,8 +127,11 @@ function LessonAssignmentDialog({
     rooms, 
     timeSlots,
     editingEntry,
-    onSuccess 
-}: { 
+    onSuccess,
+    allEntries = [],
+    allSlots = [],
+    classNameOf,
+}: {  
     open: boolean; 
     setOpen: (o: boolean) => void; 
     classId: string;
@@ -137,6 +141,9 @@ function LessonAssignmentDialog({
     timeSlots: TimeSlot[];
     editingEntry?: TimetableEntry | null;
     onSuccess: () => void;
+    allEntries?: TimetableEntry[];
+    allSlots?: TimeSlot[];
+    classNameOf?: (id: string) => string;
 }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
@@ -171,9 +178,25 @@ function LessonAssignmentDialog({
             return;
         }
 
+        // Clash check against the school's current lessons (already on screen — no reads).
+        const clash = findManualClash({
+            entries: allEntries as any[],
+            slots: (allSlots.length ? allSlots : timeSlots) as any[],
+            classId,
+            timeSlotId: form.timeSlotId,
+            teacherId: form.teacherId,
+            roomId: form.roomId,
+            ignoreId: editingEntry?.id,
+            describeClass: classNameOf,
+        });
+        if (clash) {
+            toast({ variant: 'destructive', title: "Timetable Clash", description: clash });
+            return;
+        }
         setIsSubmitting(true);
         try {
-            const entryId = editingEntry ? editingEntry.id : `${schoolId}-${classId}-${form.timeSlotId}`;
+            const entryId = editingEntry ? editingEntry.id : timetableEntryId(schoolId, classId, form.timeSlotId);
+            const slot = timeSlots.find(ts => ts.id === form.timeSlotId);
             const ref = doc(firestore, 'timetables', entryId);
 
             const selectedSubject = subjects.find(s => s.id === form.subjectId);
@@ -191,6 +214,9 @@ function LessonAssignmentDialog({
                 teacherName: `${selectedTeacher?.firstName || ''} ${selectedTeacher?.lastName || ''}`.trim() || 'Teacher',
                 roomId: form.roomId || '',
                 roomName: selectedRoom?.name || '',
+                day: slot?.day || (editingEntry as any)?.day || '',
+                startTime: slot?.startTime || (editingEntry as any)?.startTime || '',
+                endTime: slot?.endTime || (editingEntry as any)?.endTime || '',
                 updatedAt: serverTimestamp(),
             }, { merge: true });
 
@@ -304,7 +330,7 @@ function LessonAssignmentDialog({
 }
 
 // --- SUB-COMPONENT: CONFIGURATION TAB ---
-function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { schoolId: string, timeSlots: TimeSlot[], rooms: Room[], classes: Class[], onRefresh: () => void }) {
+function TimetableConfig({ schoolId, timeSlots, rooms, classes, entries = [], onRefresh }: { schoolId: string, timeSlots: TimeSlot[], rooms: Room[], classes: Class[], entries?: TimetableEntry[], onRefresh: () => void }) {
     const firestore = useFirestore();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
@@ -319,8 +345,25 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
     
     const [editingSlot, setEditingSlot] = useState<TimeSlot | null>(null);
 
+    /** Message when a slot's times are invalid or overlap another slot of the same scope (global / same class). */
+    const slotProblem = (cand: { id?: string; day: string; startTime: string; endTime: string; classId: string | null }) => {
+        const s = toMinutes(cand.startTime), e = toMinutes(cand.endTime);
+        if (Number.isNaN(s) || Number.isNaN(e) || e <= s) return 'The end time must be after the start time.';
+        const clash = timeSlots.find(ts =>
+            ts.id !== cand.id &&
+            (ts.classId || null) === (cand.classId || null) &&
+            slotsOverlap(ts as any, { id: cand.id || 'new', day: cand.day, startTime: cand.startTime, endTime: cand.endTime }) &&
+            !(ts.day === cand.day && ts.startTime === cand.startTime && !cand.id) // same start = replaces that slot
+        );
+        return clash ? `${cand.day} ${cand.startTime}–${cand.endTime} overlaps the existing ${clash.startTime}–${clash.endTime} slot.` : null;
+    };
+
     const handleAddSlot = async () => {
         if (!firestore || !schoolId || newSlot.days.length === 0) return;
+        for (const d of newSlot.days) {
+            const problem = slotProblem({ day: d, startTime: newSlot.start, endTime: newSlot.end, classId: newSlot.classId === 'all' ? null : newSlot.classId });
+            if (problem) { toast({ variant: 'destructive', title: "Check the Times", description: problem }); return; }
+        }
         setLoading(true);
         try {
             const batch = writeBatch(firestore);
@@ -351,13 +394,22 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
         if (!firestore) return;
         setLoading(true);
         try {
-            updateDocumentNonBlocking(doc(firestore, 'timeSlots', slot.id), {
+            const problem = slotProblem({ id: slot.id, day: slot.day, startTime: slot.startTime, endTime: slot.endTime, classId: (slot.classId === 'all' || !slot.classId) ? null : slot.classId });
+            if (problem) { toast({ variant: 'destructive', title: "Check the Times", description: problem }); return; }
+            const batch = writeBatch(firestore);
+            batch.update(doc(firestore, 'timeSlots', slot.id), {
                 type: slot.type,
                 startTime: slot.startTime,
                 endTime: slot.endTime,
                 day: slot.day,
                 classId: (slot.classId === 'all' || !slot.classId) ? null : slot.classId,
             });
+            // Keep the lessons in this slot in step (their stored day/time), or remove them if it is no longer a lesson slot.
+            entries.filter(e => e.timeSlotId === slot.id).forEach(e => {
+                if (slot.type && slot.type !== 'Lesson') batch.delete(doc(firestore, 'timetables', e.id));
+                else batch.update(doc(firestore, 'timetables', e.id), { day: slot.day, startTime: slot.startTime, endTime: slot.endTime });
+            });
+            await batch.commit();
             toast({ title: "Slot Updated" });
             setEditingSlot(null);
             onRefresh();
@@ -368,7 +420,11 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
     const handleDelete = async (coll: string, id: string) => {
         if (!firestore) return;
         try {
-            await deleteDoc(doc(firestore, coll, id));
+            const batch = writeBatch(firestore);
+            batch.delete(doc(firestore, coll, id));
+            // Lessons booked in a deleted slot would otherwise linger invisibly and inflate the counts.
+            if (coll === 'timeSlots') entries.filter(e => e.timeSlotId === id).slice(0, 450).forEach(e => batch.delete(doc(firestore, 'timetables', e.id)));
+            await batch.commit();
             toast({ title: "Deleted" });
             onRefresh();
         } catch (e: any) { toast({ variant: 'destructive', title: "Error", description: e.message }); }
@@ -392,7 +448,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
 
     return (
         <div className="space-y-8 animate-in fade-in">
-            <TimetableSeeder />
+            <TimetableSeeder existingSlotCount={timeSlots.length} existingRoomNames={rooms.map(r => r.name)} />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <Card>
@@ -494,7 +550,7 @@ function TimetableConfig({ schoolId, timeSlots, rooms, classes, onRefresh }: { s
                                                     <AlertDialogHeader>
                                                         <AlertDialogTitle className="text-xl font-black uppercase italic">Delete Slot?</AlertDialogTitle>
                                                         <AlertDialogDescription className="font-bold text-slate-600">
-                                                            Are you sure you want to remove the {ts.startTime} slot on {ts.day}? This may affect existing scheduled lessons.
+                                                            Are you sure you want to remove the {ts.startTime} slot on {ts.day}? Lessons booked in this slot ({entries.filter(e => e.timeSlotId === ts.id).length}) will be removed too.
                                                         </AlertDialogDescription>
                                                     </AlertDialogHeader>
                                                     <AlertDialogFooter>
@@ -657,7 +713,7 @@ export default function TimetablePage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
   const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
   const { data: schoolData } = useDoc<any>(schoolRef);
-  const aiCredits = schoolData?.aiCredits ?? 810;
+  const aiCredits: number | null = typeof schoolData?.aiCredits === 'number' ? schoolData.aiCredits : null;
 
   const [selectedClassId, setSelectedClassId] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -673,7 +729,7 @@ export default function TimetablePage() {
 
   const allTeachersQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
-    return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', '==', 'Teacher'));
+    return query(collection(firestore, 'staff'), where('schoolId', '==', schoolId), where('role', 'in', TEACHING_ROLES));
   }, [firestore, schoolId]);
   const { data: allTeachers } = useCollection<Teacher>(allTeachersQuery);
 
@@ -681,15 +737,25 @@ export default function TimetablePage() {
   const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
   const roomsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'rooms'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: rooms, forceRefetch: refetchRooms } = useCollection<Room>(roomsQuery);
+  const { data: rooms } = useCollection<Room>(roomsQuery);
 
   const timeSlotsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'timeSlots'), where('schoolId', '==', schoolId), orderBy('startTime')) : null, [firestore, schoolId]);
-  const { data: timeSlots, forceRefetch: refetchSlots } = useCollection<TimeSlot>(timeSlotsQuery);
+  const { data: timeSlots } = useCollection<TimeSlot>(timeSlotsQuery);
 
-  const timetableQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
-  const { data: timetable, isLoading: isTimetableLoading, forceRefetch: refetchTimetable } = useCollection<TimetableEntry>(timetableQuery);
-  
-  const studentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // READ COST: administrators need the whole school's lessons (clash checks, AI scheduler); everyone else only
+  // reads the lessons of the class they are looking at (was: every lesson of the school, for every user).
+  // These are live listeners, so changes appear on their own — no re-reading after a save.
+  const timetableQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId) return null;
+    if (canManage) return query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId));
+    if (!selectedClassId) return null;
+    return query(collection(firestore, 'timetables'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId));
+  }, [firestore, schoolId, canManage, selectedClassId]);
+  const { data: timetable, isLoading: isTimetableLoading } = useCollection<TimetableEntry>(timetableQuery);
+  // A student only needs their OWN record to find their class (was: every student of the school).
+  const studentsQuery = useMemoFirebase(() => (firestore && schoolId && role === 'Student' && user?.uid)
+    ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', '==', user.uid))
+    : null, [firestore, schoolId, role, user?.uid]);
   const { data: students } = useCollection<Student>(studentsQuery);
 
 
@@ -723,7 +789,7 @@ export default function TimetablePage() {
         weeklyPeriods: s.weeklyPeriods || 3,
         requiresLab: s.requiresLab || false,
         targetClasses: s.targetClasses || [],
-        allowedTeacherIds: s.teacherIds || []
+        allowedTeacherIds: (s.teacherIds || []).filter(id => allTeachers.some(t => t.uid === id))
       })) || [];
 
       const input = {
@@ -742,32 +808,32 @@ export default function TimetablePage() {
         ]
       };
 
-      const result = await generateTimetable(input);
-      
+      const result: any = await generateTimetable(input);
       if (!result.success) throw new Error(result.error);
+      const newEntries: any[] = result.timetable || [];
+      if (newEntries.length === 0) throw new Error('The AI returned no lessons. Your timetable was not changed.');
 
-      const batch = writeBatch(firestore);
-
-      if(timetable) {
-          timetable.forEach(entry => {
-            batch.delete(doc(firestore, 'timetables', entry.id));
-          });
+      // Save in parts (Firestore allows 500 writes per batch; a whole school is often more).
+      // New lessons are written FIRST, then old lessons that are no longer used are removed, so a failure
+      // part-way never leaves the school without a timetable.
+      const newIds = new Set(newEntries.map(e => e.id));
+      const ops: Array<(b: ReturnType<typeof writeBatch>) => void> = [];
+      newEntries.forEach((entry: any) => {
+        ops.push(b => b.set(doc(firestore, 'timetables', entry.id), { ...entry, schoolId, source: 'ai', createdAt: serverTimestamp() }));
+      });
+      (timetable || []).filter(e => !newIds.has(e.id)).forEach(e => {
+        ops.push(b => b.delete(doc(firestore, 'timetables', e.id)));
+      });
+      for (let i = 0; i < ops.length; i += 450) {
+        const batch = writeBatch(firestore);
+        ops.slice(i, i + 450).forEach(op => op(batch));
+        await batch.commit();
       }
-      
-      if (result && result.timetable) {
-          result.timetable.forEach((entry: any) => {
-            const newDocRef = doc(collection(firestore, 'timetables'));
-            batch.set(newDocRef, { 
-                ...entry, 
-                schoolId: schoolId || null,
-                createdAt: serverTimestamp()
-            });
-          });
-      }
-      
-      await batch.commit();
-      toast({ title: "Success!", description: `A new timetable has been generated.` });
-      refetchTimetable(); 
+      const warnings: string[] = result.warnings || [];
+      toast({
+        title: "Timetable Generated ✅",
+        description: `${newEntries.length} lessons scheduled.${warnings.length ? ` Corrected automatically: ${warnings.join('; ')}.` : ''}`
+      }); 
     } catch (error: any) {
       console.error("Error generating timetable:", error);
       toast({ variant: 'destructive', title: "AI Error", description: error.message || "Could not generate timetable." });
@@ -779,6 +845,7 @@ export default function TimetablePage() {
   const filteredTimetable = useMemo(() => {
       return timetable?.filter(entry => entry.classId === selectedClassId) || [];
   }, [timetable, selectedClassId]);
+  const classNameOf = useCallback((id: string) => classes?.find(c => c.id === id)?.name || 'another class', [classes]);
 
   const filteredTimeSlots = useMemo(() => {
       if (!timeSlots || !selectedClassId) return [];
@@ -792,7 +859,9 @@ export default function TimetablePage() {
     const hasClasses = (classes?.length || 0) > 0;
     const hasTeachers = (allTeachers?.length || 0) > 0;
 
-    const subjectsMissingTeachers = subjects?.filter(s => (s.teacherIds?.length || 0) === 0) || [];
+    // A subject needs at least one CURRENT teaching staff member (ids of removed staff do not count).
+    const teacherIdSet = new Set((allTeachers || []).map(t => t.uid));
+    const subjectsMissingTeachers = subjects?.filter(s => !(s.teacherIds || []).some(id => teacherIdSet.has(id))) || [];
     const classesMissingRooms = classes?.filter(c => !c.homeRoomId) || [];
 
     const isFullyReady = hasSlots && hasRooms && hasSubjects && hasClasses && hasTeachers && 
@@ -816,9 +885,11 @@ export default function TimetablePage() {
       const lessonSlots = timeSlots?.filter(ts => ts.type === 'Lesson' || !ts.type) || [];
       const totalPeriods = lessonSlots.filter(ts => !ts.classId || ts.classId === selectedClassId).length || 0;
       
-      const assignedCount = filteredTimetable.length;
+      // Only lessons sitting in one of this class's lesson slots count (stray lessons from deleted slots do not).
+      const lessonSlotIds = new Set(lessonSlots.filter(ts => !ts.classId || ts.classId === selectedClassId).map(ts => ts.id));
+      const assignedCount = new Set(filteredTimetable.filter(e => lessonSlotIds.has(e.timeSlotId)).map(e => e.timeSlotId)).size;
       const openSlots = Math.max(0, totalPeriods - assignedCount);
-      const utilization = totalPeriods > 0 ? Math.round((assignedCount / totalPeriods) * 100) : 0;
+      const utilization = totalPeriods > 0 ? Math.min(100, Math.round((assignedCount / totalPeriods) * 100)) : 0;
       
       const breakTimeSlots = timeSlots?.filter(ts => ts.type === 'Break' || ts.type === 'Lunch' || ts.type === 'Worship' || ts.type === 'Event') || [];
       const filteredBreaks = breakTimeSlots.filter(ts => !ts.classId || ts.classId === selectedClassId);
@@ -856,7 +927,7 @@ export default function TimetablePage() {
         actions={
           <div className="bg-slate-950/60 border border-slate-800/80 text-slate-300 text-xs font-medium px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shrink-0">
             <span className="text-amber-400">⚡</span>
-            <span>{aiCredits} AI Credits</span>
+            <span>{aiCredits === null ? '…' : aiCredits.toLocaleString()} AI Credits</span>
           </div>
         }
       />
@@ -875,7 +946,7 @@ export default function TimetablePage() {
             </TabsList>
             
             <div className="flex gap-2 w-full sm:w-auto">
-                <Button variant="outline" onClick={() => { refetchTimetable(); refetchSlots(); refetchRooms(); }} className="gap-2 rounded-xl font-bold border-slate-200 hover:bg-slate-50/50 shadow-sm flex-1 sm:flex-initial justify-center">
+                <Button variant="outline" onClick={() => toast({ title: "Up to date", description: "The timetable updates automatically — no need to sync." })} className="gap-2 rounded-xl font-bold border-slate-200 hover:bg-slate-50/50 shadow-sm flex-1 sm:flex-initial justify-center">
                     <RefreshCw className={cn("h-4 w-4 text-indigo-650", isTimetableLoading && "animate-spin")} /> Sync Data
                 </Button>
                 {canManage && selectedClassId && (
@@ -1041,14 +1112,31 @@ export default function TimetablePage() {
                                     onChange={(e) => setCustomConstraint(e.target.value)}
                                     className="bg-white/5 border-white/10 text-white min-h-[120px] rounded-2xl"
                                 />
-                                <Button 
-                                    onClick={handleGenerateTimetable} 
-                                    disabled={isGenerating || !readiness.isFullyReady} 
-                                    className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all disabled:opacity-50"
-                                >
-                                    {isGenerating ? <Loader2 className="mr-2 h-4 w-6 animate-spin" /> : <Wand2 className="mr-2 h-4 w-6" />}
-                                    RUN AI SCHEDULER (-50 Credits)
-                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button 
+                                            disabled={isGenerating || !readiness.isFullyReady} 
+                                            className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl text-lg shadow-xl active:scale-95 transition-all disabled:opacity-50"
+                                        >
+                                            {isGenerating ? <Loader2 className="mr-2 h-4 w-6 animate-spin" /> : <Wand2 className="mr-2 h-4 w-6" />}
+                                            RUN AI SCHEDULER (-50 Credits)
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Replace the whole school timetable?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                The AI will build a new timetable for every class and it will REPLACE the current one
+                                                ({timetable?.length || 0} lessons), including lessons you assigned by hand. This uses 50 AI credits
+                                                (returned if the AI fails).
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleGenerateTimetable}>Generate &amp; Replace</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </div>
                             
                             <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-4">
@@ -1079,7 +1167,8 @@ export default function TimetablePage() {
                     timeSlots={timeSlots || []} 
                     rooms={rooms || []} 
                     classes={classes || []}
-                    onRefresh={() => { refetchSlots(); refetchRooms(); }} 
+                    entries={timetable || []}
+                    onRefresh={() => {}}  
                 />
             )}
         </TabsContent>
@@ -1095,7 +1184,10 @@ export default function TimetablePage() {
             rooms={rooms || []}
             timeSlots={filteredTimeSlots}
             editingEntry={editingEntry}
-            onSuccess={refetchTimetable}
+            onSuccess={() => {}}
+            allEntries={timetable || []}
+            allSlots={timeSlots || []}
+            classNameOf={classNameOf}
           />
       )}
     </div>

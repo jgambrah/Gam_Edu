@@ -114,7 +114,9 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                                 </TableCell>
                             ) : (
                                 days.map(day => {
-                                    const slot = timeSlots.find(ts => ts.day === day && ts.startTime === startTime);
+                                    // A class's own slot takes precedence over the global one at the same time.
+                                    const slot = timeSlots.find(ts => ts.day === day && ts.startTime === startTime && !!ts.classId)
+                                        || timeSlots.find(ts => ts.day === day && ts.startTime === startTime);
                                     if (!slot) return <TableCell key={day} className="border-l border-slate-100 bg-slate-50/5"></TableCell>;
 
                                     if (slot.type === 'Break' || slot.type === 'Lunch' || slot.type === 'Worship') {
@@ -149,16 +151,16 @@ export function TimetableDisplay({ timetable, subjects, teachers, rooms, timeSlo
                                                         </div>
                                                     )}
                                                     <p className={`font-black text-xs ${style.text} leading-tight line-clamp-2 pr-5`}>
-                                                        {subject?.name || 'N/A'}
+                                                        {subject?.name || (entry as any).subjectName || 'N/A'}
                                                     </p>
                                                     <div className="mt-auto space-y-1 pt-1.5 border-t border-slate-100/50">
                                                         <p className="text-[9px] font-bold text-slate-500 uppercase truncate flex items-center gap-1.5">
                                                             <UserCircle className="h-3 w-3 text-slate-400 shrink-0" /> 
-                                                            {teacher ? `${teacher.firstName} ${teacher.lastName}` : 'TBA'}
+                                                            {teacher ? `${teacher.firstName} ${teacher.lastName}` : ((entry as any).teacherName || 'TBA')}
                                                         </p>
                                                         <p className="text-[9px] font-bold text-slate-500 uppercase truncate flex items-center gap-1.5">
                                                             <Building className="h-3 w-3 text-slate-400 shrink-0" /> 
-                                                            <span className="truncate">{room?.name || 'TBA'}</span>
+                                                            <span className="truncate">{room?.name || (entry as any).roomName || 'TBA'}</span>
                                                         </p>
                                                     </div>
                                                 </button>
