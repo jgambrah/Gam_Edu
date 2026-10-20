@@ -2042,7 +2042,18 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
             const currentBalance = record.billedAmount - (record.amountPaid || 0) - (record.waiverAmount || 0);
             let allocationCandidates: any[] = [];
             if (values.amount - Math.max(0, currentBalance) > 0.009) {
-                const studentRecs = await fetchStudentRecords(firestore, schoolId, [record.studentId, (record as any).studentUid].filter(Boolean));
+                // All of the student's ids: some older bills (often daily canteen charges) use the admission number.
+                let owner: any = null;
+                try {
+                    const byId = await getDoc(doc(firestore, 'students', record.studentId));
+                    if (byId.exists()) owner = { id: byId.id, ...byId.data() };
+                    else {
+                        const byUid = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', '==', record.studentId), limit(1)));
+                        if (!byUid.empty) owner = { id: byUid.docs[0].id, ...byUid.docs[0].data() };
+                    }
+                } catch { /* fall back to the bill's own ids */ }
+                const keys = [record.studentId, (record as any).studentUid, owner?.id, owner?.uid, owner?.studentId, owner?.admissionNo, owner?.admissionNumber].filter(Boolean);
+                const studentRecs = await fetchStudentRecords(firestore, schoolId, Array.from(new Set(keys)));
                 allocationCandidates = orderAllocationTargets(studentRecs, record).slice(0, 100);
             }
             const allocatedTo: { description: string; portion: number }[] = [];
@@ -3966,10 +3977,14 @@ export default function AccountsPage() {
   // (status Unpaid/Overdue + this year's bills) missed older bills marked 'Partially Paid' or 'Pending' that
   // still had a balance, and every older over-paid bill (parents' credit), so debts and credits came out
   // lower here than on the Director dashboard.
-  const unpaidDebtsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school' && !viewTermId) ? query(
-    collection(firestore, 'financialRecords'),
-    where('schoolId', '==', schoolId)
-  ) : null, [firestore, schoolId, ledgerMode, viewTermId]);
+  // After backfill-term-stamps.js --apply every bill carries isArchived, and only OPEN bills are read
+  // (archived/closed terms are skipped), so the load stays small once terms are closed.
+  const billsHaveArchiveFlag = schoolSettings?.billsHaveArchiveFlag === true;
+  const unpaidDebtsQuery = useMemoFirebase(() => (firestore && schoolId && ledgerMode === 'full-school' && !viewTermId) ? (
+    billsHaveArchiveFlag
+      ? query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('isArchived', '==', false))
+      : query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId))
+  ) : null, [firestore, schoolId, ledgerMode, viewTermId, billsHaveArchiveFlag]);
   const { data: unpaidRecords, isLoading: isLoadingUnpaidRecords, forceRefetch: refetchUnpaid } = useCollection<FinancialRecord>(unpaidDebtsQuery);
 
   const yearVariations = useMemo(() => {
@@ -4628,6 +4643,30 @@ export default function AccountsPage() {
     }).sort((a, b) => b.rate - a.rate); // default sort by collection rate descending
   }, [advisoryActiveRecords, performanceRecords, students, classes]);
 
+  // Every student's balance from ONE document (studentBalances/{schoolId}), kept up to date by the server.
+  // Opening Student Billing costs 1 read for all balances instead of reading any bills, so the list can show
+  // balances and put the highest debts first. A student's full ledger is still read only when opened.
+  const [balanceIndex, setBalanceIndex] = useState<{ byStudent?: Record<string, { debt?: number; credit?: number }>; updatedAt?: any } | null>(null);
+  const [loadingBalanceIndex, setLoadingBalanceIndex] = useState(false);
+  const loadBalanceIndex = useCallback(async () => {
+    if (!firestore || !schoolId) return;
+    setLoadingBalanceIndex(true);
+    try {
+      const snap = await getDoc(doc(firestore, 'studentBalances', schoolId));
+      setBalanceIndex(snap.exists() ? (snap.data() as any) : null);
+    } catch {
+      setBalanceIndex(null); // no access or not built yet: the list falls back to "View Ledger & Balance"
+    } finally {
+      setLoadingBalanceIndex(false);
+    }
+  }, [firestore, schoolId]);
+  useEffect(() => { loadBalanceIndex(); }, [loadBalanceIndex]);
+  const balanceIndexUpdated = useMemo(() => {
+    const t: any = balanceIndex?.updatedAt;
+    const ms = t?.toMillis?.() ?? (t?.seconds ? t.seconds * 1000 : 0);
+    return ms ? new Date(ms) : null;
+  }, [balanceIndex]);
+
   const studentFinancials = useMemo(() => {
     if (!students) return [];
     
@@ -4674,6 +4713,12 @@ export default function AccountsPage() {
       });
 
       const isLoaded = Boolean(records && records.length > 0) || sKeys.some(k => k in cachedStudentRecords) || studentRecords.length > 0;
+      // Balance from the server index when this student's ledger has not been opened (current term view only).
+      const indexMap = !viewTermId ? balanceIndex?.byStudent : undefined;
+      const indexBalance = indexMap
+        ? Array.from(new Set(sKeys.map(String))).reduce((t, k) => t + (Number(indexMap[k]?.debt) || 0) - (Number(indexMap[k]?.credit) || 0), 0)
+        : null;
+      const fromIndex = !isLoaded && indexBalance !== null;
       const activeRecords = studentRecords.filter(r => r.status !== 'Pending Reversal');
       const totalBilled = activeRecords.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
       const totalPaid = activeRecords.reduce((acc, r) => acc + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
@@ -4706,7 +4751,9 @@ export default function AccountsPage() {
       return { 
         student, 
         isLoaded,
-        balance: totalBilled - totalPaid, 
+        fromIndex,
+        hasBalance: isLoaded || fromIndex,
+        balance: fromIndex ? Math.round((indexBalance as number) * 100) / 100 : totalBilled - totalPaid, 
         openingArrears: Math.max(0, openingArrears),
         currentTermBilled,
         currentTermPaid,
@@ -4714,22 +4761,23 @@ export default function AccountsPage() {
         records: studentRecords 
       };
     }).sort((a, b) => {
-      if (a.isLoaded && !b.isLoaded) return -1;
-      if (!a.isLoaded && b.isLoaded) return 1;
+      // Highest debt first (students whose balance is known — from the index or an opened ledger).
+      if (a.hasBalance && !b.hasBalance) return -1;
+      if (!a.hasBalance && b.hasBalance) return 1;
       return b.balance - a.balance;
     });
-  }, [records, students, cachedStudentRecords, effectiveAcademicYear, viewTermId]);
+  }, [records, students, cachedStudentRecords, effectiveAcademicYear, viewTermId, balanceIndex]);
 
   const filteredStudentsWithBills = useMemo(() => {
     return studentFinancials.filter(sf => {
       if (searchTerm && !searchStudent(sf.student, searchTerm)) return false;
       if (selectedBillingClassId !== 'all' && sf.student.classId !== selectedBillingClassId) return false;
       if (billingStatusFilter === 'debtors') {
-        if (sf.isLoaded) return sf.balance > 0.01;
+        if (sf.hasBalance) return sf.balance > 0.01;
         return true;
       }
       if (billingStatusFilter === 'settled') {
-        if (sf.isLoaded) return sf.balance <= 0.01;
+        if (sf.hasBalance) return sf.balance <= 0.01;
         return true;
       }
       return true;
@@ -6383,7 +6431,15 @@ export default function AccountsPage() {
                                     </div>
                                     <p className="text-slate-600 text-xs">
                                         <span className="font-semibold text-slate-800">On-Demand Cashier Mode:</span> Searching or clicking any student loads only their ledger on-demand (~15–30 reads).
+                                        {!viewTermId && (balanceIndex
+                                            ? <> Balances for all students come from one summary (1 read), highest debt first{balanceIndexUpdated ? ` · updated ${balanceIndexUpdated.toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}.</>
+                                            : <> Balances appear here after tonight's summary rebuild.</>)}
                                     </p>
+                                    {!viewTermId && (
+                                        <Button variant="ghost" size="sm" onClick={loadBalanceIndex} disabled={loadingBalanceIndex} className="h-7 px-2 text-[11px] text-indigo-700 shrink-0">
+                                            {loadingBalanceIndex ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Refresh balances'}
+                                        </Button>
+                                    )}
                                 </div>
                                 {Object.keys(cachedStudentRecords).length > 0 && (
                                     <Badge variant="secondary" className="text-[10px] bg-indigo-50 text-indigo-700 border border-indigo-200/60 font-medium shrink-0">
@@ -6616,7 +6672,7 @@ export default function AccountsPage() {
                                              }} 
                                             className="w-full"
                                         >
-                                            {paginatedStudentsWithBills.map(({ student, isLoaded, balance, openingArrears, currentTermBilled, records: sRecords }) => {
+                                            {paginatedStudentsWithBills.map(({ student, isLoaded, fromIndex, balance, openingArrears, currentTermBilled, records: sRecords }) => {
                                                 const sKey = student.uid || student.id || student.studentId || '';
                                                 const isExpanded = expandedStudentKey === sKey;
                                                 const isCardLoading = (loadingStudentKey === sKey) || (isExpanded && !isLoaded);
@@ -6634,7 +6690,7 @@ export default function AccountsPage() {
                                                                 )}
                                                                 <div className="flex flex-col items-end">
                                                                     <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Total Balance</p>
-                                                                    {isLoaded ? (
+                                                                    {(isLoaded || fromIndex) && !isCardLoading ? (
                                                                         <div className="flex items-center gap-1.5 mt-0.5">
                                                                             <p className={cn("font-black text-base font-mono tracking-tight", balance > 0.01 ? "text-rose-600" : "text-emerald-600")}>
                                                                                 GH₵{Math.abs(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {balance < -0.01 ? "(CR)" : ""}

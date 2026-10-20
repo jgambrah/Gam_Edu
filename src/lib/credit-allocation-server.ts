@@ -44,7 +44,11 @@ export async function applyHeldCreditAfterBillingServer(db: FirebaseFirestore.Fi
     const initial = await fetchRecords(db, schoolId, keys);
     const sources = initial.filter(r => isAllocatable(r) && balanceOf(r) < -EPS);
 
+    // A transaction can write at most 500 documents, and each bill covered costs ~2 writes, so a large
+    // credit (e.g. a term of daily canteen bills) is applied in rounds of at most 120 bills.
+    const MAX_TARGETS_PER_ROUND = 120;
     for (const src of sources) {
+     for (let round = 0; round < 60; round++) {
       const records = await fetchRecords(db, schoolId, keys);
       const family = feeFamily(src);
       const targets = records
@@ -54,7 +58,8 @@ export async function applyHeldCreditAfterBillingServer(db: FirebaseFirestore.Fi
           const fb = feeFamily(b) === family ? 0 : 1;
           if (fa !== fb) return fa - fb;
           return (toMillis(a.dueDate) || toMillis(a.createdAt)) - (toMillis(b.dueDate) || toMillis(b.createdAt));
-        });
+        })
+        .slice(0, MAX_TARGETS_PER_ROUND);
       if (targets.length === 0) break;
 
       const paySnap = await db.collection('financialRecords').doc(src.id).collection('payments').get();
@@ -141,12 +146,14 @@ export async function applyHeldCreditAfterBillingServer(db: FirebaseFirestore.Fi
         return total;
       });
       moved = round2(moved + movedHere);
+      if (movedHere <= EPS) break; // this bill's surplus is used up (or nothing left to cover)
+     }
     }
 
     // Refresh the student's credit marker.
     const after = await fetchRecords(db, schoolId, keys);
     const remaining = round2(after.filter(isAllocatable).reduce((s, r) => { const b = balanceOf(r); return b < -EPS ? s - b : s; }, 0));
-    await db.collection('students').doc(student.uid || student.id).update({
+    await db.collection('students').doc(student.id || student.uid).update({
       hasAccountCredit: remaining > EPS,
       accountCreditBalance: remaining > EPS ? remaining : 0,
     }).catch(() => undefined);

@@ -10,6 +10,18 @@ const db = getFirestore();
 const SUMMARY = (schoolId: string) =>
   db.collection('dashboard_summaries').doc(schoolId);
 
+/**
+ * Per-student balance index: studentBalances/{schoolId} = { byStudent: { <bill studentId>: { debt, credit } } }.
+ * Student Billing reads this ONE document to show every student's balance, highest debt first, without
+ * reading any bills. Kept current by the bill trigger below (no reads) and rebuilt exactly every night.
+ */
+const BALANCES = (schoolId: string) => db.collection('studentBalances').doc(schoolId);
+/** Same balance the Student Billing ledger shows for a bill (billed − paid − waived). */
+function ledgerBalance(r: any): number {
+  if (!r || r.isArchived === true || r.status === 'Pending Reversal') return 0;
+  return (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+}
+
 /** "YYYY-MM-DD" for today on the server */
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -83,10 +95,16 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     }
   });
 
-  const recordsSnapRaw = await db.collection('financialRecords')
-    .where('schoolId', '==', schoolId)
-    .get();
+  // Once every bill of the school carries isArchived (backfill-term-stamps.js --apply sets
+  // schoolSettings.billsHaveArchiveFlag), only open bills are read — archived terms are skipped entirely,
+  // so the nightly cost stops growing with the school's history.
+  const settingsForFlag = await db.collection('schoolSettings').doc(schoolId).get();
+  const openOnly = settingsForFlag.data()?.billsHaveArchiveFlag === true;
+  const recordsSnapRaw = openOnly
+    ? await db.collection('financialRecords').where('schoolId', '==', schoolId).where('isArchived', '==', false).get()
+    : await db.collection('financialRecords').where('schoolId', '==', schoolId).get();
   const recordDocs = recordsSnapRaw.docs.filter(d => d.data().isArchived !== true);
+  const openRecordIds = new Set(recordDocs.map(d => d.id));
   const snap = { forEach: (fn: (d: FirebaseFirestore.QueryDocumentSnapshot) => void) => recordDocs.forEach(fn) };
 
   const paymentsSnapRaw = await db.collectionGroup('payments')
@@ -99,6 +117,7 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
     const p = d.data();
     if (p.isArchived === true || p.isCarryForward === true) return false;
     const parentId = d.ref.parent.parent?.id;
+    if (openOnly) return !!parentId && openRecordIds.has(parentId); // archived bills were not read
     return !(parentId && archivedRecordIds.has(parentId));
   });
   const paymentsSnap = { docs: paymentDocs };
@@ -177,10 +196,20 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
   monthStart.setUTCHours(0, 0, 0, 0);
   const monthMs = monthStart.getTime();
 
+  // Balance index for Student Billing (every student, active or not; the page shows its own roster).
+  const byStudent: Record<string, { debt: number; credit: number }> = {};
+
   // 1. Process parent financial records (billing, arrears, and debt aging)
   snap.forEach(doc => {
     const r = doc.data();
     if (r.status === 'Pending Reversal') return;
+    if (r.studentId) {
+      const lb = ledgerBalance(r);
+      if (Math.abs(lb) > 0.009) {
+        const e = (byStudent[String(r.studentId)] = byStudent[String(r.studentId)] || { debt: 0, credit: 0 });
+        if (lb > 0) e.debt += lb; else e.credit -= lb;
+      }
+    }
     if (r.studentId && !activeStudentIds.has(r.studentId) && activeStudentIds.size > 0) return;
 
     const billed = Number(r.billedAmount ?? r.amount ?? 0);
@@ -387,6 +416,15 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
       }
     }
   }, { merge: true });
+
+  // Exact rebuild of the balance index (replaces the document, removing any drift).
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  await BALANCES(schoolId).set({
+    schoolId,
+    byStudent: Object.fromEntries(Object.entries(byStudent).map(([k, v]) => [k, { debt: r2(v.debt), credit: r2(v.credit) }])),
+    rebuiltAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
 }
 
 
@@ -575,6 +613,42 @@ export const onFinancialRecordWrite = onDocumentWritten(
     const before = event.data?.before?.data();
     const schoolId: string | undefined = after?.schoolId ?? before?.schoolId;
     if (!schoolId) return;
+
+    // Every bill must carry isArchived so ledgers can query only open bills (isArchived == false).
+    // Bills created by any screen without the field get it here, within a second of being written.
+    if (after && after.isArchived === undefined && event.data?.after?.ref) {
+      await event.data.after.ref.update({ isArchived: false }).catch(() => undefined);
+    }
+
+    // Per-student balance index (no reads: increments only). A bill moving between students is handled too.
+    {
+      const parts = (r: any) => {
+        const lb = ledgerBalance(r);
+        return { sid: r?.studentId ? String(r.studentId) : '', debt: lb > 0 ? lb : 0, credit: lb < 0 ? -lb : 0 };
+      };
+      const pb = parts(before);
+      const pa = parts(after);
+      const inc: Record<string, { debt: number; credit: number }> = {};
+      const add = (p: typeof pa, sign: number) => {
+        if (!p.sid || (!p.debt && !p.credit)) return;
+        const e = (inc[p.sid] = inc[p.sid] || { debt: 0, credit: 0 });
+        e.debt = round2(e.debt + sign * p.debt);
+        e.credit = round2(e.credit + sign * p.credit);
+      };
+      add(pb, -1);
+      add(pa, 1);
+      const changed = Object.entries(inc).filter(([, v]) => Math.abs(v.debt) > 0.001 || Math.abs(v.credit) > 0.001);
+      if (changed.length) {
+        await BALANCES(schoolId).set({
+          schoolId,
+          byStudent: Object.fromEntries(changed.map(([k, v]) => [k, {
+            ...(Math.abs(v.debt) > 0.001 ? { debt: FieldValue.increment(v.debt) } : {}),
+            ...(Math.abs(v.credit) > 0.001 ? { credit: FieldValue.increment(v.credit) } : {}),
+          }])),
+          updatedAt: FieldValue.serverTimestamp(),
+        }, { merge: true }).catch(e => console.warn('[studentBalances] increment failed:', e?.message));
+      }
+    }
 
     const b = recordContribution(before);
     const a = recordContribution(after);

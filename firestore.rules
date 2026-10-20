@@ -253,6 +253,18 @@ service cloud.firestore {
       allow write: if false; // Server-side only via Cloud Functions
     }
 
+    // Per-student balances for Student Billing (one document per school, written only by Cloud Functions).
+    // Readable by that school's administrators and finance staff.
+    match /studentBalances/{schoolId} {
+      allow get: if isSuperAdmin() || (
+        (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
+          'Cashier', 'cashier', 'Accounts Officer', 'accounts officer', 'Finance Officer', 'finance officer'])
+        && getUserSchoolId() == schoolId
+      );
+      allow list: if false;
+      allow write: if false;
+    }
+
 
     // Payment / messaging credentials and rollover run records: server (admin SDK) only.
     // No browser — not even an administrator — can read or write these.

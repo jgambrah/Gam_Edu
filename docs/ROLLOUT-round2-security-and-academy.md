@@ -38,6 +38,27 @@ Every step can be repeated safely.
    Then Accounts > Student Billing (Load School Ledger, "All-Time Ledger") and the Director dashboard's
    receivables panel show the same gross debt, credits, net and aging tiers.
 
+## Finance data clean-up (run once, in this order, after the functions are deployed)
+Every script below only REPORTS unless you add `--apply`. Read the report before applying.
+8. **Bills filed under last year** — `cd functions && node restamp-term-bills.js`
+   Lists open bills dated in this term but stamped with an older term. If they are this term's fees,
+   run it again with `--apply`. (A bill for last term that was only entered this term would also be listed —
+   leave those out by fixing them by hand, or run with `--school <id>` per school.)
+9. **Give every bill the archive flag** — `node backfill-term-stamps.js`, then `--apply`.
+   After this, Student Billing and the nightly summary read only OPEN bills; once a term is closed
+   (End of Term), its bills are no longer read at all, so reads stop growing with the school's history.
+10. **Parents' credit and canteen** — from the project root: `npx tsx scripts/reconcile-credits.ts`
+    Shows each school's credit on over-paid bills, how much can clear the same students' unpaid bills
+    (usually daily canteen charges), the top 10 credits, canteen collection, canteen bills charged to
+    students marked "does not use canteen", and suspected duplicate payments (check those by hand).
+    Run with `--apply` to move the credit onto the unpaid bills (same rules as the app; receipts are split,
+    cash totals do not change).
+11. **Refresh the dashboards** — `cd functions && node rebuild-dashboard-summaries.js`
+    This also builds `studentBalances/{schoolId}`: Student Billing then shows every student's balance,
+    highest debt first, for 1 read (kept current by the bill trigger, rebuilt exactly every night).
+    Deploy the rules too (`firebase deploy --only firestore:rules`) — only administrators and finance staff
+    of the school can read it.
+
 ## If something goes wrong
 - AI tools say "session expired" for everyone: check that the Vercel environment has `FIREBASE_PROJECT_ID`,
   `FIREBASE_CLIENT_EMAIL` and `FIREBASE_PRIVATE_KEY` (the cookie needs them). Roll back the web app if needed.

@@ -17,6 +17,9 @@
  *      These are still included by the end-of-term rollover (it carries every open bill that is not in
  *      the new term), so nothing is lost; they just won't show under a specific historic term.
  * Also sets isArchived:false where the field is missing, and stamps each payment with its bill's term.
+ * With --apply it then marks the school (schoolSettings.billsHaveArchiveFlag) so Student Billing and the
+ * nightly summary read only open bills instead of the school's whole history.
+ * Deploy the functions first (they give new bills the isArchived field).
  */
 const admin = require('firebase-admin');
 const dotenv = require('dotenv');
@@ -115,6 +118,10 @@ async function backfillSchool(schoolId) {
   if (APPLY) {
     await commit(billOps);
     await commit(payOps);
+    // Every bill now has isArchived, so the ledger and the nightly summary can read open bills only
+    // (bills created later get the field from the onFinancialRecordWrite function).
+    await db.collection('schoolSettings').doc(schoolId).set({ billsHaveArchiveFlag: true }, { merge: true });
+    stats.archiveFlagReady = true;
   }
   return stats;
 }
@@ -129,7 +136,8 @@ async function backfillSchool(schoolId) {
         `\n${s.name || s.school} [${s.school}]  current term: ${s.currentTerm}\n` +
         `  bills: ${s.bills}  already stamped: ${s.alreadyStamped}  from year+term: ${s.fromYearAndTerm}  ` +
         `from date (current term): ${s.fromDate}  older, no term info: ${s.noTermInfo}  isArchived added: ${s.addedIsArchived}\n` +
-        `  payments: ${s.payments}  payments stamped: ${s.paymentsStamped}`
+        `  payments: ${s.payments}  payments stamped: ${s.paymentsStamped}` +
+        (s.archiveFlagReady ? `\n  ledger now reads open bills only (billsHaveArchiveFlag set)` : '')
       );
     } catch (e) {
       console.error(`School ${id} failed:`, e.message);
