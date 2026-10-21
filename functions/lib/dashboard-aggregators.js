@@ -36,7 +36,9 @@ async function writeBalanceIndex(schoolId, byStudent, extra) {
 const ROSTER = (schoolId) => db.collection('studentRoster').doc(schoolId);
 const ROSTER_FIELDS = ['uid', 'studentId', 'admissionNo', 'admissionNumber', 'firstName', 'lastName', 'classId',
     'enrollmentStatus', 'isArchived', 'photoURL', 'email', 'isSponsored', 'sponsorId', 'usesBusService',
-    'transportBillingModel', 'routeId', 'canteenBillingMode', 'usesCanteen', 'hasAccountCredit', 'accountCreditBalance'];
+    'transportBillingModel', 'routeId', 'canteenBillingMode', 'usesCanteen', 'hasAccountCredit', 'accountCreditBalance',
+    // when the pupil joined (the "Students Not Billed" alert checks new pupils for an Admission Fee)
+    'createdAt', 'admissionDate', 'enrollmentDate', 'isImported'];
 function rosterEntry(s) {
     if (!s)
         return null;
@@ -47,26 +49,49 @@ function rosterEntry(s) {
 }
 const ROSTER_MAX_BYTES = 900000; // stay under Firestore's 1 MiB document limit
 /**
- * Who has been billed school fees, per term: termBilling/{schoolId} = { terms: { <termId>: { <bill studentId>: n } } }
- * (n = number of school-fee bills; canteen and transport bills are not counted). The "Students Not Billed"
- * alert compares this ONE document with the roster — 2 reads instead of reading every bill.
- * Kept current by the bill trigger (increments, no reads); the weekly full rebuild rewrites it from the
- * open bills only, which also drops closed terms.
+ * Which fees each pupil has been billed, per term:
+ *   termBilling/{schoolId} = { v: 2, termFees: { <termId>: { <bill studentId>: { t, a, o } } } }
+ *   t = Tuition bills, a = Admission/Registration bills, o = other school fees (PTA, exam, books...).
+ * Canteen and transport bills (daily attendance billing) are NEVER counted, so a pupil who only has canteen
+ * bills still shows as having no tuition. The "Students Not Billed" alert compares this ONE document with
+ * the roster — 2 reads instead of reading every bill. Kept current by the bill trigger (increments, no
+ * reads); the weekly full rebuild rewrites it from the open bills, which also drops closed terms.
  */
 const TERM_BILLING = (schoolId) => db.collection('termBilling').doc(schoolId);
-/** The term + student a bill counts towards in termBilling, or null if it is not a school-fee bill. */
+/** The fee kind of a bill for the alert, or null for canteen/transport (and anything not a school fee). */
+function termFeeCat(r) {
+    const type = String((r === null || r === void 0 ? void 0 : r.type) || (r === null || r === void 0 ? void 0 : r.category) || '').toLowerCase();
+    if (/canteen|transport|feeding|bus/.test(type))
+        return null;
+    if (type.includes('tuition') || type.includes('school fee'))
+        return 't';
+    if (type.includes('admission') || type.includes('registration') || type.includes('enrol'))
+        return 'a';
+    if (!type) {
+        // Old bills without a type: decide from the description, and never count canteen/transport.
+        const desc = String((r === null || r === void 0 ? void 0 : r.description) || '').toLowerCase();
+        if (/canteen|transport|feeding|lunch|bus/.test(desc))
+            return null;
+        if (desc.includes('tuition') || desc.includes('school fee'))
+            return 't';
+        if (desc.includes('admission') || desc.includes('registration'))
+            return 'a';
+    }
+    return 'o';
+}
+/** The term + student + fee kind a bill counts towards in termBilling, or null if it does not count. */
 function termBillingKey(r) {
     if (!r || !r.studentId || r.voided === true)
         return null;
     if (!(Number(r.billedAmount) > 0))
         return null;
-    const t = String(r.type || r.category || '').toLowerCase();
-    if (t.includes('canteen') || t.includes('transport'))
+    const cat = termFeeCat(r);
+    if (!cat)
         return null;
     const st = (0, term_utils_1.termStampOfRecord)(r);
     if (!(st === null || st === void 0 ? void 0 : st.termId))
         return null;
-    return { term: st.termId, sid: String(r.studentId) };
+    return { term: st.termId, sid: String(r.studentId), cat };
 }
 async function writeRoster(schoolId, docs) {
     const students = {};
@@ -528,10 +553,10 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
         const k = termBillingKey(d.data());
         if (!k)
             return;
-        const t = (termTally[k.term] = termTally[k.term] || {});
-        t[k.sid] = (t[k.sid] || 0) + 1;
+        const s = ((termTally[k.term] = termTally[k.term] || {})[k.sid] = termTally[k.term][k.sid] || {});
+        s[k.cat] = (s[k.cat] || 0) + 1;
     });
-    await TERM_BILLING(schoolId).set({ schoolId, terms: termTally, rebuiltAt: firestore_2.FieldValue.serverTimestamp(), updatedAt: firestore_2.FieldValue.serverTimestamp() })
+    await TERM_BILLING(schoolId).set({ schoolId, v: 2, termFees: termTally, rebuiltAt: firestore_2.FieldValue.serverTimestamp(), updatedAt: firestore_2.FieldValue.serverTimestamp() })
         .catch(e => console.warn('[termBilling] rebuild failed:', e === null || e === void 0 ? void 0 : e.message));
 }
 /**
@@ -897,15 +922,16 @@ exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRe
         const kb = termBillingKey(before);
         const ka = termBillingKey(after);
         if (JSON.stringify(kb) !== JSON.stringify(ka)) {
-            const terms = {};
+            const termFees = {};
+            const bump = (k, by) => {
+                const st = ((termFees[k.term] = termFees[k.term] || {})[k.sid] = termFees[k.term][k.sid] || {});
+                st[k.cat] = firestore_2.FieldValue.increment(by); // keys differ, so the same slot is never bumped twice
+            };
             if (kb)
-                (terms[kb.term] = terms[kb.term] || {})[kb.sid] = firestore_2.FieldValue.increment(-1);
-            if (ka) {
-                const cur = (terms[ka.term] = terms[ka.term] || {});
-                // same term + student on both sides cannot happen here (keys differ), so no clash
-                cur[ka.sid] = firestore_2.FieldValue.increment(1);
-            }
-            await TERM_BILLING(schoolId).set({ schoolId, terms, updatedAt: firestore_2.FieldValue.serverTimestamp() }, { merge: true })
+                bump(kb, -1);
+            if (ka)
+                bump(ka, 1);
+            await TERM_BILLING(schoolId).set({ schoolId, termFees, updatedAt: firestore_2.FieldValue.serverTimestamp() }, { merge: true })
                 .catch(e => console.warn('[termBilling] increment failed:', e === null || e === void 0 ? void 0 : e.message));
         }
     }

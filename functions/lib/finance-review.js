@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onPaymentReversalForReview = exports.onBillChangeForReview = void 0;
+exports.onPayrollRecordForReview = exports.onSalaryConfigChangeForReview = exports.onVoucherCreatedForReview = exports.onPaymentReversalForReview = exports.onBillChangeForReview = void 0;
 /**
  * Fee-change review trail ("review after", maker–checker light).
  *
@@ -147,6 +147,127 @@ exports.onPaymentReversalForReview = (0, firestore_1.onDocumentCreatedWithAuthCo
         editedByRole: editorRole,
         at: firestore_2.FieldValue.serverTimestamp(),
         status: 'pending',
+    });
+});
+// ── Money going OUT: expenses, salary set-up and payroll runs also reach the Director's review list ──────
+/** Who made a change (from Firestore's own auth context), and whether they are the Director/owner. */
+async function editorOf(event) {
+    const authType = String(event.authType || '');
+    const isServer = authType === 'service_account' || authType === 'system';
+    const id = !isServer && event.authId ? String(event.authId) : '';
+    let name = id ? '' : (isServer ? 'System (server)' : 'Unknown');
+    let role = '';
+    if (id) {
+        const [staff, user] = await Promise.all([db.collection('staff').doc(id).get(), db.collection('users').doc(id).get()]);
+        const s = Object.assign(Object.assign({}, (user.data() || {})), (staff.data() || {}));
+        role = String(s.role || '');
+        name = `${s.firstName || ''} ${s.lastName || ''}`.trim() || s.email || id;
+    }
+    return { id, name, role, isOwner: OWNER_ROLES.has(role), isServer };
+}
+const money = (n) => `GH₵${r2(num(n)).toFixed(2)}`;
+/** Every expense voucher prepared by someone other than the Director. */
+exports.onVoucherCreatedForReview = (0, firestore_1.onDocumentCreatedWithAuthContext)('paymentVouchers/{voucherId}', async (event) => {
+    var _a;
+    const v = ((_a = event.data) === null || _a === void 0 ? void 0 : _a.exists) ? event.data.data() : null;
+    if (!v || !v.schoolId)
+        return;
+    const who = await editorOf(event);
+    if (who.isOwner)
+        return;
+    const gross = num(v.grossAmount);
+    await db.collection('financeReviews').add({
+        schoolId: v.schoolId,
+        recordId: event.params.voucherId,
+        studentId: '',
+        studentName: v.payee || 'Payee',
+        billType: 'Expense voucher',
+        description: `${v.pvNumber || ''} ${v.description || ''}`.trim(),
+        kind: 'expense',
+        risk: v.status === 'Awaiting Override' || gross >= 5000 ? 'high' : 'normal',
+        changes: { expense: { from: v.costCenter || 'General', to: `${money(gross)} to ${v.payee || 'payee'}` } },
+        amountPaidAtEdit: r2(gross),
+        reason: String(v.description || '').slice(0, 500),
+        editedBy: who.id, editedByName: who.name, editedByRole: who.role,
+        at: firestore_2.FieldValue.serverTimestamp(),
+        status: 'pending',
+    });
+});
+/** Salary set-up changes (basic salary, allowances, deductions, bank account) made by anyone but the Director. */
+exports.onSalaryConfigChangeForReview = (0, firestore_1.onDocumentWrittenWithAuthContext)('staff/{staffId}/payroll/{configId}', async (event) => {
+    var _a, _b, _c, _d;
+    const before = ((_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before) === null || _b === void 0 ? void 0 : _b.exists) ? event.data.before.data() : null;
+    const after = ((_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.after) === null || _d === void 0 ? void 0 : _d.exists) ? event.data.after.data() : null;
+    const sumOf = (list) => (Array.isArray(list) ? list : []).reduce((s, i) => s + num(i === null || i === void 0 ? void 0 : i.amount), 0);
+    const changes = {};
+    const cmp = (label, a, b) => { if (String(a !== null && a !== void 0 ? a : '') !== String(b !== null && b !== void 0 ? b : ''))
+        changes[label] = { from: a !== null && a !== void 0 ? a : '—', to: b !== null && b !== void 0 ? b : '—' }; };
+    cmp('basicSalary', before ? money(before.basicSalary) : null, after ? money(after.basicSalary) : null);
+    cmp('allowances', before ? money(sumOf(before.allowances)) : null, after ? money(sumOf(after.allowances)) : null);
+    cmp('deductions', before ? money(sumOf(before.deductions)) : null, after ? money(sumOf(after.deductions)) : null);
+    cmp('bankAccount', before ? `${before.bankName || ''} ${before.accountNumber || ''}`.trim() : null, after ? `${after.bankName || ''} ${after.accountNumber || ''}`.trim() : null);
+    if (Object.keys(changes).length === 0)
+        return;
+    const who = await editorOf(event);
+    if (who.isOwner)
+        return;
+    const staff = await db.collection('staff').doc(event.params.staffId).get();
+    const s = staff.data() || {};
+    const schoolId = String(s.schoolId || (after === null || after === void 0 ? void 0 : after.schoolId) || (before === null || before === void 0 ? void 0 : before.schoolId) || '');
+    if (!schoolId)
+        return;
+    const raised = num(after === null || after === void 0 ? void 0 : after.basicSalary) + sumOf(after === null || after === void 0 ? void 0 : after.allowances) > num(before === null || before === void 0 ? void 0 : before.basicSalary) + sumOf(before === null || before === void 0 ? void 0 : before.allowances) + 0.009;
+    await db.collection('financeReviews').add({
+        schoolId,
+        recordId: event.params.staffId,
+        studentId: '',
+        studentName: `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Staff member',
+        billType: 'Salary set-up',
+        description: s.role || '',
+        kind: 'salary',
+        // Pay raised, a bank account changed, or someone editing their own pay: high risk.
+        risk: raised || !!changes.bankAccount || who.id === event.params.staffId ? 'high' : 'normal',
+        changes,
+        amountPaidAtEdit: r2(num(after === null || after === void 0 ? void 0 : after.basicSalary)),
+        reason: '',
+        editedBy: who.id, editedByName: who.name, editedByRole: who.role,
+        at: firestore_2.FieldValue.serverTimestamp(),
+        status: 'pending',
+    });
+});
+/** One review per payroll run (school + month), totalled as the payslips are written. */
+exports.onPayrollRecordForReview = (0, firestore_1.onDocumentCreatedWithAuthContext)('payrollRecords/{recordId}', async (event) => {
+    var _a;
+    const p = ((_a = event.data) === null || _a === void 0 ? void 0 : _a.exists) ? event.data.data() : null;
+    if (!p || !p.schoolId || !p.period)
+        return;
+    const who = await editorOf(event);
+    if (who.isOwner)
+        return;
+    const ref = db.collection('financeReviews').doc(`payroll_${p.schoolId}_${String(p.period).replace(/[^0-9A-Za-z-]/g, '')}`);
+    await db.runTransaction(async (tx) => {
+        const snap = await tx.get(ref);
+        const cur = snap.data() || {};
+        const staffCount = num(cur.payrollStaff) + 1;
+        const gross = r2(num(cur.payrollGross) + num(p.grossSalary));
+        const net = r2(num(cur.payrollNet) + num(p.netSalary));
+        tx.set(ref, {
+            schoolId: p.schoolId,
+            recordId: String(p.period),
+            studentId: '',
+            studentName: `Payroll ${p.period}`,
+            billType: 'Payroll run',
+            description: '',
+            kind: 'payroll',
+            risk: 'normal',
+            payrollStaff: staffCount, payrollGross: gross, payrollNet: net,
+            changes: { payroll: { from: `${staffCount} staff`, to: `gross ${money(gross)} · net ${money(net)}` } },
+            amountPaidAtEdit: net,
+            reason: '',
+            editedBy: who.id, editedByName: who.name, editedByRole: who.role,
+            at: cur.at || firestore_2.FieldValue.serverTimestamp(),
+            status: snap.exists ? (cur.status || 'pending') : 'pending',
+        }, { merge: true });
     });
 });
 //# sourceMappingURL=finance-review.js.map

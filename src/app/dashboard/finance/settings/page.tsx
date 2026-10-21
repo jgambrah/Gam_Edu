@@ -398,7 +398,9 @@ const budgetSettingsSchema = z.object({
 function BudgetPolicySettings({ schoolId }: { schoolId: string }) {
     const firestore = useFirestore();
     const { user } = useUser();
-    const { profile } = useRole();
+    const { profile, role } = useRole();
+    // The budget control is the Director's: staff cannot loosen the check on their own spending.
+    const canChangePolicy = role === 'Director';
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
@@ -451,7 +453,7 @@ function BudgetPolicySettings({ schoolId }: { schoolId: string }) {
                 </div>
                 <div>
                     <CardTitle className="text-slate-900 font-black tracking-tight text-lg">Budget Control Policy</CardTitle>
-                    <CardDescription className="font-semibold text-slate-500 text-xs mt-0.5">Determine how the system handles payment vouchers that exceed the allocated budget.</CardDescription>
+                    <CardDescription className="font-semibold text-slate-500 text-xs mt-0.5">Determine how the system handles payment vouchers that exceed the allocated budget.{!canChangePolicy && ' Only the Director can change this.'}</CardDescription>
                 </div>
             </CardHeader>
             <CardContent className="p-6 space-y-5 flex-grow flex flex-col justify-between">
@@ -511,7 +513,7 @@ function BudgetPolicySettings({ schoolId }: { schoolId: string }) {
                             )}
                         </div>
 
-                        <Button type="submit" disabled={isSaving || isLoading} className="w-full h-12 font-bold bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white rounded-xl shadow-md transition-all active:scale-[0.98]">
+                        <Button type="submit" disabled={isSaving || isLoading || !canChangePolicy} className="w-full h-12 font-bold bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-600 hover:to-yellow-700 text-white rounded-xl shadow-md transition-all active:scale-[0.98]">
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                             Save Control Policy
                         </Button>

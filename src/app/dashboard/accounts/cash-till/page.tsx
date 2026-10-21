@@ -54,6 +54,19 @@ function formatDateOnlySafe(timestamp: any) {
     return format(new Date(timestamp), 'PPP');
 }
 
+/** What a till entry does to the cash in the drawer: cash drops out of a drawer ("Outflow") reduce it. */
+function tillCashEffect(tx: any): number {
+    const amt = Number(tx?.amount) || 0;
+    return tx?.type === 'Outflow' ? -Math.abs(amt) : amt;
+}
+/** Expected cash, worked out from the till's own entries (completed ones only). */
+function expectedFromEntries(till: any, transactions: any[] | null | undefined): number {
+    const opening = Number(till?.openingBalance) || 0;
+    return Math.round((opening + (transactions || [])
+        .filter((tx: any) => tx.status === 'Completed' || !tx.status)
+        .reduce((s: number, tx: any) => s + tillCashEffect(tx), 0)) * 100) / 100;
+}
+
 // --- SUB-COMPONENT: Till Adjustment Dialog ---
 function TillAdjustmentDialog({ open, onOpenChange, tillId, onSuccess }: { open: boolean, onOpenChange: (open: boolean) => void, tillId: string, onSuccess: () => void }) {
     const firestore = useFirestore();
@@ -298,7 +311,7 @@ function AccountantTillView({ students, classes, setSelectedTill, schoolName }: 
         if (!transactions) return 0;
         return transactions
             .filter(tx => tx.status === 'Completed' || !tx.status) 
-            .reduce((sum, tx) => sum + tx.amount, 0);
+            .reduce((sum, tx) => sum + tillCashEffect(tx), 0);
     }, [transactions]);
 
     const handleOpenTill = async () => {
@@ -937,6 +950,12 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
     });
 
     const isPendingApproval = till.status === 'PendingApproval';
+    // The expected balance in a submission is worked out on the accountant's screen. Re-check it here from
+    // the till's own entries, so a lowered "expected" figure cannot hide missing cash.
+    const recomputedExpected = transactions ? expectedFromEntries(till, transactions) : null;
+    const submittedExpected = Number(till.expectedBalance ?? till.currentBalance ?? 0);
+    const expectedMismatch = recomputedExpected !== null && Math.abs(recomputedExpected - submittedExpected) > 0.01;
+    const trueShortfall = recomputedExpected !== null ? Math.round(((Number(till.actualCashCounted ?? till.closingBalance ?? 0)) - recomputedExpected) * 100) / 100 : null;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -954,6 +973,13 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
                     </Button>
                 </DialogHeader>
 
+                {expectedMismatch && (
+                    <div className="rounded-xl border-2 border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
+                        <strong>Check this till:</strong> the expected balance submitted (GH₵{submittedExpected.toFixed(2)}) does not match the
+                        till&apos;s own entries (GH₵{recomputedExpected!.toFixed(2)}). Based on the entries, the cash counted is{' '}
+                        <strong>{trueShortfall! < 0 ? `GH₵${Math.abs(trueShortfall!).toFixed(2)} short` : trueShortfall! > 0 ? `GH₵${trueShortfall!.toFixed(2)} over` : 'exact'}</strong>.
+                    </div>
+                )}
                 {/* Audit variance summary cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
                     <div>

@@ -27,10 +27,11 @@ type Review = {
 const KIND_LABEL: Record<string, string> = {
     reduced: 'Amount reduced', increased: 'Amount increased', details: 'Details changed', moved: 'Moved to another student', deleted: 'Bill deleted', reversed: 'Payment reversed',
     expense: 'Expense paid out', salary: 'Salary set-up changed', payroll: 'Payroll run',
+    cancelled: 'Canteen/transport cancelled',
 };
-const MONEY_OUT = new Set(['expense', 'salary', 'payroll']);
+const MONEY_OUT = new Set(['expense', 'salary', 'payroll', 'cancelled']);
 const FIELD_LABEL: Record<string, string> = { billedAmount: 'Amount (GH₵)', type: 'Fee type', description: 'Description', studentId: 'Student', termId: 'Term', academicYear: 'Academic year', term: 'Term', bill: 'Bill', receipt: 'Receipt',
-    expense: 'Expense', basicSalary: 'Basic salary', allowances: 'Allowances', deductions: 'Deductions', bankAccount: 'Bank account', payroll: 'Payroll' };
+    expense: 'Expense', basicSalary: 'Basic salary', allowances: 'Allowances', deductions: 'Deductions', bankAccount: 'Bank account', payroll: 'Payroll', cancelled: 'Cancelled' };
 const when = (v: any) => { const ms = v?.toMillis?.() ?? (v?.seconds ? v.seconds * 1000 : 0); return ms ? new Date(ms).toLocaleString() : ''; };
 
 export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | null; mode: 'director' | 'accountant' }) {

@@ -335,7 +335,8 @@ export async function billMultipleStudents(
       const dateStr = format(normalizedDate, 'yyyy-MM-dd');
       const ids = students.flatMap(st => st?.uid ? [`canteen-${st.uid}-${dateStr}`, `transport-${st.uid}-${dateStr}`] : []);
       for (let i = 0; i < ids.length; i += 30) {
-          const snap = await getDocs(query(collection(firestore, 'financialRecords'), where(documentId(), 'in', ids.slice(i, i + 30))));
+          // (schoolId filter: the security rules only allow reading the school's own bills)
+          const snap = await getDocs(query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where(documentId(), 'in', ids.slice(i, i + 30))));
           snap.docs.forEach(d => {
               if ((d.data() as any)?.voided) voidedBills.set(d.id, d.data());
               else existingBillIds!.add(d.id);

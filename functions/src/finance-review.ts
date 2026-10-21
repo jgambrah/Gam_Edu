@@ -31,15 +31,20 @@ export const onBillChangeForReview = onDocumentWrittenWithAuthContext('financial
   const schoolId: string = (after?.schoolId || before?.schoolId || '') as string;
   if (!schoolId) return;
 
-  // Attendance-driven daily voids/restores and pure payment/waiver updates are not "edits".
-  if (after && Boolean(before.voided) !== Boolean(after.voided)) return;
+  // Attendance-driven daily voids/restores are not "edits" — but a CANCELLED daily canteen/transport bill
+  // (pupil re-marked absent after being billed) is money not collected, so the Director sees a daily
+  // summary per staff member (one review item per person per day, not one per pupil).
+  if (after && Boolean(before.voided) !== Boolean(after.voided)) {
+    if (!before.voided && after.voided) await recordAttendanceCancellation(event, schoolId, before);
+    return;
+  }
 
   const changes: Record<string, { from: any; to: any }> = {};
   let kind = 'edit';
   if (!after) {
     // Deleting an UNPAID daily canteen/transport bill is the attendance correction — not reviewed.
     const daily = /canteen|transport/i.test(String(before.type || '')) && /daily/i.test(String(before.type || ''));
-    if (daily && num(before.amountPaid) <= 0.009) return;
+    if (daily && num(before.amountPaid) <= 0.009) { await recordAttendanceCancellation(event, schoolId, before); return; }
     kind = 'deleted';
     changes.bill = { from: `${before.type || 'Bill'} GH₵${r2(num(before.billedAmount)).toFixed(2)}`, to: 'deleted' };
   } else {
@@ -252,3 +257,39 @@ export const onPayrollRecordForReview = onDocumentCreatedWithAuthContext('payrol
     }, { merge: true });
   });
 });
+
+/** Daily summary of canteen/transport bills cancelled through attendance corrections, per staff member. */
+async function recordAttendanceCancellation(event: any, schoolId: string, bill: any): Promise<void> {
+  const amount = r2(num(bill?.originalBilledAmount ?? bill?.billedAmount));
+  if (amount <= 0.009) return;
+  const who = await editorOf(event);
+  if (who.isOwner || who.isServer) return; // the Director's own corrections, and server-side biometric billing
+  const day = new Date().toISOString().slice(0, 10);
+  const ref = db.collection('financeReviews').doc(`cancel_${schoolId}_${day}_${(who.id || 'unknown').replace(/[^A-Za-z0-9_-]/g, '')}`);
+  const pupil = String(bill?.studentName || bill?.studentId || 'pupil');
+  await db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const cur: any = snap.data() || {};
+    const count = num(cur.cancelCount) + 1;
+    const total = r2(num(cur.cancelTotal) + amount);
+    const pupils: string[] = Array.isArray(cur.pupils) ? cur.pupils : [];
+    if (!pupils.includes(pupil) && pupils.length < 60) pupils.push(pupil);
+    tx.set(ref, {
+      schoolId,
+      recordId: day,
+      studentId: '',
+      studentName: `${count} cancelled bill${count === 1 ? '' : 's'} on ${day}`,
+      billType: 'Canteen / transport cancelled by attendance',
+      description: pupils.slice(0, 12).join(', ') + (pupils.length > 12 ? ` and ${pupils.length - 12} more` : ''),
+      kind: 'cancelled',
+      risk: count >= 10 ? 'high' : 'normal',
+      cancelCount: count, cancelTotal: total, pupils,
+      changes: { cancelled: { from: `${count} daily bill${count === 1 ? '' : 's'}`, to: `GH₵${total.toFixed(2)} not charged` } },
+      amountPaidAtEdit: 0,
+      reason: 'Pupils re-marked absent after being billed.',
+      editedBy: who.id, editedByName: who.name, editedByRole: who.role,
+      at: cur.at || FieldValue.serverTimestamp(),
+      status: snap.exists && cur.status === 'ok' ? 'pending' : (cur.status || 'pending'), // new cancellations reopen it
+    }, { merge: true });
+  });
+}

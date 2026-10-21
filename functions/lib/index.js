@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onSchoolWriteForPublicSite = exports.onPaymentReversalForReview = exports.onBillChangeForReview = exports.quizAnswerVault = exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.onSchoolWriteForPublicSite = exports.onPayrollRecordForReview = exports.onSalaryConfigChangeForReview = exports.onVoucherCreatedForReview = exports.onPaymentReversalForReview = exports.onBillChangeForReview = exports.quizAnswerVault = exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
 var dashboard_aggregators_1 = require("./dashboard-aggregators");
 Object.defineProperty(exports, "onStudentWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onStudentWrite; } });
 Object.defineProperty(exports, "onAttendanceWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onAttendanceWrite; } });
@@ -23,6 +23,9 @@ Object.defineProperty(exports, "quizAnswerVault", { enumerable: true, get: funct
 var finance_review_1 = require("./finance-review");
 Object.defineProperty(exports, "onBillChangeForReview", { enumerable: true, get: function () { return finance_review_1.onBillChangeForReview; } });
 Object.defineProperty(exports, "onPaymentReversalForReview", { enumerable: true, get: function () { return finance_review_1.onPaymentReversalForReview; } });
+Object.defineProperty(exports, "onVoucherCreatedForReview", { enumerable: true, get: function () { return finance_review_1.onVoucherCreatedForReview; } });
+Object.defineProperty(exports, "onSalaryConfigChangeForReview", { enumerable: true, get: function () { return finance_review_1.onSalaryConfigChangeForReview; } });
+Object.defineProperty(exports, "onPayrollRecordForReview", { enumerable: true, get: function () { return finance_review_1.onPayrollRecordForReview; } });
 var public_site_1 = require("./public-site");
 Object.defineProperty(exports, "onSchoolWriteForPublicSite", { enumerable: true, get: function () { return public_site_1.onSchoolWriteForPublicSite; } });
 //# sourceMappingURL=index.js.map

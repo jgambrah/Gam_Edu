@@ -349,7 +349,14 @@ service cloud.firestore {
       // no longer every teacher or cook.
       allow write: if isSuperAdmin() || (isFinanceRole() && getUserSchoolId() == docId);
 
-      match /{document=**} {
+      // Rates (canteen, transport...) — finance staff; the BUDGET control policy — the Director only, so
+      // staff cannot loosen the check on their own spending.
+      match /{sub}/{subDoc} {
+        allow read, get, list: if isSignedIn();
+        allow write: if isSuperAdmin() || (getUserSchoolId() == docId
+          && ((sub == 'rates' && subDoc == 'budget') ? isReviewDirector() : isFinanceRole()));
+      }
+      match /{sub}/{subDoc}/{rest=**} {
         allow read, get, list: if isSignedIn();
         allow write: if isSuperAdmin() || (isFinanceRole() && getUserSchoolId() == docId);
       }
@@ -889,8 +896,15 @@ service cloud.firestore {
         || existsAfter(/databases/$(database)/documents/financialRecords/$(recordId)/payments/$(paymentId + '-REV'));
     }
 
+    // Bills and receipts are read only by people of the SAME school (before, any signed-in user of any
+    // school could read every school's bills). Queries must filter by schoolId — all screens do.
+    function billInMySchool() {
+      return isSuperAdmin() || (isSignedIn() && resource.data.get('schoolId', '') == getUserSchoolId());
+    }
     match /financialRecords/{recordId} {
-      allow read, list: if isSignedIn();
+      // A bill that does not exist yet may be looked up (attendance billing checks before creating one).
+      allow get: if isSignedIn() && (resource == null || billInMySchool());
+      allow list: if billInMySchool();
       // A new bill starts with nothing paid and nothing waived: money paid arrives only through a receipt,
       // and a waiver only through the Director (otherwise a "pre-paid" bill could create fake credit).
       allow create: if isFinanceStaff() && newDocInMySchool()
@@ -910,7 +924,9 @@ service cloud.firestore {
       );
 
       match /payments/{paymentId} {
-        allow read, list: if isSignedIn();
+        // Receipts follow their bill's school.
+        allow read: if isSuperAdmin() || (isSignedIn()
+          && get(/databases/$(database)/documents/financialRecords/$(recordId)).data.get('schoolId', '') == getUserSchoolId());
         allow create: if isFinanceStaff() && newDocInMySchool();
         // A receipt's amount cannot be edited afterwards (only split out by a recorded credit move), and a
         // receipt can only be marked "Reversed" together with its reversal record — so money taken can
@@ -924,7 +940,8 @@ service cloud.firestore {
 
     // Collection Group rule for payments (dashboard live feed / sync)
     match /{path=**}/payments/{paymentId} {
-      allow read, list: if isSignedIn();
+      // School-wide receipt lists (dashboard): the query must filter by schoolId.
+      allow read: if isSuperAdmin() || (isSignedIn() && resource != null && resource.data.get('schoolId', '') == getUserSchoolId());
       // Writes go through the bill's own rule above (this wider rule used to let them bypass its checks).
       allow create, update, delete: if false;
     }
