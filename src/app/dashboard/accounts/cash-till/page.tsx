@@ -740,7 +740,8 @@ function TillDetailDialog({ till, open, onOpenChange, onUpdate, students, classe
 
     if (!till) return null;
 
-    const canApprove = role === 'Director' || role === 'Administrator';
+    // Closing a till and approving cash adjustments: the Director only (the security rules enforce this too).
+    const canApprove = role === 'Director';
     const pendingAdjustments = transactions?.filter(tx => tx.status === 'Pending Adjustment') || [];
 
     const handleAdjustmentDecision = async (tx: TillTransaction, decision: 'Approve' | 'Reject') => {

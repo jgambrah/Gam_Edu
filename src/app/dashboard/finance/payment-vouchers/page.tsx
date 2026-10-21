@@ -1313,7 +1313,7 @@ export default function PaymentVouchersPage() {
                                                                 <VoucherDocument pv={pv} schoolProfile={schoolProfile} />
                                                             </div>
                                                             <DialogFooter className="print:hidden">
-                                                                {pv.status === 'Awaiting Override' && ['Director', 'Administrator'].includes(role || '') && (
+                                                                {pv.status === 'Awaiting Override' && role === 'Director' && (
                                                                     <Button
                                                                         onClick={() => handleAuthorizeOverride(pv)}
                                                                         disabled={isAuthorizing}

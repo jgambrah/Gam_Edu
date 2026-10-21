@@ -58,6 +58,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             } else {
               setIsLocked(false);
             }
+          } else if (data.plan === 'Premium' && data.paidUntil?.toDate) {
+            // Paid subscription: locks 7 days after the paid period ends (schools upgraded before paidUntil
+            // existed have none and are not affected).
+            const graceEnd = data.paidUntil.toDate().getTime() + 7 * 24 * 60 * 60 * 1000;
+            if (Date.now() > graceEnd) {
+              setIsLocked(true);
+              if (!pathname.includes('/dashboard/subscription')) {
+                router.replace('/dashboard/subscription');
+              }
+            } else {
+              setIsLocked(false);
+            }
           } else {
             setIsLocked(false);
           }

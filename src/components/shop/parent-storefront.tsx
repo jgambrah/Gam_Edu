@@ -6,6 +6,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useFirestore, useUser, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { collection, addDoc, serverTimestamp, query, where, orderBy, doc, updateDoc, increment } from 'firebase/firestore';
 import { useRole } from '@/context/role-context';
+import { verifyShopOrderPayment } from '@/app/actions/shop-orders';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -305,51 +306,34 @@ export function ParentStorefront() {
         })),
         totalAmount,
         status: 'Pending Collection',
-        paymentStatus: 'PAID',
+        // Never "PAID" from the browser: a Paystack payment is confirmed by the server below; an order
+        // without online payment is paid at the school store.
+        paymentStatus: paystackRef ? 'VERIFYING' : 'UNPAID',
         paymentMethod: paystackRef ? `PAYSTACK (${momoProvider.toUpperCase()})` : momoProvider.toUpperCase(),
         createdAt: serverTimestamp(),
       };
 
       const docRef = await addDoc(collection(firestore, 'school_shop_orders'), orderData);
 
-      // Decrement stock for purchased items & check for automated low stock alerts
-      for (const cartEntry of cart) {
-        const itemRef = doc(firestore, 'school_shop_items', cartEntry.item.id);
-        const currentStock = Number(cartEntry.item.stock || 0);
-        const newStock = Math.max(0, currentStock - cartEntry.quantity);
-        const threshold = cartEntry.item.minStock ?? 10;
-
-        await updateDoc(itemRef, {
-          stock: increment(-cartEntry.quantity),
-        });
-
-        // Trigger automated low stock notification if item hits or drops below threshold
-        if (newStock <= threshold) {
-          try {
-            await addDoc(collection(firestore, 'notifications'), {
-              schoolId,
-              title: `⚠️ Low Stock Alert: ${cartEntry.item.name}`,
-              message: `Stock level for "${cartEntry.item.name}" has dropped to ${newStock} unit(s) (reorder threshold: ${threshold}). Please reorder soon.`,
-              type: 'inventory_low_stock',
-              targetRoles: ['Director', 'Administrator', 'Finance'],
-              itemId: cartEntry.item.id,
-              currentStock: newStock,
-              threshold,
-              createdAt: serverTimestamp(),
-              read: false,
-            });
-          } catch (notifErr) {
-            console.error('Error creating low stock notification:', notifErr);
-          }
-        }
+      // Stock is taken off by the server once the payment is confirmed (parents cannot change stock).
+      let confirmed = false;
+      if (paystackRef) {
+        const token = await user.getIdToken().catch(() => undefined);
+        const res = await verifyShopOrderPayment(docRef.id, token);
+        confirmed = !!(res.success && res.paid);
       }
+      (orderData as any).paymentStatus = confirmed ? 'PAID' : orderData.paymentStatus;
 
       setCompletedReceipt({ ...orderData, id: docRef.id, pickupPin: randomPin });
       setCart([]);
       setIsCheckoutOpen(false);
       toast({
-        title: '🎉 Payment Successful!',
-        description: `Order placed via MoMo. Show Pickup PIN: ${randomPin} at the school store.`,
+        title: (orderData as any).paymentStatus === 'PAID' ? '🎉 Payment confirmed' : 'Order placed',
+        description: (orderData as any).paymentStatus === 'PAID'
+          ? `Show Pickup PIN ${randomPin} at the school store.`
+          : (orderData as any).paymentStatus === 'VERIFYING'
+            ? `We are confirming your payment with Paystack. Pickup PIN: ${randomPin}.`
+            : `Please pay at the school store when collecting. Pickup PIN: ${randomPin}.`,
       });
     } catch (error: any) {
       console.error('Checkout failed:', error);
@@ -1055,7 +1039,7 @@ export function ParentStorefront() {
                 disabled={isProcessing}
                 className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm shadow-md uppercase tracking-wider"
               >
-                {isProcessing ? 'Processing MoMo Prompt...' : `Confirm & Pay GH₵ ${totalAmount.toFixed(2)}`}
+                {isProcessing ? 'Placing order...' : `Place order — pay GH₵ ${totalAmount.toFixed(2)} at the store`}
               </Button>
             )}
             <div className="flex items-center justify-center gap-1 text-[10px] text-slate-400 font-medium">
@@ -1075,10 +1059,14 @@ export function ParentStorefront() {
             </div>
 
             <DialogTitle className="text-2xl font-black uppercase text-slate-900">
-              Payment Confirmed!
+              {completedReceipt.paymentStatus === 'PAID' ? 'Payment Confirmed!' : 'Order Placed'}
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500 font-medium">
-              Your order for {completedReceipt.childName} has been paid via {completedReceipt.momoProvider.toUpperCase()}.
+              {completedReceipt.paymentStatus === 'PAID'
+                ? `Your order for ${completedReceipt.childName} has been paid online (confirmed with Paystack).`
+                : completedReceipt.paymentStatus === 'VERIFYING'
+                  ? `Your payment for ${completedReceipt.childName}'s order is still being confirmed. The store will see it once Paystack confirms it.`
+                  : `Your order for ${completedReceipt.childName} is NOT paid yet — please pay at the school store when you collect it.`}
             </DialogDescription>
 
             {/* 6-Digit Collection PIN Display */}

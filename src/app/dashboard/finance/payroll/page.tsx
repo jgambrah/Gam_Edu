@@ -1060,11 +1060,10 @@ interface PayrollSettingsTabProps {
 }
 function PayrollSettingsTab({ config, accounts }: PayrollSettingsTabProps) {
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
-    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
-
     const form = useForm<z.infer<typeof payrollSettingsSchema>>({
         resolver: zodResolver(payrollSettingsSchema),
         defaultValues: {
@@ -1102,14 +1101,16 @@ function PayrollSettingsTab({ config, accounts }: PayrollSettingsTabProps) {
     }, [config, form]);
 
     async function onSubmit(values: z.infer<typeof payrollSettingsSchema>) {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsSaving(true);
         try {
-            await setDoc(doc(firestore, 'payrollSettings', 'global'), {
+            // This school's own settings (no longer one document shared by every school).
+            await setDoc(doc(firestore, 'payrollSettings', schoolId), {
+                schoolId,
                 ...values,
                 updatedAt: serverTimestamp()
             }, { merge: true });
-            toast({ title: "Settings Saved", description: "Global payroll configuration and GL mapping updated." });
+            toast({ title: "Settings Saved", description: "Payroll configuration and GL mapping updated for this school." });
         } catch (e) {
             toast({ variant: 'destructive', title: "Error", description: "Could not save settings." });
         } finally {
@@ -1330,8 +1331,20 @@ export default function PayrollPage() {
     const staffQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'staff'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: staff, isLoading: isLoadingStaff } = useCollection<any>(staffQuery);
 
-    const settingsRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
-    const { data: config, isLoading: isLoadingSettings } = useDoc(settingsRef);
+    // Each school has its own payroll settings (payrollSettings/{schoolId}). The old shared 'global' document
+    // was written by every school — including GL account ids that belong to one school only — so from it we
+    // only take the tax/SSNIT rates as defaults, never the account mapping.
+    const settingsRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'payrollSettings', schoolId) : null, [firestore, schoolId]);
+    const { data: schoolConfig, isLoading: isLoadingSchoolSettings } = useDoc<any>(settingsRef);
+    const globalRef = useMemoFirebase(() => firestore ? doc(firestore, 'payrollSettings', 'global') : null, [firestore]);
+    const { data: globalConfig, isLoading: isLoadingGlobal } = useDoc<any>(globalRef);
+    const config = useMemo(() => {
+        if (schoolConfig) return schoolConfig;
+        if (!globalConfig) return null;
+        const { ssnitEmployeeContributionRate, ssnitEmployerContributionRate, payeeBrackets } = globalConfig;
+        return { ssnitEmployeeContributionRate, ssnitEmployerContributionRate, payeeBrackets };
+    }, [schoolConfig, globalConfig]);
+    const isLoadingSettings = isLoadingSchoolSettings || isLoadingGlobal;
 
     const accountsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accounts'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: accountsList, isLoading: isLoadingAccounts } = useCollection<any>(accountsQuery);

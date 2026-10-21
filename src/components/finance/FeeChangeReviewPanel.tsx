@@ -26,8 +26,11 @@ type Review = {
 
 const KIND_LABEL: Record<string, string> = {
     reduced: 'Amount reduced', increased: 'Amount increased', details: 'Details changed', moved: 'Moved to another student', deleted: 'Bill deleted', reversed: 'Payment reversed',
+    expense: 'Expense paid out', salary: 'Salary set-up changed', payroll: 'Payroll run',
 };
-const FIELD_LABEL: Record<string, string> = { billedAmount: 'Amount (GH₵)', type: 'Fee type', description: 'Description', studentId: 'Student', termId: 'Term', academicYear: 'Academic year', term: 'Term', bill: 'Bill', receipt: 'Receipt' };
+const MONEY_OUT = new Set(['expense', 'salary', 'payroll']);
+const FIELD_LABEL: Record<string, string> = { billedAmount: 'Amount (GH₵)', type: 'Fee type', description: 'Description', studentId: 'Student', termId: 'Term', academicYear: 'Academic year', term: 'Term', bill: 'Bill', receipt: 'Receipt',
+    expense: 'Expense', basicSalary: 'Basic salary', allowances: 'Allowances', deductions: 'Deductions', bankAccount: 'Bank account', payroll: 'Payroll' };
 const when = (v: any) => { const ms = v?.toMillis?.() ?? (v?.seconds ? v.seconds * 1000 : 0); return ms ? new Date(ms).toLocaleString() : ''; };
 
 export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | null; mode: 'director' | 'accountant' }) {
@@ -95,7 +98,7 @@ export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | n
     const highCount = useMemo(() => (items || []).filter(i => i.risk === 'high').length, [items]);
     if (!schoolId) return null;
 
-    const title = mode === 'director' ? 'Fee Changes to Review' : "Director's Queries on Your Bill Changes";
+    const title = mode === 'director' ? 'Fee & Expense Changes to Review' : "Director's Queries on Your Changes";
     return (
         <>
             <Card className={`p-4 rounded-2xl border ${count ? 'border-amber-300 bg-amber-50/60' : 'border-slate-100 bg-white'} flex items-center justify-between gap-3`}>
@@ -108,7 +111,7 @@ export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | n
                         <p className="text-xs text-slate-500">
                             {count === null ? '—' : count === 0
                                 ? (mode === 'director' ? 'No bill changes waiting for you.' : 'No open queries.')
-                                : mode === 'director' ? `${count} bill change${count === 1 ? '' : 's'} made by staff waiting for your review.` : `${count} quer${count === 1 ? 'y' : 'ies'} from the Director to answer.`}
+                                : mode === 'director' ? `${count} change${count === 1 ? '' : 's'} (bills, expenses, salaries) made by staff waiting for your review.` : `${count} quer${count === 1 ? 'y' : 'ies'} from the Director to answer.`}
                         </p>
                     </div>
                 </div>
@@ -121,9 +124,9 @@ export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | n
                         <DialogTitle>{title}</DialogTitle>
                         <DialogDescription>
                             {mode === 'director'
-                                ? 'Every change to what a family owes, made by anyone other than you, is recorded by the server — it cannot be hidden from this list. Mark each one OK, or query it and the accountant must answer.'
-                                : 'The Director has questions about these bill changes. Please explain each one.'}
-                            {highCount > 0 && <span className="block mt-1 text-rose-700 font-semibold">{highCount} marked high-risk (amount lowered after payment, bill moved to another pupil, bill deleted, or payment reversed).</span>}
+                                ? 'Every change to what a family owes, every expense voucher, salary change and payroll run made by anyone other than you is recorded by the server — it cannot be hidden from this list. Mark each one OK, or query it and the staff member must answer.'
+                                : 'The Director has questions about these changes. Please explain each one.'}
+                            {highCount > 0 && <span className="block mt-1 text-rose-700 font-semibold">{highCount} marked high-risk (amount lowered after payment, bill moved or deleted, payment reversed, large or over-budget expense, pay raised or bank account changed).</span>}
                         </DialogDescription>
                     </DialogHeader>
                     {loading ? (
@@ -146,7 +149,9 @@ export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | n
                                         {Object.entries(r.changes || {}).map(([k, v]) => (
                                             <div key={k} className="text-xs"><span className="text-slate-500">{FIELD_LABEL[k] || k}:</span> <span className="line-through text-slate-500">{String(v.from ?? '—')}</span> → <strong>{String(v.to ?? '—')}</strong></div>
                                         ))}
-                                        <div className="text-xs text-slate-500">Already paid on this bill at the time: GH₵{Number(r.amountPaidAtEdit || 0).toFixed(2)}</div>
+                                        {!MONEY_OUT.has(r.kind) && (
+                                            <div className="text-xs text-slate-500">Already paid on this bill at the time: GH₵{Number(r.amountPaidAtEdit || 0).toFixed(2)}</div>
+                                        )}
                                         <div className="text-xs"><span className="text-slate-500">By:</span> {r.editedByName || 'Unknown'}{r.editedByRole ? ` (${r.editedByRole})` : ''} · {when(r.at)}</div>
                                         <div className="text-xs"><span className="text-slate-500">Reason given:</span> {r.reason || <em className="text-rose-700">none given</em>}</div>
                                         {r.directorNote && <div className="text-xs"><span className="text-slate-500">Director&apos;s question:</span> {r.directorNote}</div>}

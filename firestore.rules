@@ -27,7 +27,8 @@ service cloud.firestore {
     match /auditLogs/{logId} {
       allow read, get, list: if isSignedIn();
       allow create: if isSignedIn();
-      allow update, delete: if isSuperAdmin() || isAdmin();
+      // The audit trail is permanent: no one in a school can edit or erase it (before, administrators could).
+      allow update, delete: if isSuperAdmin();
     }
 
     function isSignedIn() { return request.auth != null; }
@@ -124,6 +125,27 @@ service cloud.firestore {
       ] || isStaff(); 
     }
     function isDirector() { return isAdmin(); }
+    // Administrators and finance roles only (isFinanceStaff() also lets every teacher/cook in, because
+    // attendance billing runs in teachers' sessions — too wide for cash, payroll and settings).
+    function isFinanceRole() {
+      return isAdmin() || getUserRole() in [
+        'Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
+        'Cashier', 'cashier', 'Accounts Officer', 'accounts officer', 'Finance Officer', 'finance officer'
+      ];
+    }
+    // The document being written belongs to the user's own school (no writing into another school's books).
+    // A document without schoolId is judged by the school it already had.
+    function newDocInMySchool() {
+      return isSuperAdmin() || request.resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId();
+    }
+    // For deletes (there is no new version of the document to look at).
+    function existingDocInMySchool() {
+      return isSuperAdmin() || resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId();
+    }
+    function docInMySchool() {
+      return isSuperAdmin() || (resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId()
+        && request.resource.data.get('schoolId', resource.data.get('schoolId', '')) == resource.data.get('schoolId', request.resource.data.get('schoolId', '')));
+    }
     function isLibrarian() { return isAdmin() || getUserRole() == 'Librarian' || getUserRole() == 'librarian'; }
     function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff' || getUserRole() == 'transport staff'; }
 
@@ -211,7 +233,8 @@ service cloud.firestore {
       allow update: if isSignedIn() && (isSuperAdmin() || (isDirector() && getUserSchoolId() == schoolId
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
           'aiCredits', 'aiCreditBalance', 'plan', 'status', 'isActive', 'trialEndsAt',
-          'subscription', 'subscriptionStatus', 'subscriptionPlan', 'planExpiresAt', 'billingStatus'])));
+          'subscription', 'subscriptionStatus', 'subscriptionPlan', 'planExpiresAt', 'billingStatus',
+          'paidUntil', 'lastPaymentAmount', 'lastPaymentDate', 'paymentReference'])));
 
       match /assignments/{assignmentId} {
         allow read, get, list: if isSignedIn();
@@ -322,11 +345,13 @@ service cloud.firestore {
 
     match /schoolSettings/{docId} {
       allow read, get, list: if isSignedIn();
-      allow write: if isSuperAdmin() || ((isAdmin() || isFinanceStaff()) && getUserSchoolId() == docId);
+      // Administrators and finance staff of the school (canteen/transport rates, budget policy, term...) —
+      // no longer every teacher or cook.
+      allow write: if isSuperAdmin() || (isFinanceRole() && getUserSchoolId() == docId);
 
       match /{document=**} {
         allow read, get, list: if isSignedIn();
-        allow write: if isSuperAdmin() || ((isAdmin() || isFinanceStaff()) && getUserSchoolId() == docId);
+        allow write: if isSuperAdmin() || (isFinanceRole() && getUserSchoolId() == docId);
       }
     }
 
@@ -376,8 +401,13 @@ service cloud.firestore {
         (isOwner(staffId) && resource != null && !request.resource.data.diff(resource.data).affectedKeys().hasAny(
           ['role', 'schoolId', 'isActive', 'permissions', 'salary', 'baseSalary', 'employmentStatus', 'isSuperAdmin', 'roles']));
       allow delete: if isSuperAdmin() || (isAdmin() && resource.data.get('schoolId', '') == getUserSchoolId());
+      // Salary set-up: finance/admin of the SAME school only, and never one's own salary (except the Director).
       match /payroll/{configId} {
-        allow read, write: if isSuperAdmin() || ((isFinanceStaff() || isAdmin()) && getUserSchoolId() == getUserSchoolId()); // Or enforce school settings check
+        allow read: if isSuperAdmin() || request.auth.uid == staffId
+          || (isFinanceRole() && get(/databases/$(database)/documents/staff/$(staffId)).data.get('schoolId', '') == getUserSchoolId());
+        allow write: if isSuperAdmin() || (isFinanceRole()
+          && get(/databases/$(database)/documents/staff/$(staffId)).data.get('schoolId', '') == getUserSchoolId()
+          && (request.auth.uid != staffId || isReviewDirector()));
       }
     }
 
@@ -479,7 +509,11 @@ service cloud.firestore {
     }
 
     match /counters/{counterId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      // Receipt / student numbers only ever go up (winding a counter back would re-issue old receipt numbers).
+      allow update: if isSignedIn() && request.resource.data.get('currentId', 0) > resource.data.get('currentId', 0);
+      allow delete: if isSuperAdmin();
     }
 
     match /announcements_v2/{announcementId} {
@@ -725,28 +759,42 @@ service cloud.firestore {
     // 7. FINANCE
     // =========================================================
 
+    // ── CASH TILLS ──────────────────────────────────────────────────────────────
+    // Staff of the school open tills and record cash. Only the Director closes (approves) a till or approves
+    // a manual adjustment. Adjustments start "Pending Adjustment"; a till entry's amount can never be edited.
+    function tillApprovalUntouched() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['directorApproval', 'dateClosed'])
+        && (request.resource.data.get('status', '') != 'Closed' || resource.data.get('status', '') == 'Closed');
+    }
     match /tills/{tillId} {
       allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isFinanceStaff() && newDocInMySchool()
+        && request.resource.data.get('status', 'Open') == 'Open'
+        && request.resource.data.get('directorApproval', {}).get('directorId', null) == null;
+      allow update: if isFinanceStaff() && docInMySchool()
+        && (tillApprovalUntouched() || isReviewDirector() || isSuperAdmin());
+      allow delete: if isSuperAdmin();
 
       match /transactions/{transactionId} {
         allow read, get, list: if isSignedIn();
-        allow write, create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow create: if isFinanceStaff() && newDocInMySchool()
+          && (request.resource.data.get('type', '') != 'Adjustment' || request.resource.data.get('status', '') == 'Pending Adjustment');
+        allow update: if (isReviewDirector() || isSuperAdmin()) && docInMySchool()
+          && request.resource.data.get('amount', 0) == resource.data.get('amount', 0);
+        allow delete: if isSuperAdmin();
       }
 
       match /{document=**} {
         allow read, get, list: if isSignedIn();
-        allow write, create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow write: if isSuperAdmin();
       }
     }
 
     match /bank_transactions/{transactionId} {
       allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isFinanceRole() && newDocInMySchool();
+      allow update: if isFinanceRole() && docInMySchool();
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
     }
 
     // ── FINANCIAL RECORDS (bills) ──────────────────────────────────────────────
@@ -845,10 +893,10 @@ service cloud.firestore {
       allow read, list: if isSignedIn();
       // A new bill starts with nothing paid and nothing waived: money paid arrives only through a receipt,
       // and a waiver only through the Director (otherwise a "pre-paid" bill could create fake credit).
-      allow create: if isFinanceStaff()
+      allow create: if isFinanceStaff() && newDocInMySchool()
         && ((request.resource.data.get('amountPaid', 0) == 0 && request.resource.data.get('waiverAmount', 0) == 0)
             || isSuperAdmin() || isReviewDirector());
-      allow update: if isFinanceStaff()
+      allow update: if isFinanceStaff() && docInMySchool()
         && (resource.data.get('isArchived', false) != true || isAdmin())
         && waiverChangeAllowed()
         && amountPaidChangeAllowed(recordId);
@@ -863,11 +911,13 @@ service cloud.firestore {
 
       match /payments/{paymentId} {
         allow read, list: if isSignedIn();
-        allow create: if isFinanceStaff();
+        allow create: if isFinanceStaff() && newDocInMySchool();
         // A receipt's amount cannot be edited afterwards (only split out by a recorded credit move), and a
         // receipt can only be marked "Reversed" together with its reversal record — so money taken can
         // never quietly disappear from the books.
-        allow update: if isFinanceStaff() && receiptAmountKept() && reversalHasRecord(recordId, paymentId);
+        // Its date is fixed too: re-dating an old receipt must not let it be counted again as a new payment.
+        allow update: if isFinanceStaff() && docInMySchool() && receiptAmountKept() && reversalHasRecord(recordId, paymentId)
+          && request.resource.data.get('paidAt', null) == resource.data.get('paidAt', null);
         allow delete: if false; // receipts are permanent; use reversals instead
       }
     }
@@ -886,26 +936,36 @@ service cloud.firestore {
 
     match /waiverRequests/{requestId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff() || isDirector());
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isFinanceRole() && newDocInMySchool() && request.resource.data.get('status', 'Pending') == 'Pending';
+      allow update: if (isReviewDirector() || isSuperAdmin()) && docInMySchool(); // approve / reject: Director only
+      allow delete: if isSuperAdmin();
     }
 
     match /waiver_requests/{requestId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && (isSuperAdmin() || isAdmin() || isFinanceStaff() || isDirector());
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isFinanceRole() && newDocInMySchool() && request.resource.data.get('status', 'Pending') == 'Pending';
+      allow update: if (isReviewDirector() || isSuperAdmin()) && docInMySchool(); // approve / reject: Director only
+      allow delete: if isSuperAdmin();
     }
 
     match /paymentVouchers/{voucherId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && (isSuperAdmin() || isFinanceStaff() || isAdmin());
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isFinanceRole() && newDocInMySchool();
+      // An over-budget voucher waits for the Director; nobody else can release it.
+      allow update: if isFinanceRole() && docInMySchool()
+        && (resource.data.get('status', '') != 'Awaiting Override' || request.resource.data.get('status', '') == 'Awaiting Override'
+            || isReviewDirector() || isSuperAdmin());
+      allow delete: if isSuperAdmin() || (isReviewDirector() && existingDocInMySchool());
     }
 
     match /payment_vouchers/{voucherId} {
       allow read, get, list: if isSignedIn();
-      allow create, update: if isSignedIn() && (isSuperAdmin() || isFinanceStaff() || isAdmin());
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isFinanceRole() && newDocInMySchool();
+      // An over-budget voucher waits for the Director; nobody else can release it.
+      allow update: if isFinanceRole() && docInMySchool()
+        && (resource.data.get('status', '') != 'Awaiting Override' || request.resource.data.get('status', '') == 'Awaiting Override'
+            || isReviewDirector() || isSuperAdmin());
+      allow delete: if isSuperAdmin() || (isReviewDirector() && existingDocInMySchool());
     }
 
     match /vendors/{vendorId} {
@@ -979,8 +1039,12 @@ service cloud.firestore {
 
     match /school_shop_orders/{orderId} {
       allow read, list: if isSignedIn();
-      allow create, update: if isSignedIn();
-      allow delete: if isFinanceStaff() || isAdmin();
+      // A parent places an order as UNPAID (pay at the store) or VERIFYING (Paystack); only the server
+      // (after checking the payment with Paystack) or school staff can mark it PAID.
+      allow create: if isSignedIn() && request.resource.data.get('parentId', '') == request.auth.uid
+        && request.resource.data.get('paymentStatus', '') in ['UNPAID', 'VERIFYING'];
+      allow update: if isFinanceStaff() && docInMySchool();
+      allow delete: if isFinanceRole() && existingDocInMySchool();
     }
 
     match /accounts/{accountId} {
@@ -990,9 +1054,9 @@ service cloud.firestore {
 
     match /journal_entries/{entryId} {
       allow read, get, list: if isSignedIn();
-      allow create: if isFinanceStaff() || isAdmin() || isSuperAdmin();
+      allow create: if (isFinanceRole() || isSuperAdmin()) && newDocInMySchool();
       allow update: if false;
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow delete: if isSuperAdmin(); // correct with a reversing entry; posted entries are never erased
     }
 
     match /budgets/{budgetId} {
@@ -1017,9 +1081,10 @@ service cloud.firestore {
       allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
+    // One payroll settings document per school (id = schoolId); 'global' holds platform defaults.
     match /payrollSettings/{settingsId} {
-      allow read, list: if isFinanceStaff();
-      allow write: if isAdmin() || isFinanceStaff();
+      allow read, list: if isFinanceRole() || isSuperAdmin();
+      allow write: if isSuperAdmin() || (isFinanceRole() && settingsId == getUserSchoolId());
     }
 
     match /payroll_settings/{docId} {
@@ -1033,14 +1098,16 @@ service cloud.firestore {
     }
 
     match /payrollRecords/{recordId} {
-      allow read, write: if isAdmin() || isFinanceStaff();
-      allow get: if isSignedIn() && (isAdmin() || isFinanceStaff() || resource.data.staffId == request.auth.uid);
-      allow list: if isSignedIn() && (isAdmin() || isFinanceStaff() || request.query.where.staffId == request.auth.uid);
+      // Payslips: finance/admin, or the staff member's own (queries must filter by staffId).
+      allow read: if isFinanceRole() || (isSignedIn() && resource.data.get('staffId', '') == request.auth.uid);
+      allow create: if isFinanceRole() && newDocInMySchool();
+      allow update: if isFinanceRole() && docInMySchool();
+      allow delete: if isSuperAdmin();
     }
 
     match /staff_salary_details/{userId} {
-      allow read, list: if isFinanceStaff() || isAdmin() || request.auth.uid == userId;
-      allow write: if isFinanceStaff() || isAdmin();
+      allow read, list: if isFinanceRole() || request.auth.uid == userId;
+      allow write: if isSuperAdmin() || (isFinanceRole() && request.auth.uid != userId);
     }
 
     match /routes/{routeId} {
