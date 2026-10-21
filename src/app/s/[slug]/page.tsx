@@ -1,7 +1,7 @@
 'use client';
 import { use, useState, useEffect, useRef, useMemo } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, getDocs, orderBy, limit, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, doc, orderBy, limit, addDoc } from 'firebase/firestore';
 import { AdmissionForm, AdmissionEnquiryForm } from '@/components/public/AdmissionForm';
 import {
   Loader2, MapPin, Phone, Mail, Globe,
@@ -168,9 +168,9 @@ function getAccessibleAltText(item: any, fallbackContext: string, schoolName?: s
   if (cleanCaption && cleanCaption.length > 0) {
     return cleanCaption;
   }
-  const cleanSchool = (schoolName || "Mercy's Springfield Academy").trim();
+  const cleanSchool = (schoolName || '').trim();
   const contextLabel = fallbackContext || 'Campus Life';
-  return `${contextLabel} at ${cleanSchool} - Photo ${index + 1}`;
+  return cleanSchool ? `${contextLabel} at ${cleanSchool} - Photo ${index + 1}` : `${contextLabel} - Photo ${index + 1}`;
 }
 
 function getThumbnailUrl(url: string): string {
@@ -844,17 +844,12 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showPwaInstallBanner, setShowPwaInstallBanner] = useState(false);
 
-  const defaultFallbackBanners = [
-    'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1920',
-    'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1920',
-    'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1920'
-  ];
 
 
 
   const banners = school?.bannerImages && school.bannerImages.length > 0
     ? school.bannerImages
-    : (school?.coverImageUrl ? [school.coverImageUrl] : defaultFallbackBanners);
+    : (school?.coverImageUrl ? [school.coverImageUrl] : []); // no stock photos of another campus
 
   // Only the school's own photos — stock pictures captioned as "our campus" would mislead parents.
   const galleryList = school?.gallery && school.gallery.length > 0
@@ -931,8 +926,17 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     const fetch_ = async () => {
       if (!firestore || !slug) return;
       try {
-        const snap = await getDocs(query(collection(firestore, 'schools'), where('slug', '==', slug)));
-        if (!snap.empty) setSchool({ id: snap.docs[0].id, ...snap.docs[0].data() });
+        // Public copy kept by the server (private/billing fields removed): 1 read, no listing of schools.
+        const key = decodeURIComponent(String(slug)).trim().toLowerCase();
+        const pub = await getDoc(doc(firestore, 'publicSites', key)).catch(() => null);
+        if (pub && pub.exists()) {
+          const d: any = pub.data();
+          setSchool({ ...d, id: d.schoolId || d.id });
+        } else {
+          // Until the public copies exist (first deployment), fall back to the old lookup.
+          const snap = await getDocs(query(collection(firestore, 'schools'), where('slug', '==', slug), limit(1))).catch(() => null);
+          if (snap && !snap.empty) setSchool({ id: snap.docs[0].id, ...snap.docs[0].data() });
+        }
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
     };
@@ -1151,7 +1155,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     const words = rawAbout.trim().split(/\s+/).slice(0, 150).join(' ');
     const metaDescription = words.length > 280 ? words.substring(0, 277) + '...' : words;
     const pageTitle = `${school.name} | Official Website`;
-    const shareImage = school.logoUrl || school.coverImageUrl || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=1200';
+    const shareImage = school.logoUrl || school.coverImageUrl || (Array.isArray(school.bannerImages) && school.bannerImages[0]) || '';
 
     document.title = pageTitle;
 
@@ -1179,7 +1183,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       { name: 'theme-color', content: school.primaryColor || '#4f46e5' }
     ];
 
-    ogTags.forEach((tag) => {
+    ogTags.filter(tag => !!tag.content).forEach((tag) => {
       const key = tag.property ? `property="${tag.property}"` : `name="${tag.name}"`;
       let el = document.querySelector(`meta[${key}]`);
       if (!el) {
@@ -2077,7 +2081,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
 
       <section 
         className="relative min-h-screen flex items-center px-6 overflow-hidden hero-grain"
-        style={{ backgroundColor: banners.length > 0 ? '#ffffff' : bannerBgColor }}
+        style={banners.length > 0
+          ? { backgroundColor: '#ffffff' }
+          : { backgroundColor: bannerBgColor, backgroundImage: `linear-gradient(135deg, ${bannerBgColor} 0%, ${bannerBgColor} 40%, ${brand}aa 100%)` }}
       >
         {/* cover image slideshow */}
         {banners.length > 0 ? (
@@ -3174,13 +3180,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   }
                 }
 
-                const eventFallbackImages = [
-                  'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=800',
-                  'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=80&w=800',
-                  'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=800',
-                  'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800'
-                ];
-                const eventImg = ev.imageUrl || ev.image || ev.photoUrl || eventFallbackImages[idx % eventFallbackImages.length];
+                const eventImg = ev.imageUrl || ev.image || ev.photoUrl || ''; // the school's own photo only
 
                 return (
                   <ScrollReveal key={ev.id || idx} delayMs={idx * 100} className="h-full">
@@ -3191,11 +3191,15 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                       <div>
                         {/* Top Featured Image Banner */}
                         <div className="h-44 w-full overflow-hidden relative bg-slate-100 shrink-0">
-                          <img
-                            src={eventImg}
-                            alt={ev.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
+                          {eventImg ? (
+                            <img
+                              src={eventImg}
+                              alt={ev.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${brand}33, ${secondaryColor}55)` }} />
+                          )}
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
                           
                           {/* Carleton Style Floating Date Badge */}

@@ -190,8 +190,21 @@ service cloud.firestore {
     // 2. SAAS CORE
     // =========================================================
 
+    // Public website data lives in publicSites/{slug} and publicDomains/{domain} (server-kept, private fields
+    // removed). They can be fetched by id only — nobody can list every school on the platform.
+    match /publicSites/{slug} {
+      allow get: if true;
+      allow list, write: if false;
+    }
+    match /publicDomains/{domain} {
+      allow get: if true;
+      allow list, write: if false;
+    }
+
     match /schools/{schoolId} {
-      allow get, list: if true;
+      // Signed-in users read their school by id; only the platform owner can list all schools.
+      allow get: if isSignedIn();
+      allow list: if isSuperAdmin();
       allow write: if isSuperAdmin();
       // A school's own admins edit its profile and website, but never its subscription or AI credit balance
       // (credits are spent by server code, which these rules do not affect).

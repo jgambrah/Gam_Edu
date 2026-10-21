@@ -39,6 +39,24 @@ export async function middleware(req: NextRequest) {
       domains.push(`www.${hostname}`);
     }
 
+    // 1st choice: the public domain map kept by the server — publicDomains/{domain without www} = { slug }.
+    // A single document fetch; the schools collection itself is not public.
+    try {
+      const docUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/publicDomains/${encodeURIComponent(cleanHost.toLowerCase())}`;
+      const r = await fetch(docUrl, { next: { revalidate: 60 } } as any);
+      if (r.ok) {
+        const d = await r.json();
+        const mappedSlug = d?.fields?.slug?.stringValue;
+        if (mappedSlug) {
+          url.pathname = `/s/${mappedSlug}${url.pathname === '/' ? '' : url.pathname}`;
+          return NextResponse.rewrite(url);
+        }
+      }
+    } catch (mapErr) {
+      console.warn('[Middleware] publicDomains lookup failed:', mapErr);
+    }
+
+    // Fallback (only until the public copies exist): query schools by customDomain.
     const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
 
     // Query Firestore for schools where customDomain is either the hostname or its www/non-www counterpart
