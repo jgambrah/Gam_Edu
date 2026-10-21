@@ -39,6 +39,15 @@ export const onBillChangeForReview = onDocumentWrittenWithAuthContext('financial
     return;
   }
 
+  // Server code (scripts, term stamping, rollovers, online payments) is never a staff "edit".
+  const authTypeEarly = String(event.authType || '');
+  if (authTypeEarly === 'service_account' || authTypeEarly === 'system') return;
+
+  // Only DELIBERATE changes by a person are reviewed: a save of the "Edit Record" dialog (it stamps a new
+  // lastEditId each time) or a deletion. Everything else that touches a bill — payments, credit moves,
+  // attendance billing, status/term housekeeping — is ordinary bookkeeping and is not listed.
+  if (after && (!after.lastEditId || after.lastEditId === before.lastEditId)) return;
+
   const changes: Record<string, { from: any; to: any }> = {};
   let kind = 'edit';
   if (!after) {
@@ -50,7 +59,7 @@ export const onBillChangeForReview = onDocumentWrittenWithAuthContext('financial
   } else {
     const fb = r2(num(before.billedAmount)), ta = r2(num(after.billedAmount));
     if (Math.abs(fb - ta) > 0.009) changes.billedAmount = { from: fb, to: ta };
-    for (const k of ['type', 'description', 'studentId', 'termId', 'academicYear', 'term']) {
+    for (const k of ['type', 'description', 'studentId', 'academicYear', 'term']) {
       if ((before[k] ?? null) !== (after[k] ?? null)) changes[k] = { from: before[k] ?? null, to: after[k] ?? null };
     }
     if (Object.keys(changes).length === 0) return;

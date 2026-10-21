@@ -8,7 +8,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, query, where, getDocs, getCountFromServer, doc, updateDoc, serverTimestamp, limit } from 'firebase/firestore';
+import { collection, query, where, getDocs, getCountFromServer, doc, updateDoc, serverTimestamp, limit, writeBatch } from 'firebase/firestore';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -96,6 +96,32 @@ export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | n
         } finally { setBusyId(null); }
     };
 
+    // Director: mark every item currently shown as OK in one go (normal-risk only unless includeHigh).
+    const [bulkBusy, setBulkBusy] = useState(false);
+    const markAllOk = async (includeHigh: boolean) => {
+        if (!firestore || !user || !items?.length) return;
+        const targets = items.filter(r => r.editedBy !== user.uid && (includeHigh || r.risk !== 'high'));
+        if (!targets.length) return;
+        if (typeof window !== 'undefined' && !window.confirm(`Mark ${targets.length} item${targets.length === 1 ? '' : 's'} as OK?`)) return;
+        setBulkBusy(true);
+        try {
+            const name = user.displayName || user.email || 'Director';
+            for (let i = 0; i < targets.length; i += 400) {
+                const batch = writeBatch(firestore);
+                targets.slice(i, i + 400).forEach(r => batch.update(doc(firestore, 'financeReviews', r.id), {
+                    status: 'ok', directorNote: null, resolvedBy: user.uid, resolvedByName: name, resolvedAt: serverTimestamp(),
+                }));
+                await batch.commit();
+            }
+            const done = new Set(targets.map(t => t.id));
+            setItems(prev => (prev || []).filter(x => !done.has(x.id)));
+            setCount(c => Math.max(0, (c || 0) - targets.length));
+            toast({ title: `${targets.length} marked OK` });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Not saved', description: e?.message });
+        } finally { setBulkBusy(false); }
+    };
+
     const highCount = useMemo(() => (items || []).filter(i => i.risk === 'high').length, [items]);
     if (!schoolId) return null;
 
@@ -130,6 +156,16 @@ export function FeeChangeReviewPanel({ schoolId, mode }: { schoolId?: string | n
                             {highCount > 0 && <span className="block mt-1 text-rose-700 font-semibold">{highCount} marked high-risk (amount lowered after payment, bill moved or deleted, payment reversed, large or over-budget expense, pay raised or bank account changed).</span>}
                         </DialogDescription>
                     </DialogHeader>
+                    {mode === 'director' && !!items?.length && (
+                        <div className="flex flex-wrap gap-2 justify-end">
+                            <Button size="sm" variant="outline" disabled={bulkBusy} onClick={() => markAllOk(false)}>
+                                {bulkBusy ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <CheckCircle2 className="h-4 w-4 mr-1" />}Mark all normal-risk OK
+                            </Button>
+                            {highCount > 0 && (
+                                <Button size="sm" variant="ghost" className="text-rose-700" disabled={bulkBusy} onClick={() => markAllOk(true)}>Mark ALL shown OK</Button>
+                            )}
+                        </div>
+                    )}
                     {loading ? (
                         <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
                     ) : !items || items.length === 0 ? (

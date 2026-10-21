@@ -297,6 +297,8 @@ function EditRecordDialog({
                 updatedAt: serverTimestamp(),
                 lastEditReason: editReason.trim(),
                 lastEditedBy: user?.uid || '',
+                // A new id per save: the server lists exactly these deliberate edits for the Director.
+                lastEditId: `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
             };
 
             if (resolvedAcademicYear) {
