@@ -662,6 +662,7 @@ function AdminApplicationDashboard() {
                     enrollmentStatus: 'Active',
                     schoolId: schoolId,
                     parentId: selectedApp.submittedByParentId || null,
+                    admissionDate: new Date().toISOString().slice(0, 10), // new admission (checked for an Admission Fee)
                 };
                 
                 // Save the full student details into the collection using the generated UID

@@ -247,6 +247,7 @@ export default function MigrationHubPage() {
           schoolId: schoolId,
           enrollmentStatus: 'Active',
           createdAt: serverTimestamp(),
+          isImported: true, // existing pupil moved from the old system — not a new admission
           requirePasswordChange: true
         });
 
