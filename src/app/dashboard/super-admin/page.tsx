@@ -17,6 +17,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
+import { makeFriendlyPassword } from '@/lib/friendly-password';
+import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 
 type School = { id: string; name: string; plan: string; createdAt: any; aiCredits?: number; phone?: string };
 type Lead = { id: string; schoolName: string; contactName: string; email: string; phone: string; status: string; };
@@ -273,6 +275,7 @@ export default function SuperAdminPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [newAccount, setNewAccount] = useState<NewAccountCredentials | null>(null);
   
   const [schoolToDelete, setSchoolToDelete] = useState<School | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -340,7 +343,7 @@ export default function SuperAdminPage() {
       });
 
       const newSchoolId = schoolRef.id;
-      const password = "password123"; 
+      let password = makeFriendlyPassword(); // the new Director's own temporary password (not password123)
       const idToken = await auth?.currentUser?.getIdToken();
       const result = await createNewUser(
         adminEmail, password, 'Director', 
@@ -348,6 +351,7 @@ export default function SuperAdminPage() {
       );
 
       if ('error' in result) throw new Error(result.error);
+      if ((result as any).password) password = (result as any).password;
 
       await setDoc(doc(firestore, 'staff', result.uid), {
         uid: result.uid, 
@@ -367,6 +371,7 @@ export default function SuperAdminPage() {
       }
 
       toast({ title: "Success!", description: `Created ${schoolName}` });
+      setNewAccount({ name: adminName, email: adminEmail, password, whereLater: "that school's Staff Management", schoolName });
       setSchoolName(''); setAdminEmail(''); setAdminName(''); setAdminPhone(''); setSelectedLeadId(null);
       loadData();
     } catch (error: any) {
@@ -432,6 +437,7 @@ export default function SuperAdminPage() {
 
   return (
     <div className="p-8 space-y-8 animate-in fade-in duration-500">
+      <NewAccountPasswordDialog credentials={newAccount} onClose={() => setNewAccount(null)} />
       <h1 className="text-3xl font-bold flex items-center gap-2 text-slate-800">
         <Building2 className="h-8 w-8 text-blue-600"/> CEO Command Center
       </h1>

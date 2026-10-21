@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { makeFriendlyPassword } from '@/lib/friendly-password';
+import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 import { 
   Users, UserCheck, Clock, Award, TrendingUp, RefreshCw, 
   Search, ShieldCheck, Mail, Phone, Calendar, Briefcase, 
@@ -56,6 +57,7 @@ export function StaffDirectoryDashboardView({
 
   // Add staff modal state
   const [isAddStaffOpen, setIsAddStaffOpen] = useState(false);
+  const [newAccount, setNewAccount] = useState<NewAccountCredentials | null>(null);
   const [isCreatingStaff, setIsCreatingStaff] = useState(false);
   const [newStaffRole, setNewStaffRole] = useState('Teacher');
 
@@ -127,11 +129,8 @@ export function StaffDirectoryDashboardView({
         }
       }
 
-      toast({
-        title: "Staff Account Created",
-        description: `${firstName} ${lastName} added. Temporary password: ${tempPassword} — share it privately (it is also available later in Staff Management, key button); they must change it at first sign-in.`,
-        duration: 60000
-      });
+      toast({ title: "Staff Account Created", description: `${firstName} ${lastName} added.` });
+      setNewAccount({ name: `${firstName} ${lastName}`.trim(), email, password: tempPassword, whereLater: 'Staff Management' });
       setIsAddStaffOpen(false);
     } catch (err: any) {
       toast({
@@ -838,6 +837,7 @@ export function StaffDirectoryDashboardView({
       </Dialog>
 
       {/* ─── ADD STAFF MODAL ─── */}
+      <NewAccountPasswordDialog credentials={newAccount} onClose={() => setNewAccount(null)} />
       <Dialog open={isAddStaffOpen} onOpenChange={setIsAddStaffOpen}>
         <DialogContent className="rounded-3xl max-w-md">
           <DialogHeader>

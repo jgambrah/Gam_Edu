@@ -2,6 +2,7 @@
 
 import { approveWaiverRequest } from '@/lib/waiver-approval';
 import { FeeChangeReviewPanel } from '@/components/finance/FeeChangeReviewPanel';
+import { UnbilledStudentsPanel } from '@/components/finance/UnbilledStudentsPanel';
 import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
 import { currentTermFromProfile, termStampOfRecord, normalizeYear } from '@/lib/term';
 import { computeLedgerFigures, summaryGrossDebt, summaryCredits, summaryYearPerformance, activeStudentKeySet } from '@/lib/finance-summary';
@@ -5485,6 +5486,8 @@ function AccountantDashboard({
         <div className="space-y-6">
             {/* Questions from the Director about bill changes this accountant made (1 read). */}
             <FeeChangeReviewPanel schoolId={schoolId} mode="accountant" />
+            {/* Active pupils with no school-fee bill this term (~3 reads). */}
+            <UnbilledStudentsPanel schoolId={schoolId} />
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-black text-slate-800 tracking-tighter italic uppercase">Financial <span className="text-emerald-600">Command</span></h1>

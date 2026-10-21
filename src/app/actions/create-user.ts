@@ -6,6 +6,7 @@ import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admi
 import { sendSchoolCredentialsEmail } from '@/lib/email';
 import { sanitizeErrorMessage } from '@/lib/error-handler';
 import { savePendingCredential } from '@/lib/pending-credentials';
+import { makeFriendlyPassword, isWeakDefaultPassword } from '@/lib/friendly-password';
 
 // --- HELPER: Fixes Vercel Key Formatting Issues ---
 const formatPrivateKey = (key: string) => {
@@ -99,6 +100,9 @@ export async function createNewUser(
     // 2. Auth Creation with standardized displayName
     console.log("Creating new Auth User...");
     const displayName = `${details?.firstName || ''} ${details?.lastName || ''}`.trim();
+    // New accounts never get "password123" (or another shared/weak default) — if a screen still sends one,
+    // a personal temporary password is used instead and returned, so the school sees the real one.
+    if (isWeakDefaultPassword(password)) password = makeFriendlyPassword();
     
     const userRecord = await auth.createUser({
         email,
@@ -176,7 +180,7 @@ export async function createNewUser(
     }
 
     console.log("✅ User Created Successfully");
-    return { uid: userRecord.uid, success: true };
+    return { uid: userRecord.uid, success: true, password };
 
   } catch (error: any) {
     const errorMessage = sanitizeErrorMessage(error);

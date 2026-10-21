@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { LoginDetailsCard } from '@/components/auth/LoginDetailsCard';
+import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 import { makeFriendlyPassword } from '@/lib/friendly-password';
 import Link from 'next/link';
 import { useAuth, useFirestore } from '@/firebase';
@@ -93,6 +94,8 @@ export default function ParentsPage() {
 
   // Modal States
   const [isAddOpen, setIsAddOpen] = useState(false);
+  // Shown right after an account is created: give the temporary password now, or note where to get it later.
+  const [newAccount, setNewAccount] = useState<NewAccountCredentials | null>(null);
   const [editingParent, setEditingParent] = useState<ParentMember | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -288,7 +291,8 @@ export default function ParentsPage() {
             await updateDoc(studentRef, { parentId: result.uid });
           }
 
-          toast({ title: "Success", description: `Parent created and linked. Sign-in: ${values.email} · temporary password: ${password} (also available later from the key button).`, duration: 60000 });
+          toast({ title: "Success", description: "Parent created and linked." });
+          setNewAccount({ name: `${values.firstName || ''} ${values.lastName || ''}`.trim(), email: values.email, password, whereLater: 'Parent Directory' });
           setIsAddOpen(false);
           loadData();
 
@@ -905,6 +909,7 @@ export default function ParentsPage() {
       </Dialog>
 
       {/* PASSWORD RESET DIALOG */}
+      <NewAccountPasswordDialog credentials={newAccount} onClose={() => setNewAccount(null)} />
       <Dialog open={!!resetPasswordUser} onOpenChange={(open) => !open && setResetPasswordUser(null)}>
           <DialogContent className="sm:max-w-md">
               <DialogHeader>
@@ -939,7 +944,7 @@ export default function ParentsPage() {
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'parents', idToken);
                           
                           if (res.success) {
-                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}`, duration: 30000 });
+                              toast({ title: "Password Reset", description: `New temporary password: ${(res as any).password || newTempPassword}`, duration: 30000 });
                               setLoginDetailsTick(t => t + 1);
                               setNewTempPassword(makeFriendlyPassword());
                           } else {

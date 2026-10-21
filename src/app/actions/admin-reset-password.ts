@@ -5,6 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { sanitizeErrorMessage } from '@/lib/error-handler';
 import { savePendingCredential } from '@/lib/pending-credentials';
+import { makeFriendlyPassword, isWeakDefaultPassword } from '@/lib/friendly-password';
 
 // Initialize Admin App
 function getAdminApp() {
@@ -68,6 +69,9 @@ export async function adminResetUserPassword(
       }
     }
 
+    // No more shared defaults such as "password123": a personal temporary password is used instead (returned).
+    if (isWeakDefaultPassword(newPassword)) newPassword = makeFriendlyPassword();
+
     // 1. Update the password in Firebase Auth directly
     await auth.updateUser(uid, { password: newPassword });
 
@@ -97,7 +101,7 @@ export async function adminResetUserPassword(
     // Update the master users collection
     await db.collection('users').doc(uid).set(updateData, { merge: true });
 
-    return { success: true };
+    return { success: true, password: newPassword };
   } catch (error: any) {
     const errorMessage = sanitizeErrorMessage(error);
     return { success: false, error: errorMessage };

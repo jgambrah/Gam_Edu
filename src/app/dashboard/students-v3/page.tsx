@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { LoginDetailsCard } from '@/components/auth/LoginDetailsCard';
+import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 import { makeFriendlyPassword } from '@/lib/friendly-password';
 import { createPortal } from 'react-dom';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc, useAuth } from '@/firebase';
@@ -112,6 +113,8 @@ export default function StudentsV3Page() {
   
   // Modals
   const [isAddOpen, setIsAddOpen] = useState(false);
+  // Shown right after an account is created: give the temporary password now, or note where to get it later.
+  const [newAccount, setNewAccount] = useState<NewAccountCredentials | null>(null);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -859,7 +862,8 @@ export default function StudentsV3Page() {
               details: `Enrolled new student ${firstName} ${lastName} with Student ID ${newStudentId}`
           });
 
-          toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}. Sign-in: ${email} · temporary password: ${tempPassword} (also available later from the key button).`, duration: 60000 });
+          toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}.` });
+          setNewAccount({ name: `${firstName} ${lastName}`.trim(), email, password: tempPassword, whereLater: 'Student Directory' });
           setIsAddOpen(false);
           setSelectedEnrollmentParentId('');
           // Add the new pupil to the list and the saved snapshot: 1 read (the new record), not a full re-read.
@@ -2012,6 +2016,7 @@ export default function StudentsV3Page() {
       </Dialog>
 
       {/* PASSWORD RESET DIALOG */}
+      <NewAccountPasswordDialog credentials={newAccount} onClose={() => setNewAccount(null)} />
       <Dialog open={!!resetPasswordUser} onOpenChange={(open) => !open && setResetPasswordUser(null)}>
           <DialogContent className="sm:max-w-md">
               <DialogHeader>
@@ -2046,7 +2051,7 @@ export default function StudentsV3Page() {
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'students', idToken);
                           
                           if (res.success) {
-                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}`, duration: 30000 });
+                              toast({ title: "Password Reset", description: `New temporary password: ${(res as any).password || newTempPassword}`, duration: 30000 });
                               setLoginDetailsTick(t => t + 1);
                               setNewTempPassword(makeFriendlyPassword());
                           } else {

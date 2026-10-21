@@ -20,3 +20,10 @@ export function makeFriendlyPassword(): string {
     const digits = String(1000 + (buf[1] % 9000));
     return `${word}${digits}`;
 }
+
+/** Shared or guessable defaults that must not be given to NEW accounts (existing accounts are unaffected). */
+const WEAK_DEFAULTS = new Set(['password123', 'password', 'password1', '12345678', '123456', '1234567', '123456789', 'pass123', 'school123', 'gamedu123', 'admin123', 'student123', 'parent123', 'staff123']);
+export function isWeakDefaultPassword(pw: string | undefined | null): boolean {
+    const p = String(pw || '').trim().toLowerCase();
+    return p.length < 6 || WEAK_DEFAULTS.has(p);
+}

@@ -43,6 +43,25 @@ function rosterEntry(s: any): Record<string, any> | null {
 }
 const ROSTER_MAX_BYTES = 900_000; // stay under Firestore's 1 MiB document limit
 
+/**
+ * Who has been billed school fees, per term: termBilling/{schoolId} = { terms: { <termId>: { <bill studentId>: n } } }
+ * (n = number of school-fee bills; canteen and transport bills are not counted). The "Students Not Billed"
+ * alert compares this ONE document with the roster — 2 reads instead of reading every bill.
+ * Kept current by the bill trigger (increments, no reads); the weekly full rebuild rewrites it from the
+ * open bills only, which also drops closed terms.
+ */
+const TERM_BILLING = (schoolId: string) => db.collection('termBilling').doc(schoolId);
+/** The term + student a bill counts towards in termBilling, or null if it is not a school-fee bill. */
+function termBillingKey(r: any): { term: string; sid: string } | null {
+  if (!r || !r.studentId || r.voided === true) return null;
+  if (!(Number(r.billedAmount) > 0)) return null;
+  const t = String(r.type || r.category || '').toLowerCase();
+  if (t.includes('canteen') || t.includes('transport')) return null;
+  const st = termStampOfRecord(r);
+  if (!st?.termId) return null;
+  return { term: st.termId, sid: String(r.studentId) };
+}
+
 async function writeRoster(schoolId: string, docs: FirebaseFirestore.QueryDocumentSnapshot[]): Promise<void> {
   const students: Record<string, any> = {};
   docs.forEach(d => { const e = rosterEntry(d.data()); if (e) students[d.id] = e; });
@@ -499,6 +518,17 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
   // Exact rebuild of the balance index (replaces the document, removing any drift).
   await writeBalanceIndex(schoolId, Object.fromEntries(Object.entries(byStudent).map(([k, v]) => [k, roundIdx(v)])), { rebuiltAt: FieldValue.serverTimestamp() });
   await writeRoster(schoolId, studentsSnap.docs);
+
+  // Exact rebuild of "who has been billed school fees" from the open (current-term) bills.
+  const termTally: Record<string, Record<string, number>> = {};
+  recordDocs.forEach(d => {
+    const k = termBillingKey(d.data());
+    if (!k) return;
+    const t = (termTally[k.term] = termTally[k.term] || {});
+    t[k.sid] = (t[k.sid] || 0) + 1;
+  });
+  await TERM_BILLING(schoolId).set({ schoolId, terms: termTally, rebuiltAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() })
+    .catch(e => console.warn('[termBilling] rebuild failed:', e?.message));
 }
 
 
@@ -842,6 +872,23 @@ export const onFinancialRecordWrite = onDocumentWritten(
     // Bills created by any screen without the field get it here, within a second of being written.
     if (after && after.isArchived === undefined && event.data?.after?.ref) {
       await event.data.after.ref.update({ isArchived: false }).catch(() => undefined);
+    }
+
+    // Who has been billed this term (no reads: increments only).
+    {
+      const kb = termBillingKey(before);
+      const ka = termBillingKey(after);
+      if (JSON.stringify(kb) !== JSON.stringify(ka)) {
+        const terms: Record<string, Record<string, any>> = {};
+        if (kb) (terms[kb.term] = terms[kb.term] || {})[kb.sid] = FieldValue.increment(-1);
+        if (ka) {
+          const cur = (terms[ka.term] = terms[ka.term] || {});
+          // same term + student on both sides cannot happen here (keys differ), so no clash
+          cur[ka.sid] = FieldValue.increment(1);
+        }
+        await TERM_BILLING(schoolId).set({ schoolId, terms, updatedAt: FieldValue.serverTimestamp() }, { merge: true })
+          .catch(e => console.warn('[termBilling] increment failed:', e?.message));
+      }
     }
 
     // Per-student balance index (no reads: increments only). A bill moving between students is handled too.

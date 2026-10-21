@@ -265,6 +265,17 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Who has been billed school fees per term (server-kept; read by the "Students Not Billed" alert).
+    match /termBilling/{schoolId} {
+      allow get: if isSuperAdmin() || (
+        (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
+          'Cashier', 'cashier', 'Accounts Officer', 'accounts officer', 'Finance Officer', 'finance officer'])
+        && getUserSchoolId() == schoolId
+      );
+      allow list: if false;
+      allow write: if false;
+    }
+
     match /studentBalances/{schoolId} {
       allow get: if isSuperAdmin() || (
         (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { FeeChangeReviewPanel } from '@/components/finance/FeeChangeReviewPanel';
+import { UnbilledStudentsPanel } from '@/components/finance/UnbilledStudentsPanel';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -955,6 +956,10 @@ export function ExecutiveDirectorCockpit({
       {/* Bill changes made by staff, recorded by the server, for the Director to review (1 read). */}
       {isDirectorOrSuper && (
         <FeeChangeReviewPanel schoolId={profile?.schoolId || schoolProfile?.id || schoolProfile?.schoolId} mode="director" />
+      )}
+      {/* Active pupils with no school-fee bill this term (Director; ~3 reads). */}
+      {isDirectorOrSuper && (
+        <UnbilledStudentsPanel schoolId={profile?.schoolId || schoolProfile?.id || schoolProfile?.schoolId} />
       )}
 
       {/* ─────────────────────────────────────────────────────────────

@@ -179,6 +179,10 @@ export default function LandingAndDemoPage() {
       let message = "Invalid email or password.";
       if (error.code === 'auth/invalid-credential' || error.code === 'auth/invalid-email' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         message = "The email or password you entered is incorrect. Please verify your credentials.";
+        // New accounts no longer start with "password123" — point the person to the school for their slip.
+        if (String(password || '').trim().toLowerCase() === 'password123') {
+          message = "Incorrect password. New accounts no longer use \"password123\" — each person has their own temporary password. Please ask your school office for your login slip.";
+        }
       } else if (error.code === 'auth/too-many-requests') {
         message = "Too many attempts. Account temporarily locked for security. Try again later.";
       } else if (error.code === 'auth/network-request-failed') {

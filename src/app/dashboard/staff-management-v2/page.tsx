@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { LoginDetailsCard } from '@/components/auth/LoginDetailsCard';
+import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 import { makeFriendlyPassword } from '@/lib/friendly-password';
 import { useFirestore, useCollection, useMemoFirebase, useUser, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
@@ -92,7 +93,7 @@ export default function StaffManagementPage() {
   // Password Reset State
   const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
   const [newTempPassword, setNewTempPassword] = useState('');
-  const [createdCredentials, setCreatedCredentials] = useState<{ name: string; email: string; password: string } | null>(null);
+  const [createdCredentials, setCreatedCredentials] = useState<NewAccountCredentials | null>(null);
   const [loginDetailsTick, setLoginDetailsTick] = useState(0);
   const [isResetting, setIsResetting] = useState(false);
 
@@ -185,7 +186,7 @@ export default function StaffManagementPage() {
       });
 
       toast({ title: 'Staff added', description: `${firstName} ${lastName} has been created.` });
-      setCreatedCredentials({ name: `${firstName} ${lastName}`, email, password: tempPassword });
+      setCreatedCredentials({ name: `${firstName} ${lastName}`, email, password: tempPassword, whereLater: 'Staff Management' });
       setIsAddOpen(false);
       loadData();
     } catch (error: any) {
@@ -630,7 +631,7 @@ export default function StaffManagementPage() {
                           const idToken = await auth?.currentUser?.getIdToken();
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'staff', idToken);
                           if (res.success) {
-                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}`, duration: 30000 });
+                              toast({ title: "Password Reset", description: `New temporary password: ${(res as any).password || newTempPassword}`, duration: 30000 });
                               setLoginDetailsTick(t => t + 1);
                               setNewTempPassword(makeTempPassword());
                           } else {
@@ -647,26 +648,8 @@ export default function StaffManagementPage() {
               </div>
           </DialogContent>
       </Dialog>
-      {/* One-time display of a new account's temporary password */}
-      <Dialog open={!!createdCredentials} onOpenChange={(open) => !open && setCreatedCredentials(null)}>
-          <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                  <DialogTitle>Account created — share these details</DialogTitle>
-                  <DialogDescription>
-                      Give these to {createdCredentials?.name} privately. They will be asked to choose their own password at first sign-in.
-                      You can see it again later from the key button beside their name, until they choose their own password.
-                  </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-2 rounded-xl border bg-slate-50 p-4 font-mono text-sm">
-                  <div><span className="text-slate-500">Email:</span> {createdCredentials?.email}</div>
-                  <div><span className="text-slate-500">Temporary password:</span> <strong>{createdCredentials?.password}</strong></div>
-              </div>
-              <DialogFooter>
-                  <Button variant="outline" onClick={() => { try { navigator.clipboard.writeText(`Email: ${createdCredentials?.email}\nTemporary password: ${createdCredentials?.password}`); toast({ title: 'Copied' }); } catch {} }}>Copy</Button>
-                  <Button onClick={() => setCreatedCredentials(null)}>Done</Button>
-              </DialogFooter>
-          </DialogContent>
-      </Dialog>
+      {/* Right after an account is created: give the temporary password now, or note where to get it later */}
+      <NewAccountPasswordDialog credentials={createdCredentials} onClose={() => setCreatedCredentials(null)} />
     </div>
   );
 }

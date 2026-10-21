@@ -63,6 +63,8 @@ import { generateNextStudentId } from '@/lib/student-utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { checkAndSpendCredits } from '@/app/actions/credits';
 import { TimelineService } from '@/lib/timeline-service';
+import { makeFriendlyPassword, isWeakDefaultPassword } from '@/lib/friendly-password';
+import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 function ParentApplicationForm({ onSuccess, schoolId }: { onSuccess: () => void, schoolId: string }) {
@@ -219,7 +221,9 @@ function AdminApplicationDashboard() {
 
     // Student Credentials State
     const [studentEmail, setStudentEmail] = useState('');
-    const [studentPassword, setStudentPassword] = useState('password123');
+    // Each admitted pupil gets their own temporary password (no longer "password123").
+    const [studentPassword, setStudentPassword] = useState(() => makeFriendlyPassword());
+    const [newAccount, setNewAccount] = useState<NewAccountCredentials | null>(null);
     const [isNewAppOpen, setIsNewAppOpen] = useState(false);
 
     // School data query
@@ -244,7 +248,7 @@ function AdminApplicationDashboard() {
             setStudentEmail(`${cleanName}@${cleanSlug}.gamedu.com`);
         } else if (!selectedApp) {
             setStudentEmail('');
-            setStudentPassword('password123');
+            setStudentPassword(makeFriendlyPassword());
         }
     }, [decision, selectedApp, schoolData, studentEmail]);
 
@@ -625,7 +629,7 @@ function AdminApplicationDashboard() {
                 const idToken = await auth?.currentUser?.getIdToken();
                 const userResult = await createNewUser(
                     studentEmail.trim(), 
-                    studentPassword || 'password123', 
+                    isWeakDefaultPassword(studentPassword) ? makeFriendlyPassword() : studentPassword, 
                     'Student', 
                     { firstName, lastName }, 
                     schoolId,
@@ -702,6 +706,8 @@ function AdminApplicationDashboard() {
                 });
 
                 toast({ title: "Approved", description: "Student enrolled and parent notified." });
+                setNewAccount({ name: `${firstName} ${lastName}`.trim(), email: studentEmail.trim(), password: String((userResult as any).password || studentPassword), whereLater: 'Student Directory' });
+                setStudentPassword(makeFriendlyPassword());
 
             } else {
                 await updateDoc(appRef, {
@@ -884,6 +890,7 @@ function AdminApplicationDashboard() {
 
     return (
         <div className="space-y-6">
+            <NewAccountPasswordDialog credentials={newAccount} onClose={() => setNewAccount(null)} />
             {/* Standardized Institutional Hero Banner */}
             <SectionHeroBanner
                 eyebrow="ADMISSIONS & INTAKE"
@@ -1516,7 +1523,7 @@ function AdminApplicationDashboard() {
                                             value={studentPassword}
                                             onChange={(e) => setStudentPassword(e.target.value)}
                                             className="border-slate-200 rounded-xl focus:ring-violet-500 text-sm font-semibold"
-                                            placeholder="password123"
+                                            placeholder="e.g. mango4827"
                                             required
                                         />
                                     </div>

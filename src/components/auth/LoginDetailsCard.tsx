@@ -15,20 +15,26 @@ function escapeHtml(s: string) {
 }
 
 export function printLoginSlip(args: { name: string; email: string; password: string; schoolName?: string }) {
-    const w = window.open('', '_blank', 'width=480,height=600');
+    printLoginSlips([args], args.schoolName);
+}
+
+/** Prints one or many login slips (several per page, cut along the dashed lines). */
+export function printLoginSlips(list: { name: string; email: string; password: string }[], schoolName?: string) {
+    if (!list.length) return;
+    const w = window.open('', '_blank', 'width=520,height=700');
     if (!w) return;
     const site = window.location.origin;
-    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Login slip</title>
-<style>body{font-family:Arial,sans-serif;padding:24px;color:#111}.slip{border:2px dashed #555;border-radius:12px;padding:20px;max-width:380px}
-h2{margin:0 0 4px;font-size:18px}p{margin:6px 0;font-size:14px}.v{font-family:monospace;font-size:16px;font-weight:bold}.n{color:#555;font-size:12px;margin-top:14px}</style></head>
-<body><div class="slip"><h2>${escapeHtml(args.schoolName || 'GAM Edu')} — Login details</h2>
-<p>Name: <strong>${escapeHtml(args.name)}</strong></p>
+    const slips = list.map(a => `<div class="slip"><h2>${escapeHtml(schoolName || 'GAM Edu')} — Login details</h2>
+<p>Name: <strong>${escapeHtml(a.name)}</strong></p>
 <p>Website: <span class="v">${escapeHtml(site)}</span></p>
-<p>Sign-in ID: <span class="v">${escapeHtml(args.email)}</span></p>
-<p>Temporary password: <span class="v">${escapeHtml(args.password)}</span></p>
+<p>Sign-in ID: <span class="v">${escapeHtml(a.email)}</span></p>
+<p>Temporary password: <span class="v">${escapeHtml(a.password)}</span></p>
 <p class="n">You will be asked to choose your own password the first time you sign in. Keep this slip private.
-If you forget your password, the school office can give you a new one.</p></div>
-<script>window.onload=function(){window.print()}</script></body></html>`);
+If you forget your password, the school office can give you a new one.</p></div>`).join('');
+    w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Login slips</title>
+<style>body{font-family:Arial,sans-serif;padding:16px;color:#111}.slip{border:2px dashed #555;border-radius:12px;padding:16px;max-width:380px;margin:0 0 14px;page-break-inside:avoid}
+h2{margin:0 0 4px;font-size:17px}p{margin:5px 0;font-size:14px}.v{font-family:monospace;font-size:16px;font-weight:bold}.n{color:#555;font-size:12px;margin-top:12px}</style></head>
+<body>${slips}<script>window.onload=function(){window.print()}</script></body></html>`);
     w.document.close();
 }
 

@@ -5,6 +5,8 @@ import Papa from 'papaparse';
 import { useFirestore, useUser, useCollection, useMemoFirebase, useAuth } from '@/firebase';
 import { collection, query, where, doc, setDoc, serverTimestamp, getDocs, writeBatch, limit, arrayUnion, updateDoc, Timestamp } from 'firebase/firestore';
 import { createNewUser } from '@/app/actions/create-user';
+import { makeFriendlyPassword } from '@/lib/friendly-password';
+import { NewAccountsBatchDialog } from '@/components/auth/NewAccountPasswordDialog';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { sanitizeErrorMessage } from '@/lib/error-handler';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -65,6 +67,8 @@ export default function MigrationHubPage() {
   const [studentCsvData, setStudentCsvData] = useState<any[]>([]);
   const [classMap, setClassMap] = useState<Record<string, string>>({});
   const [isImportingStudents, setIsImportingStudents] = useState(false);
+  // Accounts made by the last import: the school chooses to hand out their passwords now or later.
+  const [importedAccounts, setImportedAccounts] = useState<{ list: { name: string; email: string; password: string }[]; whereLater: string } | null>(null);
   const [studentImportProgress, setStudentImportProgress] = useState(0);
   const [isExtracting, setIsExtracting] = useState(false);
   const [rawText, setRawText] = useState('');
@@ -193,6 +197,7 @@ export default function MigrationHubPage() {
     const total = studentCsvData.length;
 
     toast({ title: "Import Starting", description: `Provisioning ${total} student accounts.` });
+    const createdStudents: { name: string; email: string; password: string }[] = [];
 
     try {
       for (let i = 0; i < studentCsvData.length; i++) {
@@ -215,7 +220,7 @@ export default function MigrationHubPage() {
         const idToken = await auth?.currentUser?.getIdToken();
         const result = await createNewUser(
           email,
-          "password123",
+          makeFriendlyPassword(), // each pupil gets their own temporary password (not password123)
           'Student',
           { firstName, lastName },
           schoolId,
@@ -227,6 +232,7 @@ export default function MigrationHubPage() {
           setStudentImportProgress(i + 1);
           continue;
         }
+        createdStudents.push({ name: `${firstName} ${lastName || ''}`.trim(), email, password: String((result as any).password || '') });
 
         const studentId = await generateNextStudentId(firestore, schoolId);
 
@@ -256,6 +262,7 @@ export default function MigrationHubPage() {
     } finally {
       setIsImportingStudents(false);
       setStudentImportProgress(0);
+      if (createdStudents.length > 0) setImportedAccounts({ list: createdStudents, whereLater: 'Student Directory' });
     }
   };
 
@@ -267,6 +274,7 @@ export default function MigrationHubPage() {
     setParentImportProgress(0);
     let successCount = 0;
     let failCount = 0;
+    const createdParents: { name: string; email: string; password: string }[] = [];
 
     try {
       const studentsSnap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
@@ -287,8 +295,9 @@ export default function MigrationHubPage() {
         if (!email || !firstName) { failCount++; setParentImportProgress(i + 1); continue; }
 
         const idToken = await auth?.currentUser?.getIdToken();
-        const result = await createNewUser(email, "password123", 'Parent', { firstName, lastName }, schoolId, idToken);
+        const result = await createNewUser(email, makeFriendlyPassword(), 'Parent', { firstName, lastName }, schoolId, idToken);
         if ('error' in result) { failCount++; setParentImportProgress(i + 1); continue; }
+        createdParents.push({ name: `${firstName} ${lastName || ''}`.trim(), email, password: String((result as any).password || '') });
 
         const linkedStudentId = studentEmailMap.get(studentEmail);
         await setDoc(doc(firestore, 'parents', result.uid), {
@@ -313,6 +322,7 @@ export default function MigrationHubPage() {
     } finally {
       setIsImportingParents(false);
       setParentImportProgress(0);
+      if (createdParents.length > 0) setImportedAccounts({ list: createdParents, whereLater: 'Parent Directory' });
     }
   };
 
@@ -829,6 +839,7 @@ export default function MigrationHubPage() {
           </div>
         </TabsContent>
       </Tabs>
+      <NewAccountsBatchDialog accounts={importedAccounts?.list || null} whereLater={importedAccounts?.whereLater || 'the directory'} onClose={() => setImportedAccounts(null)} />
     </div>
   );
 }
