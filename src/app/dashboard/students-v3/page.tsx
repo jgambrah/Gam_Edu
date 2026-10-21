@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { LoginDetailsCard } from '@/components/auth/LoginDetailsCard';
+import { makeFriendlyPassword } from '@/lib/friendly-password';
 import { createPortal } from 'react-dom';
 import { useUser, useFirestore, useCollection, useMemoFirebase, useDoc, useAuth } from '@/firebase';
 import { logAuditEvent } from '@/lib/audit';
@@ -116,7 +118,8 @@ export default function StudentsV3Page() {
 
   // Password Reset State
   const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
-  const [newTempPassword, setNewTempPassword] = useState('password123');
+  const [newTempPassword, setNewTempPassword] = useState('');
+  const [loginDetailsTick, setLoginDetailsTick] = useState(0);
   const [isResetting, setIsResetting] = useState(false);
 
   // Custom Confirmation Dialog State
@@ -754,7 +757,10 @@ export default function StudentsV3Page() {
 
       try {
           const idToken = await auth?.currentUser?.getIdToken();
-          const result = await createNewUser(email, "password123", 'Student', { firstName, lastName }, adminSchoolId, idToken);
+          // Easy temporary password (e.g. "mango4827"), different for every pupil; the school can look it up
+          // again any time from the key button until the pupil chooses their own.
+          const tempPassword = makeFriendlyPassword();
+          const result = await createNewUser(email, tempPassword, 'Student', { firstName, lastName }, adminSchoolId, idToken);
           if ('error' in result) throw new Error(result.error);
 
           let photoURL = null;
@@ -853,7 +859,7 @@ export default function StudentsV3Page() {
               details: `Enrolled new student ${firstName} ${lastName} with Student ID ${newStudentId}`
           });
 
-          toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}.` });
+          toast({ title: "Success", description: `Student ${firstName} enrolled. ID: ${newStudentId}. Sign-in: ${email} · temporary password: ${tempPassword} (also available later from the key button).`, duration: 60000 });
           setIsAddOpen(false);
           setSelectedEnrollmentParentId('');
           // Add the new pupil to the list and the saved snapshot: 1 read (the new record), not a full re-read.
@@ -1474,7 +1480,7 @@ export default function StudentsV3Page() {
                                                         >
                                                             <HeartHandshake className="h-4.5 w-4.5 text-indigo-500"/>
                                                         </Button>
-                                                        <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(s)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
+                                                        <Button variant="ghost" size="sm" onClick={() => { setNewTempPassword(makeFriendlyPassword()); setResetPasswordUser(s); }} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
                                                             <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
                                                         </Button>
                                                         <Button variant="ghost" size="sm" onClick={() => toast({ title: "Opening direct SMS...", description: "Feature being integrated." })} title="Send Bill Reminder" className="h-8.5 w-8.5 p-0 hover:bg-slate-100 rounded-lg">
@@ -2016,8 +2022,14 @@ export default function StudentsV3Page() {
                   </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                  <LoginDetailsCard
+                      uid={resetPasswordUser?.uid || resetPasswordUser?.id}
+                      name={`${resetPasswordUser?.firstName || ''} ${resetPasswordUser?.lastName || ''}`.trim()}
+                      email={resetPasswordUser?.email}
+                      refreshKey={loginDetailsTick}
+                  />
                   <div className="space-y-2">
-                      <Label>Temporary Password</Label>
+                      <Label>New temporary password (only if they forgot it)</Label>
                       <Input 
                           type="text" 
                           value={newTempPassword} 
@@ -2034,9 +2046,9 @@ export default function StudentsV3Page() {
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'students', idToken);
                           
                           if (res.success) {
-                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
-                              setResetPasswordUser(null);
-                              setNewTempPassword('password123'); // Reset for next use
+                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}`, duration: 30000 });
+                              setLoginDetailsTick(t => t + 1);
+                              setNewTempPassword(makeFriendlyPassword());
                           } else {
                               toast({ variant: 'destructive', title: "Error", description: res.error });
                           }

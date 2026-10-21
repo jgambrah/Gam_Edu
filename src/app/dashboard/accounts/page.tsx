@@ -250,7 +250,10 @@ function EditRecordDialog({
     const { role, profile } = useRole();
     const { user } = useUser();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const canReduceBills = role === 'Director' || role === 'Administrator';
+    const [editReason, setEditReason] = useState('');
+    // Corrections are allowed straight away (no waiting for approval). Every change by anyone other than the
+    // Director is copied by the server to the Director's "Fee Changes to Review" list, with this reason.
+    const isDirector = role === 'Director';
     const initialDue = record.dueDate?.toDate ? record.dueDate.toDate() : new Date(record.dueDate);
     
     const form = useForm<z.infer<typeof financialRecordSchema>>({
@@ -270,10 +273,8 @@ function EditRecordDialog({
         if (!firestore || !record.id) return;
         const newBilled = round2Money(values.billedAmount);
         const oldBilled = round2Money(record.billedAmount);
-        // Lowering a bill is a write-off: only the Director/Administrator may do it here. Others use
-        // "Apply Waiver", which needs the Director's approval and is recorded.
-        if (newBilled < oldBilled - 0.009 && !canReduceBills) {
-            toast({ variant: 'destructive', title: 'Use Apply Waiver instead', description: 'Reducing a bill needs the Director\'s approval. Use "Apply Waiver" so the reduction is approved and recorded.' });
+        if (!isDirector && editReason.trim().length < 5) {
+            toast({ variant: 'destructive', title: 'Reason Required', description: 'Briefly say why this bill is being changed (e.g. "Wrong amount entered, fee is GH₵450"). The Director will see it.' });
             return;
         }
         if (newBilled < round2Money((record.amountPaid || 0) + (record.waiverAmount || 0)) - 0.009) {
@@ -294,6 +295,8 @@ function EditRecordDialog({
                 billedAmount: newBilled,
                 dueDate: Timestamp.fromDate(values.dueDate),
                 updatedAt: serverTimestamp(),
+                lastEditReason: editReason.trim(),
+                lastEditedBy: user?.uid || '',
             };
 
             if (resolvedAcademicYear) {
@@ -326,7 +329,7 @@ function EditRecordDialog({
                     ...sanitizedPayload,
                     status: standardStatus(newBilled, Number(cur.amountPaid) || 0, Number(cur.waiverAmount) || 0, cur.status),
                     ...(cur.originalBilledAmount === undefined && cur.billedAmount !== newBilled ? { originalBilledAmount: cur.billedAmount } : {}),
-                    editHistory: arrayUnion({ at: new Date().toISOString(), by: user?.uid || '', byName: editorName, changes }),
+                    editHistory: arrayUnion({ at: new Date().toISOString(), by: user?.uid || '', byName: editorName, changes, reason: editReason.trim() }),
                 });
                 if (Object.keys(changes).length) {
                     tx.set(doc(collection(firestore, 'auditLogs')), {
@@ -334,14 +337,15 @@ function EditRecordDialog({
                         userName: editorName,
                         userId: user?.uid || null,
                         action: 'EDIT_BILL',
-                        details: `Edited "${cur.description || 'bill'}" for ${cur.studentName || 'student'}: ` + Object.entries(changes).map(([k, v]: any) => `${k} ${v.from} → ${v.to}`).join('; '),
+                        details: `Edited "${cur.description || 'bill'}" for ${cur.studentName || 'student'}: ` + Object.entries(changes).map(([k, v]: any) => `${k} ${v.from} → ${v.to}`).join('; ') + (editReason.trim() ? ` | Reason: ${editReason.trim()}` : ''),
                         recordId: record.id,
                         timestamp: serverTimestamp(),
                     });
                 }
             });
             
-            toast({ title: 'Bill Updated' });
+            toast({ title: 'Bill Updated', description: isDirector ? undefined : 'The change has been sent to the Director\'s review list.' });
+            setEditReason('');
             onUpdate();
             setOpen(false);
         } catch (e: any) {
@@ -413,6 +417,18 @@ function EditRecordDialog({
                               );
                             }}/>
                         </div>
+                        {!isDirector && (
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium">Reason for the change <span className="text-rose-600">*</span></label>
+                                <Textarea
+                                    value={editReason}
+                                    onChange={e => setEditReason(e.target.value)}
+                                    placeholder='e.g. "Typed GH₵540 instead of GH₵450"'
+                                    rows={2}
+                                />
+                                <p className="text-[11px] text-slate-500">Saved immediately. The Director is shown every bill change (what changed, by whom, when and why) and can query it.</p>
+                            </div>
+                        )}
                         <Button type="submit" disabled={isSubmitting} className="w-full">
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>} Save Changes
                         </Button>
@@ -503,6 +519,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
             const batch = writeBatch(firestore);
             
             // 1. Mark payments as Reversed and write Reversal Payment Transactions
+            let lastReversalId = '';
             for (const payment of payments) {
                 const paymentRef = doc(firestore, 'financialRecords', record.id, 'payments', payment.id);
                 batch.update(paymentRef, {
@@ -513,6 +530,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
 
                 // Write the reversal payment transaction
                 const revId = `${payment.id}-REV`;
+                lastReversalId = revId;
                 const revPaymentRef = doc(firestore, 'financialRecords', record.id, 'payments', revId);
                 batch.set(revPaymentRef, {
                     id: revId,
@@ -554,6 +572,8 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
             
             // 3. Reset the parent record charge to unpaid/partially paid instead of deleting it
             const recordRef = doc(firestore, 'financialRecords', record.id);
+            // (lastReversalId is set in the loop above; the rules require "amount paid" to fall only together
+            //  with a reversal record written in the same save.)
             const totalReversed = round2Money(payments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0));
             const newAmountPaid = round2Money(Math.max(0, (record.amountPaid || 0) - totalReversed));
             const newStatus = standardStatus(record.billedAmount, newAmountPaid, record.waiverAmount || 0, (record as any).statusBeforeReversal);
@@ -561,6 +581,7 @@ function ReversalRequestDialog({ record, activeTill, open, setOpen, onUpdate }: 
             batch.update(recordRef, {
                 amountPaid: newAmountPaid,
                 status: newStatus,
+                ...(lastReversalId ? { lastPaymentId: lastReversalId } : {}),
                 reversalReason: deleteField(),
                 reversalRequestedAt: deleteField(),
                 statusBeforeReversal: deleteField()
@@ -2108,7 +2129,7 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                 } catch { /* fall back to the bill's own ids */ }
                 const keys = [record.studentId, (record as any).studentUid, owner?.id, owner?.uid, owner?.studentId, owner?.admissionNo, owner?.admissionNumber].filter(Boolean);
                 const studentRecs = await fetchStudentRecords(firestore, schoolId, Array.from(new Set(keys)));
-                allocationCandidates = orderAllocationTargets(studentRecs, record).slice(0, 100);
+                allocationCandidates = orderAllocationTargets(studentRecs, record).slice(0, 12); // one save may pay at most ~12 other bills (security-rule check limit); any rest stays as credit
             }
             const allocatedTo: { description: string; portion: number }[] = [];
             let leftoverCredit = 0;
@@ -2141,7 +2162,9 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
                         amountPaid: newAmountPaid, 
                         status: isFullyPaid ? 'Paid' : (target.status === 'Overdue' ? 'Overdue' : 'Unpaid'), 
                         lastPaymentDate: serverTimestamp(),
-                        paymentNarration: paymentDescription
+                        paymentNarration: paymentDescription,
+                        // The security rules only let "amount paid" change together with the payment record named here.
+                        lastPaymentId: receiptId,
                     });
                     // One payment doc per bill (same receipt number) so per-bill history & reversals stay accurate.
                     transaction.set(doc(firestore, 'financialRecords', recordId, 'payments', receiptId), {
@@ -3793,7 +3816,9 @@ export default function AccountsPage() {
     }
   }, []);
 
-  const canApprove = (role as any) === 'Director' || (role as any) === 'Administrator' || (role as any) === 'SuperAdmin' || (role as any) === 'Admin' || (profile?.role === 'Director');
+  // Approving reversals (and waivers) is the Director's decision only — not Administrators.
+  const canApprove = (role as any) === 'Director' || (role as any) === 'SuperAdmin' || (profile?.role === 'Director');
+  const isDirectorOrAdminRole = canApprove || (role as any) === 'Administrator' || (role as any) === 'Admin';
   const [analyticsTab, setAnalyticsTab] = useState('summary');
   const [advisoryScope, setAdvisoryScope] = useState<'all-time' | 'current-term'>('all-time');
   const [isProcessingReversal, setIsProcessingReversal] = useState<string | null>(null);
@@ -4094,7 +4119,7 @@ export default function AccountsPage() {
 
   // Daily audit quota for loading full-school financial ledger (protects Firestore read limits)
   // Quota: 1 audit/day for Accountants, 2 audits/day for Directors/Administrators
-  const isDirectorOrAdmin = Boolean(canApprove);
+  const isDirectorOrAdmin = Boolean(isDirectorOrAdminRole); // ledger-audit allowance (unchanged)
   const userMaxAudits = isDirectorOrAdmin ? 2 : 1;
   const todayStr = useMemo(() => format(new Date(), 'yyyy-MM-dd'), []);
 
@@ -4683,12 +4708,20 @@ export default function AccountsPage() {
       const scale = aged > debt && aged > 0 ? debt / aged : 1;
       const aging = { current: c * scale + Math.max(0, debt - aged), age30: a30 * scale, age60: a60 * scale, age90: a90 * scale };
       const oldestOverdueDays = oldest && debt > 0.01 ? Math.max(0, Math.floor((now - oldest) / 86400000)) : 0;
-      return { student, debt, credit, balance: Math.round((debt - credit) * 100) / 100, aging, oldestOverdueDays, yb, yp, yw };
+      return { student, debt, credit, balance: Math.round((debt - credit) * 100) / 100, aging, agedRaw: aged, oldestOverdueDays, yb, yp, yw };
     });
   }, [balanceIndex, viewTermId, students, effectiveAcademicYear, activeTermStamp]);
 
   // The aged-debt list, debt aging and class pace work from the balance index too (no full ledger needed).
   const advisoryAvailable = isLedgerLoaded || Boolean(indexRows);
+  // The balance index only carries aging once the server has rebuilt it (nightly job / rebuild script, after the
+  // functions are deployed). Without it every cedi of debt used to show as "Current (Not Overdue)" — 100%.
+  const indexAgingMissing = useMemo(() => {
+    if (isLedgerLoaded || !indexRows) return false;
+    let debt = 0, aged = 0;
+    indexRows.forEach((r: any) => { debt += r.debt || 0; aged += r.agedRaw || 0; });
+    return debt > 0.01 && aged < 0.01;
+  }, [isLedgerLoaded, indexRows]);
 
   // --- DEBT AGING CALCULATION ---
   const debtAgingStats = useMemo(() => {
@@ -5126,6 +5159,7 @@ export default function AccountsPage() {
         const freshSnap = await getDoc(doc(firestore, 'financialRecords', record.id));
         const fresh: any = freshSnap.exists() ? freshSnap.data() : record;
         
+        let lastReversalId = '';
         for (const p of paymentsList) {
             // Update original payment to mark as Reversed
             batch.update(doc(firestore, 'financialRecords', record.id, 'payments', p.id), {
@@ -5136,6 +5170,7 @@ export default function AccountsPage() {
 
             // Write the negative reversal transaction
             const revId = `${p.id}-REV`;
+            lastReversalId = revId;
             batch.set(doc(firestore, 'financialRecords', record.id, 'payments', revId), {
                 id: revId,
                 amount: -p.amount,
@@ -5163,6 +5198,7 @@ export default function AccountsPage() {
         batch.update(recordRef, {
             amountPaid: newAmountPaid,
             status: newStatus,
+            ...(lastReversalId ? { lastPaymentId: lastReversalId } : {}),
             reversalReason: deleteField(),
             reversalRequestedAt: deleteField(),
             statusBeforeReversal: deleteField()
@@ -5896,6 +5932,11 @@ export default function AccountsPage() {
                                         <p className="text-xs text-slate-500 leading-normal">
                                             Showing all students with outstanding balances. Click Send Reminder beside any student, or use the Bulk SMS Hub to notify all parents at once.
                                         </p>
+                                        {indexAgingMissing && (
+                                            <p className="text-[11px] text-amber-700 font-semibold mt-1">
+                                                Days overdue are not available yet (debt aging is calculated by the server each night). Balances shown are current.
+                                            </p>
+                                        )}
                                     </div>
                                     <Link href="/dashboard/communication/sms">
                                         <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 rounded-xl h-8 px-3 shrink-0">
@@ -6048,6 +6089,17 @@ export default function AccountsPage() {
                                             )}
                                             {isQuotaExhausted && ledgerMode !== 'full-school' ? `Limit Reached (0/${userMaxAudits})` : `Load School Ledger (${userAuditsRemaining}/${userMaxAudits})`}
                                         </Button>
+                                    </div>
+                                ) : indexAgingMissing ? (
+                                    <div className="text-center py-10 px-4 border border-dashed border-amber-300 rounded-xl bg-amber-50/60 flex flex-col items-center justify-center space-y-2">
+                                        <Clock className="h-6 w-6 text-amber-600" />
+                                        <p className="text-xs font-bold text-slate-800">Debt aging has not been calculated yet</p>
+                                        <p className="text-[11px] text-slate-600 max-w-md leading-relaxed">
+                                            The server works out how overdue each balance is every night, once the updated functions are deployed
+                                            (or straight away with the rebuild script). Until then the split by age is not known — this used to show
+                                            every balance as "Current". Load the full school ledger above for an exact breakdown now.
+                                        </p>
+                                        <p className="text-[11px] text-slate-500">Gross debt: GH₵{debtAgingStats.grossTotal.toFixed(2)} · Overpayments: GH₵{debtAgingStats.overpayments.toFixed(2)}</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-4">
@@ -6989,7 +7041,7 @@ export default function AccountsPage() {
                             Review and authorize requests submitted by cashiers and accountants to reverse recorded fee payments or bills.
                             {!canApprove && (
                                 <span className="text-red-500 font-bold block mt-1 text-[11px] uppercase tracking-wider">
-                                    ⚠️ Action locked: Only the Director or Administrator can approve reversals.
+                                    ⚠️ Action locked: Only the Director can approve reversals.
                                 </span>
                             )}
                         </CardDescription>

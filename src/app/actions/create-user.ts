@@ -5,6 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App, ServiceAccount, cert } from 'firebase-admin/app';
 import { sendSchoolCredentialsEmail } from '@/lib/email';
 import { sanitizeErrorMessage } from '@/lib/error-handler';
+import { savePendingCredential } from '@/lib/pending-credentials';
 
 // --- HELPER: Fixes Vercel Key Formatting Issues ---
 const formatPrivateKey = (key: string) => {
@@ -154,6 +155,18 @@ export async function createNewUser(
     }
 
     await firestore.collection('users').doc(userRecord.uid).set(userDocData, { merge: true });
+
+    // Keep the temporary password so the school can hand it over whenever the person turns up
+    // (removed automatically once they choose their own password).
+    await savePendingCredential(firestore as any, {
+        uid: userRecord.uid,
+        schoolId: targetSchoolId,
+        password,
+        email,
+        name: displayName,
+        role: role || 'Parent',
+        setBy: callerUid,
+    });
     
     // 5. Send Credentials Email
     if (details?.firstName && targetSchoolId) {

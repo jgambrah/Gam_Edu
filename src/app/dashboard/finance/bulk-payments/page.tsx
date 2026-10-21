@@ -279,9 +279,22 @@ export default function BulkDailyReceiptsPage() {
                     return;
                 }
             }
-            const batch = writeBatch(firestore);
+            // Saved in groups of BILLS_PER_SAVE bills: the security rules check each bill's payment record,
+            // and one save may only carry a limited number of such checks. Each group also updates the till.
+            const BILLS_PER_SAVE = 10;
+            let batch = writeBatch(firestore);
+            let billsInBatch = 0;
+            let batchCollected = 0;
             let totalCollected = 0;
             let processedCount = 0;
+            const commitGroup = async () => {
+                if (billsInBatch === 0) return;
+                batch.update(doc(firestore, 'tills', activeTill.id), { currentBalance: increment(batchCollected) });
+                await batch.commit();
+                batch = writeBatch(firestore);
+                billsInBatch = 0;
+                batchCollected = 0;
+            };
 
             // Keep track of the generated payments to notify parents after batch commit
             const paymentsToNotify: {
@@ -310,7 +323,9 @@ export default function BulkDailyReceiptsPage() {
                     amountPaid: newAmountPaid,
                     lastPaymentDate: serverTimestamp(),
                     status: isFullyPaid ? 'Paid' : 'Unpaid',
-                    paymentNarration: finalDescription
+                    paymentNarration: finalDescription,
+                    // The security rules only let "amount paid" change together with the payment record named here.
+                    lastPaymentId: receiptId,
                 });
 
                 batch.set(paymentRef, {
@@ -339,6 +354,8 @@ export default function BulkDailyReceiptsPage() {
                 });
 
                 totalCollected += payAmount;
+                batchCollected += payAmount;
+                billsInBatch++;
                 processedCount++;
 
                 const remBal = Math.max(0, bill.billedAmount - newAmountPaid - (bill.waiverAmount || 0));
@@ -351,13 +368,10 @@ export default function BulkDailyReceiptsPage() {
                     receiptId,
                     remainingBalance: remBal
                 });
+                if (billsInBatch >= BILLS_PER_SAVE) await commitGroup();
             }
 
-            batch.update(doc(firestore, 'tills', activeTill.id), {
-                currentBalance: increment(totalCollected)
-            });
-
-            await batch.commit();
+            await commitGroup();
 
             // Dispatch automated SMS receipts via server action for all processed payments
             const currentToken = await user.getIdToken().catch(() => undefined);

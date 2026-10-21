@@ -4,6 +4,7 @@ import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { sanitizeErrorMessage } from '@/lib/error-handler';
+import { savePendingCredential } from '@/lib/pending-credentials';
 
 // Initialize Admin App
 function getAdminApp() {
@@ -69,6 +70,23 @@ export async function adminResetUserPassword(
 
     // 1. Update the password in Firebase Auth directly
     await auth.updateUser(uid, { password: newPassword });
+
+    // Keep it available to the school until the person chooses their own (see LoginDetailsCard).
+    try {
+      const [targetUser, authUser] = await Promise.all([db.collection('users').doc(uid).get(), auth.getUser(uid)]);
+      const t: any = targetUser.data() || {};
+      await savePendingCredential(db as any, {
+        uid,
+        schoolId: t.schoolId || '',
+        password: newPassword,
+        email: authUser.email || t.email || '',
+        name: authUser.displayName || `${t.firstName || ''} ${t.lastName || ''}`.trim(),
+        role: t.role || '',
+        setBy: callerUid,
+      });
+    } catch (e) {
+      console.warn('Reset done; temporary password not stored for later look-up:', e);
+    }
 
     // 2. Reactivate the "First Login" lockout flag
     const updateData = { requirePasswordChange: true };

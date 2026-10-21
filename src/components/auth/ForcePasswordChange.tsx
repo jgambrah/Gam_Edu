@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ShieldAlert, Lock, CheckCircle2 } from 'lucide-react';
 import { useRole } from '@/context/role-context';
+import { clearMyPendingCredential } from '@/app/actions/credentials';
 
 interface ForcePasswordChangeProps {
   user: User;
@@ -94,6 +95,12 @@ export default function ForcePasswordChange({ user, profile }: ForcePasswordChan
           throw new Error(data.error || 'Failed to update password via server.');
         }
       }
+
+      // The school's copy of the temporary password is no longer valid — forget it (best effort).
+      try {
+        const tok = await user.getIdToken();
+        await clearMyPendingCredential(tok);
+      } catch { /* not critical */ }
 
       // 3. Clear requirePasswordChange on client firestore records
       if (firestore) {

@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { LoginDetailsCard } from '@/components/auth/LoginDetailsCard';
+import { makeFriendlyPassword } from '@/lib/friendly-password';
 import Link from 'next/link';
 import { useAuth, useFirestore } from '@/firebase';
 import { collection, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, deleteField } from 'firebase/firestore';
@@ -96,7 +98,8 @@ export default function ParentsPage() {
 
   // Password Reset State
   const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
-  const [newTempPassword, setNewTempPassword] = useState('password123');
+  const [newTempPassword, setNewTempPassword] = useState('');
+  const [loginDetailsTick, setLoginDetailsTick] = useState(0);
   const [isResetting, setIsResetting] = useState(false);
 
   // ✅ Controlled selection state
@@ -257,7 +260,9 @@ export default function ParentsPage() {
       const formData = new FormData(e.currentTarget);
       const values = Object.fromEntries(formData.entries()) as any;
       const studentIds = selectedStudentIds;
-      const password = "password123";
+      // Easy temporary password (e.g. "mango4827"), different for every parent; the school can look it up
+      // again any time from the key button until the parent chooses their own.
+      const password = makeFriendlyPassword();
 
       try {
           const idToken = await auth?.currentUser?.getIdToken();
@@ -283,7 +288,7 @@ export default function ParentsPage() {
             await updateDoc(studentRef, { parentId: result.uid });
           }
 
-          toast({ title: "Success", description: "Parent created and linked successfully." });
+          toast({ title: "Success", description: `Parent created and linked. Sign-in: ${values.email} · temporary password: ${password} (also available later from the key button).`, duration: 60000 });
           setIsAddOpen(false);
           loadData();
 
@@ -643,7 +648,7 @@ export default function ParentsPage() {
                         <div className="flex justify-end gap-1.5">
                           {canManage && (
                             <>
-                              <Button variant="ghost" size="sm" onClick={() => setResetPasswordUser(p)} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
+                              <Button variant="ghost" size="sm" onClick={() => { setNewTempPassword(makeFriendlyPassword()); setResetPasswordUser(p); }} title="Reset Password" className="h-8.5 w-8.5 p-0 hover:bg-amber-50 hover:text-amber-600 rounded-lg">
                                 <KeyRound className="h-4.5 w-4.5 text-amber-500"/>
                               </Button>
                               <Button variant="ghost" size="sm" onClick={() => setEditingParent(p)} className="h-8.5 w-8.5 p-0 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg">
@@ -910,8 +915,14 @@ export default function ParentsPage() {
                   </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                  <LoginDetailsCard
+                      uid={resetPasswordUser?.uid || resetPasswordUser?.id}
+                      name={`${resetPasswordUser?.firstName || ''} ${resetPasswordUser?.lastName || ''}`.trim()}
+                      email={resetPasswordUser?.email}
+                      refreshKey={loginDetailsTick}
+                  />
                   <div className="space-y-2">
-                      <Label>Temporary Password</Label>
+                      <Label>New temporary password (only if they forgot it)</Label>
                       <Input 
                           type="text" 
                           value={newTempPassword} 
@@ -928,9 +939,9 @@ export default function ParentsPage() {
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'parents', idToken);
                           
                           if (res.success) {
-                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
-                              setResetPasswordUser(null);
-                              setNewTempPassword('password123'); // Reset for next use
+                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}`, duration: 30000 });
+                              setLoginDetailsTick(t => t + 1);
+                              setNewTempPassword(makeFriendlyPassword());
                           } else {
                               toast({ variant: 'destructive', title: "Error", description: res.error });
                           }

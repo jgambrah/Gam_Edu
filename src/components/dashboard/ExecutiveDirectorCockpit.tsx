@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { FeeChangeReviewPanel } from '@/components/finance/FeeChangeReviewPanel';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
@@ -951,6 +952,11 @@ export function ExecutiveDirectorCockpit({
   return (
     <div className={cn("space-y-4 mt-6 pb-6 transition-[margin] duration-300 ease-in-out", isAiDrawerOpen && isAiDrawerPinned ? "xl:mr-[480px] 2xl:mr-[500px]" : "")}>
       
+      {/* Bill changes made by staff, recorded by the server, for the Director to review (1 read). */}
+      {isDirectorOrSuper && (
+        <FeeChangeReviewPanel schoolId={profile?.schoolId || schoolProfile?.id || schoolProfile?.schoolId} mode="director" />
+      )}
+
       {/* ─────────────────────────────────────────────────────────────
           ZONE 1: EXECUTIVE ALERT DESK (High-Density Action Center & Ribbon)
           ───────────────────────────────────────────────────────────── */}

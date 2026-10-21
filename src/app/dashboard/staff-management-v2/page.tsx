@@ -2,6 +2,8 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { LoginDetailsCard } from '@/components/auth/LoginDetailsCard';
+import { makeFriendlyPassword } from '@/lib/friendly-password';
 import { useFirestore, useCollection, useMemoFirebase, useUser, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { logAuditEvent } from '@/lib/audit';
@@ -14,10 +16,7 @@ import { deactivateStaffAccount } from '@/app/actions/staff-admin';
 /** A one-off temporary password (the staff member must change it at first sign-in). Before, every new account
  *  and every reset used "password123" — with predictable school e-mail addresses, anyone could sign in first. */
 function makeTempPassword(): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-  const bytes = new Uint32Array(8);
-  (globalThis.crypto || (window as any).crypto).getRandomValues(bytes);
-  return 'Gam-' + Array.from(bytes, b => chars[b % chars.length]).join('');
+  return makeFriendlyPassword(); // e.g. "mango4827" — easy to type, different for everyone
 }
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
@@ -94,6 +93,7 @@ export default function StaffManagementPage() {
   const [resetPasswordUser, setResetPasswordUser] = useState<any>(null);
   const [newTempPassword, setNewTempPassword] = useState('');
   const [createdCredentials, setCreatedCredentials] = useState<{ name: string; email: string; password: string } | null>(null);
+  const [loginDetailsTick, setLoginDetailsTick] = useState(0);
   const [isResetting, setIsResetting] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -608,8 +608,14 @@ export default function StaffManagementPage() {
                   </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
+                  <LoginDetailsCard
+                      uid={resetPasswordUser?.uid || resetPasswordUser?.id}
+                      name={`${resetPasswordUser?.firstName || ''} ${resetPasswordUser?.lastName || ''}`.trim()}
+                      email={resetPasswordUser?.email}
+                      refreshKey={loginDetailsTick}
+                  />
                   <div className="space-y-2">
-                      <Label>Temporary Password</Label>
+                      <Label>New temporary password (only if they forgot it)</Label>
                       <Input 
                           type="text" 
                           value={newTempPassword} 
@@ -624,8 +630,9 @@ export default function StaffManagementPage() {
                           const idToken = await auth?.currentUser?.getIdToken();
                           const res = await adminResetUserPassword(resetPasswordUser.uid, newTempPassword, 'staff', idToken);
                           if (res.success) {
-                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}` });
-                              setResetPasswordUser(null);
+                              toast({ title: "Password Reset", description: `New password is: ${newTempPassword}`, duration: 30000 });
+                              setLoginDetailsTick(t => t + 1);
+                              setNewTempPassword(makeTempPassword());
                           } else {
                               toast({ variant: 'destructive', title: "Error", description: res.error });
                           }
@@ -647,7 +654,7 @@ export default function StaffManagementPage() {
                   <DialogTitle>Account created — share these details</DialogTitle>
                   <DialogDescription>
                       Give these to {createdCredentials?.name} privately. They will be asked to choose their own password at first sign-in.
-                      This password is shown only once.
+                      You can see it again later from the key button beside their name, until they choose their own password.
                   </DialogDescription>
               </DialogHeader>
               <div className="space-y-2 rounded-xl border bg-slate-50 p-4 font-mono text-sm">

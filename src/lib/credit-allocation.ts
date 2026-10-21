@@ -75,6 +75,9 @@ export async function fetchStudentRecords(firestore: Firestore, schoolId: string
  * Splits `amount` across the source bill and the student's other unpaid bills.
  * Returns a list of { recordId, portion }. The source always comes first and absorbs any leftover credit.
  */
+/** Most bills one save may pay from a single receipt or credit (security-rule check limit). */
+export const MAX_TARGETS_PER_SAVE = 6;
+
 export function planAllocation(amount: number, sourceFresh: any, orderedTargetsFresh: any[]): { recordId: string; portion: number }[] {
   let remaining = round2(amount);
   const plan: { recordId: string; portion: number }[] = [];
@@ -116,10 +119,18 @@ export async function reallocateExistingOverpayments(params: {
   const initial = await fetchStudentRecords(firestore, schoolId, studentKeys);
   const overpaid = initial.filter(r => isAllocatable(r) && recordBalance(r) < -EPS);
 
-  for (const src of overpaid) {
+  // At most MAX_TARGETS_PER_SAVE bills are paid from one source per save (the security rules check each
+  // credit move, and a single save may only do a limited number of such checks); a source with more surplus
+  // simply goes round again.
+  const queue = [...overpaid];
+  const touched = new Set<string>();
+  let guard = 0;
+  while (queue.length > 0 && guard++ < 60) {
+    const src = queue.shift()!;
     const records = await fetchStudentRecords(firestore, schoolId, studentKeys);
-    const targets = orderAllocationTargets(records, src);
-    if (targets.length === 0) break; // nothing left to pay — remaining surplus is a genuine credit
+    const allTargets = orderAllocationTargets(records, src);
+    if (allTargets.length === 0) break; // nothing left to pay — remaining surplus is a genuine credit
+    const targets = allTargets.slice(0, MAX_TARGETS_PER_SAVE);
 
     // Payment docs on the source bill, newest first (the latest payment is what created the surplus).
     const paySnap = await getDocs(collection(firestore, 'financialRecords', src.id, 'payments'));
@@ -218,7 +229,8 @@ export async function reallocateExistingOverpayments(params: {
 
     if (movedHere > EPS) {
       moved = round2(moved + movedHere);
-      sources += 1;
+      if (!touched.has(src.id)) { touched.add(src.id); sources += 1; }
+      if (allTargets.length > targets.length) queue.unshift(src);
     }
   }
 
