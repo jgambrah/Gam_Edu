@@ -193,7 +193,12 @@ service cloud.firestore {
     match /schools/{schoolId} {
       allow get, list: if true;
       allow write: if isSuperAdmin();
-      allow update: if isSignedIn() && (isSuperAdmin() || (isDirector() && getUserSchoolId() == schoolId));
+      // A school's own admins edit its profile and website, but never its subscription or AI credit balance
+      // (credits are spent by server code, which these rules do not affect).
+      allow update: if isSignedIn() && (isSuperAdmin() || (isDirector() && getUserSchoolId() == schoolId
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'aiCredits', 'aiCreditBalance', 'plan', 'status', 'isActive', 'trialEndsAt',
+          'subscription', 'subscriptionStatus', 'subscriptionPlan', 'planExpiresAt', 'billingStatus'])));
 
       match /assignments/{assignmentId} {
         allow read, get, list: if isSignedIn();

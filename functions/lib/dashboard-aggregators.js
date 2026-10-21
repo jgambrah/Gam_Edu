@@ -46,6 +46,28 @@ function rosterEntry(s) {
     return e;
 }
 const ROSTER_MAX_BYTES = 900000; // stay under Firestore's 1 MiB document limit
+/**
+ * Who has been billed school fees, per term: termBilling/{schoolId} = { terms: { <termId>: { <bill studentId>: n } } }
+ * (n = number of school-fee bills; canteen and transport bills are not counted). The "Students Not Billed"
+ * alert compares this ONE document with the roster — 2 reads instead of reading every bill.
+ * Kept current by the bill trigger (increments, no reads); the weekly full rebuild rewrites it from the
+ * open bills only, which also drops closed terms.
+ */
+const TERM_BILLING = (schoolId) => db.collection('termBilling').doc(schoolId);
+/** The term + student a bill counts towards in termBilling, or null if it is not a school-fee bill. */
+function termBillingKey(r) {
+    if (!r || !r.studentId || r.voided === true)
+        return null;
+    if (!(Number(r.billedAmount) > 0))
+        return null;
+    const t = String(r.type || r.category || '').toLowerCase();
+    if (t.includes('canteen') || t.includes('transport'))
+        return null;
+    const st = (0, term_utils_1.termStampOfRecord)(r);
+    if (!(st === null || st === void 0 ? void 0 : st.termId))
+        return null;
+    return { term: st.termId, sid: String(r.studentId) };
+}
 async function writeRoster(schoolId, docs) {
     const students = {};
     docs.forEach(d => { const e = rosterEntry(d.data()); if (e)
@@ -500,6 +522,17 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
     // Exact rebuild of the balance index (replaces the document, removing any drift).
     await writeBalanceIndex(schoolId, Object.fromEntries(Object.entries(byStudent).map(([k, v]) => [k, roundIdx(v)])), { rebuiltAt: firestore_2.FieldValue.serverTimestamp() });
     await writeRoster(schoolId, studentsSnap.docs);
+    // Exact rebuild of "who has been billed school fees" from the open (current-term) bills.
+    const termTally = {};
+    recordDocs.forEach(d => {
+        const k = termBillingKey(d.data());
+        if (!k)
+            return;
+        const t = (termTally[k.term] = termTally[k.term] || {});
+        t[k.sid] = (t[k.sid] || 0) + 1;
+    });
+    await TERM_BILLING(schoolId).set({ schoolId, terms: termTally, rebuiltAt: firestore_2.FieldValue.serverTimestamp(), updatedAt: firestore_2.FieldValue.serverTimestamp() })
+        .catch(e => console.warn('[termBilling] rebuild failed:', e === null || e === void 0 ? void 0 : e.message));
 }
 /**
  * DAILY LIGHT REFRESH (much cheaper than the full rebuild): reads only the school's students and its
@@ -858,6 +891,23 @@ exports.onFinancialRecordWrite = (0, firestore_1.onDocumentWritten)('financialRe
     // Bills created by any screen without the field get it here, within a second of being written.
     if (after && after.isArchived === undefined && ((_g = (_f = event.data) === null || _f === void 0 ? void 0 : _f.after) === null || _g === void 0 ? void 0 : _g.ref)) {
         await event.data.after.ref.update({ isArchived: false }).catch(() => undefined);
+    }
+    // Who has been billed this term (no reads: increments only).
+    {
+        const kb = termBillingKey(before);
+        const ka = termBillingKey(after);
+        if (JSON.stringify(kb) !== JSON.stringify(ka)) {
+            const terms = {};
+            if (kb)
+                (terms[kb.term] = terms[kb.term] || {})[kb.sid] = firestore_2.FieldValue.increment(-1);
+            if (ka) {
+                const cur = (terms[ka.term] = terms[ka.term] || {});
+                // same term + student on both sides cannot happen here (keys differ), so no clash
+                cur[ka.sid] = firestore_2.FieldValue.increment(1);
+            }
+            await TERM_BILLING(schoolId).set({ schoolId, terms, updatedAt: firestore_2.FieldValue.serverTimestamp() }, { merge: true })
+                .catch(e => console.warn('[termBilling] increment failed:', e === null || e === void 0 ? void 0 : e.message));
+        }
     }
     // Per-student balance index (no reads: increments only). A bill moving between students is handled too.
     {

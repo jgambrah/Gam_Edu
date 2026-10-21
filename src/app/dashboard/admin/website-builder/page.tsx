@@ -14,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { 
   Loader2, Globe, LayoutTemplate, Palette, Save, Video, 
   Image as ImageIcon, Plus, Trash2, Phone, Mail, MapPin, 
-  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare, Pencil, BarChart3
+  Facebook, Instagram, Linkedin, Copy, ExternalLink, Check, Upload, User, Users, Megaphone, GraduationCap, Sparkles, Star, MessageSquare, Pencil, BarChart3, Receipt, ShieldCheck
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -38,6 +38,45 @@ function getYouTubeId(url: string) {
   }
 
   return null;
+}
+
+/** Registration / accreditation bodies shown in the website's trust banner (only when the school confirms them). */
+const ACCREDITATION_BODIES = [
+  { id: 'ges', name: 'Ghana Education Service', flag: 'enableGesAccreditation', numKey: 'gesRegNumber', hint: 'GES registration number' },
+  { id: 'waec', name: 'WAEC Examination Centre', flag: 'enableWaecAccreditation', numKey: 'waecCentreCode', hint: 'Centre code' },
+  { id: 'dpc', name: 'Data Protection Commission', flag: 'enableDpcAccreditation', numKey: 'dpcCertNumber', hint: 'DPC registration number' },
+  { id: 'cambridge', name: 'Cambridge Assessment', flag: 'enableCambridgeAccreditation', numKey: 'cambridgeCentreId', hint: 'Centre ID' },
+  { id: 'ib', name: 'International Baccalaureate', flag: 'enableIbAccreditation', numKey: 'ibSchoolCode', hint: 'IB school code' },
+  { id: 'stem', name: 'Ghana STEM Council', flag: 'enableStemAccreditation', numKey: 'stemHubId', hint: 'Hub ID' },
+] as const;
+type AccrState = Record<string, { on: boolean; num: string }>;
+function loadAccreditations(d: any): AccrState {
+  const out: AccrState = {};
+  ACCREDITATION_BODIES.forEach(b => {
+    const num = String(d?.[b.numKey] || '');
+    out[b.id] = { on: d?.[b.flag] === true || (d?.[b.flag] !== false && !!num), num };
+  });
+  return out;
+}
+
+type FeeRow = { level: string; label: string; amount: string; period: string };
+type WebsiteFees = { show: boolean; title: string; note: string; items: FeeRow[] };
+
+/** Saved fee schedule, or (first time) rows started from the old teaser figures — kept hidden until confirmed. */
+function loadWebsiteFees(d: any): WebsiteFees {
+  const wf = d?.websiteFees;
+  if (wf && typeof wf === 'object') {
+    return {
+      show: wf.show === true,
+      title: String(wf.title || ''),
+      note: String(wf.note || ''),
+      items: (Array.isArray(wf.items) ? wf.items : []).map((i: any) => ({ level: String(i?.level || ''), label: String(i?.label || ''), amount: String(i?.amount ?? ''), period: String(i?.period || '') })),
+    };
+  }
+  const items: FeeRow[] = [];
+  if (d?.showcaseTuition) items.push({ level: '', label: 'Tuition', amount: String(d.showcaseTuition), period: 'per term' });
+  if (d?.showcaseLabPass) items.push({ level: '', label: 'Lab / ICT Fee', amount: String(d.showcaseLabPass), period: 'per term' });
+  return { show: false, title: '', note: '', items };
 }
 
 export default function WebsiteBuilderPage() {
@@ -100,6 +139,9 @@ export default function WebsiteBuilderPage() {
     hideParentPortalTeaser: false,
     showcaseTuition: '',
     showcaseLabPass: '',
+    // Real fee schedule for the public website. Nothing is shown there unless show === true and rows exist.
+    websiteFees: { show: false, title: '', note: '', items: [] as FeeRow[] } as WebsiteFees,
+    accreditationState: {} as AccrState,
     showcaseGpa: '',
     showcaseAttendance: '',
     feeStatusText: '',
@@ -160,6 +202,15 @@ export default function WebsiteBuilderPage() {
   const [testiAvatarUrl, setTestiAvatarUrl] = useState('');
   const [testiAvatarUploading, setTestiAvatarUploading] = useState(false);
   const [editingTestiIdx, setEditingTestiIdx] = useState<number | null>(null);
+
+  /** Uploads a website image to the school's storage folder and returns its URL. */
+  const uploadSchoolMedia = async (file: File, folder: string): Promise<string> => {
+    if (!schoolId) throw new Error('School not loaded yet.');
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(-60);
+    const storageRef = ref(getStorage(), `schools/${schoolId}/website/${folder}_${Date.now()}_${safeName}`);
+    const snapshot = await uploadBytes(storageRef, file);
+    return getDownloadURL(snapshot.ref);
+  };
 
   const handleTestiAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -320,6 +371,8 @@ export default function WebsiteBuilderPage() {
         hideParentPortalTeaser: schoolData.hideParentPortalTeaser === true || schoolData.hidePortalPreview === true,
         showcaseTuition: schoolData.showcaseTuition || '',
         showcaseLabPass: schoolData.showcaseLabPass || '',
+        websiteFees: loadWebsiteFees(schoolData),
+        accreditationState: loadAccreditations(schoolData),
         showcaseGpa: schoolData.showcaseGpa || '',
         showcaseAttendance: schoolData.showcaseAttendance || schoolData.attendanceRate || '',
         feeStatusText: schoolData.feeStatusText || '',
@@ -339,6 +392,18 @@ export default function WebsiteBuilderPage() {
     }
   }, [schoolData]);
 
+  // ── Fee schedule editing ──
+  const setFees = (patch: Partial<WebsiteFees>) => setFormData(prev => ({ ...prev, websiteFees: { ...prev.websiteFees, ...patch } }));
+  const setFeeRow = (idx: number, patch: Partial<FeeRow>) => setFormData(prev => ({
+    ...prev,
+    websiteFees: { ...prev.websiteFees, items: prev.websiteFees.items.map((r, i) => (i === idx ? { ...r, ...patch } : r)) },
+  }));
+  const addFeeRow = () => setFormData(prev => {
+    const last = prev.websiteFees.items[prev.websiteFees.items.length - 1];
+    return { ...prev, websiteFees: { ...prev.websiteFees, items: [...prev.websiteFees.items, { level: last?.level || '', label: '', amount: '', period: last?.period || 'per term' }] } };
+  });
+  const removeFeeRow = (idx: number) => setFormData(prev => ({ ...prev, websiteFees: { ...prev.websiteFees, items: prev.websiteFees.items.filter((_, i) => i !== idx) } }));
+
   const publicUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}/s/${formData.slug}`
     : '';
@@ -356,8 +421,28 @@ export default function WebsiteBuilderPage() {
     if (!firestore || !schoolId) return;
     setIsSaving(true);
     try {
+        const cleanFees = {
+            ...formData.websiteFees,
+            title: formData.websiteFees.title.trim(),
+            note: formData.websiteFees.note.trim(),
+            items: formData.websiteFees.items
+                .map(i => ({ level: i.level.trim(), label: i.label.trim(), amount: i.amount.trim(), period: i.period.trim() }))
+                .filter(i => i.label && i.amount),
+        };
+        if (cleanFees.show && cleanFees.items.length === 0) cleanFees.show = false;
+        // Accreditations: an explicit on/off per body plus its number (the website never shows one that is off).
+        const accrFields: Record<string, any> = {};
+        ACCREDITATION_BODIES.forEach(b => {
+            const st = formData.accreditationState[b.id] || { on: false, num: '' };
+            accrFields[b.flag] = st.on;
+            accrFields[b.numKey] = st.num.trim();
+        });
+        accrFields.enabledAccreditationIds = []; // the ticks above are now the only switch
+        const { accreditationState: _accr, ...formToSave } = formData;
         await updateDoc(doc(firestore, 'schools', schoolId), { 
-            ...formData,
+            ...formToSave,
+            ...accrFields,
+            websiteFees: cleanFees,
             testimonials: formData.customTestimonials,
             customTestimonials: formData.customTestimonials,
             reviews: formData.customTestimonials,
@@ -1371,6 +1456,109 @@ export default function WebsiteBuilderPage() {
                     </Card>
 
                     <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <ShieldCheck className="h-5 w-5 text-emerald-600" /> Registrations &amp; Accreditations
+                            </CardTitle>
+                            <CardDescription>
+                                Tick only the bodies your school is really registered with, and enter your number. Unticked bodies never appear on your website.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {ACCREDITATION_BODIES.map(b => {
+                                const st = formData.accreditationState[b.id] || { on: false, num: '' };
+                                const set = (patch: Partial<{ on: boolean; num: string }>) => setFormData(prev => ({
+                                    ...prev,
+                                    accreditationState: { ...prev.accreditationState, [b.id]: { ...st, ...patch } },
+                                }));
+                                return (
+                                    <div key={b.id} className="grid grid-cols-1 sm:grid-cols-[1.2fr_1fr] gap-2 items-center rounded-xl border border-slate-200 p-2.5">
+                                        <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer">
+                                            <input type="checkbox" checked={st.on} onChange={e => set({ on: e.target.checked })} className="h-4 w-4 rounded border-slate-300 text-emerald-600" />
+                                            {b.name}
+                                        </label>
+                                        <Input placeholder={b.hint} value={st.num} onChange={e => set({ num: e.target.value })} disabled={!st.on} className="h-9 text-sm font-mono" />
+                                    </div>
+                                );
+                            })}
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-amber-200">
+                        <CardHeader className="flex flex-row items-start justify-between gap-4">
+                            <div>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Receipt className="h-5 w-5 text-amber-600" /> School Fees on Website
+                                </CardTitle>
+                                <CardDescription>
+                                    Show your real fees to prospective parents. Nothing about fees appears on your website until you add rows and tick &quot;Show on website&quot;.
+                                </CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <input
+                                    type="checkbox"
+                                    id="showWebsiteFees"
+                                    checked={formData.websiteFees.show}
+                                    onChange={e => setFees({ show: e.target.checked })}
+                                    className="h-4 w-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                                />
+                                <Label htmlFor="showWebsiteFees" className="text-xs cursor-pointer font-semibold text-slate-700">Show on website</Label>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-semibold">Heading (optional)</Label>
+                                <Input
+                                    placeholder="e.g. 2026/2027 Academic Year"
+                                    value={formData.websiteFees.title}
+                                    onChange={e => setFees({ title: e.target.value })}
+                                    className="h-9 text-sm"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="hidden md:grid grid-cols-[1.1fr_1.3fr_0.8fr_0.9fr_auto] gap-2 text-[11px] font-bold text-slate-500 px-1">
+                                    <span>Class / Level (optional)</span><span>Fee item</span><span>Amount (GH₵)</span><span>Period</span><span />
+                                </div>
+                                {formData.websiteFees.items.length === 0 && (
+                                    <p className="text-xs text-slate-500 italic px-1">No fee rows yet.</p>
+                                )}
+                                {formData.websiteFees.items.map((row, idx) => (
+                                    <div key={idx} className="grid grid-cols-2 md:grid-cols-[1.1fr_1.3fr_0.8fr_0.9fr_auto] gap-2 items-center bg-slate-50 md:bg-transparent p-2 md:p-0 rounded-xl">
+                                        <Input placeholder="e.g. KG 1 – KG 2" value={row.level} onChange={e => setFeeRow(idx, { level: e.target.value })} className="h-9 text-sm bg-white" />
+                                        <Input placeholder="e.g. Tuition" value={row.label} onChange={e => setFeeRow(idx, { label: e.target.value })} className="h-9 text-sm bg-white" />
+                                        <Input placeholder="e.g. 1500" value={row.amount} onChange={e => setFeeRow(idx, { amount: e.target.value })} className="h-9 text-sm font-mono bg-white" />
+                                        <Input placeholder="e.g. per term" value={row.period} onChange={e => setFeeRow(idx, { period: e.target.value })} className="h-9 text-sm bg-white" />
+                                        <Button type="button" variant="ghost" size="icon" className="h-9 w-9 text-red-500 hover:text-red-600" onClick={() => removeFeeRow(idx)} title="Remove row">
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                <Button type="button" variant="outline" size="sm" onClick={addFeeRow}>
+                                    <Plus className="h-4 w-4 mr-1" /> Add fee row
+                                </Button>
+                                <p className="text-[11px] text-slate-500">
+                                    Rows with the same Class / Level are grouped together. Amounts can be numbers (shown as GH₵) or text such as &quot;On request&quot;. Rows without an item or amount are not published.
+                                </p>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-semibold">Note for parents (optional)</Label>
+                                <Textarea
+                                    placeholder="e.g. Fees are payable at the accounts office or by Mobile Money. Sibling discounts available."
+                                    value={formData.websiteFees.note}
+                                    onChange={e => setFees({ note: e.target.value })}
+                                    rows={2}
+                                    className="text-sm"
+                                />
+                            </div>
+                            {formData.websiteFees.show && formData.websiteFees.items.filter(i => i.label.trim() && i.amount.trim()).length === 0 && (
+                                <p className="text-xs text-amber-700 font-semibold">Add at least one complete fee row — otherwise nothing is shown.</p>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
                         <CardHeader className="flex flex-row items-center justify-between">
                             <div>
                                 <CardTitle className="flex items-center gap-2">
@@ -1391,29 +1579,10 @@ export default function WebsiteBuilderPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <p className="text-xs text-slate-500">
-                                Customize the sample figures shown in the Parent Portal Preview Teaser mockup to match your school's actual fee structures and academic standards.
+                                The teaser is shown on the website as a <strong>sample preview</strong> of the parent portal. Your real fees are set in
+                                &quot;School Fees on Website&quot; above — the Fees tab appears only when you publish them.
                             </p>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <Label className="text-xs font-bold text-slate-700">Term Tuition Amount</Label>
-                                    <Input 
-                                        placeholder="e.g. GH₵ 1,850.00" 
-                                        value={formData.showcaseTuition} 
-                                        onChange={e => setFormData({...formData, showcaseTuition: e.target.value})} 
-                                        className="h-9 font-mono text-sm bg-white"
-                                    />
-                                </div>
-
-                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <Label className="text-xs font-bold text-slate-700">STEM & Lab Fee</Label>
-                                    <Input 
-                                        placeholder="e.g. GH₵ 250.00" 
-                                        value={formData.showcaseLabPass} 
-                                        onChange={e => setFormData({...formData, showcaseLabPass: e.target.value})} 
-                                        className="h-9 font-mono text-sm bg-white"
-                                    />
-                                </div>
-
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
                                     <Label className="text-xs font-bold text-slate-700">Sample GPA / Performance</Label>
                                     <Input 
@@ -1425,21 +1594,11 @@ export default function WebsiteBuilderPage() {
                                 </div>
 
                                 <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <Label className="text-xs font-bold text-slate-700">Monthly Attendance Rate</Label>
+                                    <Label className="text-xs font-bold text-slate-700">Sample Attendance Rate</Label>
                                     <Input 
                                         placeholder="e.g. 100% (22/22 Days)" 
                                         value={formData.showcaseAttendance} 
                                         onChange={e => setFormData({...formData, showcaseAttendance: e.target.value})} 
-                                        className="h-9 font-mono text-sm bg-white"
-                                    />
-                                </div>
-
-                                <div className="space-y-1.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                                    <Label className="text-xs font-bold text-slate-700">Billing Badge Status</Label>
-                                    <Input 
-                                        placeholder="e.g. Status: Paid in Full" 
-                                        value={formData.feeStatusText} 
-                                        onChange={e => setFormData({...formData, feeStatusText: e.target.value})} 
                                         className="h-9 font-mono text-sm bg-white"
                                     />
                                 </div>

@@ -850,48 +850,16 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1920'
   ];
 
-  const defaultFallbackGallery = [
-    { url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200', caption: 'Campus Quadrangle' },
-    { url: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200', caption: 'Interactive Classroom Learning' },
-    { url: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=1200', caption: 'School Resource Library' },
-    { url: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&q=80&w=1200', caption: 'STEM & Computer Laboratory' },
-    { url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=1200', caption: 'Inter-House Sports Tournament' },
-    { url: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&q=80&w=1200', caption: 'Robotics & Coding Workshop' },
-    { url: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&q=80&w=1200', caption: 'Music & Creative Performing Arts' },
-    { url: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&q=80&w=1200', caption: 'Annual Science Fair Showcase' }
-  ];
 
-  const defaultTestimonials = [
-    {
-      quote: "Enrolling our children here was the best decision we ever made. The balance between academic excellence and moral character building is truly exceptional.",
-      name: "Dr. Kwame Mensah",
-      role: "Parent (Grade 4 & Grade 8)",
-      rating: 5,
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200"
-    },
-    {
-      quote: "The dedicated STEM labs and robotics programs prepared me so well for University. The teachers genuinely care about every student's personal growth.",
-      name: "Akosua Osei",
-      role: "Alumni & Software Engineer",
-      rating: 5,
-      avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200"
-    },
-    {
-      quote: "A nurturing environment with world-class facilities. My daughter has grown in confidence, leadership, and curiosity since joining.",
-      name: "Mrs. Abena Appiah",
-      role: "Parent (Preschool)",
-      rating: 5,
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200"
-    }
-  ];
 
   const banners = school?.bannerImages && school.bannerImages.length > 0
     ? school.bannerImages
     : (school?.coverImageUrl ? [school.coverImageUrl] : defaultFallbackBanners);
 
+  // Only the school's own photos — stock pictures captioned as "our campus" would mislead parents.
   const galleryList = school?.gallery && school.gallery.length > 0
     ? school.gallery
-    : defaultFallbackGallery;
+    : [];
 
   const testimonialList = (() => {
     if (school?.hideTestimonials) return [];
@@ -911,20 +879,21 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     }
 
     // 2. Single field overrides on school doc (parentTestimonialQuote / parentTestimonialName / etc)
-    if (school?.parentTestimonialQuote || school?.parentTestimonialName || school?.testimonialQuote || school?.testimonialName) {
+    const singleQuote = school?.parentTestimonialQuote || school?.testimonialQuote;
+    if (singleQuote) {
       return [
         {
-          quote: school?.parentTestimonialQuote || school?.testimonialQuote || defaultTestimonials[0].quote,
-          name: school?.parentTestimonialName || school?.testimonialName || defaultTestimonials[0].name,
-          role: school?.parentTestimonialRole || school?.testimonialRole || defaultTestimonials[0].role,
+          quote: singleQuote,
+          name: school?.parentTestimonialName || school?.testimonialName || 'Parent',
+          role: school?.parentTestimonialRole || school?.testimonialRole || '',
           rating: Number(school?.parentTestimonialRating || 5),
-          avatar: school?.parentTestimonialAvatar || school?.testimonialAvatar || defaultTestimonials[0].avatar
-        },
-        ...defaultTestimonials.slice(1)
+          avatar: school?.parentTestimonialAvatar || school?.testimonialAvatar || ''
+        }
       ];
     }
 
-    return defaultTestimonials;
+    // No invented reviews: the section is hidden until the school adds real ones.
+    return [];
   })();
 
   const validVideos = (school?.videoUrls || [])
@@ -987,6 +956,11 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   useEffect(() => {
     const fetchClasses = async () => {
       if (!firestore || !school) return;
+      // Class documents are only needed when the school has not entered seat numbers in the Web Builder.
+      if (school.hideSeatAvailability) return;
+      const hasBuilderSeats = ['enrollmentQuotas', 'vacancies', 'customQuotas'].some(k => Array.isArray(school[k]) && school[k].length > 0)
+        || ['preschoolSeats', 'kgSeats', 'primaryLowerSeats', 'primaryUpperSeats', 'jhsSeats'].some(k => school[k] != null && school[k] !== '');
+      if (hasBuilderSeats) return;
       try {
         let list: any[] = [];
         
@@ -1080,8 +1054,11 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
 
     const activeClassesList = realtimeClasses.length > 0 ? realtimeClasses : embeddedClasses;
 
-    if (activeClassesList.length > 0) {
-      return activeClassesList.map((c: any) => {
+    // Only classes with a real capacity AND a real enrolment count (no guessed "30 seats").
+    const countOf = (c: any) => (c.currentStudents ?? c.studentsCount ?? c.enrolledCount ?? c.students ?? (Array.isArray(c.studentIds) ? c.studentIds.length : undefined));
+    const measurable = activeClassesList.filter((c: any) => Number(c.capacity || c.maxCapacity || c.totalCapacity || c.targetCapacity) > 0 && typeof countOf(c) === 'number');
+    if (measurable.length > 0) {
+      return measurable.map((c: any) => {
         const total = Number(c.capacity || c.maxCapacity || c.totalCapacity || c.targetCapacity || 30);
         const enrolled = Number(c.currentStudents || c.studentsCount || c.enrolledCount || c.students || (Array.isArray(c.studentIds) ? c.studentIds.length : 0));
         const remaining = Math.max(0, total - enrolled);
@@ -1093,14 +1070,8 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
       });
     }
 
-    // 4. Default Streams with dynamic capacity calculation
-    return [
-      { grade: 'Pre-School / Creche', remaining: Number(school?.preschoolSeats ?? 4), total: Number(school?.preschoolCap ?? 25) },
-      { grade: 'Kindergarten 1 & 2', remaining: Number(school?.kgSeats ?? 6), total: Number(school?.kgCap ?? 30) },
-      { grade: 'Primary (Lower)', remaining: Number(school?.primaryLowerSeats ?? 3), total: Number(school?.primaryLowerCap ?? 35) },
-      { grade: 'Primary (Upper)', remaining: Number(school?.primaryUpperSeats ?? 6), total: Number(school?.primaryUpperCap ?? 35) },
-      { grade: 'JHS Academy', remaining: Number(school?.jhsSeats ?? 2), total: Number(school?.jhsCap ?? 40) }
-    ];
+    // No figures from the school: show nothing rather than invented seat counts.
+    return [];
   }, [school, realtimeClasses]);
 
   // ── DYNAMIC PARENT PORTAL PREVIEW SHOWCASE RESOLVER ──────────
@@ -1119,15 +1090,36 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
             { subject: 'Creative Arts & Design', score: Number(school?.artsScore ?? 88), grade: Number(school?.artsScore ?? 88) >= 95 ? 'A+' : Number(school?.artsScore ?? 88) >= 90 ? 'A' : 'B+' }
           ],
       attendanceRate: school?.showcaseAttendance || school?.attendanceRate || '100% (22/22 Days)',
-      feeStatus: school?.feeStatusText || 'Status: Paid in Full',
-      tuitionAmount: school?.showcaseTuition || 'GH₵ 1,850.00',
-      labPassAmount: school?.showcaseLabPass || 'GH₵ 250.00',
       storyCategory: school?.showcaseStoryCategory || 'STEM Workshop',
       storyAuthor: school?.showcaseStoryAuthor || 'Lead Educator',
       storyAuthorInitials: school?.showcaseStoryAuthor ? school.showcaseStoryAuthor.split(' ').map((n: string) => n.charAt(0)).join('').toUpperCase().slice(0, 2) : 'ED',
       storyText: school?.showcaseStoryText || "Students successfully assembled their first solar-powered vehicle prototypes in today's STEM workshop!"
     };
   }, [school]);
+
+  // ── Real fee schedule entered by the school in the Web Builder (nothing shown without it) ──
+  const websiteFees = useMemo(() => {
+    const wf = school?.websiteFees;
+    if (!wf || wf.show !== true) return null;
+    const items = (Array.isArray(wf.items) ? wf.items : [])
+      .filter((i: any) => String(i?.label || '').trim() && String(i?.amount ?? '').trim() !== '');
+    if (items.length === 0) return null;
+    const groups: { level: string; items: any[] }[] = [];
+    items.forEach((i: any) => {
+      const level = String(i.level || '').trim();
+      let g = groups.find(x => x.level === level);
+      if (!g) { g = { level, items: [] }; groups.push(g); }
+      g.items.push(i);
+    });
+    return { title: String(wf.title || '').trim(), note: String(wf.note || '').trim(), groups };
+  }, [school]);
+  const formatFee = (v: any) => {
+    const raw = String(v ?? '').trim();
+    const n = Number(raw.replace(/[^0-9.]/g, ''));
+    return /^[\sGH₵¢,.0-9]+$/i.test(raw) && Number.isFinite(n) && n > 0
+      ? `GH₵ ${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : raw;
+  };
 
   // ── PWA Installation Listener ─────────────────────────────
   useEffect(() => {
@@ -1419,52 +1411,15 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-  const fallbackDepartments = [
-    {
-      level: 'Early Years / Pre-School',
-      ageRange: 'Ages 2 - 5',
-      focus: 'Focuses on early sensory exploration, motor skills, social play, and basic pre-literacy/numerical concepts using interactive methods.'
-    },
-    {
-      level: 'Primary / Basic School',
-      ageRange: 'Ages 6 - 11',
-      focus: 'Focuses on core subjects: Mathematics, English Language, Integrated Science, Citizenship Education, and Creative Arts with hands-on learning.'
-    },
-    {
-      level: 'Junior High School (JHS)',
-      ageRange: 'Ages 12 - 15',
-      focus: 'Focuses on rigorous academic preparation, critical thinking, ICT/Coding projects, and preparing students for regional BECE qualifications.'
-    }
-  ];
 
   const departments = school.academicsDepartments && school.academicsDepartments.length > 0
     ? school.academicsDepartments
-    : fallbackDepartments;
+    : [];
 
-  const academicsOverviewText = school.academicsOverview || 'We are dedicated to providing a balanced, comprehensive academic program that fosters analytical thinking, creative problem-solving, and standard exam preparations. Our certified educators utilize modern learning aids to inspire curiosity and shape future leaders.';
+  const academicsOverviewText = school.academicsOverview || '';
 
-  const gradingPolicyText = school.academicsGrading || 'Assessment is continuous throughout each term. Typically, students are graded on Class Assignments & Quizzes (10%), Project-based Assignments (30%), and End-of-Term Examinations (60%). Regular report cards are issued to track and communicate progress.';
+  const gradingPolicyText = school.academicsGrading || '';
 
-  const fallbackPillars = [
-    {
-      title: 'School Library & Resource Center',
-      description: 'A quiet, well-structured learning environment stocked with rich literary collections, reference materials, and digital reading portals to cultivate lifelong research and reading habits.',
-      icon: 'BookOpen',
-      imageUrl: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200'
-    },
-    {
-      title: 'Computer & Science Innovation Labs',
-      description: 'Equipped with modern computer setups, high-speed connectivity, and modern science experimentation kits to provide practical STEM education and digital literacy skills.',
-      icon: 'Atom',
-      imageUrl: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200'
-    },
-    {
-      title: 'Sports & Creative Athletics',
-      description: 'Dynamic extra-curricular programs spanning team sports, track activities, creative arts, and performing clubs designed to foster teamwork, health, and holistic student growth.',
-      icon: 'Sparkles',
-      imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=1200'
-    }
-  ];
 
   const pillars = (school.academicsPillars && school.academicsPillars.length > 0)
     ? school.academicsPillars
@@ -1472,7 +1427,7 @@ export default function PublicSchoolPage({ params }: { params: Promise<{ slug: s
     ? school.facilities
     : (school.campusPillars && school.campusPillars.length > 0)
     ? school.campusPillars
-    : fallbackPillars;
+    : [];
 
   const getPillarIcon = (iconName?: string) => {
     switch (iconName) {
@@ -1704,9 +1659,9 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       {
         id: 'dpc',
         title: 'Data Protection Commission',
-        subtitle: 'Act 843 Security Compliant',
-        regNo: school?.dpcCertNumber || 'Cert: DPC/PRIV/8942',
-        badge: '256-Bit Encrypted',
+        subtitle: 'Data Protection Act, 2012 (Act 843)',
+        regNo: school?.dpcCertNumber || '',
+        badge: 'Registered',
         flag: '🛡️',
         logoUrl: school?.dpcLogoUrl,
         enabled: school?.enableDpcAccreditation ?? true // Always enabled for all by default
@@ -1715,8 +1670,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         id: 'ges',
         title: 'Ghana Education Service',
         subtitle: 'Ministry of Education',
-        regNo: school?.gesRegNumber || 'Reg: GES/ASH/EJ/2024',
-        badge: 'Certified Grade-A',
+        regNo: school?.gesRegNumber || '',
+        badge: 'Registered',
         flag: '🇬🇭',
         logoUrl: school?.gesLogoUrl,
         enabled: school?.enableGesAccreditation ?? (school?.curriculumType ? school.curriculumType === 'ges' : true)
@@ -1725,7 +1680,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         id: 'cambridge',
         title: 'Cambridge Assessment',
         subtitle: 'Global Education Centre',
-        regNo: school?.cambridgeCentreId || 'Centre ID: GH-842',
+        regNo: school?.cambridgeCentreId || '',
         badge: 'IGCSE & Primary',
         flag: '🇬🇧',
         logoUrl: school?.cambridgeLogoUrl,
@@ -1735,7 +1690,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         id: 'waec',
         title: 'WAEC Examination Board',
         subtitle: 'National Exam Center',
-        regNo: school?.waecCentreCode || 'Centre: 0050849',
+        regNo: school?.waecCentreCode || '',
         badge: 'BECE & WASSCE',
         flag: '🏅',
         logoUrl: school?.waecLogoUrl,
@@ -1745,8 +1700,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         id: 'stem',
         title: 'Ghana STEM Council',
         subtitle: 'Robotics & AI Hub',
-        regNo: school?.stemHubId || 'Hub ID: STEM-GH-26',
-        badge: 'Innovator Hub',
+        regNo: school?.stemHubId || '',
+        badge: 'Member',
         flag: '🤖',
         logoUrl: school?.stemLogoUrl,
         enabled: school?.enableStemAccreditation ?? true
@@ -1755,7 +1710,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
         id: 'ib',
         title: 'International Baccalaureate',
         subtitle: 'IB World Organization',
-        regNo: school?.ibSchoolCode || 'School Code: IB-00482',
+        regNo: school?.ibSchoolCode || '',
         badge: 'IB World School',
         flag: '🌐',
         logoUrl: school?.ibLogoUrl,
@@ -1768,7 +1723,10 @@ Welcome to our admissions portal! To ensure a smooth application process for you
       return catalog.filter(item => school.enabledAccreditationIds.includes(item.id));
     }
 
-    return catalog.filter(item => item.enabled !== false);
+    // Only bodies the school has confirmed — switched on in the builder, or its registration number entered.
+    // (No accreditation is claimed on a school's behalf, and no registration number is ever made up.)
+    const FLAG: Record<string, string> = { dpc: 'enableDpcAccreditation', ges: 'enableGesAccreditation', cambridge: 'enableCambridgeAccreditation', waec: 'enableWaecAccreditation', stem: 'enableStemAccreditation', ib: 'enableIbAccreditation' };
+    return catalog.filter(item => school?.[FLAG[item.id]] === true || (school?.[FLAG[item.id]] !== false && !!item.regNo));
   })();
 
   const navLinks = [
@@ -2174,7 +2132,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   Join a Smart, Caring Community
                 </h1>
                 <p className="text-slate-200 text-xs md:text-sm leading-relaxed font-medium">
-                  {school.motto || 'Empowering young minds with academic rigor, STEM innovation, and moral character. Nurturing confident, creative, and future-ready leaders.'}
+                  {school.motto || ''}
                 </p>
               </div>
 
@@ -2547,13 +2505,8 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               <div className="space-y-12">
                 {pillars.map((pillar: any, idx: number) => {
                   const isEven = idx % 2 === 0;
-                  const facilityImg = pillar.imageUrl || pillar.photoUrl || pillar.image || pillar.buildingImg || pillar.photo || (
-                    idx === 0
-                      ? 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=1200'
-                      : idx === 1
-                      ? 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200'
-                      : 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&q=80&w=1200'
-                  );
+                  // The school's own photo only (a stock picture would pass off another campus as theirs).
+                  const facilityImg = pillar.imageUrl || pillar.photoUrl || pillar.image || pillar.buildingImg || pillar.photo || '';
 
                   return (
                     <div
@@ -2562,11 +2515,15 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     >
                       {/* Visual proof photo */}
                       <div className="w-full lg:w-1/2 aspect-[16/10] rounded-[2rem] overflow-hidden shadow-md border border-slate-200/80 relative group shrink-0">
-                        <img
-                          src={facilityImg}
-                          alt={pillar.title}
-                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
+                        {facilityImg ? (
+                          <img
+                            src={facilityImg}
+                            alt={pillar.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${brand}, ${secondaryColor})` }} />
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 via-transparent to-transparent pointer-events-none" />
                         <div className="absolute bottom-4 left-6 z-10 flex items-center gap-2">
                           <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white">
@@ -2608,63 +2565,35 @@ Welcome to our admissions portal! To ensure a smooth application process for you
               </p>
             </div>
           )}
-          {/* ─── LIVE ERP FACILITY METRICS BAR ──────────────────── */}
-          {!school.hideCampusMetrics && (
-            <div className="pt-12 border-t border-slate-200/80">
-              <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-                <div className="relative z-10 space-y-8">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase font-mono tracking-widest border border-emerald-500/30">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" /> Real-Time ERP System Data
-                      </span>
-                      <h4 className="text-2xl font-black text-white tracking-tight">Live Campus System Metrics</h4>
-                    </div>
-                    <span className="text-xs text-slate-400 font-mono">Updated Live • GAM Edu OS</span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:border-white/20 transition-all">
-                      <div className="flex items-center justify-between text-indigo-400">
-                        <BookOpen className="h-6 w-6" />
-                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">Synchronized</span>
-                      </div>
-                      <div className="text-3xl font-black text-white font-mono tracking-tight">{Number(school.libraryBookCount || school.digitalLibraryCount || 4520).toLocaleString()}</div>
-                      <span className="text-xs font-bold text-slate-300 block">Digital Library Collections</span>
-                    </div>
-
-                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:border-white/20 transition-all">
-                      <div className="flex items-center justify-between text-purple-400">
-                        <Sparkles className="h-6 w-6" />
-                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">Active</span>
-                      </div>
-                      <div className="text-3xl font-black text-white font-mono tracking-tight">{Number(school.clubCount || school.studentClubsCount || 12).toLocaleString()}</div>
-                      <span className="text-xs font-bold text-slate-300 block">Student Clubs & Societies</span>
-                    </div>
-
-                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:border-white/20 transition-all">
-                      <div className="flex items-center justify-between text-amber-400">
-                        <Award className="h-6 w-6" />
-                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">Verified</span>
-                      </div>
-                      <div className="text-3xl font-black text-white font-mono tracking-tight">{Number(school.trophyCount || school.awardsCount || 38).toLocaleString()}</div>
-                      <span className="text-xs font-bold text-slate-300 block">Academic & Sports Awards</span>
-                    </div>
-
-                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:border-white/20 transition-all">
-                      <div className="flex items-center justify-between text-sky-400">
-                        <Atom className="h-6 w-6" />
-                        <span className="text-[9px] font-mono font-bold uppercase tracking-widest text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">Online</span>
-                      </div>
-                      <div className="text-3xl font-black text-white font-mono tracking-tight">{Number(school.labCount || school.stemWorkstationsCount || 45).toLocaleString()}</div>
-                      <span className="text-xs font-bold text-slate-300 block">STEM & Robotics Workstations</span>
+          {/* ─── CAMPUS AT A GLANCE (figures entered by the school only) ──── */}
+          {!school.hideCampusMetrics && (() => {
+            const metrics = [
+              { v: school.libraryBookCount ?? school.digitalLibraryCount, label: 'Library Books', Icon: BookOpen, cls: 'text-indigo-400' },
+              { v: school.clubCount ?? school.studentClubsCount, label: 'Student Clubs & Societies', Icon: Sparkles, cls: 'text-purple-400' },
+              { v: school.trophyCount ?? school.awardsCount, label: 'Academic & Sports Awards', Icon: Award, cls: 'text-amber-400' },
+              { v: school.labCount ?? school.stemWorkstationsCount, label: 'Lab / Computer Workstations', Icon: Atom, cls: 'text-sky-400' },
+            ].filter(m => m.v !== undefined && m.v !== null && String(m.v).trim() !== '' && Number(m.v) > 0);
+            if (metrics.length === 0) return null;
+            return (
+              <div className="pt-12 border-t border-slate-200/80">
+                <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                  <div className="relative z-10 space-y-8">
+                    <h4 className="text-2xl font-black text-white tracking-tight">Campus at a Glance</h4>
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 ${metrics.length >= 4 ? 'lg:grid-cols-4' : metrics.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-6`}>
+                      {metrics.map((m, i) => (
+                        <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2 hover:border-white/20 transition-all">
+                          <div className={m.cls}><m.Icon className="h-6 w-6" /></div>
+                          <div className="text-3xl font-black text-white font-mono tracking-tight">{Number(m.v).toLocaleString()}</div>
+                          <span className="text-xs font-bold text-slate-300 block">{m.label}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
       </section>
 
@@ -2700,7 +2629,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                   >
                     <Bell className="h-3.5 w-3.5" /> Attendance
                   </button>
-                  <button
+                  {websiteFees && <button
                     type="button"
                     onClick={() => setActivePortalTab('fees')}
                     className={`flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-1 cursor-pointer ${
@@ -2708,7 +2637,7 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                     }`}
                   >
                     <Shield className="h-3.5 w-3.5" /> Fees
-                  </button>
+                  </button>}
                   <button
                     type="button"
                     onClick={() => setActivePortalTab('stories')}
@@ -2738,9 +2667,15 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                           <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest font-mono">GAM Edu Parent Portal</span>
                         </div>
                       </div>
-                      <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase font-mono border border-emerald-500/30 flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" /> Live Sync
-                      </span>
+                      {activePortalTab === 'fees' && websiteFees ? (
+                        <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black uppercase font-mono border border-emerald-500/30">
+                          Official fees
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full bg-white/10 text-slate-300 text-[10px] font-black uppercase font-mono border border-white/20" title="Example of what parents see in the portal">
+                          Sample preview
+                        </span>
+                      )}
                     </div>
 
                     {/* Tab 1: Grades */}
@@ -2817,34 +2752,44 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                       </div>
                     )}
 
-                    {/* Tab 3: Fees */}
-                    {activePortalTab === 'fees' && (
+                    {/* Tab 3: Fees — the school's real fee schedule from the Web Builder */}
+                    {activePortalTab === 'fees' && websiteFees && (
                       <div className="space-y-4 animate-in fade-in duration-300">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">Tuition & Facility Billing</span>
-                          <span className="text-xs font-black text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20 font-mono">{portalSample.feeStatus}</span>
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-xs font-black uppercase tracking-widest text-slate-400 font-mono">School Fees</span>
+                          {websiteFees.title && (
+                            <span className="text-xs font-black text-amber-300 bg-amber-400/10 px-2.5 py-1 rounded-full border border-amber-400/20 font-mono text-right">{websiteFees.title}</span>
+                          )}
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-400/30 space-y-3 text-xs">
-                          <div className="flex justify-between border-b border-white/10 pb-2">
-                            <span className="text-slate-300">Term 1 Tuition & Learning Aids</span>
-                            <span className="font-bold text-white">{portalSample.tuitionAmount}</span>
-                          </div>
-                          <div className="flex justify-between border-b border-white/10 pb-2">
-                            <span className="text-slate-300">STEM & Robotics Lab Pass</span>
-                            <span className="font-bold text-white">{portalSample.labPassAmount}</span>
-                          </div>
+                        <div className="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-400/30 space-y-4 text-xs max-h-[340px] overflow-y-auto">
+                          {websiteFees.groups.map((g, gi) => (
+                            <div key={gi} className="space-y-2">
+                              {g.level && <div className="text-[10px] font-black uppercase tracking-widest text-indigo-300">{g.level}</div>}
+                              {g.items.map((it: any, ii: number) => (
+                                <div key={ii} className="flex justify-between gap-3 border-b border-white/10 pb-2 last:border-b-0 last:pb-0">
+                                  <span className="text-slate-300">
+                                    {it.label}
+                                    {it.period ? <span className="text-slate-500"> · {it.period}</span> : null}
+                                  </span>
+                                  <span className="font-bold text-white whitespace-nowrap">{formatFee(it.amount)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
                         </div>
 
-                        <div className="flex items-center justify-between text-xs pt-1">
-                          <span className="text-slate-400 font-medium">Digital Receipt Issued</span>
+                        {websiteFees.note && (
+                          <p className="text-[11px] text-slate-400 leading-relaxed">{websiteFees.note}</p>
+                        )}
+                        <div className="flex items-center justify-end text-xs pt-1">
                           <a
                             href="https://gam-it-service.app/"
                             target="_blank"
                             rel="noreferrer"
                             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] uppercase tracking-wider transition-colors"
                           >
-                            Pay Tuition Online
+                            Parent Portal Login
                           </a>
                         </div>
                       </div>
@@ -3836,11 +3781,13 @@ Welcome to our admissions portal! To ensure a smooth application process for you
                 )}
                 <div className="min-w-0">
                   <h4 className="text-base font-extrabold text-white tracking-tight leading-tight truncate">
-                    {school.name ? school.name.trim() : 'Springfield Academy'}
+                    {school.name ? school.name.trim() : ''}
                   </h4>
-                  <p className="text-xs text-indigo-400 font-medium italic mt-0.5 line-clamp-1">
-                    "{school.motto || 'Excellence, Character & Leadership'}"
-                  </p>
+                  {school.motto && (
+                    <p className="text-xs text-indigo-400 font-medium italic mt-0.5 line-clamp-1">
+                      "{school.motto}"
+                    </p>
+                  )}
                 </div>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed font-medium line-clamp-3">
