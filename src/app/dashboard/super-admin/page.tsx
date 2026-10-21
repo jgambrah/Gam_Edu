@@ -286,6 +286,8 @@ export default function SuperAdminPage() {
 
   const [planSchool, setPlanSchool] = useState<School | null>(null);
   const [newPlan, setNewPlan] = useState<'Trial' | 'Premium'>('Trial');
+  // Premium paid up to (yyyy-mm-dd). For payments received outside Paystack (cash, MoMo to you) or free months.
+  const [paidUntilInput, setPaidUntilInput] = useState('');
   const [updatingPlan, setUpdatingPlan] = useState(false);
 
   const [schoolName, setSchoolName] = useState('');
@@ -314,7 +316,13 @@ export default function SuperAdminPage() {
   useEffect(() => { loadData(); }, [loadData]);
   
   useEffect(() => { if (creditSchool) setCreditAmount(creditSchool.aiCredits || 1000); }, [creditSchool]);
-  useEffect(() => { if (planSchool) setNewPlan(planSchool.plan as 'Trial' | 'Premium'); }, [planSchool]);
+  useEffect(() => {
+    if (!planSchool) return;
+    setNewPlan(planSchool.plan as 'Trial' | 'Premium');
+    const pu: any = (planSchool as any).paidUntil;
+    const d = pu?.toDate ? pu.toDate() : null;
+    setPaidUntilInput(d ? d.toISOString().slice(0, 10) : new Date(Date.now() + 31 * 86400000).toISOString().slice(0, 10));
+  }, [planSchool]);
 
   const populateFromLead = (lead: Lead) => {
       setSchoolName(lead.schoolName);
@@ -418,8 +426,11 @@ export default function SuperAdminPage() {
         const schoolRef = doc(firestore, 'schools', planSchool.id);
         const updates: any = { plan: newPlan };
         if (newPlan === 'Premium') {
+            if (!paidUntilInput) throw new Error('Enter the date the subscription is paid up to.');
             updates.trialEndsAt = null;
             updates.status = 'active';
+            // End of that day; the school is locked 7 days after this date unless it renews.
+            updates.paidUntil = new Date(`${paidUntilInput}T23:59:59Z`);
         } else {
             updates.trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
             updates.status = 'active';
@@ -543,7 +554,16 @@ export default function SuperAdminPage() {
                                 <TableCell>
                                     <ContactPhoneCell schoolId={s.id} />
                                 </TableCell>
-                                <TableCell><Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100">{s.plan}</Badge></TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100">{s.plan}</Badge>
+                                    {s.plan === 'Premium' && (() => {
+                                        const pu: any = (s as any).paidUntil;
+                                        const d = pu?.toDate ? pu.toDate() : null;
+                                        if (!d) return <span className="block text-[10px] text-rose-600 font-semibold">no paid-up date</span>;
+                                        const overdue = d.getTime() < Date.now();
+                                        return <span className={`block text-[10px] font-semibold ${overdue ? 'text-rose-600' : 'text-slate-500'}`}>{overdue ? 'ended' : 'paid to'} {d.toISOString().slice(0, 10)}</span>;
+                                    })()}
+                                </TableCell>
                                 <TableCell>
                                     <div className="flex items-center gap-1 font-mono text-xs bg-slate-100 px-2 py-1 rounded-full w-fit border border-slate-200">
                                         <Zap className="h-3 w-3 text-orange-500 fill-current"/>
@@ -606,6 +626,13 @@ export default function SuperAdminPage() {
                     <div onClick={() => setNewPlan('Trial')} className={`flex-1 p-4 border-2 rounded-xl cursor-pointer text-center transition-all ${newPlan === 'Trial' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-slate-100 hover:border-slate-200'}`}><Clock className="mx-auto mb-2 h-6 w-6 text-slate-400"/><h3 className="font-bold">Trial</h3></div>
                     <div onClick={() => setNewPlan('Premium')} className={`flex-1 p-4 border-2 rounded-xl cursor-pointer text-center transition-all ${newPlan === 'Premium' ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200' : 'border-slate-100 hover:border-slate-200'}`}><Crown className="mx-auto mb-2 h-6 w-6 text-yellow-500"/><h3 className="font-bold">Premium</h3></div>
                 </div>
+                {newPlan === 'Premium' && (
+                    <div className="space-y-1.5">
+                        <Label className="text-xs font-semibold">Paid up to</Label>
+                        <Input type="date" value={paidUntilInput} onChange={e => setPaidUntilInput(e.target.value)} />
+                        <p className="text-[11px] text-slate-500">The school is reminded 7 days before this date and locked 7 days after it, unless it renews. Paystack renewals extend it automatically.</p>
+                    </div>
+                )}
             </div>
             <DialogFooter><Button onClick={handleUpdatePlan} disabled={updatingPlan} className="w-full h-12 bg-slate-900">{updatingPlan ? <Loader2 className="mr-2 h-4 w-4 animate-spin mr-2"/> : "Apply Changes"}</Button></DialogFooter>
         </DialogContent>

@@ -13,6 +13,8 @@ export default function TrialBanner() {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  // Premium: days until the paid period ends (negative = in the 7-day grace week after it ended).
+  const [premiumDaysLeft, setPremiumDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
     async function checkPlan() {
@@ -44,6 +46,10 @@ export default function TrialBanner() {
                 
                 setDaysLeft(diffDays);
             }
+            if (schoolData.plan === 'Premium' && schoolData.paidUntil?.toDate) {
+                const ms = schoolData.paidUntil.toDate().getTime() - Date.now();
+                setPremiumDaysLeft(Math.ceil(ms / (1000 * 60 * 60 * 24)));
+            }
         }
       } catch (err) {
         console.error("Error fetching plan:", err);
@@ -56,8 +62,25 @@ export default function TrialBanner() {
 
   if (loading) return null;
 
-  // Don't show banner if they are Premium
-  if (plan === 'Premium') return null;
+  // Premium: remind from 7 days before the paid period ends, and through the 7-day grace week after it.
+  if (plan === 'Premium') {
+    if (premiumDaysLeft === null || premiumDaysLeft > 7) return null;
+    const inGrace = premiumDaysLeft <= 0;
+    const lockIn = 7 + premiumDaysLeft; // days until access is restricted
+    return (
+      <div className={`${inGrace ? 'bg-red-600 text-white' : 'bg-amber-100 text-amber-900 border-b border-amber-200'} px-4 py-2 text-center text-sm font-medium flex justify-center items-center gap-2`}>
+        <AlertTriangle className="h-4 w-4" />
+        <span>
+          {inGrace
+            ? <>Your Premium subscription has ended. Access will be restricted in <strong>{Math.max(0, lockIn)} {lockIn === 1 ? 'day' : 'days'}</strong>.</>
+            : <>Your Premium subscription ends in <strong>{premiumDaysLeft} {premiumDaysLeft === 1 ? 'day' : 'days'}</strong>.</>}
+        </span>
+        <Link href="/dashboard/subscription" className={`ml-2 px-3 py-1 rounded-full text-xs font-bold ${inGrace ? 'bg-white text-red-600' : 'bg-amber-600 text-white'}`}>
+          RENEW NOW
+        </Link>
+      </div>
+    );
+  }
 
   // EXPIRED TRIAL
   if (plan === 'Trial' && daysLeft !== null && daysLeft <= 0) {
