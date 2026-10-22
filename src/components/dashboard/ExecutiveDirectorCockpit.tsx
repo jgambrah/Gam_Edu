@@ -23,7 +23,7 @@ import { computeFinancialMetrics, safeParseDate } from '@/lib/financial-analytic
 import { buildExecutiveTelemetry } from '@/hooks/use-executive-telemetry';
 import { ExecutiveAIAuditorDrawer } from './ExecutiveAIAuditorDrawer';
 import { answerExecutiveQuestionAction } from '@/app/actions/insights-ai';
-import { summaryYearPerformance } from '@/lib/finance-summary';
+import { summaryYearPerformance, summaryDebtSplit } from '@/lib/finance-summary';
 import { currentTermFromProfile } from '@/lib/term';
 
 export function ExecutiveDirectorCockpit({
@@ -1057,14 +1057,15 @@ export function ExecutiveDirectorCockpit({
             </DropdownMenu>
           </div>
 
-          {/* Alert 2: Tuition Arrears (Warning Severity) */}
+          {/* Alert 2: Arrears older than 60 days — ALL fee types (it is the "Over 60 Days" aging tier; it was
+              labelled "Tuition Arrears", which made it look like it should equal Student Billing's Tuition Debt). */}
           <div className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <span className="text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 bg-amber-50 text-amber-700">
-                Tuition Arrears
+                Arrears &gt;60 Days
               </span>
               <p className="text-xs text-slate-700 font-medium truncate">
-                GH₵ {Math.round(overdue60PlusSum).toLocaleString()} overdue{overdue60PlusCount !== null ? ` across ${overdue60PlusCount} students` : ''} (&gt;60 days)
+                GH₵ {Math.round(overdue60PlusSum).toLocaleString()} owed for over 60 days (all fees){overdue60PlusCount !== null ? ` by ${overdue60PlusCount} students` : ''}
               </p>
             </div>
             <DropdownMenu>
@@ -1785,10 +1786,19 @@ export function ExecutiveDirectorCockpit({
                   </div>
                   <p className="font-bold text-slate-900 text-sm mt-0.5">GH₵ {grossTotalDebt.toLocaleString()}</p>
                   <span className="text-[10px] text-slate-500 font-medium">All unpaid bills, all terms{agingAsOf ? ` · as of ${agingAsOf}` : ''}</span>
+                  {(() => {
+                    const split = summaryDebtSplit(dashboardSummary, currentTermFromProfile(schoolProfile)?.academicYear);
+                    if (!split || split.earlier + split.unfiled < 0.01) return null;
+                    return (
+                      <span className="block text-[10px] text-amber-700 font-semibold">
+                        GH₵ {Math.round(split.thisYear).toLocaleString()} this year · GH₵ {Math.round(split.earlier + split.unfiled).toLocaleString()} earlier years / no year
+                      </span>
+                    );
+                  })()}
                 </div>
                 <div>
                   <span className="text-[10px] uppercase font-bold text-emerald-600 tracking-wider">Less: Advance Payments / Credits</span>
-                  <p className="font-bold text-emerald-600 text-sm mt-0.5">(GH₵ {advancePaymentsCredit.toLocaleString()})</p>
+                  <p className="font-bold text-emerald-600 text-sm mt-0.5">− GH₵ {advancePaymentsCredit.toLocaleString()}</p>
                   <span className="text-[10px] text-emerald-700 font-medium">Overpayments & advance deposits</span>
                 </div>
                 <div className="sm:border-l sm:border-slate-200 sm:pl-3">

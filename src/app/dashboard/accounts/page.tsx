@@ -51,7 +51,7 @@ import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatem
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { billStudentForAttendance } from '@/lib/billing';
 import { makeTermStamp, termStampOfRecord, currentTermFromProfile, stampFromTermId, compareTermIds } from '@/lib/term';
-import { summaryGrossDebt, summaryCredits, summaryYearPerformance } from '@/lib/finance-summary';
+import { summaryGrossDebt, summaryCredits, summaryYearPerformance, summaryDebtSplit } from '@/lib/finance-summary';
 
 /** termId (+ isArchived:false) for a new bill. academicYear/term are written by the caller as before. */
 const billTermFields = (academicYear?: string, term?: string) => {
@@ -4259,7 +4259,8 @@ export default function AccountsPage() {
       totalCollected: totalColl,
       overallCollectionRate: rate,
       totalBilled: rawBilled !== null ? Number(rawBilled) : (totalGross + totalColl),
-      streamDebts
+      streamDebts,
+      debtSplit: summaryDebtSplit(dashboardSummary, effectiveAcademicYear),
     };
   }, [dashboardSummary, effectiveAcademicYear]);
 
@@ -4633,7 +4634,7 @@ export default function AccountsPage() {
         otherDebt: preAggregatedBilling.streamDebts.other || 0, 
         totalBilled: preAggregatedBilling.totalBilled,
         totalWaived: 0,
-        earlierYearsDebt: 0
+        earlierYearsDebt: preAggregatedBilling.debtSplit ? preAggregatedBilling.debtSplit.earlier + preAggregatedBilling.debtSplit.unfiled : 0
       };
     }
 
@@ -5567,7 +5568,7 @@ export default function AccountsPage() {
                                             </div>
                                             {hasDisplayStats && (dashboardStats.earlierYearsDebt || 0) > 0.01 && (
                                                 <p className="text-[9px] text-slate-500 font-medium mt-0.5">
-                                                    incl. GH₵{(dashboardStats.earlierYearsDebt || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} from earlier years
+                                                    incl. GH₵{(dashboardStats.earlierYearsDebt || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} from earlier years or bills with no year
                                                 </p>
                                             )}
                                         </CardContent>
@@ -5577,13 +5578,13 @@ export default function AccountsPage() {
                                         <CardHeader className="p-3.5 pb-1 flex flex-row justify-between items-center space-y-0">
                                             <div>
                                                 <CardTitle className="text-[10px] font-bold text-emerald-700 uppercase">Advance Credits</CardTitle>
-                                                <p className="text-[9px] text-emerald-600 font-medium">Prepayments & deposits</p>
+                                                <p className="text-[9px] text-emerald-600 font-medium">Paid ahead by parents — deducted from Gross</p>
                                             </div>
                                             <HandCoins className="h-4 w-4 text-emerald-500" />
                                         </CardHeader>
                                         <CardContent className="p-3.5 pt-1">
                                             <div className="text-lg font-black text-emerald-600">
-                                                {hasDisplayStats ? `(GH₵${dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})` : "(GH₵ —.—)"}
+                                                {hasDisplayStats ? `GH₵${dashboardStats.advancePayments.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "GH₵ —.—"}
                                             </div>
                                         </CardContent>
                                     </Card>
@@ -5633,6 +5634,11 @@ export default function AccountsPage() {
                                                         GH₵{dashboardStats.outstandingTuition.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                                     </div>
                                                     <p className="text-[10px] text-slate-400 font-medium mt-0.5">{isLedgerLoaded ? 'Calculated from ledger' : 'From server summary (1 read)'}</p>
+                                                    {!isLedgerLoaded && preAggregatedBilling.debtSplit && preAggregatedBilling.debtSplit.tuitionOther > 0.01 && (
+                                                        <p className="text-[10px] text-amber-700 font-semibold mt-0.5">
+                                                            GH₵{preAggregatedBilling.debtSplit.tuitionThisYear.toLocaleString(undefined, { maximumFractionDigits: 0 })} this year · GH₵{preAggregatedBilling.debtSplit.tuitionOther.toLocaleString(undefined, { maximumFractionDigits: 0 })} earlier years / no year
+                                                        </p>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>

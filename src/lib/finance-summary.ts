@@ -36,6 +36,26 @@ export function summaryYearPerformance(summary: any, year?: string | null): Year
   return { year: y, billed, paid, waived, rate };
 }
 
+/**
+ * How much of the debt is filed under the current academic year, and how much under earlier years or
+ * under no year at all ('unknown' — usually bills created before School Profile was set to the new year).
+ * Null until the server has produced the split (after the next rebuild).
+ */
+export function summaryDebtSplit(summary: any, year?: string | null): { year: string; thisYear: number; earlier: number; unfiled: number; tuitionThisYear: number; tuitionOther: number } | null {
+  const fin = summary?.financials;
+  const by = fin?.debtByYear;
+  if (!by || typeof by !== 'object') return null;
+  const y = String(year || fin?.currentAcademicYear || '');
+  let thisYear = 0, earlier = 0, unfiled = 0, tuitionThisYear = 0, tuitionOther = 0;
+  Object.entries(by as Record<string, any>).forEach(([k, v]) => {
+    const total = Number(v?.total) || 0;
+    const tuition = Number(v?.tuition) || 0;
+    if (k === y) { thisYear += total; tuitionThisYear += tuition; }
+    else { if (k === 'unknown' || !k) unfiled += total; else earlier += total; tuitionOther += tuition; }
+  });
+  return { year: y, thisYear, earlier, unfiled, tuitionThisYear, tuitionOther };
+}
+
 /** Same student-matching rule everywhere: active (or no status), not archived, any of the student's ids. */
 export function activeStudentKeySet(students: any[] | null | undefined): Set<string> {
   const set = new Set<string>();

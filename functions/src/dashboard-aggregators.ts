@@ -284,6 +284,7 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
   const yearBills: Record<string, { billed: number; paid: number; waived: number }> = {};
   // Same, per fee category ({ "2026-2027": { Tuition: {...}, Canteen: {...} } }) for the per-fee rates.
   const yearCats: Record<string, Record<string, { billed: number; paid: number; waived: number }>> = {};
+  const debtByYear: Record<string, { total: number; tuition: number }> = {};
   const [schoolProfileSnap, schoolSettingsSnap] = await Promise.all([
     db.collection('schools').doc(schoolId).get(),
     db.collection('schoolSettings').doc(schoolId).get(),
@@ -367,6 +368,13 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
 
     totalOutstanding += balance;
     arrearsCount++;
+    {
+      // Debt split by the academic year the bill is filed under ('unknown' = no year on the bill), so the
+      // dashboards can show how much of the debt is this year's and how much is older / unfiled.
+      const dy = (debtByYear[yk] = debtByYear[yk] || { total: 0, tuition: 0 });
+      dy.total += balance;
+      if (typeLower.includes('tuition')) dy.tuition += balance;
+    }
 
     if (typeLower.includes('tuition')) outstandingTuition += balance;
     else if (typeLower.includes('canteen')) outstandingCanteen += balance;
@@ -481,6 +489,7 @@ export async function recalculateSchoolFinancials(schoolId: string, _eventTermId
       collectionRate,
       collectionRateAllTime,
       currentAcademicYear,
+      debtByYear: Object.fromEntries(Object.entries(debtByYear).map(([y, v]) => [y, { total: round2y(v.total), tuition: round2y(v.tuition) }])),
       yearBills: yearBillsOut,
       yearCats: Object.fromEntries(Object.entries(yearCats).map(([y, cats]) => [y, Object.fromEntries(Object.entries(cats).map(([c, v]) =>
         [c, { billed: round2y(v.billed), paid: round2y(v.paid), waived: round2y(v.waived) }]))])),
@@ -588,6 +597,7 @@ export async function refreshOpenDebts(schoolId: string): Promise<void> {
   const owedByCat: Record<string, number> = { 'Tuition': 0, 'Canteen': 0, 'Transport': 0, 'PTA Levy': 0, 'Other': 0 };
   const debtByStudent: Record<string, number> = {};
   const agingByStudent: Record<string, { c: number; a30: number; a60: number; a90: number; oldestDue: number }> = {};
+  const debtByYearN: Record<string, { total: number; tuition: number }> = {};
 
   unpaidSnap.forEach(d => {
     const r: any = d.data();
@@ -607,6 +617,11 @@ export async function refreshOpenDebts(schoolId: string): Promise<void> {
     if (balance <= 0.01) return;
     totalOutstanding += balance;
     arrearsCount++;
+    {
+      const dy = (debtByYearN[recordYearKey(r)] = debtByYearN[recordYearKey(r)] || { total: 0, tuition: 0 });
+      dy.total += balance;
+      if (debtKey(r) === 'tuition') dy.tuition += balance;
+    }
     streamDebts[debtKey(r)] += balance;
     owedByCat[feeCatOf(r)] += balance;
     const acc = String(r.studentId || r.studentUid || r.accountId || r.studentName || '').trim();
@@ -638,6 +653,9 @@ export async function refreshOpenDebts(schoolId: string): Promise<void> {
       streamDebts: { tuition: r2(streamDebts.tuition), canteen: r2(streamDebts.canteen), transport: r2(streamDebts.transport), other: r2(streamDebts.other) },
       categoryCollections,
       currentAcademicYear,
+      // Years that no longer have debt are written as 0 (a merge would otherwise keep their old figure).
+      debtByYear: Object.fromEntries([...new Set([...Object.keys(summary.financials?.debtByYear || {}), ...Object.keys(debtByYearN)])]
+        .map(y => [y, { total: r2(debtByYearN[y]?.total || 0), tuition: r2(debtByYearN[y]?.tuition || 0) }])),
       ...(yb ? { collectionRate: collectible > 0 ? Math.min(100, Math.round(((Number(yb.paid) || 0) / collectible) * 1000) / 10) : 0 } : {}),
     },
     debtAging: {
