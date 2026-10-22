@@ -345,7 +345,8 @@ service cloud.firestore {
 
     // Class averages per subject (no pupil names or ids), kept by the server; readable within the school.
     match /classAverages/{docId} {
-      allow get: if isSignedIn() && (isSuperAdmin() || resource.data.schoolId == getUserSchoolId());
+      // (A class with no marks yet has no document: looking it up must not be an error.)
+      allow get: if isSignedIn() && (resource == null || isSuperAdmin() || resource.data.schoolId == getUserSchoolId());
       allow list: if false;
       allow write: if false;
     }
