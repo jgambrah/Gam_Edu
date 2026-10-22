@@ -945,11 +945,12 @@ function AdminDashboard({
         }
       });
 
-      const avgScore = count > 0 ? Math.round(totalPct / count) : 82;
-      const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 88;
+      // No marks: record nothing (this used to save invented figures of 82% / 88%).
+      const avgScore = count > 0 ? Math.round(totalPct / count) : 0;
+      const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 0;
       const passingRateCapped = Math.min(passingRate, 100);
 
-      let topSubject = "General Academics";
+      let topSubject = "";
       let bestAvg = 0;
       Object.entries(subjects).forEach(([sub, data]) => {
         const avg = data.total / data.count;
@@ -963,7 +964,9 @@ function AdminDashboard({
         avgScore,
         passingRate: passingRateCapped,
         topSubject,
-        totalAssessments: count
+        topSubjectScore: topSubject ? Math.round(bestAvg) : 0,
+        totalAssessments: count,
+        syncedAt: new Date().toISOString(),
       };
 
       setSyncedAcademicData(computed);
@@ -973,7 +976,9 @@ function AdminDashboard({
           avgScorePercent: avgScore,
           passingRatePercent: passingRateCapped,
           topSubject: topSubject,
-          pendingAssessments: count
+          topSubjectScore: topSubject ? Math.round(bestAvg) : 0,
+          pendingAssessments: count,
+          syncedAt: serverTimestamp(),
         },
         lastUpdated: serverTimestamp()
       }, { merge: true });
@@ -990,11 +995,14 @@ function AdminDashboard({
   const academicTidbits = useMemo(() => {
     if (syncedAcademicData) return syncedAcademicData;
     if (dashboardSummary?.academics?.avgScorePercent !== undefined) {
+      const ac: any = dashboardSummary.academics;
       return {
-        avgScore: dashboardSummary.academics.avgScorePercent,
-        passingRate: dashboardSummary.academics.passingRatePercent ?? 0,
-        topSubject: (dashboardSummary.academics as any)?.topSubject || "",
-        totalAssessments: dashboardSummary.academics.pendingAssessments ?? 0
+        avgScore: ac.avgScorePercent,
+        passingRate: ac.passingRatePercent ?? 0,
+        topSubject: ac.topSubject || "",
+        topSubjectScore: ac.topSubjectScore ?? 0,
+        totalAssessments: ac.pendingAssessments ?? 0,
+        syncedAt: ac.syncedAt?.toDate ? ac.syncedAt.toDate().toISOString() : (ac.syncedAt || null),
       };
     }
     if (!recentAssessments || recentAssessments.length === 0) {
@@ -3154,11 +3162,12 @@ function DirectorDashboard({
         }
       });
 
-      const avgScore = count > 0 ? Math.round(totalPct / count) : 82;
-      const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 88;
+      // No marks: record nothing (this used to save invented figures of 82% / 88%).
+      const avgScore = count > 0 ? Math.round(totalPct / count) : 0;
+      const passingRate = count > 0 ? Math.round((passingCount / count) * 100) : 0;
       const passingRateCapped = Math.min(passingRate, 100);
 
-      let topSubject = "General Academics";
+      let topSubject = "";
       let bestAvg = 0;
       Object.entries(subjects).forEach(([sub, data]) => {
         const avg = data.total / data.count;
@@ -3172,7 +3181,9 @@ function DirectorDashboard({
         avgScore,
         passingRate: passingRateCapped,
         topSubject,
-        totalAssessments: count
+        topSubjectScore: topSubject ? Math.round(bestAvg) : 0,
+        totalAssessments: count,
+        syncedAt: new Date().toISOString(),
       };
 
       setSyncedAcademicData(computed);
@@ -3182,7 +3193,9 @@ function DirectorDashboard({
           avgScorePercent: avgScore,
           passingRatePercent: passingRateCapped,
           topSubject: topSubject,
-          pendingAssessments: count
+          topSubjectScore: topSubject ? Math.round(bestAvg) : 0,
+          pendingAssessments: count,
+          syncedAt: serverTimestamp(),
         },
         lastUpdated: serverTimestamp()
       }, { merge: true });
@@ -3199,11 +3212,14 @@ function DirectorDashboard({
   const academicTidbits = useMemo(() => {
     if (syncedAcademicData) return syncedAcademicData;
     if (dashboardSummary?.academics?.avgScorePercent !== undefined) {
+      const ac: any = dashboardSummary.academics;
       return {
-        avgScore: dashboardSummary.academics.avgScorePercent,
-        passingRate: dashboardSummary.academics.passingRatePercent ?? 0,
-        topSubject: (dashboardSummary.academics as any)?.topSubject || "",
-        totalAssessments: dashboardSummary.academics.pendingAssessments ?? 0
+        avgScore: ac.avgScorePercent,
+        passingRate: ac.passingRatePercent ?? 0,
+        topSubject: ac.topSubject || "",
+        topSubjectScore: ac.topSubjectScore ?? 0,
+        totalAssessments: ac.pendingAssessments ?? 0,
+        syncedAt: ac.syncedAt?.toDate ? ac.syncedAt.toDate().toISOString() : (ac.syncedAt || null),
       };
     }
     if (!recentAssessments || recentAssessments.length === 0) {

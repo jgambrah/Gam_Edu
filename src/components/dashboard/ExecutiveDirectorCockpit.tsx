@@ -536,7 +536,7 @@ export function ExecutiveDirectorCockpit({
     if (attendanceRate !== undefined && attendanceRate !== null) {
       return Number(attendanceRate).toFixed(1);
     }
-    return "96.4";
+    return "0.0"; // no data yet (was an invented 96.4)
   }, [totalActiveStudents, studentsPresentCount, attendanceRate]);
 
   // Dynamic Class Register Compliance (Which classes took attendance today vs pending)
@@ -665,29 +665,32 @@ export function ExecutiveDirectorCockpit({
       outlierDesc = `${atRiskStudentsList.length} student account${atRiskStudentsList.length === 1 ? "" : "s"} across ${streamText} performing below 50% target benchmark (${studentNames.join(", ")}). Intervention plan assigned.`;
       outlierTag = `${atRiskStudentsList.length} Student${atRiskStudentsList.length === 1 ? "" : "s"} Pending Intervention`;
       outlierColor = "bg-rose-50 text-rose-700 border-rose-200";
-    } else if (students && students.length > 0) {
-      outlierDesc = `0 student academic outliers detected across ${students.length} active enrolled accounts. All grade departments operating at or above target benchmarks.`;
-      outlierTag = `0 Academic Outliers • 100% Compliant`;
+    } else if (recentAssessments && recentAssessments.length > 0) {
+      outlierDesc = `No pupil averages below 50% in the ${recentAssessments.length} marks loaded.`;
+      outlierTag = `0 Academic Outliers`;
       outlierColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
     } else {
-      outlierDesc = `0 student academic outliers detected. All grade departments operating at or above target benchmarks.`;
-      outlierTag = `0 Academic Outliers • 100% Compliant`;
-      outlierColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+      // Marks are not loaded on the overview (to save reads): say so instead of claiming "0 outliers".
+      outlierDesc = `Not checked here — marks are not loaded on the overview. Open Academic Affairs to see pupils averaging below 50%.`;
+      outlierTag = `Open Academic Affairs`;
+      outlierColor = "bg-slate-50 text-slate-600 border-slate-200";
     }
 
-    // 2. Calculate Department Gradebook SLA Compliance from real classes & assessments
-    const totalClassesCount = classes?.length || 14;
-    const submittedClasses = Math.min(totalClassesCount, (recentAssessments && recentAssessments.length > 0 ? Math.ceil(recentAssessments.length / 5) : 13));
-    const slaPercentage = Math.round((submittedClasses / totalClassesCount) * 100);
-
+    // 2. Class registers taken TODAY (real: from today's attendance records). This card used to show an
+    //    invented "gradebook SLA" (e.g. 13/13) worked out from the number of marks loaded.
+    const regTotal = classRegisterStats.total;
+    const regDone = classRegisterStats.submittedCount;
+    const slaPercentage = regTotal > 0 ? Math.round((regDone / regTotal) * 100) : 0;
     let slaDesc = "";
-    let slaTag = `SLA: ${slaPercentage}% Submitted`;
-    let slaColor = slaPercentage >= 90 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
-
-    if (classes && classes.length > 0) {
-      slaDesc = `All Department Gradebooks operating at ${slaPercentage}% submission SLA (${submittedClasses}/${totalClassesCount} active class registers logged).`;
+    let slaTag = regTotal > 0 ? `${regDone} of ${regTotal} registers today` : 'No classes';
+    let slaColor = regTotal > 0 && slaPercentage >= 90 ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200";
+    if (regTotal > 0) {
+      const pendingNames = (classRegisterStats.pendingClasses || []).map((c: any) => c.name).filter(Boolean);
+      slaDesc = regDone === regTotal
+        ? `Every class (${regTotal}) has taken today's register.`
+        : `${regDone} of ${regTotal} classes have taken today's register.${pendingNames.length ? ` Still to submit: ${pendingNames.slice(0, 4).join(', ')}${pendingNames.length > 4 ? ` and ${pendingNames.length - 4} more` : ''}.` : ''}`;
     } else {
-      slaDesc = `Primary Science & JHS English at 100% submission SLA (14/14 registers). JHS Mathematics at 85% SLA (2 pending).`;
+      slaDesc = `No classes with pupils found.`;
     }
 
     // 3. Calculate Safeguarding & Incident Audit from real behavioralRecords
@@ -706,10 +709,20 @@ export function ExecutiveDirectorCockpit({
       safetyDesc = `0 critical safety breaches reported. ${positiveMerits} positive commendations awarded across all school divisions.`;
       safetyTag = `Safeguarding: 100% Clear`;
       safetyColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+    } else if ((dashboardSummary as any)?.behavioral?.days) {
+      // Records are not loaded on the overview; the server keeps per-day counts (0 extra reads).
+      const since = new Date(Date.now() - 6 * 86400000).toISOString().slice(0, 10);
+      let inc = 0, pos = 0;
+      Object.entries((dashboardSummary as any).behavioral.days as Record<string, any>).forEach(([d, v]) => {
+        if (d >= since) { inc += Number(v?.inc) || 0; pos += Number(v?.pos) || 0; }
+      });
+      safetyDesc = `This week: ${inc} incident${inc === 1 ? '' : 's'} and ${pos} commendation${pos === 1 ? '' : 's'} recorded.`;
+      safetyTag = inc > 0 ? `Safeguarding: ${inc} this week` : `Safeguarding: none this week`;
+      safetyColor = inc > 0 ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-emerald-50 text-emerald-700 border-emerald-200";
     } else {
-      safetyDesc = `No behaviour or incident records have been logged yet.`;
-      safetyTag = `Safeguarding: No records`;
-      safetyColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+      safetyDesc = `Not loaded here. Open the Behaviour tab to review incidents.`;
+      safetyTag = `Open Behaviour`;
+      safetyColor = "bg-slate-50 text-slate-600 border-slate-200";
     }
 
     return [
@@ -726,12 +739,12 @@ export function ExecutiveDirectorCockpit({
       {
         id: 'sla-1',
         type: 'department_sla',
-        title: 'Department Gradebook SLA Compliance',
+        title: 'Class Registers Today',
         desc: slaDesc,
         tag: slaTag,
         color: slaColor,
-        actionLabel: 'Audit SLA Compliance',
-        time: 'This term'
+        actionLabel: 'View Registers',
+        time: 'Today'
       },
       {
         id: 'safeguarding-1',
@@ -744,7 +757,7 @@ export function ExecutiveDirectorCockpit({
         time: 'Safety Audit'
       }
     ];
-  }, [recentAssessments, students, classes, behavioralRecords]);
+  }, [recentAssessments, students, classes, behavioralRecords, classRegisterStats, dashboardSummary]);
 
   // Command Bar State
   const [commandSuccess, setCommandSuccess] = useState<string | null>(null);
@@ -1472,7 +1485,7 @@ export function ExecutiveDirectorCockpit({
               </div>
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-semibold text-indigo-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-0.5" /> From recent assessments
+                  <TrendingUp className="h-3 w-3 mr-0.5" /> {academicTidbits.syncedAt ? `Marks as of ${new Date(academicTidbits.syncedAt).toLocaleDateString()}` : 'From recent assessments'}
                 </span>
                 {academicTidbits.avgScore ? (
                   <Badge variant="outline" className="text-[9px] bg-slate-50 text-slate-700 border-slate-200 font-semibold px-1.5 py-0">
@@ -1487,7 +1500,11 @@ export function ExecutiveDirectorCockpit({
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Lead Subject:</span>
-                  <span className="font-semibold text-indigo-700">{telemetry.topPerformingSubject && Number(telemetry.topPerformingScore) > 0 ? `${telemetry.topPerformingSubject} (${telemetry.topPerformingScore}%)` : '—'}</span>
+                  <span className="font-semibold text-indigo-700">{(() => {
+                    const subj = telemetry.topPerformingSubject || academicTidbits.topSubject;
+                    const sc = Number(telemetry.topPerformingScore) || Number(academicTidbits.topSubjectScore) || 0;
+                    return subj && sc > 0 ? `${subj} (${sc}%)` : (subj || '—');
+                  })()}</span>
                 </div>
               </div>
             </div>
@@ -1512,7 +1529,7 @@ export function ExecutiveDirectorCockpit({
                   <h3 className="text-2xl font-bold text-slate-900">{dynamicAttendancePct}%</h3>
                   <span className="text-[10px] font-semibold text-slate-500">Student Pulse</span>
                 </div>
-                <Sparkline points={[92, 94, 95, 96, Number(dynamicAttendancePct) || 96.4]} color="#f59e0b" />
+
               </div>
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-semibold text-slate-700 flex items-center">

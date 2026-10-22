@@ -1212,11 +1212,14 @@ export const onBehavioralWrite = onDocumentWritten(
 
     if (infDelta === 0 && posDelta === 0) return;
 
+    // Counted per day (the dashboard adds up the last 7 days). The old fields were written with dotted
+    // names through set(), which stores them as literal "behavioral.x" keys, and they never went back down
+    // as the week moved on.
+    const day = new Date(createdMs || Date.now()).toISOString().slice(0, 10);
     await SUMMARY(schoolId).set({
       schoolId,
       lastUpdated: FieldValue.serverTimestamp(),
-      'behavioral.incidentsThisWeek': FieldValue.increment(infDelta),
-      'behavioral.positiveThisWeek':  FieldValue.increment(posDelta),
+      behavioral: { days: { [day]: { inc: FieldValue.increment(infDelta), pos: FieldValue.increment(posDelta) } } },
     }, { merge: true });
   }
 );
