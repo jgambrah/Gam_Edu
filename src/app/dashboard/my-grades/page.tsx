@@ -1,31 +1,45 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
-import { currentTermFromProfile, buildTermId } from '@/lib/term';
+import { currentTermFromProfile, termStampOfRecord, compareTermIds, stampFromTermId } from '@/lib/term';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, orderBy, limit, documentId, doc } from 'firebase/firestore';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Loader2, TrendingUp, BookOpen, User as UserIcon, Calendar, History, Sparkles, X, Info, AlertCircle, Award, ChevronRight, ArrowUpRight, AlertTriangle } from 'lucide-react';
-import { format } from 'date-fns';
-import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
-import { Assessment, Student, Subject } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
+import { Loader2, BookOpen, ChevronDown, FileText, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
-const toDateSafe = (d: any): Date => {
-    if (!d) return new Date();
-    if (d instanceof Date) return d;
-    if (d.toDate && typeof d.toDate === 'function') return d.toDate();
-    if (d.seconds) return new Date(d.seconds * 1000);
-    return new Date(d);
+/**
+ * Live Grades for pupils and parents: one term at a time.
+ * Reads the pupil's own marks (newest 300) once per child, groups them by term, and compares each subject
+ * with the class average from the server-kept classAverages document (no classmates' marks are read).
+ */
+
+const toDate = (d: any): Date | null => {
+    if (!d) return null;
+    const x = d instanceof Date ? d : typeof d.toDate === 'function' ? d.toDate() : d.seconds ? new Date(d.seconds * 1000) : new Date(d);
+    return isNaN(x.getTime()) ? null : x;
 };
+
+const pctOf = (a: any) => {
+    const max = Number(a.maxScore) || 0;
+    return max > 0 ? Math.max(0, Math.min(100, (Number(a.score) || 0) / max * 100)) : null;
+};
+
+// Grade bands (the old page called every subject "Excelling", even 59%).
+const band = (p: number) =>
+    p >= 80 ? { label: 'Excellent', cls: 'bg-emerald-100 text-emerald-800', bar: 'bg-emerald-500', advice: 'Doing very well. Keep encouraging this effort.' }
+    : p >= 70 ? { label: 'Very good', cls: 'bg-teal-100 text-teal-800', bar: 'bg-teal-500', advice: 'Strong work. A little extra practice can lift it further.' }
+    : p >= 60 ? { label: 'Good', cls: 'bg-sky-100 text-sky-800', bar: 'bg-sky-500', advice: 'Solid. Regular revision at home will help it grow.' }
+    : p >= 50 ? { label: 'Pass', cls: 'bg-amber-100 text-amber-800', bar: 'bg-amber-500', advice: 'Passing, but needs more practice. Ask the teacher what to revise.' }
+    : { label: 'Needs support', cls: 'bg-rose-100 text-rose-800', bar: 'bg-rose-500', advice: 'Below 50%. Please speak with the class teacher about extra support.' };
+
+const isExam = (a: any) => /exam|mid|mock|end of term|terminal/i.test(String(a.assessmentType || a.type || ''));
 
 export default function MyGradesPage() {
     const { user } = useUser();
@@ -33,562 +47,267 @@ export default function MyGradesPage() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const firestore = useFirestore();
 
-    // View State
-    const [viewMode, setViewMode] = useState<'recent' | 'history'>('recent');
-    const [selectedYear, setSelectedYear] = useState(MOCK_ACADEMIC_YEARS[MOCK_ACADEMIC_YEARS.length - 1]);
-    const [selectedTerm, setSelectedTerm] = useState(MOCK_TERMS[0] || 'First Term');
     const [selectedChildId, setSelectedChildId] = useState<string>('');
+    const [selectedTermId, setSelectedTermId] = useState<string>('');
+    const [openSubject, setOpenSubject] = useState<string | null>(null);
 
-    const parentStudentIds = useMemo(() => {
+    const parentStudentIds: string[] = useMemo(() => {
         const ids = profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || [];
-        // Cap at 30 to respect Firestore 'in' query limits
         return ids.slice(0, 30);
     }, [profile]);
     const parentStudentIdsStr = parentStudentIds.join(',');
 
-    const activeChildId = useMemo(() => {
-        if (role === 'Student') return user?.uid || '';
-        return selectedChildId || parentStudentIds[0] || '';
-    }, [role, user?.uid, selectedChildId, parentStudentIds]);
-
-    const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !role || !activeChildId) return null;
-        
-        const baseQuery = collection(firestore, 'assessments');
-        
-        // --- RECENT MODE: Last 20 items across any period ---
-        if (viewMode === 'recent') {
-            return query(
-                baseQuery,
-                where('schoolId', '==', schoolId),
-                where('studentId', '==', activeChildId),
-                orderBy('createdAt', 'desc'),
-                limit(20)
-            );
-        }
-        
-        // --- HISTORY MODE: Filtered by specific year and term ---
-        return query(
-            baseQuery,
-            where('schoolId', '==', schoolId),
-            where('studentId', '==', activeChildId),
-            where('academicYear', '==', selectedYear),
-            where('term', '==', selectedTerm),
-            orderBy('createdAt', 'desc')
-        );
-    }, [firestore, schoolId, role, activeChildId, selectedYear, selectedTerm, viewMode]);
-
-    const { data: assessments, isLoading: loadingAssessments } = useCollection<Assessment>(assessmentsQuery);
-
+    // Children (parent) or the pupil themself
     const studentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !role) return null;
         if (role === 'Student' && user) {
-            return query(
-                collection(firestore, 'students'), 
-                where('schoolId', '==', schoolId), 
-                where('uid', '==', user.uid)
-            );
+            return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', '==', user.uid));
         }
         if (role === 'Parent' && parentStudentIds.length > 0) {
-            return query(
-                collection(firestore, 'students'),
-                where('schoolId', '==', schoolId),
-                where(documentId(), 'in', parentStudentIds)
-            );
+            return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where(documentId(), 'in', parentStudentIds));
         }
         return null;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [firestore, schoolId, parentStudentIdsStr, role, user?.uid]);
+    const { data: students } = useCollection<any>(studentsQuery);
 
-    const { data: students } = useCollection<Student>(studentsQuery);
+    const activeChildId = role === 'Student' ? (user?.uid || '') : (selectedChildId || parentStudentIds[0] || '');
+    const activeChild = useMemo(() => (students || []).find((s: any) => s.id === activeChildId || s.uid === activeChildId) || null, [students, activeChildId]);
+    const markKey = activeChild?.uid || activeChildId; // marks are filed under the pupil's uid
 
-    const activeChild = useMemo(() => {
-        if (!students || !activeChildId) return null;
-        return students.find(s => s.id === activeChildId || s.uid === activeChildId) || null;
-    }, [students, activeChildId]);
+    // The pupil's own marks, newest first (one read per mark; a pupil has a few dozen per term)
+    const marksQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !markKey) return null;
+        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', '==', markKey), orderBy('createdAt', 'desc'), limit(300));
+    }, [firestore, schoolId, markKey]);
+    const { data: marks, isLoading: loadingMarks } = useCollection<any>(marksQuery);
 
-    const activeClassId = activeChild?.classId || '';
-
-    const subjectsQuery = useMemoFirebase(() => 
-        (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null,
-    [firestore, schoolId]);
-
-    const { data: subjects } = useCollection<Subject>(subjectsQuery);
-
-    // Class averages from one server-kept document per class and term (no classmates' marks are downloaded;
-    // this page used to read 250 of them).
     const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]));
-    const averagesTermId = useMemo(() => {
-        if (viewMode === 'history') return buildTermId(selectedYear, selectedTerm) || '';
-        return currentTermFromProfile(schoolProfile)?.termId || '';
-    }, [viewMode, selectedYear, selectedTerm, schoolProfile]);
+    const { data: subjectsList } = useCollection<any>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
+    const currentTermId = currentTermFromProfile(schoolProfile)?.termId || '';
+
+    // Group marks by term
+    const terms = useMemo(() => {
+        const map = new Map<string, any[]>();
+        (marks || []).forEach((a: any) => {
+            if (pctOf(a) === null) return;
+            const id = termStampOfRecord(a)?.termId || 'unknown';
+            if (!map.has(id)) map.set(id, []);
+            map.get(id)!.push(a);
+        });
+        return Array.from(map.entries())
+            .map(([termId, list]) => {
+                const st = stampFromTermId(termId);
+                const avg = Math.round(list.reduce((s, a) => s + (pctOf(a) as number), 0) / list.length);
+                return { termId, label: st ? `${st.term} ${st.academicYear}` : 'Term not recorded', short: st ? `${st.term.replace(' Term', '')} ${st.academicYear}` : 'Unknown', list, avg };
+            })
+            .sort((a, b) => (a.termId === 'unknown' ? -1 : b.termId === 'unknown' ? 1 : compareTermIds(a.termId, b.termId)));
+    }, [marks]);
+
+    // Default: the current term if it has marks, otherwise the latest term with marks
+    useEffect(() => { setSelectedTermId(''); setOpenSubject(null); }, [markKey]);
+    const termId = selectedTermId
+        || (terms.some(t => t.termId === currentTermId) ? currentTermId : (terms.filter(t => t.termId !== 'unknown').slice(-1)[0]?.termId || terms[0]?.termId || ''));
+    const term = terms.find(t => t.termId === termId) || null;
+
+    const classId = activeChild?.classId || '';
     const { data: classAverages } = useDoc<any>(useMemoFirebase(
-        () => (firestore && schoolId && activeClassId && averagesTermId) ? doc(firestore, 'classAverages', `${schoolId}__${averagesTermId}__${activeClassId}`) : null,
-        [firestore, schoolId, activeClassId, averagesTermId]
+        () => (firestore && schoolId && classId && termId && termId !== 'unknown') ? doc(firestore, 'classAverages', `${schoolId}__${termId}__${classId}`) : null,
+        [firestore, schoolId, classId, termId]
     ));
 
-    // Per-assessment class averages are not kept (they needed every classmate's marks).
-    const classAssessmentAverages: Record<string, number> = {};
+    const subjectName = (a: any) => subjectsList?.find((s: any) => s.id === a.subjectId)?.name || a.subjectName || 'Subject';
 
-    const classSubjectAverages = useMemo(() => {
-        const result: Record<string, number> = {};
-        Object.entries(classAverages?.subjects || {}).forEach(([subjectId, v]: any) => {
+    const subjectRows = useMemo(() => {
+        if (!term) return [];
+        const by = new Map<string, any[]>();
+        term.list.forEach(a => { const n = subjectName(a); if (!by.has(n)) by.set(n, []); by.get(n)!.push(a); });
+        const classBy: Record<string, number> = {};
+        Object.entries(classAverages?.subjects || {}).forEach(([sid, v]: any) => {
             if (!(Number(v?.c) > 0)) return;
-            const sub = subjects?.find((s: any) => s.id === subjectId);
-            result[sub?.name || v.name || subjectId] = Math.round(Number(v.s) / Number(v.c));
+            const n = subjectsList?.find((s: any) => s.id === sid)?.name || v.name || sid;
+            classBy[n] = Math.round(Number(v.s) / Number(v.c));
         });
-        return result;
-    }, [classAverages, subjects]);
-    const classOverall = Number(classAverages?.totals?.c) > 0 ? Math.round(Number(classAverages.totals.s) / Number(classAverages.totals.c)) : 0;
-
-    const subjectAverages = useMemo(() => {
-        if (!assessments) return [];
-        const averages: Record<string, { totalPct: number; count: number; name: string }> = {};
-        assessments.forEach((a: any) => {
-            const score = Number(a.score) || 0;
-            const max = Number(a.maxScore) || 100;
-            if (max > 0) {
-                const pct = (score / max) * 100;
-                const sub = subjects?.find((s: any) => s.id === a.subjectId);
-                const subName = sub?.name || a.subjectName || 'Other';
-                if (!averages[subName]) {
-                    averages[subName] = { totalPct: 0, count: 0, name: subName };
-                }
-                averages[subName].totalPct += pct;
-                averages[subName].count++;
-            }
-        });
-        return Object.values(averages).map(avg => {
-            const childAvg = Math.round(avg.totalPct / avg.count);
-            const classAvg = classSubjectAverages[avg.name] || 0;
-            return {
-                name: avg.name,
-                average: childAvg,
-                classAverage: classAvg
-            };
-        });
-    }, [assessments, subjects, classSubjectAverages]);
-
-    const enrichedAssessments = useMemo(() => {
-        if (!assessments) return [];
-        return assessments.map(a => {
-            const student = students?.find(s => s.uid === a.studentId);
-            const subject = subjects?.find(s => s.id === a.subjectId);
-            const key = `${a.subjectId}_${(a.assessmentName || '').toLowerCase().trim()}`;
-            const specificClassAvg = classAssessmentAverages[key] || 0;
-            return {
-                ...a,
-                studentName: student ? `${student.firstName} ${student.lastName}` : 'Unknown Student',
-                subjectName: subject?.name || a.subjectName || 'Unknown Subject',
-                percentage: (a.score && a.maxScore) ? (a.score / a.maxScore) * 100 : 0,
-                classAverage: specificClassAvg
-            };
-        });
+        return Array.from(by.entries()).map(([name, list]) => {
+            const avg = Math.round(list.reduce((s, a) => s + (pctOf(a) as number), 0) / list.length);
+            const ca = list.filter(a => !isExam(a));
+            const ex = list.filter(isExam);
+            const caAvg = ca.length ? Math.round(ca.reduce((s, a) => s + (pctOf(a) as number), 0) / ca.length) : null;
+            const exAvg = ex.length ? Math.round(ex.reduce((s, a) => s + (pctOf(a) as number), 0) / ex.length) : null;
+            const sorted = [...list].sort((x, y) => (toDate(y.assessmentDate || y.createdAt)?.getTime() || 0) - (toDate(x.assessmentDate || x.createdAt)?.getTime() || 0));
+            return { name, avg, caAvg, exAvg, classAvg: classBy[name] ?? null, list: sorted };
+        }).sort((a, b) => b.avg - a.avg);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [assessments, students, subjects]);
+    }, [term, classAverages, subjectsList]);
 
-    const stats = useMemo(() => {
-        if (enrichedAssessments.length === 0) {
-            return { average: 0, count: 0, classAverage: 0 };
-        }
-        let totalPct = 0;
-        let count = 0;
-        enrichedAssessments.forEach(a => {
-            totalPct += a.percentage;
-            count++;
-        });
-        const average = Math.round(totalPct / count);
+    const classOverall = Number(classAverages?.totals?.c) > 0 ? Math.round(Number(classAverages.totals.s) / Number(classAverages.totals.c)) : null;
+    const prevTerm = term ? terms.filter(t => t.termId !== 'unknown' && t.termId !== term.termId && compareTermIds(t.termId, term.termId) < 0).slice(-1)[0] : null;
+    const change = term && prevTerm ? term.avg - prevTerm.avg : null;
+    const best = subjectRows[0];
+    const weakest = subjectRows.length > 1 ? subjectRows[subjectRows.length - 1] : null;
 
-        return { average, count, classAverage: classOverall };
-    }, [enrichedAssessments, classOverall]);
-
-    const isLoading = schoolLoading || loadingAssessments;
-
-    if (role !== 'Student' && role !== 'Parent') {
-        return (
-            <div className="p-8 flex justify-center">
-                <Card className="max-w-md w-full border-red-100 bg-red-50/50">
-                    <CardHeader className="text-center">
-                        <div className="bg-red-100 p-3 rounded-full w-fit mx-auto mb-4">
-                            <AlertCircle className="h-8 w-8 text-red-600" />
-                        </div>
-                        <CardTitle>Access Restricted</CardTitle>
-                        <CardDescription>Only students and parents can view personal grade logs.</CardDescription>
-                    </CardHeader>
-                </Card>
-            </div>
-        );
-    }
+    const loading = schoolLoading || (!!markKey && loadingMarks && !marks);
 
     return (
-        <div className="p-6 space-y-8 max-w-7xl mx-auto pb-20 animate-in fade-in duration-500">
-            {/* Header Banner */}
-            <div className="relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r from-indigo-900 via-indigo-950 to-slate-900 border-indigo-500/20">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-                <div className="space-y-3 relative z-10 max-w-xl">
-                    <span className="text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase bg-indigo-500/20 text-indigo-300">
-                        Academic Performance Console
-                    </span>
-                    <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">
-                        {role === 'Parent' ? "Ward Grade Index" : "My Grade Index"}
-                    </h2>
-                    <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                        Track live grades, subject-specific averages, and compare performance directly against class cohort averages.
-                    </p>
+        <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Grades</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">{role === 'Parent' ? 'Ward Grades' : 'My Grades'}</h1>
+                    <p className="text-xs text-slate-500 font-medium mt-1">Marks entered by teachers during the term. The final position is on the report card.</p>
                 </div>
-                <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-                    <TrendingUp className="h-10 w-10 text-white opacity-80" />
-                </div>
+                <Button asChild variant="outline" size="sm" className="rounded-xl font-bold text-xs w-fit">
+                    <Link href="/dashboard/my-reports"><FileText className="h-4 w-4 mr-1.5" /> Report Cards</Link>
+                </Button>
             </div>
 
-            {/* Child Selector Tabs (Parents with multiple students) */}
+            {/* Child selector */}
             {role === 'Parent' && students && students.length > 1 && (
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Child</Label>
-                    <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border w-fit">
-                        {students.map((st: any) => {
-                            const targetId = st.id || st.uid;
-                            return (
-                                <button
-                                    key={targetId}
-                                    onClick={() => setSelectedChildId(targetId)}
-                                    className={cn(
-                                        "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                                        activeChildId === targetId
-                                            ? "bg-white text-indigo-600 shadow-md scale-[1.02]"
-                                            : "text-slate-500 hover:text-slate-900"
-                                    )}
-                                >
-                                    {st.firstName} {st.lastName}
-                                </button>
-                            );
-                        })}
-                    </div>
+                <div className="flex flex-wrap gap-2">
+                    {students.map((st: any) => {
+                        const id = st.id || st.uid;
+                        const on = activeChildId === id || activeChildId === st.uid;
+                        return (
+                            <button key={id} onClick={() => setSelectedChildId(id)}
+                                className={cn("px-4 py-2.5 text-xs font-black rounded-xl border transition-all",
+                                    on ? "bg-indigo-700 text-white border-indigo-700 shadow" : "bg-white text-slate-600 border-slate-200 hover:border-indigo-300")}>
+                                {st.firstName} {st.lastName}
+                            </button>
+                        );
+                    })}
                 </div>
             )}
 
-            {/* Statistics Cards */}
-            <div className="grid gap-6 md:grid-cols-3">
-                <Card className="hover:shadow-md transition-all border-l-4 border-l-indigo-500 rounded-[1.5rem] bg-white overflow-hidden relative">
-                    <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Ward Cumulative Average</p>
-                            <h3 className="text-2xl font-black text-slate-900">{stats.average}%</h3>
-                            <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Cumulative score index</p>
-                        </div>
-                        <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl shadow-inner">
-                            <TrendingUp className="h-5 w-5" />
-                        </div>
+            {loading ? (
+                <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-indigo-600 h-8 w-8" /></div>
+            ) : terms.length === 0 ? (
+                <Card className="rounded-3xl border border-dashed bg-white">
+                    <CardContent className="p-12 text-center space-y-2">
+                        <BookOpen className="h-8 w-8 text-slate-300 mx-auto" />
+                        <p className="text-sm font-black text-slate-600">No marks recorded yet</p>
+                        <p className="text-xs text-slate-400">Marks appear here as soon as teachers enter them.</p>
                     </CardContent>
                 </Card>
-                <Card className="hover:shadow-md transition-all border-l-4 border-l-emerald-500 rounded-[1.5rem] bg-white overflow-hidden relative">
-                    <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Class Cohort Average</p>
-                            <h3 className="text-2xl font-black text-slate-900">{stats.classAverage > 0 ? `${stats.classAverage}%` : '—'}</h3>
-                            <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Classroom cohort index</p>
-                        </div>
-                        <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl shadow-inner">
-                            <BookOpen className="h-5 w-5" />
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="hover:shadow-md transition-all border-l-4 border-l-purple-500 rounded-[1.5rem] bg-white overflow-hidden relative">
-                    <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Assessments</p>
-                            <h3 className="text-2xl font-black text-slate-900">{stats.count} Marks</h3>
-                            <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Logged continuous marks</p>
-                        </div>
-                        <div className="p-3.5 bg-purple-50 text-purple-600 rounded-2xl shadow-inner">
-                            <Award className="h-5 w-5" />
-                        </div>
-                    </CardContent>
-                </Card>
+            ) : (
+            <>
+            {/* Term chips */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+                {[...terms].reverse().map(t => (
+                    <button key={t.termId} onClick={() => { setSelectedTermId(t.termId); setOpenSubject(null); }}
+                        className={cn("shrink-0 px-3.5 py-2 rounded-xl border text-left transition-all",
+                            t.termId === termId ? "bg-indigo-50 border-indigo-300" : "bg-white border-slate-200 hover:border-indigo-200")}>
+                        <span className="block text-[11px] font-black text-slate-800">{t.short}{t.termId === currentTermId ? ' · now' : ''}</span>
+                        <span className="block text-[10px] font-bold text-slate-500">{t.avg}% · {t.list.length} marks</span>
+                    </button>
+                ))}
             </div>
 
-            {/* Main Interactive Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left side: Subject tracker */}
-                <Card className="lg:col-span-1 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
-                                <TrendingUp className="h-5 w-5 text-indigo-600" /> Subject Tracker
-                            </CardTitle>
-                            <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 font-black">Performance averages compared directly with class averages</CardDescription>
-                        </div>
-                    </div>
-
-                    {subjectAverages.length > 0 ? (
-                        <div className="space-y-4">
-                            {subjectAverages.map((sub: any) => (
-                                <div key={sub.name} className="p-5 bg-slate-50/60 border border-slate-100 rounded-[1.5rem] space-y-3 relative hover:scale-[1.02] transition-all duration-300">
-                                    <div className="flex justify-between items-start">
-                                        <span className="text-xs font-black text-slate-800 uppercase tracking-tight truncate max-w-[140px]" title={sub.name}>{sub.name}</span>
-                                        <div className="flex flex-col items-end gap-0.5">
-                                            <span className={cn(
-                                                "text-sm font-black uppercase italic tracking-wider",
-                                                sub.average >= 50 ? "text-emerald-600" : "text-rose-600"
-                                            )}>{sub.average}%</span>
-                                            {sub.classAverage > 0 && (
-                                                <span className={cn(
-                                                    "text-[9px] font-black uppercase tracking-tight",
-                                                    sub.average >= sub.classAverage ? "text-emerald-500" : "text-rose-500"
-                                                )}>
-                                                    {sub.average >= sub.classAverage ? `+${sub.average - sub.classAverage}% Above Class` : `${sub.average - sub.classAverage}% Below Class`}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="space-y-1.5">
-                                        {/* Student Progress */}
-                                        <div className="space-y-1">
-                                            <div className="flex justify-between text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                                <span>Student</span>
-                                            </div>
-                                            <div className="h-2 w-full bg-slate-200/50 rounded-full overflow-hidden">
-                                                <div 
-                                                    className={cn("h-full rounded-full transition-all duration-500", sub.average >= 50 ? "bg-emerald-500" : "bg-rose-500")}
-                                                    style={{ width: `${sub.average}%` }}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Class Average Progress */}
-                                        {sub.classAverage > 0 && (
-                                            <div className="space-y-1">
-                                                <div className="flex justify-between text-[8px] font-black text-slate-400 uppercase tracking-widest">
-                                                    <span>Class Average ({sub.classAverage}%)</span>
-                                                </div>
-                                                <div className="h-1.5 w-full bg-slate-200/30 rounded-full overflow-hidden">
-                                                    <div 
-                                                        className="h-full rounded-full bg-slate-400"
-                                                        style={{ width: `${sub.classAverage}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Subject difficulty coaching advice highlight */}
-                                    <div className="pt-3 border-t border-slate-200 mt-2 space-y-1">
-                                        {sub.average < sub.classAverage - 3 || sub.average < 50 ? (
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-1 text-[9px] font-black text-rose-600 uppercase tracking-wider">
-                                                    <AlertTriangle className="h-3.5 w-3.5 text-rose-500 animate-pulse" />
-                                                    <span>Needs Support: Below Average</span>
-                                                </div>
-                                                <p className="text-[9.5px] text-rose-700 leading-normal font-semibold bg-rose-50/50 p-2 rounded-lg">
-                                                    Advisory: scoring below average in {sub.name}. Encourage daily textbook revisions, review homework answers, or drop a line to the teacher.
-                                                </p>
-                                            </div>
-                                        ) : sub.average > sub.classAverage + 5 ? (
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-1 text-[9px] font-black text-emerald-600 uppercase tracking-wider">
-                                                    <Award className="h-3.5 w-3.5 text-emerald-500" />
-                                                    <span>Excelling in {sub.name}</span>
-                                                </div>
-                                                <p className="text-[9.5px] text-emerald-700 leading-normal font-semibold bg-emerald-50/30 p-2 rounded-lg">
-                                                    Advisory: performing exceptionally! Keep up the encouragement and sustain their structured reading environment.
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-1 text-[9px] font-black text-amber-600 uppercase tracking-wider">
-                                                    <Info className="h-3.5 w-3.5 text-amber-500" />
-                                                    <span>Steady: Average standing</span>
-                                                </div>
-                                                <p className="text-[9.5px] text-amber-700 leading-normal font-semibold bg-amber-50/30 p-2 rounded-lg">
-                                                    Advisory: on track with classmates. Practicing additional quizzes and chapter summaries can help push them above class cohort index.
-                                                </p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-center py-6 text-slate-400 italic font-black uppercase tracking-widest text-xs">No grades to compute subject averages.</p>
-                    )}
-                </Card>
-
-                {/* Right side: Detailed Grade Feed */}
-                <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
-                    <CardHeader className="bg-slate-50/50 border-b p-8 flex flex-row justify-between items-center">
-                        <div>
-                            <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">
-                                {viewMode === 'recent' ? "Latest Marks Posted" : "Archived Results"}
-                            </CardTitle>
-                            <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">
-                                {viewMode === 'recent' ? "Showing recent assessments across all terms" : `Results filtered for term`}
-                            </CardDescription>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                            {viewMode === 'history' && (
-                                <Button 
-                                    variant="ghost" 
-                                    onClick={() => setViewMode('recent')}
-                                    className="text-indigo-600 hover:text-indigo-700 font-bold uppercase text-[10px] tracking-widest"
-                                >
-                                    <X className="mr-1 h-3 w-3" /> Reset
-                                </Button>
-                            )}
-                            
-                            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
-                                <Button 
-                                    variant={viewMode === 'recent' ? 'secondary' : 'ghost'} 
-                                    size="sm"
-                                    onClick={() => setViewMode('recent')}
-                                    className={cn("rounded-lg text-[10px] font-black uppercase tracking-widest h-8 px-4", viewMode === 'recent' && "bg-white shadow-sm")}
-                                >
-                                    <Sparkles className="mr-1.5 h-3 w-3" /> Recent
-                                </Button>
-                                <Button 
-                                    variant={viewMode === 'history' ? 'secondary' : 'ghost'} 
-                                    size="sm"
-                                    onClick={() => setViewMode('history')}
-                                    className={cn("rounded-lg text-[10px] font-black uppercase tracking-widest h-8 px-4", viewMode === 'history' && "bg-white shadow-sm")}
-                                >
-                                    <History className="mr-1.5 h-3 w-3" /> Archive
-                                </Button>
-                            </div>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="p-0">
-                        {viewMode === 'history' && (
-                            <div className="bg-slate-50/50 p-6 border-b flex flex-wrap gap-4">
-                                <div className="space-y-1.5 flex-1 min-w-[200px]">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Academic Year</Label>
-                                    <Select value={selectedYear} onValueChange={setSelectedYear}>
-                                        <SelectTrigger className="bg-white border-2 rounded-xl h-11"><SelectValue placeholder="Year" /></SelectTrigger>
-                                        <SelectContent>
-                                            {MOCK_ACADEMIC_YEARS.map(y => <SelectItem key={y} value={y}>{y}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                <div className="space-y-1.5 flex-1 min-w-[200px]">
-                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Academic Term</Label>
-                                    <Select value={selectedTerm} onValueChange={setSelectedTerm}>
-                                        <SelectTrigger className="bg-white border-2 rounded-xl h-11"><SelectValue placeholder="Term" /></SelectTrigger>
-                                        <SelectContent>
-                                            {MOCK_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        )}
-
-                        {isLoading ? (
-                            <div className="p-32 flex flex-col items-center justify-center gap-4">
-                                <Loader2 className="animate-spin text-indigo-600 h-10 w-10 opacity-20"/>
-                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-300">Syncing Gradebook...</p>
-                            </div>
-                        ) : enrichedAssessments.length === 0 ? (
-                            <div className="p-32 text-center flex flex-col items-center gap-4 text-slate-300">
-                                <BookOpen className="h-16 w-16 opacity-10" />
-                                <div className="space-y-1">
-                                    <p className="text-sm font-black uppercase tracking-widest">No assessments recorded</p>
-                                    <p className="text-xs font-medium lowercase">No continuous marks match the select criteria.</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <Table>
-                                <TableHeader className="bg-slate-50/30">
-                                    <TableRow>
-                                        <TableHead className="w-[180px] font-black text-[10px] uppercase tracking-widest pl-8 py-6">Date Posted</TableHead>
-                                        <TableHead className="font-black text-[10px] uppercase tracking-widest">Subject & Type</TableHead>
-                                        <TableHead className="w-[220px] font-black text-[10px] uppercase tracking-widest">Performance vs Class</TableHead>
-                                        <TableHead className="font-black text-[10px] uppercase tracking-widest pr-8">Teacher Remark</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {enrichedAssessments.map((a) => (
-                                        <TableRow key={a.id} className="hover:bg-slate-50/50 transition-colors group h-24">
-                                            <TableCell className="pl-8">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="p-2 bg-indigo-50 rounded-xl text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                                                        <Calendar className="h-4 w-4" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-black text-slate-700 tracking-tight">
-                                                            {format(toDateSafe(a.assessmentDate), 'PPP')}
-                                                        </span>
-                                                        {viewMode === 'recent' && (
-                                                            <span className="text-[9px] font-black uppercase text-indigo-400 tracking-tighter">
-                                                                {a.term} · {a.academicYear}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex flex-col gap-1">
-                                                    <span className="text-sm font-black text-slate-800 uppercase italic tracking-tighter leading-none">
-                                                        {a.subjectName}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                                        {a.assessmentType}
-                                                    </span>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="space-y-1.5">
-                                                    <div className="flex justify-between items-end">
-                                                        <span className="text-sm font-black text-slate-900 tracking-tighter leading-none">
-                                                            {a.score} <span className="text-[10px] text-slate-400 font-bold uppercase">/ {a.maxScore}</span>
-                                                        </span>
-                                                        <div className="text-right">
-                                                            <span className={cn(
-                                                                "text-xs font-black uppercase italic tracking-widest",
-                                                                a.percentage >= 50 ? 'text-emerald-600' : 'text-rose-600'
-                                                            )}>
-                                                                {Math.round(a.percentage)}%
-                                                            </span>
-                                                            {a.classAverage > 0 && (
-                                                                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-tight">
-                                                                    Class Avg: {a.classAverage}%
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden relative">
-                                                        <div 
-                                                            className={cn("h-full rounded-full transition-all duration-1000", a.percentage >= 50 ? "bg-emerald-500" : "bg-rose-500")} 
-                                                            style={{ width: `${a.percentage}%` }}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="pr-8">
-                                                <div className="max-w-[200px]">
-                                                    {a.teacherRemark ? (
-                                                        <p className="text-xs font-medium text-slate-500 italic leading-relaxed line-clamp-2" title={a.teacherRemark}>
-                                                            "{a.teacherRemark}"
-                                                        </p>
-                                                    ) : (
-                                                        <span className="text-[10px] font-bold uppercase text-slate-300 tracking-[0.2em] italic">No comment recorded</span>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        )}
-                    </CardContent>
-                    <CardFooter className="bg-slate-50/50 p-6 border-t flex items-center gap-3">
-                        <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                            <Info className="h-4 w-4 text-indigo-500" />
-                        </div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
-                            Continuous assessment marks are updated in real-time as teachers submit them. 
-                            Overall terminal results are released separately via the "Report Cards" module.
-                        </p>
-                    </CardFooter>
-                </Card>
+            {term && (
+            <>
+            {/* Summary */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Average · {term.short}</p>
+                    <p className="text-2xl font-black text-slate-900">{term.avg}%</p>
+                    <Badge className={cn("border-none text-[9px] font-black uppercase mt-1", band(term.avg).cls)}>{band(term.avg).label}</Badge>
+                </CardContent></Card>
+                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Class average</p>
+                    <p className="text-2xl font-black text-slate-900">{classOverall !== null ? `${classOverall}%` : '—'}</p>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">
+                        {classOverall !== null ? (term.avg >= classOverall ? `${term.avg - classOverall} points above` : `${classOverall - term.avg} points below`) : 'Not available for this term'}
+                    </p>
+                </CardContent></Card>
+                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Since last term</p>
+                    <p className={cn("text-2xl font-black flex items-center gap-1", change === null ? "text-slate-400" : change > 0 ? "text-emerald-600" : change < 0 ? "text-rose-600" : "text-slate-700")}>
+                        {change === null ? '—' : <>{change > 0 ? <TrendingUp className="h-5 w-5" /> : change < 0 ? <TrendingDown className="h-5 w-5" /> : <Minus className="h-5 w-5" />}{change > 0 ? '+' : ''}{change}</>}
+                    </p>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">{prevTerm ? `vs ${prevTerm.short} (${prevTerm.avg}%)` : 'No earlier term'}</p>
+                </CardContent></Card>
+                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Marks this term</p>
+                    <p className="text-2xl font-black text-slate-900">{term.list.length}</p>
+                    <p className="text-[10px] font-bold text-slate-500 mt-1">{subjectRows.length} subject{subjectRows.length === 1 ? '' : 's'}</p>
+                </CardContent></Card>
             </div>
+
+            {(best || weakest) && (
+                <p className="text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-100 rounded-2xl px-4 py-3">
+                    {best ? <>Strongest: <b>{best.name}</b> ({best.avg}%). </> : null}
+                    {weakest && weakest.name !== best?.name ? <>Needs most attention: <b>{weakest.name}</b> ({weakest.avg}%).</> : null}
+                </p>
+            )}
+
+            {/* Subjects */}
+            <Card className="rounded-3xl border border-slate-100 shadow-sm bg-white overflow-hidden">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800">Subjects · {term.label}</CardTitle>
+                    <CardDescription className="text-[11px]">Tap a subject to see each mark. CA = class work and tests; Exam = exam papers.</CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                    {subjectRows.map(row => {
+                        const b = band(row.avg);
+                        const open = openSubject === row.name;
+                        return (
+                            <div key={row.name} className="border-t border-slate-100">
+                                <button onClick={() => setOpenSubject(open ? null : row.name)} className="w-full text-left px-5 py-4 hover:bg-slate-50/60 transition-colors">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-black text-slate-800 truncate">{row.name}</p>
+                                            <p className="text-[10px] font-bold text-slate-500">
+                                                {row.caAvg !== null ? `CA ${row.caAvg}%` : 'CA —'} · {row.exAvg !== null ? `Exam ${row.exAvg}%` : 'Exam —'}
+                                                {row.classAvg !== null ? ` · Class ${row.classAvg}%` : ''}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-3 shrink-0">
+                                            <Badge className={cn("border-none text-[9px] font-black uppercase hidden sm:inline-flex", b.cls)}>{b.label}</Badge>
+                                            <span className="text-lg font-black text-slate-900 w-12 text-right">{row.avg}%</span>
+                                            <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform", open && "rotate-180")} />
+                                        </div>
+                                    </div>
+                                    <div className="relative h-2 mt-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                        <div className={cn("h-full rounded-full", b.bar)} style={{ width: `${row.avg}%` }} />
+                                        {row.classAvg !== null && <div className="absolute top-0 h-full w-0.5 bg-slate-700" style={{ left: `${row.classAvg}%` }} title={`Class average ${row.classAvg}%`} />}
+                                    </div>
+                                </button>
+                                {open && (
+                                    <div className="px-5 pb-4 space-y-2 bg-slate-50/40">
+                                        <p className="text-[11px] font-semibold text-slate-600 pt-1">{b.advice}</p>
+                                        {row.list.map((a: any) => {
+                                            const p = Math.round(pctOf(a) as number);
+                                            const d = toDate(a.assessmentDate || a.createdAt);
+                                            return (
+                                                <div key={a.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-white border border-slate-100">
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-bold text-slate-800">{a.assessmentName || a.assessmentType || 'Assessment'}</p>
+                                                        <p className="text-[10px] text-slate-500">{d ? format(d, 'd MMM yyyy') : ''}{a.assessmentName && a.assessmentType ? ` · ${a.assessmentType}` : ''}</p>
+                                                        {a.teacherRemark ? <p className="text-[11px] text-slate-600 italic mt-0.5">“{a.teacherRemark}”</p> : null}
+                                                    </div>
+                                                    <div className="text-right shrink-0">
+                                                        <p className="text-xs font-black text-slate-800">{Number(a.score) || 0} / {Number(a.maxScore) || 0}</p>
+                                                        <p className={cn("text-[10px] font-black", p >= 50 ? "text-emerald-600" : "text-rose-600")}>{p}%</p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </CardContent>
+            </Card>
+
+            <p className="text-[10px] text-slate-400 font-semibold text-center">
+                Grade bands: 80%+ Excellent · 70–79 Very good · 60–69 Good · 50–59 Pass · below 50 Needs support.
+                {term.termId === 'unknown' ? ' Some marks were saved without a term, so they are grouped together here.' : ''}
+            </p>
+            </>
+            )}
+            </>
+            )}
         </div>
     );
 }
