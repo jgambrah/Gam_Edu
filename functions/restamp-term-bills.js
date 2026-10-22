@@ -14,6 +14,13 @@
  * Check the report first: a bill for LAST term that was only entered after this term started would also
  * be listed (it is dated in this term). If you see such bills, re-stamp them by hand instead.
  *
+ * FUTURE-TERM bills (stamped Term 2 / Term 3 while the school is still in Term 1) are left alone by default,
+ * because they may be genuine advance fees. To check them and, if they are really this term's fees filed
+ * under the wrong term, move them to the current term:
+ *   node restamp-term-bills.js --school <id> --future                 lists every such bill (nothing written)
+ *   node restamp-term-bills.js --school <id> --future --type tuition  only bills whose fee type contains "tuition"
+ *   node restamp-term-bills.js --school <id> --future --apply         moves the listed bills to the current term
+ *
  * Never touches: archived bills, carried-forward balances (Arrears/Credit Brought Forward, opening
  * balances), bills dated before the term start, or bills already stamped with the current term.
  * Payments on re-stamped bills get the same term. Then run node rebuild-dashboard-summaries.js.
@@ -26,6 +33,8 @@ dotenv.config({ path: '../.env' });
 const args = process.argv.slice(2);
 const APPLY = args.includes('--apply');
 const schoolArg = args.includes('--school') ? args[args.indexOf('--school') + 1] : null;
+const FUTURE = args.includes('--future');
+const typeFilter = args.includes('--type') ? String(args[args.indexOf('--type') + 1] || '').toLowerCase() : '';
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
@@ -62,6 +71,7 @@ async function run(schoolId) {
   const snap = await db.collection('financialRecords').where('schoolId', '==', schoolId).get();
   const fixes = [];
   const byFrom = {};
+  const details = [];
   snap.docs.forEach(d => {
     const r = d.data();
     if (r.isArchived === true || isCarried(r)) return;
@@ -69,7 +79,13 @@ async function run(schoolId) {
     if (!dated || dated < startMs) return;
     const st = termStampOfRecord(r);
     if (st && st.termId === current.termId) return;
-    if (st && compareTermIds(st.termId, current.termId) > 0) return; // stamped LATER than current: leave alone
+    const isFuture = !!st && compareTermIds(st.termId, current.termId) > 0;
+    if (FUTURE !== isFuture) return; // default: older/unstamped only; --future: later-term bills only
+    if (typeFilter && !String(r.type || r.category || '').toLowerCase().includes(typeFilter)) return;
+    if (FUTURE) {
+      const paid = Number(r.amountPaid) || 0;
+      details.push(`    ${st.termId}  ${new Date(dated).toISOString().slice(0, 10)}  ${(r.studentName || r.studentId || '').slice(0, 26).padEnd(26)} ${(r.type || 'Other').slice(0, 22).padEnd(22)} GH₵${(Number(r.billedAmount) || 0).toFixed(2).padStart(9)}  paid ${paid.toFixed(2).padStart(9)}  ${(r.description || '').slice(0, 40)}`);
+    }
     const from = st ? st.termId : '(no term)';
     const k = `${from} | ${r.type || 'Other'}`;
     byFrom[k] = byFrom[k] || { count: 0, billed: 0 };
@@ -78,9 +94,14 @@ async function run(schoolId) {
     fixes.push(d);
   });
 
-  console.log(`\n${name} [${schoolId}]  current term ${current.termId} (starts ${profile.termStartDate})`);
-  if (!fixes.length) { console.log('  nothing to re-stamp'); return; }
+  console.log(`\n${name} [${schoolId}]  current term ${current.termId} (starts ${profile.termStartDate})${FUTURE ? '  — FUTURE-TERM bills' : ''}`);
+  if (!fixes.length) { console.log(FUTURE ? '  no bills filed under a later term' : '  nothing to re-stamp'); return; }
   Object.entries(byFrom).sort().forEach(([k, v]) => console.log(`  ${k.padEnd(45)} ${String(v.count).padStart(6)} bills  GH₵${v.billed.toFixed(2)}`));
+  if (FUTURE) {
+    console.log('\n    filed as     dated       pupil                      fee type               billed           paid  description');
+    details.sort().forEach(l => console.log(l));
+    if (!APPLY) console.log('\n  If these are THIS term\'s fees (not real advance billing), add --apply to move them to ' + current.termId + '.');
+  }
 
   if (!APPLY) return;
   const update = { termId: current.termId, academicYear: current.academicYear, term: current.term, restampedAt: admin.firestore.FieldValue.serverTimestamp() };
