@@ -12271,26 +12271,60 @@ export default function DashboardClient() {
   }, [firestore, isParent, parentStudentIds]);
   const { data: parentStickers, isLoading: loadingStickers } = useCollection(parentStickersQuery);
 
+  // ── Parent: the CURRENT term only (it used to read any 100 marks and any 100 attendance days) ──
+  const parentTerm = useMemo(() => (isParent ? (currentTermFromProfile(schoolData) || currentTermFromProfile(schoolSettings)) : null), [isParent, schoolData, schoolSettings]);
+  // Marks carry the year as it was typed when they were entered ("2025/2026", "2025-2026"…), so ask for each spelling.
+  const parentYearSpellings = useMemo(() => {
+    if (!parentTerm) return [] as string[];
+    const y = parentTerm.academicYear;
+    return Array.from(new Set([schoolSettings?.academicYear, schoolData?.academicYear, y, y.replace('-', '/')].filter(Boolean).map(String))).slice(0, 3);
+  }, [parentTerm, schoolSettings?.academicYear, schoolData?.academicYear]);
+  const parentYearKey = parentYearSpellings.join('|');
   const parentAssessmentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
+    // School has no current term set in its profile: fall back to the latest 100 marks.
+    if (parentYearSpellings.length === 0) {
+      return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', 'in', parentStudentIds.slice(0, 30)), limit(100));
+    }
     return query(
       collection(firestore, 'assessments'),
       where('schoolId', '==', schoolId),
-      where('studentId', 'in', parentStudentIds),
-      limit(100)
+      where('studentId', 'in', parentStudentIds.slice(0, 10)),
+      where('academicYear', 'in', parentYearSpellings),
+      limit(400)
     );
-  }, [firestore, schoolId, isParent, parentStudentIds]);
-  const { data: parentAssessments, isLoading: loadingParentAssessments } = useCollection(parentAssessmentsQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firestore, schoolId, isParent, parentStudentIds, parentYearKey]);
+  const { data: parentYearAssessments, isLoading: loadingParentAssessments } = useCollection(parentAssessmentsQuery);
+  const parentAssessments = useMemo(() => {
+    if (!parentYearAssessments || !parentTerm) return parentYearAssessments || [];
+    return parentYearAssessments.filter((a: any) => termStampOfRecord(a)?.termId === parentTerm.termId);
+  }, [parentYearAssessments, parentTerm]);
 
+  const parentTermStart = useMemo(() => {
+    const raw = schoolData?.termStartDate || schoolSettings?.termStartDate;
+    const d = raw ? new Date(`${String(raw).slice(0, 10)}T00:00:00`) : null;
+    return d && !isNaN(d.getTime()) ? d : null;
+  }, [schoolData?.termStartDate, schoolSettings?.termStartDate]);
   const parentAttendanceQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId || !isParent || !parentStudentIds || parentStudentIds.length === 0) return null;
-    return query(
-      collection(firestore, 'attendance'),
-      where('schoolId', '==', schoolId),
-      where('studentId', 'in', parentStudentIds),
-      limit(100)
-    );
-  }, [firestore, schoolId, isParent, parentStudentIds]);
+    return parentTermStart
+      ? query(
+          collection(firestore, 'attendance'),
+          where('schoolId', '==', schoolId),
+          where('studentId', 'in', parentStudentIds.slice(0, 30)),
+          where('date', '>=', Timestamp.fromDate(parentTermStart)),
+          orderBy('date', 'desc'),
+          limit(200)
+        )
+      : query(
+          collection(firestore, 'attendance'),
+          where('schoolId', '==', schoolId),
+          where('studentId', 'in', parentStudentIds.slice(0, 30)),
+          orderBy('date', 'desc'),
+          limit(100)
+        );
+  }, [firestore, schoolId, isParent, parentStudentIds, parentTermStart]);
   const { data: parentAttendance, isLoading: loadingAttendance } = useCollection(parentAttendanceQuery);
 
   const parentClassIds = useMemo(() => Array.from(new Set(parentChildren.map((c: any) => c.classId).filter(Boolean))), [parentChildren]);
@@ -12340,16 +12374,12 @@ export default function DashboardClient() {
   [firestore, schoolId, isParent, role]);
   const { data: subjects } = useCollection(subjectsQuery);
 
-  const classAssessmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || !isParent || !activeClassId) return null;
-    return query(
-      collection(firestore, 'assessments'),
-      where('schoolId', '==', schoolId),
-      where('classId', '==', activeClassId),
-      limit(250)
-    );
-  }, [firestore, schoolId, isParent, activeClassId]);
-  const { data: classAssessments } = useCollection<Assessment>(classAssessmentsQuery);
+  // Class averages per subject from one server-kept document (no classmates' marks are downloaded).
+  const classAveragesRef = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || !activeClassId || !parentTerm) return null;
+    return doc(firestore, 'classAverages', `${schoolId}__${parentTerm.termId}__${activeClassId}`);
+  }, [firestore, schoolId, isParent, activeClassId, parentTerm?.termId]);
+  const { data: classAverages } = useDoc<any>(classAveragesRef);
 
   // Live assessment records for Director / Admin / Staff (gated to academics tab)
   const staffAssessmentsQuery = useMemoFirebase(() => {
@@ -12650,7 +12680,9 @@ export default function DashboardClient() {
       subjects={subjects ?? []}
       selectedChildId={selectedChildId}
       setSelectedChildId={setSelectedChildId}
-      classAssessments={classAssessments ?? []}
+      classAverages={classAverages || null}
+      currentTerm={parentTerm}
+      termStartDate={parentTermStart}
       assignments={parentAssignments ?? []}
       submissions={parentSubmissions ?? []}
       students={students ?? []}

@@ -541,15 +541,26 @@ export function ClassStoryFeed({ schoolId, classId, studentIdFilter, userRole }:
   const firestore = useFirestore();
   const [feedFilter, setFeedFilter] = useState<'all' | 'ward' | 'class' | 'school'>('all');
 
+  // A parent sees only their child's class and whole-school posts, so read only those (it used to read every
+  // story in the school, plus the whole pupil list).
+  const parentClass = effectiveRole === 'Parent' && classId && classId !== 'ALL_SCHOOL' ? classId : null;
   const storiesQuery = useMemoFirebase(
-    () => (firestore && schoolId ? query(collection(firestore, 'class_stories'), where('schoolId', '==', schoolId)) : null),
-    [firestore, schoolId]
+    () => (firestore && schoolId
+      ? (parentClass
+          ? query(collection(firestore, 'class_stories'), where('schoolId', '==', schoolId), where('classId', 'in', [parentClass, 'ALL_SCHOOL']))
+          : query(collection(firestore, 'class_stories'), where('schoolId', '==', schoolId)))
+      : null),
+    [firestore, schoolId, parentClass]
   );
   const { data: rawStories, isLoading } = useCollection<ClassStoryPost>(storiesQuery);
 
   const studentsQuery = useMemoFirebase(
-    () => (firestore && schoolId ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId)) : null),
-    [firestore, schoolId]
+    () => (firestore && schoolId
+      ? (parentClass
+          ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('classId', '==', parentClass))
+          : query(collection(firestore, 'students'), where('schoolId', '==', schoolId)))
+      : null),
+    [firestore, schoolId, parentClass]
   );
   const { data: students } = useCollection<Student>(studentsQuery);
 

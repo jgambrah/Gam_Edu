@@ -329,6 +329,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Class averages per subject (no pupil names or ids), kept by the server; readable within the school.
+    match /classAverages/{docId} {
+      allow get: if isSignedIn() && (isSuperAdmin() || resource.data.schoolId == getUserSchoolId());
+      allow list: if false;
+      allow write: if false;
+    }
+
     match /studentBalances/{schoolId} {
       allow get: if isSuperAdmin() || (
         (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',

@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useMemo } from 'react';
 import { useUser, useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, doc, query, where, orderBy, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, query, where, orderBy, limit, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Student, AttendanceRecord, BehavioralRecord } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, User, CalendarCheck, ShieldAlert, BadgeInfo, CheckCircle2, Users, Calendar as CalendarIcon, Home, ClipboardCopy, Plus, AlertOctagon, HelpCircle, Wallet, Coins, Milestone, Bus as BusIcon } from 'lucide-react';
@@ -69,13 +69,28 @@ function AttendanceHistory({ studentId }: { studentId: string }) {
     const attendanceQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !studentId || !hasPermission || isRoleLoading) return null;
         
-        // Remove complex filters from the DB query to avoid index errors for now
+        // The latest 60 school days, or the chosen dates (it used to read the whole history and keep it live).
+        if (dateRange?.from) {
+            const start = startOfDay(dateRange.from);
+            const end = dateRange.to ? endOfDay(dateRange.to) : endOfDay(dateRange.from);
+            return query(
+                collection(firestore, 'attendance'),
+                where('schoolId', '==', schoolId),
+                where('studentId', '==', studentId),
+                where('date', '>=', start),
+                where('date', '<=', end),
+                orderBy('date', 'desc'),
+                limit(200)
+            );
+        }
         return query(
             collection(firestore, 'attendance'),
             where('schoolId', '==', schoolId),
-            where('studentId', '==', studentId)
+            where('studentId', '==', studentId),
+            orderBy('date', 'desc'),
+            limit(60)
         );
-    }, [firestore, schoolId, studentId, hasPermission, isRoleLoading]);
+    }, [firestore, schoolId, studentId, hasPermission, isRoleLoading, dateRange?.from?.getTime(), dateRange?.to?.getTime()]);
     
     const { data: rawRecords, isLoading } = useCollection<AttendanceRecord>(attendanceQuery);
 

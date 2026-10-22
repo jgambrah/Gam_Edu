@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
+import { currentTermFromProfile, buildTermId } from '@/lib/term';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, orderBy, limit, documentId } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, documentId, doc } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -113,65 +114,31 @@ export default function MyGradesPage() {
 
     const { data: subjects } = useCollection<Subject>(subjectsQuery);
 
-    const classAssessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !activeClassId) return null;
-        return query(
-            collection(firestore, 'assessments'),
-            where('schoolId', '==', schoolId),
-            where('classId', '==', activeClassId),
-            limit(250)
-        );
-    }, [firestore, schoolId, activeClassId]);
-    
-    const { data: classAssessments } = useCollection<Assessment>(classAssessmentsQuery);
+    // Class averages from one server-kept document per class and term (no classmates' marks are downloaded;
+    // this page used to read 250 of them).
+    const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]));
+    const averagesTermId = useMemo(() => {
+        if (viewMode === 'history') return buildTermId(selectedYear, selectedTerm) || '';
+        return currentTermFromProfile(schoolProfile)?.termId || '';
+    }, [viewMode, selectedYear, selectedTerm, schoolProfile]);
+    const { data: classAverages } = useDoc<any>(useMemoFirebase(
+        () => (firestore && schoolId && activeClassId && averagesTermId) ? doc(firestore, 'classAverages', `${schoolId}__${averagesTermId}__${activeClassId}`) : null,
+        [firestore, schoolId, activeClassId, averagesTermId]
+    ));
 
-    const classAssessmentAverages = useMemo(() => {
-        if (!classAssessments) return {};
-        const averages: Record<string, { totalPct: number; count: number }> = {};
-        classAssessments.forEach((a: any) => {
-            const score = Number(a.score) || 0;
-            const max = Number(a.maxScore) || 100;
-            if (max > 0) {
-                const pct = (score / max) * 100;
-                // Key by subjectId and assessmentName
-                const key = `${a.subjectId}_${(a.assessmentName || '').toLowerCase().trim()}`;
-                if (!averages[key]) {
-                    averages[key] = { totalPct: 0, count: 0 };
-                }
-                averages[key].totalPct += pct;
-                averages[key].count++;
-            }
-        });
-        const result: Record<string, number> = {};
-        Object.entries(averages).forEach(([key, data]) => {
-            result[key] = Math.round(data.totalPct / data.count);
-        });
-        return result;
-    }, [classAssessments]);
+    // Per-assessment class averages are not kept (they needed every classmate's marks).
+    const classAssessmentAverages: Record<string, number> = {};
 
     const classSubjectAverages = useMemo(() => {
-        if (!classAssessments) return {};
-        const averages: Record<string, { totalPct: number; count: number }> = {};
-        classAssessments.forEach((a: any) => {
-            const score = Number(a.score) || 0;
-            const max = Number(a.maxScore) || 100;
-            if (max > 0) {
-                const pct = (score / max) * 100;
-                const sub = subjects?.find((s: any) => s.id === a.subjectId);
-                const subName = sub?.name || a.subjectName || 'Other';
-                if (!averages[subName]) {
-                    averages[subName] = { totalPct: 0, count: 0 };
-                }
-                averages[subName].totalPct += pct;
-                averages[subName].count++;
-            }
-        });
         const result: Record<string, number> = {};
-        Object.entries(averages).forEach(([name, data]) => {
-            result[name] = Math.round(data.totalPct / data.count);
+        Object.entries(classAverages?.subjects || {}).forEach(([subjectId, v]: any) => {
+            if (!(Number(v?.c) > 0)) return;
+            const sub = subjects?.find((s: any) => s.id === subjectId);
+            result[sub?.name || v.name || subjectId] = Math.round(Number(v.s) / Number(v.c));
         });
         return result;
-    }, [classAssessments, subjects]);
+    }, [classAverages, subjects]);
+    const classOverall = Number(classAverages?.totals?.c) > 0 ? Math.round(Number(classAverages.totals.s) / Number(classAverages.totals.c)) : 0;
 
     const subjectAverages = useMemo(() => {
         if (!assessments) return [];
@@ -216,7 +183,8 @@ export default function MyGradesPage() {
                 classAverage: specificClassAvg
             };
         });
-    }, [assessments, students, subjects, classAssessmentAverages]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [assessments, students, subjects]);
 
     const stats = useMemo(() => {
         if (enrichedAssessments.length === 0) {
@@ -230,16 +198,8 @@ export default function MyGradesPage() {
         });
         const average = Math.round(totalPct / count);
 
-        let classTotalPct = 0;
-        let classCount = 0;
-        Object.values(classSubjectAverages).forEach((val: number) => {
-            classTotalPct += val;
-            classCount++;
-        });
-        const classAverage = classCount > 0 ? Math.round(classTotalPct / classCount) : 0;
-
-        return { average, count, classAverage };
-    }, [enrichedAssessments, classSubjectAverages]);
+        return { average, count, classAverage: classOverall };
+    }, [enrichedAssessments, classOverall]);
 
     const isLoading = schoolLoading || loadingAssessments;
 
@@ -324,7 +284,7 @@ export default function MyGradesPage() {
                     <CardContent className="p-6 flex items-center justify-between">
                         <div>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Class Cohort Average</p>
-                            <h3 className="text-2xl font-black text-slate-900">{stats.classAverage}%</h3>
+                            <h3 className="text-2xl font-black text-slate-900">{stats.classAverage > 0 ? `${stats.classAverage}%` : '—'}</h3>
                             <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Classroom cohort index</p>
                         </div>
                         <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl shadow-inner">

@@ -26,6 +26,25 @@ const db = getFirestore();
 export const ACADEMIC_SUMMARY = (schoolId: string, termId: string) =>
   db.collection('academicSummary').doc(`${schoolId}__${termId}`);
 
+/**
+ * Parent-safe class averages: classAverages/{schoolId}__{termId}__{classId} = { schoolId, termId, classId,
+ * totals: { s, c }, subjects: { <subjectId>: { s, c, name } } }. No pupil names or ids, so parents of the
+ * class may read it (the parent portal used to download 250 of the classmates' marks to work this out).
+ */
+export const CLASS_AVERAGES = (schoolId: string, termId: string, classId: string) =>
+  db.collection('classAverages').doc(`${schoolId}__${termId}__${classId}`);
+
+export function classContribution(m: MarkPart, sign: 1 | -1, inc: (n: number) => any) {
+  const sp = inc(sign * m.pct), c1 = inc(sign);
+  return {
+    schoolId: m.schoolId,
+    termId: m.termId,
+    classId: m.classId,
+    totals: { s: sp, c: c1 },
+    subjects: { [m.subjectId]: { s: sp, c: c1, ...(sign > 0 && m.subjectName ? { name: m.subjectName } : {}) } },
+  };
+}
+
 const safeKey = (v: any) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
 
 export type MarkPart = {
@@ -88,5 +107,7 @@ export const onAssessmentWriteForSummary = onDocumentWritten('assessments/{asses
   const writes: Promise<any>[] = [];
   if (before) writes.push(ACADEMIC_SUMMARY(before.schoolId, before.termId).set({ ...contribution(before, -1, inc), updatedAt: FieldValue.serverTimestamp() }, { merge: true }));
   if (after) writes.push(ACADEMIC_SUMMARY(after.schoolId, after.termId).set({ ...contribution(after, 1, inc), updatedAt: FieldValue.serverTimestamp() }, { merge: true }));
+  if (before?.classId && before.subjectId) writes.push(CLASS_AVERAGES(before.schoolId, before.termId, before.classId).set({ ...classContribution(before, -1, inc), updatedAt: FieldValue.serverTimestamp() }, { merge: true }));
+  if (after?.classId && after.subjectId) writes.push(CLASS_AVERAGES(after.schoolId, after.termId, after.classId).set({ ...classContribution(after, 1, inc), updatedAt: FieldValue.serverTimestamp() }, { merge: true }));
   await Promise.all(writes).catch(e => console.warn('[academicSummary] update failed:', e?.message));
 });

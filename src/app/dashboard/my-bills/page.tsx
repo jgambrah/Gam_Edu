@@ -115,8 +115,13 @@ function StudentBillView({ studentId }: { studentId: string }) {
     const [allPayments, setAllPayments] = useState<(PaymentTransaction & { recordDescription: string; record: FinancialRecord })[]>([]);
     const [loadingPayments, setLoadingPayments] = useState(true);
 
+    // Payments are read only for bills that have money on them, and again only when a bill's paid amount
+    // changes (it used to read every bill's payments, and re-read them all on any change to any bill).
+    const paidRecords = useMemo(() => (records || []).filter(r => (Number((r as any).amountPaid) || 0) > 0), [records]);
+    const paidKey = paidRecords.map(r => `${r.id}:${(r as any).amountPaid}`).join('|');
     useEffect(() => {
         let active = true;
+        const records = paidRecords;
         if (!firestore || !records || records.length === 0) {
             setAllPayments([]);
             setLoadingPayments(false);
@@ -166,7 +171,8 @@ function StudentBillView({ studentId }: { studentId: string }) {
         return () => {
             active = false;
         };
-    }, [firestore, records]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [firestore, paidKey]);
 
     const overallSummary = useMemo(() => {
         if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };

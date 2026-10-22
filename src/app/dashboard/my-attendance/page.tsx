@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, limit, documentId } from 'firebase/firestore';
+import { collection, query, where, limit, documentId, orderBy } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -83,6 +83,7 @@ export default function MyAttendancePage() {
             collection(firestore, 'attendance'),
             where('schoolId', '==', schoolId),
             where('studentId', '==', activeChildId),
+            orderBy('date', 'desc'), // the latest 100 days (it used to be any 100)
             limit(100)
         );
     }, [firestore, schoolId, activeChildId]);

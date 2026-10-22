@@ -42,7 +42,9 @@ export function ParentDashboard({
   subjects = [],
   selectedChildId,
   setSelectedChildId,
-  classAssessments = [],
+  classAverages = null,
+  currentTerm = null,
+  termStartDate = null,
   assignments = [],
   submissions = [],
   students = [],
@@ -53,7 +55,8 @@ export function ParentDashboard({
     const displayName = profile?.firstName || 'Parent';
     // Bills from a closed term are archived; their remaining balance is on the Brought Forward record.
     const financials = useMemo(() => (allFinancials || []).filter((r: any) => r?.isArchived !== true), [allFinancials]);
-    const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'attendance' | 'academics' | 'examination' | 'assignments' | 'financials' | 'notices' | 'canteen' | 'satisfaction'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'stories' | 'activity' | 'attendance' | 'academics' | 'examination' | 'assignments' | 'financials' | 'transport' | 'notices' | 'satisfaction'>('overview');
+    const termLabel: string = currentTerm ? `${currentTerm.term} ${currentTerm.academicYear}` : 'this term';
     const [academicTrendView, setAcademicTrendView] = useState<'improvement' | 'decline' | 'subject-comparison' | 'class-comparison'>('improvement');
 
     // Firebase & Satisfaction State Setup
@@ -270,206 +273,29 @@ export function ParentDashboard({
     // Attendance stats
     const attendanceStats = useMemo(() => {
         if (activeChildAttendance.length === 0) {
-            return {
-                total: 0,
-                present: 0,
-                absent: 0,
-                late: 0,
-                rate: activeChild?.attendanceRate || 95
-            };
+            // No register entries yet this term: say so (it used to show an invented 95%).
+            return { total: 0, present: 0, absent: 0, late: 0, rate: null as number | null };
         }
         const total = activeChildAttendance.length;
         const present = activeChildAttendance.filter((a: any) => a.status === 'Present').length;
         const late = activeChildAttendance.filter((a: any) => a.status === 'Late').length;
         const absent = activeChildAttendance.filter((a: any) => a.status === 'Absent').length;
-        const rate = Math.round(((present + late) / total) * 100);
+        const rate: number | null = Math.round(((present + late) / total) * 100);
         return { total, present, absent, late, rate };
     }, [activeChildAttendance, activeChild]);
 
-    // Current Academic Position calculation comparing all peers in same class
-    const classRankInfo = useMemo(() => {
-        if (!activeClassId || !classAssessments || !students || students.length === 0) {
-            return { position: 1, total: 1, ordinal: '1st' };
-        }
-        const classmates = students.filter((s: any) => s.classId === activeClassId);
-        const studentAverages = classmates.map((student: any) => {
-            const studentId = student.uid;
-            const studentAss = classAssessments.filter((a: any) => a.studentId === studentId);
-            let average = 0;
-            if (studentAss.length > 0) {
-                const sumPct = studentAss.reduce((sum: number, a: any) => {
-                    const score = Number(a.score) || 0;
-                    const max = Number(a.maxScore) || 100;
-                    return sum + (max > 0 ? (score / max) * 100 : 0);
-                }, 0);
-                average = sumPct / studentAss.length;
-            }
-            return { studentId, average };
-        });
-        
-        // Sort descending by average
-        studentAverages.sort((a: any, b: any) => b.average - a.average);
-        const rankIndex = studentAverages.findIndex((x: any) => x.studentId === activeChildId);
-        const position = rankIndex !== -1 ? rankIndex + 1 : studentAverages.length;
-        const total = classmates.length || studentAverages.length || 1;
-        
-        const getOrdinal = (n: number) => {
-            const s = ["th", "st", "nd", "rd"];
-            const v = n % 100;
-            return n + (s[(v - 20) % 10] || s[v] || s[0]);
-        };
-
-        return { position, total, ordinal: getOrdinal(position) };
-    }, [activeClassId, classAssessments, students, activeChildId]);
-
-    // Dynamic Longitudinal Position Tracking across Terms
-    const positionTrackingData = useMemo(() => {
-        const getOrdinal = (n: number) => {
-            const s = ["th", "st", "nd", "rd"];
-            const v = n % 100;
-            return n + (s[(v - 20) % 10] || s[v] || s[0]);
-        };
-
-        if (!activeClassId || !classAssessments || classAssessments.length === 0 || !students || students.length === 0) {
-            const pos = classRankInfo.position || 1;
-            return {
-                currentOrdinal: getOrdinal(pos),
-                previousOrdinal: 'N/A',
-                termDiffText: 'N/A',
-                annualDiffText: 'No position history available yet',
-                history: [
-                    { term: "Current Term", position: pos, ordinal: getOrdinal(pos) }
-                ]
-            };
-        }
-
-        const classmates = students.filter((s: any) => s.classId === activeClassId);
-
-        // Sort terms chronologically (First Term -> Second Term -> Third Term)
-        const termSortOrder: Record<string, number> = {
-            'First Term': 1, '1st Term': 1, 'Term 1': 1,
-            'Second Term': 2, '2nd Term': 2, 'Term 2': 2,
-            'Third Term': 3, '3rd Term': 3, 'Term 3': 3
-        };
-
-        const rawTerms = Array.from(new Set(classAssessments.map((a: any) => a.term).filter(Boolean)));
-        const termsFound = rawTerms.sort((a: any, b: any) => {
-            const orderA = termSortOrder[String(a)] || 99;
-            const orderB = termSortOrder[String(b)] || 99;
-            return orderA - orderB;
-        });
-        
-        if (termsFound.length <= 1) {
-            const currentPos = classRankInfo.position || 1;
-            return {
-                currentOrdinal: getOrdinal(currentPos),
-                previousOrdinal: 'N/A',
-                termDiffText: 'Initial term',
-                annualDiffText: `Current Rank: ${getOrdinal(currentPos)} in class of ${classmates.length || 1}`,
-                history: [
-                    { term: termsFound[0] || "Current Term", position: currentPos, ordinal: getOrdinal(currentPos) }
-                ]
-            };
-        }
-
-        const termRankings = termsFound.map((termName, idx) => {
-            // For active current term, synchronize with classRankInfo for 100% position consistency across all desks
-            if (idx === termsFound.length - 1 && classRankInfo?.position) {
-                return {
-                    term: termName,
-                    position: classRankInfo.position,
-                    ordinal: classRankInfo.ordinal
-                };
-            }
-
-            const termAssessments = classAssessments.filter((a: any) => a.term === termName);
-            const studentAverages = classmates.map((student: any) => {
-                const studentId = student.uid;
-                const studentAss = termAssessments.filter((a: any) => a.studentId === studentId);
-                let average = 0;
-                if (studentAss.length > 0) {
-                    const sumPct = studentAss.reduce((sum: number, a: any) => {
-                        const score = Number(a.score) || 0;
-                        const max = Number(a.maxScore) || 100;
-                        return sum + (max > 0 ? (score / max) * 100 : 0);
-                    }, 0);
-                    average = sumPct / studentAss.length;
-                }
-                return { studentId, average };
-            });
-
-            studentAverages.sort((a: any, b: any) => b.average - a.average);
-            const rankIndex = studentAverages.findIndex((x: any) => x.studentId === activeChildId);
-            const position = rankIndex !== -1 ? rankIndex + 1 : studentAverages.length;
-
-            return {
-                term: termName,
-                position,
-                ordinal: getOrdinal(position)
-            };
-        });
-
-        const currentTermObj = termRankings[termRankings.length - 1];
-        const previousTermObj = termRankings.length > 1 ? termRankings[termRankings.length - 2] : null;
-        const firstTermObj = termRankings[0];
-
-        const currentPos = currentTermObj.position;
-        const previousPos = previousTermObj ? previousTermObj.position : currentPos;
-        const firstPos = firstTermObj.position;
-
-        const termDiff = previousPos - currentPos;
-        let termDiffText = 'No change';
-        if (previousTermObj) {
-            if (termDiff > 0) {
-                termDiffText = `⬆ ${termDiff} place${termDiff > 1 ? 's' : ''}`;
-            } else if (termDiff < 0) {
-                termDiffText = `⬇ ${Math.abs(termDiff)} place${Math.abs(termDiff) > 1 ? 's' : ''}`;
-            }
-        }
-
-        const annualDiff = firstPos - currentPos;
-        let annualDiffText = `Maintained ${getOrdinal(currentPos)} Position this academic year`;
-        if (termRankings.length > 1) {
-            if (annualDiff > 0) {
-                annualDiffText = `⬆ Improved by ${annualDiff} place${annualDiff > 1 ? 's' : ''} (${firstTermObj.ordinal} → ${currentTermObj.ordinal})`;
-            } else if (annualDiff < 0) {
-                annualDiffText = `⬇ Dropped by ${Math.abs(annualDiff)} place${Math.abs(annualDiff) > 1 ? 's' : ''} (${firstTermObj.ordinal} → ${currentTermObj.ordinal})`;
-            }
-        }
-
-        return {
-            currentOrdinal: currentTermObj.ordinal,
-            previousOrdinal: previousTermObj ? previousTermObj.ordinal : 'N/A',
-            termDiffText,
-            annualDiffText,
-            history: termRankings
-        };
-    }, [activeClassId, classAssessments, students, activeChildId, classRankInfo]);
-
-    // Class subject averages lookup
+    // Class subject averages for this term, from the server-kept class document (no classmates' marks needed).
     const classSubjectAverages = useMemo(() => {
-        if (!classAssessments) return {};
-        const averages: Record<string, { totalPct: number; count: number }> = {};
-        classAssessments.forEach((a: any) => {
-            const score = Number(a.score) || 0;
-            const max = Number(a.maxScore) || 100;
-            if (max > 0) {
-                const pct = (score / max) * 100;
-                const sub = subjects?.find((s: any) => s.id === a.subjectId);
-                const subName = sub?.name || a.subjectName || 'Other';
-                if (!averages[subName]) {
-                    averages[subName] = { totalPct: 0, count: 0 };
-                }
-                averages[subName].totalPct += pct;
-                averages[subName].count++;
-            }
-        });
         const result: Record<string, number> = {};
-        Object.entries(averages).forEach(([name, data]) => {
-            result[name] = Math.round(data.totalPct / data.count);
+        Object.entries(classAverages?.subjects || {}).forEach(([subjectId, v]: any) => {
+            if (!(Number(v?.c) > 0)) return;
+            const sub = subjects?.find((s: any) => s.id === subjectId);
+            const name = sub?.name || v.name || subjectId;
+            result[name] = Math.round(Number(v.s) / Number(v.c));
         });
         return result;
-    }, [classAssessments, subjects]);
+    }, [classAverages, subjects]);
+    const classOverallAverage: number | null = Number(classAverages?.totals?.c) > 0 ? Math.round(Number(classAverages.totals.s) / Number(classAverages.totals.c)) : null;
 
     // Child subject averages
     const subjectAverages = useMemo(() => {
@@ -490,7 +316,7 @@ export function ParentDashboard({
         });
         return Object.values(averages).map(avg => {
             const childAvg = Math.round(avg.totalPct / avg.count);
-            const classAvg = classSubjectAverages[avg.name] || 0;
+            const classAvg = classSubjectAverages[avg.name] ?? null;
             return {
                 name: avg.name,
                 average: childAvg,
@@ -499,18 +325,9 @@ export function ParentDashboard({
         });
     }, [activeChildAssessments, subjects, classSubjectAverages]);
 
-    const displaySubjectAverages = useMemo(() => {
-        if (subjectAverages && subjectAverages.length > 0) {
-            return subjectAverages;
-        }
-        // Fallback spec data
-        return [
-            { name: 'Mathematics', average: 84, classAverage: 79 },
-            { name: 'English', average: 78, classAverage: 75 },
-            { name: 'Science', average: 81, classAverage: 77 },
-            { name: 'ICT', average: 88, classAverage: 82 }
-        ];
-    }, [subjectAverages]);
+    // Only the child's real marks (it used to show invented Maths 84 / English 78 / Science 81 / ICT 88).
+    const displaySubjectAverages = subjectAverages;
+    const hasClassComparison = displaySubjectAverages.some((s: any) => s.classAverage !== null && s.classAverage !== undefined);
 
     const academicInsightsAndTrends = useMemo(() => {
         // Group child assessments by subject
@@ -554,23 +371,23 @@ export function ParentDashboard({
             .filter(([_, t]) => t.direction === 'down')
             .map(([name, t]) => ({ name, diff: Math.abs(t.diff) }));
 
-        // Fallbacks for display validation matching user specs
-        if (improving.length === 0) {
-            improving = [{ name: 'Mathematics', diff: 5 }];
-        }
-        if (declining.length === 0) {
-            declining = [{ name: 'English', diff: 3 }];
-        }
+        improving.sort((a, b) => b.diff - a.diff);
+        declining.sort((a, b) => b.diff - a.diff);
 
-        // Build insights
-        const insights = [
-            { type: 'success', text: 'Mathematics performance improving', icon: '✅' },
-            { type: 'warning', text: 'English comprehension needs attention', icon: '⚠' },
-            { type: 'info', text: 'Performing above class average', icon: '🏆' }
-        ];
+        // Insights only from the child's real marks this term (they used to be fixed sentences for every child).
+        const insights: { type: 'success' | 'warning' | 'info'; title: string; text: string; icon: string }[] = [];
+        if (improving[0]) insights.push({ type: 'success', title: 'Progress identified', text: `${improving[0].name}: last mark up ${improving[0].diff} points on the one before`, icon: '✅' });
+        if (declining[0]) insights.push({ type: 'warning', title: 'Needs attention', text: `${declining[0].name}: last mark down ${declining[0].diff} points on the one before`, icon: '⚠' });
+        const weak = subjectAverages.filter((s: any) => s.average < 50).map((s: any) => s.name);
+        if (weak.length) insights.push({ type: 'warning', title: 'Below 50%', text: `${weak.slice(0, 3).join(', ')} — average below 50% this term`, icon: '⚠' });
+        const compared = subjectAverages.filter((s: any) => s.classAverage !== null && s.classAverage !== undefined);
+        if (compared.length) {
+            const above = compared.filter((s: any) => s.average >= s.classAverage).length;
+            insights.push({ type: 'info', title: 'Against the class', text: `At or above the class average in ${above} of ${compared.length} subject${compared.length === 1 ? '' : 's'}`, icon: '🏆' });
+        }
 
         return { trends, improving, declining, insights };
-    }, [activeChildAssessments, subjects]);
+    }, [activeChildAssessments, subjects, subjectAverages]);
 
     // Boarding House Fallback
     const houseName = useMemo(() => {
@@ -578,8 +395,8 @@ export function ParentDashboard({
     }, [activeChild]);
 
     // Academic current average grade score
-    const childAverageGrade = useMemo(() => {
-        if (activeChildAssessments.length === 0) return 78; // sensible default
+    const childAverageGrade = useMemo((): number | null => {
+        if (activeChildAssessments.length === 0) return null; // no marks yet this term (it used to show an invented 78%)
         const sum = activeChildAssessments.reduce((acc, curr) => {
             const score = Number(curr.score) || 0;
             const max = Number(curr.maxScore) || 100;
@@ -587,6 +404,25 @@ export function ParentDashboard({
         }, 0);
         return Math.round(sum / activeChildAssessments.length);
     }, [activeChildAssessments]);
+
+    // Exam marks this term (Mid-Term, End of Term, Mock…) — the Examination tab used to show fixed 79 / 83 / 85%.
+    const examRows = useMemo(() => {
+        return activeChildAssessments
+            .filter((a: any) => /exam|mid|mock|end of term|terminal/i.test(String(a.assessmentType || a.type || '')))
+            .map((a: any) => {
+                const score = Number(a.score) || 0;
+                const max = Number(a.maxScore) || 100;
+                const sub = subjects?.find((s: any) => s.id === a.subjectId);
+                return {
+                    id: a.id || a.uid,
+                    exam: a.assessmentType || 'Exam',
+                    subject: sub?.name || a.subjectName || 'Subject',
+                    pct: max > 0 ? Math.round((score / max) * 100) : 0,
+                    score, max,
+                };
+            })
+            .sort((x: any, y: any) => x.subject.localeCompare(y.subject));
+    }, [activeChildAssessments, subjects]);
 
     // Assignments due count calculation
     const assignmentsDueCount = useMemo(() => {
@@ -724,9 +560,7 @@ export function ParentDashboard({
 
     const checkedOut = useMemo(() => {
         if (!todayRecord || todayRecord.status === 'Absent') return false;
-        if (todayRecord.checkOutTime) return true;
-        const now = new Date();
-        return now.getHours() >= 15; // Past school closing time
+        return !!todayRecord.checkOutTime; // only a recorded check-out (it used to turn green at 3 pm by itself)
     }, [todayRecord]);
 
     const presentToday = useMemo(() => {
@@ -743,28 +577,20 @@ export function ParentDashboard({
 
     // Today's school timeline
     const timelineEvents = useMemo(() => {
-        const now = new Date();
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const currentTimeInMinutes = currentHour * 60 + currentMinute;
-
-        const timeToMinutes = (timeStr: string) => {
-            const [time, modifier] = timeStr.split(' ');
-            let [hours, minutes] = time.split(':').map(Number);
-            if (modifier === 'PM' && hours < 12) hours += 12;
-            if (modifier === 'AM' && hours === 12) hours = 0;
-            return hours * 60 + minutes;
-        };
-
-        return [
-            { time: '7:30 AM', label: 'Arrived', completed: checkedIn, icon: MapPin },
-            { time: '8:00 AM', label: 'Assembly', completed: checkedIn && currentTimeInMinutes >= timeToMinutes('8:00 AM'), icon: Users },
-            { time: '10:30 AM', label: 'Mathematics Class', completed: checkedIn && currentTimeInMinutes >= timeToMinutes('10:30 AM'), icon: TrendingUp },
-            { time: '12:00 PM', label: 'Lunch', completed: checkedIn && currentTimeInMinutes >= timeToMinutes('12:00 PM'), icon: Utensils },
-            { time: '2:00 PM', label: 'Science Practical', completed: checkedIn && currentTimeInMinutes >= timeToMinutes('2:00 PM'), icon: FlaskConical },
-            { time: '3:00 PM', label: 'School Closed', completed: checkedOut, icon: ShieldAlert }
-        ];
-    }, [checkedIn, checkedOut]);
+        // Only what was actually recorded today (it used to show a fixed Maths 10:30 / Science 2:00 schedule).
+        const fmtTime = (v: any) => { const d = v?.toDate ? v.toDate() : v ? new Date(v) : null; return d && !isNaN(d.getTime()) ? format(d, 'h:mm a') : ''; };
+        const events: { time: string; label: string; completed: boolean; icon: any }[] = [];
+        if (todayRecord) {
+            events.push({
+                time: fmtTime(todayRecord.checkInTime) || fmtTime(todayRecord.updatedAt) || '—',
+                label: todayRecord.status === 'Absent' ? 'Marked absent on the register' : todayRecord.status === 'Late' ? 'Marked late on the register' : `Marked ${String(todayRecord.status || 'present').toLowerCase()} on the register`,
+                completed: true,
+                icon: MapPin,
+            });
+            if (todayRecord.checkOutTime) events.push({ time: fmtTime(todayRecord.checkOutTime) || '—', label: 'Checked out', completed: true, icon: ShieldAlert });
+        }
+        return events;
+    }, [todayRecord]);
 
     // Historical attendance rates
     const statsWeek = useMemo(() => {
@@ -774,10 +600,10 @@ export function ParentDashboard({
             const diff = (new Date().getTime() - date.getTime()) / (1000 * 3600 * 24);
             return diff <= 7;
         });
-        if (records.length === 0) return attendanceStats.rate;
+        if (records.length === 0) return null as number | null;
         const present = records.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
-        return Math.round((present / records.length) * 100);
-    }, [activeChildAttendance, attendanceStats.rate]);
+        return Math.round((present / records.length) * 100) as number | null;
+    }, [activeChildAttendance]);
 
     const statsMonth = useMemo(() => {
         const records = activeChildAttendance.filter((a: any) => {
@@ -786,10 +612,10 @@ export function ParentDashboard({
             const diff = (new Date().getTime() - date.getTime()) / (1000 * 3600 * 24);
             return diff <= 30;
         });
-        if (records.length === 0) return attendanceStats.rate;
+        if (records.length === 0) return null as number | null;
         const present = records.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
-        return Math.round((present / records.length) * 100);
-    }, [activeChildAttendance, attendanceStats.rate]);
+        return Math.round((present / records.length) * 100) as number | null;
+    }, [activeChildAttendance]);
 
     // Check for 3 consecutive absences
     const hasThreeConsecutiveAbsences = useMemo(() => {
@@ -822,7 +648,7 @@ export function ParentDashboard({
                 desc: 'Alert: Your child has missed three consecutive school days. Please contact administrative staff immediately.'
             });
         }
-        if (attendanceStats.rate < 80) {
+        if (attendanceStats.rate !== null && attendanceStats.total >= 5 && attendanceStats.rate < 80) {
             alerts.push({
                 id: 'low_rate',
                 type: 'warning',
@@ -840,15 +666,7 @@ export function ParentDashboard({
             { name: 'Late', value: attendanceStats.late, fill: '#f59e0b' },
             { name: 'Absent', value: attendanceStats.absent, fill: '#ef4444' }
         ];
-        // If no records exist, supply a default mockup
-        if (attendanceStats.present === 0 && attendanceStats.late === 0 && attendanceStats.absent === 0) {
-            return [
-                { name: 'Present', value: 95, fill: '#10b981' },
-                { name: 'Late', value: 3, fill: '#f59e0b' },
-                { name: 'Absent', value: 2, fill: '#ef4444' }
-            ];
-        }
-        return data.filter(d => d.value > 0);
+        return data.filter(d => d.value > 0); // empty when nothing is recorded (it used to show 95/3/2)
     }, [attendanceStats]);
 
     const activeChildStickerCount = activeChildStickers.length;
@@ -880,7 +698,7 @@ export function ParentDashboard({
         activity: {
             gradient: "from-sky-900 via-sky-950 to-slate-900 border-sky-500/20",
             title: "Today's School Activity",
-            description: "Real-time verification of check-in, check-out times and interactive school timelines.",
+            description: "What the class register recorded for your child today.",
             badge: "Live Status Feed",
             badgeColor: "bg-sky-500/20 text-sky-300",
             icon: Activity,
@@ -904,7 +722,7 @@ export function ParentDashboard({
         examination: {
             gradient: "from-amber-900 via-amber-950 to-slate-900 border-amber-500/20",
             title: "Examination Records & Rankings",
-            description: "Track mid-term, end-term, mock examinations, student rankings, and position trends.",
+            description: "Exam marks recorded this term. The class position is on the end-of-term report card.",
             badge: "Exam Desk",
             badgeColor: "bg-amber-500/20 text-amber-300",
             icon: FileText,
@@ -981,7 +799,7 @@ export function ParentDashboard({
                 {/* Main Navigation Tab Selector */}
                 <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
                     <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner flex-wrap gap-1">
-                        {(['overview', 'stories', 'activity', 'attendance', 'academics', 'examination', 'assignments', 'financials', 'transport', 'notices', 'canteen', 'satisfaction'] as const).map((tab) => (
+                        {(['overview', 'stories', 'activity', 'attendance', 'academics', 'examination', 'assignments', 'financials', 'transport', 'notices', 'satisfaction'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
@@ -1062,7 +880,7 @@ export function ParentDashboard({
                 {activeTab === 'stories' && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                         {schoolId ? (
-                            <ClassStoryFeed schoolId={schoolId} studentIdFilter={activeChildId} />
+                            <ClassStoryFeed schoolId={schoolId} classId={activeClassId || undefined} studentIdFilter={activeChildId} userRole="Parent" />
                         ) : (
                             <p className="text-center text-xs font-bold text-slate-400 uppercase tracking-widest p-8">Loading class stories...</p>
                         )}
@@ -1115,19 +933,20 @@ export function ParentDashboard({
                                                 <span className="font-black text-slate-800 font-mono">{activeChild.studentId || activeChild.uid?.slice(0, 8)}</span>
                                             </div>
                                             <div className="flex justify-between items-center text-xs">
-                                                <span className="font-bold text-slate-400 uppercase tracking-wider">Class Standing</span>
+                                                <span className="font-bold text-slate-400 uppercase tracking-wider">Class Average</span>
                                                 <Badge className="bg-indigo-50 text-indigo-700 font-black border-none text-[10px] tracking-wide px-3 py-1 rounded-md uppercase">
-                                                    {classRankInfo.ordinal} of {classRankInfo.total}
+                                                    {classOverallAverage !== null ? `${classOverallAverage}%` : '—'}
                                                 </Badge>
                                             </div>
                                             <div className="flex justify-between items-center text-xs">
                                                 <span className="font-bold text-slate-400 uppercase tracking-wider">Attendance Rate</span>
                                                 <Badge className={cn("border-none text-[10px] font-black tracking-wide px-3 py-1 rounded-md uppercase", 
+                                                    attendanceStats.rate === null ? "bg-slate-100 text-slate-500" :
                                                     attendanceStats.rate >= 90 ? "bg-emerald-50 text-emerald-700" :
                                                     attendanceStats.rate >= 80 ? "bg-amber-50 text-amber-700" :
                                                     "bg-rose-50 text-rose-700"
                                                 )}>
-                                                    {attendanceStats.rate}%
+                                                    {attendanceStats.rate !== null ? `${attendanceStats.rate}%` : '—'}
                                                 </Badge>
                                             </div>
                                         </div>
@@ -1144,8 +963,8 @@ export function ParentDashboard({
                                             </div>
                                             <div className="space-y-1">
                                                 <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Average Score</p>
-                                                <h4 className="text-2xl font-black text-slate-800 italic">{childAverageGrade}%</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">Term Average grade</p>
+                                                <h4 className="text-2xl font-black text-slate-800 italic">{childAverageGrade !== null ? `${childAverageGrade}%` : '—'}</h4>
+                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{childAverageGrade !== null ? `${activeChildAssessments.length} mark${activeChildAssessments.length === 1 ? '' : 's'} · ${termLabel}` : `No marks yet · ${termLabel}`}</p>
                                             </div>
                                         </Card>
 
@@ -1155,9 +974,9 @@ export function ParentDashboard({
                                                 <TrendingUp className="h-6 w-6" />
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Rank Position</p>
-                                                <h4 className="text-2xl font-black text-slate-800">{classRankInfo.ordinal}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">Out of {classRankInfo.total} classmates</p>
+                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Average</p>
+                                                <h4 className="text-2xl font-black text-slate-800">{classOverallAverage !== null ? `${classOverallAverage}%` : '—'}</h4>
+                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{activeClassName} · {termLabel}</p>
                                             </div>
                                         </Card>
 
@@ -1168,8 +987,8 @@ export function ParentDashboard({
                                             </div>
                                             <div className="space-y-1">
                                                 <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Attendance</p>
-                                                <h4 className="text-2xl font-black text-slate-800">{attendanceStats.rate}%</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">School Check-in Rate</p>
+                                                <h4 className="text-2xl font-black text-slate-800">{attendanceStats.rate !== null ? `${attendanceStats.rate}%` : '—'}</h4>
+                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{attendanceStats.total ? `${attendanceStats.present + attendanceStats.late} of ${attendanceStats.total} days this term` : 'No register entries yet this term'}</p>
                                             </div>
                                         </Card>
 
@@ -1181,7 +1000,7 @@ export function ParentDashboard({
                                             <div className="space-y-1">
                                                 <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fees Outstanding Balance</p>
                                                 <h4 className="text-2xl font-black text-rose-600">GH₵ {totalOutstanding.toLocaleString()}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">Term account balances</p>
+                                                <p className="text-[9px] font-bold text-slate-500 uppercase">All open bills{children.length > 1 ? ' (all children)' : ''}</p>
                                             </div>
                                         </Card>
 
@@ -1219,11 +1038,13 @@ export function ParentDashboard({
                                                 <Info className="h-4 w-4 text-indigo-600" /> Coaching Insight
                                             </h4>
                                             <p className="text-xs text-slate-500 leading-relaxed font-semibold">
-                                                Your ward is ranked {classRankInfo.ordinal} in their class with a term average score of {childAverageGrade}%. Check the Academics section to assist with their assignments due.
+                                                {childAverageGrade !== null
+                                                    ? `${activeChild.firstName}'s average this term is ${childAverageGrade}%${classOverallAverage !== null ? ` (class average ${classOverallAverage}%)` : ''}. The class position is shown on the end-of-term report card.`
+                                                    : `No marks have been recorded for ${activeChild.firstName} this term yet.`}{assignmentsDueCount > 0 ? ` ${assignmentsDueCount} task${assignmentsDueCount === 1 ? '' : 's'} still to submit.` : ''}
                                             </p>
                                         </div>
                                         <Button asChild size="sm" className="bg-indigo-650 hover:bg-indigo-750 text-white font-black rounded-xl text-xs uppercase h-11 px-5 self-start md:self-center shrink-0">
-                                            <Link href="/dashboard/my-grades">Full Report Card</Link>
+                                            <Link href="/dashboard/my-reports">Report Cards</Link>
                                         </Button>
                                     </div>
                                 </div>
@@ -1291,15 +1112,21 @@ export function ParentDashboard({
                                 <Card className="lg:col-span-2 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
                                     <div className="flex justify-between items-start mb-6">
                                         <div>
-                                            <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">School Daily Timeline</CardTitle>
-                                            <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Chronological sequence of standard student schedules</CardDescription>
+                                            <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Today's Record</CardTitle>
+                                            <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">What the school recorded for your child today</CardDescription>
                                         </div>
                                         <span className="text-[10px] font-black tracking-widest text-indigo-650 bg-indigo-55/40 px-3 py-1.5 rounded-full uppercase">
                                             Local: {new Date().toLocaleTimeString(undefined, {hour: '2-digit', minute:'2-digit'})}
                                         </span>
                                     </div>
 
-                                    <div className="relative pl-8 border-l border-slate-200 space-y-6 py-4">
+                                    {timelineEvents.length === 0 && (
+                                        <div className="text-center py-10 bg-slate-50 border border-dashed rounded-[2rem]">
+                                            <CalendarCheck className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+                                            <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Today's register has not been marked yet</p>
+                                        </div>
+                                    )}
+                                    <div className={cn("relative pl-8 border-l border-slate-200 space-y-6 py-4", timelineEvents.length === 0 && "hidden")}>
                                         {timelineEvents.map((evt, idx) => {
                                             const EventIcon = evt.icon;
                                             return (
@@ -1318,7 +1145,7 @@ export function ParentDashboard({
                                                     <div className="flex items-center justify-between bg-slate-50 border border-slate-100 hover:border-indigo-100/50 p-4 rounded-2xl hover:scale-[1.01] transition-transform duration-300">
                                                         <div className="space-y-0.5">
                                                             <p className="text-xs font-black text-slate-800 uppercase tracking-tight">{evt.label}</p>
-                                                            <p className="text-[9px] text-slate-400 font-bold uppercase">Standard Slot: {evt.time}</p>
+                                                            <p className="text-[9px] text-slate-400 font-bold uppercase">Recorded: {evt.time}</p>
                                                         </div>
                                                         <span className={cn(
                                                             "text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md",
@@ -1326,7 +1153,7 @@ export function ParentDashboard({
                                                                 ? "bg-emerald-100 text-emerald-800" 
                                                                 : "bg-slate-200 text-slate-500"
                                                         )}>
-                                                            {evt.completed ? 'Completed' : 'Pending'}
+                                                            {evt.completed ? 'Recorded' : 'Pending'}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -1382,12 +1209,12 @@ export function ParentDashboard({
                                             <div className="space-y-2">
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="font-bold text-slate-450 uppercase tracking-wider">Attendance this Week</span>
-                                                    <span className="font-black text-slate-800 font-mono">{statsWeek}%</span>
+                                                    <span className="font-black text-slate-800 font-mono">{statsWeek !== null ? `${statsWeek}%` : '—'}</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                                     <div 
-                                                        className={cn("h-full rounded-full transition-all duration-500", statsWeek >= 90 ? "bg-emerald-500" : statsWeek >= 80 ? "bg-amber-500" : "bg-rose-500")}
-                                                        style={{ width: `${statsWeek}%` }}
+                                                        className={cn("h-full rounded-full transition-all duration-500", (statsWeek ?? 0) >= 90 ? "bg-emerald-500" : (statsWeek ?? 0) >= 80 ? "bg-amber-500" : "bg-rose-500")}
+                                                        style={{ width: `${statsWeek ?? 0}%` }}
                                                     />
                                                 </div>
                                             </div>
@@ -1396,12 +1223,12 @@ export function ParentDashboard({
                                             <div className="space-y-2">
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="font-bold text-slate-450 uppercase tracking-wider">Attendance this Month</span>
-                                                    <span className="font-black text-slate-800 font-mono">{statsMonth}%</span>
+                                                    <span className="font-black text-slate-800 font-mono">{statsMonth !== null ? `${statsMonth}%` : '—'}</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                                     <div 
-                                                        className={cn("h-full rounded-full transition-all duration-500", statsMonth >= 90 ? "bg-emerald-500" : statsMonth >= 80 ? "bg-amber-500" : "bg-rose-500")}
-                                                        style={{ width: `${statsMonth}%` }}
+                                                        className={cn("h-full rounded-full transition-all duration-500", (statsMonth ?? 0) >= 90 ? "bg-emerald-500" : (statsMonth ?? 0) >= 80 ? "bg-amber-500" : "bg-rose-500")}
+                                                        style={{ width: `${statsMonth ?? 0}%` }}
                                                     />
                                                 </div>
                                             </div>
@@ -1410,12 +1237,12 @@ export function ParentDashboard({
                                             <div className="space-y-2">
                                                 <div className="flex justify-between items-center text-xs">
                                                     <span className="font-bold text-slate-450 uppercase tracking-wider">Attendance this Term</span>
-                                                    <span className="font-black text-slate-800 font-mono">{attendanceStats.rate}%</span>
+                                                    <span className="font-black text-slate-800 font-mono">{attendanceStats.rate !== null ? `${attendanceStats.rate}%` : '—'}</span>
                                                 </div>
                                                 <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                                                     <div 
-                                                        className={cn("h-full rounded-full transition-all duration-500", attendanceStats.rate >= 90 ? "bg-emerald-500" : attendanceStats.rate >= 80 ? "bg-amber-500" : "bg-rose-500")}
-                                                        style={{ width: `${attendanceStats.rate}%` }}
+                                                        className={cn("h-full rounded-full transition-all duration-500", (attendanceStats.rate ?? 0) >= 90 ? "bg-emerald-500" : (attendanceStats.rate ?? 0) >= 80 ? "bg-amber-500" : "bg-rose-500")}
+                                                        style={{ width: `${attendanceStats.rate ?? 0}%` }}
                                                     />
                                                 </div>
                                             </div>
@@ -1436,7 +1263,10 @@ export function ParentDashboard({
                                                 <CalendarCheck className="h-5 w-5 text-indigo-650" /> Attendance Distribution
                                             </CardTitle>
                                             <div className="h-[150px] w-full relative flex items-center justify-center">
-                                                <ResponsiveContainer width="100%" height="100%">
+                                                {attendancePieData.length === 0 && (
+                                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">No register entries yet this term</p>
+                                                )}
+                                                <ResponsiveContainer width="100%" height="100%" className={attendancePieData.length === 0 ? 'hidden' : ''}>
                                                     <PieChart>
                                                         <Pie
                                                             data={attendancePieData}
@@ -1479,12 +1309,12 @@ export function ParentDashboard({
                                     {/* Historical Logs List */}
                                     <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8 overflow-hidden hover:shadow-xl transition-all duration-300">
                                         <CardHeader className="p-0 mb-6">
-                                            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-450">Attendance History Logs</CardTitle>
+                                            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-450">Attendance This Term</CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-0">
                                             <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
                                                 {activeChildAttendance.length > 0 ? (
-                                                    activeChildAttendance.slice(0, 10).map((att: any) => {
+                                                    activeChildAttendance.slice(0, 30).map((att: any) => {
                                                         const dateStr = att.date?.toDate ? format(att.date.toDate(), 'PPP') : 'Unknown Date';
                                                         const status = att.status || 'Present';
                                                         return (
@@ -1540,8 +1370,8 @@ export function ParentDashboard({
                                             </p>
                                         </div>
                                         <div className="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/10 text-center">
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-indigo-300 block">Class Average Rank</span>
-                                            <span className="text-2xl font-extrabold text-white mt-1 block">{classRankInfo.ordinal} / {classRankInfo.total}</span>
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-indigo-300 block">Average · {termLabel}</span>
+                                            <span className="text-2xl font-extrabold text-white mt-1 block">{childAverageGrade !== null ? `${childAverageGrade}%` : '—'}{classOverallAverage !== null ? <span className="text-xs font-bold text-indigo-200"> (class {classOverallAverage}%)</span> : null}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1557,7 +1387,7 @@ export function ParentDashboard({
                                                         <CheckSquare className="h-5 w-5 text-indigo-650" /> Continuous Assessment
                                                     </CardTitle>
                                                     <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 font-black">
-                                                        Aggregated homework, quiz, and test score distributions this term
+                                                        Average of every mark recorded {termLabel}
                                                     </CardDescription>
                                                 </div>
                                             </div>
@@ -1572,6 +1402,9 @@ export function ParentDashboard({
                                                         </TableRow>
                                                     </TableHeader>
                                                     <TableBody>
+                                                        {displaySubjectAverages.length === 0 && (
+                                                            <TableRow><TableCell colSpan={3} className="text-center py-8 text-slate-400 italic text-xs font-black uppercase">No marks recorded {termLabel} yet</TableCell></TableRow>
+                                                        )}
                                                         {displaySubjectAverages.map((sub: any) => (
                                                             <TableRow key={sub.name} className="hover:bg-slate-50/50 transition-colors">
                                                                 <TableCell className="font-bold text-slate-800 text-xs py-4">{sub.name}</TableCell>
@@ -1649,6 +1482,7 @@ export function ParentDashboard({
                                                 {academicTrendView === 'improvement' && (
                                                     <div className="space-y-4 animate-in fade-in-50 duration-300">
                                                         <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Subject Performance Improvements</h4>
+                                                        {academicInsightsAndTrends.improving.length === 0 && <p className="text-xs text-slate-400 font-bold">No subject has a rising mark yet this term (needs at least two marks in a subject).</p>}
                                                         {academicInsightsAndTrends.improving.map(imp => (
                                                             <div key={imp.name} className="flex justify-between items-center p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl">
                                                                 <div className="flex items-center gap-3">
@@ -1657,11 +1491,11 @@ export function ParentDashboard({
                                                                     </span>
                                                                     <div>
                                                                         <p className="text-xs font-bold text-slate-800">{imp.name}</p>
-                                                                        <p className="text-[10px] text-slate-500">Gradual upward trajectory identified</p>
+                                                                        <p className="text-[10px] text-slate-500">Latest mark compared with the one before</p>
                                                                     </div>
                                                                 </div>
                                                                 <span className="text-xs font-black text-emerald-650 bg-emerald-100/50 px-3 py-1 rounded-full uppercase tracking-wider">
-                                                                    ⬆ Improved by {imp.diff}%
+                                                                    ⬆ Up {imp.diff} points
                                                                 </span>
                                                             </div>
                                                         ))}
@@ -1671,6 +1505,7 @@ export function ParentDashboard({
                                                 {academicTrendView === 'decline' && (
                                                     <div className="space-y-4 animate-in fade-in-50 duration-300">
                                                         <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Needs Support / Grade Decline Alert</h4>
+                                                        {academicInsightsAndTrends.declining.length === 0 && <p className="text-xs text-slate-400 font-bold">No subject has a falling mark this term.</p>}
                                                         {academicInsightsAndTrends.declining.map(dec => (
                                                             <div key={dec.name} className="flex justify-between items-center p-4 bg-rose-50/50 border border-rose-100 rounded-2xl">
                                                                 <div className="flex items-center gap-3">
@@ -1679,11 +1514,11 @@ export function ParentDashboard({
                                                                     </span>
                                                                     <div>
                                                                         <p className="text-xs font-bold text-slate-800">{dec.name}</p>
-                                                                        <p className="text-[10px] text-slate-500">Requires review and home supervision</p>
+                                                                        <p className="text-[10px] text-slate-500">Latest mark compared with the one before</p>
                                                                     </div>
                                                                 </div>
                                                                 <span className="text-xs font-black text-rose-650 bg-rose-100/50 px-3 py-1 rounded-full uppercase tracking-wider">
-                                                                    ⚠ Decline of {dec.diff}%
+                                                                    ⚠ Down {dec.diff} points
                                                                 </span>
                                                             </div>
                                                         ))}
@@ -1709,7 +1544,10 @@ export function ParentDashboard({
                                                     </div>
                                                 )}
 
-                                                {academicTrendView === 'class-comparison' && (
+                                                {academicTrendView === 'class-comparison' && !hasClassComparison && (
+                                                    <p className="text-xs text-slate-400 font-bold text-center">The class averages for {termLabel} are not available yet.</p>
+                                                )}
+                                                {academicTrendView === 'class-comparison' && hasClassComparison && (
                                                     <div className="h-[260px] animate-in fade-in-50 duration-300">
                                                         <ResponsiveContainer width="100%" height="100%">
                                                             <BarChart data={displaySubjectAverages} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -1734,47 +1572,28 @@ export function ParentDashboard({
                                         <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-gradient-to-b from-indigo-50/50 to-white p-8">
                                             <div className="flex items-center justify-between mb-6">
                                                 <div>
-                                                    <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">AI Insights</CardTitle>
+                                                    <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Insights</CardTitle>
                                                     <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 font-black">
-                                                        Automatic performance advisory analysis
+                                                        Worked out from this term's marks
                                                     </CardDescription>
                                                 </div>
                                                 <Award className="h-6 w-6 text-indigo-650" />
                                             </div>
 
                                             <div className="space-y-4">
-                                                {/* Insight 1: Improvement check mark */}
-                                                <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-start gap-3.5 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                                    <div className="text-lg leading-none pt-0.5">✅</div>
-                                                    <div className="space-y-0.5">
-                                                        <h5 className="text-[10px] font-black text-emerald-800 uppercase tracking-widest">Progress Identified</h5>
-                                                        <p className="text-xs text-emerald-700 font-bold leading-snug">
-                                                            {academicInsightsAndTrends.improving[0]?.name || 'Mathematics'} performance improving
-                                                        </p>
+                                                {academicInsightsAndTrends.insights.length === 0 && (
+                                                    <p className="text-xs text-slate-400 font-bold">Not enough marks {termLabel} yet to say anything useful.</p>
+                                                )}
+                                                {academicInsightsAndTrends.insights.map((ins, i) => (
+                                                    <div key={i} className={cn("p-4 border rounded-2xl flex items-start gap-3.5 shadow-sm",
+                                                        ins.type === 'success' ? "bg-emerald-50 border-emerald-100" : ins.type === 'warning' ? "bg-amber-50 border-amber-100" : "bg-indigo-50 border-indigo-100")}>
+                                                        <div className="text-lg leading-none pt-0.5">{ins.icon}</div>
+                                                        <div className="space-y-0.5">
+                                                            <h5 className={cn("text-[10px] font-black uppercase tracking-widest", ins.type === 'success' ? "text-emerald-800" : ins.type === 'warning' ? "text-amber-800" : "text-indigo-800")}>{ins.title}</h5>
+                                                            <p className={cn("text-xs font-bold leading-snug", ins.type === 'success' ? "text-emerald-700" : ins.type === 'warning' ? "text-amber-700" : "text-indigo-700")}>{ins.text}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                {/* Insight 2: Warning check mark */}
-                                                <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-start gap-3.5 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-400">
-                                                    <div className="text-lg leading-none pt-0.5">⚠</div>
-                                                    <div className="space-y-0.5">
-                                                        <h5 className="text-[10px] font-black text-amber-800 uppercase tracking-widest">Action Required</h5>
-                                                        <p className="text-xs text-amber-700 font-bold leading-snug">
-                                                            {academicInsightsAndTrends.declining[0]?.name || 'English'} comprehension needs attention
-                                                        </p>
-                                                    </div>
-                                                </div>
-
-                                                {/* Insight 3: Trophy / Peer compare check mark */}
-                                                <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-start gap-3.5 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                                    <div className="text-lg leading-none pt-0.5">🏆</div>
-                                                    <div className="space-y-0.5">
-                                                        <h5 className="text-[10px] font-black text-indigo-800 uppercase tracking-widest">Cohort Benchmark</h5>
-                                                        <p className="text-xs text-indigo-700 font-bold leading-snug">
-                                                            Performing above class average
-                                                        </p>
-                                                    </div>
-                                                </div>
+                                                ))}
                                             </div>
                                         </Card>
 
@@ -1828,7 +1647,7 @@ export function ParentDashboard({
                                                 const pct = max > 0 ? Math.round((score / max) * 100) : 0;
                                                 const sub = subjects?.find((s: any) => s.id === a.subjectId);
                                                 const subName = sub?.name || a.subjectName || 'General';
-                                                const dateStr = a.assessmentDate?.toDate ? format(a.assessmentDate.toDate(), 'PPP') : 'Recently';
+                                                const dateStr = a.assessmentDate?.toDate ? format(a.assessmentDate.toDate(), 'PPP') : a.createdAt?.toDate ? format(a.createdAt.toDate(), 'PPP') : '—';
 
                                                 return (
                                                     <div key={a.id || a.uid} className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:scale-[1.01] transition-transform duration-300">
@@ -1883,7 +1702,7 @@ export function ParentDashboard({
                                                 <FileText className="h-5 w-5 text-amber-650" /> Results Summary
                                             </CardTitle>
                                             <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 font-black">
-                                                Exam performance scores this term
+                                                Exam marks recorded {termLabel}
                                             </CardDescription>
                                         </CardHeader>
                                         <CardContent className="p-0">
@@ -1897,20 +1716,19 @@ export function ParentDashboard({
                                                         </TableRow>
                                                     </TableHeader>
                                                     <TableBody>
-                                                        {[
-                                                            { exam: "Mid-Term", score: 79 },
-                                                            { exam: "End-Term", score: 83 },
-                                                            { exam: "Mock Exam", score: 85 }
-                                                        ].map((item, idx) => (
-                                                            <TableRow key={idx} className="hover:bg-slate-50/50 transition-colors">
-                                                                <TableCell className="font-bold text-slate-800 text-xs py-4 uppercase tracking-tight">{item.exam}</TableCell>
-                                                                <TableCell className="font-black text-slate-900 font-mono text-xs text-center py-4">{item.score}%</TableCell>
+                                                        {examRows.length === 0 && (
+                                                            <TableRow><TableCell colSpan={3} className="text-center py-8 text-slate-400 italic text-xs font-black uppercase">No exam marks recorded {termLabel} yet</TableCell></TableRow>
+                                                        )}
+                                                        {examRows.map((item: any) => (
+                                                            <TableRow key={item.id} className="hover:bg-slate-50/50 transition-colors">
+                                                                <TableCell className="font-bold text-slate-800 text-xs py-4 uppercase tracking-tight">{item.subject}<span className="block text-[9px] text-slate-400 normal-case font-semibold">{item.exam}</span></TableCell>
+                                                                <TableCell className="font-black text-slate-900 font-mono text-xs text-center py-4">{item.score} / {item.max} ({item.pct}%)</TableCell>
                                                                 <TableCell className="py-4">
                                                                     <Badge className={cn(
                                                                         "border-none font-black text-[9px] px-3 py-1 rounded-full uppercase tracking-wider",
-                                                                        item.score >= 80 ? "bg-emerald-100 text-emerald-800" : "bg-indigo-100 text-indigo-805"
+                                                                        item.pct >= 50 ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"
                                                                     )}>
-                                                                        {item.score >= 85 ? 'Distinction' : item.score >= 80 ? 'Very Good' : 'Credit'}
+                                                                        {item.pct >= 80 ? 'Excellent' : item.pct >= 60 ? 'Very Good' : item.pct >= 50 ? 'Pass' : 'Needs Support'}
                                                                     </Badge>
                                                                 </TableCell>
                                                             </TableRow>
@@ -1921,72 +1739,27 @@ export function ParentDashboard({
                                         </CardContent>
                                     </Card>
 
-                                    {/* 2. Position Tracking Card */}
+                                    {/* 2. Class position: only from the school's report card (it used to be worked out from the
+                                        parent's own children only, so every child came out 1st). */}
                                     <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8">
                                         <CardHeader className="p-0 mb-6">
                                             <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
-                                                <TrendingUp className="h-5 w-5 text-indigo-650" /> Position Tracking
+                                                <TrendingUp className="h-5 w-5 text-indigo-650" /> Class Position
                                             </CardTitle>
                                             <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 font-black">
-                                                Longitudinal cohort ranking across terms
+                                                Published by the school on the end-of-term report card
                                             </CardDescription>
                                         </CardHeader>
-                                        <CardContent className="p-0 space-y-6">
-                                            {/* Quick metrics grid */}
-                                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                                <div className="p-4 bg-indigo-50/50 border border-indigo-100 rounded-2xl">
-                                                    <span className="text-[9px] font-black text-indigo-650 uppercase tracking-widest block">Current Position</span>
-                                                    <span className="text-xl font-black text-slate-805 mt-1 block">{positionTrackingData.currentOrdinal} Position</span>
-                                                </div>
-                                                <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
-                                                    <span className="text-[9px] font-black text-slate-450 uppercase tracking-widest block">Previous Position</span>
-                                                    <span className="text-xl font-black text-slate-700 mt-1 block">{positionTrackingData.previousOrdinal} {positionTrackingData.previousOrdinal !== 'N/A' ? 'Position' : ''}</span>
-                                                </div>
-                                                <div className={cn(
-                                                    "p-4 rounded-2xl border",
-                                                    positionTrackingData.termDiffText.includes('⬇') ? "bg-rose-50/60 border-rose-100" : "bg-emerald-50/60 border-emerald-100"
-                                                )}>
-                                                    <span className={cn(
-                                                        "text-[9px] font-black uppercase tracking-widest block",
-                                                        positionTrackingData.termDiffText.includes('⬇') ? "text-rose-600" : "text-emerald-805"
-                                                    )}>Improvement Rate</span>
-                                                    <span className={cn(
-                                                        "text-xl font-black mt-1 block flex items-center gap-1",
-                                                        positionTrackingData.termDiffText.includes('⬇') ? "text-rose-600" : "text-emerald-705"
-                                                    )}>
-                                                        {positionTrackingData.termDiffText}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className="space-y-4">
-                                                {positionTrackingData.history.map((item: any, idx: number) => (
-                                                    <div key={idx} className="flex justify-between items-center p-4 bg-slate-50 border border-slate-105 rounded-2xl">
-                                                        <span className="text-xs font-black text-slate-700 uppercase tracking-tight">{item.term}</span>
-                                                        <Badge className="bg-indigo-50 text-indigo-700 font-black border-none text-[11px] tracking-wide px-3.5 py-1.5 rounded-xl uppercase">
-                                                            {item.ordinal} Position
-                                                        </Badge>
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            <div className={cn(
-                                                "p-4 border rounded-2xl flex items-center gap-3",
-                                                positionTrackingData.annualDiffText.includes('⬇') ? "bg-rose-50 border-rose-100" : "bg-emerald-50 border-emerald-100"
-                                            )}>
-                                                <span className={cn(
-                                                    "p-2 rounded-xl shrink-0",
-                                                    positionTrackingData.annualDiffText.includes('⬇') ? "bg-rose-500/10 text-rose-600" : "bg-emerald-500/10 text-emerald-600"
-                                                )}>
-                                                    {positionTrackingData.annualDiffText.includes('⬇') ? <TrendingDown className="h-5 w-5" /> : <ArrowUpRight className="h-5 w-5" />}
-                                                </span>
-                                                <div className="space-y-0.5">
-                                                    <p className={cn("text-[10px] font-black uppercase tracking-widest", positionTrackingData.annualDiffText.includes('⬇') ? "text-rose-800" : "text-emerald-805")}>Performance Summary</p>
-                                                    <p className={cn("text-xs font-bold leading-snug", positionTrackingData.annualDiffText.includes('⬇') ? "text-rose-700" : "text-emerald-700")}>
-                                                        {positionTrackingData.annualDiffText}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                        <CardContent className="p-0 space-y-4">
+                                            <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+                                                {activeChild.firstName}'s position in class is worked out by the school from every pupil's marks and shown on the report card once the term's results are released.
+                                            </p>
+                                            {classOverallAverage !== null && childAverageGrade !== null && (
+                                                <p className="text-xs font-bold text-slate-700">So far {termLabel}: {activeChild.firstName} {childAverageGrade}% · class average {classOverallAverage}%</p>
+                                            )}
+                                            <Button asChild size="sm" className="bg-indigo-650 hover:bg-indigo-750 text-white font-black rounded-xl text-xs uppercase h-10 px-5">
+                                                <Link href="/dashboard/my-reports">Open Report Cards</Link>
+                                            </Button>
                                         </CardContent>
                                     </Card>
                                 </div>
@@ -2223,52 +1996,6 @@ export function ParentDashboard({
                                 )}
                             </CardContent>
                         </Card>
-                    </div>
-                )}
-
-                {activeTab === 'canteen' && (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                        {/* Canteen coordinated menu */}
-                        <div className="bg-amber-50 border border-amber-200/60 rounded-3xl p-6 flex items-start gap-4 shadow-sm">
-                            <div className="p-3 bg-amber-500/10 text-amber-700 rounded-2xl shrink-0">
-                                <Utensils className="h-6 w-6" />
-                            </div>
-                            <div className="space-y-1">
-                                <h4 className="font-black text-sm uppercase tracking-tight text-amber-805">Dietary Coordination Advice</h4>
-                                <p className="text-xs text-amber-700 leading-relaxed font-semibold">
-                                    Coordinate breakfast and dinner at home with the school's cafeteria weekly menu schedule to avoid repeat meals and ensure a balanced nutritional rotation.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Menu list */}
-                        <div className="grid gap-6 xl:grid-cols-5">
-                            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => {
-                                // Since we don't have canteen details from dashboard-client directly, we default to standard weekly catalog placeholders
-                                const mealsMock = [
-                                    { type: 'Breakfast', name: 'Oatmeal & Toast / Hot Cocoa' },
-                                    { type: 'Lunch', name: 'Jollof Rice with Grilled Chicken & Salad' },
-                                    { type: 'Snacks', name: 'Fresh Fruits / Biscuit' }
-                                ];
-                                return (
-                                    <Card key={day} className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
-                                        <div className="space-y-4">
-                                            <div className="border-b pb-2">
-                                                <h3 className="text-sm font-black uppercase text-slate-800 tracking-wider">{day}</h3>
-                                            </div>
-                                            <div className="space-y-4">
-                                                {mealsMock.map((m) => (
-                                                    <div key={m.type} className="space-y-1">
-                                                        <span className="text-[9px] font-black uppercase text-amber-600 tracking-widest">{m.type}</span>
-                                                        <p className="text-xs font-bold text-slate-700 leading-snug">{m.name}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </Card>
-                                );
-                            })}
-                        </div>
                     </div>
                 )}
 
