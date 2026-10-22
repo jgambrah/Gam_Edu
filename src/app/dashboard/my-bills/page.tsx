@@ -86,7 +86,27 @@ function StudentBillView({ studentId }: { studentId: string }) {
             orderBy('createdAt', 'desc')
         );
     }, [firestore, studentId, schoolId]);
-    const { data: allRecords, isLoading } = useCollection<FinancialRecord>(recordsQuery);
+    const { data: uidRecords, isLoading } = useCollection<FinancialRecord>(recordsQuery);
+
+    const { data: student } = useDoc<Student>(useMemoFirebase(() => firestore && studentId ? doc(firestore, 'students', studentId) : null, [firestore, studentId]));
+
+    // Bills filed under the pupil's document id or admission number (Student Billing counts these too).
+    const altKeys = useMemo(() => {
+        const s: any = student || {};
+        return Array.from(new Set([s.id, s.uid, s.studentId, s.admissionNo, s.admissionNumber].filter(Boolean).map(String))).filter(k => k !== studentId).slice(0, 10);
+    }, [student, studentId]);
+    const altKeysStr = altKeys.join('|');
+    const { data: altRecords } = useCollection<FinancialRecord>(useMemoFirebase(() => {
+        if (!firestore || !schoolId || altKeys.length === 0) return null;
+        return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('studentId', 'in', altKeys));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [firestore, schoolId, altKeysStr]));
+    const allRecords = useMemo(() => {
+        if (!uidRecords && !altRecords) return uidRecords;
+        const m = new Map<string, FinancialRecord>();
+        [...(uidRecords || []), ...(altRecords || [])].forEach(r => m.set(r.id, r));
+        return Array.from(m.values());
+    }, [uidRecords, altRecords]);
 
     // Current view = open records only. Bills from a closed term are archived; whatever was left on them
     // is already on the "Arrears/Credit Brought Forward" record, so showing both would double the debt.
@@ -103,7 +123,6 @@ function StudentBillView({ studentId }: { studentId: string }) {
         return allRecords.filter(r => viewTermId ? (r as any).closedInTermId === viewTermId : (r as any).isArchived !== true);
     }, [allRecords, viewTermId]);
 
-    const { data: student } = useDoc<Student>(useMemoFirebase(() => firestore && studentId ? doc(firestore, 'students', studentId) : null, [firestore, studentId]));
 
     const schoolSettingsQuery = useMemoFirebase(
       () => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, 
@@ -176,9 +195,11 @@ function StudentBillView({ studentId }: { studentId: string }) {
 
     const overallSummary = useMemo(() => {
         if (!records) return { totalBilled: 0, totalPaid: 0, totalWaivers: 0, balance: 0 };
-        const totalBilled = records.reduce((acc, r) => acc + (r.billedAmount || 0), 0);
-        const totalPaid = records.reduce((acc, r) => acc + (r.amountPaid || 0), 0);
-        const totalWaivers = records.reduce((acc, r) => acc + (r.waiverAmount || 0), 0);
+        // Same as Student Billing: a reversal still awaiting approval is set aside.
+        const active = records.filter(r => (r as any).status !== 'Pending Reversal');
+        const totalBilled = active.reduce((acc, r) => acc + (Number(r.billedAmount) || 0), 0);
+        const totalPaid = active.reduce((acc, r) => acc + (Number(r.amountPaid) || 0), 0);
+        const totalWaivers = active.reduce((acc, r) => acc + (Number(r.waiverAmount) || 0), 0);
         const balance = totalBilled - totalPaid - totalWaivers;
         return { totalBilled, totalPaid, totalWaivers, balance };
     }, [records]);

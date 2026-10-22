@@ -195,19 +195,19 @@ export function ParentDashboard({
         }
     };
 
-    const totalOutstanding = useMemo(() => {
-        if (!financials) return 0;
-        return financials.reduce((sum: number, r: any) => {
-            // A rejected reversal leaves the bill owed as normal; only a reversal still pending is set aside.
-            if (r.status === 'Pending Reversal') return sum;
-            const balance = (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
-            return sum + Math.max(0, balance);
-        }, 0);
-    }, [financials]);
+    // Same sum as Student Billing's ledger: every open bill's billed − paid − waived, so money paid in
+    // advance (a bill paid beyond its amount) reduces the balance. It used to ignore those credits and add
+    // all children together, so it did not match the school's figure.
+    const balanceOf = (rows: any[]) => rows.reduce((sum: number, r: any) => {
+        if (r.status === 'Pending Reversal') return sum; // a reversal still awaiting approval is set aside
+        return sum + (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
+    }, 0);
+    const totalOutstanding = useMemo(() => Math.round(balanceOf(financials || []) * 100) / 100, [financials]);
 
     const activeChildId = selectedChildId || children?.[0]?.uid || '';
     const activeChild = useMemo(() => children?.find((c: any) => c.uid === activeChildId), [children, activeChildId]);
     const activeClassId = activeChild?.classId || '';
+    const childBalance = useMemo(() => Math.round(balanceOf((financials || []).filter((r: any) => (r.childUid || r.studentId) === activeChildId)) * 100) / 100, [financials, activeChildId]);
     const activeClassName = useMemo(() => {
         if (!activeClassId) return 'Unassigned';
         const matchedClass = classes?.find((c: any) => c.id === activeClassId || c.uid === activeClassId);
@@ -998,9 +998,9 @@ export function ParentDashboard({
                                                 <Wallet className="h-6 w-6" />
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fees Outstanding Balance</p>
-                                                <h4 className="text-2xl font-black text-rose-600">GH₵ {totalOutstanding.toLocaleString()}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">All open bills{children.length > 1 ? ' (all children)' : ''}</p>
+                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">{childBalance < 0 ? 'Fees Paid in Advance' : 'Fees Outstanding Balance'}</p>
+                                                <h4 className={cn("text-2xl font-black", childBalance > 0 ? "text-rose-600" : "text-emerald-600")}>GH₵ {Math.abs(childBalance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h4>
+                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{activeChild?.firstName}{children.length > 1 ? ` · all ${children.length} children: GH₵ ${totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${totalOutstanding < 0 ? ' credit' : ''}` : ''}</p>
                                             </div>
                                         </Card>
 
@@ -1906,9 +1906,19 @@ export function ParentDashboard({
                             </div>
 
                             <div className="space-y-4">
-                                {financials && financials.length > 0 ? (
-                                    financials.map((record: any) => {
-                                        const student = children?.find((c: any) => c.uid === record.studentId);
+                                {/* The selected child's bills (the balance above them matches that child's Student Billing ledger). */}
+                                {(() => {
+                                    const rows = (financials || []).filter((r: any) => (r.childUid || r.studentId) === activeChildId);
+                                    return rows.length > 0 ? (
+                                        <div className="flex flex-wrap items-center justify-between gap-2 p-4 rounded-2xl bg-slate-900 text-white">
+                                            <span className="text-xs font-black uppercase tracking-wider">{activeChild?.firstName} {activeChild?.lastName} · {rows.length} open bill{rows.length === 1 ? '' : 's'}</span>
+                                            <span className="text-sm font-black">{childBalance < 0 ? 'Paid in advance' : 'Balance'}: GH₵ {Math.abs(childBalance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                                        </div>
+                                    ) : null;
+                                })()}
+                                {financials && financials.some((r: any) => (r.childUid || r.studentId) === activeChildId) ? (
+                                    financials.filter((r: any) => (r.childUid || r.studentId) === activeChildId).map((record: any) => {
+                                        const student = children?.find((c: any) => c.uid === (record.childUid || record.studentId));
                                         const studentName = student ? `${student.firstName} ${student.lastName}` : 'Student';
                                         const billed = Number(record.billedAmount) || 0;
                                         const paid = Number(record.amountPaid) || 0;

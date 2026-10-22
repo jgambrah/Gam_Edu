@@ -12259,7 +12259,32 @@ export default function DashboardClient() {
   const loadingRecords = isParent ? loadingParentRecords : loadingAllRecords;
 
   const parentChildren = useMemo(() => students?.filter(s => parentStudentIds?.includes(s.uid)) || [], [students, parentStudentIds]);
-  const parentFinancials = useMemo(() => records?.filter(r => parentStudentIds?.includes(r.studentId)) || [], [records, parentStudentIds]);
+
+  // Some bills are filed under the pupil's document id or admission number instead of their uid. Student
+  // Billing counts those too, so read them here as well (otherwise the parent sees a different balance).
+  const parentKeyToChild = useMemo(() => {
+    const m = new Map<string, string>();
+    parentChildren.forEach((c: any) => [c.uid, c.id, c.studentId, c.admissionNo, c.admissionNumber].filter(Boolean).forEach((k: any) => m.set(String(k), c.uid)));
+    return m;
+  }, [parentChildren]);
+  const parentAltKeys = useMemo(() => Array.from(parentKeyToChild.keys()).filter(k => !parentStudentIds.includes(k)).slice(0, 30), [parentKeyToChild, parentStudentIds]);
+  const parentAltKeysStr = parentAltKeys.join('|');
+  const parentAltRecordsQuery = useMemoFirebase(() => {
+    if (!firestore || !schoolId || !isParent || parentAltKeys.length === 0) return null;
+    return query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('studentId', 'in', parentAltKeys));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firestore, schoolId, isParent, parentAltKeysStr]);
+  const { data: parentAltRecords } = useCollection(parentAltRecordsQuery);
+
+  const parentFinancials = useMemo(() => {
+    if (!isParent) return [];
+    const byId = new Map<string, any>();
+    [...(parentRecords || []), ...(parentAltRecords || [])].forEach((r: any) => {
+      const child = parentKeyToChild.get(String(r.studentId)) || (parentStudentIds.includes(r.studentId) ? r.studentId : null);
+      if (child) byId.set(r.id, { ...r, childUid: child });
+    });
+    return Array.from(byId.values());
+  }, [isParent, parentRecords, parentAltRecords, parentKeyToChild, parentStudentIds]);
 
   const activeChildId = selectedChildId || parentChildren?.[0]?.uid || '';
   const activeChild = useMemo(() => parentChildren?.find(c => c.uid === activeChildId), [parentChildren, activeChildId]);
