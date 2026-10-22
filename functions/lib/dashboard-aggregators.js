@@ -1240,11 +1240,14 @@ exports.onBehavioralWrite = (0, firestore_1.onDocumentWritten)('behavioral_recor
     }
     if (infDelta === 0 && posDelta === 0)
         return;
+    // Counted per day (the dashboard adds up the last 7 days). The old fields were written with dotted
+    // names through set(), which stores them as literal "behavioral.x" keys, and they never went back down
+    // as the week moved on.
+    const day = new Date(createdMs || Date.now()).toISOString().slice(0, 10);
     await SUMMARY(schoolId).set({
         schoolId,
         lastUpdated: firestore_2.FieldValue.serverTimestamp(),
-        'behavioral.incidentsThisWeek': firestore_2.FieldValue.increment(infDelta),
-        'behavioral.positiveThisWeek': firestore_2.FieldValue.increment(posDelta),
+        behavioral: { days: { [day]: { inc: firestore_2.FieldValue.increment(infDelta), pos: firestore_2.FieldValue.increment(posDelta) } } },
     }, { merge: true });
 });
 // ── TRIGGER 7: Parents ─────────────────────────────────────────────────────────

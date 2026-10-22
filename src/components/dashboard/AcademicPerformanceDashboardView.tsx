@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { readOnceCached } from '@/lib/firestore-once';
+import { currentTermFromProfile, stampFromTermId, compareTermIds } from '@/lib/term';
 import { 
   Award, BookOpen, BrainCircuit, CheckCircle2, ChevronRight, 
   Sparkles, TrendingUp, Users, AlertTriangle, AlertCircle, RefreshCw,
@@ -43,6 +45,23 @@ export function AcademicPerformanceDashboardView({
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
   const [selectedAtRiskStudent, setSelectedAtRiskStudent] = useState<any | null>(null);
   const [activeRemediationModal, setActiveRemediationModal] = useState<any | null>(null);
+
+  // Server-kept academic summary per term (every mark counted) — a few documents, read once and cached.
+  const summarySchoolId: string = schoolData?.id || schoolData?.schoolId || '';
+  const currentTermId: string = currentTermFromProfile(schoolData)?.termId || '';
+  const [termSummaries, setTermSummaries] = useState<any[] | null>(null);
+  useEffect(() => {
+    if (!firestore || !summarySchoolId) return;
+    readOnceCached(`acadsum:${summarySchoolId}`, async () => {
+      const snap = await getDocs(query(collection(firestore, 'academicSummary'), where('schoolId', '==', summarySchoolId)));
+      return snap.docs.map(d => d.data());
+    }, { ttlMs: 10 * 60 * 1000 }).then(setTermSummaries).catch(() => setTermSummaries([]));
+  }, [firestore, summarySchoolId]);
+  const currentSummary = useMemo(() => {
+    if (!termSummaries || !currentTermId) return null;
+    const s = termSummaries.find((t: any) => t.termId === currentTermId);
+    return s && Number(s.totals?.c) > 0 ? s : null;
+  }, [termSummaries, currentTermId]);
 
   // Sync Academic Analytics to Firestore dashboard_summaries
   const handleSyncAcademicSummary = async () => {
@@ -121,8 +140,8 @@ export function AcademicPerformanceDashboardView({
     return `${s.firstName || ""} ${s.lastName || ""}`.trim() || s.name || s.displayName || "Staff";
   };
 
-  // Dynamic Real-Time Academic Computation
-  const computed = useMemo(() => {
+  // Marks-based computation (fallback when the server summary for this term does not exist yet)
+  const computedFromMarks = useMemo(() => {
     if (!recentAssessments || recentAssessments.length === 0) {
       return {
         schoolAverage: 0,
@@ -264,7 +283,7 @@ export function AcademicPerformanceDashboardView({
       const flaggedFails = subjectFailingStudentCounts[name] || 0;
       const totalEvaluated = Math.max(data.count, data.passingCount + data.failingCount + flaggedFails);
       const actualPassing = Math.max(0, totalEvaluated - (data.failingCount + flaggedFails));
-      const passRate = Math.min(100, Math.max(45, Math.round((actualPassing / totalEvaluated) * 100)));
+      const passRate = Math.min(100, Math.max(0, Math.round((actualPassing / totalEvaluated) * 100)));
 
       const matchedSubjectDoc = subjects?.find((s: any) => s.name?.toLowerCase() === name.toLowerCase() || s.id === name || s.id === data.subjectId);
       let teacherName = "";
@@ -307,20 +326,13 @@ export function AcademicPerformanceDashboardView({
       const reviews = performanceReviews?.filter((r: any) => r.staffId === t.uid || r.staffId === t.id) || [];
       const tAssessments = parsed.filter((a: any) => a.teacherId === t.uid || a.teacherId === t.id);
 
-      let rating = 4.5;
-      if (reviews.length > 0) {
-        rating = parseFloat((reviews.reduce((sum: number, r: any) => sum + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1));
-      } else if (tAssessments.length > 0) {
-        const passRatio = tAssessments.filter((a: any) => a.pct >= 50).length / tAssessments.length;
-        const avgPct = tAssessments.reduce((s: number, a: any) => s + a.pct, 0) / tAssessments.length;
-        rating = parseFloat((3.2 + (passRatio * 1.0) + ((avgPct / 100) * 0.8)).toFixed(1));
-      } else {
-        const mockBaseRatings = [4.8, 4.2, 4.6, 4.9, 4.1, 4.4, 4.7];
-        rating = mockBaseRatings[idx % mockBaseRatings.length];
-      }
-
-      rating = Math.min(5.0, Math.max(3.5, rating));
-      const satisfaction = `${Math.round((rating / 5) * 100)}%`;
+      // A star rating only from real performance reviews (it used to be invented from marks or a fixed list).
+      const rating: number | null = reviews.length > 0
+        ? parseFloat((reviews.reduce((sum: number, r: any) => sum + (Number(r.rating) || 0), 0) / reviews.length).toFixed(1))
+        : null;
+      const marksAvg = tAssessments.length ? Math.round(tAssessments.reduce((s: number, a: any) => s + a.pct, 0) / tAssessments.length) : null;
+      const marksPass = tAssessments.length ? Math.round((tAssessments.filter((a: any) => a.pct >= 50).length / tAssessments.length) * 100) : null;
+      const satisfaction = null;
 
       const subCounts: Record<string, number> = {};
       tAssessments.forEach((a: any) => {
@@ -340,15 +352,23 @@ export function AcademicPerformanceDashboardView({
         subject,
         rating,
         satisfaction,
+        reviews: reviews.length,
+        marksAvg,
+        marksPass,
+        markCount: tAssessments.length,
         class: className
       };
-    }).sort((a: any, b: any) => b.rating - a.rating);
+    }).filter((t: any) => t.rating !== null || t.markCount > 0)
+      .sort((a: any, b: any) => (b.rating ?? -1) - (a.rating ?? -1) || (b.marksAvg ?? -1) - (a.marksAvg ?? -1));
 
     // 6. Longitudinal Exam Trends (Chronologically Sorted)
     const termGroups: Record<string, { totalPct: number; count: number; label: string; sortValue: number }> = {};
     parsed.forEach((a: any) => {
-      const year = a.academicYear || "2024-2025";
-      const term = a.term || "First Term";
+      // From the mark's own term (it used to call every undated mark "First Term 2024-2025").
+      const stamp = a.termId ? stampFromTermId(a.termId) : null;
+      const year = stamp?.academicYear || a.academicYear || '';
+      const term = stamp?.term || a.term || '';
+      if (!year || !term) return;
       const label = `${term} ${year}`.trim();
 
       let termNum = 1;
@@ -387,9 +407,94 @@ export function AcademicPerformanceDashboardView({
       atRiskStudents,
       classComparisonData: classRankings.map(c => ({ name: c.name, average: c.average })).slice(0, 6),
       examPerformanceTrends,
-      hasAssessments: true
+      hasAssessments: true,
+      source: 'sample',
+      markCount: parsed.length,
     };
   }, [recentAssessments, students, classes, staff, subjects, rooms, performanceReviews]);
+
+  // Summary-based computation: every mark of the current term (server-kept, 0 marks read).
+  const computedFromSummary = useMemo(() => {
+    const sum: any = currentSummary;
+    if (!sum) return null;
+    const pctOf = (v: any) => (Number(v?.c) > 0 ? Math.round(Number(v.s) / Number(v.c)) : 0);
+    const passOf = (v: any) => (Number(v?.c) > 0 ? Math.round((Number(v.p) / Number(v.c)) * 100) : 0);
+    const staffName = (id: string) => { const st = staff?.find((x: any) => x.uid === id || x.id === id); return st ? getStaffName(st) : ''; };
+
+    const classRankings = Object.entries(sum.classes || {}).filter(([, v]: any) => Number(v?.c) > 0).map(([classId, v]: any) => {
+      const cls = classes?.find((c: any) => c.id === classId);
+      const size = students?.filter((s: any) => s.classId === classId && (s.enrollmentStatus === 'Active' || !s.enrollmentStatus)).length || 0;
+      const matchedRoom = rooms?.find((r: any) => r.id === cls?.homeRoomId || r.id === cls?.room || r.name === cls?.room);
+      return { id: classId, name: cls?.name || 'Class', average: pctOf(v), passRate: passOf(v), size, room: matchedRoom ? matchedRoom.name : (cls?.room || 'Classroom'), advisor: staffName(cls?.teacherId) || 'Unassigned' };
+    }).sort((a, b) => b.average - a.average);
+
+    const subjectRankings = Object.entries(sum.subjects || {}).filter(([, v]: any) => Number(v?.c) > 0).map(([subjectId, v]: any) => {
+      const sd = subjects?.find((s: any) => s.id === subjectId || s.name === subjectId);
+      const ids: string[] = sd?.teacherIds?.length ? sd.teacherIds : (sd?.teacherId ? [sd.teacherId] : []);
+      const teacher = ids.map(staffName).filter(Boolean).join(', ') || 'Unassigned';
+      return { name: sd?.name || v.name || subjectId, average: pctOf(v), passRate: passOf(v), teacher };
+    }).sort((a, b) => b.average - a.average);
+
+    const subjName = (id: string) => subjects?.find((s: any) => s.id === id)?.name || sum.subjects?.[id]?.name || id;
+    const atRiskStudents: any[] = [];
+    let excelling = 0;
+    Object.entries(sum.students || {}).forEach(([studentId, v]: any) => {
+      if (!(Number(v?.c) > 0)) return;
+      const avg = pctOf(v);
+      if (avg >= 80) excelling++;
+      if (avg >= 50) return;
+      const stud = students?.find((s: any) => s.uid === studentId || s.id === studentId);
+      if (stud && stud.enrollmentStatus && stud.enrollmentStatus !== 'Active') return;
+      const cls = classes?.find((c: any) => c.id === (stud?.classId || v.classId));
+      const failing = Object.entries(v.f || {}).filter(([, n]: any) => Number(n) > 0).map(([sid]) => subjName(sid));
+      atRiskStudents.push({
+        id: studentId,
+        studentObj: stud || { uid: studentId, firstName: v.name || 'Student' },
+        name: stud ? (`${stud.firstName || ''} ${stud.lastName || ''}`.trim() || v.name || 'Student') : (v.name || 'Student'),
+        class: cls?.name || 'Class',
+        average: `${avg}%`,
+        rawAvg: avg,
+        subjects: failing.slice(0, 3).join(', ') || '—',
+        status: avg < 40 ? 'Critical' : avg < 45 ? 'High Risk' : 'Warning',
+      });
+    });
+    atRiskStudents.sort((a, b) => a.rawAvg - b.rawAvg);
+
+    const teacherRankings = Object.entries(sum.teachers || {}).filter(([, v]: any) => Number(v?.c) > 0).map(([tid, v]: any) => {
+      const st = staff?.find((x: any) => x.uid === tid || x.id === tid);
+      const reviews = performanceReviews?.filter((r: any) => r.staffId === tid) || [];
+      const rating = reviews.length ? parseFloat((reviews.reduce((s: number, r: any) => s + (Number(r.rating) || 0), 0) / reviews.length).toFixed(1)) : null;
+      const cls = classes?.find((c: any) => c.teacherId === tid);
+      return { name: st ? getStaffName(st) : 'Former / unknown staff', subject: 'Marks entered', class: cls?.name || 'General', rating, satisfaction: null, reviews: reviews.length, marksAvg: pctOf(v), marksPass: passOf(v), markCount: Number(v.c) };
+    }).sort((a: any, b: any) => (b.rating ?? -1) - (a.rating ?? -1) || (b.marksAvg ?? -1) - (a.marksAvg ?? -1));
+
+    const examPerformanceTrends = (termSummaries || [])
+      .filter((t: any) => t.termId && t.termId !== 'unknown' && Number(t.totals?.c) > 0)
+      .sort((a: any, b: any) => compareTermIds(String(a.termId), String(b.termId)))
+      .slice(-5)
+      .map((t: any) => { const st = stampFromTermId(t.termId); return { term: st ? `${st.term} ${st.academicYear}` : t.termId, average: pctOf(t.totals) }; });
+
+    return {
+      schoolAverage: pctOf(sum.totals),
+      bestClass: classRankings[0]?.name || 'N/A',
+      weakestClass: classRankings[classRankings.length - 1]?.name || 'N/A',
+      bestSubject: subjectRankings[0]?.name || 'N/A',
+      weakestSubject: subjectRankings[subjectRankings.length - 1]?.name || 'N/A',
+      studentsFailingCount: atRiskStudents.length,
+      studentsExcellingCount: excelling,
+      subjectRankings,
+      classRankings,
+      teacherRankings,
+      atRiskStudents,
+      classComparisonData: classRankings.map(c => ({ name: c.name, average: c.average })).slice(0, 6),
+      examPerformanceTrends,
+      hasAssessments: true,
+      source: 'summary',
+      markCount: Number(sum.totals?.c) || 0,
+    };
+  }, [currentSummary, termSummaries, students, classes, staff, subjects, rooms, performanceReviews]);
+
+  const computed: any = computedFromSummary || computedFromMarks;
 
   // Handlers for Parent Notification & Remediation
   const handleDraftParentAlert = (student: any) => {
@@ -413,12 +518,14 @@ export function AcademicPerformanceDashboardView({
     setActiveRemediationModal(student);
   };
 
+  // Nothing is sent from here: the list is copied and the SMS page opened, so the user sends it themselves.
   const handleBatchDispatchRiskAlerts = () => {
-    const count = computed.atRiskStudents?.length || 0;
-    toast({
-      title: "Batch Risk Alerts Dispatched",
-      description: `Academic risk SMS notifications & remediation plans dispatched for ${count} flagged student profile${count === 1 ? '' : 's'}.`,
-    });
+    const list: any[] = computed.atRiskStudents || [];
+    if (!list.length) { toast({ title: 'No students flagged', description: 'There is nobody on the at-risk list to message.' }); return; }
+    const text = list.map((s: any) => `${s.name} (${s.class}) — average ${s.average}${s.subjects && s.subjects !== '—' ? `, weak in ${s.subjects}` : ''}`).join('\n');
+    try { navigator.clipboard?.writeText(text); } catch { /* ignore */ }
+    toast({ title: 'List copied — opening SMS', description: `${list.length} flagged student${list.length === 1 ? '' : 's'} copied. Choose their parents on the SMS page and send.` });
+    if (typeof window !== 'undefined') window.location.href = '/dashboard/communication/sms';
   };
 
   return (
@@ -435,6 +542,9 @@ export function AcademicPerformanceDashboardView({
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">School Average</p>
             <h3 className="text-2xl font-black text-slate-900 mt-1">{computed.schoolAverage}%</h3>
             <p className="text-[10px] text-indigo-600 font-bold mt-0.5">Target: 75% Benchmark</p>
+            <p className="text-[9px] text-slate-400 font-medium mt-0.5">
+              {computed.source === 'summary' ? `All ${computed.markCount} marks this term` : computed.markCount ? `Sample of ${computed.markCount} marks only` : 'No marks yet'}
+            </p>
           </CardContent>
         </Card>
 
@@ -505,7 +615,7 @@ export function AcademicPerformanceDashboardView({
                 className="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
               >
                 <Send className="h-3.5 w-3.5" />
-                <span>Batch Dispatch Risk Alerts</span>
+                <span>Copy List &amp; Open SMS</span>
               </Button>
               <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-xs font-bold px-3 py-1.5 rounded-xl shrink-0">
                 {computed.studentsFailingCount} Students Flagged (&lt;50%)
@@ -723,7 +833,7 @@ export function AcademicPerformanceDashboardView({
         <Card className="shadow-sm border-slate-200 rounded-2xl bg-white">
           <CardHeader className="pb-2 border-b border-slate-100">
             <CardTitle className="text-sm font-bold text-slate-900">Faculty Performance</CardTitle>
-            <CardDescription className="text-[11px] text-slate-500">Teacher evaluations & student satisfaction</CardDescription>
+            <CardDescription className="text-[11px] text-slate-500">Average of the marks each teacher entered (stars only from real performance reviews)</CardDescription>
           </CardHeader>
           <CardContent className="pt-3 space-y-2.5">
             {computed.teacherRankings && computed.teacherRankings.length > 0 ? (
@@ -734,8 +844,12 @@ export function AcademicPerformanceDashboardView({
                     <p className="text-[10px] text-slate-500">{t.subject} ({t.class})</p>
                   </div>
                   <div className="text-right">
-                    <span className="font-black text-amber-600">⭐ {t.rating}</span>
-                    <p className="text-[10px] text-slate-500">Satisfaction: {t.satisfaction}</p>
+                    {t.rating !== null && t.rating !== undefined ? (
+                      <span className="font-black text-amber-600">⭐ {t.rating} <span className="text-[10px] text-slate-500 font-medium">({t.reviews} review{t.reviews === 1 ? '' : 's'})</span></span>
+                    ) : null}
+                    {t.marksAvg !== null && t.marksAvg !== undefined ? (
+                      <p className="text-[10px] text-slate-600 font-semibold">Marks avg {t.marksAvg}% · {t.marksPass}% pass · {t.markCount} marks</p>
+                    ) : null}
                   </div>
                 </div>
               ))

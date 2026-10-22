@@ -321,6 +321,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Per-term academic aggregate kept by onAssessmentWriteForSummary (server-only writes).
+    match /academicSummary/{docId} {
+      allow read: if isSuperAdmin() || (
+        (isStaff() || isAdmin()) && resource.data.schoolId == getUserSchoolId()
+      );
+      allow write: if false;
+    }
+
     match /studentBalances/{schoolId} {
       allow get: if isSuperAdmin() || (
         (isAdmin() || getUserRole() in ['Accountant', 'accountant', 'Finance', 'finance', 'Bursar', 'bursar',
@@ -1749,4 +1757,4 @@ service cloud.firestore {
     }
 
   }
-}
+}
