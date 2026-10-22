@@ -157,6 +157,20 @@ service cloud.firestore {
       return isParent() && studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds;
     }
 
+    // A pupil's school records (marks, attendance, behaviour, homework, quiz attempts…) can be read only by
+    // people of that school, by the pupil, or by the platform owner. Until Oct 2026 any signed-in account of
+    // ANY school could read every school's records. Queries must filter by schoolId (or by the pupil's own id).
+    function inMySchool() {
+      return isSignedIn() && getUserSchoolId() != '' && resource.data.schoolId == getUserSchoolId();
+    }
+    function schoolRecordReadable() {
+      return isSuperAdmin() || (isSignedIn() && resource.data.studentId == request.auth.uid) || inMySchool();
+    }
+    // Sub-documents (e.g. submissions under an assignment) follow their parent document's school.
+    function parentDocInMySchool(path) {
+      return isSuperAdmin() || (isSignedIn() && getUserSchoolId() != '' && get(path).data.get('schoolId', '') == getUserSchoolId());
+    }
+
     // =========================================================
     // 1B. GLOBAL SHARED CURRICULUM REPOSITORY
     // =========================================================
@@ -241,9 +255,9 @@ service cloud.firestore {
           'paidUntil', 'lastPaymentAmount', 'lastPaymentDate', 'paymentReference'])));
 
       match /assignments/{assignmentId} {
-        allow read, get, list: if isSignedIn();
-        allow write, create, update: if isSignedIn();
-        allow delete: if isSignedIn() && (
+        allow read, get, list: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
+        allow write, create, update: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
+        allow delete: if isSignedIn() && getUserSchoolId() == schoolId && (
           isSuperAdmin() ||
           isAdmin() ||
           isDirector() ||
@@ -252,8 +266,8 @@ service cloud.firestore {
         );
 
         match /submissions/{submissionId} {
-          allow read, get, list: if isSignedIn();
-          allow write, create, update, delete: if isSignedIn();
+          allow read, get, list: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
+          allow write, create, update, delete: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
         }
       }
 
@@ -263,8 +277,8 @@ service cloud.firestore {
       }
 
       match /students/{studentId} {
-        allow read, get, list: if isSignedIn();
-        allow write, create, update: if isSignedIn();
+        allow read, get, list: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
+        allow write, create, update: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
       }
 
       match /classes/{classId} {
@@ -452,20 +466,26 @@ service cloud.firestore {
     }
 
     match /students/{studentId} {
-      allow read, get, list: if true; // Public verified portfolio view & all users
+      // One pupil document may be opened by its id (the public portfolio page /p/<id> needs this), but the
+      // pupil LIST may be read only within the school or by the pupil themself (it used to be open to anyone).
+      allow get: if true;
+      allow list: if isSuperAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid) || inMySchool();
       allow create: if isSignedIn();
-      // Staff of the student's school can edit everything; anyone else signed in (the student, a parent,
-      // older screens) can still save other fields but cannot touch XP/badges or identity/billing fields.
+      // Staff of the student's school can edit everything; the pupil, their parent or other users of the same
+      // school can still save other fields but cannot touch XP/badges or identity/billing fields.
       allow update: if isSignedIn() && (
         isSuperAdmin() ||
         isStaffOfStudentSchool() ||
-        !request.resource.data.diff(resource.data).affectedKeys().hasAny(studentProtectedFields())
+        ((studentId == request.auth.uid || resource.data.get('uid', '') == request.auth.uid
+          || resource.data.get('schoolId', '') == getUserSchoolId() || parentOwnsStudent(studentId))
+          && !request.resource.data.diff(resource.data).affectedKeys().hasAny(studentProtectedFields()))
       );
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow delete: if isSuperAdmin() || (isAdmin() && resource.data.get('schoolId', '') == getUserSchoolId());
 
       match /timeline/{eventId} {
         allow read, get, list: if true;
-        allow write, create, update: if isSignedIn();
+        allow write, create, update: if isSuperAdmin() || (isSignedIn() && (studentId == request.auth.uid
+          || parentDocInMySchool(/databases/$(database)/documents/students/$(studentId))));
         allow delete: if isSuperAdmin() || isAdmin();
       }
     }
@@ -580,20 +600,26 @@ service cloud.firestore {
     }
 
     match /subjects/{subjectId}/assessments/{assessmentId} {
-        allow read, list: if isSignedIn();
+        // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+        allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+        allow list: if schoolRecordReadable();
         allow create, update: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
         allow delete: if isSuperAdmin() || isAdmin() || isTeacher();
     }
 
     match /assessments/{assessmentId} {
-        allow read, get, list: if isSignedIn();
+        // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+        allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+        allow list: if schoolRecordReadable();
         allow create: if canCreateAssessment();
         allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
         allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
     }
 
     match /{path=**}/assessments/{assessmentId} {
-        allow read, get, list: if isSignedIn();
+        // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+        allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+        allow list: if schoolRecordReadable();
         allow create: if canCreateAssessment();
         allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
         allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
@@ -629,7 +655,9 @@ service cloud.firestore {
     }
 
     match /attendance/{attendanceId} {
-      allow read, get, list: if isSignedIn();
+      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+      allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+      allow list: if schoolRecordReadable();
       // Marked by teachers / staff (biometric scans are written by the server). Parents and students cannot
       // write attendance, and days in a closed term are read-only except for administrators.
       allow create: if isTeacher() || isStaff() || isAdmin();
@@ -637,7 +665,7 @@ service cloud.firestore {
       allow delete: if (isTeacher() || isStaff() || isAdmin()) && notArchivedOrAdmin();
 
       match /{document=**} {
-        allow read, get, list: if isSignedIn();
+        allow read, get, list: if parentDocInMySchool(/databases/$(database)/documents/attendance/$(attendanceId));
         allow write: if isTeacher() || isStaff() || isAdmin();
       }
     }
@@ -682,7 +710,7 @@ service cloud.firestore {
         resource.data.studentId == request.auth.uid ||
         parentOwnsStudent(resource.data.studentId)
       )));
-      allow list: if isSignedIn();
+      allow list: if schoolRecordReadable();
       allow create: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
       allow update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId && notArchivedOrAdmin());
       allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
@@ -695,7 +723,9 @@ service cloud.firestore {
     }
 
     match /assignments/{assignmentId} {
-      allow read, get, list: if isSignedIn();
+      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+      allow get: if isSignedIn() && (resource == null || isSuperAdmin() || inMySchool());
+      allow list: if isSuperAdmin() || inMySchool();
       allow create, update: if isSignedIn();
       allow delete: if isSignedIn() && (
         isSuperAdmin() ||
@@ -704,14 +734,16 @@ service cloud.firestore {
       );
 
       match /submissions/{submissionId} {
-        allow read, get, list: if isSignedIn();
+        allow read, get, list: if parentDocInMySchool(/databases/$(database)/documents/assignments/$(assignmentId));
         allow create, update: if isSignedIn();
         allow delete: if isSuperAdmin() || isAdmin();
       }
     }
 
     match /submissions/{submissionId} {
-      allow read, get, list: if isSignedIn();
+      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+      allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+      allow list: if schoolRecordReadable();
       // A pupil submits their own work (staff may submit for them).
       allow create: if isSignedIn() && (request.resource.data.get('studentId', '') == request.auth.uid || isTeacher() || isAdmin());
       // Only staff grade. A pupil may replace their own UNGRADED submission but can never set a grade,
@@ -742,21 +774,25 @@ service cloud.firestore {
         resource.data.teacherId == request.auth.uid
       );
       match /attempts/{attemptId} {
-        allow read, get, list: if isSignedIn();
+        allow read, get, list: if parentDocInMySchool(/databases/$(database)/documents/quizzes/$(quizId));
         allow create, update: if isSignedIn();
         allow delete: if isSuperAdmin() || isAdmin();
       }
     }
 
     match /quizAttempts/{attemptId} {
-      allow read, get, list: if isSignedIn();
+      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+      allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+      allow list: if schoolRecordReadable();
       // Students' attempts are graded and saved by the server (submitQuizAttemptAction).
       allow create, update: if isTeacher() || isAdmin();
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
     match /assessments/{assessmentId} {
-      allow read, get, list: if isSignedIn();
+      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+      allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+      allow list: if schoolRecordReadable();
       allow create: if canCreateAssessment();
       allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
       allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
@@ -775,7 +811,9 @@ service cloud.firestore {
     }
 
     match /behavioral_records/{recordId} {
-      allow read, list: if isSignedIn();
+      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
+      allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
+      allow list: if schoolRecordReadable();
       allow create: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
       allow update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId && notArchivedOrAdmin());
       allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId && notArchivedOrAdmin());
@@ -1728,13 +1766,14 @@ service cloud.firestore {
     // =========================================================
     // 8.12. STUDENT TIMELINE & PUBLIC PORTFOLIO SECURITY
     // =========================================================
+    // (Pupil documents themselves are governed by the main students rule above. This block used to add
+    // "allow write: if isSignedIn()", which let ANY signed-in account of any school overwrite or delete any
+    // pupil record, including the protected fields.)
     match /students/{studentId} {
-      allow read, get, list: if true; // Public verified portfolio view
-      allow write: if isSignedIn();
-
       match /timeline/{eventId} {
         allow read, get, list: if true; // Public verified timeline view
-        allow write: if isSignedIn();
+        allow write: if isSuperAdmin() || (isSignedIn() && (studentId == request.auth.uid
+          || parentDocInMySchool(/databases/$(database)/documents/students/$(studentId))));
       }
     }
 

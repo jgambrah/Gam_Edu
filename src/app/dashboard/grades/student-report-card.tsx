@@ -47,8 +47,8 @@ export function StudentReportCard({ student, term, year }: { student: Student, t
 
     // Fetch all assessments for the student
     const assessmentsQuery = useMemoFirebase(
-      () => (student && firestore) ? query(collection(firestore, 'assessments'), where('studentId', '==', student.uid)) : null,
-      [firestore, student]
+      () => (student && firestore && schoolId) ? query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', '==', student.uid)) : null,
+      [firestore, student, schoolId]
     );
     const { data: assessments } = useCollection<Assessment>(assessmentsQuery);
 

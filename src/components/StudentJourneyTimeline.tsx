@@ -118,15 +118,15 @@ export function StudentJourneyTimeline({ studentId }: { studentId: string }) {
   const { data: manualEvents, isLoading: isLoadingManual } = useCollection<any>(timelineQuery);
 
   const assessmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !studentId) return null;
-    return query(collection(firestore, 'assessments'), where('studentId', '==', studentId));
-  }, [firestore, studentId]);
+    if (!firestore || !studentId || !schoolId) return null;
+    return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', '==', studentId));
+  }, [firestore, studentId, schoolId]);
   const { data: assessmentsData, isLoading: isLoadingAssessments } = useCollection<any>(assessmentsQuery);
 
   const behaviorQuery = useMemoFirebase(() => {
-    if (!firestore || !studentId) return null;
-    return query(collection(firestore, 'behavioral_records'), where('studentId', '==', studentId));
-  }, [firestore, studentId]);
+    if (!firestore || !studentId || !schoolId) return null;
+    return query(collection(firestore, 'behavioral_records'), where('schoolId', '==', schoolId), where('studentId', '==', studentId));
+  }, [firestore, studentId, schoolId]);
   const { data: behaviorData, isLoading: isLoadingBehavior } = useCollection<any>(behaviorQuery);
 
   const stickersQuery = useMemoFirebase(() => {

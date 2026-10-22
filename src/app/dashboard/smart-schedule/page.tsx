@@ -4,6 +4,7 @@
 import { useState, useMemo } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, Timestamp } from 'firebase/firestore';
 import { 
   Calendar as CalendarIcon, Wand2, Loader2, CalendarCheck, ChevronLeft, ChevronRight 
@@ -43,6 +44,7 @@ export default function SmartSchedulePage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isGenerating, setIsGenerating] = useState(false);
@@ -50,8 +52,9 @@ export default function SmartSchedulePage() {
 
   // --- DATA FETCHING ---
   const assignmentsQuery = useMemoFirebase(() => 
-    (user && firestore) ? query(collection(firestore, 'assignments')) : null, 
-  [firestore, user]);
+    // This school's assignments only (it used to read every school's assignments).
+    (user && firestore && schoolId) ? query(collection(firestore, 'assignments'), where('schoolId', '==', schoolId)) : null, 
+  [firestore, user, schoolId]);
   const { data: assignments } = useCollection<Assignment>(assignmentsQuery);
 
   const lecturesQuery = useMemoFirebase(() => 

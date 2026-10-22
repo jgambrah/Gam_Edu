@@ -446,7 +446,7 @@ export default function ReportCardManager() {
             for (let i = 0; i < missingReportStudentIds.length; i += 30) {
                 const chunk = missingReportStudentIds.slice(i, i + 30);
                 try {
-                    out.push(...await readAll(query(collection(firestore!, 'students'), where(documentId(), 'in', chunk))));
+                    out.push(...await readAll(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where(documentId(), 'in', chunk))));
                 } catch (err) {
                     console.warn('Report cards: could not look up former class members', err);
                 }

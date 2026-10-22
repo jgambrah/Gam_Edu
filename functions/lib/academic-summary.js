@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onAssessmentWriteForSummary = exports.ACADEMIC_SUMMARY = void 0;
+exports.onAssessmentWriteForSummary = exports.CLASS_AVERAGES = exports.ACADEMIC_SUMMARY = void 0;
+exports.classContribution = classContribution;
 exports.markPart = markPart;
 exports.contribution = contribution;
 /**
@@ -29,6 +30,23 @@ if (!(0, app_1.getApps)().length)
 const db = (0, firestore_2.getFirestore)();
 const ACADEMIC_SUMMARY = (schoolId, termId) => db.collection('academicSummary').doc(`${schoolId}__${termId}`);
 exports.ACADEMIC_SUMMARY = ACADEMIC_SUMMARY;
+/**
+ * Parent-safe class averages: classAverages/{schoolId}__{termId}__{classId} = { schoolId, termId, classId,
+ * totals: { s, c }, subjects: { <subjectId>: { s, c, name } } }. No pupil names or ids, so parents of the
+ * class may read it (the parent portal used to download 250 of the classmates' marks to work this out).
+ */
+const CLASS_AVERAGES = (schoolId, termId, classId) => db.collection('classAverages').doc(`${schoolId}__${termId}__${classId}`);
+exports.CLASS_AVERAGES = CLASS_AVERAGES;
+function classContribution(m, sign, inc) {
+    const sp = inc(sign * m.pct), c1 = inc(sign);
+    return {
+        schoolId: m.schoolId,
+        termId: m.termId,
+        classId: m.classId,
+        totals: { s: sp, c: c1 },
+        subjects: { [m.subjectId]: Object.assign({ s: sp, c: c1 }, (sign > 0 && m.subjectName ? { name: m.subjectName } : {})) },
+    };
+}
 const safeKey = (v) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
 /** What one mark contributes, or null if it is not a usable mark. */
 function markPart(a) {
@@ -87,6 +105,10 @@ exports.onAssessmentWriteForSummary = (0, firestore_1.onDocumentWritten)('assess
         writes.push((0, exports.ACADEMIC_SUMMARY)(before.schoolId, before.termId).set(Object.assign(Object.assign({}, contribution(before, -1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
     if (after)
         writes.push((0, exports.ACADEMIC_SUMMARY)(after.schoolId, after.termId).set(Object.assign(Object.assign({}, contribution(after, 1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+    if ((before === null || before === void 0 ? void 0 : before.classId) && before.subjectId)
+        writes.push((0, exports.CLASS_AVERAGES)(before.schoolId, before.termId, before.classId).set(Object.assign(Object.assign({}, classContribution(before, -1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+    if ((after === null || after === void 0 ? void 0 : after.classId) && after.subjectId)
+        writes.push((0, exports.CLASS_AVERAGES)(after.schoolId, after.termId, after.classId).set(Object.assign(Object.assign({}, classContribution(after, 1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
     await Promise.all(writes).catch(e => console.warn('[academicSummary] update failed:', e === null || e === void 0 ? void 0 : e.message));
 });
 //# sourceMappingURL=academic-summary.js.map
