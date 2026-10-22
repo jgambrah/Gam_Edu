@@ -785,98 +785,108 @@ export function ParentDashboard({
         }
     };
 
+    // One line per child for the family strip (from data already loaded: no extra reads).
+    const familySummaries = useMemo(() => {
+        const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+        return (children || []).map((c: any) => {
+            const att = (attendance || []).filter((a: any) => a.studentId === c.uid);
+            const counted = att.filter((a: any) => a.status);
+            const rate = counted.length ? Math.round(counted.filter((a: any) => a.status === 'Present' || a.status === 'Late').length / counted.length * 100) : null;
+            const todayRec = att.find((a: any) => { const d = a.date?.toDate ? a.date.toDate() : a.date ? new Date(a.date) : null; return d && d >= today0; });
+            const marks = (assessments || []).filter((a: any) => a.studentId === c.uid && Number(a.maxScore) > 0);
+            const avg = marks.length ? Math.round(marks.reduce((s: number, a: any) => s + (Number(a.score) || 0) / Number(a.maxScore) * 100, 0) / marks.length) : null;
+            const bal = Math.round(balanceOf((financials || []).filter((r: any) => (r.childUid || r.studentId) === c.uid)) * 100) / 100;
+            const className = classes?.find((k: any) => k.id === c.classId)?.name || '';
+            return { child: c, rate, today: todayRec?.status || null, avg, bal, className };
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [children, attendance, assessments, financials, classes]);
+
+    // "Needs your attention" for the selected child, from real records only.
+    const attentionItems = useMemo(() => {
+        const items: { tone: 'red' | 'amber' | 'blue'; text: string; action?: { label: string; tab?: typeof activeTab; href?: string } }[] = [];
+        if (childBalance > 0.009) items.push({ tone: 'red', text: `GH₵ ${childBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} in fees still to pay`, action: { label: 'View fees', tab: 'financials' } });
+        absenteeismAlerts.forEach(a => items.push({ tone: a.type === 'danger' ? 'red' : 'amber', text: a.message, action: { label: 'Attendance', href: '/dashboard/my-attendance' } }));
+        if (attendanceStats.absent > 0 && !absenteeismAlerts.length) items.push({ tone: 'amber', text: `Absent ${attendanceStats.absent} day${attendanceStats.absent === 1 ? '' : 's'} this term`, action: { label: 'See days', href: '/dashboard/my-attendance' } });
+        if (assignmentStats.overdue > 0) items.push({ tone: 'red', text: `${assignmentStats.overdue} homework task${assignmentStats.overdue === 1 ? '' : 's'} overdue`, action: { label: 'Homework', tab: 'assignments' } });
+        else if (assignmentStats.pending > 0) items.push({ tone: 'amber', text: `${assignmentStats.pending} homework task${assignmentStats.pending === 1 ? '' : 's'} to submit`, action: { label: 'Homework', tab: 'assignments' } });
+        const weak = subjectAverages.filter((x: any) => x.average < 50);
+        if (weak.length) items.push({ tone: 'amber', text: `Below 50% in ${weak.map((x: any) => x.name).slice(0, 3).join(', ')}`, action: { label: 'Grades', href: '/dashboard/my-grades' } });
+        return items;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [childBalance, absenteeismAlerts, attendanceStats.absent, assignmentStats.overdue, assignmentStats.pending, subjectAverages]);
+
+    const tabLabels: Record<string, string> = {
+        overview: 'Overview', attendance: 'Attendance', academics: 'Grades', examination: 'Exams', assignments: 'Homework',
+        financials: 'Fees', notices: 'Notices', stories: 'Class Stories', activity: 'Today', transport: 'Bus', satisfaction: 'Feedback',
+    };
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    const money = (n: number) => `GH₵ ${Math.abs(n).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    const todayLabel = todayRecord?.status ? String(todayRecord.status) : 'Not marked yet';
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-500 relative pb-16">
-            {/* Top Bar: Selector & Portal Tag */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+        <div className="space-y-6 animate-in fade-in duration-500 relative pb-16 max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[9px] font-black tracking-[0.25em] bg-indigo-500/10 text-indigo-600 px-3.5 py-1.5 rounded-full uppercase">Parent Suite</span>
-                    </div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">Parent <span className="text-indigo-600">Portal</span></h1>
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Parent Portal{schoolSettings?.name ? ` · ${schoolSettings.name}` : ''}</p>
+                    <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">{greeting}, {displayName}</h1>
+                    <p className="text-xs text-slate-500 font-medium mt-1">{termLabel !== 'this term' ? termLabel : ''}{children.length ? `${termLabel !== 'this term' ? ' · ' : ''}${children.length} child${children.length === 1 ? '' : 'ren'}` : ''}</p>
                 </div>
+                <div className="flex flex-wrap gap-2">
+                    <Link href="/dashboard/my-bills" className="px-3.5 py-2 text-[11px] font-black rounded-xl bg-rose-600 hover:bg-rose-700 text-white">Pay Fees</Link>
+                    <Link href="/dashboard/my-reports" className="px-3.5 py-2 text-[11px] font-black rounded-xl bg-white border border-slate-200 text-slate-700 hover:border-indigo-300">Report Cards</Link>
+                    <Link href="/dashboard/finance/shop" className="px-3.5 py-2 text-[11px] font-black rounded-xl bg-white border border-slate-200 text-slate-700 hover:border-indigo-300 flex items-center gap-1.5"><ShoppingBag className="w-3.5 h-3.5" /> Store</Link>
+                    <Link href="/dashboard/forum" className="px-3.5 py-2 text-[11px] font-black rounded-xl bg-white border border-slate-200 text-slate-700 hover:border-indigo-300 flex items-center gap-1.5"><MessageSquare className="w-3.5 h-3.5" /> Forum</Link>
+                </div>
+            </div>
 
-                {/* Main Navigation Tab Selector */}
-                <div className="flex flex-wrap items-center gap-4 w-full xl:w-auto">
-                    <div className="flex p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border border-slate-200/50 shadow-inner flex-wrap gap-1">
-                        {(['overview', 'stories', 'activity', 'attendance', 'academics', 'examination', 'assignments', 'financials', 'transport', 'notices', 'satisfaction'] as const).map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={cn(
-                                    "px-4 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                                    activeTab === tab 
-                                        ? "bg-white text-indigo-600 shadow-md font-black scale-[1.02]"
-                                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
+            {/* Family strip: one card per child, tap to select */}
+            {children.length > 0 && (
+                <div className={cn("grid gap-3", children.length === 1 ? "grid-cols-1" : children.length === 2 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3")}>
+                    {familySummaries.map(({ child, rate, today, avg, bal, className }: any) => {
+                        const on = activeChildId === child.uid;
+                        return (
+                            <button key={child.uid} onClick={() => setSelectedChildId(child.uid)}
+                                className={cn("text-left p-4 rounded-2xl border transition-all flex items-center gap-3",
+                                    on ? "bg-indigo-700 border-indigo-700 text-white shadow-lg" : "bg-white border-slate-200 hover:border-indigo-300")}>
+                                {child.photoURL ? (
+                                    <img src={child.photoURL} alt="" className="h-12 w-12 rounded-xl object-cover shrink-0 bg-slate-100" />
+                                ) : (
+                                    <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center font-black shrink-0", on ? "bg-white/15 text-white" : "bg-indigo-50 text-indigo-700")}>
+                                        {child.firstName?.[0]}{child.lastName?.[0]}
+                                    </div>
                                 )}
-                            >
-                                {tab === 'stories' ? "Class Stories 📸" : tab === 'activity' ? "Today's Activity" : tab === 'attendance' ? "Attendance" : tab === 'transport' ? "Bus Fleet 🚌" : tab === 'satisfaction' ? "Feedback & Ratings" : tab}
+                                <div className="min-w-0 flex-1">
+                                    <p className="text-sm font-black truncate">{child.firstName} {child.lastName}</p>
+                                    <p className={cn("text-[10px] font-bold truncate", on ? "text-indigo-200" : "text-slate-500")}>{className || 'Class not set'}</p>
+                                    <div className={cn("flex flex-wrap gap-x-3 gap-y-0.5 mt-1.5 text-[10px] font-bold", on ? "text-indigo-100" : "text-slate-600")}>
+                                        <span>Today: {today || '—'}</span>
+                                        <span>Att. {rate !== null ? `${rate}%` : '—'}</span>
+                                        <span>Avg. {avg !== null ? `${avg}%` : '—'}</span>
+                                        <span className={cn(!on && bal > 0.009 && "text-rose-600", !on && bal < -0.009 && "text-emerald-600")}>{bal > 0.009 ? `Owes ${money(bal)}` : bal < -0.009 ? `Credit ${money(bal)}` : 'Fees clear'}</span>
+                                    </div>
+                                </div>
                             </button>
-                        ))}
-                    </div>
-
-                    <Link
-                        href="/dashboard/finance/shop"
-                        className="flex items-center gap-2 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-2xl bg-purple-600 hover:bg-purple-700 text-white shadow-md transition-all hover:scale-[1.02] shrink-0"
-                    >
-                        <ShoppingBag className="w-3.5 h-3.5" />
-                        <span>Uniform & Book Store</span>
-                    </Link>
-
-                    <Link
-                        href="/dashboard/forum"
-                        className="flex items-center gap-2 px-4 py-2.5 text-[10px] font-black uppercase tracking-wider rounded-2xl bg-teal-600 hover:bg-teal-700 text-white shadow-md transition-all hover:scale-[1.02] shrink-0"
-                    >
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        <span>Community Forum</span>
-                    </Link>
-                </div>
-            </div>
-
-            {/* Banner Header Display */}
-            <div 
-                style={schoolSettings?.brandColor ? { background: `linear-gradient(135deg, ${schoolSettings.brandColor} 0%, ${schoolSettings.secondaryColor || '#0f172a'} 100%)` } : undefined}
-                className={cn("relative p-8 xl:p-10 rounded-[2.5rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border transition-all duration-500", !schoolSettings?.brandColor && banners[activeTab].gradient)}
-            >
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-                <div className="space-y-3 relative z-10 max-w-xl">
-                    <span className={cn("text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase", banners[activeTab].badgeColor)}>
-                        {banners[activeTab].badge}
-                    </span>
-                    <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">{banners[activeTab].title}</h2>
-                    <p className="text-xs text-slate-300 leading-relaxed font-medium">{banners[activeTab].description}</p>
-                </div>
-                <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-                    {(() => {
-                        const IconComponent = banners[activeTab].icon;
-                        return <IconComponent className="h-10 w-10 text-white opacity-80" />;
-                    })()}
-                </div>
-            </div>
-
-            {/* Multiple Children Selectors tab (if applicable) */}
-            {children && children.length > 1 && (
-                <div className="flex flex-wrap items-center gap-3 p-2 bg-slate-50 border border-slate-150 rounded-3xl w-fit">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-3 pr-1">Active Child:</span>
-                    {children.map((child: any) => (
-                        <button
-                            key={child.uid}
-                            onClick={() => setSelectedChildId(child.uid)}
-                            className={cn(
-                                "px-5 py-2 text-xs font-black uppercase tracking-wider rounded-2xl transition-all duration-300",
-                                activeChildId === child.uid
-                                    ? "bg-indigo-650 text-white shadow-lg"
-                                    : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/50"
-                            )}
-                        >
-                            {child.firstName} {child.lastName}
-                        </button>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
 
+            {/* Tabs */}
+            <div className="flex gap-1 overflow-x-auto p-1 bg-slate-100 rounded-2xl border border-slate-200/60">
+                {(['overview', 'attendance', 'academics', 'examination', 'assignments', 'financials', 'notices', 'stories', 'activity', 'transport', 'satisfaction'] as const).map((tab) => (
+                    <button key={tab} onClick={() => setActiveTab(tab)}
+                        className={cn("shrink-0 px-3.5 py-2 text-[11px] font-black rounded-xl transition-all whitespace-nowrap",
+                            activeTab === tab ? "bg-white text-indigo-700 shadow" : "text-slate-500 hover:text-slate-900")}>
+                        {tabLabels[tab]}
+                    </button>
+                ))}
+            </div>
+
             {/* TAB CONTENT SECTIONS */}
-            <div className="mt-8">
+            <div>
                 {activeTab === 'stories' && (
                     <div className="space-y-6 animate-in fade-in duration-300">
                         {schoolId ? (
@@ -894,163 +904,110 @@ export function ParentDashboard({
                 )}
 
                 {activeTab === 'overview' && (
-                    <div className="space-y-8 animate-in fade-in duration-300">
-                        {activeChild ? (
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                                {/* Student Profile Card */}
-                                <Card className="lg:col-span-1 rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden flex flex-col hover:shadow-xl transition-all duration-300">
-                                    <div className="relative h-36 bg-gradient-to-tr from-indigo-500 via-indigo-650 to-purple-600 flex items-center justify-center p-6 text-white overflow-hidden">
-                                        <div className="absolute inset-0 bg-black/10" />
-                                        <div className="relative z-10 text-center space-y-1">
-                                            <span className="text-[9px] font-black tracking-widest bg-white/20 px-3 py-1 rounded-full uppercase">Student Profile Card</span>
-                                        </div>
-                                    </div>
-                                    <div className="p-8 pt-0 -mt-12 flex-1 flex flex-col items-center text-center relative z-10">
-                                        {/* Profile Photo */}
-                                        {activeChild.photoURL ? (
-                                            <img 
-                                                src={activeChild.photoURL} 
-                                                alt={`${activeChild.firstName} ${activeChild.lastName}`}
-                                                className="h-24 w-24 rounded-3xl border-4 border-white object-cover shadow-xl bg-slate-100"
-                                            />
-                                        ) : (
-                                            <div className="h-24 w-24 rounded-3xl border-4 border-white bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-3xl shadow-xl">
-                                                {activeChild.firstName?.[0]}{activeChild.lastName?.[0]}
-                                            </div>
-                                        )}
-                                        
-                                        <h3 className="font-black text-slate-800 text-xl mt-4 uppercase tracking-tight">{activeChild.firstName} {activeChild.lastName}</h3>
-                                        <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mt-1">Class Code: {activeClassName}</p>
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        {!activeChild ? (
+                            <p className="text-slate-400 text-center py-12 text-xs font-black uppercase">No children are linked to this account yet. Please ask the school office to link them.</p>
+                        ) : (
+                        <>
+                            {/* Key figures for the selected child */}
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Today</p>
+                                    <p className={cn("text-xl font-black mt-0.5", todayRecord?.status === 'Absent' ? "text-rose-600" : todayRecord?.status === 'Late' ? "text-amber-600" : todayRecord ? "text-emerald-600" : "text-slate-400")}>{todayLabel}</p>
+                                    <p className="text-[10px] font-bold text-slate-500 mt-1">{activeClassName}</p>
+                                </CardContent></Card>
+                                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Attendance · term</p>
+                                    <p className="text-xl font-black text-slate-900 mt-0.5">{attendanceStats.rate !== null ? `${attendanceStats.rate}%` : '—'}</p>
+                                    <p className="text-[10px] font-bold text-slate-500 mt-1">{attendanceStats.total ? `${attendanceStats.present + attendanceStats.late} of ${attendanceStats.total} days` : 'No register entries yet'}</p>
+                                </CardContent></Card>
+                                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Average · term</p>
+                                    <p className="text-xl font-black text-slate-900 mt-0.5">{childAverageGrade !== null ? `${childAverageGrade}%` : '—'}</p>
+                                    <p className="text-[10px] font-bold text-slate-500 mt-1">{childAverageGrade === null ? 'No marks yet' : classOverallAverage !== null ? `Class ${classOverallAverage}%` : `${activeChildAssessments.length} marks`}</p>
+                                </CardContent></Card>
+                                <Card className="rounded-2xl border border-slate-100 bg-white"><CardContent className="p-4">
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{childBalance < -0.009 ? 'Paid in advance' : 'Fees balance'}</p>
+                                    <p className={cn("text-xl font-black mt-0.5", childBalance > 0.009 ? "text-rose-600" : "text-emerald-600")}>{money(childBalance)}</p>
+                                    <p className="text-[10px] font-bold text-slate-500 mt-1">{children.length > 1 ? `All children: ${money(totalOutstanding)}${totalOutstanding < -0.009 ? ' credit' : ''}` : (childBalance > 0.009 ? 'Still to pay' : 'Nothing owed')}</p>
+                                </CardContent></Card>
+                            </div>
 
-                                        {/* Profile Meta List */}
-                                        <div className="w-full space-y-3.5 mt-8 pt-6 border-t border-slate-100">
-                                            <div className="flex justify-between items-center text-xs">
-                                                <span className="font-bold text-slate-400 uppercase tracking-wider">Boarding House</span>
-                                                <span className="font-black text-slate-800 uppercase">{houseName}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-xs">
-                                                <span className="font-bold text-slate-400 uppercase tracking-wider">Admission No</span>
-                                                <span className="font-black text-slate-800 font-mono">{activeChild.studentId || activeChild.uid?.slice(0, 8)}</span>
-                                            </div>
-                                            <div className="flex justify-between items-center text-xs">
-                                                <span className="font-bold text-slate-400 uppercase tracking-wider">Class Average</span>
-                                                <Badge className="bg-indigo-50 text-indigo-700 font-black border-none text-[10px] tracking-wide px-3 py-1 rounded-md uppercase">
-                                                    {classOverallAverage !== null ? `${classOverallAverage}%` : '—'}
-                                                </Badge>
-                                            </div>
-                                            <div className="flex justify-between items-center text-xs">
-                                                <span className="font-bold text-slate-400 uppercase tracking-wider">Attendance Rate</span>
-                                                <Badge className={cn("border-none text-[10px] font-black tracking-wide px-3 py-1 rounded-md uppercase", 
-                                                    attendanceStats.rate === null ? "bg-slate-100 text-slate-500" :
-                                                    attendanceStats.rate >= 90 ? "bg-emerald-50 text-emerald-700" :
-                                                    attendanceStats.rate >= 80 ? "bg-amber-50 text-amber-700" :
-                                                    "bg-rose-50 text-rose-700"
-                                                )}>
-                                                    {attendanceStats.rate !== null ? `${attendanceStats.rate}%` : '—'}
-                                                </Badge>
-                                            </div>
+                            {/* Needs your attention */}
+                            <Card className="rounded-3xl border border-slate-100 bg-white">
+                                <CardHeader className="pb-2">
+                                    <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800">Needs your attention · {activeChild.firstName}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-2">
+                                    {attentionItems.length === 0 ? (
+                                        <p className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-2xl p-4">All good — nothing needs your attention right now.</p>
+                                    ) : attentionItems.map((it, i) => (
+                                        <div key={i} className={cn("flex items-center justify-between gap-3 p-3 rounded-2xl border",
+                                            it.tone === 'red' ? "bg-rose-50 border-rose-100" : it.tone === 'amber' ? "bg-amber-50 border-amber-100" : "bg-sky-50 border-sky-100")}>
+                                            <p className={cn("text-xs font-bold", it.tone === 'red' ? "text-rose-800" : it.tone === 'amber' ? "text-amber-800" : "text-sky-800")}>{it.text}</p>
+                                            {it.action ? (it.action.href
+                                                ? <Link href={it.action.href} className="text-[11px] font-black text-indigo-700 shrink-0">{it.action.label} →</Link>
+                                                : <button onClick={() => setActiveTab(it.action!.tab as any)} className="text-[11px] font-black text-indigo-700 shrink-0">{it.action.label} →</button>) : null}
                                         </div>
-                                    </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Latest marks */}
+                                <Card className="rounded-3xl border border-slate-100 bg-white">
+                                    <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                                        <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800">Latest marks</CardTitle>
+                                        <Link href="/dashboard/my-grades" className="text-[11px] font-black text-indigo-700">All grades →</Link>
+                                    </CardHeader>
+                                    <CardContent className="space-y-2">
+                                        {activeChildAssessments.length === 0 ? (
+                                            <p className="text-xs text-slate-400 font-bold py-4 text-center">No marks recorded {termLabel} yet.</p>
+                                        ) : activeChildAssessments.slice(0, 5).map((a: any) => {
+                                            const max = Number(a.maxScore) || 100;
+                                            const pct = Math.round(((Number(a.score) || 0) / max) * 100);
+                                            const sub = subjects?.find((x: any) => x.id === a.subjectId);
+                                            return (
+                                                <div key={a.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                    <div className="min-w-0">
+                                                        <p className="text-xs font-black text-slate-800 truncate">{sub?.name || a.subjectName || 'Subject'}</p>
+                                                        <p className="text-[10px] text-slate-500 truncate">{a.assessmentName || a.assessmentType || 'Assessment'}</p>
+                                                    </div>
+                                                    <span className={cn("text-xs font-black shrink-0", pct >= 50 ? "text-emerald-700" : "text-rose-600")}>{Number(a.score) || 0}/{max} · {pct}%</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </CardContent>
                                 </Card>
 
-                                {/* Quick Summary Metric Grid */}
-                                <div className="lg:col-span-2 space-y-8">
-                                    <div className="grid gap-6 md:grid-cols-2">
-                                        {/* Current Average */}
-                                        <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                            <div className="p-4 bg-indigo-50 text-indigo-650 rounded-2xl">
-                                                <BookOpen className="h-6 w-6" />
+                                {/* Latest notices */}
+                                <Card className="rounded-3xl border border-slate-100 bg-white">
+                                    <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                                        <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800">School notices</CardTitle>
+                                        <button onClick={() => setActiveTab('notices')} className="text-[11px] font-black text-indigo-700">All notices →</button>
+                                    </CardHeader>
+                                    <CardContent className="space-y-2">
+                                        {(announcements || []).length === 0 ? (
+                                            <p className="text-xs text-slate-400 font-bold py-4 text-center">No notices from the school yet.</p>
+                                        ) : (announcements || []).slice(0, 3).map((a: any) => (
+                                            <div key={a.id} className="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                                                <p className="text-xs font-black text-slate-800">{a.title}</p>
+                                                <p className="text-[11px] text-slate-500 line-clamp-2 mt-0.5">{a.content}</p>
+                                                <p className="text-[9px] text-slate-400 font-bold mt-1">{a.publishedAt?.toDate ? formatDistanceToNow(a.publishedAt.toDate(), { addSuffix: true }) : ''}</p>
                                             </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Average Score</p>
-                                                <h4 className="text-2xl font-black text-slate-800 italic">{childAverageGrade !== null ? `${childAverageGrade}%` : '—'}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{childAverageGrade !== null ? `${activeChildAssessments.length} mark${activeChildAssessments.length === 1 ? '' : 's'} · ${termLabel}` : `No marks yet · ${termLabel}`}</p>
-                                            </div>
-                                        </Card>
-
-                                        {/* Class Position */}
-                                        <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                            <div className="p-4 bg-purple-50 text-purple-650 rounded-2xl">
-                                                <TrendingUp className="h-6 w-6" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Class Average</p>
-                                                <h4 className="text-2xl font-black text-slate-800">{classOverallAverage !== null ? `${classOverallAverage}%` : '—'}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{activeClassName} · {termLabel}</p>
-                                            </div>
-                                        </Card>
-
-                                        {/* Attendance Rate */}
-                                        <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                            <div className="p-4 bg-emerald-50 text-emerald-650 rounded-2xl">
-                                                <CalendarCheck className="h-6 w-6" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Current Attendance</p>
-                                                <h4 className="text-2xl font-black text-slate-800">{attendanceStats.rate !== null ? `${attendanceStats.rate}%` : '—'}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{attendanceStats.total ? `${attendanceStats.present + attendanceStats.late} of ${attendanceStats.total} days this term` : 'No register entries yet this term'}</p>
-                                            </div>
-                                        </Card>
-
-                                        {/* Fees Balance */}
-                                        <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                            <div className="p-4 bg-rose-50 text-rose-650 rounded-2xl">
-                                                <Wallet className="h-6 w-6" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">{childBalance < 0 ? 'Fees Paid in Advance' : 'Fees Outstanding Balance'}</p>
-                                                <h4 className={cn("text-2xl font-black", childBalance > 0 ? "text-rose-600" : "text-emerald-600")}>GH₵ {Math.abs(childBalance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">{activeChild?.firstName}{children.length > 1 ? ` · all ${children.length} children: GH₵ ${totalOutstanding.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}${totalOutstanding < 0 ? ' credit' : ''}` : ''}</p>
-                                            </div>
-                                        </Card>
-
-                                        {/* Assignments Due */}
-                                        <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                            <div className="p-4 bg-sky-50 text-sky-650 rounded-2xl">
-                                                <CheckSquare className="h-6 w-6" />
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Assignments Due</p>
-                                                <h4 className={cn("text-2xl font-black", assignmentsDueCount > 0 ? "text-amber-600" : "text-slate-800")}>
-                                                    {assignmentsDueCount} Pending
-                                                </h4>
-                                                <p className="text-[9px] font-bold text-slate-500 uppercase">Tasks awaiting submission</p>
-                                            </div>
-                                        </Card>
-
-                                        {/* Recent Achievement */}
-                                        <Card className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm flex items-center gap-5 hover:scale-[1.02] transition-transform duration-300">
-                                            <div className="p-4 bg-amber-50 text-amber-650 rounded-2xl">
-                                                <span className="text-2xl">{recentSticker ? recentSticker.emoji : '🏆'}</span>
-                                            </div>
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Recent Achievement</p>
-                                                <h4 className="text-base font-black text-slate-800 uppercase tracking-tight line-clamp-1">{recentSticker ? recentSticker.name : 'No Badges Earned Yet'}</h4>
-                                                <p className="text-[9px] font-bold text-slate-450 uppercase">Badges cabinet: {activeChildStickerCount} earned</p>
-                                            </div>
-                                        </Card>
-                                    </div>
-
-                                    {/* Action Links & Tips Panel */}
-                                    <div className="bg-slate-50 border border-slate-150 rounded-[2rem] p-8 flex flex-col md:flex-row justify-between gap-6">
-                                        <div className="space-y-2">
-                                            <h4 className="font-black text-slate-800 uppercase text-sm tracking-tight flex items-center gap-1.5">
-                                                <Info className="h-4 w-4 text-indigo-600" /> Coaching Insight
-                                            </h4>
-                                            <p className="text-xs text-slate-500 leading-relaxed font-semibold">
-                                                {childAverageGrade !== null
-                                                    ? `${activeChild.firstName}'s average this term is ${childAverageGrade}%${classOverallAverage !== null ? ` (class average ${classOverallAverage}%)` : ''}. The class position is shown on the end-of-term report card.`
-                                                    : `No marks have been recorded for ${activeChild.firstName} this term yet.`}{assignmentsDueCount > 0 ? ` ${assignmentsDueCount} task${assignmentsDueCount === 1 ? '' : 's'} still to submit.` : ''}
-                                            </p>
-                                        </div>
-                                        <Button asChild size="sm" className="bg-indigo-650 hover:bg-indigo-750 text-white font-black rounded-xl text-xs uppercase h-11 px-5 self-start md:self-center shrink-0">
-                                            <Link href="/dashboard/my-reports">Report Cards</Link>
-                                        </Button>
-                                    </div>
-                                </div>
+                                        ))}
+                                    </CardContent>
+                                </Card>
                             </div>
-                        ) : (
-                            <p className="text-slate-400 italic text-center py-12 text-xs font-black uppercase">No active children found to load overview.</p>
+
+                            {/* Small profile line */}
+                            <div className="flex flex-wrap gap-x-6 gap-y-1 text-[11px] font-semibold text-slate-500 px-1">
+                                <span>Admission no: <b className="text-slate-700">{activeChild.studentId || activeChild.admissionNo || activeChild.admissionNumber || '—'}</b></span>
+                                <span>Class: <b className="text-slate-700">{activeClassName}</b></span>
+                                {activeChild.house ? <span>House: <b className="text-slate-700">{activeChild.house}</b></span> : null}
+                                {activeChildStickerCount > 0 ? <span>Badges: <b className="text-slate-700">{activeChildStickerCount}{recentSticker ? ` (latest: ${recentSticker.emoji} ${recentSticker.name})` : ''}</b></span> : null}
+                            </div>
+                        </>
                         )}
                     </div>
                 )}
