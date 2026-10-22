@@ -21,6 +21,13 @@
  *   node restamp-term-bills.js --school <id> --future --type tuition  only bills whose fee type contains "tuition"
  *   node restamp-term-bills.js --school <id> --future --apply         moves the listed bills to the current term
  *
+ * BILLED BEFORE THE TERM START DATE: if the school raised this term's fees before the start date it set
+ * (e.g. tuition billed in August for a term starting 7 Sept), those bills fall before the cut-off and are
+ * skipped. Move the cut-off back with --since, check the report (it shows the months and descriptions),
+ * then apply — use --type to limit it to tuition if only that was billed early:
+ *   node restamp-term-bills.js --school <id> --since 2026-08-01 --type tuition
+ *   node restamp-term-bills.js --school <id> --since 2026-08-01 --type tuition --apply
+ *
  * Never touches: archived bills, carried-forward balances (Arrears/Credit Brought Forward, opening
  * balances), bills dated before the term start, or bills already stamped with the current term.
  * Payments on re-stamped bills get the same term. Then run node rebuild-dashboard-summaries.js.
@@ -34,6 +41,8 @@ const args = process.argv.slice(2);
 const APPLY = args.includes('--apply');
 const schoolArg = args.includes('--school') ? args[args.indexOf('--school') + 1] : null;
 const FUTURE = args.includes('--future');
+const sinceArg = args.includes('--since') ? String(args[args.indexOf('--since') + 1] || '') : '';
+if (sinceArg && !/^\d{4}-\d{2}-\d{2}$/.test(sinceArg)) { console.error('--since must be a date like 2026-08-01'); process.exit(1); }
 const typeFilter = args.includes('--type') ? String(args[args.indexOf('--type') + 1] || '').toLowerCase() : '';
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
@@ -65,13 +74,17 @@ async function run(schoolId) {
   const current = currentTermFromProfile(profile);
   const name = profile.name || schoolId;
   if (!current) { console.log(`\n${name} [${schoolId}]: no term set in School Profile — skipped`); return; }
-  const startMs = profile.termStartDate ? new Date(`${profile.termStartDate}T00:00:00`).getTime() : 0;
+  const termStartMs = profile.termStartDate ? new Date(`${profile.termStartDate}T00:00:00`).getTime() : 0;
+  // --since moves the cut-off earlier (fees raised before the term start date). Never later than the start.
+  const startMs = sinceArg ? Math.min(new Date(`${sinceArg}T00:00:00`).getTime(), termStartMs || Infinity) : termStartMs;
   if (!startMs) { console.log(`\n${name} [${schoolId}]: no Term Start Date in School Profile — skipped (set it first)`); return; }
 
   const snap = await db.collection('financialRecords').where('schoolId', '==', schoolId).get();
   const fixes = [];
   const byFrom = {};
   const details = [];
+  const byMonth = {};
+  const byDesc = {};
   snap.docs.forEach(d => {
     const r = d.data();
     if (r.isArchived === true || isCarried(r)) return;
@@ -87,6 +100,11 @@ async function run(schoolId) {
       details.push(`    ${st.termId}  ${new Date(dated).toISOString().slice(0, 10)}  ${(r.studentName || r.studentId || '').slice(0, 26).padEnd(26)} ${(r.type || 'Other').slice(0, 22).padEnd(22)} GH₵${(Number(r.billedAmount) || 0).toFixed(2).padStart(9)}  paid ${paid.toFixed(2).padStart(9)}  ${(r.description || '').slice(0, 40)}`);
     }
     const from = st ? st.termId : '(no term)';
+    const month = new Date(dated).toISOString().slice(0, 7);
+    byMonth[month] = byMonth[month] || { count: 0, billed: 0 };
+    byMonth[month].count++; byMonth[month].billed += Number(r.billedAmount) || 0;
+    const desc = String(r.description || r.type || '').trim().slice(0, 60) || '(no description)';
+    byDesc[desc] = (byDesc[desc] || 0) + 1;
     const k = `${from} | ${r.type || 'Other'}`;
     byFrom[k] = byFrom[k] || { count: 0, billed: 0 };
     byFrom[k].count++;
@@ -97,6 +115,11 @@ async function run(schoolId) {
   console.log(`\n${name} [${schoolId}]  current term ${current.termId} (starts ${profile.termStartDate})${FUTURE ? '  — FUTURE-TERM bills' : ''}`);
   if (!fixes.length) { console.log(FUTURE ? '  no bills filed under a later term' : '  nothing to re-stamp'); return; }
   Object.entries(byFrom).sort().forEach(([k, v]) => console.log(`  ${k.padEnd(45)} ${String(v.count).padStart(6)} bills  GH₵${v.billed.toFixed(2)}`));
+  if (sinceArg) console.log(`  (cut-off moved back to ${new Date(startMs).toISOString().slice(0, 10)} with --since; term start is ${profile.termStartDate})`);
+  console.log('  by month dated:');
+  Object.entries(byMonth).sort().forEach(([m, v]) => console.log(`    ${m}  ${String(v.count).padStart(6)} bills  GH₵${v.billed.toFixed(2)}`));
+  console.log('  most common descriptions:');
+  Object.entries(byDesc).sort((a, b) => b[1] - a[1]).slice(0, 12).forEach(([d, c]) => console.log(`    ${String(c).padStart(6)} × ${d}`));
   if (FUTURE) {
     console.log('\n    filed as     dated       pupil                      fee type               billed           paid  description');
     details.sort().forEach(l => console.log(l));
