@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateNextReceiptId, sendPaymentNotificationToParent } from '@/lib/student-utils';
+import { reallocateExistingOverpayments } from '@/lib/credit-allocation';
 import { sendBulkPaymentSMSNotificationAction } from '@/app/actions/sms';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
@@ -372,6 +373,20 @@ export default function BulkDailyReceiptsPage() {
             }
 
             await commitGroup();
+
+            // Paid MORE than a bill's balance? Spread the extra onto the same pupil's other unpaid bills (the
+            // same rule as Record Payment). Whatever cannot be placed stays as the pupil's credit.
+            const overpaidStudents = Array.from(new Set(billsToPay
+                .filter(b => Number(paymentData[b.id]) > (b.billedAmount - (b.amountPaid || 0) - (b.waiverAmount || 0)) + 0.009)
+                .map(b => String(b.studentId || ''))
+                .filter(Boolean)));
+            for (const sid of overpaidStudents) {
+                try {
+                    await reallocateExistingOverpayments({ firestore, schoolId, studentKeys: [sid], performedBy: user.displayName || user.email || 'Accountant' });
+                } catch (spreadErr) {
+                    console.warn('Could not spread extra payment for', sid, spreadErr);
+                }
+            }
 
             // Dispatch automated SMS receipts via server action for all processed payments
             const currentToken = await user.getIdToken().catch(() => undefined);

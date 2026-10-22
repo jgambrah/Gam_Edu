@@ -56,8 +56,12 @@ export function UnbilledStudentsPanel({ schoolId }: { schoolId?: string | null }
 
     const load = useCallback(async (force = false) => {
         if (!firestore || !schoolId) return;
+        setState('loading');
+        // Never spin for ever: give up after 20 s (one attempt — no automatic retries, so no extra reads).
+        let timer: any;
+        const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error('timeout')), 20000); });
         try {
-            const [profileArr, rosterArr, billingArr] = await Promise.all([
+            const [profileArr, rosterArr, billingArr] = await Promise.race([Promise.all([
                 readOnceCached(`unbilled:profile:${schoolId}`, async () => {
                     const s = await getDoc(doc(firestore, 'schools', schoolId));
                     let p: any = s.exists() ? s.data() : null;
@@ -70,7 +74,8 @@ export function UnbilledStudentsPanel({ schoolId }: { schoolId?: string | null }
                 }, { ttlMs: TEN_MIN, force }),
                 readOnceCached(`unbilled:roster:${schoolId}`, async () => { const s = await getDoc(doc(firestore, 'studentRoster', schoolId)); return [s.exists() ? s.data() : null]; }, { ttlMs: TEN_MIN, force }),
                 readOnceCached(`unbilled:billing:${schoolId}`, async () => { const s = await getDoc(doc(firestore, 'termBilling', schoolId)); return [s.exists() ? s.data() : null]; }, { ttlMs: TEN_MIN, force }),
-            ]);
+            ]), timeout]);
+            clearTimeout(timer);
             const profile: any = profileArr[0];
             const roster: any = rosterArr[0];
             const billing: any = billingArr[0];
@@ -107,6 +112,7 @@ export function UnbilledStudentsPanel({ schoolId }: { schoolId?: string | null }
             setList(out);
             setState('ready');
         } catch (e) {
+            clearTimeout(timer);
             console.warn('Unbilled check failed:', e);
             setState('error');
         }
@@ -157,7 +163,7 @@ export function UnbilledStudentsPanel({ schoolId }: { schoolId?: string | null }
     else if (state === 'preparing') line = 'Being prepared — available after the next full finance update.';
     else if (state === 'noterm') line = 'Set the current academic year and term in School Profile to use this check.';
     else if (state === 'toolarge') line = 'Not available for a school this large yet.';
-    else if (state === 'error') line = 'Could not check right now.';
+    else if (state === 'error') line = 'Could not check right now — tap Retry.';
     else if (count === 0) line = `Every active pupil has a Tuition bill for ${termName}, and every new pupil an Admission Fee.`;
     else {
         const parts: string[] = [];
@@ -179,6 +185,7 @@ export function UnbilledStudentsPanel({ schoolId }: { schoolId?: string | null }
                     </div>
                 </div>
                 {count > 0 && <Button size="sm" onClick={() => setOpen(true)}>View</Button>}
+                {state === 'error' && <Button size="sm" variant="outline" onClick={() => load(true)}>Retry</Button>}
             </Card>
 
             <Dialog open={open} onOpenChange={setOpen}>

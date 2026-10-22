@@ -2189,6 +2189,16 @@ function RecordPaymentDialog({ record, open, setOpen, onUpdate }: { record: Fina
 
             // Payment left money over with no bill to absorb it (e.g. prepaid the week): mark the student as
             // holding credit so the next daily canteen/transport bills are paid from it automatically.
+            // One save pays at most 12 other bills; if extra is still left, keep spreading it onto the
+            // pupil's remaining unpaid bills (in further saves) before holding it as credit.
+            if (leftoverCredit > 0.009 && record.studentId) {
+                try {
+                    const res = await reallocateExistingOverpayments({ firestore, schoolId, studentKeys: [record.studentId], performedBy: user.displayName || user.email || 'Accountant' });
+                    leftoverCredit = Math.max(0, Math.min(leftoverCredit, res.remainingCredit));
+                } catch (spreadErr) {
+                    console.warn('Could not spread the rest of the payment:', spreadErr);
+                }
+            }
             if (leftoverCredit > 0.009 && record.studentId) {
                 try {
                     await updateDoc(doc(firestore, 'students', record.studentId), {

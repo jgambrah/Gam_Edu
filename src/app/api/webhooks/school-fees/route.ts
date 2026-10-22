@@ -5,6 +5,7 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { NotificationService } from '@/lib/notification-service';
 import { termStampOfRecord } from '@/lib/term';
 import { getSchoolSecrets } from '@/lib/school-secrets';
+import { applyHeldCreditAfterBillingServer } from '@/lib/credit-allocation-server';
 
 /**
  * Initializes and returns the Firebase Admin App instance.
@@ -175,6 +176,23 @@ export async function POST(req: NextRequest) {
         if (alreadyProcessed) {
           console.log(`Webhook: payment ${data.reference} was already recorded; ignoring repeat delivery.`);
           return NextResponse.json({ status: 'already_processed' }, { status: 200 });
+        }
+
+        // D2. A parent who paid MORE than the bill: spread the extra onto the pupil's other unpaid bills
+        // (same rule as payments at the cash desk). What cannot be placed stays as the pupil's credit.
+        try {
+          const evSnap = await eventRef.get();
+          const appliedId = String(evSnap.data()?.appliedToRecordId || recordId);
+          const billSnap = await db.collection('financialRecords').doc(appliedId).get();
+          const b: any = billSnap.data() || {};
+          const bal = (Number(b.billedAmount) || 0) - (Number(b.amountPaid) || 0) - (Number(b.waiverAmount) || 0);
+          if (bal < -0.009) {
+            const st = await db.collection('students').doc(String(studentId)).get();
+            const sd: any = st.exists ? st.data() : {};
+            await applyHeldCreditAfterBillingServer(db, schoolId, { ...sd, id: st.id, uid: sd.uid || studentId, hasAccountCredit: true });
+          }
+        } catch (spreadErr) {
+          console.warn('Webhook: could not spread extra payment:', spreadErr);
         }
 
         // E. Send DM notification to parents asynchronously
