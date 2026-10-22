@@ -731,7 +731,7 @@ export function ExecutiveDirectorCockpit({
         tag: slaTag,
         color: slaColor,
         actionLabel: 'Audit SLA Compliance',
-        time: 'Term 2 SLA'
+        time: 'This term'
       },
       {
         id: 'safeguarding-1',
@@ -1116,7 +1116,7 @@ export function ExecutiveDirectorCockpit({
               Operational Health
             </Badge>
             <span className="text-slate-600 font-medium truncate">
-              Pantry & Stores: Inventory healthy • Next restock cycle in 5 days
+              Pantry & Stores: open the audit to see current stock levels
             </span>
           </div>
           <button 
@@ -1482,12 +1482,12 @@ export function ExecutiveDirectorCockpit({
               </div>
               <div className="border-t border-slate-100 pt-1.5 space-y-0.5 text-[10px]">
                 <div className="flex items-center justify-between font-medium text-slate-600">
-                  <span>Target Benchmark:</span>
-                  <span className="font-semibold text-slate-800">92.0% API</span>
+                  <span>Target:</span>
+                  <span className="font-semibold text-slate-800">92% average</span>
                 </div>
                 <div className="flex items-center justify-between font-medium text-slate-600">
                   <span>Lead Subject:</span>
-                  <span className="font-semibold text-indigo-700">{telemetry.topPerformingSubject ? `${telemetry.topPerformingSubject} (${telemetry.topPerformingScore}%)` : '—'}</span>
+                  <span className="font-semibold text-indigo-700">{telemetry.topPerformingSubject && Number(telemetry.topPerformingScore) > 0 ? `${telemetry.topPerformingSubject} (${telemetry.topPerformingScore}%)` : '—'}</span>
                 </div>
               </div>
             </div>

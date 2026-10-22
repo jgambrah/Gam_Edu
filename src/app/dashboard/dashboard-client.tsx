@@ -3873,14 +3873,13 @@ function DirectorDashboard({
                 { label: activeDomain.label },
               ]}
               stats={
+                // Real figures only (these used to fall back to made-up numbers such as "253 +4 New").
                 activeTab === 'academics' ? [
-                  { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
-                  { label: 'Velocity', value: '+3.2%', change: 'Growth' },
-                  { label: 'Benchmark', value: '75%', change: 'School Avg' },
+                  { label: 'Active Term', value: schoolSettings?.currentTerm || schoolSettings?.term || '—' },
                 ] : [
-                  { label: 'Active Term', value: schoolSettings?.currentTerm || 'Term 2' },
-                  { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length}` : '253', change: '+4 New' },
-                  { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '96.2%', change: '+1.4%' },
+                  { label: 'Active Term', value: schoolSettings?.currentTerm || schoolSettings?.term || '—' },
+                  { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length}` : (summaryStudentActive ? `${summaryStudentActive}` : '—') },
+                  { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '—' },
                 ]
               }
               actions={
