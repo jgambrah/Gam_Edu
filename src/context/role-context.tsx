@@ -163,8 +163,23 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         const userRef = doc(firestore, 'users', currentUser.uid);
         const userSnap = await getDoc(userRef);
         if (userSnap.exists()) {
-          const data = userSnap.data();
+          let data: any = userSnap.data();
           if (data?.role) {
+            // users/{uid} holds only the role and school. A parent's name and linked children (studentIds)
+            // live on parents/{uid}, a pupil's details on students/{uid}: merge them in, or the parent portal
+            // shows "Welcome, Parent" and no children.
+            const detailCol = data.role === 'Parent' ? 'parents' : data.role === 'Student' ? 'students' : null;
+            if (detailCol) {
+              try {
+                const detailSnap = await getDoc(doc(firestore, detailCol, currentUser.uid));
+                if (detailSnap.exists()) {
+                  const detail: any = detailSnap.data();
+                  data = { ...data, ...detail, role: data.role, schoolId: detail.schoolId || data.schoolId };
+                }
+              } catch (err) {
+                console.warn('[RoleContext] Could not load profile details:', err);
+              }
+            }
             if (isCancelled) return;
             setRole(data.role as Role);
             setProfile(data);
