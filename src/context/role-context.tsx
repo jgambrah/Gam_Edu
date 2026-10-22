@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { useFirestore, useUser } from '@/firebase';
 import { doc, getDoc, setDoc, query, collection, where, getDocs } from 'firebase/firestore';
 import { User } from 'firebase/auth';
+import { storedSchoolFor, clearSessionForAccountChange } from '@/lib/session-school';
+import { invalidateOnceCache } from '@/lib/firestore-once';
 
 type Role = 'Director' | 'Administrator' | 'Teacher' | 'Accountant' | 'Student' | 'Parent' | 'Librarian' | 'Cook' | 'Transport Staff' | 'Cleaner' | 'Security Officer' | 'Secretary' | 'Receptionist' | null;
 
@@ -106,9 +108,8 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
             }
           }
 
-          const storedSchoolId = typeof window !== 'undefined'
-            ? (localStorage.getItem('gam_school_id') || localStorage.getItem('selected_school_id'))
-            : null;
+          // Only a school this same account chose (not one left behind by a school login in this browser).
+          const storedSchoolId = storedSchoolFor(currentUser.uid);
           const finalSchoolId = isMercyAdminUser ? MERCY_SCHOOL_ID : (staffData?.schoolId || storedSchoolId || 'oHr3BrGdK2eS5MQ5zmZU');
 
           // Ensure users/{uid} and staff/{uid} exist in Firestore so security rules and backend recognize the admin immediately
@@ -355,12 +356,21 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     if (isUserLoading) {
       setLoading(true);
     } else if (user) {
+      // A different account than the one cached in this tab: drop its role, profile and school first.
+      let cachedUid: string | null = null;
+      try { cachedUid = sessionStorage.getItem('gam_cached_uid'); } catch {}
+      if (cachedUid && cachedUid !== user.uid) {
+        clearSessionForAccountChange();
+        invalidateOnceCache('');
+        setRole(null);
+        setProfile(null);
+      }
+      try { sessionStorage.setItem('gam_cached_uid', user.uid); } catch {}
       fetchRole(user);
     } else {
-      try {
-        sessionStorage.removeItem('gam_cached_role');
-        sessionStorage.removeItem('gam_cached_profile');
-      } catch {}
+      // Signed out: forget the school, role and cached data of that account.
+      clearSessionForAccountChange();
+      invalidateOnceCache('');
       setRole(null);
       setProfile(null);
       setLoading(false);

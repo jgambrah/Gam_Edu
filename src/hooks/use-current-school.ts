@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { useRef } from 'react';
+import { storedSchoolFor, rememberSchool } from '@/lib/session-school';
 
 const SUPER_ADMIN_EMAIL = 'jamesgambrah@gmail.com';
 const SUPER_ADMIN_UID = 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
@@ -19,24 +21,21 @@ export function useCurrentSchool() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
+  // Start from the school remembered for THIS account only (never one left by another login).
   const [schoolId, setSchoolIdState] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('gam_school_id') || localStorage.getItem('selected_school_id') || null;
-    }
-    return null;
+    // Before Firebase has confirmed the user, trust only the account last seen in this tab.
+    let lastUid: string | null = null;
+    try { lastUid = typeof window !== 'undefined' ? sessionStorage.getItem('gam_cached_uid') : null; } catch {}
+    return storedSchoolFor(user?.uid || lastUid);
   });
+  const uidRef = useRef<string | null>(user?.uid || null);
+  uidRef.current = user?.uid || null;
   const [loading, setLoading] = useState<boolean>(true);
 
   // Synchronized setter that broadcasts changes
   const setSchoolId = useCallback((newId: string | null) => {
     if (typeof window !== 'undefined') {
-      if (newId) {
-        localStorage.setItem('gam_school_id', newId);
-        localStorage.setItem('selected_school_id', newId);
-      } else {
-        localStorage.removeItem('gam_school_id');
-        localStorage.removeItem('selected_school_id');
-      }
+      rememberSchool(uidRef.current, newId);
       window.dispatchEvent(new CustomEvent('gam_school_change', { detail: { schoolId: newId } }));
     }
     setSchoolIdState(newId);
@@ -81,10 +80,9 @@ export function useCurrentSchool() {
           user.email?.toLowerCase() === SUPER_ADMIN_EMAIL ||
           user.uid === SUPER_ADMIN_UID;
 
-        // 1. If stored schoolId is already valid in localStorage, keep it
-        const stored = typeof window !== 'undefined'
-          ? (localStorage.getItem('gam_school_id') || localStorage.getItem('selected_school_id'))
-          : null;
+        // 1. The school remembered for THIS account (one left by a different login is ignored)
+        const stored = storedSchoolFor(user.uid);
+        if (!stored) setSchoolIdState(null);
 
         if (stored) {
           setSchoolIdState(stored);
