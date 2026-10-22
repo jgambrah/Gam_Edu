@@ -42,6 +42,15 @@ exports.onBillChangeForReview = (0, firestore_1.onDocumentWrittenWithAuthContext
             await recordAttendanceCancellation(event, schoolId, before);
         return;
     }
+    // Server code (scripts, term stamping, rollovers, online payments) is never a staff "edit".
+    const authTypeEarly = String(event.authType || '');
+    if (authTypeEarly === 'service_account' || authTypeEarly === 'system')
+        return;
+    // Only DELIBERATE changes by a person are reviewed: a save of the "Edit Record" dialog (it stamps a new
+    // lastEditId each time) or a deletion. Everything else that touches a bill — payments, credit moves,
+    // attendance billing, status/term housekeeping — is ordinary bookkeeping and is not listed.
+    if (after && (!after.lastEditId || after.lastEditId === before.lastEditId))
+        return;
     const changes = {};
     let kind = 'edit';
     if (!after) {
@@ -58,7 +67,7 @@ exports.onBillChangeForReview = (0, firestore_1.onDocumentWrittenWithAuthContext
         const fb = r2(num(before.billedAmount)), ta = r2(num(after.billedAmount));
         if (Math.abs(fb - ta) > 0.009)
             changes.billedAmount = { from: fb, to: ta };
-        for (const k of ['type', 'description', 'studentId', 'termId', 'academicYear', 'term']) {
+        for (const k of ['type', 'description', 'studentId', 'academicYear', 'term']) {
             if (((_e = before[k]) !== null && _e !== void 0 ? _e : null) !== ((_f = after[k]) !== null && _f !== void 0 ? _f : null))
                 changes[k] = { from: (_g = before[k]) !== null && _g !== void 0 ? _g : null, to: (_h = after[k]) !== null && _h !== void 0 ? _h : null };
         }
