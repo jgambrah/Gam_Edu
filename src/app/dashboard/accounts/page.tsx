@@ -5880,55 +5880,6 @@ export default function AccountsPage() {
                                     </div>
                                 </div>
 
-                                {/* 1-Read Pre-Aggregated Summary Notice Banner */}
-                                {!isLedgerLoaded && preAggregatedBilling.hasData && (
-                                    <div className="mt-4 p-4 rounded-xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 via-blue-50/40 to-slate-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs shadow-xs">
-                                        <div className="flex items-center gap-2.5">
-                                            <div className="h-8 w-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                                                <Zap className="h-4 w-4" />
-                                            </div>
-                                            <div>
-                                                <p className="font-bold text-slate-800 flex items-center gap-2">
-                                                    <span>Pre-Aggregated School Financials</span>
-                                                    <Badge variant="outline" className="text-[10px] bg-indigo-100/80 text-indigo-800 border-indigo-200">
-                                                        ⚡ 1 Firestore Read Active
-                                                    </Badge>
-                                                </p>
-                                                <p className="text-[11px] text-slate-500 mt-0.5">
-                                                    Gross revenue and debt totals are loaded from instant server aggregation. Load full school ledger for student-level aged debtor calls or classroom pace.
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <Button
-                                            size="sm"
-                                            onClick={handleRequestFullLedger}
-                                            disabled={isLoadingRecords || isUpdatingQuota || (isQuotaExhausted && ledgerMode !== 'full-school')}
-                                            className={cn(
-                                                "h-9 px-4 rounded-lg shrink-0 text-xs shadow-xs font-bold transition-all",
-                                                isQuotaExhausted && ledgerMode !== 'full-school'
-                                                    ? "bg-slate-200 text-slate-500 hover:bg-slate-200 cursor-not-allowed border border-slate-300"
-                                                    : "bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
-                                            )}
-                                        >
-                                            {isLoadingRecords || isUpdatingQuota ? (
-                                                <>
-                                                    <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
-                                                    <span>Loading Full Ledger...</span>
-                                                </>
-                                            ) : isQuotaExhausted && ledgerMode !== 'full-school' ? (
-                                                <>
-                                                    <ShieldAlert className="h-3.5 w-3.5 mr-1.5 text-amber-600" />
-                                                    <span>Daily Limit Reached (0/{userMaxAudits})</span>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Database className="h-3.5 w-3.5 mr-1.5" />
-                                                    <span>Load Full School Ledger ({userAuditsRemaining}/{userMaxAudits} left)</span>
-                                                </>
-                                            )}
-                                        </Button>
-                                    </div>
-                                )}
                             </TabsContent>
 
                             <TabsContent value="debtors" className="mt-0 space-y-4 animate-in fade-in-50">

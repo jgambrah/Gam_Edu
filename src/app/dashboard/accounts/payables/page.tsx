@@ -3,7 +3,8 @@
 import { useState, useMemo } from 'react';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, updateDoc, query, where } from 'firebase/firestore';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -38,20 +39,23 @@ function PayableForm({ setOpen, onBillAdded }: { setOpen: (open: boolean) => voi
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => firestore ? collection(firestore, 'vendors') : null, [firestore]));
+    const { schoolId } = useCurrentSchool();
+    // This school's vendors only (this page used to list every school's vendors).
+    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'vendors'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
 
     const form = useForm<z.infer<typeof payableSchema>>({
         resolver: zodResolver(payableSchema),
     });
 
     async function onSubmit(values: z.infer<typeof payableSchema>) {
-        if (!firestore) return;
+        if (!firestore || !schoolId) return;
         setIsSubmitting(true);
         try {
             await addDocumentNonBlocking(collection(firestore, 'accountsPayable'), {
                 ...values,
                 status: 'Unpaid',
                 createdAt: serverTimestamp(),
+                schoolId,
             });
             // TODO: addJournalEntry
             toast({ title: 'Success', description: 'Bill has been recorded.' });
@@ -148,9 +152,11 @@ export default function AccountsPayablePage() {
 
     const canAccess = role ? ['Administrator', 'Director', 'Accountant'].includes(role) : false;
 
-    const payablesQuery = useMemoFirebase(() => firestore ? collection(firestore, 'accountsPayable') : null, [firestore]);
+    const { schoolId } = useCurrentSchool();
+    // This school's bills and vendors only (the page used to show every school's payables).
+    const payablesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'accountsPayable'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
     const { data: payables, isLoading, forceRefetch } = useCollection<AccountsPayableRecord>(payablesQuery);
-    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => firestore ? collection(firestore, 'vendors') : null, [firestore]));
+    const { data: vendors } = useCollection<Vendor>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'vendors'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
     
     const unpaidBills = useMemo(() => payables?.filter(p => p.status === 'Unpaid'), [payables]);
     const paidBills = useMemo(() => payables?.filter(p => p.status === 'Paid'), [payables]);

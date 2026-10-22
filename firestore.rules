@@ -138,6 +138,10 @@ service cloud.firestore {
     function newDocInMySchool() {
       return isSuperAdmin() || request.resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId();
     }
+    // Reading money records: only people of the same school (queries must filter by schoolId — all do).
+    function readMySchool() {
+      return isSuperAdmin() || (isSignedIn() && (resource == null || resource.data.get('schoolId', '') == getUserSchoolId()));
+    }
     // For deletes (there is no new version of the document to look at).
     function existingDocInMySchool() {
       return isSuperAdmin() || resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId();
@@ -224,8 +228,8 @@ service cloud.firestore {
     }
 
     match /schools/{schoolId} {
-      // Signed-in users read their school by id; only the platform owner can list all schools.
-      allow get: if isSignedIn();
+      // Users read their OWN school; only the platform owner can read or list any school.
+      allow get: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
       allow list: if isSuperAdmin();
       allow write: if isSuperAdmin();
       // A school's own admins edit its profile and website, but never its subscription or AI credit balance
@@ -774,7 +778,7 @@ service cloud.firestore {
         && (request.resource.data.get('status', '') != 'Closed' || resource.data.get('status', '') == 'Closed');
     }
     match /tills/{tillId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow create: if isFinanceStaff() && newDocInMySchool()
         && request.resource.data.get('status', 'Open') == 'Open'
         && request.resource.data.get('directorApproval', {}).get('directorId', null) == null;
@@ -783,7 +787,11 @@ service cloud.firestore {
       allow delete: if isSuperAdmin();
 
       match /transactions/{transactionId} {
-        allow read, get, list: if isSignedIn();
+        // Follow the till's school (the online-payments till may have no till document of its own).
+        allow read: if isSuperAdmin() || (isSignedIn() && (
+          exists(/databases/$(database)/documents/tills/$(tillId))
+            ? get(/databases/$(database)/documents/tills/$(tillId)).data.get('schoolId', '') == getUserSchoolId()
+            : tillId == 'online-' + getUserSchoolId()));
         allow create: if isFinanceStaff() && newDocInMySchool()
           && (request.resource.data.get('type', '') != 'Adjustment' || request.resource.data.get('status', '') == 'Pending Adjustment');
         allow update: if (isReviewDirector() || isSuperAdmin()) && docInMySchool()
@@ -798,7 +806,7 @@ service cloud.firestore {
     }
 
     match /bank_transactions/{transactionId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow create: if isFinanceRole() && newDocInMySchool();
       allow update: if isFinanceRole() && docInMySchool();
       allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
@@ -966,7 +974,7 @@ service cloud.firestore {
     }
 
     match /paymentVouchers/{voucherId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow create: if isFinanceRole() && newDocInMySchool();
       // An over-budget voucher waits for the Director; nobody else can release it.
       allow update: if isFinanceRole() && docInMySchool()
@@ -976,7 +984,7 @@ service cloud.firestore {
     }
 
     match /payment_vouchers/{voucherId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow create: if isFinanceRole() && newDocInMySchool();
       // An over-budget voucher waits for the Director; nobody else can release it.
       allow update: if isFinanceRole() && docInMySchool()
@@ -996,8 +1004,10 @@ service cloud.firestore {
     }
 
     match /accountsPayable/{payableId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
+      allow read: if readMySchool();
+      allow create: if isFinanceRole() && newDocInMySchool();
+      allow update: if isFinanceRole() && docInMySchool();
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
     }
 
     match /accountsReceivable/{receivableId} {
@@ -1065,19 +1075,19 @@ service cloud.firestore {
     }
 
     match /accounts/{accountId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
     match /journal_entries/{entryId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow create: if (isFinanceRole() || isSuperAdmin()) && newDocInMySchool();
       allow update: if false;
       allow delete: if isSuperAdmin(); // correct with a reversing entry; posted entries are never erased
     }
 
     match /budgets/{budgetId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow create, update: if isSignedIn() && (isFinanceStaff() || isAdmin() || isSuperAdmin());
       allow delete: if isSuperAdmin() || isAdmin();
     }
@@ -1089,7 +1099,7 @@ service cloud.firestore {
     }
 
     match /fixed_assets/{assetId} {
-      allow read, get, list: if isSignedIn();
+      allow read: if readMySchool();
       allow write, create, update, delete: if isFinanceStaff() || isAdmin() || isSuperAdmin();
     }
 
