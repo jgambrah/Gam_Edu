@@ -1,16 +1,16 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
+import { currentTermFromProfile } from '@/lib/term';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, limit, documentId, orderBy } from 'firebase/firestore';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { collection, query, where, limit, documentId, orderBy, doc, Timestamp } from 'firebase/firestore';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { format } from 'date-fns';
-import { Loader2, CalendarCheck, Info, CheckCircle2, Clock, XCircle, AlertTriangle } from 'lucide-react';
-import { Label } from '@/components/ui/label';
+import { format, startOfMonth, getDaysInMonth, getDay } from 'date-fns';
+import { Loader2, CalendarCheck, Info, CheckCircle2, Clock, XCircle, AlertTriangle, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
@@ -75,49 +75,64 @@ export default function MyAttendancePage() {
         return students.find((s: any) => s.id === activeChildId || s.uid === activeChildId) || null;
     }, [students, activeChildId]);
 
-    // 4. Fetch attendance logs for selected child
-    const attendanceQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !activeChildId) return null;
+    // 4. The school's current term (start date) — one read of the school profile.
+    const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]));
+    const term = useMemo(() => currentTermFromProfile(schoolProfile), [schoolProfile]);
+    const termStart = useMemo(() => {
+        const raw = schoolProfile?.termStartDate;
+        const d = raw ? new Date(`${String(raw).slice(0, 10)}T00:00:00`) : null;
+        return d && !isNaN(d.getTime()) ? d : null;
+    }, [schoolProfile?.termStartDate]);
+    const [period, setPeriod] = useState<'term' | 'recent'>('term');
+    const usingTerm = period === 'term' && !!termStart;
+    const periodLabel = usingTerm ? (term ? `${term.term} ${term.academicYear}` : 'This term') : 'Last 100 school days';
 
-        return query(
-            collection(firestore, 'attendance'),
-            where('schoolId', '==', schoolId),
-            where('studentId', '==', activeChildId),
-            orderBy('date', 'desc'), // the latest 100 days (it used to be any 100)
-            limit(100)
-        );
-    }, [firestore, schoolId, activeChildId]);
+    // 5. Attendance for the chosen period only (this term by default).
+    // Register entries are filed under the pupil's uid (which can differ from the document id).
+    const attendanceKey = activeChild?.uid || activeChildId;
+    const attendanceQuery = useMemoFirebase(() => {
+        if (!firestore || !schoolId || !attendanceKey) return null;
+        return usingTerm
+            ? query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId), where('studentId', '==', attendanceKey),
+                where('date', '>=', Timestamp.fromDate(termStart!)), orderBy('date', 'desc'), limit(150))
+            : query(collection(firestore, 'attendance'), where('schoolId', '==', schoolId), where('studentId', '==', attendanceKey),
+                orderBy('date', 'desc'), limit(100));
+    }, [firestore, schoolId, attendanceKey, usingTerm, termStart?.getTime()]);
 
     const { data: attendance, isLoading: attendanceLoading } = useCollection<any>(attendanceQuery);
 
-    // 5. Sort newest-first in memory
+    const toDate = (v: any): Date | null => { const d = v?.toDate ? v.toDate() : v ? new Date(v) : null; return d && !isNaN(d.getTime()) ? d : null; };
     const sortedAttendance = useMemo(() => {
         if (!attendance) return [];
-        return [...attendance].sort((a, b) => {
-            const dateA = a.date?.toDate ? a.date.toDate().getTime() : 0;
-            const dateB = b.date?.toDate ? b.date.toDate().getTime() : 0;
-            return dateB - dateA;
-        });
+        return attendance.filter((a: any) => toDate(a.date)).sort((a: any, b: any) => toDate(b.date)!.getTime() - toDate(a.date)!.getTime());
     }, [attendance]);
 
-    // 6. Stats calculation
-    const attendanceStats = useMemo(() => {
-        if (sortedAttendance.length === 0) {
-            return {
-                total: 0,
-                present: 0,
-                absent: 0,
-                late: 0,
-                rate: activeChild?.attendanceRate || 100
-            };
-        }
+    // 6. Stats (no invented figure when nothing is recorded — it used to show 100%).
+    const stats = useMemo(() => {
         const total = sortedAttendance.length;
         const present = sortedAttendance.filter((a: any) => a.status === 'Present').length;
         const late = sortedAttendance.filter((a: any) => a.status === 'Late').length;
         const absent = sortedAttendance.filter((a: any) => a.status === 'Absent').length;
-        const rate = Math.round(((present + late) / total) * 100);
-        return { total, present, absent, late, rate };
-    }, [sortedAttendance, activeChild]);
+        const excused = sortedAttendance.filter((a: any) => a.status === 'Excused').length;
+        const rate: number | null = total ? Math.round(((present + late) / total) * 100) : null;
+        return { total, present, late, absent, excused, rate };
+    }, [sortedAttendance]);
+
+    const exceptions = useMemo(() => sortedAttendance.filter((a: any) => a.status && a.status !== 'Present'), [sortedAttendance]);
+
+    // Group by month for the calendar view.
+    const months = useMemo(() => {
+        const map = new Map<string, { label: string; first: Date; days: Map<number, any> }>();
+        sortedAttendance.forEach((a: any) => {
+            const d = toDate(a.date)!;
+            const key = format(d, 'yyyy-MM');
+            if (!map.has(key)) map.set(key, { label: format(d, 'MMMM yyyy'), first: startOfMonth(d), days: new Map() });
+            map.get(key)!.days.set(d.getDate(), a);
+        });
+        return Array.from(map.values());
+    }, [sortedAttendance]);
+
+    const [showList, setShowList] = useState(false);
 
     const isActuallyLoading =
         schoolLoading ||
@@ -125,188 +140,204 @@ export default function MyAttendancePage() {
         (role === 'Parent' && parentStudentDocIds.length > 0 && !students) ||
         (activeChildId && attendanceLoading && !attendance);
 
-    if (isActuallyLoading) {
-        return (
-            <div className="p-10 flex justify-center">
-                <Loader2 className="animate-spin text-indigo-600 h-8 w-8" />
-            </div>
-        );
-    }
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'Present': return 'bg-emerald-500';
-            case 'Absent':  return 'bg-rose-500';
-            case 'Late':    return 'bg-orange-500';
-            default:        return 'bg-slate-500';
-        }
+    const statusStyle: Record<string, string> = {
+        Present: 'bg-emerald-500 text-white',
+        Late: 'bg-amber-500 text-white',
+        Absent: 'bg-rose-500 text-white',
+        Excused: 'bg-sky-500 text-white',
     };
-
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status) {
-            case 'Present': return 'bg-emerald-100 text-emerald-800';
-            case 'Absent':  return 'bg-rose-100 text-rose-800';
-            case 'Late':    return 'bg-orange-100 text-orange-800';
-            default:        return 'bg-slate-100 text-slate-800';
-        }
-    };
+    const childName = activeChild ? `${activeChild.firstName || ''} ${activeChild.lastName || ''}`.trim() : '';
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-8 pb-20 animate-in fade-in duration-500">
-            {/* Header Banner */}
-            <div className="relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r from-purple-900 via-purple-950 to-indigo-950 border-purple-500/20">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-                <div className="space-y-3 relative z-10 max-w-xl">
-                    <span className="text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase bg-purple-500/20 text-purple-300">
-                        Attendance Control
-                    </span>
-                    <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">
-                        {role === 'Parent' ? "Ward Attendance" : "My Attendance"}
-                    </h2>
-                    <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                        Monitor ward daily attendance percentages, late marks, and historical classroom participation logs.
-                    </p>
+        <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6 pb-20 animate-in fade-in duration-500">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-purple-600">Attendance</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">{role === 'Parent' ? 'Ward Attendance' : 'My Attendance'}</h1>
+                    <p className="text-xs text-slate-500 font-medium mt-1">Days marked on the class register by the school.</p>
                 </div>
-                <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-                    <CalendarCheck className="h-10 w-10 text-white opacity-80" />
+                <div className="flex p-1 bg-slate-100 rounded-xl border w-fit">
+                    {([['term', term ? 'This term' : 'This term'], ['recent', 'Last 100 days']] as const).map(([k, label]) => (
+                        <button key={k} onClick={() => setPeriod(k)} disabled={k === 'term' && !termStart}
+                            className={cn("px-4 py-2 text-[11px] font-black uppercase tracking-wider rounded-lg transition-all",
+                                (k === 'term' ? usingTerm : !usingTerm) ? "bg-white text-purple-700 shadow" : "text-slate-500 hover:text-slate-900 disabled:opacity-40")}>
+                            {label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Child Selector Tabs (Parents with multiple students) */}
+            {/* Child selector */}
             {role === 'Parent' && students && students.length > 1 && (
-                <div className="space-y-2">
-                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Child</Label>
-                    <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border w-fit">
-                        {students.map((st: any) => {
-                            const targetId = st.id || st.uid;
-                            return (
-                                <button
-                                    key={targetId}
-                                    onClick={() => setSelectedChildId(targetId)}
-                                    className={cn(
-                                        "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                                        activeChildId === targetId
-                                            ? "bg-white text-indigo-600 shadow-md scale-[1.02]"
-                                            : "text-slate-500 hover:text-slate-900"
-                                    )}
-                                >
-                                    {st.firstName} {st.lastName}
-                                </button>
-                            );
-                        })}
-                    </div>
+                <div className="flex flex-wrap gap-2">
+                    {students.map((st: any) => {
+                        const targetId = st.id || st.uid;
+                        const on = activeChildId === targetId || activeChildId === st.uid;
+                        return (
+                            <button key={targetId} onClick={() => setSelectedChildId(targetId)}
+                                className={cn("px-4 py-2.5 text-xs font-black rounded-xl border transition-all",
+                                    on ? "bg-purple-700 text-white border-purple-700 shadow" : "bg-white text-slate-600 border-slate-200 hover:border-purple-300")}>
+                                {st.firstName} {st.lastName}
+                            </button>
+                        );
+                    })}
                 </div>
             )}
 
-            {/* Analytics Stats Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left side: Circular attendance gauge */}
-                <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white p-8 flex flex-col justify-between">
-                    <div>
-                        <CardTitle className="text-lg font-black uppercase tracking-tight text-slate-800">Attendance Pulse</CardTitle>
-                        <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400 font-black">Overall attendance score this term</CardDescription>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-center p-6 bg-slate-50 border border-slate-100 rounded-3xl gap-4 my-6">
-                        <div className="relative flex items-center justify-center w-32 h-32">
-                            <svg className="absolute w-full h-full transform -rotate-90">
-                                <circle cx="64" cy="64" r="56" stroke="#e2e8f0" strokeWidth="8" fill="transparent" />
-                                <circle cx="64" cy="64" r="56" stroke="#8b5cf6" strokeWidth="8" fill="transparent"
-                                        strokeDasharray={351.85}
-                                        strokeDashoffset={351.85 - (351.85 * attendanceStats.rate) / 100}
-                                        strokeLinecap="round" />
+            {isActuallyLoading ? (
+                <div className="p-10 flex justify-center"><Loader2 className="animate-spin text-purple-600 h-8 w-8" /></div>
+            ) : (
+            <>
+            {/* Summary */}
+            <Card className="rounded-3xl border border-slate-100 shadow-sm bg-white overflow-hidden">
+                <CardContent className="p-6 grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6 items-center">
+                    <div className="flex items-center gap-5">
+                        <div className="relative flex items-center justify-center w-28 h-28 shrink-0">
+                            <svg className="absolute w-full h-full -rotate-90" viewBox="0 0 128 128">
+                                <circle cx="64" cy="64" r="56" stroke="#e2e8f0" strokeWidth="10" fill="transparent" />
+                                <circle cx="64" cy="64" r="56" stroke={stats.rate === null ? '#e2e8f0' : stats.rate >= 90 ? '#10b981' : stats.rate >= 80 ? '#f59e0b' : '#f43f5e'} strokeWidth="10" fill="transparent"
+                                    strokeDasharray={351.85} strokeDashoffset={351.85 - (351.85 * (stats.rate ?? 0)) / 100} strokeLinecap="round" />
                             </svg>
-                            <span className="text-3xl font-black text-slate-800 relative z-10">{attendanceStats.rate}%</span>
+                            <span className="text-2xl font-black text-slate-800 relative">{stats.rate !== null ? `${stats.rate}%` : '—'}</span>
                         </div>
-                        <Badge className="bg-purple-100 text-purple-800 font-black text-[10px] px-3.5 py-1.5 rounded-full uppercase tracking-wider">
-                            {attendanceStats.rate >= 90 ? "Excellent standing" : attendanceStats.rate >= 80 ? "Satisfactory" : "Attention Required"}
-                        </Badge>
+                        <div className="md:hidden">
+                            <p className="text-sm font-black text-slate-800">{childName}</p>
+                            <p className="text-[11px] text-slate-500 font-semibold">{periodLabel}</p>
+                        </div>
                     </div>
-                    
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed text-center">
-                        Maintained above the school's target threshold (90%)
-                    </p>
+                    <div className="space-y-4">
+                        <div className="hidden md:block">
+                            <p className="text-base font-black text-slate-800">{childName}</p>
+                            <p className="text-xs text-slate-500 font-semibold">
+                                {periodLabel}{stats.total ? ` · ${stats.total} day${stats.total === 1 ? '' : 's'} recorded` : ''}
+                            </p>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {[
+                                { label: 'Present', value: stats.present, icon: CheckCircle2, cls: 'text-emerald-600 bg-emerald-50' },
+                                { label: 'Late', value: stats.late, icon: Clock, cls: 'text-amber-600 bg-amber-50' },
+                                { label: 'Absent', value: stats.absent, icon: XCircle, cls: 'text-rose-600 bg-rose-50' },
+                                { label: 'Excused', value: stats.excused, icon: Info, cls: 'text-sky-600 bg-sky-50' },
+                            ].map(x => (
+                                <div key={x.label} className="flex items-center gap-3 p-3 rounded-2xl border border-slate-100">
+                                    <span className={cn("p-2 rounded-xl", x.cls)}><x.icon className="h-4 w-4" /></span>
+                                    <div>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{x.label}</p>
+                                        <p className="text-lg font-black text-slate-800 leading-tight">{x.value}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <p className={cn("text-[11px] font-bold",
+                            stats.rate === null ? "text-slate-400" : stats.rate >= 90 ? "text-emerald-700" : stats.rate >= 80 ? "text-amber-700" : "text-rose-700")}>
+                            {stats.rate === null ? 'No register entries for this period yet.'
+                                : stats.rate >= 90 ? 'Above the 90% attendance target.'
+                                : `Below the 90% attendance target — ${stats.absent} day${stats.absent === 1 ? '' : 's'} absent.`}
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                {/* Days missed or late */}
+                <Card className="lg:col-span-2 rounded-3xl border border-slate-100 shadow-sm bg-white">
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-amber-500" /> Absent, late or excused
+                        </CardTitle>
+                        <CardDescription className="text-[11px]">{periodLabel}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        {exceptions.length === 0 ? (
+                            <p className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-2xl p-4 text-center">
+                                {stats.total ? 'Present every day recorded in this period.' : 'Nothing recorded yet.'}
+                            </p>
+                        ) : exceptions.map((r: any) => (
+                            <div key={r.id} className="flex items-start justify-between gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                                <div>
+                                    <p className="text-xs font-black text-slate-800">{format(toDate(r.date)!, 'EEE d MMM yyyy')}</p>
+                                    {r.notes ? <p className="text-[11px] text-slate-500 italic mt-0.5">{r.notes}</p> : null}
+                                </div>
+                                <Badge className={cn("border-none text-[9px] font-black uppercase tracking-wider rounded-full shrink-0", statusStyle[r.status] || 'bg-slate-500 text-white')}>{r.status}</Badge>
+                            </div>
+                        ))}
+                    </CardContent>
                 </Card>
 
-                {/* Right side: Summary Indicators and Log Feed */}
-                <div className="lg:col-span-2 space-y-8">
-                    {/* Stat Breakdown Grid */}
-                    <div className="grid grid-cols-3 gap-4">
-                        <div className="p-5 bg-white border border-slate-100 rounded-[1.5rem] shadow-sm flex items-center gap-4 hover:scale-[1.02] transition-transform">
-                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle2 className="h-5 w-5"/></div>
-                            <div>
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Present</p>
-                                <p className="text-xl font-black text-slate-850">{attendanceStats.present} Days</p>
-                            </div>
+                {/* Month calendar */}
+                <Card className="lg:col-span-3 rounded-3xl border border-slate-100 shadow-sm bg-white">
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                            <CalendarCheck className="h-4 w-4 text-purple-600" /> Month by month
+                        </CardTitle>
+                        <div className="flex flex-wrap gap-3 pt-1">
+                            {Object.entries({ Present: 'bg-emerald-500', Late: 'bg-amber-500', Absent: 'bg-rose-500', Excused: 'bg-sky-500', 'Not recorded': 'bg-slate-100 border' }).map(([k, c]) => (
+                                <span key={k} className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500"><span className={cn("w-3 h-3 rounded", c)} />{k}</span>
+                            ))}
                         </div>
-                        <div className="p-5 bg-white border border-slate-100 rounded-[1.5rem] shadow-sm flex items-center gap-4 hover:scale-[1.02] transition-transform">
-                            <div className="p-3 bg-orange-50 text-orange-500 rounded-xl"><Clock className="h-5 w-5"/></div>
-                            <div>
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Late</p>
-                                <p className="text-xl font-black text-slate-850">{attendanceStats.late} Days</p>
-                            </div>
-                        </div>
-                        <div className="p-5 bg-white border border-slate-100 rounded-[1.5rem] shadow-sm flex items-center gap-4 hover:scale-[1.02] transition-transform">
-                            <div className="p-3 bg-rose-50 text-rose-500 rounded-xl"><XCircle className="h-5 w-5"/></div>
-                            <div>
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Absent</p>
-                                <p className="text-xl font-black text-slate-850">{attendanceStats.absent} Days</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Timeline Feed Log */}
-                    <Card className="rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.03)] bg-white overflow-hidden">
-                        <CardHeader className="bg-slate-50/50 border-b p-8">
-                            <CardTitle className="text-sm font-black uppercase tracking-widest text-slate-400">
-                                History Logs
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            {sortedAttendance.length === 0 ? (
-                                <div className="p-20 text-center flex flex-col items-center gap-3 opacity-20">
-                                    <CalendarCheck size={48} className="text-slate-400" />
-                                    <p className="font-black uppercase tracking-widest text-xs">No participation records found</p>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {months.length === 0 && <p className="text-xs text-slate-400 font-bold text-center py-8">No register entries for this period.</p>}
+                        {months.map(m => {
+                            const daysInMonth = getDaysInMonth(m.first);
+                            const lead = (getDay(m.first) + 6) % 7; // Monday first
+                            const cells: (number | null)[] = [...Array(lead).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)];
+                            return (
+                                <div key={m.label}>
+                                    <p className="text-xs font-black text-slate-700 mb-2">{m.label}</p>
+                                    <div className="grid grid-cols-7 gap-1 text-center">
+                                        {['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(d => <span key={d} className="text-[9px] font-black text-slate-400">{d}</span>)}
+                                        {cells.map((day, i) => {
+                                            if (day === null) return <span key={`b${i}`} />;
+                                            const rec = m.days.get(day);
+                                            return (
+                                                <span key={day} title={rec ? `${day} ${m.label}: ${rec.status}${rec.notes ? ` — ${rec.notes}` : ''}` : undefined}
+                                                    className={cn("h-7 rounded-md flex items-center justify-center text-[10px] font-bold",
+                                                        rec ? (statusStyle[rec.status] || 'bg-slate-400 text-white') : 'bg-slate-50 text-slate-300')}>
+                                                    {day}
+                                                </span>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
-                            ) : (
-                                <Table>
-                                    <TableHeader className="bg-slate-50/30">
-                                        <TableRow>
-                                            <TableHead className="font-black text-[10px] pl-8 py-5 uppercase tracking-widest">Date</TableHead>
-                                            <TableHead className="font-black text-[10px] uppercase tracking-widest">Status</TableHead>
-                                            <TableHead className="font-black text-[10px] pr-8 uppercase tracking-widest">Notes & Justifications</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {sortedAttendance.map(record => (
-                                            <TableRow key={record.id} className="hover:bg-slate-50/50 transition-colors h-16">
-                                                <TableCell className="pl-8 font-black text-slate-700 text-sm">
-                                                    {record.date?.toDate ? format(record.date.toDate(), 'PPP') : 'Unknown Date'}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Badge className={cn(
-                                                        "border-none font-black text-[9px] tracking-wider px-3 py-1 rounded-full uppercase text-white shadow-sm shrink-0",
-                                                        getStatusColor(record.status)
-                                                    )}>
-                                                        {record.status}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="pr-8 text-xs text-slate-500 italic font-medium">
-                                                    {record.notes ? `"${record.notes}"` : '-'}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            )}
-                        </CardContent>
-                        <CardFooter className="bg-slate-50/50 py-4 border-t flex items-center gap-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                            <Info className="h-4 w-4 text-purple-500" />
-                            <span>Logs are compiled by school administration and class teachers.</span>
-                        </CardFooter>
-                    </Card>
-                </div>
+                            );
+                        })}
+                    </CardContent>
+                </Card>
             </div>
+
+            {/* Full list, folded away */}
+            {sortedAttendance.length > 0 && (
+                <Card className="rounded-3xl border border-slate-100 shadow-sm bg-white overflow-hidden">
+                    <button onClick={() => setShowList(v => !v)} className="w-full flex items-center justify-between p-5 text-left">
+                        <span className="text-sm font-black uppercase tracking-wider text-slate-800">Every day ({sortedAttendance.length})</span>
+                        <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform", showList && "rotate-180")} />
+                    </button>
+                    {showList && (
+                        <Table>
+                            <TableHeader className="bg-slate-50/50">
+                                <TableRow>
+                                    <TableHead className="font-black text-[10px] pl-6 uppercase tracking-widest">Date</TableHead>
+                                    <TableHead className="font-black text-[10px] uppercase tracking-widest">Status</TableHead>
+                                    <TableHead className="font-black text-[10px] pr-6 uppercase tracking-widest">Notes</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {sortedAttendance.map((record: any) => (
+                                    <TableRow key={record.id}>
+                                        <TableCell className="pl-6 font-bold text-slate-700 text-xs">{format(toDate(record.date)!, 'EEE d MMM yyyy')}</TableCell>
+                                        <TableCell><Badge className={cn("border-none text-[9px] font-black uppercase rounded-full", statusStyle[record.status] || 'bg-slate-500 text-white')}>{record.status}</Badge></TableCell>
+                                        <TableCell className="pr-6 text-xs text-slate-500 italic">{record.notes || '—'}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
+                </Card>
+            )}
+            </>
+            )}
         </div>
     );
 }
