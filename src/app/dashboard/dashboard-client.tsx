@@ -1072,7 +1072,7 @@ function AdminDashboard({
   const effectiveTotalCount  = (students?.length || 0) || summaryStudentTotal || 0;
 
   const attendanceRate = useMemo(() => {
-    if (!attendance || attendance.length === 0 || activeStudents.length === 0) return 66; // Fallback to 66% if no records
+    if (!attendance || attendance.length === 0 || activeStudents.length === 0) return null; // no records: show "—" (was an invented 66%)
     const today = startOfDay(new Date());
     const todayRecords = attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
@@ -1372,7 +1372,7 @@ function AdminDashboard({
       try {
         const statsPayload = {
           totalStudents: activeStudents.length,
-          attendanceRateToday: attendanceRate,
+          attendanceRateToday: attendanceRate ?? 0,
           totalStaff,
           financials: hasFinanceAccess ? {
             totalOutstanding: financials.totalOutstanding,
@@ -1714,6 +1714,7 @@ function AdminDashboard({
                 students={students}
                 schoolData={schoolData}
                 performanceReviews={performanceReviews}
+                activeStudentCount={summaryStudentActive}
               />
             ) : (
               <StaffPerformanceDashboardView 
@@ -3368,7 +3369,7 @@ function DirectorDashboard({
 
   const attendanceRate = useMemo(() => {
     if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;
-    if (!attendance || attendance.length === 0 || activeStudents.length === 0) return 66; // Fallback to 66% if no records
+    if (!attendance || attendance.length === 0 || activeStudents.length === 0) return null; // no records: show "—" (was an invented 66%)
     const today = startOfDay(new Date());
     const todayRecords = attendance.filter((r: any) => {
       const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
@@ -3894,7 +3895,7 @@ function DirectorDashboard({
                   { label: 'Active Term', value: schoolSettings?.currentTerm || schoolSettings?.term || '—' },
                 ] : [
                   { label: 'Active Term', value: schoolSettings?.currentTerm || schoolSettings?.term || '—' },
-                  { label: 'Enrolled', value: activeStudents?.length ? `${activeStudents.length}` : (summaryStudentActive ? `${summaryStudentActive}` : '—') },
+                  { label: 'Enrolled', value: summaryStudentActive ? `${summaryStudentActive}` : (activeStudents?.length ? `${activeStudents.length}` : '—') },
                   { label: 'Attendance', value: attendanceRate ? `${attendanceRate}%` : '—' },
                 ]
               }
@@ -4242,6 +4243,7 @@ function DirectorDashboard({
               students={students}
               schoolData={schoolData}
               performanceReviews={performanceReviews}
+              activeStudentCount={summaryStudentActive}
             />
           </div>
         )}

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { readOnceCached } from '@/lib/firestore-once';
 import { makeFriendlyPassword } from '@/lib/friendly-password';
 import { NewAccountPasswordDialog, type NewAccountCredentials } from '@/components/auth/NewAccountPasswordDialog';
 import { 
@@ -34,17 +35,27 @@ export function StaffDirectoryDashboardView({
   schoolData,
   performanceReviews: rawPerformanceReviews,
   leaveRequests: rawLeaveRequests,
+  activeStudentCount,
 }: any) {
   const staff = useMemo(() => rawStaff || [], [rawStaff]);
   const staffAttendance = useMemo(() => rawStaffAttendance || [], [rawStaffAttendance]);
   const classes = useMemo(() => rawClasses || [], [rawClasses]);
   const students = useMemo(() => rawStudents || [], [rawStudents]);
   const performanceReviews = useMemo(() => rawPerformanceReviews || [], [rawPerformanceReviews]);
-  const leaveRequests = useMemo(() => rawLeaveRequests || [], [rawLeaveRequests]);
-
   const firestore = useFirestore();
+  // Pending leave requests were never passed in, so the card always said 0. Read them here: one small
+  // query (pending only), cached for 5 minutes.
+  const leaveSchoolId: string = schoolData?.id || schoolData?.schoolId || '';
+  const [loadedLeaves, setLoadedLeaves] = useState<any[] | null>(null);
+  useEffect(() => {
+    if (rawLeaveRequests || !firestore || !leaveSchoolId) return;
+    readOnceCached(`leaves-pending:${leaveSchoolId}`, async () => {
+      const snap = await getDocs(query(collection(firestore, 'leaveRequests'), where('schoolId', '==', leaveSchoolId), where('status', 'in', ['Pending', 'Under Review']), limit(50)));
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }, { ttlMs: 5 * 60 * 1000 }).then(setLoadedLeaves).catch(() => setLoadedLeaves(null));
+  }, [rawLeaveRequests, firestore, leaveSchoolId]);
+  const leaveRequests = useMemo(() => rawLeaveRequests || loadedLeaves || [], [rawLeaveRequests, loadedLeaves]);
   const { toast } = useToast();
-  const [isSyncingStaff, setIsSyncingStaff] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const auth = useAuth();
   const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('all');
@@ -143,43 +154,6 @@ export function StaffDirectoryDashboardView({
     }
   };
 
-  // Sync Staff Analytics to Firestore dashboard_summaries
-  const handleSyncStaffSummary = async () => {
-    const sId = schoolData?.id || schoolData?.schoolId;
-    if (!firestore || !sId) return;
-    setIsSyncingStaff(true);
-    try {
-      const activeStaff = staff?.filter((s: any) => s.status === 'Active' || !s.status) || [];
-      const teachersCount = activeStaff.filter((s: any) => s.role?.toLowerCase() === 'teacher' || s.role?.toLowerCase() === 'faculty').length;
-      const adminCount = activeStaff.length - teachersCount;
-
-      await setDoc(doc(firestore, 'dashboard_summaries', sId), {
-        staff: {
-          totalStaff: staff?.length || 0,
-          activeStaff: activeStaff.length,
-          teachersCount,
-          adminCount,
-          lastUpdatedDate: new Date().toISOString()
-        },
-        lastUpdated: serverTimestamp()
-      }, { merge: true });
-
-      toast({ 
-        title: "Staff Analytics Synced", 
-        description: `Updated workforce summary (${activeStaff.length} active staff members).` 
-      });
-    } catch (err) {
-      console.error("Error syncing staff summary:", err);
-      toast({ 
-        variant: "destructive", 
-        title: "Sync Error", 
-        description: "Failed to sync staff data." 
-      });
-    } finally {
-      setIsSyncingStaff(false);
-    }
-  };
-
   const startOfToday = useMemo(() => startOfDay(new Date()), []);
 
   // Format Staff Name Helper
@@ -194,13 +168,15 @@ export function StaffDirectoryDashboardView({
     const totalStaffCount = activeStaff.length;
 
     // Active Students & Student-Teacher Ratio
-    const activeStudents = students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus) || [];
+    // The server count of active pupils (every pupil). The `students` list here is only a page of up to 150.
+    const loadedActive = students?.filter((s: any) => (s.enrollmentStatus === 'Active' || !s.enrollmentStatus) && s.isArchived !== true).length || 0;
+    const pupilCount = Number(activeStudentCount) > 0 ? Number(activeStudentCount) : loadedActive;
     const teachersList = activeStaff.filter((s: any) => {
       const r = s.role?.toLowerCase() || '';
       return r === 'teacher' || r === 'faculty' || r === 'instructor' || r === 'educator';
     });
-    const teachersCount = teachersList.length || 1;
-    const studentTeacherRatio = Math.round(activeStudents.length / teachersCount);
+    const teachersCount = teachersList.length;
+    const studentTeacherRatio: number | null = teachersCount > 0 && pupilCount > 0 ? Math.round(pupilCount / teachersCount) : null;
 
     // Today's Staff Attendance & Punctuality
     const todayStaffRecs = staffAttendance?.filter((r: any) => {
@@ -212,7 +188,9 @@ export function StaffDirectoryDashboardView({
 
     const todayCheckIns = todayStaffRecs.filter((r: any) => r.type === 'In' || r.type === 'check-in' || r.status === 'Present' || r.status === 'Late' || !r.type);
     const presentTeacherIds = new Set(todayCheckIns.map((r: any) => r.staffId || r.uid || r.userId));
-    const staffAttendanceRate = totalStaffCount > 0 ? Math.round((presentTeacherIds.size / totalStaffCount) * 100) : 0;
+    // Count only people on the active staff list (a check-in by someone since removed is not counted).
+    const presentActive = activeStaff.filter((s: any) => presentTeacherIds.has(s.uid || s.id) || presentTeacherIds.has(s.id)).length;
+    const staffAttendanceRate = totalStaffCount > 0 ? Math.round((presentActive / totalStaffCount) * 100) : 0;
 
     const totalCheckIns = todayCheckIns.length;
     const onTimeCheckIns = todayCheckIns.filter((r: any) => r.status === 'Present' || r.status === 'On Time').length;
@@ -298,17 +276,21 @@ export function StaffDirectoryDashboardView({
     return {
       totalStaffCount,
       teachersCount,
+      pupilCount,
       adminCount,
       studentTeacherRatio,
       staffAttendanceRate,
+      presentCount: presentActive,
       teacherPunctuality,
+      totalCheckIns,
+      onTimeCheckIns,
       pendingLeavesCount,
       roleBreakdown,
       deptData,
       statusData,
       staffRoster
     };
-  }, [staff, staffAttendance, classes, students, leaveRequests, startOfToday]);
+  }, [staff, staffAttendance, classes, students, leaveRequests, startOfToday, activeStudentCount]);
 
   // Filtered Staff Roster Search
   const filteredStaffList = useMemo(() => {
@@ -357,15 +339,6 @@ export function StaffDirectoryDashboardView({
             <UserPlus className="h-3.5 w-3.5" />
             <span>Add Staff Member</span>
           </Button>
-
-          <Button
-            onClick={handleSyncStaffSummary}
-            disabled={isSyncingStaff}
-            className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl h-9 px-4 shadow-sm flex items-center gap-2 shrink-0 text-xs"
-          >
-            <RefreshCw className={cn("h-3.5 w-3.5", isSyncingStaff && "animate-spin")} />
-            <span>{isSyncingStaff ? "Syncing..." : "Sync Staff Analytics"}</span>
-          </Button>
         </div>
       </div>
 
@@ -393,8 +366,8 @@ export function StaffDirectoryDashboardView({
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Student:Teacher</p>
               <TrendingUp className="h-4 w-4 text-purple-600" />
             </div>
-            <h3 className="text-2xl font-black text-slate-900">{stats.studentTeacherRatio}:1</h3>
-            <p className="text-[10px] text-purple-600 font-bold mt-0.5">Teaching Workload</p>
+            <h3 className="text-2xl font-black text-slate-900">{stats.studentTeacherRatio !== null ? `${stats.studentTeacherRatio}:1` : '—'}</h3>
+            <p className="text-[10px] text-purple-600 font-bold mt-0.5">{stats.pupilCount ? `${stats.pupilCount} pupils · ${stats.teachersCount} teachers` : 'Teaching Workload'}</p>
           </CardContent>
         </Card>
 
@@ -405,8 +378,8 @@ export function StaffDirectoryDashboardView({
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Punctuality</p>
               <Clock className="h-4 w-4 text-emerald-600" />
             </div>
-            <h3 className="text-2xl font-black text-slate-900">{stats.teacherPunctuality}%</h3>
-            <p className="text-[10px] text-emerald-600 font-bold mt-0.5">On-Time Clock-in</p>
+            <h3 className="text-2xl font-black text-slate-900">{stats.totalCheckIns ? `${stats.teacherPunctuality}%` : '—'}</h3>
+            <p className="text-[10px] text-emerald-600 font-bold mt-0.5">{stats.totalCheckIns ? `${stats.onTimeCheckIns} of ${stats.totalCheckIns} on time today` : 'On-Time Clock-in'}</p>
           </CardContent>
         </Card>
 
@@ -430,7 +403,7 @@ export function StaffDirectoryDashboardView({
               <UserCheck className="h-4 w-4 text-amber-600" />
             </div>
             <h3 className="text-2xl font-black text-slate-900">{stats.staffAttendanceRate}%</h3>
-            <p className="text-[10px] text-amber-600 font-bold mt-0.5">Today's Check-ins</p>
+            <p className="text-[10px] text-amber-600 font-bold mt-0.5">{stats.presentCount} of {stats.totalStaffCount} checked in today</p>
           </CardContent>
         </Card>
 
