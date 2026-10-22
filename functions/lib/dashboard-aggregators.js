@@ -282,6 +282,7 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
     const yearBills = {};
     // Same, per fee category ({ "2026-2027": { Tuition: {...}, Canteen: {...} } }) for the per-fee rates.
     const yearCats = {};
+    const debtByYear = {};
     const [schoolProfileSnap, schoolSettingsSnap] = await Promise.all([
         db.collection('schools').doc(schoolId).get(),
         db.collection('schoolSettings').doc(schoolId).get(),
@@ -368,6 +369,14 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
             return;
         totalOutstanding += balance;
         arrearsCount++;
+        {
+            // Debt split by the academic year the bill is filed under ('unknown' = no year on the bill), so the
+            // dashboards can show how much of the debt is this year's and how much is older / unfiled.
+            const dy = (debtByYear[yk] = debtByYear[yk] || { total: 0, tuition: 0 });
+            dy.total += balance;
+            if (typeLower.includes('tuition'))
+                dy.tuition += balance;
+        }
         if (typeLower.includes('tuition'))
             outstandingTuition += balance;
         else if (typeLower.includes('canteen'))
@@ -492,6 +501,7 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
             collectionRate,
             collectionRateAllTime,
             currentAcademicYear,
+            debtByYear: Object.fromEntries(Object.entries(debtByYear).map(([y, v]) => [y, { total: round2y(v.total), tuition: round2y(v.tuition) }])),
             yearBills: yearBillsOut,
             yearCats: Object.fromEntries(Object.entries(yearCats).map(([y, cats]) => [y, Object.fromEntries(Object.entries(cats).map(([c, v]) => [c, { billed: round2y(v.billed), paid: round2y(v.paid), waived: round2y(v.waived) }]))])),
             arrearsCount,
@@ -568,7 +578,7 @@ async function recalculateSchoolFinancials(schoolId, _eventTermId) {
  * the scheduler then falls back to the full rebuild.
  */
 async function refreshOpenDebts(schoolId) {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     const [studentsSnap, unpaidSnap, summarySnap, balancesSnap, profileSnap, settingsSnap] = await Promise.all([
         db.collection('students').where('schoolId', '==', schoolId).get(),
         db.collection('financialRecords').where('schoolId', '==', schoolId).where('status', '!=', 'Paid').get(),
@@ -596,6 +606,7 @@ async function refreshOpenDebts(schoolId) {
     const owedByCat = { 'Tuition': 0, 'Canteen': 0, 'Transport': 0, 'PTA Levy': 0, 'Other': 0 };
     const debtByStudent = {};
     const agingByStudent = {};
+    const debtByYearN = {};
     unpaidSnap.forEach(d => {
         var _a, _b, _c, _d;
         const r = d.data();
@@ -619,6 +630,12 @@ async function refreshOpenDebts(schoolId) {
             return;
         totalOutstanding += balance;
         arrearsCount++;
+        {
+            const dy = (debtByYearN[recordYearKey(r)] = debtByYearN[recordYearKey(r)] || { total: 0, tuition: 0 });
+            dy.total += balance;
+            if (debtKey(r) === 'tuition')
+                dy.tuition += balance;
+        }
         streamDebts[debtKey(r)] += balance;
         owedByCat[feeCatOf(r)] += balance;
         const acc = String(r.studentId || r.studentUid || r.accountId || r.studentName || '').trim();
@@ -651,7 +668,10 @@ async function refreshOpenDebts(schoolId) {
         schoolId,
         lastUpdated: firestore_2.FieldValue.serverTimestamp(),
         financials: Object.assign({ totalOutstanding: r2(totalOutstanding), arrearsCount, streamDebts: { tuition: r2(streamDebts.tuition), canteen: r2(streamDebts.canteen), transport: r2(streamDebts.transport), other: r2(streamDebts.other) }, categoryCollections,
-            currentAcademicYear }, (yb ? { collectionRate: collectible > 0 ? Math.min(100, Math.round(((Number(yb.paid) || 0) / collectible) * 1000) / 10) : 0 } : {})),
+            currentAcademicYear, 
+            // Years that no longer have debt are written as 0 (a merge would otherwise keep their old figure).
+            debtByYear: Object.fromEntries([...new Set([...Object.keys(((_e = summary.financials) === null || _e === void 0 ? void 0 : _e.debtByYear) || {}), ...Object.keys(debtByYearN)])]
+                .map(y => { var _a, _b; return [y, { total: r2(((_a = debtByYearN[y]) === null || _a === void 0 ? void 0 : _a.total) || 0), tuition: r2(((_b = debtByYearN[y]) === null || _b === void 0 ? void 0 : _b.tuition) || 0) }]; })) }, (yb ? { collectionRate: collectible > 0 ? Math.min(100, Math.round(((Number(yb.paid) || 0) / collectible) * 1000) / 10) : 0 } : {})),
         debtAging: {
             current: r2(current), age30: r2(age30), age60: r2(age60), age90: r2(age90),
             rebuiltAt: firestore_2.FieldValue.serverTimestamp(),

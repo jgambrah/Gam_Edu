@@ -22,8 +22,7 @@ const { currentTermFromProfile, termStampOfRecord, normalizeYear } = require('./
 dotenv.config({ path: '../.env' });
 
 const args = process.argv.slice(2);
-const schoolId = args.includes('--school') ? args[args.indexOf('--school') + 1] : null;
-if (!schoolId) { console.error('Usage: node finance-health-check.js --school <schoolId>'); process.exit(1); }
+const schoolArg = args.includes('--school') ? args[args.indexOf('--school') + 1] : null;
 
 const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
@@ -39,7 +38,7 @@ const isTuition = r => String(r.type || r.category || '').toLowerCase().includes
 const isCarried = r => /brought forward|opening balance/i.test(`${r.type || ''} ${r.description || ''}`) || /^(abf|cbf)_/.test(String(r._id || ''));
 const yearOf = r => { const st = termStampOfRecord(r); return st ? st.academicYear : (normalizeYear(r.academicYear) || 'unknown'); };
 
-(async () => {
+async function checkSchool(schoolId) {
   const [school, settings, studentsSnap, billsSnap] = await Promise.all([
     db.collection('schools').doc(schoolId).get(),
     db.collection('schoolSettings').doc(schoolId).get(),
@@ -49,7 +48,8 @@ const yearOf = r => { const st = termStampOfRecord(r); return st ? st.academicYe
   const profile = { ...(settings.data() || {}), ...(school.data() || {}) };
   const term = currentTermFromProfile(school.data()) || currentTermFromProfile(settings.data());
   const termStart = profile.termStartDate ? new Date(`${profile.termStartDate}T00:00:00`).getTime() : 0;
-  console.log(`\n${profile.name || schoolId}`);
+  console.log(`\n======================================================`);
+  console.log(`${profile.name || schoolId} [${schoolId}]`);
   console.log(`Current term: ${term ? `${term.term} ${term.academicYear} (${term.termId})` : 'NOT SET in School Profile'}   term start: ${profile.termStartDate || 'NOT SET'}\n`);
 
   const active = new Map(); // any id -> student doc id
@@ -119,5 +119,16 @@ const yearOf = r => { const st = termStampOfRecord(r); return st ? st.academicYe
   if (cy) console.log(`   as on the dashboards (bills filed under ${term.academicYear}): ${rate(cy.billed, cy.paid, cy.waived).toFixed(1)}%  (billed ${cy.billed.toFixed(2)}, paid ${cy.paid.toFixed(2)})`);
   console.log(`   all bills dated in this term, however they are filed:     ${rate(thisTermBilled, thisTermPaid, thisTermWaived).toFixed(1)}%  (billed ${thisTermBilled.toFixed(2)}, paid ${thisTermPaid.toFixed(2)})`);
   console.log('   If these two differ a lot, this term\'s bills are filed under the wrong year (see 2).\n');
+}
+
+(async () => {
+  const ids = schoolArg ? [schoolArg] : (await db.collection('schools').get()).docs.map(d => d.id);
+  for (const id of ids) {
+    try {
+      await checkSchool(id);
+    } catch (e) {
+      console.error(`Failed checking school ${id}:`, e.message);
+    }
+  }
   process.exit(0);
 })().catch(e => { console.error(e); process.exit(1); });

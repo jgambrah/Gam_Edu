@@ -528,6 +528,24 @@ export default function SuperAdminPage() {
 
           <Card className="shadow-xl rounded-3xl overflow-hidden border-0 ring-1 ring-slate-200">
             <CardHeader className="bg-slate-50 border-b"><CardTitle>Active School Directory ({schools.length})</CardTitle></CardHeader>
+            {(() => {
+                // Premium schools without a paid-up date never expire: list them so each gets a date.
+                const missing = schools.filter((s: any) => s.plan === 'Premium' && !s.paidUntil);
+                if (missing.length === 0) return null;
+                return (
+                    <div className="mx-4 mt-4 rounded-xl border-2 border-rose-300 bg-rose-50 p-3 text-sm text-rose-800">
+                        <strong>{missing.length} Premium school{missing.length === 1 ? '' : 's'} with no paid-up date</strong> — they never expire until you set one.
+                        Click the crown button on each to set &quot;Paid up to&quot;:
+                        <div className="mt-2 flex flex-wrap gap-2">
+                            {missing.map((s: any) => (
+                                <Button key={s.id} size="sm" variant="outline" className="h-7 bg-white" onClick={() => { setPlanSchool(s); setNewPlan('Premium'); }}>
+                                    {s.name || s.id}
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })()}
             <CardContent className="p-0">
               {loading ? <div className="flex justify-center p-20"><Loader2 className="animate-spin h-8 w-8 text-indigo-600" /></div> : (
                 <Table>
