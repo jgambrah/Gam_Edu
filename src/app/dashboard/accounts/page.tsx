@@ -26,7 +26,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3, Eye, History, Coins } from 'lucide-react';
+import { Loader2, PlusCircle, FileCog, Edit, Utensils, Bus as BusIcon, DollarSign, HandCoins, Receipt, AlertCircle, Wallet, CalendarIcon, RefreshCw, ChevronsUpDown, Check, XCircle, CheckCircle2, MoreVertical, Search, Sparkles, Route as RouteIcon, ChevronDown, ChevronLeft, ChevronRight, ShieldAlert, Trash2, Globe, Send, Clock, TrendingUp, Layers, BookOpen, ArrowUpRight, AlertTriangle, X, Printer, Info, Users, Zap, Archive, ArrowRightLeft, Database, BarChart3, Eye, History, Coins, Download } from 'lucide-react';
+import { downloadXlsx } from '@/lib/xlsx-lite';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -5118,6 +5119,33 @@ export default function AccountsPage() {
       return diffDays > 0 ? diffDays : 0;
   }, []);
 
+  // The aged-debt call list as an Excel file (the list shown, so a search narrows it).
+  const handleDownloadDebtorsExcel = useCallback(() => {
+      const bracket = (d: number) => d <= 0 ? 'Current' : d <= 30 ? '1–30 days' : d <= 60 ? '31–60 days' : d <= 90 ? '61–90 days' : 'Over 90 days';
+      const header = ['No.', 'Student', 'Student ID', 'Class', 'Parent / guardian', 'Phone', 'Outstanding (GH₵)', 'Oldest overdue (days)', 'Age bracket'];
+      const rows = topDebtors.map(({ student, balance, records: recs, oldestOverdueDays }: any, i: number) => {
+          const days = typeof oldestOverdueDays === 'number' ? oldestOverdueDays : getOldestOverdueDays(recs || []);
+          const cls = classes?.find((c: any) => c.id === student.classId)?.name || student.className || '';
+          return [
+              i + 1,
+              `${student.firstName || ''} ${student.lastName || ''}`.trim(),
+              student.studentId || student.admissionNumber || student.admissionNo || '',
+              cls,
+              student.guardianName || '',
+              student.guardianPhone || student.parentPhone || '',
+              Math.round((Number(balance) || 0) * 100) / 100,
+              typeof days === 'number' ? days : '',
+              bracket(Number(days) || 0),
+          ];
+      });
+      const total = rows.reduce((s, r) => s + (Number(r[6]) || 0), 0);
+      const schoolLabel = String(schoolSettings?.name || schoolSettings?.schoolName || 'School').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_');
+      downloadXlsx(`${schoolLabel}_Aged_Debt_${format(new Date(), 'yyyy-MM-dd')}.xlsx`, 'Aged debt',
+          [header, ...rows, [], ['', 'TOTAL', '', '', '', '', Math.round(total * 100) / 100, '', `${rows.length} students`]],
+          [6, 30, 16, 16, 24, 15, 18, 20, 14]);
+      toast({ title: 'Excel downloaded', description: `${rows.length} students, GH₵ ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} outstanding.` });
+  }, [topDebtors, classes, getOldestOverdueDays, schoolSettings, toast]);
+
   const handleSendOverallSMSReminder = useCallback(async (studentId: string, studentName: string, balance: number) => {
       if (!firestore || !schoolId) return;
       setSendingSMSStudentId(studentId);
@@ -5907,11 +5935,19 @@ export default function AccountsPage() {
                                             </p>
                                         )}
                                     </div>
-                                    <Link href="/dashboard/communication/sms">
-                                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 rounded-xl h-8 px-3 shrink-0">
-                                            <Send className="h-3.5 w-3.5" /> Broadcast via Bulk SMS
-                                        </Button>
-                                    </Link>
+                                    <div className="flex flex-wrap gap-2 shrink-0">
+                                        {advisoryAvailable && topDebtors.length > 0 && (
+                                            <Button size="sm" variant="outline" onClick={handleDownloadDebtorsExcel}
+                                                className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 text-xs font-bold gap-1.5 rounded-xl h-8 px-3">
+                                                <Download className="h-3.5 w-3.5" /> Download Excel{debtorSearchQuery.trim() ? ` (${topDebtors.length})` : ''}
+                                            </Button>
+                                        )}
+                                        <Link href="/dashboard/communication/sms">
+                                            <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold gap-1.5 rounded-xl h-8 px-3">
+                                                <Send className="h-3.5 w-3.5" /> Broadcast via Bulk SMS
+                                            </Button>
+                                        </Link>
+                                    </div>
                                 </div>
                                 {advisoryAvailable && allDebtorsList.length > 0 && (
                                     <div className="relative">
