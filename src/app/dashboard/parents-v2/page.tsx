@@ -74,6 +74,12 @@ export interface ParentDirectorySnapshotDoc {
   students: Student[];
 }
 
+const slimStudent = (s: any): Student => {
+  const out: any = { id: s.id, uid: s.uid || s.id, firstName: s.firstName || '', lastName: s.lastName || '' };
+  ['classId', 'parentId', 'enrollmentStatus', 'studentId', 'isArchived', 'schoolId'].forEach(k => { if (s[k] !== undefined && s[k] !== null) out[k] = s[k]; });
+  return out as Student;
+};
+
 // --- MAIN PAGE COMPONENT ---
 export default function ParentsPage() {
   const auth = useAuth();
@@ -139,7 +145,8 @@ export default function ParentsPage() {
         ]);
 
         const parentList = parentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as ParentMember[];
-        const studentList = studentSnap.docs.map(d => ({ id: d.id, ...d.data() })) as Student[];
+        // Only the fields this page needs (the snapshot used to copy whole pupil records, health notes included).
+        const studentList = studentSnap.docs.map(d => slimStudent({ id: d.id, ...d.data() }));
 
         const snapshotDocId = adminSchoolId;
         const snapshotPayload: ParentDirectorySnapshotDoc = {
@@ -225,16 +232,34 @@ export default function ParentsPage() {
     toast({ title: "Switched to On-Demand Mode", description: "Parent records unloaded from memory to eliminate reads." });
   }, [toast]);
 
+  // Open the directory straight away (one read of the saved list; it is rebuilt only when it does not exist).
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const searchParam = params.get('search');
-      if (searchParam) {
-        setSearchTerm(searchParam);
-        loadParentData();
-      }
+      if (searchParam) setSearchTerm(searchParam);
     }
-  }, [loadParentData]);
+    if (adminSchoolId && firestore && !hasLoadedParents && !isLoadingParents) loadParentData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminSchoolId, firestore]);
+
+  // After a change, update the list on screen and the saved directory (1 write) instead of re-reading every
+  // parent and pupil of the school (it used to re-read ~400 records after each save).
+  const applyLocal = useCallback(async (nextParents: ParentMember[], nextStudents: Student[]) => {
+    setParents(nextParents);
+    setStudents(nextStudents);
+    if (!firestore || !adminSchoolId) return;
+    const payload: ParentDirectorySnapshotDoc = {
+      id: adminSchoolId, schoolId: adminSchoolId, updatedAt: new Date().toISOString(),
+      parentCount: nextParents.length, parents: nextParents, students: nextStudents.map(slimStudent),
+    };
+    setActiveSnapshot(payload);
+    try { await setDoc(doc(firestore, 'parent_directory_snapshots', adminSchoolId), payload); }
+    catch (err) { console.warn('Parent directory save notice:', err); }
+  }, [firestore, adminSchoolId]);
+
+  // The pupil record to update for a selected id (ids in the list are uids; the record id can differ).
+  const studentDocId = (sid: string) => (students.find(s => s.uid === sid || s.id === sid) as any)?.id || sid;
 
   useEffect(() => {
     if (isAddOpen) {
@@ -287,14 +312,16 @@ export default function ParentsPage() {
           });
 
           for (const studentId of studentIds) {
-            const studentRef = doc(firestore, 'students', studentId);
-            await updateDoc(studentRef, { parentId: result.uid });
+            await updateDoc(doc(firestore, 'students', studentDocId(studentId)), { parentId: result.uid });
           }
 
           toast({ title: "Success", description: "Parent created and linked." });
           setNewAccount({ name: `${values.firstName || ''} ${values.lastName || ''}`.trim(), email: values.email, password, whereLater: 'Parent Directory' });
           setIsAddOpen(false);
-          loadData();
+          await applyLocal(
+            [{ id: result.uid, uid: result.uid, title: values.title || '', firstName: values.firstName, lastName: values.lastName, email: values.email, phone: values.phone, address: values.address, studentIds, schoolId: adminSchoolId } as any, ...parents],
+            students.map(s => studentIds.includes(s.uid) ? { ...s, parentId: result.uid } : s)
+          );
 
       } catch (error: any) {
           console.error("Error adding parent:", error);
@@ -331,18 +358,25 @@ export default function ParentsPage() {
         const studentsToUnlink = oldStudentIds.filter(id => !studentIds.includes(id));
         const studentsToLink = studentIds.filter(id => !oldStudentIds.includes(id));
 
+        const parentUid = editingParent.uid || editingParent.id;
+        // Unlinking clears the pupil's parent only if it still points to THIS parent (a pupil linked to the
+        // other parent keeps that link; before, it was wiped).
         for (const studentId of studentsToUnlink) {
-            const studentRef = doc(firestore, 'students', studentId);
-            await updateDoc(studentRef, { parentId: deleteField() }); 
+            const st = students.find(s => s.uid === studentId || s.id === studentId);
+            if (st && st.parentId && st.parentId !== parentUid) continue;
+            await updateDoc(doc(firestore, 'students', studentDocId(studentId)), { parentId: deleteField() });
         }
         for (const studentId of studentsToLink) {
-            const studentRef = doc(firestore, 'students', studentId);
-            await updateDoc(studentRef, { parentId: editingParent.uid });
+            await updateDoc(doc(firestore, 'students', studentDocId(studentId)), { parentId: parentUid });
         }
 
         toast({ title: "Updated", description: "Parent details saved." });
         setEditingParent(null);
-        loadData();
+        await applyLocal(
+          parents.map(p => p.id === editingParent.id ? { ...p, title: values.title || '', firstName: values.firstName, lastName: values.lastName, phone: values.phone, address: values.address, studentIds } : p),
+          students.map(s => studentsToLink.includes(s.uid) ? { ...s, parentId: parentUid }
+            : (studentsToUnlink.includes(s.uid) && (!s.parentId || s.parentId === parentUid)) ? { ...s, parentId: undefined } : s)
+        );
 
     } catch (error: any) {
         console.error("Error updating parent:", error);
@@ -356,15 +390,48 @@ export default function ParentsPage() {
   const handleDelete = async (id: string) => {
     if (!firestore) return;
     try {
+        const p = parents.find(x => x.id === id);
+        const parentUid = (p as any)?.uid || id;
         await deleteDoc(doc(firestore, 'parents', id));
+        // Clear the link on that parent's pupils (before, they kept pointing to a parent that no longer exists).
+        const linked = students.filter(s => s.parentId === parentUid);
+        for (const s of linked) {
+            try { await updateDoc(doc(firestore, 'students', (s as any).id || s.uid), { parentId: deleteField() }); } catch (err) { console.warn('Unlink notice:', err); }
+        }
         toast({ title: "Deleted", description: "Parent profile removed." });
-        loadData();
+        await applyLocal(parents.filter(x => x.id !== id), students.map(s => s.parentId === parentUid ? { ...s, parentId: undefined } : s));
     } catch (e: any) {
         toast({ variant: 'destructive', title: "Error", description: e.message });
     }
   };
 
-  const filteredParents = useMemo(() => parents.filter(p => searchStudent(p as any, searchTerm)), [parents, searchTerm]);
+  const [parentFilter, setParentFilter] = useState<'all' | 'kids' | 'nochild' | 'nophone'>('all');
+  const activeKidsOf = useCallback((p: ParentMember) => (p.studentIds || [])
+    .map((sid: string) => students.find(s => s.uid === sid || s.id === sid))
+    .filter((s: any) => !!s && s.enrollmentStatus !== 'Inactive' && s.enrollmentStatus !== 'Graduated' && s.isArchived !== true), [students]);
+  const directoryStats = useMemo(() => {
+    const active = students.filter((s: any) => (!s.enrollmentStatus || s.enrollmentStatus === 'Active') && s.isArchived !== true);
+    const linkedIds = new Set<string>();
+    parents.forEach(p => (p.studentIds || []).forEach((id: string) => linkedIds.add(id)));
+    const isLinked = (s: any) => !!s.parentId || linkedIds.has(s.uid) || linkedIds.has(s.id);
+    return {
+      activeChildren: active.length,
+      linkedChildren: active.filter(isLinked).length,
+      childrenNoParent: active.filter(s => !isLinked(s)).length,
+      parentsNoChild: parents.filter(p => activeKidsOf(p).length === 0).length,
+      parentsNoPhone: parents.filter(p => !String((p as any).phone || '').trim()).length,
+    };
+  }, [parents, students, activeKidsOf]);
+  const filteredParents = useMemo(() => parents
+    .filter(p => {
+      const q = searchTerm.trim().toLowerCase();
+      return !q || searchStudent(p as any, searchTerm) || String((p as any).phone || '').includes(q) || String(p.email || '').toLowerCase().includes(q);
+    })
+    .filter(p => parentFilter === 'nochild' ? activeKidsOf(p).length === 0
+      : parentFilter === 'nophone' ? !String((p as any).phone || '').trim()
+      : parentFilter === 'kids' ? activeKidsOf(p).length > 0 : true)
+    .sort((a, b) => `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`)),
+    [parents, searchTerm, parentFilter, activeKidsOf]);
   
   const filteredStudentsForModal = useMemo(() => {
       let list = students.filter(s => s.enrollmentStatus !== 'Inactive' && searchStudent(s as any, studentSearch));
@@ -377,209 +444,82 @@ export default function ParentsPage() {
   const overallLoading = isLoadingSchoolId;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      {/* Standardized Institutional Hero Banner */}
-      <SectionHeroBanner
-        className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
-        eyebrow="FAMILY RELATIONS"
-        title="Parent Profiles"
-        subtitle="Manage school-parent relationships, configure student assignments, and maintain directory profiles."
-        icon={Users}
-        badge={{
-          label: "Family Relations",
-          variant: "gold",
-        }}
-        breadcrumbs={[
-          { label: 'Director Suite' },
-          { label: 'Family Relations', href: '/dashboard' },
-          { label: 'Parent Profiles' },
-        ]}
-        stats={
-          adminSchoolId ? [
-            { 
-              label: 'Linked Guardians', 
-              value: hasLoadedParents ? `${parents.length} Accounts` : 'On-Demand' 
-            },
-            { 
-              label: 'Associated Children', 
-              value: hasLoadedParents ? `${students.filter(s => s.parentId).length} Linked` : 'On-Demand' 
-            },
-            {
-              label: 'Firestore Reads',
-              value: hasLoadedParents ? '1 Read Active' : '0 Upfront Active',
-              change: hasLoadedParents ? 'Snapshot' : 'Zero Read',
-              changeType: hasLoadedParents ? 'positive' : 'neutral',
-            }
-          ] : undefined
-        }
-        actions={
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Subtle Telemetry Pill */}
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-[10px] font-bold text-slate-300">
-              <Zap className={cn("h-3 w-3", hasLoadedParents ? "text-emerald-400" : "text-amber-400")} />
-              <span>{hasLoadedParents ? "1 Read Active (Snapshot)" : "0 Upfront Reads Active"}</span>
-            </div>
+    <div className="space-y-5 animate-in fade-in duration-300">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Family Relations</p>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Parents</h1>
+          <p className="text-xs text-slate-500 font-medium mt-1">Parent accounts, their contact details and the children linked to them.</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleRecompileParentSnapshot} disabled={isLoadingParents || isCompilingSnapshot}
+            className="rounded-xl h-10 text-xs font-bold" title="Reads every parent and pupil again (use if a change made elsewhere is missing)">
+            <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", (isLoadingParents || isCompilingSnapshot) && "animate-spin")} /> Refresh list
+          </Button>
+          {canManage && (
+            <Button onClick={() => setIsAddOpen(true)} disabled={!adminSchoolId || !hasLoadedParents}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs rounded-xl h-10 px-4 gap-1.5">
+              <UserPlus className="h-4 w-4" /> Add parent
+            </Button>
+          )}
+        </div>
+      </div>
 
-            {hasLoadedParents ? (
-              <>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleRecompileParentSnapshot} 
-                  disabled={isLoadingParents || isCompilingSnapshot} 
-                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
-                >
-                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5", (isLoadingParents || isCompilingSnapshot) && "animate-spin")}/> 
-                  <span>Re-sync</span>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={resetToOnDemand} 
-                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 hover:text-white rounded-xl h-9 px-3 text-xs font-bold transition-all"
-                >
-                  <RotateCcw className="h-3.5 w-3.5 mr-1.5"/> 
-                  <span>On-Demand</span>
-                </Button>
-              </>
-            ) : (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={loadParentData} 
-                disabled={isLoadingParents} 
-                className="bg-white/10 text-white hover:bg-white/20 border-white/20 font-bold h-9 px-3.5 rounded-xl gap-1.5 cursor-pointer text-xs transition-all"
-              >
-                {isLoadingParents ? <Loader2 className="h-3.5 w-3.5 animate-spin"/> : <PackageCheck className="h-3.5 w-3.5"/>}
-                <span>Generate Parent List (1 Read)</span>
-              </Button>
-            )}
+      {/* Figures that need action */}
+      {hasLoadedParents && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[
+            { key: 'all', label: 'Parent accounts', value: parents.length, sub: 'in the directory' },
+            { key: 'kids', label: 'Children linked', value: directoryStats.linkedChildren, sub: `of ${directoryStats.activeChildren} active pupils` },
+            { key: 'nochild', label: 'Parents with no child', value: directoryStats.parentsNoChild, sub: 'link or remove', warn: directoryStats.parentsNoChild > 0 },
+            { key: 'nophone', label: 'No phone number', value: directoryStats.parentsNoPhone, sub: 'cannot get SMS', warn: directoryStats.parentsNoPhone > 0 },
+          ].map(x => (
+            <button key={x.key} onClick={() => setParentFilter(x.key as any)}
+              className={cn("text-left p-4 rounded-2xl border bg-white transition-all",
+                parentFilter === x.key ? "border-indigo-400 ring-2 ring-indigo-100" : "border-slate-100 hover:border-indigo-200")}>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{x.label}</p>
+              <p className={cn("text-2xl font-black mt-1", x.warn ? "text-amber-600" : "text-slate-900")}>{x.value}</p>
+              <p className="text-[10px] font-bold text-slate-500">{x.sub}</p>
+            </button>
+          ))}
+        </div>
+      )}
+      {hasLoadedParents && directoryStats.childrenNoParent > 0 && (
+        <p className="text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+          {directoryStats.childrenNoParent} active pupil{directoryStats.childrenNoParent === 1 ? ' has' : 's have'} no parent linked, so nobody can see {directoryStats.childrenNoParent === 1 ? 'their' : 'their'} portal or receive messages about them.
+          {canManage ? ' Use “Add parent” (or edit a parent) and tick them.' : ''}
+        </p>
+      )}
 
-            {canManage && (
-              <Button 
-                onClick={() => { if (!hasLoadedParents) loadParentData(); setIsAddOpen(true); }} 
-                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]" 
-                disabled={!adminSchoolId}
-              >
-                <UserPlus className="h-4 w-4 text-slate-950"/> 
-                <span>Add Parent Profile</span>
-              </Button>
-            )}
-          </div>
-        }
-      />
-      
       {/* Main Card */}
       <Card className="rounded-3xl border-slate-100 shadow-sm overflow-hidden bg-white">
-        <CardContent className="p-6 space-y-6">
-          {/* On-Demand Mode Bar when parents are loaded */}
-          {hasLoadedParents && (
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-slate-900/[0.03] border border-slate-200/80 rounded-2xl text-xs text-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center h-7 w-7 rounded-lg bg-slate-900 text-white font-bold shadow-xs shrink-0">
-                  <PackageCheck className="h-3.5 w-3.5" />
-                </div>
-                <div>
-                  <span className="font-bold text-slate-900">1-Read Consolidated Parent Directory Active</span>
-                  <span className="text-slate-600 ml-2">({filteredParents.length} of {parents.length} profiles showing)</span>
-                  <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">1 Read</span>
-                  <span className="ml-1.5 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-indigo-50 text-indigo-700">⚡ Zero-Read Filtering</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleRecompileParentSnapshot}
-                  disabled={isLoadingParents || isCompilingSnapshot}
-                  className="h-8 text-xs font-semibold rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100"
-                >
-                  <RefreshCw className={cn("h-3.5 w-3.5 mr-1.5 text-slate-600", (isLoadingParents || isCompilingSnapshot) && "animate-spin")} /> Re-sync Snapshot
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={resetToOnDemand}
-                  className="h-8 text-xs font-semibold rounded-lg border-slate-300 text-slate-700 hover:bg-slate-100"
-                >
-                  <RotateCcw className="h-3.5 w-3.5 mr-1.5 text-slate-600" /> Switch to On-Demand
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center justify-between gap-4">
+        <CardContent className="p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative max-w-sm flex-grow">
               <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
-              <StudentSearchInput 
-                value={searchTerm} 
-                onChange={(val) => {
-                  setSearchTerm(val);
-                  if (!hasLoadedParents && val.trim().length >= 3) {
-                    loadParentData();
-                  }
-                }} 
+              <StudentSearchInput
+                value={searchTerm}
+                onChange={(val) => setSearchTerm(val)}
                 className="pl-10 h-10 border-slate-200 focus-visible:ring-indigo-500 rounded-xl"
-                placeholder="Search parents by name or email..."
+                placeholder="Search by parent name, email or phone…"
               />
             </div>
-            <div className="flex items-center gap-3">
-              {/* Telemetry Tag */}
-              <div className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-[11px] font-medium text-slate-600 border border-slate-200">
-                <Zap className={cn("h-3 w-3", hasLoadedParents ? "text-emerald-500" : "text-amber-500")} />
-                <span>{hasLoadedParents ? "1 Read Active (Snapshot)" : "0 Upfront Firestore Reads Active"}</span>
-              </div>
-              <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">
-                {hasLoadedParents ? `${filteredParents.length} Records` : 'On-Demand'}
-              </span>
-            </div>
+            <span className="text-[11px] text-slate-500 font-semibold">
+              {hasLoadedParents ? `${filteredParents.length} of ${parents.length} shown` : ''}
+              {activeSnapshot?.updatedAt ? ` · list updated ${new Date(activeSnapshot.updatedAt).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}` : ''}
+            </span>
           </div>
 
           {isLoadingParents ? (
             <div className="py-16 flex flex-col items-center justify-center text-slate-400 bg-slate-50 border border-dashed rounded-2xl">
               <Loader2 className="h-8 w-8 animate-spin text-indigo-500 mb-2"/>
-              <p className="text-xs uppercase font-bold tracking-wider font-mono">Loading Parent Directory (1 Document Read)...</p>
+              <p className="text-xs font-bold">Loading parents…</p>
             </div>
           ) : !hasLoadedParents ? (
-            <div className="py-16 px-6 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-gradient-to-b from-slate-50/70 via-slate-50/30 to-white flex flex-col items-center justify-center gap-4 max-w-2xl mx-auto shadow-xs my-4">
-              <div className="h-16 w-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
-                <HeartHandshake className="h-8 w-8 text-indigo-600 animate-pulse" />
-              </div>
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs font-bold uppercase tracking-wider mb-1">
-                  ⚡ Single-Document Architecture
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 tracking-tight">Parent Profiles Generated in 1 Document Read</h3>
-                <p className="text-sm text-slate-500 max-w-lg mx-auto leading-relaxed">
-                  To prevent automatic Firestore read spikes upon page open, parent records and linked student relationships are loaded from a single consolidated document snapshot (1 read for all parents and children).
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                <Button 
-                  onClick={loadParentData}
-                  disabled={isLoadingParents}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-11 px-7 shadow-md hover:shadow-lg transition-all gap-2 cursor-pointer text-sm"
-                >
-                  <PackageCheck className="h-4 w-4" />
-                  Generate Parent List (1 Read)
-                </Button>
-                {searchTerm.trim().length > 0 && (
-                  <Button 
-                    variant="outline"
-                    onClick={loadParentData}
-                    className="rounded-xl h-11 px-4 border-slate-200 hover:bg-slate-50 text-slate-700"
-                  >
-                    Search Directory for "{searchTerm.trim()}"
-                  </Button>
-                )}
-              </div>
-              <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-slate-400 pt-3 border-t border-slate-100 w-full">
-                <span>⚡ 1 single Firestore read</span>
-                <span>•</span>
-                <span>Associated child linkages</span>
-                <span>•</span>
-                <span>Contact information & credentials</span>
-              </div>
+            <div className="py-16 text-center border border-dashed rounded-2xl bg-slate-50 space-y-3">
+              <p className="text-sm font-semibold text-slate-600">The parent list could not be loaded.</p>
+              <Button onClick={loadParentData} className="rounded-xl text-xs font-bold">Try again</Button>
             </div>
           ) : filteredParents.length === 0 ? (
             <div className="py-16 text-center text-slate-400 border border-dashed rounded-2xl bg-slate-50 flex flex-col items-center gap-3">
@@ -595,7 +535,7 @@ export default function ParentsPage() {
                 <TableHeader className="bg-slate-50/50">
                   <TableRow>
                     <TableHead className="font-bold text-slate-700 h-12">Parent Guardian</TableHead>
-                    <TableHead className="font-bold text-slate-700 h-12">Email Address</TableHead>
+                    <TableHead className="font-bold text-slate-700 h-12 hidden md:table-cell">Email (login)</TableHead>
                     <TableHead className="font-bold text-slate-700 h-12">Linked Students</TableHead>
                     <TableHead className="text-right font-bold text-slate-700 h-12 px-6">Actions</TableHead>
                   </TableRow>
@@ -610,18 +550,19 @@ export default function ParentsPage() {
                           </div>
                           <div>
                             <div className="font-bold text-slate-800">{p.title ? `${p.title} ` : ''}{p.firstName} {p.lastName}</div>
-                            {p.phone && <div className="text-[10px] text-slate-400 font-medium">{p.phone}</div>}
+                            {p.phone ? <div className="text-[11px] text-slate-500 font-medium">{p.phone}</div> : <div className="text-[10px] text-amber-600 font-bold">No phone number</div>}
+                            <div className="text-[10px] text-slate-400 md:hidden">{p.email}</div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="py-4 text-slate-600 text-sm font-medium">{p.email}</TableCell>
+                      <TableCell className="py-4 text-slate-600 text-sm font-medium hidden md:table-cell">{p.email}</TableCell>
                       <TableCell className="py-4">
                         <div className="flex flex-col gap-1.5 items-start">
                           <Badge variant="secondary" className="font-bold text-xs bg-slate-100 text-slate-700 border border-slate-200/50 rounded-md px-2 py-0.5">
                             {p.studentIds?.filter((sid: string) => {
                               const foundStudent = students.find(s => s.uid === sid || s.id === sid);
                               return foundStudent && foundStudent.enrollmentStatus !== 'Inactive';
-                            }).length || 0} Students
+                            }).length || 0} {(p.studentIds || []).length === 1 ? 'child' : 'children'}
                           </Badge>
                           {(() => {
                             const activeWards = (p.studentIds || [])

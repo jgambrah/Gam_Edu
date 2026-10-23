@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, doc, writeBatch, serverTimestamp, getDoc } from 'firebase/firestore';
@@ -40,7 +40,11 @@ export default function PromotionPage() {
   
   // Custom Confirmation State
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [isGuideOpen, setIsGuideOpen] = useState(true);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [confirmMix, setConfirmMix] = useState(false);
+  // Transfers done in this session (newest first), so the last one can be undone if it was a mistake.
+  const [sessionLog, setSessionLog] = useState<{ from: string; fromName: string; to: string; toName: string; ids: string[]; at: Date; undone?: boolean }[]>([]);
+  const [isUndoing, setIsUndoing] = useState(false);
 
   const canAccess = ['Administrator', 'Director'].includes(role || '');
 
@@ -51,35 +55,66 @@ export default function PromotionPage() {
   const { data: classes, isLoading: loadingClasses } = useCollection<Class>(classesQuery);
 
   // 2. Fetch Active Students in the selected Source Class
+  // (Pupils with no enrollmentStatus saved are active too: filtering on 'Active' in the query left them
+  // behind in the old class without anyone noticing.)
+  const isActivePupil = (s: any) => (!s.enrollmentStatus || s.enrollmentStatus === 'Active') && s.isArchived !== true;
   const studentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && sourceClassId) ? query(
         collection(firestore, 'students'), 
         where('schoolId', '==', schoolId),
-        where('classId', '==', sourceClassId),
-        where('enrollmentStatus', '==', 'Active')
+        where('classId', '==', sourceClassId)
     ) : null,
   [firestore, schoolId, sourceClassId]);
-  const { data: students, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+  const { data: classRoll, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+  const students = useMemo(() => classRoll ? classRoll.filter(isActivePupil).sort((a, b) => `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)) : classRoll,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [classRoll]);
+
+  // Third-term report-card decisions for this class (Promoted / Repeated / Graduated), used to pre-tick.
+  const decisionsQuery = useMemoFirebase(() =>
+    (firestore && schoolId && sourceClassId) ? query(
+        collection(firestore, 'report-cards'),
+        where('schoolId', '==', schoolId),
+        where('classId', '==', sourceClassId),
+        where('term', 'in', ['Third Term', 'Term 3', '3rd Term'])
+    ) : null,
+  [firestore, schoolId, sourceClassId]);
+  const { data: thirdTermReports } = useCollection<any>(decisionsQuery);
+  const decisions = useMemo(() => {
+    const m = new Map<string, any>();
+    (thirdTermReports || []).forEach((r: any) => {
+      if (!r.studentId || !r.promotionDecision) return;
+      const prev = m.get(r.studentId);
+      if (!prev || String(r.academicYear || '') > String(prev.academicYear || '')) m.set(r.studentId, r);
+    });
+    return m;
+  }, [thirdTermReports]);
+
+  const { data: schoolSettings } = useDoc<any>(useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]));
 
   // 3. Fetch Active Students in Destination Class to alert on occupancy collisions
   const destStudentsQuery = useMemoFirebase(() => 
     (firestore && schoolId && destinationClassId && destinationClassId !== 'GRADUATE') ? query(
         collection(firestore, 'students'), 
         where('schoolId', '==', schoolId),
-        where('classId', '==', destinationClassId),
-        where('enrollmentStatus', '==', 'Active')
+        where('classId', '==', destinationClassId)
     ) : null,
   [firestore, schoolId, destinationClassId]);
-  const { data: destStudents } = useCollection<Student>(destStudentsQuery);
+  const { data: destRoll } = useCollection<Student>(destStudentsQuery);
+  const destStudents = useMemo(() => destRoll ? destRoll.filter(isActivePupil) : destRoll,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [destRoll]);
+  useEffect(() => { setConfirmMix(false); }, [destinationClassId, sourceClassId]);
 
   // Auto-select all students when the class list is loaded or changed
+  // Everyone is ticked except pupils whose third-term report card says they repeat.
   useEffect(() => {
     if (students) {
-      setSelectedStudentIds(students.map(s => s.uid));
+      setSelectedStudentIds(students.filter(s => decisions.get(s.uid)?.promotionDecision !== 'Repeated').map(s => s.uid));
     } else {
       setSelectedStudentIds([]);
     }
-  }, [students]);
+  }, [students, decisions]);
 
   const handleToggleStudent = (uid: string) => {
     setSelectedStudentIds(prev => 
@@ -91,6 +126,30 @@ export default function PromotionPage() {
     if (!students) return;
     if (selectedStudentIds.length === students.length) setSelectedStudentIds([]);
     else setSelectedStudentIds(students.map(s => s.uid));
+  };
+
+  // Put the pupils of a transfer done in this session back where they were.
+  const undoTransfer = async (index: number) => {
+    const entry = sessionLog[index];
+    if (!firestore || !entry || entry.undone) return;
+    setIsUndoing(true);
+    try {
+      for (let i = 0; i < entry.ids.length; i += 400) {
+        const b = writeBatch(firestore);
+        entry.ids.slice(i, i + 400).forEach(id => {
+          b.update(doc(firestore, 'students', id), entry.to === 'GRADUATE'
+            ? { enrollmentStatus: 'Active', classId: entry.from, updatedAt: serverTimestamp() }
+            : { classId: entry.from, updatedAt: serverTimestamp() });
+        });
+        await b.commit();
+      }
+      setSessionLog(log => log.map((l, i) => i === index ? { ...l, undone: true } : l));
+      toast({ title: 'Transfer undone', description: `${entry.ids.length} pupil${entry.ids.length === 1 ? '' : 's'} moved back to ${entry.fromName}.` });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'Could not undo', description: err.message || 'Please try again.' });
+    } finally {
+      setIsUndoing(false);
+    }
   };
 
   // STEP A: Trigger the Dialog
@@ -126,14 +185,18 @@ export default function PromotionPage() {
             console.error("Failed to fetch settings:", e);
         }
 
-        const batch = writeBatch(firestore);
+        // At most 200 pupils per batch (each pupil = 2 writes; Firestore allows 500 per batch).
+        const batches = [writeBatch(firestore)];
+        let inBatch = 0;
+        const nextBatch = () => { if (inBatch >= 200) { batches.push(writeBatch(firestore)); inBatch = 0; } inBatch++; return batches[batches.length - 1]; };
         let count = 0;
 
         const sourceClassName = classes?.find(c => c.id === sourceClassId)?.name || 'Class';
         const destClassName = destinationClassId === 'GRADUATE' ? 'Graduated' : (classes?.find(c => c.id === destinationClassId)?.name || 'Class');
 
         studentsToMove.forEach(student => {
-            const studentRef = doc(firestore, 'students', student.uid);
+            const batch = nextBatch();
+            const studentRef = doc(firestore, 'students', (student as any).id || student.uid);
             
             if (destinationClassId === 'GRADUATE') {
                 // Graduation Logic: Mark status and archive
@@ -185,7 +248,9 @@ export default function PromotionPage() {
             count++;
         });
 
-        await batch.commit();
+        for (const b of batches) await b.commit();
+        setSessionLog(log => [{ from: sourceClassId, fromName: sourceClassName, to: destinationClassId, toName: destClassName,
+            ids: studentsToMove.map(s => (s as any).id || s.uid), at: new Date() }, ...log]);
 
         // Notify parents asynchronously
         try {
@@ -411,6 +476,42 @@ export default function PromotionPage() {
         )}
       </Card>
 
+      {/* When to run it: after the third term's results, before the new year's first term starts */}
+      {schoolSettings?.term && !/third|3/i.test(String(schoolSettings.term)) && (
+        <Alert className="bg-sky-50 border-sky-200 rounded-2xl">
+          <Info className="h-4 w-4 text-sky-600" />
+          <AlertDescription className="text-sky-900 text-xs font-semibold">
+            The school profile says the current term is <b>{schoolSettings.term} {schoolSettings.academicYear || ''}</b>. Promotion is normally done once,
+            after the Third Term results are out. If this year's pupils have already been moved, there is nothing more to do here.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Transfers done in this session */}
+      {sessionLog.length > 0 && (
+        <Card className="rounded-2xl border border-slate-200 bg-white">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black uppercase tracking-wider text-slate-800">Done in this session</CardTitle>
+            <CardDescription className="text-[11px]">If a transfer was a mistake, undo it here before leaving this page.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {sessionLog.map((l, i) => (
+              <div key={i} className={cn("flex items-center justify-between gap-3 p-3 rounded-xl border", l.undone ? "bg-slate-50 border-slate-100 opacity-60" : "bg-emerald-50/60 border-emerald-100")}>
+                <span className="text-xs font-bold text-slate-800">
+                  {l.fromName} → {l.to === 'GRADUATE' ? 'Graduated' : l.toName} · {l.ids.length} pupil{l.ids.length === 1 ? '' : 's'} · {l.at.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {l.undone ? ' · undone' : ''}
+                </span>
+                {!l.undone && (
+                  <Button size="sm" variant="outline" disabled={isUndoing} onClick={() => undoTransfer(i)} className="rounded-lg text-[11px] font-black h-8">
+                    {isUndoing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : 'Undo'}
+                  </Button>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* CONFIGURATION PANEL */}
@@ -473,6 +574,10 @@ export default function PromotionPage() {
                   <p className="text-[11px] leading-relaxed text-amber-800">
                     <strong>{classes?.find(c => c.id === destinationClassId)?.name}</strong> already has students in it! Have you already promoted or graduated them? If not, promoting now will mix both cohorts into the same class. Always promote top-down!
                   </p>
+                  <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                    <Checkbox checked={confirmMix} onCheckedChange={v => setConfirmMix(!!v)} className="mt-0.5" />
+                    <span className="text-[11px] font-bold">I understand — these pupils will join the {destStudents.length} already in this class.</span>
+                  </label>
                 </AlertDescription>
               </Alert>
             )}
@@ -480,7 +585,8 @@ export default function PromotionPage() {
           <CardFooter className="p-8 pt-0">
             <Button 
               className="w-full h-14 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-wider rounded-2xl shadow-lg shadow-indigo-100 disabled:opacity-50 transition-all"
-              disabled={!sourceClassId || !destinationClassId || selectedStudentIds.length === 0 || isProcessing}
+              disabled={!sourceClassId || !destinationClassId || selectedStudentIds.length === 0 || isProcessing
+                || (destinationClassId !== 'GRADUATE' && !!destStudents && destStudents.length > 0 && !confirmMix)}
               onClick={triggerPromotion}
             >
               {isProcessing ? <Loader2 className="animate-spin mr-2"/> : <CheckCircle2 className="mr-2 h-5 w-5"/>}
@@ -513,7 +619,7 @@ export default function PromotionPage() {
             <div className="flex items-center gap-2 text-amber-950 font-medium">
               <Info className="w-4 h-4 text-amber-600 shrink-0" />
               <span>
-                <strong>Repeating / Retained Students:</strong> Simply <strong>uncheck the box</strong> next to their name. Unchecked students show <span className="font-bold text-slate-700">RETAIN (STAY)</span> and will NOT be moved.
+                <strong>Repeating pupils:</strong> those whose third-term report card says <b>Repeated</b> are already unticked. Untick anyone else who stays; unticked pupils show <span className="font-bold text-slate-700">RETAIN (STAY)</span> and are not moved.
               </span>
             </div>
             {students && students.length > 0 && (
@@ -546,6 +652,7 @@ export default function PromotionPage() {
                     <TableRow>
                         <TableHead className="w-[60px] pl-6"></TableHead>
                         <TableHead className="font-black text-[10px] uppercase text-slate-400 tracking-widest">Student</TableHead>
+                        <TableHead className="font-black text-[10px] uppercase text-slate-400 tracking-widest hidden sm:table-cell">Report card</TableHead>
                         <TableHead className="text-right pr-8 font-black text-[10px] uppercase text-slate-400 tracking-widest">Outcome</TableHead>
                     </TableRow>
                     </TableHeader>
@@ -563,6 +670,19 @@ export default function PromotionPage() {
                             </TableCell>
                             <TableCell className="py-4">
                             <StudentDisplay student={s} variant="list" showAvatar />
+                            </TableCell>
+                            <TableCell className="py-4 hidden sm:table-cell">
+                              {(() => {
+                                const d = decisions.get(s.uid);
+                                if (!d) return <span className="text-[10px] font-bold text-slate-300">No third-term report</span>;
+                                const wrongTarget = d.promotionDecision === 'Promoted' && d.promotedToClassId && destinationClassId && destinationClassId !== 'GRADUATE' && d.promotedToClassId !== destinationClassId;
+                                return (
+                                  <span className={cn("text-[10px] font-black", d.promotionDecision === 'Repeated' ? "text-amber-700" : "text-emerald-700")}>
+                                    {d.promotionDecision === 'Promoted' ? `Promoted${d.promotedToClassName ? ` to ${d.promotedToClassName}` : ''}` : d.promotionDecision}
+                                    {wrongTarget ? <span className="block text-rose-600">differs from the class chosen</span> : null}
+                                  </span>
+                                );
+                              })()}
                             </TableCell>
                             <TableCell className="text-right pr-8 py-4">
                             {isChecked ? (

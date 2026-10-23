@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Student, Class } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 
 // Helper to get base64 via proxy to avoid CORS issues with html2canvas
@@ -42,6 +44,9 @@ async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
         return "";
     }
 }
+
+// The number printed on the card: the SS-YYYY-XXXX id, else the school's own admission number.
+const cardId = (s: any) => { const v = formatStudentId(s); return v !== 'ID Pending' ? v : (s?.admissionNo || s?.admissionNumber || v); };
 
 // ── Single ID Card Component (used in both preview & print templates) ──
 function IDCard({
@@ -206,9 +211,14 @@ function IDCard({
                                 Student ID
                             </p>
                             <p style={{ fontSize: '11px', fontWeight: 900, letterSpacing: '0.15em', fontFamily: 'monospace', color: '#0f172a' }}>
-                                {formatStudentId(student)}
+                                {cardId(student)}
                             </p>
                         </div>
+                        {schoolProfile?.academicYear && (
+                            <p style={{ fontSize: '7px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                Valid {String(schoolProfile.academicYear).replace('/', '-')}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -257,8 +267,9 @@ function IDCard({
                     <div className="mt-2 flex flex-col">
                         <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest">Student ID</span>
                         <span className="text-[11px] font-black tracking-widest font-mono text-slate-800">
-                            {formatStudentId(student)}
+                            {cardId(student)}
                         </span>
+                        {schoolProfile?.academicYear && <span className="text-[6px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Valid {String(schoolProfile.academicYear).replace('/', '-')}</span>}
                     </div>
                 </div>
             </div>
@@ -273,7 +284,9 @@ export default function IDCardGeneratorPage() {
     const { toast } = useToast();
 
     const [classId, setClassId] = useState('');
-    const [selectedStudentId, setSelectedStudentId] = useState<string>('all');
+    // Pupils NOT to print (everyone is printed by default; untick to leave someone out, e.g. to reprint a few lost cards).
+    const [excluded, setExcluded] = useState<Set<string>>(new Set());
+    const selectedStudentId = excluded.size === 0 ? 'all' : 'some';
     const [isGenerating, setIsGenerating] = useState(false);
     const [logoBase64, setLogoBase64] = useState<string>('');
 
@@ -303,16 +316,18 @@ export default function IDCardGeneratorPage() {
         return query(
             collection(firestore, 'students'),
             where('schoolId', '==', schoolId),
-            where('classId', '==', classId),
-            where('enrollmentStatus', '==', 'Active')
+            where('classId', '==', classId)
         );
     }, [firestore, schoolId, classId]);
-    const { data: allStudents, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+    const { data: classRoll, isLoading: loadingStudents } = useCollection<Student>(studentsQuery);
+    // Active pupils, including older records with no status saved (they were missing from the list).
+    const allStudents = useMemo(() => classRoll ? classRoll.filter((s: any) => (!s.enrollmentStatus || s.enrollmentStatus === 'Active') && s.isArchived !== true) : classRoll, [classRoll]);
 
     // Reset student selection when class changes
     useEffect(() => {
-        setSelectedStudentId('all');
+        setExcluded(new Set());
     }, [classId]);
+    const toggleExcluded = (id: string) => setExcluded(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
     // ── MOVED HOOKS ABOVE CONDITIONAL RETURNS ──
     const sortedStudents = useMemo(() =>
@@ -322,9 +337,8 @@ export default function IDCardGeneratorPage() {
 
         const studentsToExport = useMemo(() => {
         if (!allStudents) return [];
-        if (selectedStudentId === 'all') return sortedStudents;
-        return sortedStudents.filter(s => (s.id || s.uid) === selectedStudentId);
-    }, [allStudents, sortedStudents, selectedStudentId]);
+        return sortedStudents.filter(s => !excluded.has(s.id || s.uid));
+    }, [allStudents, sortedStudents, excluded]);
 
     const [resolvedPhotos, setResolvedPhotos] = useState<Record<string, string>>({});
 
@@ -371,10 +385,13 @@ export default function IDCardGeneratorPage() {
     }, [studentsToExport]);
 
     const unresolvedPhotosCount = useMemo(() => {
-        return studentsToExport.filter(s => s.photoURL && !resolvedPhotos[s.id || s.uid]).length;
+        // Still loading = not tried yet. A photo that failed to load ("") no longer blocks the export forever.
+        return studentsToExport.filter(s => s.photoURL && resolvedPhotos[s.id || s.uid] === undefined).length;
     }, [studentsToExport, resolvedPhotos]);
 
     const previewStudent = useMemo(() => studentsToExport[0] || null, [studentsToExport]);
+    const missingPhoto = useMemo(() => studentsToExport.filter(s => !s.photoURL).length, [studentsToExport]);
+    const missingId = useMemo(() => studentsToExport.filter(s => cardId(s) === 'ID Pending').length, [studentsToExport]);
 
     const studentChunks = useMemo(() => {
         if (!studentsToExport.length) return [];
@@ -425,7 +442,7 @@ export default function IDCardGeneratorPage() {
                 pageElement.style.display = 'none';
             }
 
-            const label = selectedStudentId === 'all'
+            const label = (selectedStudentId === 'all' || studentsToExport.length > 1)
                 ? currentClassName.replace(/\s+/g, '_')
                 : `${studentsToExport[0]?.lastName}_${studentsToExport[0]?.firstName}`.replace(/\s+/g, '_');
 
@@ -452,7 +469,7 @@ export default function IDCardGeneratorPage() {
                 className="mb-6 bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/80 border border-slate-800/80 rounded-2xl"
                 eyebrow="DIGITAL BADGE STUDIO"
                 title="ID Card Generator"
-                subtitle="Configure, preview, and generate print-ready student identification cards in compliance with CR80 badge templates."
+                subtitle="Choose a class, check who is missing a photo or ID, and download print-ready cards (standard bank-card size, 8 per A4 page)."
                 icon={IdCard}
                 badge={{
                     label: "CR80 Standard",
@@ -468,16 +485,12 @@ export default function IDCardGeneratorPage() {
                         { label: 'Target Class', value: classes?.find(c => c.id === classId)?.name || 'Selected' },
                         { label: 'Batch Queue', value: `${studentsToExport.length} Badges` },
                     ] : [
-                        { label: 'Badge Standard', value: 'CR80 (ISO 7810)' },
-                        { label: 'Print DPI', value: '300 DPI Ready' },
+                        { label: 'Card size', value: '86 × 54 mm' },
+                        { label: 'Per A4 page', value: '8 cards' },
                     ]
                 }
                 actions={
                     <div className="flex flex-wrap items-center gap-2">
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.06] border border-white/10 text-xs font-bold text-slate-200">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span>CR80 STANDARD</span>
-                        </div>
                         {classId && (
                             <Button
                                 size="sm"
@@ -496,8 +509,8 @@ export default function IDCardGeneratorPage() {
             {/* ── Controls Card ── */}
             <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden print:hidden">
                 <CardHeader className="bg-slate-900 text-white pb-6 pt-8 px-8">
-                    <CardTitle className="text-lg font-black uppercase tracking-tight">Select Population</CardTitle>
-                    <CardDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">Choose class and select target students.</CardDescription>
+                    <CardTitle className="text-lg font-black uppercase tracking-tight">Choose pupils</CardTitle>
+                    <CardDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">Pick a class; everyone is ticked — untick anyone you don't want to print.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col md:flex-row gap-4 items-end flex-wrap p-8">
                     {/* Class Selector */}
@@ -514,30 +527,6 @@ export default function IDCardGeneratorPage() {
                             </SelectContent>
                         </Select>
                     </div>
-
-                    {/* Student Selector — only shown once a class is chosen */}
-                    {classId && !loadingStudents && sortedStudents.length > 0 && (
-                        <div className="space-y-2 flex-1 min-w-[200px] max-w-sm">
-                            <Label className="text-[10px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1">
-                                <Users className="h-3 w-3" /> Student (optional)
-                            </Label>
-                            <Select value={selectedStudentId} onValueChange={setSelectedStudentId}>
-                                <SelectTrigger className="h-12 border-2 rounded-xl bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 transition-colors">
-                                    <SelectValue placeholder="All Students" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">
-                                        <span className="font-bold">All Students ({sortedStudents.length})</span>
-                                    </SelectItem>
-                                    {sortedStudents.map((s) => (
-                                        <SelectItem key={s.id || s.uid} value={s.id || s.uid}>
-                                            {s.lastName}, {s.firstName}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    )}
 
                     {/* Export Button */}
                     {classId && (
@@ -564,6 +553,47 @@ export default function IDCardGeneratorPage() {
                             )}
                         </Button>
                     )}
+                                    {/* Pupils to print, with what is missing on their card */}
+                    {classId && !loadingStudents && sortedStudents.length > 0 && (
+                        <div className="basis-full w-full space-y-3">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                                <p className="text-xs font-bold text-slate-600">
+                                    {studentsToExport.length} of {sortedStudents.length} pupils will be printed
+                                    {missingPhoto > 0 ? <span className="text-amber-600"> · {missingPhoto} without a photo</span> : null}
+                                    {missingId > 0 ? <span className="text-rose-600"> · {missingId} without a student ID</span> : null}
+                                </p>
+                                <div className="flex gap-2">
+                                    <Button variant="outline" size="sm" className="h-8 rounded-lg text-[11px] font-bold" onClick={() => setExcluded(new Set())}>Tick all</Button>
+                                    <Button variant="outline" size="sm" className="h-8 rounded-lg text-[11px] font-bold" onClick={() => setExcluded(new Set(sortedStudents.map(s => s.id || s.uid)))}>Untick all</Button>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[320px] overflow-y-auto pr-1">
+                                {sortedStudents.map(s => {
+                                    const id = s.id || s.uid;
+                                    const on = !excluded.has(id);
+                                    const noId = cardId(s) === 'ID Pending';
+                                    return (
+                                        <label key={id} className={cn("flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-colors",
+                                            on ? "bg-white border-indigo-200" : "bg-slate-50 border-slate-100 opacity-60")}>
+                                            <Checkbox checked={on} onCheckedChange={() => toggleExcluded(id)} />
+                                            <div className="min-w-0">
+                                                <p className="text-xs font-bold text-slate-800 truncate">{s.lastName}, {s.firstName}</p>
+                                                <p className="text-[10px] font-semibold">
+                                                    {!s.photoURL ? <span className="text-amber-600">No photo </span> : null}
+                                                    {noId ? <span className="text-rose-600">No student ID</span> : <span className="text-slate-400">{cardId(s)}</span>}
+                                                </p>
+                                            </div>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                            {(missingPhoto > 0 || missingId > 0) && (
+                                <p className="text-[11px] text-slate-500 font-semibold">
+                                    Add missing photos or IDs on the pupil's record (Students page) before printing, or untick those pupils and print them later.
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -575,16 +605,14 @@ export default function IDCardGeneratorPage() {
                             <CardTitle className="text-xl font-black uppercase tracking-tight">
                                 Layout Preview
                                 <span className="ml-2 text-indigo-400">{currentClassName}</span>
-                                {selectedStudentId !== 'all' && previewStudent && (
+                                {studentsToExport.length === 1 && previewStudent && (
                                     <span className="ml-2 text-slate-400 font-normal text-base">
                                         — {previewStudent.firstName} {previewStudent.lastName}
                                     </span>
                                 )}
                             </CardTitle>
                             <CardDescription className="text-xs font-bold text-slate-400 uppercase mt-0.5">
-                                {selectedStudentId === 'all'
-                                    ? `Showing sample card. ${sortedStudents.length} cards will be exported.`
-                                    : 'Showing selected student card preview.'}
+                                {`First card shown. ${studentsToExport.length} card${studentsToExport.length === 1 ? '' : 's'} will be exported (8 per A4 page).`}
                             </CardDescription>
                         </div>
                     </CardHeader>

@@ -48,7 +48,6 @@ import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Trash2, Loader2, Search, RefreshCw, Edit, GraduationCap, WifiOff, Database, Bug, Bus, Utensils, MessageSquare, Camera, Upload, Archive, RotateCcw, Filter, AlertTriangle, Lock, KeyRound, Home, Milestone, Printer, Zap, Users, Sparkles, PackageCheck, HeartHandshake, UserCheck, ExternalLink, Phone, Mail, MapPin, UserMinus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Student, Class, UserRole } from '@/lib/types';
-import { MigrateStudentIds } from './migrate-student-ids';
 import { StudentSearchInput } from '@/components/student-search';
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, formatStudentId, generateNextStudentId } from '@/lib/student-utils';
@@ -1536,8 +1535,6 @@ export default function StudentsV3Page() {
             )}
         </CardContent>
       </Card>
-
-      <MigrateStudentIds />
 
       {/* ENROLLMENT MODAL */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
