@@ -2895,6 +2895,7 @@ interface PrintDebtorsDialogProps {
   classDebtorsCount: number;
   totalSum: number;
   onPrint: () => void;
+  sourceNote?: string;
 }
 
 function PrintDebtorsDialog({ 
@@ -2910,7 +2911,8 @@ function PrintDebtorsDialog({
   debtorsCount,
   classDebtorsCount,
   totalSum,
-  onPrint
+  onPrint,
+  sourceNote
 }: PrintDebtorsDialogProps) {
   useEffect(() => {
     if (classes && classes.length > 0 && !selectedClassId) {
@@ -2995,8 +2997,10 @@ function PrintDebtorsDialog({
             </div>
           </div>
 
-          <Button onClick={onPrint} className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold h-11 rounded-xl">
-            <Printer className="mr-2 h-4 w-4" /> Open Print Setup / Print
+          {sourceNote ? <p className="text-[11px] text-slate-500 font-semibold leading-relaxed">{sourceNote}</p> : null}
+          <Button onClick={() => { setOpen(false); onPrint(); }} disabled={debtorsCount === 0 || (printMode === 'single-class' && classDebtorsCount === 0)}
+            className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold h-11 rounded-xl">
+            <Printer className="mr-2 h-4 w-4" /> {debtorsCount === 0 ? 'No debtors to print' : 'Open Print Setup / Print'}
           </Button>
         </div>
       </DialogContent>
@@ -3033,17 +3037,18 @@ function ParentLetterPrintArea({
   const classMap = new Map<string, string>();
   classes?.forEach(c => classMap.set(c.id, c.name));
 
-  const parentChildren = students?.filter(s => parent.studentIds?.includes(s.uid)) || [];
+  const parentChildren = students?.filter(s => parent.studentIds?.includes(s.uid) || parent.studentIds?.includes(s.id)) || [];
 
   const childrenDebts = parentChildren.map(s => {
-    const studentRecords = records?.filter(r => r.studentId === s.uid && r.status !== 'Pending Reversal') || [];
+    const keys = new Set([s.uid, s.id, s.studentId, (s as any).admissionNo, (s as any).admissionNumber].filter(Boolean).map(String));
+    const studentRecords = records?.filter(r => keys.has(String(r.studentId)) && r.status !== 'Pending Reversal' && (r as any).isArchived !== true) || [];
     const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
     const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
     const balance = totalBilled - totalPaid;
 
-    const tuitionDebt = studentRecords.filter(r => r.type.toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
-    const canteenDebt = studentRecords.filter(r => r.type.toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
-    const transportDebt = studentRecords.filter(r => r.type.toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+    const tuitionDebt = studentRecords.filter(r => (r.type || '').toLowerCase().includes('tuition')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+    const canteenDebt = studentRecords.filter(r => (r.type || '').toLowerCase().includes('canteen')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
+    const transportDebt = studentRecords.filter(r => (r.type || '').toLowerCase().includes('transport')).reduce((sum, r) => sum + (Number(r.billedAmount) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0)), 0);
     const otherDebt = balance - tuitionDebt - canteenDebt - transportDebt;
 
     return {
@@ -3679,6 +3684,7 @@ interface ParentDemandLettersDialogProps {
   records: FinancialRecord[];
   isSending: boolean;
   onPrint: (parentId: string) => void;
+  balanceForStudent?: (s: any) => number | null;
 }
 
 function ParentDemandLettersDialog({
@@ -3689,7 +3695,8 @@ function ParentDemandLettersDialog({
   classes,
   records,
   isSending,
-  onPrint
+  onPrint,
+  balanceForStudent
 }: ParentDemandLettersDialogProps) {
   const [selectedParentId, setSelectedParentId] = useState('');
   const classMap = useMemo(() => {
@@ -3706,20 +3713,15 @@ function ParentDemandLettersDialog({
     if (!selectedParent || !students || !records) return [];
     
     return (selectedParent.studentIds || []).map((sid: string) => {
-      const student = students.find(s => s.uid === sid);
+      const student = students.find(s => s.uid === sid || s.id === sid);
       if (!student) return null;
-
-      const studentRecords = records.filter(r => r.studentId === sid && r.status !== 'Pending Reversal');
-      const totalBilled = studentRecords.reduce((sum, r) => sum + (Number(r.billedAmount) || 0), 0);
-      const totalPaid = studentRecords.reduce((sum, r) => sum + (Number(r.amountPaid) || 0) + (Number(r.waiverAmount) || 0), 0);
-      const balance = totalBilled - totalPaid;
-
-      return {
-        student,
-        balance
-      };
+      const fromHelper = balanceForStudent ? balanceForStudent(student) : null;
+      const balance = fromHelper !== null && fromHelper !== undefined ? fromHelper
+        : records.filter(r => r.studentId === sid && r.status !== 'Pending Reversal' && (r as any).isArchived !== true)
+            .reduce((sum, r) => sum + (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0), 0);
+      return { student, balance };
     }).filter((cd: any) => cd !== null);
-  }, [selectedParent, students, records]);
+  }, [selectedParent, students, records, balanceForStudent]);
 
   const totalOutstanding = useMemo(() => {
     return childrenDebts.reduce((sum: number, cd: any) => sum + cd.balance, 0);
@@ -3784,11 +3786,11 @@ function ParentDemandLettersDialog({
                   disabled={isSending}
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-11 rounded-xl shadow-md transition-all active:scale-95"
                 >
-                  <Printer className="mr-2 h-4 w-4" /> Print/Save PDF Letter
+                  {isSending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Printer className="mr-2 h-4 w-4" />} {isSending ? 'Preparing letter…' : 'Print/Save PDF Letter'}
                 </Button>
               ) : (
-                <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center text-xs text-emerald-800 font-semibold animate-pulse">
-                  This parent has no outstanding balance. Letter generation is locked.
+                <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-center text-xs text-emerald-800 font-semibold">
+                  {childrenDebts.length === 0 ? 'No children are linked to this parent (link them on the Parents page).' : 'This parent owes nothing at the moment, so there is no letter to print.'}
                 </div>
               )}
             </div>
@@ -4357,15 +4359,20 @@ export default function AccountsPage() {
   const classesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
   const { data: classes } = useCollection<Class>(classesQuery);
 
-  const parentsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]);
+  // Parents are read only when Parent Debt Letters is opened (they were read on every visit to this page).
+  const needParents = parentLettersOpen || activePrintType === 'parent-letter';
+  const parentsQuery = useMemoFirebase(() => (firestore && schoolId && needParents) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId, needParents]);
   const { data: parents, isLoading: isLoadingParents } = useCollection<any>(parentsQuery);
 
-  const debtors = useMemo(() => {
+  // Debtors from the loaded school ledger (with the fee breakdown).
+  const ledgerDebtors = useMemo((): any[] => {
     if (!students || !records) return [];
 
     const studentRecordsMap: Record<string, FinancialRecord[]> = {};
     records.forEach(r => {
       if (r.status === 'Pending Reversal') return;
+      // A closed term's bills are archived; what was left on them is on the Brought Forward bill already.
+      if ((r as any).isArchived === true) return;
       if (!studentRecordsMap[r.studentId]) {
         studentRecordsMap[r.studentId] = [];
       }
@@ -4405,7 +4412,7 @@ export default function AccountsPage() {
           other: Math.max(0, otherDebt)
         }
       };
-    }).filter(d => d.balance >= minDebt);
+    }).filter(d => d.balance > 0.009 && d.balance >= minDebt);
   }, [students, records, minDebt]);
 
   const sponsorsWithBalances = useMemo(() => {
@@ -4482,25 +4489,6 @@ export default function AccountsPage() {
       });
   }, [selectedSponsorIdForStudents, students, records, classes]);
 
-  const classGroupedDebtors = useMemo(() => {
-    const groups: Record<string, typeof debtors> = {};
-    debtors.forEach(d => {
-      const cid = d.student.classId || 'unassigned';
-      if (!groups[cid]) groups[cid] = [];
-      groups[cid].push(d);
-    });
-    return groups;
-  }, [debtors]);
-
-  const classesToPrint = useMemo(() => {
-    if (printMode === 'single-class') {
-      return (classes || []).filter(c => c.id === selectedClassId);
-    }
-    return (classes || [])
-      .filter(c => (classGroupedDebtors[c.id] || []).length > 0)
-      .sort((a, b) => a.name.localeCompare(b.name));
-  }, [classes, printMode, selectedClassId, classGroupedDebtors]);
-
   const classesMap = useMemo(() => {
     const map = new Map<string, string>();
     (classes || []).forEach(c => map.set(c.id, c.name));
@@ -4514,12 +4502,33 @@ export default function AccountsPage() {
     }, 150);
   };
 
-  const handlePrintParentLetter = (parentId: string) => {
-    setSelectedParentIdForPrint(parentId);
-    setActivePrintType('parent-letter');
-    setTimeout(() => {
-      window.print();
-    }, 150);
+  // Reads this family's open bills (a few reads) so the letter is right even when the school ledger is not
+  // loaded (before, the letter showed GH₵0 and "no outstanding balance" unless the whole ledger was loaded).
+  const [letterRecords, setLetterRecords] = useState<FinancialRecord[] | null>(null);
+  const [isPreparingLetter, setIsPreparingLetter] = useState(false);
+  const handlePrintParentLetter = async (parentId: string) => {
+    if (!firestore || !schoolId) return;
+    const parent = (parents || []).find((p: any) => p.id === parentId || p.uid === parentId);
+    if (!parent) return;
+    setIsPreparingLetter(true);
+    try {
+      const kids = (students || []).filter(s => (parent.studentIds || []).includes(s.uid) || (parent.studentIds || []).includes(s.id));
+      const keys = Array.from(new Set(kids.flatMap(s => [s.uid, s.id, s.studentId, (s as any).admissionNo, (s as any).admissionNumber]).filter(Boolean).map(String)));
+      const out = new Map<string, FinancialRecord>();
+      for (let i = 0; i < keys.length; i += 30) {
+        const snap = await getDocs(query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where('studentId', 'in', keys.slice(i, i + 30))));
+        snap.docs.forEach(d => out.set(d.id, { id: d.id, ...d.data() } as FinancialRecord));
+      }
+      setLetterRecords(Array.from(out.values()).filter(r => (r as any).isArchived !== true && r.status !== 'Pending Reversal'));
+      setSelectedParentIdForPrint(parentId);
+      setActivePrintType('parent-letter');
+      setParentLettersOpen(false);
+      setTimeout(() => { window.print(); }, 300);
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'Could not prepare the letter', description: err?.message || 'Please try again.' });
+    } finally {
+      setIsPreparingLetter(false);
+    }
   };
 
   const canAccess = 
@@ -4725,6 +4734,50 @@ export default function AccountsPage() {
       return { student, debt, credit, balance: Math.round((debt - credit) * 100) / 100, aging, agedRaw: aged, oldestOverdueDays, yb, yp, yw };
     });
   }, [balanceIndex, viewTermId, students, effectiveAcademicYear, activeTermStamp]);
+
+  // Print Debtors uses the loaded ledger when there is one (fee breakdown), otherwise the balance index
+  // (1 read, every pupil). Before, it used only the ledger, so with the ledger unloaded it printed nothing.
+  const debtors = useMemo((): any[] => {
+    if (isLedgerLoaded) return ledgerDebtors;
+    if (!indexRows) return [];
+    return indexRows
+      .filter((r: any) => r.balance > 0.009 && r.balance >= minDebt)
+      .map((r: any) => ({ student: r.student, balance: r.balance, breakdown: null, oldestOverdueDays: r.oldestOverdueDays }));
+  }, [isLedgerLoaded, ledgerDebtors, indexRows, minDebt]);
+  const debtorsHaveBreakdown = isLedgerLoaded;
+  // One pupil's balance for the letters preview: from the loaded ledger, else the balance index.
+  const letterBalanceFor = useCallback((s: any): number | null => {
+    const keys = new Set([s.uid, s.id, s.studentId, s.admissionNo, s.admissionNumber].filter(Boolean).map(String));
+    if (isLedgerLoaded && records) {
+      return Math.round(records.filter(r => keys.has(String(r.studentId)) && r.status !== 'Pending Reversal' && (r as any).isArchived !== true)
+        .reduce((sum, r) => sum + (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0), 0) * 100) / 100;
+    }
+    const row = indexRows?.find((r: any) => r.student.uid === s.uid || r.student.id === s.id);
+    return row ? row.balance : null;
+  }, [isLedgerLoaded, records, indexRows]);
+
+  const classGroupedDebtors = useMemo(() => {
+    const groups: Record<string, typeof debtors> = {};
+    debtors.forEach(d => {
+      const cid = d.student.classId && (classes || []).some(c => c.id === d.student.classId) ? d.student.classId : 'unassigned';
+      if (!groups[cid]) groups[cid] = [];
+      groups[cid].push(d);
+    });
+    Object.values(groups).forEach(list => list.sort((x: any, y: any) => `${x.student.lastName} ${x.student.firstName}`.localeCompare(`${y.student.lastName} ${y.student.firstName}`)));
+    return groups;
+  }, [debtors, classes]);
+
+  const classesToPrint = useMemo(() => {
+    if (printMode === 'single-class') {
+      return (classes || []).filter(c => c.id === selectedClassId);
+    }
+    const list = (classes || [])
+      .filter(c => (classGroupedDebtors[c.id] || []).length > 0)
+      .sort((a, b) => a.name.localeCompare(b.name));
+    // Pupils with no (or a deleted) class used to be left off every printed list.
+    if ((classGroupedDebtors['unassigned'] || []).length > 0) list.push({ id: 'unassigned', name: 'No class assigned' } as any);
+    return list;
+  }, [classes, printMode, selectedClassId, classGroupedDebtors]);
 
   // The aged-debt list, debt aging and class pace work from the balance index too (no full ledger needed).
   const advisoryAvailable = isLedgerLoaded || Boolean(indexRows);
@@ -7575,6 +7628,7 @@ export default function AccountsPage() {
             minDebt={minDebt}
             setMinDebt={setMinDebt}
             debtorsCount={debtors.length}
+            sourceNote={isLedgerLoaded ? '' : (indexRows ? 'Balances come from the live balance list. Load the school ledger first if you want the Tuition / Canteen / Transport columns.' : 'Balances are still loading…')}
             classDebtorsCount={(classGroupedDebtors[selectedClassId] || []).length}
             totalSum={debtors.reduce((sum, d) => sum + d.balance, 0)}
             onPrint={handlePrintDebtorsList}
@@ -7588,8 +7642,9 @@ export default function AccountsPage() {
             students={students || []}
             classes={classes || []}
             records={records || []}
-            isSending={false}
+            isSending={isPreparingLetter}
             onPrint={handlePrintParentLetter}
+            balanceForStudent={letterBalanceFor}
         />
 
         {activePrintType === 'parent-letter' && (
@@ -7598,7 +7653,7 @@ export default function AccountsPage() {
             parents={parents || []}
             students={students || []}
             classes={classes || []}
-            records={records || []}
+            records={letterRecords || records || []}
             schoolProfile={schoolProfile}
           />
         )}
@@ -7837,22 +7892,32 @@ export default function AccountsPage() {
                             <tr>
                               <th className="col-id text-left">Student ID</th>
                               <th className="col-name text-left">Name</th>
+                              {debtorsHaveBreakdown ? (<>
                               <th className="col-fee text-right">Tuition</th>
                               <th className="col-fee text-right">Canteen</th>
                               <th className="col-fee text-right">Transport</th>
                               <th className="col-fee text-right">Other</th>
+                              </>) : (<>
+                              <th className="col-fee text-left">Class</th>
+                              <th className="col-fee text-right">Oldest overdue</th>
+                              </>)}
                               <th className="col-total text-right">Total Balance</th>
                             </tr>
                           </thead>
                           <tbody>
                             {classDebtors.map(d => (
                               <tr key={d.student.uid}>
-                                <td className="font-mono text-left">{d.student.studentId || 'ID Pending'}</td>
+                                <td className="font-mono text-left">{d.student.studentId || (d.student as any).admissionNo || (d.student as any).admissionNumber || '—'}</td>
                                 <td className="font-bold text-left">{d.student.firstName} {d.student.lastName}</td>
+                                {d.breakdown ? (<>
                                 <td className="text-right font-mono">GH₵{d.breakdown.tuition.toFixed(2)}</td>
                                 <td className="text-right font-mono">GH₵{d.breakdown.canteen.toFixed(2)}</td>
                                 <td className="text-right font-mono">GH₵{d.breakdown.transport.toFixed(2)}</td>
                                 <td className="text-right font-mono">GH₵{d.breakdown.other.toFixed(2)}</td>
+                                </>) : (<>
+                                <td className="text-left">{classesMap.get(d.student.classId) || '—'}</td>
+                                <td className="text-right font-mono">{d.oldestOverdueDays ? `${d.oldestOverdueDays} days` : '—'}</td>
+                                </>)}
                                 <td className="text-right font-bold font-mono text-rose-600">GH₵{d.balance.toFixed(2)}</td>
                               </tr>
                             ))}
@@ -7905,22 +7970,32 @@ export default function AccountsPage() {
                           <tr>
                             <th className="col-id text-left">Student ID</th>
                             <th className="col-name text-left">Student Name</th>
+                            {debtorsHaveBreakdown ? (<>
                             <th className="col-fee text-right">Tuition</th>
                             <th className="col-fee text-right">Canteen</th>
                             <th className="col-fee text-right">Transport</th>
                             <th className="col-fee text-right">Other</th>
+                            </>) : (<>
+                            <th className="col-fee text-left">Class</th>
+                            <th className="col-fee text-right">Oldest overdue</th>
+                            </>)}
                             <th className="col-total text-right">Total Balance</th>
                           </tr>
                         </thead>
                         <tbody>
                           {classDebtors.map(d => (
                             <tr key={d.student.uid}>
-                              <td className="font-mono text-left">{d.student.studentId || 'ID Pending'}</td>
+                              <td className="font-mono text-left">{d.student.studentId || (d.student as any).admissionNo || (d.student as any).admissionNumber || '—'}</td>
                               <td className="font-black text-slate-800 text-left">{d.student.firstName} {d.student.lastName}</td>
+                              {d.breakdown ? (<>
                               <td className="text-right font-mono">GH₵{d.breakdown.tuition.toFixed(2)}</td>
                               <td className="text-right font-mono">GH₵{d.breakdown.canteen.toFixed(2)}</td>
                               <td className="text-right font-mono">GH₵{d.breakdown.transport.toFixed(2)}</td>
                               <td className="text-right font-mono">GH₵{d.breakdown.other.toFixed(2)}</td>
+                              </>) : (<>
+                              <td className="text-left">{classesMap.get(d.student.classId) || '—'}</td>
+                              <td className="text-right font-mono">{d.oldestOverdueDays ? `${d.oldestOverdueDays} days` : '—'}</td>
+                              </>)}
                               <td className="text-right font-black font-mono text-rose-600 text-[11px]">GH₵{d.balance.toFixed(2)}</td>
                             </tr>
                           ))}
