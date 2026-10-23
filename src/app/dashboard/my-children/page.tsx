@@ -731,107 +731,141 @@ function ChildCurriculumRoadmapTab({ student }: { student: Student }) {
     );
 }
 
-function StudentDetailView({ student }: { student: Student }) {
-    const studentId = student.id || student.uid;
+function ageFrom(dob?: string): string {
+    if (!dob) return '';
+    const d = new Date(dob);
+    if (isNaN(d.getTime())) return '';
+    const now = new Date();
+    let age = now.getFullYear() - d.getFullYear();
+    if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) age--;
+    return age >= 0 && age < 40 ? `${age} yrs` : '';
+}
 
+function InfoRow({ label, value }: { label: string; value?: React.ReactNode }) {
     return (
-        <div className="space-y-6">
-            <StudentBadgeShowcase 
-                studentName={`${student.firstName} ${student.lastName}`}
-                gradeLevel={(student as any).gradeLevel || (student as any).classId}
-                totalPoints={(student as any).totalPoints || 0}
-                earnedBadges={(student as any).earnedBadges || []}
-            />
-
-            <Tabs defaultValue="roadmap" className="w-full">
-                <TabsList className="grid w-full grid-cols-7 bg-slate-100 p-1 rounded-xl">
-                    <TabsTrigger value="roadmap" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm text-indigo-950">
-                        <Flame className="mr-2 h-4 w-4 text-amber-500" /> Roadmap
-                    </TabsTrigger>
-                    <TabsTrigger value="attendance" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <CalendarCheck className="mr-2 h-4 w-4" /> Attendance Log
-                    </TabsTrigger>
-                    <TabsTrigger value="behavioral" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <ShieldAlert className="mr-2 h-4 w-4" /> Behavioral Log
-                    </TabsTrigger>
-                    <TabsTrigger value="timeline" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <Milestone className="mr-2 h-4 w-4" /> Journey Timeline
-                    </TabsTrigger>
-                    <TabsTrigger value="transport" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <BusIcon className="mr-2 h-4 w-4 text-indigo-600" /> Transport Fleet
-                    </TabsTrigger>
-                    <TabsTrigger value="boarding" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <Home className="mr-2 h-4 w-4" /> Boarding Service
-                    </TabsTrigger>
-                    <TabsTrigger value="wallet" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <Wallet className="mr-2 h-4 w-4" /> Digital Wallet
-                    </TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="roadmap" className="mt-6">
-                    <ChildCurriculumRoadmapTab student={student} />
-                </TabsContent>
-
-                <TabsContent value="attendance" className="mt-6">
-                    <AttendanceHistory studentId={studentId} />
-                </TabsContent>
-
-                <TabsContent value="behavioral" className="mt-6">
-                    <BehavioralHistory studentId={studentId} />
-                </TabsContent>
-
-                <TabsContent value="timeline" className="mt-6">
-                    <StudentJourneyTimeline studentId={studentId} />
-                </TabsContent>
-
-                <TabsContent value="transport" className="mt-6">
-                    <StudentTransportCard student={student} />
-                </TabsContent>
-
-                <TabsContent value="boarding" className="mt-6">
-                    <BoardingServiceTab student={student} />
-                </TabsContent>
-
-                <TabsContent value="wallet" className="mt-6">
-                    <DigitalWalletTab student={student} />
-                </TabsContent>
-            </Tabs>
+        <div className="flex items-start justify-between gap-4 py-2 border-b border-slate-100 last:border-0">
+            <span className="text-[11px] font-bold text-slate-500">{label}</span>
+            <span className="text-xs font-black text-slate-800 text-right">{value || <span className="text-slate-300 font-bold">Not recorded</span>}</span>
         </div>
     );
 }
 
-function StudentAccordionItem({ studentUid }: { studentUid: string }) {
-    const firestore = useFirestore();
-    
-    const studentDocRef = useMemoFirebase(
-        () => firestore ? doc(firestore, 'students', studentUid) : null,
-        [firestore, studentUid]
+function ChildProfileTab({ student, className }: { student: Student; className: string }) {
+    const s: any = student;
+    const dob = s.dateOfBirth ? (() => { const d = new Date(s.dateOfBirth); return isNaN(d.getTime()) ? s.dateOfBirth : `${format(d, 'd MMM yyyy')}${ageFrom(s.dateOfBirth) ? ` (${ageFrom(s.dateOfBirth)})` : ''}`; })() : '';
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="rounded-2xl border border-slate-100 bg-white">
+                <CardHeader className="pb-1"><CardTitle className="text-xs font-black uppercase tracking-wider text-slate-700">School details</CardTitle></CardHeader>
+                <CardContent>
+                    <InfoRow label="Admission no." value={s.studentId || s.admissionNo || s.admissionNumber} />
+                    <InfoRow label="Class" value={className} />
+                    <InfoRow label="Date of birth" value={dob} />
+                    <InfoRow label="Gender" value={s.gender} />
+                    {s.house ? <InfoRow label="House" value={s.house} /> : null}
+                    <InfoRow label="Status" value={s.enrollmentStatus || 'Active'} />
+                </CardContent>
+            </Card>
+            <Card className="rounded-2xl border border-slate-100 bg-white">
+                <CardHeader className="pb-1"><CardTitle className="text-xs font-black uppercase tracking-wider text-slate-700">Health & guardian</CardTitle></CardHeader>
+                <CardContent>
+                    <InfoRow label="Blood group" value={s.bloodGroup || s.medical?.bloodGroup} />
+                    <InfoRow label="Allergies" value={s.allergies || s.medical?.allergies} />
+                    <InfoRow label="Medical conditions" value={s.chronicIllnesses || s.medical?.conditions} />
+                    {s.healthNotes ? <InfoRow label="Health notes" value={s.healthNotes} /> : null}
+                    <InfoRow label="Guardian" value={s.guardianName} />
+                    <InfoRow label="Guardian phone" value={s.guardianPhone} />
+                </CardContent>
+            </Card>
+            <Card className="rounded-2xl border border-slate-100 bg-white md:col-span-2">
+                <CardHeader className="pb-1"><CardTitle className="text-xs font-black uppercase tracking-wider text-slate-700">School services</CardTitle></CardHeader>
+                <CardContent className="flex flex-wrap gap-2">
+                    <Badge className={cn("border-none text-[10px] font-black", s.usesBusService ? "bg-indigo-100 text-indigo-800" : "bg-slate-100 text-slate-500")}>School bus: {s.usesBusService ? `Yes${s.transportBillingModel ? ` (${s.transportBillingModel})` : ''}` : 'No'}</Badge>
+                    <Badge className={cn("border-none text-[10px] font-black", s.usesCanteen ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-500")}>Canteen: {s.usesCanteen ? `Yes${s.canteenBillingMode && s.canteenBillingMode !== 'None' ? ` (${s.canteenBillingMode})` : ''}` : 'No'}</Badge>
+                    {s.isSponsored ? <Badge className="border-none text-[10px] font-black bg-emerald-100 text-emerald-800">Sponsored{s.sponsorName ? `: ${s.sponsorName}` : ''}</Badge> : null}
+                </CardContent>
+            </Card>
+            <p className="md:col-span-2 text-[11px] font-semibold text-slate-500">If any of these details are wrong or missing, please let the school office know so they can update the record.</p>
+        </div>
     );
-    
-    const { data: student, isLoading } = useDoc<Student>(studentDocRef);
+}
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center p-6 border-b">
-                <Loader2 className="h-5 w-5 animate-spin text-primary"/>
-                <span className="ml-3 text-sm font-medium text-slate-500">Synchronizing child profile...</span>
-            </div>
-        );
-    }
-    
-    if (!student || student.enrollmentStatus === 'Inactive') {
-        return null;
-    }
+function StudentDetailView({ student }: { student: Student }) {
+    const studentId = student.id || student.uid;
+    const firestore = useFirestore();
+    const { data: cls } = useDoc<any>(useMemoFirebase(() => (firestore && student.classId) ? doc(firestore, 'classes', student.classId) : null, [firestore, student.classId]));
+    const className = cls?.name || '';
+    const s: any = student;
+    const badges = (s.earnedBadges || []).length;
+
+    const tabs: { value: string; label: string; icon: any }[] = [
+        { value: 'profile', label: 'Profile', icon: User },
+        { value: 'attendance', label: 'Attendance', icon: CalendarCheck },
+        { value: 'behavioral', label: 'Behaviour', icon: ShieldAlert },
+        { value: 'roadmap', label: 'Homework & quizzes', icon: Flame },
+        { value: 'achievements', label: `Achievements${badges ? ` (${badges})` : ''}`, icon: BadgeInfo },
+        { value: 'timeline', label: 'Timeline', icon: Milestone },
+        { value: 'transport', label: 'Bus', icon: BusIcon },
+        { value: 'boarding', label: 'Boarding', icon: Home },
+        { value: 'wallet', label: 'Wallet', icon: Wallet },
+    ];
 
     return (
-        <AccordionItem value={studentUid} key={studentUid} className="border rounded-2xl mb-4 overflow-hidden shadow-sm bg-white">
-            <AccordionTrigger className="hover:no-underline px-6 py-5 hover:bg-slate-50 transition-all">
-                <StudentDisplay student={student} variant="list" showAvatar/>
-            </AccordionTrigger>
-            <AccordionContent className="p-6 bg-slate-50/30 border-t">
-                <StudentDetailView student={student} />
-            </AccordionContent>
-        </AccordionItem>
+        <div className="space-y-5">
+            {/* Child header */}
+            <div className="flex items-center gap-4 p-5 rounded-3xl bg-white border border-slate-100 shadow-sm">
+                {student.photoURL ? (
+                    <img src={student.photoURL} alt="" className="h-16 w-16 rounded-2xl object-cover bg-slate-100 shrink-0" />
+                ) : (
+                    <div className="h-16 w-16 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center text-xl font-black shrink-0">
+                        {student.firstName?.[0]}{student.lastName?.[0]}
+                    </div>
+                )}
+                <div className="min-w-0">
+                    <h2 className="text-lg font-black text-slate-900 truncate">{student.firstName} {student.lastName}</h2>
+                    <p className="text-xs font-bold text-slate-500">{className || 'Class not set'} · {s.studentId || s.admissionNo || '—'}</p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                        {s.usesBusService ? <Badge className="border-none bg-indigo-50 text-indigo-700 text-[9px] font-black">Bus</Badge> : null}
+                        {s.usesCanteen ? <Badge className="border-none bg-amber-50 text-amber-700 text-[9px] font-black">Canteen</Badge> : null}
+                        {s.isSponsored ? <Badge className="border-none bg-emerald-50 text-emerald-700 text-[9px] font-black">Sponsored</Badge> : null}
+                        <Badge className="border-none bg-slate-100 text-slate-600 text-[9px] font-black">{badges} badge{badges === 1 ? '' : 's'} · {s.totalPoints || 0} XP</Badge>
+                    </div>
+                </div>
+            </div>
+
+            <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="flex w-full justify-start overflow-x-auto h-auto gap-1 bg-slate-100 p-1 rounded-2xl">
+                    {tabs.map(t => (
+                        <TabsTrigger key={t.value} value={t.value} className="shrink-0 rounded-xl text-[11px] font-black px-3 py-2 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                            <t.icon className="mr-1.5 h-3.5 w-3.5" /> {t.label}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+
+                {/* Each tab loads its own data only when it is opened. */}
+                <TabsContent value="profile" className="mt-5"><ChildProfileTab student={student} className={className} /></TabsContent>
+                <TabsContent value="attendance" className="mt-5">
+                    <div className="mb-3 text-[11px] font-semibold text-slate-500">
+                        For the term summary and month calendar, open <a href="/dashboard/my-attendance" className="text-indigo-700 font-black">Ward Attendance →</a>
+                    </div>
+                    <AttendanceHistory studentId={student.uid || studentId} />
+                </TabsContent>
+                <TabsContent value="behavioral" className="mt-5"><BehavioralHistory studentId={student.uid || studentId} /></TabsContent>
+                <TabsContent value="roadmap" className="mt-5"><ChildCurriculumRoadmapTab student={student} /></TabsContent>
+                <TabsContent value="achievements" className="mt-5">
+                    <StudentBadgeShowcase
+                        studentName={`${student.firstName} ${student.lastName}`}
+                        gradeLevel={s.gradeLevel || s.classId}
+                        totalPoints={s.totalPoints || 0}
+                        earnedBadges={s.earnedBadges || []}
+                    />
+                </TabsContent>
+                <TabsContent value="timeline" className="mt-5"><StudentJourneyTimeline studentId={studentId} /></TabsContent>
+                <TabsContent value="transport" className="mt-5"><StudentTransportCard student={student} /></TabsContent>
+                <TabsContent value="boarding" className="mt-5"><BoardingServiceTab student={student} /></TabsContent>
+                <TabsContent value="wallet" className="mt-5"><DigitalWalletTab student={student} /></TabsContent>
+            </Tabs>
+        </div>
     );
 }
 
@@ -839,22 +873,37 @@ function MyChildrenPageContent() {
     const { user, isUserLoading } = useUser();
     const { role, profile, loading: isRoleLoading } = useRole();
     const firestore = useFirestore();
+    const { schoolId } = useCurrentSchool();
+    const [selectedId, setSelectedId] = useState<string>('');
 
-    const studentIds = useMemo(() => {
+    const studentIds: string[] = useMemo(() => {
         return (
-            profile?.studentIds || 
-            profile?.student_ids || 
-            profile?.students || 
-            profile?.childrenIds || 
-            profile?.linkedStudentIds || 
+            profile?.studentIds ||
+            profile?.student_ids ||
+            profile?.students ||
+            profile?.childrenIds ||
+            profile?.linkedStudentIds ||
             []
         );
     }, [profile]);
-    
+    const idsKey = studentIds.join(',');
+
     const { data: studentForStudentRole, isLoading: isStudentLoading } = useCollection<Student>(
         useMemoFirebase(() => (role === 'Student' && user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [firestore, user?.uid, role])
     );
-    
+
+    // All linked children in one query (one read each).
+    const { data: childrenDocs, isLoading: loadingChildren } = useCollection<Student>(
+        useMemoFirebase(() => (role === 'Parent' && firestore && schoolId && studentIds.length > 0)
+            ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', studentIds.slice(0, 30)))
+            : null,
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [firestore, role, schoolId, idsKey])
+    );
+    const children = useMemo(() => (childrenDocs || []).filter((c: any) => c.enrollmentStatus !== 'Inactive')
+        .sort((a: any, b: any) => studentIds.indexOf(a.uid) - studentIds.indexOf(b.uid)), [childrenDocs, idsKey]);
+    const active: any = children.find((c: any) => c.uid === selectedId || c.id === selectedId) || children[0];
+
     const isLoading = isUserLoading || isRoleLoading || isStudentLoading;
 
     if (isLoading) {
@@ -876,7 +925,7 @@ function MyChildrenPageContent() {
             </Card>
         );
     }
-    
+
     if (role === 'Student') {
         const student = studentForStudentRole?.[0];
         if (!student) {
@@ -888,57 +937,59 @@ function MyChildrenPageContent() {
             );
         }
         return (
-            <div className="max-w-4xl mx-auto space-y-6">
-                <div className="bg-white p-6 rounded-3xl border-2 border-indigo-50 shadow-xl">
-                    <StudentDetailView student={student} />
-                </div>
+            <div className="max-w-5xl mx-auto space-y-6">
+                <StudentDetailView student={student} />
             </div>
         );
     }
 
-    if (role === 'Parent') {
-        if (!studentIds || studentIds.length === 0) {
-            return (
-                <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto mt-10">
-                    <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                    <h3 className="text-xl font-bold text-slate-800">No Children Linked</h3>
-                    <p className="text-slate-500 mt-2">We couldn't find any students associated with your parent account.</p>
-                    <p className="text-sm text-indigo-600 mt-4 font-bold">Please contact the school office to verify your account link.</p>
-                </div>
-            );
-        }
-        
+    if (!studentIds || studentIds.length === 0) {
         return (
-            <div className="max-w-4xl mx-auto space-y-6">
-                {/* Executive Violet/Fuchsia Gradient Banner */}
-                <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-violet-600 via-fuchsia-600 to-indigo-600 p-8 text-white shadow-xl shadow-indigo-100/50 dark:shadow-none mb-6">
-                    {/* Decorative background shapes */}
-                    <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-white/10 blur-xl animate-pulse" />
-                    <div className="absolute -left-10 -bottom-10 h-32 w-32 rounded-full bg-white/10 blur-xl" />
-                    
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md">
-                                <Users className="h-3.5 w-3.5 text-fuchsia-200" /> Parent Portal
-                            </span>
-                            <h1 className="mt-4 text-2xl md:text-3xl font-extrabold tracking-tight italic uppercase">My Children</h1>
-                            <p className="mt-2 text-indigo-100/90 text-xs leading-relaxed font-semibold italic">
-                                Access your children's live academic attendance log, behavioral records, and campus housing boarding details.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <Accordion type="single" collapsible defaultValue={studentIds[0]} className="w-full">
-                    {studentIds.map((uid: string) => (
-                        <StudentAccordionItem key={uid} studentUid={uid} />
-                    ))}
-                </Accordion>
+            <div className="p-12 text-center border-2 border-dashed rounded-3xl bg-slate-50 max-w-2xl mx-auto mt-10">
+                <Users className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-xl font-bold text-slate-800">No Children Linked</h3>
+                <p className="text-slate-500 mt-2">We couldn't find any students associated with your parent account.</p>
+                <p className="text-sm text-indigo-600 mt-4 font-bold">Please contact the school office to verify your account link.</p>
             </div>
         );
     }
 
-    return null;
+    return (
+        <div className="max-w-5xl mx-auto space-y-5">
+            <div>
+                <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Parent Portal</p>
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">My Children</h1>
+                <p className="text-xs text-slate-500 font-medium mt-1">Each child's school record, attendance, behaviour, homework, bus, boarding and wallet.</p>
+            </div>
+
+            {loadingChildren && !childrenDocs ? (
+                <div className="flex justify-center p-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+            ) : children.length === 0 ? (
+                <p className="text-sm text-slate-500 font-semibold">The linked children could not be loaded. Please contact the school office.</p>
+            ) : (
+                <>
+                    {children.length > 1 && (
+                        <div className="flex flex-wrap gap-2">
+                            {children.map((c: any) => {
+                                const on = active && (active.uid === c.uid);
+                                return (
+                                    <button key={c.uid} onClick={() => setSelectedId(c.uid)}
+                                        className={cn("flex items-center gap-2.5 pl-1.5 pr-4 py-1.5 rounded-2xl border transition-all",
+                                            on ? "bg-indigo-700 border-indigo-700 text-white shadow" : "bg-white border-slate-200 text-slate-700 hover:border-indigo-300")}>
+                                        {c.photoURL ? <img src={c.photoURL} alt="" className="h-8 w-8 rounded-xl object-cover" /> : (
+                                            <span className={cn("h-8 w-8 rounded-xl flex items-center justify-center text-[11px] font-black", on ? "bg-white/15" : "bg-indigo-50 text-indigo-700")}>{c.firstName?.[0]}{c.lastName?.[0]}</span>
+                                        )}
+                                        <span className="text-xs font-black">{c.firstName} {c.lastName}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                    {active && <StudentDetailView key={active.uid} student={active} />}
+                </>
+            )}
+        </div>
+    );
 }
 
 export default function MyChildrenPage() {
