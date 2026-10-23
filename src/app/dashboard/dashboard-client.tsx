@@ -10419,7 +10419,7 @@ function StudentDashboard({ profile }: any) {
         return query(
             collection(firestore, 'announcements_v2'),
             where('schoolId', '==', schoolId),
-            where('audience', 'array-contains-any', ['Everybody', 'Student'])
+            where('audience', 'array-contains-any', ['Everybody', 'Students', 'Student'])
         );
     }, [firestore, schoolId]);
     const { data: announcements, isLoading: loadingAnnouncements } = useCollection<any>(annQuery);
@@ -12518,7 +12518,9 @@ export default function DashboardClient() {
     if (!firestore || !schoolId || !role) return null;
     let q = query(collection(firestore, 'announcements_v2'), where('schoolId', '==', schoolId), orderBy('publishedAt', 'desc'), limit(5));
     if (!isStaff && role) {
-        q = query(q, where('audience', 'array-contains-any', ['Everybody', role]));
+        // Posts are addressed to 'Parents' / 'Students' (plural); the role is 'Parent' / 'Student'.
+        const group = role === 'Parent' ? 'Parents' : role === 'Student' ? 'Students' : role;
+        q = query(q, where('audience', 'array-contains-any', ['Everybody', group]));
     }
     return q;
   }, [firestore, schoolId, role, isStaff]);

@@ -26,7 +26,74 @@ import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
+/**
+ * Parents see only their own children's badges. (Before, a parent got the staff hub with the class
+ * leaderboard, which could load any class's pupils.)
+ */
+function ParentAchievements() {
+  const { profile } = useRole();
+  const firestore = useFirestore();
+  const { schoolId } = useCurrentSchool();
+  const [selected, setSelected] = useState('');
+  const ids: string[] = (profile?.studentIds || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || []).slice(0, 30);
+  const idsKey = ids.join(',');
+  const { data: kids, isLoading } = useCollection<Student>(useMemoFirebase(
+    () => (firestore && schoolId && ids.length) ? query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', ids)) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [firestore, schoolId, idsKey]));
+  const children = (kids || []).slice().sort((a: any, b: any) => ids.indexOf(a.uid) - ids.indexOf(b.uid));
+  const active: any = children.find((c: any) => c.uid === selected) || children[0];
+
+  return (
+    <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-5 pb-16">
+      <div>
+        <p className="text-[10px] font-black tracking-[0.2em] uppercase text-amber-600">Achievements</p>
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">Badges & Achievements</h1>
+        <p className="text-xs text-slate-500 font-medium mt-1">Badges and points your children have earned at school, and the ones still to unlock.</p>
+      </div>
+      {isLoading && !kids ? (
+        <div className="flex justify-center p-10"><Loader2 className="h-8 w-8 animate-spin text-amber-600" /></div>
+      ) : children.length === 0 ? (
+        <p className="text-sm text-slate-500 font-semibold">No children are linked to this account yet.</p>
+      ) : (
+        <>
+          {children.length > 1 && (
+            <div className="flex flex-wrap gap-2">
+              {children.map((c: any) => {
+                const on = active?.uid === c.uid;
+                const n = (c.earnedBadges || []).length;
+                return (
+                  <button key={c.uid} onClick={() => setSelected(c.uid)}
+                    className={cn("px-4 py-2.5 text-xs font-black rounded-xl border transition-all",
+                      on ? "bg-amber-500 text-white border-amber-500 shadow" : "bg-white text-slate-600 border-slate-200 hover:border-amber-300")}>
+                    {c.firstName} {c.lastName} <span className={cn("ml-1", on ? "text-amber-100" : "text-slate-400")}>· {n} badge{n === 1 ? '' : 's'}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          {active && (
+            <StudentBadgeShowcase
+              key={active.uid}
+              studentName={`${active.firstName} ${active.lastName}`}
+              gradeLevel={active.gradeLevel || active.classId}
+              totalPoints={active.totalPoints || 0}
+              earnedBadges={active.earnedBadges || []}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function AchievementsPage() {
+  const { role } = useRole();
+  if (role === 'Parent') return <ParentAchievements />;
+  return <StaffAchievementsPage />;
+}
+
+function StaffAchievementsPage() {
   const { role, profile } = useRole();
   const { user } = useUser();
   const firestore = useFirestore();

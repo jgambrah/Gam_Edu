@@ -76,6 +76,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
     const [expandedPayments, setExpandedPayments] = useState<Record<string, boolean>>({});
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [billTab, setBillTab] = useState<string>('insights');
 
     const recordsQuery = useMemoFirebase(() => {
         if (!firestore || !studentId || !schoolId) return null;
@@ -214,15 +215,21 @@ function StudentBillView({ studentId }: { studentId: string }) {
         if (!records) return [];
         const categories: Record<string, { billed: number; paid: number; waivers: number; balance: number }> = {};
         
-        records.forEach(r => {
-            const catType = r.type || 'Other';
+        // A clear name per fee type (balances carried from an earlier term were shown as "Other").
+        const nameOf = (r: any) => {
+            const text = `${r.type || ''} ${r.description || ''} ${r.title || ''}`;
+            if (r.isCarryForward || r.isOpeningBalance || /brought forward|opening balance|arrears/i.test(text)) return 'Balance from earlier terms';
+            return String(r.type || 'Other').replace(/\s*\((Daily|Termly)\)\s*$/i, '').trim() || 'Other';
+        };
+        records.filter(r => (r as any).status !== 'Pending Reversal').forEach(r => {
+            const catType = nameOf(r);
             if (!categories[catType]) {
                 categories[catType] = { billed: 0, paid: 0, waivers: 0, balance: 0 };
             }
-            categories[catType].billed += r.billedAmount || 0;
-            categories[catType].paid += r.amountPaid || 0;
-            categories[catType].waivers += r.waiverAmount || 0;
-            categories[catType].balance += (r.billedAmount || 0) - (r.amountPaid || 0) - (r.waiverAmount || 0);
+            categories[catType].billed += Number(r.billedAmount) || 0;
+            categories[catType].paid += Number(r.amountPaid) || 0;
+            categories[catType].waivers += Number(r.waiverAmount) || 0;
+            categories[catType].balance += (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0);
         });
         
         return Object.entries(categories).map(([name, data]) => {
@@ -233,7 +240,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
                 ...data,
                 pct
             };
-        }).sort((a, b) => b.billed - a.billed);
+        }).sort((a, b) => b.balance - a.balance || b.billed - a.billed);
     }, [records]);
 
     const accountStanding = useMemo(() => {
@@ -264,10 +271,12 @@ function StudentBillView({ studentId }: { studentId: string }) {
         });
         
         if (overdueRecords.length > 0) {
+            const overdueAmount = overdueRecords.reduce((s, r) => s + (Number(r.billedAmount) || 0) - (Number(r.amountPaid) || 0) - (Number(r.waiverAmount) || 0), 0);
+            const oldest = overdueRecords.map(r => r.dueDate.toDate()).sort((a: Date, b: Date) => a.getTime() - b.getTime())[0];
             return {
                 status: 'overdue',
-                title: 'Overdue Balance Warning',
-                message: `You have ${overdueRecords.length} overdue bill(s). Outstanding amount: GH₵ ${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}. Please clear immediately.`,
+                title: 'Some fees are past their due date',
+                message: `GH₵ ${overdueAmount.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} is past due on ${overdueRecords.length} bill${overdueRecords.length === 1 ? '' : 's'} (the oldest was due ${format(oldest, 'd MMM yyyy')}).`,
                 variant: 'destructive'
             };
         }
@@ -308,7 +317,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
             
             if (statusFilter !== 'all') {
                 if (statusFilter === 'paid' && status !== 'Paid') return false;
-                if (statusFilter === 'unpaid' && status !== 'Unpaid' && status !== 'Overdue') return false;
+                if (statusFilter === 'unpaid' && balance <= 0.009) return false;
                 if (statusFilter === 'overdue' && status !== 'Overdue') return false;
             }
             
@@ -372,158 +381,96 @@ function StudentBillView({ studentId }: { studentId: string }) {
     }
 
     return (
-        <Tabs defaultValue="insights" className="w-full space-y-6">
+        <Tabs value={billTab} onValueChange={setBillTab} className="w-full space-y-6">
             {termPicker}
             <TabsList className="grid w-full grid-cols-3 bg-slate-100/80 p-1 rounded-2xl border border-slate-200/50 backdrop-blur-sm max-w-lg mx-auto">
                 <TabsTrigger value="insights" className="rounded-xl font-black text-xs uppercase tracking-wider py-2.5">
-                    Insights
+                    Summary
                 </TabsTrigger>
                 <TabsTrigger value="ledger" className="rounded-xl font-black text-xs uppercase tracking-wider py-2.5">
-                    Ledger Statement
+                    Bills
                 </TabsTrigger>
                 <TabsTrigger value="payments" className="rounded-xl font-black text-xs uppercase tracking-wider py-2.5">
-                    Payment History
+                    Payments
                 </TabsTrigger>
             </TabsList>
 
-            {/* INSIGHTS TAB */}
-            <TabsContent value="insights" className="space-y-6 outline-none">
-                {/* Account standing status banner */}
-                <div className={cn(
-                    "p-6 rounded-3xl border shadow-sm flex items-center gap-4 transition-all",
-                    accountStanding.status === 'good' && "bg-emerald-50/50 border-emerald-200 text-emerald-950",
-                    accountStanding.status === 'outstanding' && "bg-amber-50/50 border-amber-200 text-amber-950",
-                    accountStanding.status === 'overdue' && "bg-rose-50/50 border-rose-200 text-rose-950"
-                )}>
-                    <div className={cn(
-                        "p-3 rounded-2xl shadow-inner",
-                        accountStanding.status === 'good' && "bg-emerald-100 text-emerald-600",
-                        accountStanding.status === 'outstanding' && "bg-amber-100 text-amber-600",
-                        accountStanding.status === 'overdue' && "bg-rose-100 text-rose-600"
-                    )}>
-                        {accountStanding.status === 'good' ? <CheckCircle2 className="h-6 w-6" /> : <AlertTriangle className="h-6 w-6" />}
-                    </div>
-                    <div className="space-y-1">
-                        <h4 className="text-sm font-black uppercase tracking-wider">{accountStanding.title}</h4>
-                        <p className="text-xs font-semibold leading-relaxed opacity-90">{accountStanding.message}</p>
-                    </div>
-                </div>
-
-                {/* Grid for Gauge and Breakdown */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Gauge Card */}
-                    <Card className="rounded-3xl border border-slate-100 bg-white shadow-sm flex flex-col justify-center p-6">
-                        <CardHeader className="p-0 pb-4 text-center">
-                            <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Payment Progress</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 flex flex-col items-center justify-center">
-                            <div className="relative w-40 h-40">
-                                <svg className="w-full h-full transform -rotate-90">
-                                    <circle
-                                        cx="80"
-                                        cy="80"
-                                        r="68"
-                                        className="stroke-slate-100"
-                                        strokeWidth="12"
-                                        fill="transparent"
-                                    />
-                                    <circle
-                                        cx="80"
-                                        cy="80"
-                                        r="68"
-                                        className="stroke-indigo-650 transition-all duration-1000 ease-out"
-                                        strokeWidth="12"
-                                        fill="transparent"
-                                        strokeDasharray={2 * Math.PI * 68}
-                                        strokeDashoffset={2 * Math.PI * 68 * (1 - percentPaid / 100)}
-                                        strokeLinecap="round"
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-3xl font-black text-slate-800">{percentPaid}%</span>
-                                    <span className="text-[9px] font-black text-indigo-600 uppercase tracking-widest mt-0.5">Paid</span>
-                                </div>
-                            </div>
-                            <div className="text-center mt-4">
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
-                                    {percentPaid === 100 ? 'All charges fully settled!' : 'Remaining balance pending'}
+            {/* SUMMARY TAB */}
+            <TabsContent value="insights" className="space-y-5 outline-none">
+                {/* Balance, front and centre */}
+                <Card className={cn("rounded-3xl border shadow-sm overflow-hidden",
+                    overallSummary.balance > 0.01 ? "border-rose-100" : "border-emerald-100")}>
+                    <CardContent className="p-6 space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                    {overallSummary.balance > 0.01 ? 'Balance to pay' : overallSummary.balance < -0.01 ? 'Paid in advance' : 'Balance'}
+                                </p>
+                                <p className={cn("text-3xl font-black mt-1", overallSummary.balance > 0.01 ? "text-rose-600" : "text-emerald-600")}>
+                                    GH₵ {Math.abs(overallSummary.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </p>
+                                <p className="text-xs font-semibold text-slate-500 mt-1">
+                                    {student ? `${student.firstName} ${student.lastName}` : ''}{viewTermId ? ' · closed term' : ' · open bills'}
                                 </p>
                             </div>
-                        </CardContent>
-                    </Card>
+                            {overallSummary.balance > 0.01 && !viewTermId && (
+                                <Button onClick={() => { setStatusFilter('unpaid'); setBillTab('ledger'); }} className="bg-rose-600 hover:bg-rose-700 text-white font-black text-xs rounded-xl h-11 px-5 w-fit">
+                                    {role === 'Parent' && schoolSettings?.enablePaystack && schoolSettings?.paystackPubKey ? 'Pay online' : 'See unpaid bills'}
+                                </Button>
+                            )}
+                        </div>
+                        <div>
+                            <div className="flex justify-between text-[11px] font-bold text-slate-500 mb-1.5">
+                                <span>{percentPaid}% paid</span>
+                                <span>Billed GH₵ {overallSummary.totalBilled.toLocaleString(undefined, { minimumFractionDigits: 2 })} · Paid GH₵ {overallSummary.totalPaid.toLocaleString(undefined, { minimumFractionDigits: 2 })}{overallSummary.totalWaivers > 0 ? ` · Waived GH₵ ${overallSummary.totalWaivers.toLocaleString(undefined, { minimumFractionDigits: 2 })}` : ''}</span>
+                            </div>
+                            <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                <div className={cn("h-full rounded-full", percentPaid >= 100 ? "bg-emerald-500" : "bg-indigo-500")} style={{ width: `${percentPaid}%` }} />
+                            </div>
+                        </div>
+                        {accountStanding.status !== 'good' && (
+                            <div className={cn("flex items-start gap-3 p-3 rounded-2xl text-xs font-semibold",
+                                accountStanding.status === 'overdue' ? "bg-rose-50 text-rose-800" : "bg-amber-50 text-amber-800")}>
+                                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                                <span><b>{accountStanding.title}.</b> {accountStanding.message}</span>
+                            </div>
+                        )}
+                        {accountStanding.status === 'good' && (
+                            <div className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-50 text-emerald-800 text-xs font-semibold">
+                                <CheckCircle2 className="h-4 w-4" /> {accountStanding.message}
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
 
-                    {/* Category Breakdown Card */}
-                    <Card className="md:col-span-2 rounded-3xl border border-slate-100 bg-white shadow-sm p-6 flex flex-col justify-between">
-                        <CardHeader className="p-0 pb-4">
-                            <CardTitle className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Fee Category Breakdown</CardTitle>
-                            <CardDescription className="text-xs text-slate-450 mt-1 font-bold">Itemized summary by service/type</CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0 overflow-y-auto max-h-[190px] space-y-4 pr-1">
-                            {categoryInsights.map((item) => (
-                                <div key={item.name} className="space-y-1.5">
-                                    <div className="flex justify-between text-xs font-black">
-                                        <span className="text-slate-700">{item.name}</span>
-                                        <span className="text-slate-500 font-mono">
-                                            GH₵ {item.paid.toFixed(2)} / {(item.billed - item.waivers).toFixed(2)} ({item.pct}%)
+                {/* What the balance is made of */}
+                <Card className="rounded-3xl border border-slate-100 bg-white shadow-sm">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-xs font-black uppercase tracking-wider text-slate-700">By fee type</CardTitle>
+                        <CardDescription className="text-[11px]">What has been billed, what is paid, and what is left on each.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {categoryInsights.map((item) => {
+                            const left = Math.round(item.balance * 100) / 100;
+                            return (
+                                <div key={item.name} className="px-6 py-3.5 border-t border-slate-100">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-black text-slate-800 truncate">{item.name}</p>
+                                            <p className="text-[10px] font-bold text-slate-500">Billed GH₵ {(item.billed - item.waivers).toFixed(2)} · Paid GH₵ {item.paid.toFixed(2)}</p>
+                                        </div>
+                                        <span className={cn("text-sm font-black shrink-0", left > 0.009 ? "text-rose-600" : left < -0.009 ? "text-emerald-600" : "text-slate-400")}>
+                                            {left > 0.009 ? `GH₵ ${left.toFixed(2)} left` : left < -0.009 ? `GH₵ ${Math.abs(left).toFixed(2)} extra` : 'Paid'}
                                         </span>
                                     </div>
-                                    <div className="w-full bg-slate-100 rounded-full h-2">
-                                        <div 
-                                            className={cn(
-                                                "h-2 rounded-full transition-all duration-500",
-                                                item.pct >= 100 ? "bg-emerald-500" : item.pct >= 50 ? "bg-indigo-500" : "bg-rose-400"
-                                            )}
-                                            style={{ width: `${item.pct}%` }}
-                                        />
+                                    <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                                        <div className={cn("h-1.5 rounded-full", item.pct >= 100 ? "bg-emerald-500" : item.pct >= 50 ? "bg-indigo-500" : "bg-rose-400")} style={{ width: `${item.pct}%` }} />
                                     </div>
                                 </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-                </div>
-
-                {/* Quick Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card className="border-l-4 border-l-slate-400 rounded-2xl shadow-sm bg-white overflow-hidden">
-                        <CardContent className="p-5 flex items-center justify-between">
-                            <div>
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Total Billed</p>
-                                <h4 className="text-lg font-black text-slate-800 mt-1">GH₵ {overallSummary.totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
-                            </div>
-                            <div className="p-2.5 bg-slate-50 text-slate-500 rounded-xl"><FileText className="h-4 w-4"/></div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-emerald-500 rounded-2xl shadow-sm bg-white overflow-hidden">
-                        <CardContent className="p-5 flex items-center justify-between">
-                            <div>
-                                <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Total Paid</p>
-                                <h4 className="text-lg font-black text-slate-800 mt-1">GH₵ {overallSummary.totalPaid.toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
-                            </div>
-                            <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle2 className="h-4 w-4"/></div>
-                        </CardContent>
-                    </Card>
-                    <Card className="border-l-4 border-l-indigo-500 rounded-2xl shadow-sm bg-white overflow-hidden">
-                        <CardContent className="p-5 flex items-center justify-between">
-                            <div>
-                                <p className="text-[9px] font-black text-indigo-600 uppercase tracking-widest">Waivers</p>
-                                <h4 className="text-lg font-black text-slate-800 mt-1">GH₵ {overallSummary.totalWaivers.toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
-                            </div>
-                            <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl"><Award className="h-4 w-4"/></div>
-                        </CardContent>
-                    </Card>
-                    <Card className={cn(
-                        "border-l-4 rounded-2xl shadow-sm bg-white overflow-hidden",
-                        overallSummary.balance > 0.01 ? "border-l-rose-500" : "border-l-emerald-500"
-                    )}>
-                        <CardContent className="p-5 flex items-center justify-between">
-                            <div>
-                                <p className={cn("text-[9px] font-black uppercase tracking-widest", overallSummary.balance > 0.01 ? "text-rose-600" : "text-emerald-600")}>Outstanding</p>
-                                <h4 className="text-lg font-black text-slate-800 mt-1">GH₵ {Math.max(0, overallSummary.balance).toLocaleString(undefined, {minimumFractionDigits: 2})}</h4>
-                            </div>
-                            <div className="p-2.5 bg-rose-50 text-rose-500 rounded-xl"><Coins className="h-4 w-4"/></div>
-                        </CardContent>
-                    </Card>
-                </div>
+                            );
+                        })}
+                    </CardContent>
+                </Card>
             </TabsContent>
 
             {/* LEDGER TAB */}
@@ -860,55 +807,34 @@ function MyBillsPageContent() {
         }
         
         return (
-            <div className="space-y-8">
-                {/* Header Banner */}
-                <div className="relative p-8 xl:p-10 rounded-[2rem] text-white border-b-8 border-black/10 overflow-hidden shadow-2xl flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 border bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 border-emerald-500/20">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.06),_rgba(255,255,255,0))] pointer-events-none" />
-                    <div className="space-y-3 relative z-10 max-w-xl">
-                        <span className="text-[9px] font-black tracking-[0.25em] px-3.5 py-1.5 rounded-full uppercase bg-emerald-500/20 text-emerald-300">
-                            Family Finance Control
-                        </span>
-                        <h2 className="text-2.5xl xl:text-3.5xl font-black tracking-tight uppercase italic mt-2">
-                            Tuition & Fees Ledger
-                        </h2>
-                        <p className="text-xs text-slate-300 leading-relaxed font-medium">
-                            Review detailed invoice ledgers, view itemized payment histories, and make secure online fee payments.
-                        </p>
-                    </div>
-                    <div className="hidden xl:flex p-5 bg-white/5 border border-white/10 rounded-[1.5rem] relative z-10 shrink-0">
-                        <Coins className="h-10 w-10 text-white opacity-80" />
-                    </div>
+            <div className="space-y-5">
+                {/* Header */}
+                <div>
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-emerald-700">Fees</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">School Fees</h1>
+                    <p className="text-xs text-slate-500 font-medium mt-1">Balance, bills and receipts for each child.</p>
                 </div>
 
-                {/* Child Switcher Tabs (Parents with multiple students) */}
+                {/* Child buttons */}
                 {students && students.length > 1 && (
-                    <div className="space-y-2">
-                        <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Child</Label>
-                        <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/80 backdrop-blur-md rounded-2xl border w-fit">
-                            {students.map((st: any) => {
-                                const targetId = st.id || st.uid;
-                                return (
-                                    <button
-                                        key={targetId}
-                                        onClick={() => setSelectedChildId(targetId)}
-                                        className={cn(
-                                            "px-5 py-2.5 text-xs font-black uppercase tracking-wider rounded-xl transition-all duration-300",
-                                            activeChildId === targetId
-                                                ? "bg-white text-indigo-600 shadow-md scale-[1.02]"
-                                                : "text-slate-500 hover:text-slate-900"
-                                        )}
-                                    >
-                                        {st.firstName} {st.lastName}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                    <div className="flex flex-wrap gap-2">
+                        {students.map((st: any) => {
+                            const targetId = st.id || st.uid;
+                            const on = activeChildId === targetId;
+                            return (
+                                <button key={targetId} onClick={() => setSelectedChildId(targetId)}
+                                    className={cn("px-4 py-2.5 text-xs font-black rounded-xl border transition-all",
+                                        on ? "bg-emerald-700 text-white border-emerald-700 shadow" : "bg-white text-slate-600 border-slate-200 hover:border-emerald-300")}>
+                                    {st.firstName} {st.lastName}
+                                </button>
+                            );
+                        })}
                     </div>
                 )}
 
                 {activeChildId && (
-                    <div className="bg-white/60 backdrop-blur-md rounded-[2.5rem] border border-slate-100 shadow-xl p-8 animate-in fade-in duration-300">
-                        <StudentBillView studentId={activeChildId} />
+                    <div className="animate-in fade-in duration-300">
+                        <StudentBillView key={activeChildId} studentId={activeChildId} />
                     </div>
                 )}
             </div>

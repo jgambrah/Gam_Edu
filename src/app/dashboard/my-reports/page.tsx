@@ -20,6 +20,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, FileText, Download, Printer, ChevronRight, Users, Award, GraduationCap } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -140,6 +141,25 @@ export default function MyReportsPage() {
         }
     };
 
+    const avgOf = (r: any) => Math.round((Number(r.overallAverage ?? r.finalPercentage) || 0) * 10) / 10;
+    const bandColor = (v: number) => v >= 80 ? 'text-emerald-600' : v >= 70 ? 'text-indigo-600' : v >= 50 ? 'text-amber-600' : 'text-rose-600';
+    // One section per child, newest report first (it was one mixed grid of every child's reports).
+    const childGroups = useMemo(() => {
+        const termNo = (t: any) => { const m = String(t || '').match(/(first|1)|(second|2)|(third|3)/i); return m ? (m[1] ? 1 : m[2] ? 2 : 3) : 0; };
+        const map = new Map<string, { key: string; name: string; reports: any[] }>();
+        (reports || []).forEach((r: any) => {
+            const key = r.studentId || r.student?.uid || r.id;
+            const name = `${r.student?.firstName || ''} ${r.student?.lastName || ''}`.trim() || r.studentName || 'Student';
+            if (!map.has(key)) map.set(key, { key, name, reports: [] });
+            map.get(key)!.reports.push(r);
+        });
+        const order = (r: any) => `${String(r.academicYear || '').slice(0, 4)}-${termNo(r.term)}`;
+        const groups = Array.from(map.values());
+        groups.forEach(g => g.reports.sort((a, b) => order(b).localeCompare(order(a))));
+        return groups.sort((a, b) => parentStudentIds.indexOf(a.key) - parentStudentIds.indexOf(b.key));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [reports, parentStudentIdsStr]);
+
     if (schoolLoading || reportsLoading || roleLoading) {
         return <div className="p-20 flex justify-center"><Loader2 className="animate-spin text-indigo-600 h-8 w-8"/></div>;
     }
@@ -147,25 +167,10 @@ export default function MyReportsPage() {
     if (!selectedReport && (!reports || reports.length === 0)) {
         return (
             <div className="p-6 max-w-5xl mx-auto space-y-6">
-                <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-10 shadow-xl border border-indigo-950/20 text-white">
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-[80px]" />
-                    <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-600/10 rounded-full blur-[80px]" />
-
-                    <div className="relative z-10 space-y-4">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-indigo-200 text-xs font-black uppercase tracking-wider">
-                            <GraduationCap className="h-3.5 w-3.5" /> Academic Transcript Hub
-                        </div>
-                        <div className="space-y-2">
-                            <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
-                                My Reports
-                            </h1>
-                            <p className="text-indigo-200/85 text-sm md:text-base max-w-xl font-medium leading-relaxed font-sans">
-                                Official terminal results released by the school administration.
-                            </p>
-                        </div>
-                    </div>
+                <div>
+                    <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Results</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Report Cards</h1>
                 </div>
-
                 <Card className="border-2 border-dashed bg-slate-50/50 rounded-[2rem]">
                     <CardContent className="py-20 flex flex-col items-center gap-4 text-muted-foreground">
                         <Users className="h-12 w-12 text-slate-300" />
@@ -222,76 +227,70 @@ export default function MyReportsPage() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto space-y-8 p-4 md:p-6">
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 p-8 md:p-10 shadow-xl border border-indigo-950/20 text-white">
-                <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/15 rounded-full blur-[80px]" />
-                <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-purple-600/10 rounded-full blur-[80px]" />
-
-                <div className="relative z-10 space-y-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-indigo-200 text-xs font-black uppercase tracking-wider">
-                        <GraduationCap className="h-3.5 w-3.5" /> Academic Transcript Hub
-                    </div>
-                    <div className="space-y-2">
-                        <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
-                            My Reports
-                        </h1>
-                        <p className="text-indigo-200/85 text-sm md:text-base max-w-xl font-medium leading-relaxed font-sans">
-                            Official terminal results released by the school administration.
-                        </p>
-                    </div>
-                </div>
+        <div className="max-w-4xl mx-auto space-y-6 p-4 md:p-6">
+            <div>
+                <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Results</p>
+                <h1 className="text-2xl font-black text-slate-900 tracking-tight">Report Cards</h1>
+                <p className="text-xs text-slate-500 font-medium mt-1">End-of-term reports released by the school. Open one to view, print or download it.</p>
             </div>
 
-            <div className="space-y-4">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <FileText className="h-4 w-4" /> Academic Transcript List
-                </h2>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {reports?.map((report: any) => {
-                        const average = report.overallAverage || report.finalPercentage || 0;
-                        
-                        const getAverageColor = (avg: number) => {
-                            if (avg >= 80) return 'from-emerald-500 to-teal-500 text-white';
-                            if (avg >= 70) return 'from-indigo-500 to-indigo-600 text-white';
-                            if (avg >= 50) return 'from-amber-500 to-orange-500 text-white';
-                            return 'from-rose-500 to-red-500 text-white';
-                        };
-
-                        return (
-                            <Card 
-                                key={report.id} 
-                                className="cursor-pointer hover:ring-2 hover:ring-indigo-500 hover:shadow-md transition-all group overflow-hidden rounded-3xl border border-slate-100/80 bg-white"
-                                onClick={() => setSelectedReport(report)}
-                            >
-                                <CardHeader className="bg-slate-50/50 border-b border-slate-100 group-hover:bg-indigo-50/30 transition-colors p-6">
-                                    <div className="flex justify-between items-start">
-                                        <Badge variant="outline" className="bg-white border-indigo-200 text-indigo-700 rounded-lg font-bold text-[10px] uppercase">
-                                            {report.academicYear}
-                                        </Badge>
-                                        <span className="text-[10px] uppercase font-bold text-slate-400">
-                                            {report.publishedAt ? format(report.publishedAt.toDate(), 'dd MMM yyyy') : ''}
-                                        </span>
+            {childGroups.map(group => (
+                <Card key={group.key} className="rounded-3xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+                    <CardHeader className="pb-3 flex flex-row items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-11 w-11 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black shrink-0">
+                                {group.name.split(' ').map((w: string) => w[0]).slice(0, 2).join('')}
+                            </div>
+                            <div className="min-w-0">
+                                <CardTitle className="text-base font-black text-slate-900 truncate">{group.name}</CardTitle>
+                                <CardDescription className="text-[11px] font-semibold">
+                                    {group.reports.length} report{group.reports.length === 1 ? '' : 's'}{group.reports[0]?.className ? ` · latest in ${group.reports[0].className}` : ''}
+                                </CardDescription>
+                            </div>
+                        </div>
+                        {group.reports[0] && (
+                            <div className="text-right shrink-0">
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Latest</p>
+                                <p className={cn("text-xl font-black", bandColor(avgOf(group.reports[0])))}>{avgOf(group.reports[0])}%</p>
+                            </div>
+                        )}
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        {group.reports.map((report: any, i: number) => {
+                            const avg = avgOf(report);
+                            const prev = group.reports[i + 1];
+                            const diff = prev ? Math.round((avg - avgOf(prev)) * 10) / 10 : null;
+                            const showPos = (report.reportCardPositionMode || 'both') === 'both' && report.classPosition;
+                            const size = report.totalClassStudents || report.cohortTotal || report.totalStudents;
+                            const published = report.publishedAt?.toDate ? format(report.publishedAt.toDate(), 'd MMM yyyy') : '';
+                            return (
+                                <button key={report.id} onClick={() => setSelectedReport(report)}
+                                    className="w-full text-left flex items-center gap-4 px-6 py-4 border-t border-slate-100 hover:bg-indigo-50/40 transition-colors">
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-black text-slate-800">{report.term} <span className="text-slate-400 font-bold">· {report.academicYear}</span></p>
+                                        <p className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                                            {report.className ? `${report.className} · ` : ''}{showPos ? `Position ${report.classPosition}${size ? ` of ${size}` : ''} · ` : ''}{published ? `Released ${published}` : ''}
+                                        </p>
+                                        {report.promotionDecision ? (
+                                            <Badge className={cn("mt-1.5 border-none text-[9px] font-black uppercase",
+                                                report.promotionDecision === 'Repeated' ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800")}>
+                                                {report.promotionDecision === 'Promoted' ? `Promoted${report.promotedToClassName ? ` to ${report.promotedToClassName}` : ''}` : report.promotionDecision}
+                                            </Badge>
+                                        ) : null}
                                     </div>
-                                    <CardTitle className="pt-3 text-lg font-black text-slate-800 leading-snug">{report.term}</CardTitle>
-                                    <CardDescription className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                                        {report.student?.firstName} {report.student?.lastName}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-6 flex justify-between items-center">
-                                    <div className={`px-3 py-1.5 rounded-xl bg-gradient-to-r ${getAverageColor(average)} font-black text-[11px] shadow-sm flex items-center justify-center gap-1.5`}>
-                                        <span className="opacity-80">AVG</span>
-                                        <span>{average}%</span>
+                                    <div className="text-right shrink-0">
+                                        <p className={cn("text-lg font-black", bandColor(avg))}>{avg}%</p>
+                                        <p className={cn("text-[10px] font-black", diff === null ? "text-slate-300" : diff > 0 ? "text-emerald-600" : diff < 0 ? "text-rose-600" : "text-slate-400")}>
+                                            {diff === null ? 'first report' : diff > 0 ? `▲ ${diff} vs previous` : diff < 0 ? `▼ ${Math.abs(diff)} vs previous` : 'same as previous'}
+                                        </p>
                                     </div>
-                                    <Button variant="ghost" size="sm" className="group-hover:translate-x-1 transition-transform font-bold text-xs uppercase text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50/50 p-0 h-auto">
-                                        View Report <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-                </div>
-            </div>
+                                    <ChevronRight className="h-4 w-4 text-slate-300 shrink-0" />
+                                </button>
+                            );
+                        })}
+                    </CardContent>
+                </Card>
+            ))}
         </div>
     );
 }

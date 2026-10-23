@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { cn } from '@/lib/utils';
-import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where } from 'firebase/firestore';
+import { collection, query, orderBy, addDoc, serverTimestamp, deleteDoc, doc, where, limit } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { 
   Megaphone, Plus, Trash2, Loader2, Calendar, User, AlertCircle, Wand2, Users,
@@ -283,33 +283,32 @@ function PostAnnouncementForm({
 export default function AnnouncementsPage() {
   const firestore = useFirestore();
   const { role, profile, loading: isRoleLoading } = useRole();
-  const { user } = useUser();
   const { toast } = useToast();
-  const { schoolId, loading: schoolLoading } = useCurrentSchool(); 
+  const { schoolId, loading: schoolLoading } = useCurrentSchool();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [pageSize, setPageSize] = useState(30);
+  const [search, setSearch] = useState('');
+  const [audienceFilter, setAudienceFilter] = useState<'All' | Audience>('All');
+  const [priorityFilter, setPriorityFilter] = useState<'All' | 'Important'>('All');
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const canManage = role ? ['Administrator', 'Director'].includes(role) : false;
   const schoolName = profile?.schoolName || '';
 
-  const announcementsQuery = useMemoFirebase(() => {
-      if (!firestore || !schoolId) return null; 
-      
-      const q = query(
-          collection(firestore, 'announcements_v2'), 
-          where('schoolId', '==', schoolId), 
-          orderBy('publishedAt', 'desc')
-      );
-      
-      if (!canManage && role) {
-          return query(q, where('audience', 'array-contains-any', ['Everybody', role]));
-      }
-      
-      return q;
-  }, [firestore, schoolId, role, canManage]);
-  
-  const { data: announcements, isLoading } = useCollection<Announcement>(announcementsQuery);
+  // Posts are addressed to Everybody / Staff / Students / Parents. A signed-in role must be mapped to that
+  // group (before, "Parent" was compared with "Parents", so parents, pupils and staff only saw "Everybody" posts).
+  const myAudience: Audience | null = role === 'Parent' ? 'Parents' : role === 'Student' ? 'Students' : role ? 'Staff' : null;
 
+  const announcementsQuery = useMemoFirebase(() => {
+      if (!firestore || !schoolId) return null;
+      const base = [where('schoolId', '==', schoolId)] as any[];
+      if (!canManage && myAudience) base.push(where('audience', 'array-contains-any', ['Everybody', myAudience]));
+      // Newest first, a page at a time (it used to read every post ever made and keep them live).
+      return query(collection(firestore, 'announcements_v2'), ...base, orderBy('publishedAt', 'desc'), limit(pageSize));
+  }, [firestore, schoolId, canManage, myAudience, pageSize]);
+
+  const { data: announcements, isLoading } = useCollection<Announcement>(announcementsQuery);
 
   const handleDelete = async (id: string) => {
       try {
@@ -320,230 +319,204 @@ export default function AnnouncementsPage() {
       }
   };
 
-  const getPriorityStyle = (p: string) => {
-      switch(p) {
-          case 'Urgent': 
-              return {
-                  bg: 'bg-rose-50/40 border-rose-100/80',
-                  badge: 'bg-rose-100 text-rose-800 border-none font-black text-[9px] uppercase tracking-wider',
-                  stripe: 'border-l-rose-500',
-                  glow: 'shadow-[0_20px_50px_-12px_rgba(244,63,94,0.08)] border-rose-200/50 shadow-rose-100/10 hover:shadow-[0_30px_60px_-15px_rgba(244,63,94,0.12)]'
-              };
-          case 'High': 
-              return {
-                  bg: 'bg-amber-50/20 border-amber-100/50',
-                  badge: 'bg-amber-100 text-amber-800 border-none font-black text-[9px] uppercase tracking-wider',
-                  stripe: 'border-l-amber-500',
-                  glow: 'shadow-[0_20px_50px_-12px_rgba(245,158,11,0.04)] border-amber-200/30 hover:shadow-[0_30px_60px_-15px_rgba(245,158,11,0.08)]'
-              };
-          default: 
-              return {
-                  bg: 'bg-white/95',
-                  badge: 'bg-indigo-50 text-indigo-700 border-none font-black text-[9px] uppercase tracking-wider',
-                  stripe: 'border-l-indigo-500',
-                  glow: 'shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] border-slate-100/80 hover:shadow-[0_25px_50px_-12px_rgba(99,102,241,0.05)]'
-              };
-      }
+  const postDate = (p: any): Date | null => {
+      const v = p.publishedAt || p.createdAt;
+      if (!v) return null;
+      const d = v.toDate ? v.toDate() : v.seconds ? new Date(v.seconds * 1000) : new Date(v);
+      return isNaN(d.getTime()) ? null : d;
   };
 
-  const announcementStats = useMemo(() => {
-    if (!announcements) return { totalCount: 0, urgentCount: 0, everybodyPct: 0 };
-    const totalCount = announcements.length;
-    const urgentCount = announcements.filter(a => a.priority === 'Urgent' || a.priority === 'High').length;
-    const everybodyCount = announcements.filter(a => a.audience?.includes('Everybody')).length;
-    const everybodyPct = totalCount > 0 ? Math.round((everybodyCount / totalCount) * 100) : 0;
-    return { totalCount, urgentCount, everybodyPct };
+  const filtered = useMemo(() => {
+      const q = search.trim().toLowerCase();
+      return (announcements || []).filter(p =>
+          (audienceFilter === 'All' || (p.audience || []).includes(audienceFilter)) &&
+          (priorityFilter === 'All' || p.priority === 'Urgent' || p.priority === 'High') &&
+          (!q || `${p.title} ${p.content} ${p.authorName}`.toLowerCase().includes(q)));
+  }, [announcements, search, audienceFilter, priorityFilter]);
+
+  // Group by month for easy scanning
+  const groups = useMemo(() => {
+      const out: { label: string; posts: Announcement[] }[] = [];
+      filtered.forEach(p => {
+          const d = postDate(p);
+          const label = d ? format(d, 'MMMM yyyy') : 'Undated';
+          if (!out.length || out[out.length - 1].label !== label) out.push({ label, posts: [] });
+          out[out.length - 1].posts.push(p);
+      });
+      return out;
+  }, [filtered]);
+
+  const stats = useMemo(() => {
+      const list = announcements || [];
+      const thirty = Date.now() - 30 * 86400000;
+      return {
+          shown: list.length,
+          last30: list.filter(p => (postDate(p)?.getTime() || 0) >= thirty).length,
+          important: list.filter(p => p.priority === 'Urgent' || p.priority === 'High').length,
+          latest: list[0] ? postDate(list[0]) : null,
+      };
   }, [announcements]);
 
-  const formatPostDate = (createdAt: any) => {
-    if (!createdAt) return 'Just now';
-    try {
-        if (createdAt.toDate) return format(createdAt.toDate(), 'PPP p');
-        if (createdAt.seconds) return format(new Date(createdAt.seconds * 1000), 'PPP p');
-        return format(new Date(createdAt), 'PPP p');
-    } catch (e) {
-        return 'Recently';
-    }
+  const priorityStyle = (p: string) =>
+      p === 'Urgent' ? { stripe: 'border-l-rose-500', badge: 'bg-rose-100 text-rose-800' }
+      : p === 'High' ? { stripe: 'border-l-amber-500', badge: 'bg-amber-100 text-amber-800' }
+      : { stripe: 'border-l-indigo-300', badge: 'bg-slate-100 text-slate-600' };
+  const audienceColor: Record<string, string> = {
+      Everybody: 'bg-indigo-50 text-indigo-700', Staff: 'bg-purple-50 text-purple-700',
+      Students: 'bg-teal-50 text-teal-700', Parents: 'bg-orange-50 text-orange-700',
   };
-  
-  const pageLoading = isLoading || isRoleLoading || schoolLoading;
+
+  const pageLoading = (isLoading && !announcements) || isRoleLoading || schoolLoading;
+  const hasMore = (announcements?.length || 0) >= pageSize;
 
   return (
-    <div className="space-y-6 p-4 sm:p-6 max-w-6xl mx-auto pb-16 animate-in fade-in duration-500">
-      
-      {/* Standardized Classic Institutional Hero Banner */}
-      <SectionHeroBanner
-        eyebrow={`${schoolName.toUpperCase()} • NOTICEBOARD SUITE`}
-        title="Global Noticeboard"
-        subtitle="Post institutional announcements, issue urgent notifications, and coordinate target audience coverage."
-        icon={Megaphone}
-        badge={{
-          label: announcementStats.urgentCount > 0 ? `${announcementStats.urgentCount} Urgent Notices Active` : "Broadcasting Active",
-          variant: announcementStats.urgentCount > 0 ? "warning" : "success",
-        }}
-        breadcrumbs={[
-          { label: 'Director Suite' },
-          { label: 'Communications', href: '/dashboard' },
-          { label: 'Global Noticeboard' },
-        ]}
-        actions={
-          canManage && schoolId ? (
-            <Button 
-              onClick={() => setIsFormOpen(true)} 
-              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl h-9 px-4 gap-1.5 shadow-sm cursor-pointer shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
-            >
-              <Plus className="h-4 w-4 text-slate-950"/>
-              <span>Post Announcement</span>
-            </Button>
-          ) : undefined
-        }
-      />
+    <div className="space-y-5 p-4 sm:p-6 max-w-4xl mx-auto pb-16 animate-in fade-in duration-500">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+              <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">{schoolName ? `${schoolName} · ` : ''}Noticeboard</p>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Announcements</h1>
+              <p className="text-xs text-slate-500 font-medium mt-1">
+                  {canManage ? 'Post notices to everybody, staff, students or parents.' : 'Notices from the school.'}
+              </p>
+          </div>
+          {canManage && schoolId && (
+              <Button onClick={() => setIsFormOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 font-black text-xs rounded-xl h-10 px-4 gap-1.5 w-fit">
+                  <Plus className="h-4 w-4" /> New announcement
+              </Button>
+          )}
+      </div>
 
-      {/* QUICK METRICS SECTION */}
-      {!pageLoading && announcements && announcements.length > 0 && (
-          <div className="grid gap-6 md:grid-cols-3">
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                  <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Broadcast Logs</p>
-                      <h4 className="text-2xl font-black text-slate-800 mt-2">{announcementStats.totalCount}</h4>
-                      <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Active Noticeboard Posts</p>
+      {/* Summary (managers) */}
+      {canManage && !pageLoading && (announcements?.length || 0) > 0 && (
+          <div className="grid grid-cols-3 gap-3">
+              {[
+                  { label: 'Last 30 days', value: stats.last30, sub: 'posts' },
+                  { label: 'Urgent / high', value: stats.important, sub: `of ${stats.shown} shown` },
+                  { label: 'Latest post', value: stats.latest ? format(stats.latest, 'd MMM') : '—', sub: stats.latest ? format(stats.latest, 'yyyy') : '' },
+              ].map(x => (
+                  <div key={x.label} className="p-4 bg-white border border-slate-100 rounded-2xl">
+                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{x.label}</p>
+                      <p className="text-xl font-black text-slate-800 mt-1">{x.value}</p>
+                      <p className="text-[10px] font-bold text-slate-500">{x.sub}</p>
                   </div>
-                  <div className="p-3.5 bg-indigo-50 text-indigo-600 rounded-2xl"><Megaphone className="h-5 w-5" /></div>
-              </div>
-
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                  <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Urgent Broadcasts</p>
-                      <h4 className="text-2xl font-black text-rose-600 mt-2">{announcementStats.urgentCount}</h4>
-                      <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Critical notices active</p>
-                  </div>
-                  <div className="p-3.5 bg-rose-50 text-rose-600 rounded-2xl"><AlertCircle className="h-5 w-5 animate-pulse" /></div>
-              </div>
-
-              <div className="p-6 bg-white border border-slate-100/80 rounded-3xl shadow-[0_15px_30px_-5px_rgba(0,0,0,0.02)] flex items-center justify-between hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                  <div>
-                      <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">General Reach</p>
-                      <h4 className="text-2xl font-black text-emerald-600 mt-2">{announcementStats.everybodyPct}%</h4>
-                      <p className="text-[9px] font-bold text-slate-500 mt-1 uppercase">Broadcast to Everybody</p>
-                  </div>
-                  <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-2xl"><Users className="h-5 w-5" /></div>
-              </div>
+              ))}
           </div>
       )}
 
-      {/* CONTENT AREA */}
+      {/* Filters */}
+      {!pageLoading && (announcements?.length || 0) > 0 && (
+          <div className="flex flex-col sm:flex-row gap-2">
+              <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search notices…" className="rounded-xl h-10 text-sm sm:max-w-xs" />
+              <div className="flex gap-1 overflow-x-auto p-1 bg-slate-100 rounded-xl">
+                  {(['All', 'Everybody', 'Parents', 'Students', 'Staff'] as const).map(a => (
+                      <button key={a} onClick={() => setAudienceFilter(a)}
+                          className={cn("shrink-0 px-3 py-1.5 text-[11px] font-black rounded-lg", audienceFilter === a ? "bg-white text-indigo-700 shadow" : "text-slate-500")}>
+                          {a}
+                      </button>
+                  ))}
+              </div>
+              <button onClick={() => setPriorityFilter(priorityFilter === 'All' ? 'Important' : 'All')}
+                  className={cn("shrink-0 px-3 py-2 text-[11px] font-black rounded-xl border", priorityFilter === 'Important' ? "bg-rose-50 border-rose-200 text-rose-700" : "bg-white border-slate-200 text-slate-500")}>
+                  Urgent / high only
+              </button>
+          </div>
+      )}
+
+      {/* Feed */}
       {pageLoading ? (
-          <div className="flex flex-col items-center py-24 text-muted-foreground gap-3">
-              <Loader2 className="h-10 w-10 animate-spin text-indigo-600"/>
-              <p className="text-xs uppercase font-black tracking-widest text-slate-400">Loading updates...</p>
+          <div className="flex flex-col items-center py-24 gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+              <p className="text-xs font-bold text-slate-400">Loading notices…</p>
           </div>
       ) : (!announcements || announcements.length === 0) ? (
-          <div className="text-center py-20 border border-slate-100 rounded-[2.5rem] bg-white shadow-sm flex flex-col items-center">
-              <div className="bg-slate-50 p-6 rounded-full w-fit mx-auto mb-4 border shadow-inner text-slate-300">
-                  <Megaphone className="h-8 w-8" />
-              </div>
-              <p className="text-lg font-black text-slate-800 uppercase tracking-tight">No Announcements Posted</p>
-              <p className="text-xs text-slate-400 font-bold uppercase mt-1">Check back later for school administrative updates.</p>
+          <div className="text-center py-16 border border-dashed rounded-3xl bg-white">
+              <Megaphone className="h-8 w-8 text-slate-300 mx-auto mb-3" />
+              <p className="text-sm font-black text-slate-700">No announcements yet</p>
               {canManage && (
-                  <Button onClick={() => setIsFormOpen(true)} className="mt-6 bg-indigo-600 hover:bg-indigo-700 font-black text-xs uppercase tracking-wider rounded-xl h-10 px-5 shadow-md">
-                      Create the first post
-                  </Button>
+                  <Button onClick={() => setIsFormOpen(true)} className="mt-4 bg-indigo-600 hover:bg-indigo-700 font-black text-xs rounded-xl">Post the first one</Button>
               )}
           </div>
+      ) : filtered.length === 0 ? (
+          <p className="text-center text-xs font-bold text-slate-400 py-10">No notices match your search or filters.</p>
       ) : (
           <div className="space-y-6">
-              {announcements.map((post) => {
-                  const style = getPriorityStyle(post.priority);
-                  return (
-                      <Card 
-                          key={post.id} 
-                          className={cn(
-                              "border-0 border-l-8 rounded-[2rem] bg-white/90 backdrop-blur-md transition-all duration-300 relative overflow-hidden",
-                              style.stripe,
-                              style.bg,
-                              style.glow,
-                              post.priority === 'Urgent' ? 'animate-pulse hover:animate-none' : ''
-                          )}
-                      >
-                          <CardHeader className="pb-3 p-6 xl:p-8">
-                              <div className="flex justify-between items-start">
-                                  <div className="space-y-2 flex-1">
-                                      <div className="flex flex-wrap items-center gap-2.5">
-                                          <Badge className={style.badge}>
-                                              {post.priority}
-                                          </Badge>
-                                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                                              <Calendar className="h-3.5 w-3.5 text-slate-400"/> 
-                                              {formatPostDate(post.createdAt)}
-                                          </span>
+              {groups.map(g => (
+                  <section key={g.label} className="space-y-3">
+                      <h2 className="text-[11px] font-black uppercase tracking-widest text-slate-400 px-1">{g.label}</h2>
+                      {g.posts.map(post => {
+                          const st = priorityStyle(post.priority);
+                          const d = postDate(post);
+                          const long = (post.content || '').length > 280 || (post.content || '').split('\n').length > 4;
+                          const open = !!expanded[post.id];
+                          return (
+                              <Card key={post.id} className={cn("rounded-2xl border border-slate-100 border-l-4 bg-white shadow-sm", st.stripe)}>
+                                  <CardContent className="p-5 space-y-3">
+                                      <div className="flex items-start justify-between gap-3">
+                                          <div className="min-w-0 space-y-1">
+                                              <div className="flex flex-wrap items-center gap-2">
+                                                  {post.priority !== 'Normal' && <Badge className={cn("border-none text-[9px] font-black uppercase", st.badge)}>{post.priority}</Badge>}
+                                                  <span className="text-[11px] font-bold text-slate-400 flex items-center gap-1"><Calendar className="h-3 w-3" />{d ? format(d, 'EEE d MMM yyyy, h:mm a') : '—'}</span>
+                                              </div>
+                                              <h3 className="text-base font-black text-slate-900 leading-snug">{post.title}</h3>
+                                          </div>
+                                          {canManage && (
+                                              <AlertDialog>
+                                                  <AlertDialogTrigger asChild>
+                                                      <Button variant="ghost" size="icon" className="text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl h-8 w-8 shrink-0">
+                                                          <Trash2 className="h-4 w-4" />
+                                                      </Button>
+                                                  </AlertDialogTrigger>
+                                                  <AlertDialogContent className="rounded-3xl">
+                                                      <AlertDialogHeader>
+                                                          <AlertDialogTitle>Delete this announcement?</AlertDialogTitle>
+                                                          <AlertDialogDescription>"{post.title}" will be removed from everyone's portal.</AlertDialogDescription>
+                                                      </AlertDialogHeader>
+                                                      <AlertDialogFooter>
+                                                          <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+                                                          <AlertDialogAction onClick={() => handleDelete(post.id)} className="bg-red-600 hover:bg-red-700 rounded-xl">Delete</AlertDialogAction>
+                                                      </AlertDialogFooter>
+                                                  </AlertDialogContent>
+                                              </AlertDialog>
+                                          )}
                                       </div>
-                                      <CardTitle className="text-xl font-black tracking-tight text-slate-800 uppercase italic pt-1">{post.title}</CardTitle>
-                                  </div>
-                                  
-                                  {canManage && (
-                                      <AlertDialog>
-                                          <AlertDialogTrigger asChild>
-                                              <Button variant="ghost" size="icon" className="text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl h-9 w-9">
-                                                  <Trash2 className="h-4 w-4"/>
-                                              </Button>
-                                          </AlertDialogTrigger>
-                                          <AlertDialogContent className="rounded-3xl border border-slate-100 shadow-2xl">
-                                              <AlertDialogHeader>
-                                                  <AlertDialogTitle className="font-black text-slate-800 uppercase tracking-tight">Delete Announcement?</AlertDialogTitle>
-                                                  <AlertDialogDescription className="text-slate-500 font-medium text-xs leading-relaxed">
-                                                      Are you sure you want to remove the announcement "<strong>{post.title}</strong>"? This will hide it from everyone's portal permanently.
-                                                  </AlertDialogDescription>
-                                              </AlertDialogHeader>
-                                              <AlertDialogFooter>
-                                                  <AlertDialogCancel className="rounded-xl font-bold">Cancel</AlertDialogCancel>
-                                                  <AlertDialogAction onClick={() => handleDelete(post.id)} className="bg-red-600 hover:bg-red-700 rounded-xl font-bold">Delete Post</AlertDialogAction>
-                                              </AlertDialogFooter>
-                                          </AlertDialogContent>
-                                      </AlertDialog>
-                                  )}
-                              </div>
-                          </CardHeader>
-                          
-                          <CardContent className="text-slate-600 leading-relaxed text-sm font-medium px-6 xl:px-8 pb-5 whitespace-pre-wrap">
-                              {post.content}
-                          </CardContent>
-    
-                          <CardFooter className="pt-4 px-6 xl:p-8 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                              <div className="flex items-center gap-3">
-                                  <Avatar className="h-10 w-10 border-2 border-white shadow-sm ring-1 ring-slate-100">
-                                      <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-black text-sm">
-                                          {post.authorName?.charAt(0)}
-                                      </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex flex-col">
-                                      <span className="text-sm font-black text-slate-700 uppercase tracking-tight">{post.authorName}</span>
-                                      <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{post.authorRole}</span>
-                                  </div>
-                              </div>
-                              
-                              <div className="flex flex-wrap gap-1">
-                                  {post.audience?.map(aud => {
-                                      let audColor = "bg-indigo-50 text-indigo-600";
-                                      if (aud === 'Staff') audColor = "bg-purple-50 text-purple-600";
-                                      if (aud === 'Students') audColor = "bg-teal-50 text-teal-600";
-                                      if (aud === 'Parents') audColor = "bg-orange-50 text-orange-600";
-                                      return (
-                                          <Badge key={aud} className={cn("border-none text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md", audColor)}>
-                                              {aud}
-                                          </Badge>
-                                      );
-                                  })}
-                              </div>
-                          </CardFooter>
-                      </Card>
-                  );
-              })}
+
+                                      <p className={cn("text-sm text-slate-600 leading-relaxed whitespace-pre-wrap", long && !open && "line-clamp-4")}>{post.content}</p>
+                                      {long && (
+                                          <button onClick={() => setExpanded(e => ({ ...e, [post.id]: !open }))} className="text-[11px] font-black text-indigo-700">
+                                              {open ? 'Show less' : 'Read more'}
+                                          </button>
+                                      )}
+
+                                      <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
+                                          <div className="flex items-center gap-2">
+                                              <Avatar className="h-7 w-7">
+                                                  <AvatarFallback className="bg-indigo-100 text-indigo-700 font-black text-[11px]">{post.authorName?.charAt(0)}</AvatarFallback>
+                                              </Avatar>
+                                              <span className="text-xs font-bold text-slate-700">{post.authorName}</span>
+                                              <span className="text-[10px] font-semibold text-slate-400">{post.authorRole}</span>
+                                          </div>
+                                          <div className="flex flex-wrap gap-1">
+                                              {(post.audience || []).map(aud => (
+                                                  <Badge key={aud} className={cn("border-none text-[9px] font-black uppercase rounded-md", audienceColor[aud] || 'bg-slate-100 text-slate-600')}>{aud === 'Everybody' ? 'Everyone' : aud}</Badge>
+                                              ))}
+                                          </div>
+                                      </div>
+                                  </CardContent>
+                              </Card>
+                          );
+                      })}
+                  </section>
+              ))}
+              {hasMore && (
+                  <div className="text-center">
+                      <Button variant="outline" onClick={() => setPageSize(n => n + 30)} className="rounded-xl font-bold text-xs">Show older notices</Button>
+                  </div>
+              )}
           </div>
       )}
 
-      {/* MODAL (Pass schoolId down) */}
       {schoolId && <PostAnnouncementForm open={isFormOpen} setOpen={setIsFormOpen} schoolId={schoolId}/>}
-
     </div>
   );
 }
