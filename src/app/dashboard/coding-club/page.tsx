@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LogicLabPage from './logic-lab/page';
@@ -16,7 +17,27 @@ const STARTER_PROJECTS = [
   { id: "1026256",  title: "Starter: Music Maker", desc: "Play sounds and music" },
 ];
 
+/** Accepts a Scratch/TurboWarp link or a bare project number. */
+const projectIdFrom = (text: string) => {
+  const t = text.trim();
+  if (/^\d{3,12}$/.test(t)) return t;
+  const m = t.match(/(?:scratch\.mit\.edu\/projects|turbowarp\.org)\/(\d{3,12})/i);
+  return m ? m[1] : null;
+};
+
 export default function CodingClubPage() {
+  const [previewId, setPreviewId] = useState(STARTER_PROJECTS[0].id);
+  const [projectLink, setProjectLink] = useState('');
+  const [linkError, setLinkError] = useState('');
+  const previewTitle = STARTER_PROJECTS.find(p => p.id === previewId)?.title || `Project ${previewId}`;
+
+  const openLink = () => {
+    const id = projectIdFrom(projectLink);
+    if (!id) { setLinkError('Paste a Scratch project link (scratch.mit.edu/projects/…) or its number.'); return; }
+    setLinkError('');
+    setPreviewId(id);
+  };
+
   return (
     <div className="bg-slate-950 min-h-screen text-slate-100 p-6 relative rounded-3xl border border-slate-900 shadow-2xl overflow-hidden flex flex-col">
       {/* Ambient glowing blobs */}
@@ -93,18 +114,19 @@ export default function CodingClubPage() {
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
-                      <span className="text-[10px] font-mono text-slate-500 ml-2">scratch_player_v4.2.sh</span>
+                      <span className="text-[10px] font-mono text-slate-500 ml-2 truncate max-w-[220px]">{previewTitle}</span>
                     </div>
                     <span className="text-[9px] uppercase font-black tracking-widest text-orange-400 flex items-center gap-1.5">
                       <Play className="h-3 w-3 fill-orange-400 text-orange-400 animate-pulse" /> Live Preview
                     </span>
                   </div>
                   <iframe
-                    src="https://turbowarp.org/60917032/embed"
+                    key={previewId}
+                    src={`https://turbowarp.org/${previewId}/embed`}
                     className="w-full flex-grow border-none bg-slate-950"
                     allowFullScreen
-                    allow="geolocation; microphone; camera; midi; bluetooth"
-                    title="Scratch Starter Project"
+                    allow="microphone; camera; midi"
+                    title={previewTitle}
                     style={{ minHeight: '400px' }}
                   />
                 </div>
@@ -115,7 +137,7 @@ export default function CodingClubPage() {
                     {/* Create section */}
                     <div className="space-y-3">
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">🎨 Create Your Own</p>
-                      <p className="text-xs text-slate-450 leading-relaxed text-slate-400">
+                      <p className="text-xs leading-relaxed text-slate-400">
                         Open the full Scratch block workspace in a new tab to create custom stories, paint animations, or build games.
                       </p>
                       
@@ -123,7 +145,7 @@ export default function CodingClubPage() {
                         href="https://scratch.mit.edu/projects/editor/"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-650 hover:to-amber-655 text-white font-bold h-11 rounded-xl transition-all text-sm shadow-md shadow-orange-500/10 active:scale-95"
+                        className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold h-11 rounded-xl transition-all text-sm shadow-md shadow-orange-500/10 active:scale-95"
                       >
                         <Maximize2 className="h-4 w-4" />
                         Open Scratch Editor
@@ -133,7 +155,7 @@ export default function CodingClubPage() {
                         href="https://turbowarp.org/editor"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-850 text-slate-200 border border-slate-800 rounded-xl h-11 transition-all text-sm active:scale-95"
+                        className="flex items-center justify-center gap-2 w-full bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 rounded-xl h-11 transition-all text-sm active:scale-95"
                       >
                         <ExternalLink className="h-4 w-4" />
                         Open TurboWarp Editor
@@ -145,17 +167,38 @@ export default function CodingClubPage() {
                       <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">⭐ Starter Templates</p>
                       <div className="space-y-2">
                         {STARTER_PROJECTS.map((project) => (
-                          <a
+                          <div
                             key={project.id}
-                            href={`https://turbowarp.org/${project.id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex flex-col w-full bg-slate-900/50 hover:bg-slate-900 border border-slate-850 hover:border-orange-500/40 p-3 rounded-xl transition-all group text-left shadow-sm"
+                            className={cn(
+                              "flex items-center gap-2 w-full border p-3 rounded-xl transition-all group shadow-sm",
+                              previewId === project.id ? 'bg-orange-500/10 border-orange-500/40' : 'bg-slate-900/50 hover:bg-slate-900 border-slate-800 hover:border-orange-500/40'
+                            )}
                           >
-                            <span className="text-xs font-bold text-slate-200 group-hover:text-orange-400 transition-colors">{project.title}</span>
-                            <span className="text-[10px] text-slate-550 text-slate-500 mt-0.5">{project.desc}</span>
-                          </a>
+                            <button type="button" onClick={() => setPreviewId(project.id)} className="flex-1 text-left">
+                              <span className="block text-xs font-bold text-slate-200 group-hover:text-orange-400 transition-colors">{project.title}</span>
+                              <span className="block text-[10px] text-slate-500 mt-0.5">{project.desc} · tap to preview</span>
+                            </button>
+                            <a href={`https://turbowarp.org/${project.id}/editor`} target="_blank" rel="noopener noreferrer" title="Remix in the editor" className="p-1.5 rounded-lg text-slate-400 hover:text-orange-300 hover:bg-slate-800">
+                              <ExternalLink className="h-3.5 w-3.5" />
+                            </a>
+                          </div>
                         ))}
+                      </div>
+
+                    {/* Any project */}
+                    <div className="space-y-2 pt-2">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">🔗 Preview Any Project</p>
+                      <div className="flex gap-2">
+                        <input
+                          value={projectLink}
+                          onChange={(e) => { setProjectLink(e.target.value); setLinkError(''); }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') openLink(); }}
+                          placeholder="Scratch link or number"
+                          className="flex-1 min-w-0 h-9 rounded-lg bg-slate-900 border border-slate-800 px-3 text-xs text-slate-100 placeholder:text-slate-600 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        />
+                        <button type="button" onClick={openLink} className="h-9 px-3 rounded-lg bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold">Show</button>
+                      </div>
+                      {linkError && <p className="text-[10px] text-rose-400">{linkError}</p>}
                       </div>
                     </div>
                   </div>
@@ -163,7 +206,7 @@ export default function CodingClubPage() {
                   <div className="p-4 bg-orange-500/5 border border-orange-500/10 rounded-xl">
                     <p className="text-[10px] text-orange-300 leading-relaxed flex gap-1.5 items-start font-medium">
                       <Sparkles className="h-3.5 w-3.5 text-orange-400 shrink-0 mt-0.5 animate-pulse" />
-                      <span>Build your Scratch project, export its ID, and compile complex mechanics inside your web browser.</span>
+                      <span>Share your project on Scratch, then paste its link above to show it to the class.</span>
                     </p>
                   </div>
                 </div>

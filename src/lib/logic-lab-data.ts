@@ -9,6 +9,10 @@ export interface Mission {
   expectedOutput: string;
   hint: string;
   availableBlocks: string[];
+  /** Pieces the answer must use, so printing the answer directly does not count (e.g. ['while']). */
+  mustUse?: string[];
+  /** Folder the program starts in (for os.getcwd()). */
+  cwd?: string;
 }
 
 export const CURRICULUM: Mission[] = [
@@ -52,6 +56,7 @@ export const CURRICULUM: Mission[] = [
     task: "Convert the string '10' to an integer, add 5 to it, and print the result.",
     expectedOutput: "15",
     hint: "Wrap the string in int(), then add 5.",
+    mustUse: ["int("],
     availableBlocks: [
       "print(", "int(", "str(", "float(", 
       "'10'", "10", "'5'", "5", 
@@ -67,6 +72,7 @@ export const CURRICULUM: Mission[] = [
     task: "Calculate 10 multiplied by 5 and print the result.",
     expectedOutput: "50",
     hint: "Use the asterisk * for multiplication.",
+    mustUse: ["*"],
     availableBlocks: [
       "print(", "x", "y", "result =", 
       "10", "5", "2", "50", 
@@ -83,6 +89,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create variable age = 12, then print age + 1.",
     expectedOutput: "13",
     hint: "Two lines of code needed.",
+    mustUse: ["age", "+"],
     availableBlocks: [
       "age", "year", "num", "=", 
       "12", "1", "13", "'12'", 
@@ -101,6 +108,7 @@ export const CURRICULUM: Mission[] = [
     task: "Print True if 5 is less than 10.",
     expectedOutput: "True",
     hint: "Use the < operator.",
+    mustUse: ["<"],
     availableBlocks: [
       "print(", "if", "True", "False", 
       "5", "10", "0", 
@@ -116,7 +124,7 @@ export const CURRICULUM: Mission[] = [
     theory: "### If/Else\nMake decisions based on conditions.\n\n```python\nif x > 5:\n  print('Big')\nelse:\n  print('Small')\n```",
     task: "Write logic: If 10 > 5, print 'Bigger'.",
     expectedOutput: "Bigger",
-    hint: "Remember the colon : and indentation is simulated by order here.",
+    hint: "End the if line with a colon : then press Enter and Tab before the print line.",
     availableBlocks: [
       "if", "else:", "elif", 
       "10", "5", "0", 
@@ -133,6 +141,7 @@ export const CURRICULUM: Mission[] = [
     task: "Set x = 1. While x < 3, print x, then increment x by 1.",
     expectedOutput: "1\n2",
     hint: "Initialize, Condition, Action, Update.",
+    mustUse: ["while"],
     availableBlocks: [
       "x = 1", "x = 0", "i = 0", 
       "while", "for", "if", 
@@ -150,6 +159,7 @@ export const CURRICULUM: Mission[] = [
     task: "Use a for loop with range(3) to print numbers 0, 1, 2.",
     expectedOutput: "0\n1\n2",
     hint: "for i in range(...)",
+    mustUse: ["for"],
     availableBlocks: [
       "for", "while", "if", 
       "i", "x", "num", 
@@ -166,6 +176,7 @@ export const CURRICULUM: Mission[] = [
     task: "Loop range(5). If i == 3, break. Else print i.",
     expectedOutput: "0\n1\n2",
     hint: "Combine loop with if/break.",
+    mustUse: ["break"],
     availableBlocks: [
       "for", "i", "in", "range(5)", ":", 
       "if", "i", "==", "3", "5", ":", 
@@ -182,6 +193,7 @@ export const CURRICULUM: Mission[] = [
     task: "If 5 > 2, pass. Else print 'No'. (Output should be empty/nothing).",
     expectedOutput: "",
     hint: "Just use pass in the if block.",
+    mustUse: ["if", "pass"],
     availableBlocks: [
       "if", "5", ">", "2", ":", 
       "pass", "break", "continue", 
@@ -197,6 +209,7 @@ export const CURRICULUM: Mission[] = [
     task: "Set score = 80. If score > 90 print 'A', elif score > 70 print 'B'.",
     expectedOutput: "B",
     hint: "Use elif for the second condition.",
+    mustUse: ["elif"],
     availableBlocks: [
       "score = 80", "score = 50", 
       "if", "elif", "else:", 
@@ -213,6 +226,7 @@ export const CURRICULUM: Mission[] = [
     task: "Print 'Go' 2 times using a for loop and range(2).",
     expectedOutput: "Go\nGo",
     hint: "for loop with range(2)",
+    mustUse: ["for"],
     availableBlocks: [
       "for", "while", "x", "in", 
       "range(2)", "range(5)", ":", 
@@ -230,6 +244,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define a function that sets x = 5 and prints x. Call it.",
     expectedOutput: "5",
     hint: "Define, indent content, then call.",
+    mustUse: ["def"],
     availableBlocks: [
       "def", "my_func():", "main():", 
       "x = 5", "global x", 
@@ -246,6 +261,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define function `greet(name)` that prints 'Hello ' + name. Call `greet('Sam')`.",
     expectedOutput: "Hello Sam",
     hint: "Use the parameter inside the print.",
+    mustUse: ["def"],
     availableBlocks: [
       "def", "greet(name):", "hello():", 
       "print(", "'Hello '", "+", "name", ")", 
@@ -261,6 +277,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create a lambda `add = lambda x: x + 5`. Print `add(10)`.",
     expectedOutput: "15",
     hint: "Assign lambda to a variable then call it.",
+    mustUse: ["lambda"],
     availableBlocks: [
       "add =", "func =", 
       "lambda x:", "def x:", 
@@ -274,9 +291,10 @@ export const CURRICULUM: Mission[] = [
     title: "Recursion",
     category: "Functions",
     theory: "### Recursion\nA function that calls itself.",
-    task: "Write a recursive function to print 'A' once. (Simulated for block logic). Just Call a function `rec()` that prints 'A'.",
+    task: "Define a function `rec()` that prints 'A', then call `rec()`.",
     expectedOutput: "A",
     hint: "Just define and call for this simple test.",
+    mustUse: ["def"],
     availableBlocks: [
       "def", "rec():", 
       "print('A')", "return", 
@@ -292,6 +310,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define `square(n)` that prints `n * n`. Call `square(4)`.",
     expectedOutput: "16",
     hint: "Math inside the function.",
+    mustUse: ["def"],
     availableBlocks: [
       "def", "square(n):", "double(n):", 
       "print(", "n * n", "n + n", ")", 
@@ -309,6 +328,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create a list `nums = [1, 2]`. Print `nums[0]`.",
     expectedOutput: "1",
     hint: "Index 0 is the first item.",
+    mustUse: ["nums ="],
     availableBlocks: [
       "nums =", "list =", 
       "[1, 2]", "(1, 2)", "{1, 2}", 
@@ -324,6 +344,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create `tup = (10, 20)`. Print `tup[1]`.",
     expectedOutput: "20",
     hint: "Use parentheses.",
+    mustUse: ["tup ="],
     availableBlocks: [
       "tup =", "list =", 
       "(10, 20)", "[10, 20]", 
@@ -339,6 +360,7 @@ export const CURRICULUM: Mission[] = [
     task: "Print the first letter of 'Python' using index 0.",
     expectedOutput: "P",
     hint: "String indices works like lists.",
+    mustUse: ["text ="],
     availableBlocks: [
       "text =", "'Python'", 
       "print(", "text[0]", "text[1]", "text[-1]", ")"
@@ -353,6 +375,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create a set `s = {1, 1, 2}`. Print `s`. (Note duplicates are removed).",
     expectedOutput: "{1, 2}",
     hint: "Use curly braces.",
+    mustUse: ["s ="],
     availableBlocks: [
       "s =", "list =", 
       "{1, 1, 2}", "[1, 1, 2]", "(1, 1, 2)", 
@@ -368,6 +391,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create `d = {'a': 1}`. Print `d['a']`.",
     expectedOutput: "1",
     hint: "Access by key.",
+    mustUse: ["d ="],
     availableBlocks: [
       "d =", "map =", 
       "{'a': 1}", "['a': 1]", 
@@ -383,6 +407,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create a list `x = [5, 6]`. Change index 0 to 9. Print x.",
     expectedOutput: "[9, 6]",
     hint: "Assign to the index.",
+    mustUse: ["x[0] = 9"],
     availableBlocks: [
       "x =", "[5, 6]", "(5, 6)", 
       "x[0] = 9", "x(0) = 9", 
@@ -400,6 +425,7 @@ export const CURRICULUM: Mission[] = [
     task: "Import math and print `math.sqrt(16)`.",
     expectedOutput: "4.0",
     hint: "Use import first.",
+    mustUse: ["import math"],
     availableBlocks: [
       "import math", "include math", 
       "print(", "math.sqrt(16)", "math.pow(4)", ")"
@@ -413,7 +439,7 @@ export const CURRICULUM: Mission[] = [
     theory: "### Files\n`open('file.txt', 'w')` to write.",
     task: "Simulate writing: Print 'Writing to file...'.",
     expectedOutput: "Writing to file...",
-    hint: "We simulate file ops with print for now.",
+    hint: "Printing the message is enough here; real file blocks are there to explore.",
     availableBlocks: [
       "print('Writing to file...')", 
       "f = open('test.txt')", "f.close()", 
@@ -426,12 +452,14 @@ export const CURRICULUM: Mission[] = [
     title: "Directory",
     category: "IO",
     theory: "### OS Module\nUse `os` to interact with directories.",
-    task: "Import os. Print 'os.getcwd()' (Simulated output: /home).",
+    task: "Import os, then print the current folder with `print(os.getcwd())`. Your program starts in /home.",
     expectedOutput: "/home",
-    hint: "Combine the strings to simulate output.",
+    hint: "os.getcwd() gives the current folder; wrap it in print( ).",
+    cwd: "/home",
+    mustUse: ["os.getcwd()"],
     availableBlocks: [
       "import os", "import sys", 
-      "print('/home')", "os.getcwd()", "os.listdir()"
+      "print(", "os.getcwd()", "os.listdir()", ")"
     ]
   },
   {
@@ -443,6 +471,7 @@ export const CURRICULUM: Mission[] = [
     task: "Import random. Print 'Random Number'.",
     expectedOutput: "Random Number",
     hint: "Just printing a string placeholder.",
+    mustUse: ["import random"],
     availableBlocks: [
       "import random", "import math", 
       "print('Random Number')", "random.randint(1,10)"
@@ -456,12 +485,13 @@ export const CURRICULUM: Mission[] = [
     title: "Exceptions",
     category: "Errors",
     theory: "### Errors\nWhen code fails, it raises an Exception. e.g., Dividing by zero.",
-    task: "Print 'Error' to simulate an exception caught.",
+    task: "Inside try:, run 1 / 0. In except:, print 'Error'.",
     expectedOutput: "Error",
     hint: "Simulate the output.",
+    mustUse: ["try:", "1 / 0"],
     availableBlocks: [
       "print('Error')", "print('Success')", 
-      "1 / 0", "raise Exception", "try:"
+      "1 / 0", "raise Exception", "try:", "except:"
     ]
   },
   {
@@ -473,6 +503,7 @@ export const CURRICULUM: Mission[] = [
     task: "Try to divide 1/0. Except: print 'Cannot divide'.",
     expectedOutput: "Cannot divide",
     hint: "Use try/except blocks.",
+    mustUse: ["try:", "except:"],
     availableBlocks: [
       "try:", "if:", 
       "x = 1 / 0", "x = 1 + 1", 
@@ -486,9 +517,10 @@ export const CURRICULUM: Mission[] = [
     title: "Custom Exceptions",
     category: "Errors",
     theory: "### Raising Errors\nYou can trigger your own errors using `raise`.",
-    task: "Raise a ValueError. (Simulated output: 'ValueError Raised').",
+    task: "Inside try:, raise ValueError. In except ValueError:, print 'ValueError Raised'.",
     expectedOutput: "ValueError Raised",
-    hint: "Just print the simulation string.",
+    hint: "try: then (Enter, Tab) raise ValueError, then except ValueError: then (Enter, Tab) the print.",
+    mustUse: ["raise ValueError"],
     availableBlocks: [
       "print('ValueError Raised')", 
       "raise ValueError", "raise TypeError", 
@@ -504,6 +536,7 @@ export const CURRICULUM: Mission[] = [
     task: "Try printing variable 'y' (undefined). Except: print 'Not Found'.",
     expectedOutput: "Not Found",
     hint: "try/except structure.",
+    mustUse: ["try:", "print(y)"],
     availableBlocks: [
       "try:", "except:", 
       "print(y)", "print('y')", 
@@ -521,6 +554,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define class Dog with a pass. Print 'Dog class created'.",
     expectedOutput: "Dog class created",
     hint: "Define class then print.",
+    mustUse: ["class Dog:"],
     availableBlocks: [
       "class Dog:", "def Dog():", 
       "pass", "return", 
@@ -536,6 +570,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define class with `__init__` that prints 'Init'. Create object.",
     expectedOutput: "Init",
     hint: "Define class, init, then instantiate.",
+    mustUse: ["__init__"],
     availableBlocks: [
       "class A:", "class B:", 
       "def __init__(self):", "def init():", 
@@ -551,6 +586,7 @@ export const CURRICULUM: Mission[] = [
     task: "Class B inherits from A. A has method `hi()`. Call `B().hi()`.",
     expectedOutput: "Hi",
     hint: "Class B(A):",
+    mustUse: ["class B(A):"],
     availableBlocks: [
       "class A:", "class B(A):", "class B:", 
       "def hi(self): print('Hi')", "pass", 
@@ -566,6 +602,7 @@ export const CURRICULUM: Mission[] = [
     task: "Set class variable `x=1`. Print `MyClass.x`.",
     expectedOutput: "1",
     hint: "Access variable via class name.",
+    mustUse: ["class MyClass:"],
     availableBlocks: [
       "class MyClass:", "class Obj:", 
       "x = 1", "self.x = 1", 
@@ -581,6 +618,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create object `p = Person()`. Print 'Person created'.",
     expectedOutput: "Person created",
     hint: "Simulate object creation output.",
+    mustUse: ["p = Person()"],
     availableBlocks: [
       "class Person: pass", "def Person:", 
       "p = Person()", "p = new Person()", 
@@ -598,6 +636,7 @@ export const CURRICULUM: Mission[] = [
     task: "Create iterator for list [1, 2]. Print next(it).",
     expectedOutput: "1",
     hint: "Use iter() then next().",
+    mustUse: ["iter("],
     availableBlocks: [
       "it = iter([1, 2])", "it = [1, 2]", 
       "print(next(it))", "print(it[0])"
@@ -612,6 +651,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define gen that yields 5. Print next(gen()).",
     expectedOutput: "5",
     hint: "Use yield keyword.",
+    mustUse: ["yield"],
     availableBlocks: [
       "def gen():", "class gen:", 
       "yield 5", "return 5", 
@@ -627,6 +667,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define outer function returning inner function that prints 'Secret'. Call it.",
     expectedOutput: "Secret",
     hint: "Nested def.",
+    mustUse: ["return inner"],
     availableBlocks: [
       "def outer():", "def inner(): print('Secret')", 
       "return inner", "return print", 
@@ -639,13 +680,14 @@ export const CURRICULUM: Mission[] = [
     title: "Decorators",
     category: "Advanced",
     theory: "### Decorators\nWrappers that modify function behavior. `@my_decorator`.",
-    task: "Use @dec on func. (Simulate output 'Decorated').",
+    task: "Write `dec(f)` that prints 'Decorated' and returns f. Put @dec on the line above `def func(): pass`.",
     expectedOutput: "Decorated",
-    hint: "Print the simulation.",
+    hint: "A decorator runs when the function below it is defined.",
+    mustUse: ["@dec"],
     availableBlocks: [
+      "def dec(f):", "print('Decorated')", "return f",
       "@dec", "#dec", 
-      "def func(): pass", 
-      "print('Decorated')"
+      "def func(): pass"
     ]
   },
   {
@@ -657,6 +699,7 @@ export const CURRICULUM: Mission[] = [
     task: "Define class with @property name returning 'Bob'. Print obj.name.",
     expectedOutput: "Bob",
     hint: "Use @property decorator.",
+    mustUse: ["@property"],
     availableBlocks: [
       "class P:", "@property", 
       "def name(self): return 'Bob'", "def name():", 
@@ -672,9 +715,35 @@ export const CURRICULUM: Mission[] = [
     task: "Create a generator that yields 'End'. Print it.",
     expectedOutput: "End",
     hint: "yield + next.",
+    mustUse: ["yield"],
     availableBlocks: [
       "def g(): yield 'End'", "def g(): return 'End'", 
       "print(next(g()))", "print(g())"
     ]
   }
 ];
+
+/** Turn workspace blocks into Python. A line's indent = the Tab blocks at its start; a line right after one
+ *  ending in ':' that has no Tab is indented one step for the pupil (the most common slip). */
+export function blocksToPython(blocks: string[]): string {
+  const lines: { tabs: number; parts: string[] }[] = [{ tabs: 0, parts: [] }];
+  for (const b of blocks) {
+    const cur = lines[lines.length - 1];
+    if (b === '[NEWLINE]') { lines.push({ tabs: 0, parts: [] }); continue; }
+    if (b === '    ') { if (cur.parts.length === 0) cur.tabs++; continue; }
+    cur.parts.push(b);
+  }
+  const out: string[] = [];
+  let prevIndent = 0;
+  let prevHeader = false;
+  for (const l of lines) {
+    if (!l.parts.length) continue;
+    const text = l.parts.join(' ').replace(/\s+/g, ' ').trim();
+    let indent = l.tabs;
+    if (indent === 0 && prevHeader && !/^(else|elif|except|finally)\b/.test(text)) indent = prevIndent + 1;
+    out.push('    '.repeat(indent) + text);
+    prevIndent = indent;
+    prevHeader = /:$/.test(text) && !text.startsWith('#');
+  }
+  return out.join('\n');
+}
