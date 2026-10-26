@@ -8,8 +8,11 @@ export async function GET(request: NextRequest) {
     const url = request.nextUrl.searchParams.get('url');
     if (!url) return new NextResponse('Missing url', { status: 400 });
 
-    // Security: Only allow requests to the school's Firebase Storage domain
-    if (!url.startsWith('https://firebasestorage.googleapis.com')) {
+    // Security: only Firebase Storage. (A prefix check let "https://firebasestorage.googleapis.com.evil.com/…"
+    // through, so the server could be used to fetch any site.)
+    let parsed: URL;
+    try { parsed = new URL(url); } catch { return new NextResponse('Bad url', { status: 400 }); }
+    if (parsed.protocol !== 'https:' || parsed.hostname !== 'firebasestorage.googleapis.com') {
         return new NextResponse('Forbidden: Only Firebase Storage URLs are allowed', { status: 403 });
     }
 
@@ -46,4 +49,4 @@ export async function GET(request: NextRequest) {
         }
         return new NextResponse(`Internal Image Proxy Error: ${err.message}`, { status: 500 });
     }
-}
+}

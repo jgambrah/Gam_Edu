@@ -12427,7 +12427,7 @@ export default function DashboardClient() {
   const parentsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && (adminActiveTab === 'parents' || directorActiveTab === 'parents')) ? query(collection(firestore, 'parents'), where('schoolId', '==', schoolId), limit(50)) : null, [firestore, schoolId, isAdmin, adminActiveTab, directorActiveTab]);
   const { data: parents, isLoading: loadingParents } = useCollection<any>(parentsQuery);
 
-  const admissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && (adminActiveTab === 'admissions' || directorActiveTab === 'admissions')) ? query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), limit(50)) : null, [firestore, schoolId, isAdmin, adminActiveTab, directorActiveTab]);
+  const admissionsQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && (adminActiveTab === 'admissions' || directorActiveTab === 'admissions')) ? query(collection(firestore, 'admissionApplications'), where('schoolId', '==', schoolId), limit(300)) : null, [firestore, schoolId, isAdmin, adminActiveTab, directorActiveTab]);
   const { data: admissions, isLoading: loadingAdmissions } = useCollection<any>(admissionsQuery);
 
   const behavioralQuery = useMemoFirebase(() => (firestore && schoolId && isAdmin && (adminActiveTab === 'behavior' || directorActiveTab === 'behavior')) ? query(collection(firestore, 'behavioral_records'), where('schoolId', '==', schoolId), limit(50)) : null, [firestore, schoolId, isAdmin, adminActiveTab, directorActiveTab]);
