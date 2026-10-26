@@ -695,13 +695,20 @@ service cloud.firestore {
       }
     }
 
+    // Staff clock-ins. Records are written by the server (clockStaffAction) so time, distance and the
+    // face check cannot be edited from a phone. A staff member reads their own; the school's admins and HR read the school's.
+    function canReadStaffAttendance() {
+      return isSuperAdmin() || (isSignedIn() && resource.data.staffId == request.auth.uid)
+        || ((isAdmin() || getUserRole() in ['HR', 'hr', 'HR Manager', 'HR Officer', 'Human Resources']) && inMySchool());
+    }
     match /staff_attendance/{attendanceId} {
-      allow read, get, list, write, create, update: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow read: if canReadStaffAttendance();
+      allow create, update: if false;
+      allow delete: if isSuperAdmin() || (isAdmin() && inMySchool());
 
       match /{document=**} {
-        allow read, get, list, write, create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow read: if isSuperAdmin() || (isAdmin() && getUserSchoolId() != '' && get(/databases/$(database)/documents/staff_attendance/$(attendanceId)).data.schoolId == getUserSchoolId());
+        allow write: if isSuperAdmin();
       }
     }
 
