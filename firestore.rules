@@ -1282,81 +1282,142 @@ service cloud.firestore {
     }
 
 
+    // Admission applications and enquiries hold families' names, phones and emails.
+    // Before: ANY signed-in account of any school could read, change or delete every school's applications,
+    // and the public form could create one already marked "Admitted".
+    function newAdmissionIsValid(statusValue) {
+      return request.resource.data.schoolId is string && request.resource.data.schoolId.size() > 0
+        && request.resource.data.get('status', '') == statusValue
+        && exists(/databases/$(database)/documents/schools/$(request.resource.data.schoolId));
+    }
+    function isStaffOfSchool(sid) {
+      return isSuperAdmin() || ((isStaff() || isAdmin()) && getUserSchoolId() == sid);
+    }
     match /admissionApplications/{applicationId} {
-      allow read, get, list: if isSignedIn();
-      allow create: if true;
-      allow update, write: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      // The school's staff; a parent sees the applications they submitted themselves.
+      allow get: if isSignedIn() && (resource == null || isStaffOfSchool(resource.data.schoolId)
+        || resource.data.get('submittedByParentId', '') == request.auth.uid);
+      allow list: if isSignedIn() && (isStaffOfSchool(resource.data.schoolId)
+        || resource.data.submittedByParentId == request.auth.uid);
+      // Anyone (the school website's form) may apply, but only as a new, pending application.
+      allow create: if newAdmissionIsValid('Pending Review') || (isSignedIn() && isStaffOfSchool(request.resource.data.schoolId));
+      allow update: if isSignedIn() && isStaffOfSchool(resource.data.schoolId) && request.resource.data.schoolId == resource.data.schoolId;
+      allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
     }
 
     match /admissionEnquiries/{enquiryId} {
-      allow read, get, list: if isSignedIn();
-      allow create: if true;
-      allow update, write: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow get: if isSignedIn() && (resource == null || isStaffOfSchool(resource.data.schoolId));
+      allow list: if isSignedIn() && isStaffOfSchool(resource.data.schoolId);
+      allow create: if newAdmissionIsValid('Pending Response') || (isSignedIn() && isStaffOfSchool(request.resource.data.schoolId));
+      allow update: if isSignedIn() && isStaffOfSchool(resource.data.schoolId) && request.resource.data.schoolId == resource.data.schoolId;
+      allow delete: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == resource.data.schoolId);
     }
 
     // =========================================================
     // 8. JUNIOR / SENIOR ACADEMY & CLUBS
     // =========================================================
 
+    // ---- Junior Campus (Nursery Bloom) ----
+    // Items with no schoolId are older shared items; new items record schoolId + createdBy.
+    // Activity content stays readable by any signed-in user (the page lists it unfiltered and shows only
+    // shared + own-school items); changing or deleting it is limited to its creator or the same school.
+    function juniorCanCreate() {
+      return (isTeacher() || isAdmin()) &&
+        (isSuperAdmin() || request.resource.data.get('schoolId', null) == null || request.resource.data.get('schoolId', null) == getUserSchoolId());
+    }
+    function juniorCanChange() {
+      return isSuperAdmin() ||
+        (isSignedIn() && resource.data.get('createdBy', '') == request.auth.uid) ||
+        ((isTeacher() || isAdmin()) && getUserSchoolId() != '' && resource.data.get('schoolId', '') == getUserSchoolId()) ||
+        (isAdmin() && resource.data.get('schoolId', null) == null);
+    }
+    function juniorReadable() {
+      return isSignedIn() && (resource == null || resource.data.get('schoolId', null) == null || resource.data.get('createdBy', '') == request.auth.uid
+        || resource.data.schoolId == getUserSchoolId() || isSuperAdmin());
+    }
+
     match /junior_abc_words/{docId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isTeacher();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_phonics_sounds/{docId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isTeacher();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_phonics_rhymes/{docId} {
-      allow read, list: if isSignedIn();
-      allow write: if isAdmin() || isTeacher();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_stories/{storyId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if request.auth.uid == resource.data.createdBy || isTeacher() || isAdmin();
+      allow read: if juniorReadable();
+      allow create: if isSignedIn() && request.resource.data.get('createdBy', '') == request.auth.uid
+        && (request.resource.data.get('schoolId', null) == null || request.resource.data.get('schoolId', null) == getUserSchoolId() || isSuperAdmin());
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_science/{factId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if request.auth.uid == resource.data.createdBy || isTeacher() || isAdmin();
+      allow read: if juniorReadable();
+      allow create: if isSignedIn() && request.resource.data.get('createdBy', '') == request.auth.uid
+        && (request.resource.data.get('schoolId', null) == null || request.resource.data.get('schoolId', null) == getUserSchoolId() || isSuperAdmin());
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_phonics/{wordId} {
-      allow read, list: if isSignedIn();
-      allow create: if isTeacher() || isAdmin();
-      allow delete: if isTeacher() || isAdmin();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_puzzles/{puzzleId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
+    // Stickers: a pupil sees their own; the school's staff see their school's.
     match /junior_stickers/{stickerId} {
-      allow read, list: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+      allow read: if isSuperAdmin() || (isSignedIn() && (resource == null || resource.data.userId == request.auth.uid))
+        || ((isTeacher() || isAdmin()) && inMySchool());
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isOwner(resource.data.userId) || isSuperAdmin() || (isAdmin() && inMySchool());
     }
 
     match /junior_sorter_items/{itemId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_science_materials/{materialId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
     }
 
     match /junior_art_quests/{questId} {
-      allow read, list: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn();
+      allow create: if juniorCanCreate();
+      allow update, delete: if juniorCanChange();
+    }
+
+    // Teacher-made Sentence Finisher and Year 5+ maths items: one school only.
+    // (These had no rule before, so only the platform team could save or see them.)
+    match /junior_incomplete_sentences/{id} {
+      allow read: if isSuperAdmin() || inMySchool();
+      allow create: if (isTeacher() || isAdmin()) && (isSuperAdmin() || request.resource.data.schoolId == getUserSchoolId());
+      allow update, delete: if isSuperAdmin() || ((isTeacher() || isAdmin()) && inMySchool());
+    }
+
+    match /junior_math_word_problems/{id} {
+      allow read: if isSuperAdmin() || inMySchool();
+      allow create: if (isTeacher() || isAdmin()) && (isSuperAdmin() || request.resource.data.schoolId == getUserSchoolId());
+      allow update, delete: if isSuperAdmin() || ((isTeacher() || isAdmin()) && inMySchool());
     }
 
     match /senior_stories/{id} {
@@ -1804,4 +1865,4 @@ service cloud.firestore {
     }
 
   }
-}
+}

@@ -37,9 +37,9 @@ export function AdmissionsDashboardView({
 
     admissions?.forEach((app: any) => {
       const status = (app.status || '').toLowerCase().trim();
-      if (status === 'accepted' || status === 'admitted' || status === 'admit') {
+      if (status === 'accepted' || status === 'admitted' || status === 'admit' || status === 'enrolled') {
         accepted++;
-      } else if (status === 'pending review' || status === 'pending' || status === 'review' || status === '') {
+      } else if (status === 'pending review' || status === 'under review' || status === 'pending' || status === 'review' || status === '') {
         pending++;
       } else if (status === 'rejected' || status === 'reject' || status === 'denied') {
         rejected++;
@@ -78,17 +78,9 @@ export function AdmissionsDashboardView({
       }
     });
 
-    // If no years found, generate some mock data based on total students to populate the graph beautifully
+    // No dates on the records: show nothing (it used to invent a growth curve from 15/25/28/32% of the roll).
     const years = Object.keys(yearCounts).sort();
-    if (years.length === 0) {
-      const currentYear = new Date().getFullYear();
-      return [
-        { year: (currentYear - 3).toString(), students: Math.round(students.length * 0.15) },
-        { year: (currentYear - 2).toString(), students: Math.round(students.length * 0.25) },
-        { year: (currentYear - 1).toString(), students: Math.round(students.length * 0.28) },
-        { year: currentYear.toString(), students: Math.round(students.length * 0.32) }
-      ];
-    }
+    if (years.length === 0) return [];
 
     // Cumulative growth mapping
     let runningTotal = 0;
@@ -118,13 +110,8 @@ export function AdmissionsDashboardView({
       }
     });
 
-    // Standard baseline split if zero records
-    if (maleCount === 0 && femaleCount === 0) {
-      return [
-        { name: 'Male', value: 50, fill: '#6366f1' },
-        { name: 'Female', value: 50, fill: '#ec4899' }
-      ];
-    }
+    // No genders recorded: show nothing (it used to show an invented 50/50 split).
+    if (maleCount === 0 && femaleCount === 0) return [];
 
     const data = [
       { name: 'Male', value: maleCount, fill: '#6366f1' },

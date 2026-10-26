@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useUser, useMemoFirebase, useDoc, useAuth } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { logAuditEvent } from '@/lib/audit';
-import { collection, doc, query, where, getDocs, getDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy, setDoc } from 'firebase/firestore';
+import { collection, doc, query, where, getDocs, getDoc, onSnapshot, updateDoc, serverTimestamp, addDoc, orderBy, setDoc, arrayUnion, limit } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -224,6 +224,9 @@ function AdminApplicationDashboard() {
     // Each admitted pupil gets their own temporary password (no longer "password123").
     const [studentPassword, setStudentPassword] = useState(() => makeFriendlyPassword());
     const [newAccount, setNewAccount] = useState<NewAccountCredentials | null>(null);
+    // Logins created by one approval (pupil, then parent) are shown one after the other.
+    const [pendingAccounts, setPendingAccounts] = useState<NewAccountCredentials[]>([]);
+    const [linkParent, setLinkParent] = useState(true);
     const [isNewAppOpen, setIsNewAppOpen] = useState(false);
 
     // School data query
@@ -466,12 +469,22 @@ function AdminApplicationDashboard() {
         if (!firestore || !schoolId) return;
         const fetchClasses = async () => {
             const querySnapshot = await getDocs(query(collection(firestore, 'classes'), where('schoolId', '==', schoolId)));
-            
-            const studentsQuery = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
-            const studentsData = studentsQuery.docs.map(doc => doc.data() as Student);
-            
+
+            // Class sizes from the server-kept roster (1 read); only if it is missing, read the pupils.
+            let studentsData: any[] = [];
+            try {
+                const roster = await getDoc(doc(firestore, 'studentRoster', schoolId));
+                const data: any = roster.exists() ? roster.data() : null;
+                if (data?.students && !data.tooLarge) studentsData = Object.values(data.students);
+            } catch { /* fall back below */ }
+            if (studentsData.length === 0) {
+                const studentsQuery = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId)));
+                studentsData = studentsQuery.docs.map(doc => doc.data() as Student);
+            }
+            const isActive = (s: any) => (!s.enrollmentStatus || s.enrollmentStatus === 'Active') && s.isArchived !== true;
+
             const classesData = querySnapshot.docs.map(doc => {
-                const currentStudents = studentsData.filter(s => s.classId === doc.id).length;
+                const currentStudents = studentsData.filter(s => s.classId === doc.id && isActive(s)).length;
                 return {
                     id: doc.id,
                     name: doc.data().name || doc.id,
@@ -607,6 +620,13 @@ function AdminApplicationDashboard() {
             const timestamp = serverTimestamp();
 
             if (decision === 'Approve') {
+                // Never admit the same application twice (that created a second pupil and login).
+                const fresh = await getDoc(appRef);
+                if (fresh.exists() && ['Admitted', 'Enrolled'].includes((fresh.data() as any).status)) {
+                    toast({ variant: "destructive", title: "Already admitted", description: "This application has already been admitted." });
+                    setProcessing(false);
+                    return;
+                }
                 if (!assignedClass) {
                     toast({ variant: "destructive", title: "Class Required", description: "Please assign a class." });
                     setProcessing(false);
@@ -627,14 +647,15 @@ function AdminApplicationDashboard() {
 
                 // Create Firebase User account for the student
                 const idToken = await auth?.currentUser?.getIdToken();
-                const userResult = await createNewUser(
-                    studentEmail.trim(), 
-                    isWeakDefaultPassword(studentPassword) ? makeFriendlyPassword() : studentPassword, 
-                    'Student', 
-                    { firstName, lastName }, 
-                    schoolId,
-                    idToken
-                );
+                const pupilPassword = isWeakDefaultPassword(studentPassword) ? makeFriendlyPassword() : studentPassword;
+                // Two pupils with the same name get the same suggested email: try name2@, name3@ … automatically.
+                let loginEmail = studentEmail.trim();
+                let userResult: any = await createNewUser(loginEmail, pupilPassword, 'Student', { firstName, lastName }, schoolId, idToken);
+                for (let n = 2; n <= 6 && userResult?.error && /already|exists|in use/i.test(String(userResult.error)); n++) {
+                    const [local, domain] = studentEmail.trim().split('@');
+                    loginEmail = `${local}${n}@${domain}`;
+                    userResult = await createNewUser(loginEmail, pupilPassword, 'Student', { firstName, lastName }, schoolId, idToken);
+                }
 
                 if (userResult.error) {
                     toast({ variant: "destructive", title: "Account Creation Failed", description: userResult.error });
@@ -649,12 +670,13 @@ function AdminApplicationDashboard() {
                     return;
                 }
 
-                const studentData = {
+                const p1: any = selectedApp.parent1 || {};
+                const studentData: any = {
                     uid: newUid,
                     studentId: newStudentId,
                     firstName: firstName,
                     lastName: lastName,
-                    email: studentEmail.trim(),
+                    email: loginEmail,
                     classId: assignedClass,
                     gender: selectedApp.student?.gender || selectedApp.gender || 'Other',
                     dateOfBirth: selectedApp.student?.dateOfBirth || selectedApp.dateOfBirth || null,
@@ -663,10 +685,64 @@ function AdminApplicationDashboard() {
                     schoolId: schoolId,
                     parentId: selectedApp.submittedByParentId || null,
                     admissionDate: new Date().toISOString().slice(0, 10), // new admission (checked for an Admission Fee)
+                    // Details from the application that were thrown away before (used on ID cards, debtor lists, SMS).
+                    guardianName: p1.name || null,
+                    guardianPhone: p1.phone || null,
+                    previousSchool: selectedApp.student?.previousSchool || null,
+                    healthNotes: selectedApp.student?.medicalConditions || null,
+                    admissionApplicationId: selectedApp.id,
                 };
                 
                 // Save the full student details into the collection using the generated UID
                 await setDoc(doc(firestore, 'students', newUid), studentData, { merge: true });
+
+                // Link a parent so the family can see the portal and get messages. Before, a pupil admitted from the
+                // website form had NO parent at all. Use the parent who applied, else an existing parent account
+                // with the same email or phone, else (if ticked) create one.
+                const extraAccounts: NewAccountCredentials[] = [];
+                let linkedParentNote = '';
+                if (linkParent) {
+                    try {
+                        let parentUid: string | null = selectedApp.submittedByParentId || null;
+                        const email = String(p1.email || '').trim().toLowerCase();
+                        const phone = String(p1.phone || '').trim();
+                        if (!parentUid && email) {
+                            const q1 = await getDocs(query(collection(firestore, 'parents'), where('schoolId', '==', schoolId), where('email', '==', email), limit(1)));
+                            if (!q1.empty) parentUid = q1.docs[0].id;
+                        }
+                        if (!parentUid && phone) {
+                            const q2 = await getDocs(query(collection(firestore, 'parents'), where('schoolId', '==', schoolId), where('phone', '==', phone), limit(1)));
+                            if (!q2.empty) parentUid = q2.docs[0].id;
+                        }
+                        if (parentUid) {
+                            await updateDoc(doc(firestore, 'parents', parentUid), { studentIds: arrayUnion(newUid) });
+                            linkedParentNote = ' Linked to the existing parent account.';
+                        } else if (email) {
+                            const parts = String(p1.name || '').trim().split(/\s+/);
+                            const pFirst = parts[0] || 'Parent';
+                            const pLast = parts.slice(1).join(' ') || lastName;
+                            const parentPassword = makeFriendlyPassword();
+                            const pRes: any = await createNewUser(email, parentPassword, 'Parent', { firstName: pFirst, lastName: pLast, phone }, schoolId, idToken);
+                            if (pRes?.uid) {
+                                parentUid = pRes.uid;
+                                await setDoc(doc(firestore, 'parents', pRes.uid), {
+                                    uid: pRes.uid, firstName: pFirst, lastName: pLast, email, phone: phone || null,
+                                    role: 'Parent', schoolId, studentIds: [newUid], createdAt: serverTimestamp(),
+                                }, { merge: true });
+                                extraAccounts.push({ name: `${pFirst} ${pLast}`.trim(), email, password: String(pRes.password || parentPassword), whereLater: 'Parent Directory' });
+                                linkedParentNote = ' A parent login was created.';
+                            } else {
+                                linkedParentNote = ` Parent not linked (${pRes?.error || 'could not create the parent login'}). Link them on the Parents page.`;
+                            }
+                        } else {
+                            linkedParentNote = ' No parent email on the application, so no parent login was created. Add the parent on the Parents page.';
+                        }
+                        if (parentUid) await updateDoc(doc(firestore, 'students', newUid), { parentId: parentUid });
+                    } catch (linkErr: any) {
+                        console.warn('Parent link notice:', linkErr);
+                        linkedParentNote = ' The parent could not be linked automatically; link them on the Parents page.';
+                    }
+                }
 
                 let academicYear = '';
                 let term = '';
@@ -702,12 +778,15 @@ function AdminApplicationDashboard() {
                 await updateDoc(appRef, {
                     status: 'Admitted',
                     assignedClassId: assignedClass,
+                    admittedStudentUid: newUid,
+                    admittedStudentId: newStudentId,
                     reviewedBy: user.uid,
                     reviewedAt: timestamp
                 });
 
-                toast({ title: "Approved", description: "Student enrolled and parent notified." });
-                setNewAccount({ name: `${firstName} ${lastName}`.trim(), email: studentEmail.trim(), password: String((userResult as any).password || studentPassword), whereLater: 'Student Directory' });
+                toast({ title: "Admitted", description: `${firstName} ${lastName} enrolled as ${newStudentId}.${linkedParentNote}` });
+                setNewAccount({ name: `${firstName} ${lastName}`.trim(), email: loginEmail, password: String((userResult as any).password || pupilPassword), whereLater: 'Student Directory' });
+                setPendingAccounts(extraAccounts);
                 setStudentPassword(makeFriendlyPassword());
 
             } else {
@@ -891,7 +970,12 @@ function AdminApplicationDashboard() {
 
     return (
         <div className="space-y-6">
-            <NewAccountPasswordDialog credentials={newAccount} onClose={() => setNewAccount(null)} />
+            <NewAccountPasswordDialog credentials={newAccount} onClose={() => {
+                // Show the next login made by the same approval (e.g. the parent's), if any.
+                const [next, ...rest] = pendingAccounts;
+                setNewAccount(next || null);
+                setPendingAccounts(rest);
+            }} />
             {/* Standardized Institutional Hero Banner */}
             <SectionHeroBanner
                 eyebrow="ADMISSIONS & INTAKE"
@@ -1530,6 +1614,13 @@ function AdminApplicationDashboard() {
                                     </div>
                                 </div>
                             </div>
+                            <label className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100 cursor-pointer">
+                                <Checkbox checked={linkParent} onCheckedChange={v => setLinkParent(!!v)} className="mt-0.5" />
+                                <span className="text-xs text-slate-700">
+                                    <b>Link the parent</b> ({selectedApp?.parent1?.name || 'parent'}{selectedApp?.parent1?.email ? `, ${selectedApp.parent1.email}` : ''}{selectedApp?.parent1?.phone ? `, ${selectedApp.parent1.phone}` : ''}).
+                                    <span className="block text-[11px] text-slate-500 mt-0.5">Uses the parent who applied or an existing parent account with the same email or phone; otherwise creates a parent login (needs an email). Without a parent, nobody can see this pupil's portal or receive messages.</span>
+                                </span>
+                            </label>
                         </div>
                     )}
 

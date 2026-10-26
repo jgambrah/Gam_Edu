@@ -476,6 +476,11 @@ export const editAlumniSchema = z.object({
     currentOccupation: z.string().optional(),
     employer: z.string().optional(),
     mentorshipWillingness: z.boolean().default(false),
+    // Contact and progress after leaving (the school login email stops being read once a pupil leaves).
+    phone: z.string().optional(),
+    personalEmail: z.string().optional(),
+    furtherStudies: z.string().optional(),
+    location: z.string().optional(),
 });
 
 export type AlumniDetails = z.infer<typeof editAlumniSchema>;
