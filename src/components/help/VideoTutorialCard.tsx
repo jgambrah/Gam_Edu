@@ -70,7 +70,9 @@ export function VideoTutorialCard({ tutorial: t }: { tutorial: Tutorial }) {
                     ))}
                   </ol>
                 ) : steps[0] ? (
-                  <p className="text-sm font-medium leading-relaxed text-slate-600"><Inline text={steps[0]} /></p>
+                  <div className="rounded-xl bg-white p-3.5 border border-slate-200/80 shadow-xs">
+                    <p className="text-sm font-medium leading-relaxed text-slate-700"><Inline text={steps[0]} /></p>
+                  </div>
                 ) : null}
               </div>
             </CollapsibleContent>
