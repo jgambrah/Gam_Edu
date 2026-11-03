@@ -1177,11 +1177,17 @@ export const onAdmissionWrite = onDocumentWritten(
     const admittedDelta = (isAdmitted ? 1 : 0) - (wasAdmitted ? 1 : 0);
     if (pendingDelta === 0 && admittedDelta === 0) return;
 
+    // Nested object, not 'admissions.pendingCount' keys: set() does not read dots as paths, so those wrote
+    // fields literally named "admissions.pendingCount" and the dashboard's admissions.pendingCount never moved.
+    // Admissions are counted per month (admittedByMonth["2026-10"]) so "this month" is right in every month.
+    const month = new Date().toISOString().slice(0, 7);
+    const admissions: any = {};
+    if (pendingDelta) admissions.pendingCount = FieldValue.increment(pendingDelta);
+    if (admittedDelta) admissions.admittedByMonth = { [month]: FieldValue.increment(admittedDelta) };
     await SUMMARY(schoolId).set({
       schoolId,
       lastUpdated: FieldValue.serverTimestamp(),
-      'admissions.pendingCount':      FieldValue.increment(pendingDelta),
-      'admissions.approvedThisMonth': FieldValue.increment(admittedDelta),
+      admissions,
     }, { merge: true });
   }
 );

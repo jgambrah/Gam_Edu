@@ -3,12 +3,13 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, doc } from 'firebase/firestore';
+import { collection, query, where, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Download, UserRound, IdCard, Users } from 'lucide-react';
+import { Loader2, Download, UserRound, IdCard, Users, Camera, Eye } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { Label } from '@/components/ui/label';
@@ -42,6 +43,28 @@ async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
     } catch (error: any) {
         console.error("❌ getBase64ImageFromUrl failed:", error.message);
         return "";
+    }
+}
+
+// Shrinks a photo to at most 480px (JPEG) before upload: a phone photo is often 3-5 MB, which made uploads slow
+// and the PDF heavy. Returns the file to upload and a data URL for the card straight away.
+async function shrinkPhoto(file: File): Promise<{ blob: Blob; dataUrl: string }> {
+    const url = URL.createObjectURL(file);
+    try {
+        const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+            const i = new Image(); i.onload = () => resolve(i); i.onerror = reject; i.src = url;
+        });
+        const max = 480;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        const blob = await new Promise<Blob>((resolve) => canvas.toBlob(b => resolve(b as Blob), 'image/jpeg', 0.85));
+        return { blob, dataUrl };
+    } finally {
+        URL.revokeObjectURL(url);
     }
 }
 
@@ -328,6 +351,31 @@ export default function IDCardGeneratorPage() {
         setExcluded(new Set());
     }, [classId]);
     const toggleExcluded = (id: string) => setExcluded(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+    // Which pupil's card is shown in the preview (default: the first to be printed).
+    const [previewId, setPreviewId] = useState<string | null>(null);
+    useEffect(() => { setPreviewId(null); }, [classId]);
+    const [uploadingId, setUploadingId] = useState<string | null>(null);
+    // Take or choose a photo for one pupil, right here (same storage place as the Students page).
+    const handlePhotoPick = async (student: any, file?: File | null) => {
+        if (!file || !firestore || !schoolId) return;
+        const id = student.id || student.uid;
+        setUploadingId(id);
+        try {
+            const { blob, dataUrl } = await shrinkPhoto(file);
+            setResolvedPhotos(prev => ({ ...prev, [id]: dataUrl }));
+            const path = storageRef(getStorage(), `schools/${schoolId}/students/${student.uid || id}/profile_pic`);
+            await uploadBytes(path, blob, { contentType: 'image/jpeg' });
+            const url = await getDownloadURL(path);
+            await updateDoc(doc(firestore, 'students', id), { photoURL: url, updatedAt: serverTimestamp() });
+            setPreviewId(id);
+            toast({ title: 'Photo saved', description: `${student.firstName} ${student.lastName}` });
+        } catch (err: any) {
+            console.error('Photo upload failed:', err);
+            toast({ variant: 'destructive', title: 'Photo not saved', description: err?.message || 'Please try again.' });
+        } finally {
+            setUploadingId(null);
+        }
+    };
 
     // ── MOVED HOOKS ABOVE CONDITIONAL RETURNS ──
     const sortedStudents = useMemo(() =>
@@ -389,7 +437,7 @@ export default function IDCardGeneratorPage() {
         return studentsToExport.filter(s => s.photoURL && resolvedPhotos[s.id || s.uid] === undefined).length;
     }, [studentsToExport, resolvedPhotos]);
 
-    const previewStudent = useMemo(() => studentsToExport[0] || null, [studentsToExport]);
+    const previewStudent = useMemo(() => (previewId && sortedStudents.find(s => (s.id || s.uid) === previewId)) || studentsToExport[0] || null, [studentsToExport, sortedStudents, previewId]);
     const missingPhoto = useMemo(() => studentsToExport.filter(s => !s.photoURL).length, [studentsToExport]);
     const missingId = useMemo(() => studentsToExport.filter(s => cardId(s) === 'ID Pending').length, [studentsToExport]);
 
@@ -521,7 +569,7 @@ export default function IDCardGeneratorPage() {
                                 <SelectValue placeholder="Select Class" />
                             </SelectTrigger>
                             <SelectContent>
-                                {classes?.map((c) => (
+                                {[...(classes || [])].sort((a, b) => String(a.name).localeCompare(String(b.name), undefined, { numeric: true })).map((c) => (
                                     <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
                                 ))}
                             </SelectContent>
@@ -576,20 +624,31 @@ export default function IDCardGeneratorPage() {
                                         <label key={id} className={cn("flex items-center gap-2.5 p-2.5 rounded-xl border cursor-pointer transition-colors",
                                             on ? "bg-white border-indigo-200" : "bg-slate-50 border-slate-100 opacity-60")}>
                                             <Checkbox checked={on} onCheckedChange={() => toggleExcluded(id)} />
-                                            <div className="min-w-0">
+                                            <div className="min-w-0 flex-1">
                                                 <p className="text-xs font-bold text-slate-800 truncate">{s.lastName}, {s.firstName}</p>
                                                 <p className="text-[10px] font-semibold">
-                                                    {!s.photoURL ? <span className="text-amber-600">No photo </span> : null}
+                                                    {!s.photoURL && !resolvedPhotos[id] ? <span className="text-amber-600">No photo </span> : null}
                                                     {noId ? <span className="text-rose-600">No student ID</span> : <span className="text-slate-400">{cardId(s)}</span>}
                                                 </p>
                                             </div>
+                                            <button type="button" title="Preview this card" onClick={(ev) => { ev.preventDefault(); setPreviewId(id); }}
+                                                className={cn("p-1.5 rounded-lg shrink-0", previewStudent && (previewStudent.id || previewStudent.uid) === id ? "bg-indigo-100 text-indigo-700" : "text-slate-400 hover:bg-slate-100")}>
+                                                <Eye className="h-3.5 w-3.5" />
+                                            </button>
+                                            <span title={s.photoURL ? 'Replace photo' : 'Take or upload photo'}
+                                                onClick={(ev) => { ev.preventDefault(); (document.getElementById(`photo-${id}`) as HTMLInputElement | null)?.click(); }}
+                                                className={cn("p-1.5 rounded-lg shrink-0 cursor-pointer", !s.photoURL && !resolvedPhotos[id] ? "bg-amber-50 text-amber-700 hover:bg-amber-100" : "text-slate-400 hover:bg-slate-100")}>
+                                                {uploadingId === id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
+                                            </span>
+                                            <input id={`photo-${id}`} type="file" accept="image/*" capture="user" className="hidden"
+                                                onChange={(ev) => { const f = ev.target.files?.[0]; ev.target.value = ''; handlePhotoPick(s, f); }} />
                                         </label>
                                     );
                                 })}
                             </div>
                             {(missingPhoto > 0 || missingId > 0) && (
                                 <p className="text-[11px] text-slate-500 font-semibold">
-                                    Add missing photos or IDs on the pupil's record (Students page) before printing, or untick those pupils and print them later.
+                                    Tap the camera beside a pupil to take or upload their photo here (on a phone it opens the camera). Missing IDs are added on the Students page; or untick those pupils and print them later.
                                 </p>
                             )}
                         </div>

@@ -1201,11 +1201,19 @@ exports.onAdmissionWrite = (0, firestore_1.onDocumentWritten)('admissionApplicat
     const admittedDelta = (isAdmitted ? 1 : 0) - (wasAdmitted ? 1 : 0);
     if (pendingDelta === 0 && admittedDelta === 0)
         return;
+    // Nested object, not 'admissions.pendingCount' keys: set() does not read dots as paths, so those wrote
+    // fields literally named "admissions.pendingCount" and the dashboard's admissions.pendingCount never moved.
+    // Admissions are counted per month (admittedByMonth["2026-10"]) so "this month" is right in every month.
+    const month = new Date().toISOString().slice(0, 7);
+    const admissions = {};
+    if (pendingDelta)
+        admissions.pendingCount = firestore_2.FieldValue.increment(pendingDelta);
+    if (admittedDelta)
+        admissions.admittedByMonth = { [month]: firestore_2.FieldValue.increment(admittedDelta) };
     await SUMMARY(schoolId).set({
         schoolId,
         lastUpdated: firestore_2.FieldValue.serverTimestamp(),
-        'admissions.pendingCount': firestore_2.FieldValue.increment(pendingDelta),
-        'admissions.approvedThisMonth': firestore_2.FieldValue.increment(admittedDelta),
+        admissions,
     }, { merge: true });
 });
 // ── TRIGGER 6: Behavioral Records ────────────────────────────────────────────

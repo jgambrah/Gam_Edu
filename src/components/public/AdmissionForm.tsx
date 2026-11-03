@@ -12,42 +12,53 @@ export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, pr
     const firestore = useFirestore();
     const { toast } = useToast();
     const [loading, setLoading] = useState(false);
+    const [submittedId, setSubmittedId] = useState<string | null>(null);
     
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!firestore) return;
-        setLoading(true);
         const formData = new FormData(e.currentTarget);
+        // Hidden field that people never fill in; automated spam bots usually do.
+        if (String(formData.get('website') || '').trim()) return;
+        const phone = String(formData.get('phone') || '').replace(/[^\d+]/g, '');
+        if (phone.replace(/\D/g, '').length < 9) {
+            toast({ variant: 'destructive', title: 'Check the phone number', description: 'Please enter a full phone number so the school can reach you.' });
+            return;
+        }
+        setLoading(true);
         
         try {
-            const appId = `APP-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+            const appId = `APP-${Date.now().toString().slice(-6)}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+            const dob = String(formData.get('dob') || '');
             await addDoc(collection(firestore, 'admissionApplications'), {
                 schoolId,
                 applicationId: appId,
                 status: 'Pending Review',
                 submittedAt: serverTimestamp(),
                 student: {
-                    fullName: formData.get('studentName') as string || '',
-                    desiredGrade: formData.get('grade') as string || '',
-                    gender: '',
+                    fullName: String(formData.get('studentName') || '').trim(),
+                    desiredGrade: String(formData.get('grade') || '').trim(),
+                    gender: String(formData.get('gender') || ''),
                     address: '',
-                    dateOfBirth: null,
+                    dateOfBirth: dob || null,
+                    previousSchool: String(formData.get('previousSchool') || '').trim(),
                 },
+                source: 'website',
                 parent1: {
-                    name: formData.get('parentName') as string || '',
+                    name: String(formData.get('parentName') || '').trim(),
                     relationship: 'Parent/Guardian',
-                    phone: formData.get('phone') as string || '',
-                    email: formData.get('email') as string || '',
+                    phone,
+                    email: String(formData.get('email') || '').trim().toLowerCase(),
                     addressSameAsStudent: true,
                     address: '',
                 },
                 emergencyContact: {
                     name: formData.get('parentName') as string || '',
                     relationship: 'Parent/Guardian',
-                    phone: formData.get('phone') as string || '',
+                    phone,
                 }
             });
-            toast({ title: "Application Submitted!", description: `The school will review your application. ID: ${appId}` });
+            setSubmittedId(appId);
             (e.target as HTMLFormElement).reset();
         } catch (err: any) {
             console.error("Admission Submit Error:", err);
@@ -57,9 +68,24 @@ export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, pr
         }
     };
 
+    if (submittedId) {
+        return (
+            <div className="space-y-4 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 text-left">
+                <h3 className="text-2xl font-bold" style={{ color: primaryColor }}>Application received</h3>
+                <p className="text-sm text-slate-600">Thank you. The school will review the application and contact you on the phone number you gave.</p>
+                <div className="p-4 rounded-xl bg-slate-50 border">
+                    <p className="text-xs text-slate-500">Your application number — please keep it:</p>
+                    <p className="text-xl font-black font-mono text-slate-900 mt-1">{submittedId}</p>
+                </div>
+                <Button variant="outline" onClick={() => setSubmittedId(null)} className="w-full">Apply for another child</Button>
+            </div>
+        );
+    }
+
     return (
         <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-2xl shadow-xl border border-slate-100 text-left">
             <h3 className="text-2xl font-bold mb-4" style={{ color: primaryColor }}>Apply for Admission</h3>
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label>Parent Name *</Label>
@@ -84,6 +110,25 @@ export function AdmissionForm({ schoolId, primaryColor }: { schoolId: string, pr
                     <Input name="grade" placeholder="e.g. Grade 1" required />
                 </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                    <Label>Child's Date of Birth</Label>
+                    <Input name="dob" type="date" max={new Date().toISOString().slice(0, 10)} />
+                </div>
+                <div className="space-y-2">
+                    <Label>Gender</Label>
+                    <select name="gender" className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm">
+                        <option value="">—</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div className="space-y-2">
+                    <Label>Previous School</Label>
+                    <Input name="previousSchool" placeholder="If any" />
+                </div>
+            </div>
+            <p className="text-[11px] text-slate-500">Add an email address if you would like a parent login to follow your child's progress once admitted.</p>
             <Button 
                 type="submit" 
                 disabled={loading} 

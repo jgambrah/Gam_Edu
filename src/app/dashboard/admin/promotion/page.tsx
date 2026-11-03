@@ -200,9 +200,13 @@ export default function PromotionPage() {
             
             if (destinationClassId === 'GRADUATE') {
                 // Graduation Logic: Mark status and archive
+                // Same fields as the Alumni page, so graduates show their year and class there.
                 batch.update(studentRef, {
                     enrollmentStatus: 'Graduated',
                     previousClassId: sourceClassId,
+                    graduationYear: new Date().getFullYear(),
+                    graduatedAt: serverTimestamp(),
+                    graduatedFromClassName: sourceClassName,
                     updatedAt: serverTimestamp()
                 });
 

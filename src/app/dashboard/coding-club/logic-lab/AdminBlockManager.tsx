@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useUser, useFirestore } from '@/firebase'; 
 import { doc, getDoc, setDoc, updateDoc, arrayUnion } from 'firebase/firestore';
-import { Plus, Loader2 } from 'lucide-react'; // Changed icon to simple Plus
+import { Plus, Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface Props {
   missionId: number; 
@@ -12,6 +13,7 @@ interface Props {
 export default function AdminBlockManager({ missionId }: Props) {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   
   const [newBlock, setNewBlock] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,11 +53,11 @@ export default function AdminBlockManager({ missionId }: Props) {
         });
       }
 
-      alert(`✅ Admin: Added block "${newBlock}"`);
+      toast({ title: 'Block added', description: `"${newBlock.trim()}" is now in Mission ${missionId}'s toolbox.` });
       setNewBlock(''); // Clear input
     } catch (error: any) {
       console.error(error);
-      alert(`❌ Error: ${error.message}`);
+      toast({ variant: 'destructive', title: 'Could not add block', description: error.message });
     } finally {
       setIsSubmitting(false);
     }
@@ -65,12 +67,12 @@ export default function AdminBlockManager({ missionId }: Props) {
   if (!isAdmin) return null;
 
   return (
-    <div className="mt-6 p-4 bg-red-50 border-2 border-red-200 rounded-lg shadow-sm">
+    <div className="mt-6 p-4 bg-slate-950 border border-fuchsia-500/30 rounded-2xl shadow-sm">
       <div className="mb-2">
-        <h3 className="text-red-800 font-bold text-xs uppercase tracking-wider">
+        <h3 className="text-fuchsia-300 font-bold text-xs uppercase tracking-wider">
            👮 Admin Control
         </h3>
-        <p className="text-[10px] text-red-600">
+        <p className="text-[10px] text-slate-400">
           Adding to Mission {missionId}
         </p>
       </div>
@@ -82,13 +84,13 @@ export default function AdminBlockManager({ missionId }: Props) {
           value={newBlock}
           onChange={(e) => setNewBlock(e.target.value)}
           placeholder="Type block code here..."
-          className="w-full border border-red-300 rounded px-3 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="w-full border border-slate-700 bg-slate-900 rounded-lg px-3 py-2 text-sm text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
         />
         
         <button
           type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded text-sm flex items-center justify-center gap-2 transition-colors"
+          disabled={isSubmitting || !newBlock.trim()}
+          className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 disabled:opacity-50 text-white font-semibold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
         >
           {isSubmitting ? (
             <>

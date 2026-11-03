@@ -1,33 +1,53 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
-import { collection, query, where, orderBy, addDoc, serverTimestamp, limit, getDocs, doc, getDoc } from 'firebase/firestore';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
+import { collection, query, where, orderBy, limit, doc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { Loader2, Camera, UserCheck, History, LogIn, LogOut, MapPin, CheckCircle2, AlertTriangle, ShieldAlert, RefreshCw, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { WebcamCapture } from '@/components/dashboard/attendance/WebcamCapture';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import type { StaffAttendance } from '@/lib/types';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { useRole } from '@/context/role-context';
-import { verifyStaffIdentityAction } from '@/app/actions/verify-identity';
+import { clockStaffAction } from '@/app/actions/staff-clock';
 import { getDistanceInMeters } from '@/lib/geo';
 import { cn } from '@/lib/utils';
 
-/**
- * Converts HH:mm time string to a Date object for today.
- */
-const getTodayTimeFromStr = (timeStr: string) => {
-    if (!timeStr) return null;
-    const [hours, minutes] = timeStr.split(':').map(Number);
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-    return date;
+const DEFAULT_RADIUS = 200;
+const ADMIN_ROLES = ['director', 'administrator', 'admin', 'principal', 'headmaster', 'headmistress', 'head teacher', 'owner'];
+
+const num = (v: unknown) => {
+  const n = typeof v === 'string' ? parseFloat(v) : (v as number);
+  return typeof n === 'number' && Number.isFinite(n) ? n : null;
 };
+
+/** 850m, or 196.6 km once it is over a kilometre. */
+const fmtDistance = (m: number) => (m >= 1000 ? `${(m / 1000).toFixed(m >= 10000 ? 0 : 1)} km` : `${Math.round(m)} m`);
+
+const sameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+/** Make the selfie small before sending (about 60-120 KB instead of 1 MB+). */
+function shrinkSelfie(dataUri: string, maxSide = 640): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      const ctx = c.getContext('2d');
+      if (!ctx) return resolve(dataUri);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      resolve(c.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = () => resolve(dataUri);
+    img.src = dataUri;
+  });
+}
 
 export default function StaffAttendancePage() {
   const { user, isUserLoading } = useUser();
@@ -38,8 +58,9 @@ export default function StaffAttendancePage() {
 
   const [imageDataUri, setImageDataUri] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
+  const [location, setLocation] = useState<{ latitude: number; longitude: number; accuracy: number | null; at: number } | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
 
   const isStaff = role && !['student', 'parent'].includes(role.toLowerCase());
 
@@ -63,48 +84,60 @@ export default function StaffAttendancePage() {
   }, [user, schoolId, firestore, isStaff]);
   const { data: attendanceLogs, isLoading: isLogsLoading, forceRefetch } = useCollection<StaffAttendance>(attendanceQuery);
 
-  useEffect(() => {
-    if (isStaff && "geolocation" in navigator) {
-      // Use high accuracy settings to prevent false off-campus flags
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setLocationError(null);
-        },
-        (error) => {
-          setLocationError(error.message);
-          toast({
-            variant: "destructive",
-            title: "Location Error",
-            description: "Could not get your location. Please enable location services to verify your campus proximity.",
-          });
-        },
-        { 
-            enableHighAccuracy: true, 
-            timeout: 15000, 
-            maximumAge: 0 
-        }
-      );
+  const locate = useCallback(() => {
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
+      setLocationError('This device cannot share its location.');
+      return;
     }
-  }, [toast, isStaff]);
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : null,
+          at: Date.now(),
+        });
+        setLocationError(null);
+        setIsLocating(false);
+      },
+      (error) => {
+        setIsLocating(false);
+        setLocationError(error.code === error.PERMISSION_DENIED ? 'Location permission was refused. Allow location for this site, then press Refresh.' : error.message);
+        toast({
+          variant: "destructive",
+          title: "Location Error",
+          description: "Could not get your location. Please enable location services to verify your campus proximity.",
+        });
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }, [toast]);
 
-  const lastAction = useMemo(() => attendanceLogs?.[0], [attendanceLogs]);
+  useEffect(() => {
+    if (isStaff) locate();
+  }, [isStaff, locate]);
 
-  const hasClockedInToday = useMemo(() => {
-    if (!lastAction || !lastAction.timestamp) return false;
-    const today = new Date();
-    const lastActionDate = lastAction.timestamp.toDate();
-    return lastAction.type === 'In' && lastActionDate.getDate() === today.getDate() && lastActionDate.getMonth() === today.getMonth();
-  }, [lastAction]);
-  
-  const hasClockedOutToday = useMemo(() => {
-      if(!lastAction || !hasClockedInToday) return false;
-      return lastAction.type === 'Out';
-  }, [lastAction, hasClockedInToday]);
+  // --- Campus distance (shown before clocking; the server works it out again when saving) ---
+  const campus = useMemo(() => {
+    const lat = num(schoolSettings?.schoolLat), lng = num(schoolSettings?.schoolLng);
+    const radius = num(schoolSettings?.allowedRadius) && num(schoolSettings?.allowedRadius)! > 0 ? num(schoolSettings?.allowedRadius)! : DEFAULT_RADIUS;
+    const isSet = lat !== null && lng !== null && !(lat === 0 && lng === 0);
+    return { lat, lng, radius, isSet };
+  }, [schoolSettings]);
+  const distance = useMemo(() => (
+    location && campus.isSet ? getDistanceInMeters(campus.lat!, campus.lng!, location.latitude, location.longitude) : null
+  ), [location, campus]);
+  const isOffSite = distance !== null && distance > campus.radius;
+  const isAdminUser = ADMIN_ROLES.includes(String(role || '').toLowerCase());
 
+  // Today's records (the feed holds the last 10, newest first).
+  const todayLogs = useMemo(() => {
+    const now = new Date();
+    return (attendanceLogs || []).filter(l => l.timestamp?.toDate && sameDay(l.timestamp.toDate(), now));
+  }, [attendanceLogs]);
+  const hasClockedInToday = todayLogs.some(l => l.type === 'In');
+  const hasClockedOutToday = todayLogs.some(l => l.type === 'Out');
 
   const handleClockAction = async (type: 'In' | 'Out') => {
     if (!user || !imageDataUri || !schoolId || !location) {
@@ -117,100 +150,42 @@ export default function StaffAttendancePage() {
     }
 
     setIsSubmitting(true);
-
-    // 1. AI IDENTITY VERIFICATION
-    let isIdentityFlagged = false;
-    let identityNotes = "";
-    
     try {
-        const staffDoc = await getDoc(doc(firestore!, 'staff', user.uid));
-        const profilePic = staffDoc.data()?.photoURL;
-
-        if (profilePic && imageDataUri) {
-            toast({ title: "Verifying Identity...", description: "AI is checking facial match." });
-            const verifyRes = await verifyStaffIdentityAction(profilePic, imageDataUri);
-            
-            if (verifyRes.success && verifyRes.data) {
-                if (verifyRes.data.isMatch === false) {
-                    isIdentityFlagged = true;
-                    identityNotes = verifyRes.data.confidence;
-                    toast({ variant: 'destructive', title: "Identity Flag", description: "Your photo does not match our records. Logged for review." });
-                } else {
-                    identityNotes = "Identity Verified by AI.";
-                }
-            } else {
-                identityNotes = "AI Comparison Failed. Manual review required.";
-            }
-        } else {
-            identityNotes = "Profile picture missing. Could not perform AI verification.";
-        }
-    } catch (err) {
-        console.error("Identity verification error:", err);
-        identityNotes = "System error during identity check.";
-    }
-
-    // Geofencing logic
-    let isFlagged = false;
-    let distance = 0;
-    
-    if (schoolSettings?.schoolLat && schoolSettings?.schoolLng) {
-        distance = getDistanceInMeters(
-            schoolSettings.schoolLat, 
-            schoolSettings.schoolLng, 
-            location.latitude, 
-            location.longitude
-        );
-        if (distance > (schoolSettings.allowedRadius || 200)) {
-            isFlagged = true;
-        }
-    }
-
-    // Time Tracking Logic
-    const now = new Date();
-    let calculatedStatus = 'Present';
-    let leftEarly = false;
-
-    if (type === 'In') {
-        const expectedStart = getTodayTimeFromStr(schoolSettings?.schoolStartTime);
-        if (expectedStart && now.getTime() > expectedStart.getTime() + (5 * 60 * 1000)) {
-            calculatedStatus = 'Late';
-        }
-    } else {
-        const expectedClose = getTodayTimeFromStr(schoolSettings?.schoolCloseTime);
-        if (expectedClose && now.getTime() < expectedClose.getTime()) {
-            leftEarly = true;
-        }
-    }
-
-    try {
-      await addDocumentNonBlocking(collection(firestore!, 'staff_attendance'), {
-        staffId: user.uid,
-        staffName: user.displayName || 'N/A',
+      toast({ title: type === 'In' ? 'Clocking in...' : 'Clocking out...', description: 'Checking your photo and location.' });
+      const photo = await shrinkSelfie(imageDataUri);
+      const res = await clockStaffAction({
+        schoolId,
         type,
-        status: calculatedStatus,
-        leftEarly,
-        timestamp: serverTimestamp(),
-        verificationPhotoUrl: imageDataUri,
-        schoolId: schoolId,
+        photo,
         latitude: location.latitude,
         longitude: location.longitude,
-        isFlagged,
-        distanceMeters: Math.round(distance),
-        isIdentityFlagged,
-        identityNotes,
+        accuracy: location.accuracy,
       });
 
-      toast({ 
-          title: `Clocked ${type}!`, 
-          description: isFlagged 
-            ? `Your record has been flagged because you are ${Math.round(distance)}m from campus.` 
-            : `Your ${type === 'In' ? 'arrival' : 'departure'} has been recorded.` 
+      if (!res.success) {
+        toast({ variant: 'destructive', title: `Could not clock ${type.toLowerCase()}`, description: res.error });
+        return;
+      }
+
+      const notes: string[] = [];
+      if (res.isFlagged && res.distanceMeters !== null) notes.push(`Flagged: you are ${fmtDistance(res.distanceMeters)} from campus (allowed ${res.allowedRadius} m).`);
+      if (res.geofence === 'not_set') notes.push('Campus location is not set, so distance was not checked.');
+      if (res.identityStatus === 'mismatch') notes.push('Your photo did not match your profile photo. Logged for review.');
+      if (res.identityStatus === 'unchecked') notes.push(res.identityNotes);
+      if (res.status === 'Late') notes.push('Marked late.');
+      if (res.leftEarly) notes.push('Marked as leaving early.');
+
+      toast({
+          variant: res.isFlagged || res.identityStatus === 'mismatch' ? 'destructive' : undefined,
+          title: `Clocked ${type}!`,
+          description: notes.length ? notes.join(' ') : `Your ${type === 'In' ? 'arrival' : 'departure'} has been recorded.`,
       });
 
       setImageDataUri(null);
       forceRefetch();
     } catch (e) {
-      toast({ variant: 'destructive', title: 'Error', description: `Failed to clock ${type}.` });
+      console.error('Clock action failed', e);
+      toast({ variant: 'destructive', title: 'Error', description: `Failed to clock ${type}. Check your connection and try again.` });
     } finally {
       setIsSubmitting(false);
     }
@@ -267,14 +242,14 @@ export default function StaffAttendancePage() {
              <div className="text-xs space-y-1">
                 <span className="text-indigo-200/60 block uppercase font-extrabold tracking-wider text-[9px]">Shift Hours</span>
                 <span className="font-extrabold block text-xs text-indigo-150">
-                   {schoolSettings?.schoolStartTime || '08:00'} - {schoolSettings?.schoolCloseTime || '16:00'}
+                   {schoolSettings?.schoolStartTime && schoolSettings?.schoolCloseTime ? `${schoolSettings.schoolStartTime} - ${schoolSettings.schoolCloseTime}` : 'Not set'}
                 </span>
              </div>
              <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
              <div className="text-xs space-y-1">
                 <span className="text-indigo-200/60 block uppercase font-extrabold tracking-wider text-[9px]">Allowed Radius</span>
                 <Badge variant="secondary" className="bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/20 uppercase font-black text-[9px] px-2 py-0.5 block w-fit">
-                   {schoolSettings?.allowedRadius || 200}m Proximity
+                   {campus.isSet ? `${campus.radius}m Proximity` : 'Campus not set'}
                 </Badge>
              </div>
              <div className="h-8 w-px bg-white/10 hidden sm:block"></div>
@@ -343,20 +318,51 @@ export default function StaffAttendancePage() {
                     <div className="grid grid-cols-2 gap-2 text-[10px] text-slate-500 font-bold bg-white p-3 rounded-xl border border-slate-150 shadow-inner font-mono">
                        <div>LATITUDE: <span className="text-slate-800 font-extrabold">{location.latitude.toFixed(6)}</span></div>
                        <div>LONGITUDE: <span className="text-slate-800 font-extrabold">{location.longitude.toFixed(6)}</span></div>
-                       {schoolSettings?.schoolLat && schoolSettings?.schoolLng && (
-                         <div className="col-span-2 border-t pt-2 mt-1 flex justify-between items-center text-xs font-sans font-bold">
-                            <span>Campus Distance:</span>
-                            <Badge variant="outline" className={cn(
-                               "font-black text-[10px] border-none shadow-none px-0",
-                               getDistanceInMeters(schoolSettings.schoolLat, schoolSettings.schoolLng, location.latitude, location.longitude) > (schoolSettings.allowedRadius || 200)
-                                ? "text-rose-600"
-                                : "text-emerald-600"
-                            )}>
-                               {Math.round(getDistanceInMeters(schoolSettings.schoolLat, schoolSettings.schoolLng, location.latitude, location.longitude))}m away 
-                               ({getDistanceInMeters(schoolSettings.schoolLat, schoolSettings.schoolLng, location.latitude, location.longitude) > (schoolSettings.allowedRadius || 200) ? 'Off-Site' : 'On-Site'})
-                            </Badge>
+                       {location.accuracy !== null && (
+                         <div className="col-span-2">GPS ACCURACY: <span className={cn("font-extrabold", location.accuracy > campus.radius ? 'text-amber-600' : 'text-slate-800')}>±{Math.round(location.accuracy)} m</span>
+                           {location.accuracy > campus.radius && <span className="font-sans text-amber-600"> — weak signal; step outside or wait a moment, then Refresh.</span>}
                          </div>
                        )}
+                       <div className="col-span-2 border-t pt-2 mt-1 flex justify-between items-center text-xs font-sans font-bold">
+                          <span>Campus Distance:</span>
+                          {distance !== null ? (
+                            <span className={cn("font-black text-[11px]", isOffSite ? "text-rose-600" : "text-emerald-600")}>
+                               {fmtDistance(distance)} away ({isOffSite ? 'Off-Site' : 'On-Site'})
+                            </span>
+                          ) : (
+                            <span className="font-black text-[11px] text-slate-500">Campus location not set</span>
+                          )}
+                       </div>
+                    </div>
+                  )}
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={locate} disabled={isLocating} className="h-8 rounded-lg text-[11px] font-bold">
+                      {isLocating ? <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5 mr-1" />} Refresh location
+                    </Button>
+                    {location && (
+                      <a href={`https://www.google.com/maps?q=${location.latitude},${location.longitude}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-indigo-600 hover:underline inline-flex items-center gap-1">
+                        My position on map <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                    {campus.isSet && (
+                      <a href={`https://www.google.com/maps?q=${campus.lat},${campus.lng}`} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-indigo-600 hover:underline inline-flex items-center gap-1">
+                        Saved campus location <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Very far away usually means the saved campus location is wrong, not that the person is 200 km off. */}
+                  {distance !== null && distance > 20000 && (
+                    <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] font-semibold text-amber-800 leading-relaxed">
+                      You appear to be {fmtDistance(distance)} from the saved campus location. If you are on campus right now, the school's saved location is probably wrong
+                      {isAdminUser ? <> — fix it in <a href="/dashboard/admin/school-profile" className="underline font-bold">School Profile → Geofencing</a> (stand on campus and press “Get Current Location”).</> : <> — please tell your administrator.</>}
+                    </div>
+                  )}
+                  {!campus.isSet && schoolSettings && (
+                    <div className="rounded-xl border border-slate-200 bg-white p-3 text-[11px] font-semibold text-slate-600">
+                      The campus location has not been set, so clock-ins cannot be checked against it.
+                      {isAdminUser && <> Set it in <a href="/dashboard/admin/school-profile" className="underline font-bold text-indigo-600">School Profile</a>.</>}
                     </div>
                   )}
               </div>
@@ -419,7 +425,7 @@ export default function StaffAttendancePage() {
                   {attendanceLogs && attendanceLogs.length > 0 ? (
                     attendanceLogs.map((log, index) => {
                       const uniqueKey = log.id || `${log.staffId}-${log.type}-${log.timestamp?.toMillis()}-${index}`;
-                      const logDate = log.timestamp ? log.timestamp.toDate() : new Date();
+                      const logDate = log.timestamp?.toDate ? log.timestamp.toDate() : new Date();
                       
                       return (
                         <div key={uniqueKey} className="relative group flex flex-col gap-1.5 transition-all">
@@ -434,7 +440,9 @@ export default function StaffAttendancePage() {
                           <div className="flex justify-between items-start gap-2">
                             <div>
                               <p className="font-bold text-slate-850 text-xs">
-                                {log.type === 'In' ? (log.status === 'Late' ? 'Clocked In (Late)' : 'Clocked In') : (log.leftEarly ? 'Clocked Out (Early)' : 'Clocked Out')}
+                                {log.type === 'In'
+                                  ? ((log as any).afterHours ? 'Clocked In (After hours)' : log.status === 'Late' ? 'Clocked In (Late)' : 'Clocked In')
+                                  : (log.leftEarly ? 'Clocked Out (Early)' : 'Clocked Out')}
                               </p>
                               <p className="text-[9px] font-bold text-slate-400 uppercase font-mono mt-0.5">
                                 {format(logDate, 'PPPP')} @ {format(logDate, 'p')}
@@ -443,25 +451,33 @@ export default function StaffAttendancePage() {
                           </div>
 
                           <div className="flex flex-wrap gap-1.5 mt-0.5">
-                            {/* Proximity / Off-site Indicator */}
+                            {/* Proximity: older records have distance 0 when the campus location was not set, so they say "not checked" */}
                             {log.isFlagged ? (
-                               <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-rose-250 text-rose-600 bg-rose-50/50 rounded-md">
-                                  Off-Site ({log.distanceMeters ?? 0}m)
+                               <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-rose-200 text-rose-600 bg-rose-50/50 rounded-md">
+                                  Off-Site ({fmtDistance(log.distanceMeters ?? 0)})
+                               </Badge>
+                            ) : (log as any).geofence === 'not_set' || !log.distanceMeters ? (
+                               <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-slate-200 text-slate-500 bg-slate-50 rounded-md">
+                                  Location not checked
                                </Badge>
                             ) : (
-                               <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-emerald-250 text-emerald-600 bg-emerald-50/40 rounded-md">
-                                  On-Campus
+                               <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-emerald-200 text-emerald-600 bg-emerald-50/40 rounded-md">
+                                  On-Campus ({fmtDistance(log.distanceMeters)})
                                </Badge>
                             )}
 
-                            {/* Identity Flag */}
+                            {/* Identity: only "AI Verified" when the face check really passed */}
                             {log.isIdentityFlagged ? (
-                               <Badge variant="destructive" className="h-4.5 text-[8px] font-black uppercase px-1.5 tracking-wider rounded-md">
+                               <Badge variant="destructive" className="h-4.5 text-[8px] font-black uppercase px-1.5 tracking-wider rounded-md" title={log.identityNotes}>
                                   Face Mismatch
                                </Badge>
-                            ) : (
+                            ) : ((log as any).identityStatus === 'verified' || log.identityNotes === 'Identity Verified by AI.') ? (
                                <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-indigo-200 text-indigo-600 bg-indigo-50/50 rounded-md">
                                   AI Verified
+                               </Badge>
+                            ) : (
+                               <Badge variant="outline" className="h-4.5 text-[8px] font-extrabold uppercase px-1.5 border-slate-200 text-slate-500 bg-slate-50 rounded-md" title={log.identityNotes || ''}>
+                                  Face not checked
                                </Badge>
                             )}
                           </div>
@@ -471,7 +487,7 @@ export default function StaffAttendancePage() {
                   ) : (
                     <div className="text-center py-16 text-slate-400 flex flex-col items-center gap-3">
                        <History className="h-10 w-10 text-slate-300"/>
-                       <p className="text-xs font-semibold italic">No clocking activities registered in this term.</p>
+                       <p className="text-xs font-semibold italic">No clock-ins yet.</p>
                     </div>
                   )}
                 </div>

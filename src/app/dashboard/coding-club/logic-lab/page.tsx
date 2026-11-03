@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { CURRICULUM, Mission } from '@/lib/logic-lab-data';
-import { interpretBlockCodeAction, getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
+import { CURRICULUM, Mission, blocksToPython } from '@/lib/logic-lab-data';
+import { getCodeCoachResponseAction, explainCodingConceptAction } from '@/ai/flows/logic-lab-actions';
 import { useUser, useFirestore } from '@/firebase';
-import { doc, setDoc, getDoc, onSnapshot, collection, query } from 'firebase/firestore';
+import { doc, setDoc, getDoc, onSnapshot, collection, query, increment } from 'firebase/firestore';
+import { runPython, preparePython, outputMatches } from '@/lib/python-runner';
+import { useRole } from '@/context/role-context';
 import { 
   Play, RotateCcw, HelpCircle, CheckCircle2, Lock, 
   Code2, Bot, Trash2, BookOpen, CornerDownLeft, ArrowRight, Loader2, Eraser, AlertCircle, FlaskConical, Trophy, Info, FolderOpen, Puzzle 
@@ -38,11 +40,16 @@ export default function LogicLabPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
+  const { role } = useRole();
+  // Teachers and admins can open any mission; pupils unlock them in order.
+  const canOpenAll = !!role && role !== 'Student';
 
   // --- STATE ---
   const [allMissions, setAllMissions] = useState<Mission[]>(CURRICULUM);
   const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
+  // Mission ids (not list positions) of the missions this pupil has completed.
   const [completedMissions, setCompletedMissions] = useState<number[]>([]);
+  const [savedProgressRaw, setSavedProgressRaw] = useState<number[] | null>(null);
   const [workspaceBlocks, setWorkspaceBlocks] = useState<string[]>([]);
   const [consoleOutput, setConsoleOutput] = useState<string>('');
   const [isRunning, setIsRunning] = useState(false);
@@ -64,13 +71,23 @@ export default function LogicLabPage() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
         const dbMissions: Mission[] = [];
         snapshot.forEach((doc) => dbMissions.push(doc.data() as Mission));
-        const merged = [...CURRICULUM, ...dbMissions].sort((a, b) => a.id - b.id);
-        setAllMissions(merged);
-    });
+        const byId = new Map<number, Mission>();
+        [...CURRICULUM, ...dbMissions].forEach(m => { if (typeof m?.id === 'number' && !byId.has(m.id)) byId.set(m.id, m); });
+        setAllMissions(Array.from(byId.values()).sort((a, b) => a.id - b.id));
+    }, (err) => console.warn('Logic Lab: extra missions not readable', err));
     return () => unsubscribe();
   }, [firestore]);
 
   const activeMission = allMissions[currentMissionIndex] || allMissions[0];
+  const generatedCode = useMemo(() => blocksToPython(workspaceBlocks), [workspaceBlocks]);
+
+  // Start loading Python in the background (free; runs on the pupil's own device).
+  const [pyState, setPyState] = useState<'loading' | 'ready' | 'failed'>('loading');
+  useEffect(() => {
+    let alive = true;
+    preparePython().then(() => alive && setPyState('ready')).catch(() => alive && setPyState('failed'));
+    return () => { alive = false; };
+  }, []);
 
   // Helper: Get Color based on Block Type (Fuchsia & Violet cyber theme palette)
   const getBlockColor = (text: string) => {
@@ -88,13 +105,26 @@ export default function LogicLabPage() {
         try {
             const ref = doc(firestore, 'student_progress', user.uid);
             const snap = await getDoc(ref);
-            if (snap.exists() && snap.data().logicLabCompleted) {
-                setCompletedMissions(snap.data().logicLabCompleted);
+            if (snap.exists() && Array.isArray(snap.data().logicLabCompleted)) {
+                setSavedProgressRaw(snap.data().logicLabCompleted.filter((n: any) => typeof n === 'number'));
             }
         } catch(e) { console.error(e); }
     };
     fetchProgress();
   }, [user, firestore]);
+
+  // Older saves stored list positions instead of mission ids. Built-in missions have id = position (0-42),
+  // so those carry over as they are; positions past the built-in list are mapped to that mission's id.
+  useEffect(() => {
+    if (!savedProgressRaw) return;
+    const ids = new Set<number>();
+    savedProgressRaw.forEach(n => {
+      if (n < CURRICULUM.length) ids.add(n);
+      else if (n < 100 && allMissions[n]) ids.add(allMissions[n].id);
+      else if (allMissions.some(m => m.id === n)) ids.add(n);
+    });
+    setCompletedMissions(Array.from(ids));
+  }, [savedProgressRaw, allMissions]);
 
   // --- 3. DYNAMIC BLOCKS ---
   useEffect(() => {
@@ -124,48 +154,65 @@ export default function LogicLabPage() {
   const handleHardReset = () => { setWorkspaceBlocks([]); setConsoleOutput(''); setCoachChat([]); setIsRunning(false); setIsCoachThinking(false); setLastResult(null); toast({ description: "Workspace cleared." }); };
 
   // --- RUN LOGIC ---
+  // The blocks become real Python and run on the pupil's device: exact results, no AI credits.
   const handleRun = async (mode: 'test' | 'submit') => {
-    if (workspaceBlocks.length === 0 || !schoolId) return;
-    setConsoleOutput(''); setLastResult(null); setIsRunning(true);
-    setTimeout(() => setConsoleOutput('Compiling blocks & executing script...'), 50);
+    if (workspaceBlocks.length === 0 || isRunning) return;
+    setConsoleOutput('Running your code...'); setLastResult(null); setIsRunning(true);
+    try {
+        const code = generatedCode;
+        const result = await runPython(code, { stdin: 'UserValue\nUserValue\nUserValue', cwd: activeMission.cwd, timeoutMs: 5000 });
+        const shown = [result.output, result.error ? `❌ ${result.error}` : ''].filter(Boolean).join('\n');
+        setConsoleOutput(shown || '(no output)');
 
-    const result = await interpretBlockCodeAction(workspaceBlocks, schoolId);
-    
-    if (result.success) {
-        setConsoleOutput(result.output);
-        const normOutput = result.output.replace(/\s+/g, '').toLowerCase();
-        const normExpected = activeMission.expectedOutput.replace(/\s+/g, '').toLowerCase();
-        const isSuccess = normOutput === normExpected || result.output.includes(activeMission.expectedOutput);
+        if (!result.ok) {
+            if (/IndentationError|expected an indented block|unexpected indent/i.test(result.error || '')) {
+                toast({ variant: 'destructive', title: 'Check your indentation', description: 'Lines inside if / for / while / def need a Tab block at the start.' });
+            }
+            if (mode === 'submit') setLastResult({ success: false, actual: shown, expected: activeMission.expectedOutput });
+            return;
+        }
 
+        const missing = (activeMission.mustUse || []).filter(t => !code.includes(t));
+        const outputOk = outputMatches(result.output, activeMission.expectedOutput);
+        const isSuccess = outputOk && missing.length === 0;
+
+        if (outputOk && missing.length) {
+            toast({ title: 'Right output — now use the idea', description: `This mission must use: ${missing.join(', ')}` });
+        }
         if (isSuccess) {
              confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d946ef', '#4f46e5', '#10b981'] });
         }
 
         if (mode === 'test') {
-            setIsRunning(false);
             if (isSuccess) toast({ title: "Correct Code!", description: "Great job! Click 'Submit Mission' to save.", className: "bg-emerald-600 text-white" });
-            return; 
+            return;
         }
 
         if (isSuccess) {
             setLastResult({ success: true, actual: result.output, expected: activeMission.expectedOutput });
-            toast({ title: "Mission Accomplished!", description: "Progress saved to your profile.", className: "bg-emerald-600 text-white" });
-            
-            if (!completedMissions.includes(currentMissionIndex)) {
-                const newCompleted = [...completedMissions, currentMissionIndex];
+            if (!completedMissions.includes(activeMission.id)) {
+                const newCompleted = [...completedMissions, activeMission.id];
                 setCompletedMissions(newCompleted);
                 if (user && firestore) {
-                    await setDoc(doc(firestore, 'student_progress', user.uid), { logicLabCompleted: newCompleted }, { merge: true });
+                    const day = new Date().toISOString().slice(0, 10);
+                    try {
+                        await setDoc(doc(firestore, 'student_progress', user.uid), { logicLabCompleted: newCompleted, codingActivity: { [day]: increment(1) } }, { merge: true });
+                        toast({ title: "Mission Accomplished!", description: "Progress saved to your profile.", className: "bg-emerald-600 text-white" });
+                    } catch (e) {
+                        console.error('Logic Lab: progress not saved', e);
+                        toast({ variant: 'destructive', title: 'Not saved', description: 'Your answer is right, but progress could not be saved. Check your connection and submit again.' });
+                    }
                 }
+            } else {
+                toast({ title: "Mission Accomplished!", description: "You had already completed this one.", className: "bg-emerald-600 text-white" });
             }
         } else {
             setLastResult({ success: false, actual: result.output, expected: activeMission.expectedOutput });
-            toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but did not match the expected goal." });
+            if (!outputOk) toast({ variant: 'destructive', title: "Incorrect Output", description: "The code ran, but did not match the expected goal." });
         }
-    } else {
-        setConsoleOutput(`Compilation Error: ${result.output}`);
+    } finally {
+        setIsRunning(false);
     }
-    setIsRunning(false);
   };
 
   // AI Actions
@@ -182,7 +229,7 @@ export default function LogicLabPage() {
           userQuestion: userQuestion,
           schoolId: schoolId
       });
-      if (response.success) setCoachChat([...newChat, { role: 'model', text: response.text }]);
+      setCoachChat([...newChat, { role: 'model', text: response.text || "I couldn't answer just now. Try again." }]);
       setIsCoachThinking(false);
   };
 
@@ -190,7 +237,7 @@ export default function LogicLabPage() {
       if (!schoolId) return;
       setIsCoachOpen(true); setIsCoachThinking(true);
       const response = await explainCodingConceptAction(activeMission.title, schoolId);
-      if(response.success) setCoachChat(prev => [...prev, { role: 'model', text: response.text }]);
+      setCoachChat(prev => [...prev, { role: 'model', text: response.text || 'Unable to explain this concept right now.' }]);
       setIsCoachThinking(false);
   };
 
@@ -200,7 +247,8 @@ export default function LogicLabPage() {
     return groups;
   }, [allMissions]);
 
-  const progressPercentage = Math.round((completedMissions.length / allMissions.length) * 100) || 0;
+  const solvedCount = useMemo(() => completedMissions.filter(id => allMissions.some(m => m.id === id)).length, [completedMissions, allMissions]);
+  const progressPercentage = Math.round((solvedCount / allMissions.length) * 100) || 0;
 
   if (!activeMission) {
     return <div className="flex h-64 items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-fuchsia-500" /></div>;
@@ -210,14 +258,14 @@ export default function LogicLabPage() {
     <div className="flex flex-col flex-1 gap-6 p-1 text-slate-100">
       
       {/* --- TOP BAR: GAMIFICATION --- */}
-      <div className="flex items-center justify-between bg-slate-900/40 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-xl shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/40 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-xl shrink-0">
         <div className="flex items-center gap-3">
              <div className="bg-fuchsia-500/10 border border-fuchsia-500/20 p-2.5 rounded-full"><Trophy className="h-5 w-5 text-fuchsia-400" /></div>
              <div>
                  <div className="text-[10px] text-slate-455 font-bold uppercase tracking-wider text-slate-400">Student Rank</div>
                  <div className="text-sm font-bold text-white flex items-center gap-2">
-                     {completedMissions.length < 5 ? "Novice Coder 👶" : completedMissions.length < 15 ? "Python Apprentice 🐍" : "Code Wizard 🧙"}
-                     <Badge className="bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20 text-[9px] py-0.5">{completedMissions.length} Stars</Badge>
+                     {solvedCount < 5 ? "Novice Coder 👶" : solvedCount < 15 ? "Python Apprentice 🐍" : "Code Wizard 🧙"}
+                     <Badge className="bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20 text-[9px] py-0.5">{solvedCount} / {allMissions.length} solved</Badge>
                  </div>
              </div>
         </div>
@@ -235,9 +283,9 @@ export default function LogicLabPage() {
         </Button>
       </div>
 
-      <div className="flex flex-1 gap-6 min-h-[600px] items-stretch">
+      <div className="flex flex-col lg:flex-row flex-1 gap-6 min-h-[600px] items-stretch">
         {/* SIDEBAR */}
-        <Card className="w-1/4 flex flex-col h-full bg-slate-950 border border-slate-900 rounded-3xl overflow-hidden shadow-2xl">
+        <Card className="w-full lg:w-1/4 flex flex-col max-h-[320px] lg:max-h-none h-full bg-slate-950 border border-slate-900 rounded-3xl overflow-hidden shadow-2xl">
             <div className="p-4 border-b border-slate-900 bg-slate-950 flex items-center justify-between shrink-0">
                 <h2 className="text-white font-extrabold flex items-center gap-2 text-md tracking-tight">
                   <Code2 className="h-5 w-5 text-fuchsia-400"/> Curriculum
@@ -250,21 +298,23 @@ export default function LogicLabPage() {
                         <h3 className="text-[10px] font-black uppercase text-slate-550 mb-2 tracking-widest text-slate-500">{section}</h3>
                         <div className="space-y-1">
                             {missions.map(m => {
-                                const isLocked = m.id > 0 && !completedMissions.includes(m.id - 1) && !completedMissions.includes(m.id);
+                                const pos = allMissions.findIndex(am => am.id === m.id);
+                                const prev = pos > 0 ? allMissions[pos - 1] : null;
+                                const isLocked = !canOpenAll && !!prev && !completedMissions.includes(prev.id) && !completedMissions.includes(m.id);
                                 const isCompleted = completedMissions.includes(m.id);
                                 const isActive = m.id === activeMission.id;
                                 return (
                                     <button
                                         key={m.id}
                                         disabled={isLocked}
-                                        onClick={() => setCurrentMissionIndex(allMissions.findIndex(am => am.id === m.id))}
+                                        onClick={() => setCurrentMissionIndex(pos)}
                                         className={`w-full text-left p-3 rounded-xl text-xs font-medium flex items-center justify-between transition-all
                                             ${isActive ? 'bg-fuchsia-600 text-white font-bold shadow-md shadow-fuchsia-500/20' : 'hover:bg-slate-900 text-slate-400 hover:text-slate-100'}
                                             ${isLocked ? 'opacity-40 cursor-not-allowed' : ''}
                                         `}
                                     >
                                         <span className="flex items-center gap-2 truncate">
-                                            {isLocked ? <Lock className="h-3.5 w-3.5 text-slate-600"/> : <span className="opacity-40 font-mono">{allMissions.findIndex(am => am.id === m.id) + 1}.</span>}
+                                            {isLocked ? <Lock className="h-3.5 w-3.5 text-slate-600"/> : <span className="opacity-40 font-mono">{pos + 1}.</span>}
                                             {m.title}
                                         </span>
                                         {isCompleted && <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0"/>}
@@ -295,9 +345,9 @@ export default function LogicLabPage() {
                 </CardHeader>
             </Card>
 
-            <div className="flex-grow flex gap-4 min-h-0 items-stretch">
+            <div className="flex-grow flex flex-col md:flex-row gap-4 min-h-0 items-stretch">
                 {/* TOOLBOX */}
-                <div className="w-1/3 bg-slate-900/30 border border-slate-900 rounded-3xl p-5 flex flex-col gap-3 overflow-y-auto shadow-inner">
+                <div className="w-full md:w-1/3 max-h-[360px] md:max-h-none bg-slate-900/30 border border-slate-900 rounded-3xl p-5 flex flex-col gap-3 overflow-y-auto shadow-inner">
                     <h4 className="text-[10px] font-black uppercase text-slate-550 tracking-widest text-slate-555 text-slate-500">Editor inputs</h4>
                     <div className="grid grid-cols-2 gap-2.5">
                         <Button variant="outline" size="sm" className="border-slate-800 bg-slate-950 hover:bg-slate-900 text-xs text-slate-300 rounded-xl h-10 transition-all" onClick={() => handleAddBlock('[NEWLINE]')}><CornerDownLeft className="h-3.5 w-3.5 mr-1 text-fuchsia-400"/> Enter</Button>
@@ -348,6 +398,17 @@ export default function LogicLabPage() {
                         </div>
                     </div>
                     
+                    {workspaceBlocks.length > 0 && (
+                        <div className="bg-slate-950 border border-slate-900 rounded-2xl p-3 shrink-0">
+                            <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1.5">Your blocks as Python</div>
+                            <pre className="font-mono text-[11px] text-sky-300 whitespace-pre overflow-x-auto leading-relaxed">{generatedCode || ' '}</pre>
+                        </div>
+                    )}
+                    {pyState !== 'ready' && (
+                        <div className={cn("text-[10px] font-bold rounded-xl px-3 py-2 border shrink-0", pyState === 'failed' ? 'text-rose-300 border-rose-900/40 bg-rose-950/20' : 'text-slate-400 border-slate-800 bg-slate-900/40')}>
+                            {pyState === 'failed' ? 'Python could not load. Check your internet connection and reload the page.' : 'Loading Python on this device (first time takes a few seconds)...'}
+                        </div>
+                    )}
                     <div className="flex gap-2.5 shrink-0">
                         <Button size="sm" onClick={() => handleRun('test')} disabled={isRunning || workspaceBlocks.length === 0} className="bg-slate-900 hover:bg-slate-850 text-blue-400 hover:text-white border border-slate-800 font-bold h-11 rounded-xl shadow-lg px-4 flex items-center gap-1.5 transition-all text-xs">
                             <FlaskConical className="h-4 w-4"/> Test Run

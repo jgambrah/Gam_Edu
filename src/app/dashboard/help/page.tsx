@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -17,6 +16,8 @@ import { Badge } from '@/components/ui/badge';
 import type { Tutorial } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import ReactMarkdown from 'react-markdown';
+import { Input } from '@/components/ui/input';
+import { VideoTutorialCard } from '@/components/help/VideoTutorialCard';
 
 function GuideCard({ icon: Icon, title, desc, steps }: any) {
     return (
@@ -141,6 +142,19 @@ export default function HelpPage() {
   [firestore]);
   
   const { data: tutorials, isLoading: tutorialsLoading } = useCollection<Tutorial>(tutorialsQuery);
+
+  const [videoSearch, setVideoSearch] = React.useState('');
+  const [videoCategory, setVideoCategory] = React.useState<string>('All');
+  const videoCategories = React.useMemo(
+    () => ['All', ...Array.from(new Set((tutorials || []).map(t => t.category).filter(Boolean)))],
+    [tutorials]
+  );
+  const filteredTutorials = React.useMemo(() => {
+    const q = videoSearch.trim().toLowerCase();
+    return (tutorials || []).filter(t =>
+      (videoCategory === 'All' || t.category === videoCategory) &&
+      (!q || `${t.title || ''} ${t.description || ''}`.toLowerCase().includes(q)));
+  }, [tutorials, videoSearch, videoCategory]);
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -334,10 +348,47 @@ export default function HelpPage() {
                         <p className="font-bold uppercase tracking-widest text-xs">Loading training modules...</p>
                     </div>
                 ) : tutorials && tutorials.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {tutorials.map(t => (
-                            <TutorialCard key={t.id} tutorial={t} />
-                        ))}
+                    <div className="space-y-10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            {tutorials.map(t => (
+                                <TutorialCard key={t.id} tutorial={t} />
+                            ))}
+                        </div>
+
+                        <div className="space-y-8 border-t border-slate-200 pt-10">
+                            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                                <div className="flex flex-wrap gap-2" role="group" aria-label="Filter videos by category">
+                                    {videoCategories.map(c => (
+                                        <button
+                                            key={c}
+                                            type="button"
+                                            onClick={() => setVideoCategory(c)}
+                                            aria-pressed={videoCategory === c}
+                                            className={`rounded-full border px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-colors ${videoCategory === c ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-700'}`}
+                                        >
+                                            {c}
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="relative w-full md:w-72">
+                                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                    <Input value={videoSearch} onChange={e => setVideoSearch(e.target.value)} placeholder="Search videos..." className="rounded-full pl-9" />
+                                </div>
+                            </div>
+                            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                                {filteredTutorials.length} of {tutorials.length} video{tutorials.length === 1 ? '' : 's'}
+                            </p>
+                            {filteredTutorials.length > 0 ? (
+                                <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
+                                    {filteredTutorials.map(t => <VideoTutorialCard key={t.id} tutorial={t} />)}
+                                </div>
+                            ) : (
+                                <div className="py-16 text-center text-slate-400">
+                                    <p className="text-sm font-bold">No videos match your search.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                     </div>
                 ) : (
                     <div className="text-center py-32 text-slate-300">

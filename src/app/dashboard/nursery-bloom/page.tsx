@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, createContext, useContext } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, serverTimestamp, deleteDoc, doc, where, increment, getDocs, setDoc, limit, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { generateJuniorStory, generateJuniorScience, generateWordDetails, generateLessonImageAction, generateIncompleteSentenceAction, generateMathWordProblemAction } from '@/ai/flows/junior-actions';
-import { useToast } from '@/hooks/use-toast';
+import { useToast, toast as showToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -58,9 +58,63 @@ const speak = (text: string, rate = 0.9, onEnd?: () => void) => {
 };
 
 
+// --- School scoping for Junior Campus content ---
+// The page reads the school once and shares it, so each activity does not look it up again.
+const JuniorSchoolContext = createContext<string | null>(null);
+const useJuniorSchoolId = () => useContext(JuniorSchoolContext);
+
+/** Who and which school a new item belongs to (older items without these stay shared). */
+const juniorStamp = (schoolId: string | null) => ({
+    schoolId: schoolId || null,
+    createdBy: getAuth().currentUser?.uid || null,
+});
+
+/** Shared items (no school) plus this school's own — never another school's. */
+function visibleForSchool<T extends { schoolId?: string | null }>(items: T[] | null | undefined, schoolId: string | null): T[] | null | undefined {
+    if (!items) return items;
+    return items.filter(d => !d.schoolId || d.schoolId === schoolId);
+}
+
+/** Delete with a clear message when the rules say no (only the person who added it, or the school's admin, may remove it). */
+async function removeJuniorDoc(firestore: any, coll: string, id: string): Promise<boolean> {
+    try {
+        await deleteDoc(doc(firestore, coll, id));
+        return true;
+    } catch (err) {
+        console.error(`Delete ${coll}/${id} failed:`, err);
+        showToast({ title: 'Could not delete', description: 'Only the person who added this, or your school admin, can remove it.', variant: 'destructive' });
+        return false;
+    }
+}
+
+const millisOf = (v: any) => (v?.toMillis ? v.toMillis() : (v?.seconds ? v.seconds * 1000 : 0));
+
+/**
+ * This school's items plus the ones I made (older items made before schools were recorded).
+ * Two small, bounded listeners instead of one listener on every school's items.
+ */
+function useSchoolAndMine(coll: string, schoolId: string | null, uid: string | null | undefined, max = 50) {
+    const firestore = useFirestore();
+    const schoolQ = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, coll), where('schoolId', '==', schoolId), orderBy('createdAt', 'desc'), limit(max)) : null, [firestore, coll, schoolId, max]);
+    const mineQ = useMemoFirebase(() => (firestore && uid) ? query(collection(firestore, coll), where('createdBy', '==', uid), orderBy('createdAt', 'desc'), limit(max)) : null, [firestore, coll, uid, max]);
+    const a = useCollection<any>(schoolQ);
+    const b = useCollection<any>(mineQ);
+    const data = useMemo(() => {
+        if (!a.data && !b.data) return null;
+        const byId = new Map<string, any>();
+        [...(a.data || []), ...(b.data || [])].forEach((d: any) => {
+            if (!d.schoolId || d.schoolId === schoolId) byId.set(d.id, d);
+        });
+        return Array.from(byId.values()).sort((x, y) => millisOf(y.createdAt) - millisOf(x.createdAt));
+    }, [a.data, b.data, schoolId]);
+    const forceRefetch = useCallback(() => { a.forceRefetch?.(); b.forceRefetch?.(); }, [a, b]);
+    return { data, forceRefetch };
+}
+
 // --- 1. VOICE COACH (THE SPEAKING ACADEMY) ---
 function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
     const [challenge, setChallenge] = useState<any>(null);
@@ -83,7 +137,8 @@ function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
     ], []);
 
     const phonicsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: dbWordLibrary, forceRefetch } = useCollection<any>(phonicsQuery);
+    const { data: dbWordLibraryAll, forceRefetch } = useCollection<any>(phonicsQuery);
+    const dbWordLibrary = useMemo(() => visibleForSchool(dbWordLibraryAll, juniorSchoolId), [dbWordLibraryAll, juniorSchoolId]);
 
     const wordLibrary = useMemo(() => {
       if (activeAgeTier === 'ages2-3') return TODDLER_WORDS;
@@ -352,7 +407,7 @@ function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
                                 setIsGenerating(true);
                                 const res = await generateWordDetails({ word: newWord, schoolId: schoolId || '' });
                                 if (res.success) {
-                                    await addDoc(collection(firestore, 'junior_phonics'), { ...res.data, createdAt: serverTimestamp() });
+                                    await addDoc(collection(firestore, 'junior_phonics'), { ...res.data, ...juniorStamp(juniorSchoolId), createdAt: serverTimestamp() });
                                     setNewWord("");
                                     forceRefetch();
                                     toast({ title: "Word Added!" });
@@ -375,7 +430,7 @@ function VoiceCoach({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
                                     </div>
                                 </div>
                                 <Button size="icon" variant="ghost" className="opacity-0 group-hover:opacity-100 text-red-300 hover:text-red-500 hover:bg-red-50 rounded-full transition-all" onClick={async () => {
-                                    if(firestore) await deleteDoc(doc(firestore, 'junior_phonics', item.id));
+                                    if (firestore && await removeJuniorDoc(firestore, 'junior_phonics', item.id)) forceRefetch();
                                 }}>
                                     <Trash2 className="w-4 h-4"/>
                                 </Button>
@@ -824,6 +879,7 @@ const WORD_EMOJI_MAP: Record<string, string> = {
 function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { toast } = useToast();
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const [activeTab, setActiveTab] = useState<'library' | 'blender' | 'families' | 'game'>('library');
     const [progressionMode, setProgressionMode] = useState<'ssp' | 'categories'>('ssp');
     const [isFacilitatorModalOpen, setIsFacilitatorModalOpen] = useState(false);
@@ -972,11 +1028,13 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
 
     // Fetch custom sound cards from Firestore
     const soundsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics_sounds'), orderBy('createdAt', 'asc')) : null, [firestore]);
-    const { data: dbSounds, forceRefetch: refetchSounds } = useCollection<any>(soundsQuery);
+    const { data: dbSoundsAll, forceRefetch: refetchSounds } = useCollection<any>(soundsQuery);
+    const dbSounds = useMemo(() => visibleForSchool(dbSoundsAll, juniorSchoolId), [dbSoundsAll, juniorSchoolId]);
 
     // Fetch custom rhyming families from Firestore
     const rhymesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_phonics_rhymes'), orderBy('createdAt', 'asc')) : null, [firestore]);
-    const { data: dbRhymes, forceRefetch: refetchRhymes } = useCollection<any>(rhymesQuery);
+    const { data: dbRhymesAll, forceRefetch: refetchRhymes } = useCollection<any>(rhymesQuery);
+    const dbRhymes = useMemo(() => visibleForSchool(dbRhymesAll, juniorSchoolId), [dbRhymesAll, juniorSchoolId]);
 
     // Facilitator Form States
     const [newSound, setNewSound] = useState({ sound: '', example: '', category: 'Single Letters', phase: 'Phase 2', formationCue: '' });
@@ -2149,7 +2207,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                                 e.stopPropagation();
                                                 if (confirm("Delete this rhyming family?")) {
                                                     if (firestore) {
-                                                        await deleteDoc(doc(firestore, 'junior_phonics_rhymes', item.id));
+                                                        if (!(await removeJuniorDoc(firestore, 'junior_phonics_rhymes', item.id))) return;
                                                         refetchRhymes();
                                                         toast({ title: "Rhyming family deleted." });
                                                     }
@@ -2320,6 +2378,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                         setIsAddingSound(true);
                                         try {
                                             await addDoc(collection(firestore, 'junior_phonics_sounds'), {
+                                                ...juniorStamp(juniorSchoolId),
                                                 sound: newSound.sound.trim().toLowerCase(),
                                                 example: newSound.example.trim().toLowerCase(),
                                                 category: newSound.category,
@@ -2383,6 +2442,7 @@ function PhonicsForest({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolea
                                         try {
                                             const wordsArr = newRhyme.words.split(',').map(w => w.trim().toLowerCase()).filter(Boolean);
                                             await addDoc(collection(firestore, 'junior_phonics_rhymes'), {
+                                                ...juniorStamp(juniorSchoolId),
                                                 family: newRhyme.family.trim().toLowerCase(),
                                                 words: wordsArr,
                                                 createdAt: serverTimestamp()
@@ -2506,6 +2566,7 @@ function AbcMatcherGame({
 }) {
     const { user } = useUser();
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
 
     const [matcherMode, setMatcherMode] = useState<MatcherMode>('upper-to-lower');
@@ -2837,7 +2898,7 @@ function AbcMatcherGame({
                     // Award sticker to Sticker Book
                     if (user && firestore) {
                         try {
-                            await addDoc(collection(firestore, 'junior_stickers'), {
+                            await addDoc(collection(firestore, 'junior_stickers'), { schoolId: juniorSchoolId || null,
                                 userId: user.uid,
                                 emoji: '🌟',
                                 name: 'ABC Matcher Champion',
@@ -3128,6 +3189,7 @@ function ABCKingdom({
     onSubTabChange?: (tab: 'explorer' | 'tracing' | 'matcher') => void;
 }) {
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
     const [activeTab, setActiveTab] = useState<'explorer' | 'tracing' | 'matcher'>('tracing');
     const [selectedLetter, setSelectedLetter] = useState('A');
@@ -3312,7 +3374,8 @@ function ABCKingdom({
 
     // Fetch custom ABC words from Firestore
     const abcQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_abc_words'), orderBy('createdAt', 'asc')) : null, [firestore]);
-    const { data: dbAbcWords, forceRefetch: refetchAbc } = useCollection<any>(abcQuery);
+    const { data: dbAbcWordsAll, forceRefetch: refetchAbc } = useCollection<any>(abcQuery);
+    const dbAbcWords = useMemo(() => visibleForSchool(dbAbcWordsAll, juniorSchoolId), [dbAbcWordsAll, juniorSchoolId]);
 
     const mergedDict = useMemo(() => {
         const copy = JSON.parse(JSON.stringify(defaultDict));
@@ -3435,6 +3498,7 @@ function ABCKingdom({
         setIsAddingAbc(true);
         try {
             await addDoc(collection(firestore, 'junior_abc_words'), {
+                ...juniorStamp(juniorSchoolId),
                 letter: newAbcWord.letter.toUpperCase().trim(),
                 word: newAbcWord.word.trim(),
                 emoji: newAbcWord.emoji.trim(),
@@ -3455,7 +3519,7 @@ function ABCKingdom({
     const handleDeleteAbcWord = async (id: string) => {
         if (!canEdit || !firestore) return;
         if (confirm("Delete this word card from ABC Kingdom?")) {
-            await deleteDoc(doc(firestore, 'junior_abc_words', id));
+            if (!(await removeJuniorDoc(firestore, 'junior_abc_words', id))) return;
             refetchAbc();
             setWordIndex(0);
             toast({ title: "Word card deleted." });
@@ -3804,6 +3868,7 @@ function MathPlayground({ activeAgeTier = 'ages2-3' }: { activeAgeTier?: string 
   const [streak, setStreak] = useState(0);
   const { user } = useUser(); 
   const firestore = useFirestore(); 
+  const juniorSchoolId = useJuniorSchoolId();
   const { toast } = useToast();
 
   const generateQuestion = useCallback(() => {
@@ -3892,7 +3957,7 @@ function MathPlayground({ activeAgeTier = 'ages2-3' }: { activeAgeTier?: string 
 
       if ((streak + 1) % 5 === 0 && user && firestore) {
           const sticker = '🎓';
-          await addDoc(collection(firestore, 'junior_stickers'), {
+          await addDoc(collection(firestore, 'junior_stickers'), { schoolId: juniorSchoolId || null,
               userId: user.uid,
               emoji: sticker,
               name: `${mode.toUpperCase()} Master`,
@@ -4095,6 +4160,7 @@ function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
     const { user } = useUser(); 
     const { role } = useRole();
     const firestore = useFirestore(); 
+    const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
     
@@ -4232,8 +4298,8 @@ function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
     const [score, setScore] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false);
     
-    const storiesQuery = useMemoFirebase(() => (firestore && user) ? query(collection(firestore, 'junior_stories'), orderBy('createdAt', 'desc')) : null, [firestore, user]);
-    const { data: savedStories, forceRefetch } = useCollection<any>(storiesQuery);
+    // This school's stories plus my own (was every school's stories, unbounded).
+    const { data: savedStories, forceRefetch } = useSchoolAndMine('junior_stories', juniorSchoolId, user?.uid);
     const resetQuiz = () => {
         setCurrentQuestionIndex(0);
         setUserAnswer('');
@@ -4332,6 +4398,7 @@ function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
         try {
             await addDoc(collection(firestore, 'junior_stories'), { 
                 ...cleanStory, 
+                ...juniorStamp(juniorSchoolId),
                 topic, 
                 wordCount: (cleanStory.content || '').split(/\s+/).filter(Boolean).length || 0,
                 createdAt: serverTimestamp(), 
@@ -4353,7 +4420,7 @@ function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
     const handleDelete = async (id: string) => { 
         if (!firestore) return;
         if (confirm("Delete story?")) { 
-            await deleteDoc(doc(firestore, 'junior_stories', id)); 
+            if (!(await removeJuniorDoc(firestore, 'junior_stories', id))) return; 
             forceRefetch(); 
         } 
     };
@@ -4965,6 +5032,7 @@ function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; 
 // --- 6. SCIENCE WORLD (NON-SAAS DYNAMIC & CYCLING) ---
 function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const { user } = useUser();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
@@ -5086,15 +5154,17 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
     const sorterQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'junior_sorter_items'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
-    const { data: dbSorterItems, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
+    const { data: dbSorterItemsAll, forceRefetch: refetchSorter } = useCollection<any>(sorterQuery);
+    const dbSorterItems = useMemo(() => visibleForSchool(dbSorterItemsAll, juniorSchoolId), [dbSorterItemsAll, juniorSchoolId]);
     
     const materialsQuery = useMemoFirebase(() => 
         firestore ? query(collection(firestore, 'junior_science_materials'), orderBy('createdAt', 'asc')) : null, 
     [firestore]);
-    const { data: dbMaterials, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
+    const { data: dbMaterialsAll, forceRefetch: refetchMaterials } = useCollection<any>(materialsQuery);
+    const dbMaterials = useMemo(() => visibleForSchool(dbMaterialsAll, juniorSchoolId), [dbMaterialsAll, juniorSchoolId]);
 
-    const scienceQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_science'), orderBy('createdAt', 'desc')) : null, [firestore]);
-    const { data: savedScience, forceRefetch: refetchScience } = useCollection<any>(scienceQuery);
+    // This school's discoveries plus my own (was every school's, unbounded).
+    const { data: savedScience, forceRefetch: refetchScience } = useSchoolAndMine('junior_science', juniorSchoolId, user?.uid);
     
     // --- 2. GAME & ADMIN STATES ---
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -5137,6 +5207,7 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
         if (!newItem.name || !newItem.emoji || !firestore) return;
         try {
             await addDoc(collection(firestore, 'junior_sorter_items'), {
+                ...juniorStamp(juniorSchoolId),
                 ...newItem,
                 createdAt: serverTimestamp()
             });
@@ -5184,6 +5255,7 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
         ];
 
         await addDoc(collection(firestore, 'junior_science_materials'), {
+            ...juniorStamp(juniorSchoolId),
             name: newMat.name,
             states: statesArray,
             createdAt: serverTimestamp()
@@ -5212,6 +5284,7 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
     const handleSave = async () => { 
         if(!user || !fact || !firestore) return; 
         await addDoc(collection(firestore,'junior_science'), {
+            ...juniorStamp(juniorSchoolId),
             ...fact,
             createdAt: serverTimestamp(),
             createdBy: user.uid
@@ -5224,7 +5297,7 @@ function ScienceWorld({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean
     const handleDeleteDiscovery = async (id: string) => {
         if (!firestore) return;
         if(window.confirm("Are you sure?")){
-            await deleteDoc(doc(firestore, 'junior_science', id));
+            if (!(await removeJuniorDoc(firestore, 'junior_science', id))) return;
             refetchScience();
             toast({ title: "Deleted discovery" });
         }
@@ -5778,8 +5851,10 @@ function ArtStudio({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; a
     
     // Fetch Dynamic Quests
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const questsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'junior_art_quests')) : null, [firestore]);
-    const { data: dbQuests } = useCollection<any>(questsQuery);
+    const { data: dbQuestsAll } = useCollection<any>(questsQuery);
+    const dbQuests = useMemo(() => visibleForSchool(dbQuestsAll, juniorSchoolId), [dbQuestsAll, juniorSchoolId]);
     const [currentQuestIdx, setCurrentQuestIdx] = useState(0);
 
     const { toast } = useToast();
@@ -6327,6 +6402,7 @@ function NumberGarden({ activeAgeTier = 'ages2-3' }: { activeAgeTier?: string })
     const [isTracing, setIsTracing] = useState(false);
     const { user } = useUser();
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
 
     // Duplicate prevention refs
@@ -6427,7 +6503,7 @@ function NumberGarden({ activeAgeTier = 'ages2-3' }: { activeAgeTier?: string })
             speak(`Yes! There are ${currentNumber}!`);
 
             if ((streak + 1) % 5 === 0 && user && firestore) {
-                addDoc(collection(firestore, 'junior_stickers'), {
+                addDoc(collection(firestore, 'junior_stickers'), { schoolId: juniorSchoolId || null,
                     userId: user.uid, emoji: '🔢', name: 'Number Whiz',
                     category: 'math', earnedAt: serverTimestamp()
                 });
@@ -6718,6 +6794,7 @@ function MusicRhythmCorner() {
     const audioCtxRef = useRef<AudioContext | null>(null);
     const { user } = useUser();
     const firestore = useFirestore();
+    const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
 
     // Drum challenge state
@@ -6779,7 +6856,7 @@ function MusicRhythmCorner() {
                 confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
                 
                 if (user && firestore) {
-                    addDoc(collection(firestore, 'junior_stickers'), {
+                    addDoc(collection(firestore, 'junior_stickers'), { schoolId: juniorSchoolId || null,
                         userId: user.uid,
                         emoji: '🎹',
                         name: 'Little Mozart',
@@ -6899,7 +6976,7 @@ function MusicRhythmCorner() {
             }
 
             if ((drumStreak + 1) % 4 === 0 && user && firestore) {
-                addDoc(collection(firestore, 'junior_stickers'), {
+                addDoc(collection(firestore, 'junior_stickers'), { schoolId: juniorSchoolId || null,
                     userId: user.uid,
                     emoji: '🥁',
                     name: 'Master Drummer',
@@ -6972,7 +7049,7 @@ function MusicRhythmCorner() {
             }
 
             if ((streak + 1) % 5 === 0 && user && firestore) {
-                addDoc(collection(firestore, 'junior_stickers'), {
+                addDoc(collection(firestore, 'junior_stickers'), { schoolId: juniorSchoolId || null,
                     userId: user.uid, emoji: '🎵', name: 'Rhythm Star',
                     category: 'art', earnedAt: serverTimestamp()
                 });
@@ -7323,54 +7400,74 @@ function MusicRhythmCorner() {
 // --- 11. TEACHER PROGRESS DASHBOARD ---
 function TeacherDashboard() {
     const firestore = useFirestore();
+    const schoolId = useJuniorSchoolId();
+    const STICKER_CAP = 1000;
     const [classStats, setClassStats] = useState<{
         totalStickers: number;
         mathStickers: number;
         literacyStickers: number;
         scienceStickers: number;
         artStickers: number;
-        topStudents: { uid: string; count: number }[];
+        topStudents: { uid: string; count: number; name?: string; className?: string }[];
         recentActivity: any[];
+        capped: boolean;
     }>({
         totalStickers: 0, mathStickers: 0, literacyStickers: 0,
-        scienceStickers: 0, artStickers: 0, topStudents: [], recentActivity: []
+        scienceStickers: 0, artStickers: 0, topStudents: [], recentActivity: [], capped: false
     });
     const [loading, setLoading] = useState(true);
-    const [timeRange, setTimeRange] = useState<'all' | 'week' | 'month'>('all');
+    const [loadError, setLoadError] = useState<string | null>(null);
+    const [timeRange, setTimeRange] = useState<'all' | 'week' | 'month'>('month');
+    const namesCache = useRef<Map<string, { name: string; className?: string }>>(new Map());
 
     useEffect(() => {
+        let cancelled = false;
         const fetchStats = async () => {
-            if (!firestore) return;
+            if (!firestore || !schoolId) return;
             setLoading(true);
+            setLoadError(null);
             try {
-                const stickersSnap = await getDocs(query(collection(firestore, 'junior_stickers'), orderBy('earnedAt', 'desc')));
-                const allStickers = stickersSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
-
-                // Filter by time range
-                const now = new Date();
-                const filtered = timeRange === 'all' ? allStickers : allStickers.filter(s => {
-                    if (!s.earnedAt?.toDate) return false;
-                    const earned = s.earnedAt.toDate();
-                    if (timeRange === 'week') return (now.getTime() - earned.getTime()) < 7 * 24 * 60 * 60 * 1000;
-                    if (timeRange === 'month') return (now.getTime() - earned.getTime()) < 30 * 24 * 60 * 60 * 1000;
-                    return true;
-                });
+                // Only THIS school's stickers, newest first, bounded (was: every sticker from every school on each load).
+                const constraints: any[] = [where('schoolId', '==', schoolId)];
+                if (timeRange !== 'all') {
+                    const days = timeRange === 'week' ? 7 : 30;
+                    constraints.push(where('earnedAt', '>=', Timestamp.fromMillis(Date.now() - days * 24 * 60 * 60 * 1000)));
+                }
+                const stickersSnap = await getDocs(query(collection(firestore, 'junior_stickers'), ...constraints, orderBy('earnedAt', 'desc'), limit(STICKER_CAP)));
+                const filtered = stickersSnap.docs.map(d => ({ id: d.id, ...d.data() })) as any[];
 
                 const math = filtered.filter(s => s.category === 'math').length;
-                const literacy = filtered.filter(s => s.category === 'literacy' || s.name?.includes('ABC') || s.name?.includes('Word')).length;
+                const literacy = filtered.filter(s => s.category === 'literacy').length;
                 const science = filtered.filter(s => s.category === 'science').length;
-                const art = filtered.filter(s => s.category === 'art').length;
+                const art = filtered.filter(s => s.category === 'art' || s.category === 'music').length;
 
-                // Top students by sticker count
+                // Top pupils by sticker count
                 const studentMap = new Map<string, number>();
                 filtered.forEach(s => {
                     if (s.userId) studentMap.set(s.userId, (studentMap.get(s.userId) || 0) + 1);
                 });
-                const topStudents = Array.from(studentMap.entries())
+                const top = Array.from(studentMap.entries())
                     .map(([uid, count]) => ({ uid, count }))
                     .sort((a, b) => b.count - a.count)
                     .slice(0, 5);
 
+                // Names for the top pupils: one small query (at most 5 reads), remembered while the page is open.
+                const missing = top.map(t => t.uid).filter(uid => !namesCache.current.has(uid));
+                if (missing.length) {
+                    try {
+                        const snap = await getDocs(query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', 'in', missing)));
+                        snap.docs.forEach(d => {
+                            const st: any = d.data();
+                            const name = [st.firstName, st.lastName].filter(Boolean).join(' ') || st.name || st.fullName || st.displayName;
+                            if (name) namesCache.current.set(st.uid || d.id, { name, className: st.className || st.class || undefined });
+                        });
+                    } catch (nameErr) {
+                        console.warn('Junior dashboard: pupil names not readable', nameErr);
+                    }
+                }
+                const topStudents = top.map(t => ({ ...t, ...(namesCache.current.get(t.uid) || {}) }));
+
+                if (cancelled) return;
                 setClassStats({
                     totalStickers: filtered.length,
                     mathStickers: math,
@@ -7378,16 +7475,21 @@ function TeacherDashboard() {
                     scienceStickers: science,
                     artStickers: art,
                     topStudents,
-                    recentActivity: filtered.slice(0, 10)
+                    recentActivity: filtered.slice(0, 10),
+                    capped: filtered.length >= STICKER_CAP,
                 });
-            } catch (err) {
+            } catch (err: any) {
                 console.error('Dashboard fetch error:', err);
+                if (!cancelled) setLoadError(err?.code === 'failed-precondition'
+                    ? 'The sticker report is still being set up (a database index is building). Please try again in a few minutes.'
+                    : 'Could not load sticker activity.');
             } finally {
-                setLoading(false);
+                if (!cancelled) setLoading(false);
             }
         };
         fetchStats();
-    }, [firestore, timeRange]);
+        return () => { cancelled = true; };
+    }, [firestore, schoolId, timeRange]);
 
     const maxSubject = Math.max(classStats.mathStickers, classStats.literacyStickers, classStats.scienceStickers, classStats.artStickers, 1);
 
@@ -7397,6 +7499,10 @@ function TeacherDashboard() {
         { label: 'Science', count: classStats.scienceStickers, color: 'bg-blue-500', lightColor: 'bg-blue-100', icon: <Atom className="w-4 h-4 text-blue-600" />, iconBg: 'bg-blue-50 border-blue-200' },
         { label: 'Art & Music', count: classStats.artStickers, color: 'bg-pink-500', lightColor: 'bg-pink-100', icon: <Palette className="w-4 h-4 text-pink-600" />, iconBg: 'bg-pink-50 border-pink-200' },
     ];
+
+    if (!schoolId) {
+        return <p className="py-20 text-center font-bold text-slate-500">Choose a school to see sticker activity.</p>;
+    }
 
     if (loading) {
         return (
@@ -7416,7 +7522,7 @@ function TeacherDashboard() {
                         <h3 className="text-3xl font-black mb-1 tracking-tight flex items-center gap-2">
                             <BarChart3 className="w-8 h-8" /> Class Progress Dashboard
                         </h3>
-                        <p className="font-extrabold opacity-90 text-lg">Overview of all student achievements</p>
+                        <p className="font-extrabold opacity-90 text-lg">Stickers earned by pupils in your school</p>
                     </div>
 
                     <div className="flex gap-2 p-1 bg-white/20 rounded-xl backdrop-blur-sm border border-white/10">
@@ -7438,6 +7544,15 @@ function TeacherDashboard() {
                 </div>
                 <Activity className="absolute -bottom-4 -right-4 w-40 h-40 opacity-10 rotate-12" />
             </div>
+
+            {loadError && (
+                <div className="rounded-2xl border-2 border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">{loadError}</div>
+            )}
+            {classStats.capped && (
+                <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-800">
+                    Showing the latest {STICKER_CAP.toLocaleString()} stickers. Pick This Month or This Week for exact counts.
+                </div>
+            )}
 
             {/* KPI CARDS */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -7510,8 +7625,8 @@ function TeacherDashboard() {
                                     <div key={student.uid} className="flex items-center gap-3 p-3 bg-slate-50/70 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-colors">
                                         <span className="text-2xl select-none">{medals[idx] || '⭐'}</span>
                                         <div className="flex-1">
-                                            <p className="font-black text-sm text-slate-700 truncate">Student {idx + 1}</p>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{student.uid.slice(0, 8)}...</p>
+                                            <p className="font-black text-sm text-slate-700 truncate">{student.name || 'Pupil (name not on record)'}</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{student.className || 'Class not set'}</p>
                                         </div>
                                         <div className="bg-indigo-100 px-3 py-1 rounded-full">
                                             <span className="font-black text-sm text-indigo-700">{student.count} 🌟</span>
@@ -8059,8 +8174,9 @@ function SentenceFinisherGame({ canEdit = false, isDedicatedTab = false }: { can
   const { toast } = useToast();
 
   // Firestore query for teacher added sentence challenges
-  const sentencesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_incomplete_sentences'), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
-  const { data: dbSentences } = useCollection<any>(sentencesQuery);
+  const sentencesQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_incomplete_sentences'), where('schoolId', '==', schoolId), limit(200)) : null, [firestore, schoolId]);
+  const { data: dbSentencesRaw } = useCollection<any>(sentencesQuery);
+  const dbSentences = useMemo(() => dbSentencesRaw ? [...dbSentencesRaw].sort((x: any, y: any) => millisOf(y.createdAt) - millisOf(x.createdAt)) : dbSentencesRaw, [dbSentencesRaw]);
 
   // Combine built-in dataset with teacher-created and algorithmic sentences
   const allSentences = useMemo(() => {
@@ -8220,6 +8336,7 @@ function SentenceFinisherGame({ canEdit = false, isDedicatedTab = false }: { can
         explanation: formExplanation.trim() || `Context rule: ${formAnswer} correctly finishes the sentence.`,
         schoolId,
         createdBy: user?.displayName || 'Teacher',
+        createdByUid: user?.uid || null,
         createdAt: serverTimestamp()
       });
 
@@ -8922,8 +9039,9 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
   ], []);
 
   // Firestore query for teacher added math word problems
-  const mathProblemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_math_word_problems'), orderBy('createdAt', 'desc')) : null, [firestore, schoolId]);
-  const { data: dbMathProblems } = useCollection<any>(mathProblemsQuery);
+  const mathProblemsQuery = useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'junior_math_word_problems'), where('schoolId', '==', schoolId), limit(200)) : null, [firestore, schoolId]);
+  const { data: dbMathProblemsRaw } = useCollection<any>(mathProblemsQuery);
+  const dbMathProblems = useMemo(() => dbMathProblemsRaw ? [...dbMathProblemsRaw].sort((x: any, y: any) => millisOf(y.createdAt) - millisOf(x.createdAt)) : dbMathProblemsRaw, [dbMathProblemsRaw]);
 
   // Combine static word problems with custom teacher problems
   const combinedWordProblems = useMemo(() => {
@@ -9128,6 +9246,7 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
         options: optionsArray,
         schoolId,
         createdBy: user?.displayName || 'Class Teacher',
+        createdByUid: user?.uid || null,
         createdAt: serverTimestamp()
       });
 
@@ -9444,6 +9563,7 @@ function Age5PlusMathMastery({ canEdit = false }: { canEdit?: boolean }) {
 // --- MAIN PAGE ---
 export default function JuniorCampusPage() {
   const { role } = useRole();
+  const { schoolId: currentSchoolId } = useCurrentSchool();
   const canEdit = ['Admin', 'Administrator', 'Director', 'Teacher'].includes(role || '');
   const { toast } = useToast(); 
 
@@ -9491,6 +9611,7 @@ export default function JuniorCampusPage() {
   }, [activeAgeTier, pageModules, activeTab]);
 
   return (
+    <JuniorSchoolContext.Provider value={currentSchoolId || null}>
     <div className="min-h-screen bg-gradient-to-b from-[#F0F9FF] to-[#E0F2FE] p-2.5 sm:p-4 md:py-3.5 md:px-6 font-sans relative overflow-x-hidden w-full max-w-full">
       {/* Ambient background decorations */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-pink-200/30 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
@@ -9765,5 +9886,6 @@ export default function JuniorCampusPage() {
         </Tabs>
       </div>
     </div>
+    </JuniorSchoolContext.Provider>
   );
 }
