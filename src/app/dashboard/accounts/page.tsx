@@ -48,6 +48,7 @@ import { Student, financialRecordSchema, recordPaymentSchema, bulkBillingSchema,
 import { StudentDisplay } from '@/components/student-display';
 import { searchStudent, generateNextReceiptId, sendPaymentNotificationToParent } from '@/lib/student-utils';
 import { GenerateReceipt } from './generate-receipt';
+import { FeeTypeSelect, resolveCustomFeeFields } from '@/components/finance/FeeTypeSelect';
 import { GenerateStatement } from '@/components/dashboard/finance/GenerateStatement';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { billStudentForAttendance } from '@/lib/billing';
@@ -104,6 +105,12 @@ import { fetchStudentRecords, orderAllocationTargets, planAllocation, reallocate
 const extendedFinancialRecordSchema = financialRecordSchema.extend({
     isOpeningBalance: z.boolean().optional(),
 });
+
+// The built-in Fee Type options each billing form already offered. A school's own custom fee items are added
+// after these by <FeeTypeSelect/> (see lib/custom-fee-items.ts).
+const EDIT_BILL_FEE_TYPES = ['Tuition Fee', 'Admission Fee', 'Maintenance Fee', 'Examination Fee', 'PTA Levy', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'] as const;
+const SINGLE_BILL_FEE_TYPES = ['Tuition Fee', 'Admission Fee', 'Maintenance Fee', 'Examination Fee', 'PTA Levy', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Other', 'Correction / Reversal'] as const;
+const BULK_BILL_FEE_TYPES = ['Tuition Fee', 'Admission Fee', 'Maintenance Fee', 'Examination Fee', 'PTA Levy', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other'] as const;
 
 // --- SUB-COMPONENT: Apply Waiver Dialog ---
 function ApplyWaiverDialog({ record, open, setOpen, onUpdate }: { record: FinancialRecord, open: boolean, setOpen: (open: boolean) => void, onUpdate: () => void }) {
@@ -313,6 +320,24 @@ function EditRecordDialog({
                 rawPayload.termId = editStamp.termId;
             }
 
+            // Fee type changed: keep the custom-fee mapping in step (only touched when the type actually changes).
+            if (values.type !== record.type) {
+                const billSchoolId = record.schoolId || (profile as any)?.schoolId;
+                const feeFields = billSchoolId ? await resolveCustomFeeFields(firestore, billSchoolId, values.type) : {};
+                if (feeFields === null) {
+                    toast({ variant: 'destructive', title: 'Fee item not available', description: 'This custom fee item no longer exists. Please pick another fee type.' });
+                    return;
+                }
+                if (Object.keys(feeFields).length) {
+                    Object.assign(rawPayload, feeFields);
+                } else if ((record as any).isCustomFee) {
+                    // moved from a custom item back to a built-in type: drop the mapping the custom item added
+                    rawPayload.feeCategory = deleteField();
+                    rawPayload.category = deleteField();
+                    rawPayload.isCustomFee = deleteField();
+                }
+            }
+
             // Sanitize payload to strip any undefined values before calling updateDoc
             const sanitizedPayload = Object.fromEntries(
                 Object.entries(rawPayload).filter(([_, v]) => v !== undefined)
@@ -371,14 +396,8 @@ function EditRecordDialog({
                           return (
                             <FormItem>
                                 <FormLabel>Fee Type</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                    <SelectContent>
-                                        {['Tuition Fee', 'Admission Fee', 'Maintenance Fee', 'Examination Fee', 'PTA Levy', 'Library Fine', 'Lab Fee', 'Sports Fee', 'Canteen Fee', 'Transport Fee', 'Other', 'Correction / Reversal'].map(t => (
-                                            <SelectItem key={t} value={t}>{t}</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <FeeTypeSelect value={field.value} onChange={field.onChange} schoolId={record.schoolId || (profile as any)?.schoolId} builtIn={EDIT_BILL_FEE_TYPES} placeholder="Select fee type" />
+                                <FormMessage />
                             </FormItem>
                           );
                         }}/>
@@ -1032,8 +1051,15 @@ function FinancialRecordForm({ setOpen, students, classes, schoolId, onRecordAdd
     try {
         const student = students.find(s => s.uid === values.studentId);
         if(!student) throw new Error("Student not found");
+      // A custom fee item carries the fee family it reports under; built-in types add nothing.
+      const feeFields = await resolveCustomFeeFields(firestore, schoolId, values.type);
+      if (feeFields === null) {
+        toast({ variant: 'destructive', title: 'Fee item not available', description: 'This custom fee item no longer exists. Please pick another fee type.' });
+        return;
+      }
       const newRecord = { 
           ...values, 
+          ...feeFields,
           studentName: `${student.firstName} ${student.lastName}`, 
           classId: student.classId || '', 
           amountPaid: 0, 
@@ -1102,28 +1128,7 @@ function FinancialRecordForm({ setOpen, students, classes, schoolId, onRecordAdd
                       return (
                         <FormItem>
                             <FormLabel>Fee Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger><SelectValue placeholder="Select type"/></SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {[
-                                        'Tuition Fee', 
-                                        'Admission Fee',
-                                        'Maintenance Fee',
-                                        'Examination Fee',
-                                        'PTA Levy',
-                                        'Library Fine', 
-                                        'Lab Fee', 
-                                        'Sports Fee', 
-                                        'Canteen Fee', 
-                                        'Other', 
-                                        'Correction / Reversal'
-                                    ].map(t => (
-                                        <SelectItem key={t} value={t}>{t}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <FeeTypeSelect value={field.value} onChange={field.onChange} schoolId={schoolId} builtIn={SINGLE_BILL_FEE_TYPES} placeholder="Select type" />
                             <FormMessage />
                         </FormItem>
                       );
@@ -1238,6 +1243,12 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
       }
 
       try {
+        // A custom fee item carries the fee family it reports under; built-in types add nothing.
+        const feeFields = await resolveCustomFeeFields(firestore, schoolId, values.type);
+        if (feeFields === null) {
+          toast({ variant: 'destructive', title: 'Fee item not available', description: 'This custom fee item no longer exists. Please pick another fee type.' });
+          return;
+        }
         const batch = writeBatch(firestore);
         const resolvedAcademicYear = normalizeAcademicYear(values.academicYear || academicYear) || getDefaultAcademicYear();
         const resolvedTerm = values.term || term || 'Term 1';
@@ -1247,6 +1258,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
             const newRecordRef = doc(collection(firestore, 'financialRecords'));
             batch.set(newRecordRef, { 
                 ...values, 
+                ...feeFields,
                 studentId: student.uid, 
                 studentName: `${student.firstName} ${student.lastName}`, 
                 amountPaid: 0, 
@@ -1304,27 +1316,7 @@ function BulkBillingForm({ setOpen, classes, students, schoolId, onRecordsAdded,
                   return (
                     <FormItem>
                         <FormLabel>Fee Type</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                                <SelectTrigger><SelectValue placeholder="Select fee type"/></SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                                {[
-                                    'Tuition Fee', 
-                                    'Admission Fee',
-                                    'Maintenance Fee',
-                                    'Examination Fee',
-                                    'PTA Levy',
-                                    'Lab Fee', 
-                                    'Sports Fee', 
-                                    'Canteen Fee', 
-                                    'Transport Fee', 
-                                    'Other'
-                                ].map(t => (
-                                    <SelectItem key={t} value={t}>{t}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <FeeTypeSelect value={field.value} onChange={field.onChange} schoolId={schoolId} builtIn={BULK_BILL_FEE_TYPES} placeholder="Select fee type" />
                         <FormMessage />
                     </FormItem>
                   );

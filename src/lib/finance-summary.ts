@@ -6,6 +6,7 @@
  *  - Collection rate = paid ÷ (billed − waivers) on the CURRENT academic year's bills (Accounts > Student
  *    Billing "All-Time Ledger" uses the same rule); older years' debt is still in the debt figures.
  */
+import { explicitFeeCategory } from '@/lib/custom-fee-items';
 export interface YearPerformance { year: string; billed: number; paid: number; waived: number; rate: number }
 
 export function summaryGrossDebt(summary: any): number | null {
@@ -89,6 +90,9 @@ export function agingBucketOf(r: any, now: Date = new Date()): 'current' | 'age3
 }
 
 export function feeCategoryOf(r: any): 'Tuition' | 'Canteen' | 'Transport' | 'PTA Levy' | 'Other' {
+  // A bill made from a school's custom fee item says which family it reports under; every other bill is unchanged.
+  const explicit = explicitFeeCategory(r);
+  if (explicit) return explicit;
   const t = String(r?.type || '').toLowerCase();
   if (t.includes('tuition')) return 'Tuition';
   if (t.includes('canteen')) return 'Canteen';

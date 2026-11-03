@@ -616,24 +616,8 @@ export type PerformanceReview = z.infer<typeof performanceReviewSchema> & {
 // Financial Schemas
 export const financialRecordSchema = z.object({
   studentId: z.string().min(1, "A student must be selected."),
-  type: z.enum([
-    'Tuition Fee', 
-    'Admission Fee',
-    'Maintenance Fee',
-    'Examination Fee',
-    'PTA Levy',
-    'Library Fine', 
-    'Lab Fee', 
-    'Sports Fee', 
-    'Canteen Fee', 
-    'Canteen Fee (Daily)',
-    'Canteen Fee (Termly)',
-    'Transport Fee', 
-    'Transport Fee (Daily)', 
-    'Transport Fee (Termly)', 
-    'Other', 
-    'Correction / Reversal'
-  ]),
+  // Built-in fee types (Tuition Fee, PTA Levy, ...) OR a school's own custom fee item — see lib/custom-fee-items.ts.
+  type: z.string().trim().min(1, "Select a fee type.").max(60, "Fee type is too long."),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -643,18 +627,8 @@ export const financialRecordSchema = z.object({
 
 export const bulkBillingSchema = z.object({
   classId: z.string().min(1, "A class must be selected."),
-  type: z.enum([
-    'Tuition Fee', 
-    'Admission Fee',
-    'Maintenance Fee',
-    'Examination Fee',
-    'PTA Levy',
-    'Lab Fee', 
-    'Sports Fee', 
-    'Canteen Fee', 
-    'Transport Fee', 
-    'Other'
-  ]),
+  // Built-in fee types OR a school's own custom fee item — see lib/custom-fee-items.ts.
+  type: z.string().trim().min(1, "Select a fee type.").max(60, "Fee type is too long."),
   description: z.string().min(1, "Description is required."),
   billedAmount: z.coerce.number().min(0.01, "Amount must be greater than 0."),
   dueDate: z.date({ required_error: "Due date is required." }),
@@ -679,23 +653,8 @@ export type FinancialRecord = {
     studentId: string;
     studentName: string;
     classId: string;
-    type: 
-      | 'Tuition Fee' 
-      | 'Admission Fee'
-      | 'Maintenance Fee'
-      | 'Examination Fee'
-      | 'PTA Levy'
-      | 'Library Fine' 
-      | 'Lab Fee' 
-      | 'Sports Fee' 
-      | 'Canteen Fee' 
-      | 'Canteen Fee (Daily)'
-      | 'Canteen Fee (Termly)'
-      | 'Transport Fee' 
-      | 'Transport Fee (Daily)' 
-      | 'Transport Fee (Termly)' 
-      | 'Other' 
-      | 'Correction / Reversal';
+    /** A built-in fee type (Tuition Fee, PTA Levy, ...) or the name of a school's custom fee item. */
+    type: string;
     description: string;
     billedAmount: number;
     amountPaid: number;
@@ -711,6 +670,9 @@ export type FinancialRecord = {
     category?: string;
     title?: string;
     isOpeningBalance?: boolean;
+    /** Only on bills made from a custom fee item: the fee family it reports under. */
+    feeCategory?: 'Tuition' | 'Canteen' | 'Transport' | 'PTA Levy' | 'Other';
+    isCustomFee?: boolean;
     isArchived?: boolean;
     itemizedArrears?: any;
     schoolId?: string;

@@ -6,6 +6,7 @@
 
 import { startOfDay } from 'date-fns';
 import { calculateCollectionRate, isSameAcademicYear } from './financials';
+import { explicitFeeCategory } from './custom-fee-items';
 
 export interface PaymentItem {
   id?: string;
@@ -207,6 +208,10 @@ export function safeParseDate(val: any): Date | null {
  */
 export function classifyFeeCategory(p: any): 'tuition' | 'canteen' | 'transport' | 'boarding' | 'uniforms' | 'other' {
   if (!p) return 'tuition';
+  // A bill made from a school's custom fee item says which family it reports under (PTA levies have always
+  // counted with tuition here). Every other record is classified exactly as before.
+  const explicit = explicitFeeCategory(p);
+  if (explicit) return explicit === 'Canteen' ? 'canteen' : explicit === 'Transport' ? 'transport' : explicit === 'Other' ? 'other' : 'tuition';
   const text = `${p.type || ''} ${p.category || ''} ${p.description || ''} ${p.feeType || ''} ${p.notes || ''} ${p.name || ''} ${p.title || ''} ${p.paymentType || ''} ${p.narration || ''} ${p.paymentNarration || ''} ${p.item || ''}`.toLowerCase();
 
   if (text.includes('canteen') || text.includes('feed') || text.includes('lunch') || text.includes('meal') || text.includes('food') || text.includes('cafeteria')) {
