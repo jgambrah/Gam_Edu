@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Plus, Building2, Trash2, ArrowRight, UserPlus, Zap, Crown, Clock, Video, Mail, Phone } from 'lucide-react'; 
+import { Loader2, Plus, Building2, Trash2, Pencil, ArrowRight, UserPlus, Zap, Crown, Clock, Video, Mail, Phone } from 'lucide-react'; 
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -128,6 +128,7 @@ function TutorialManager() {
   const [videoUrl, setVideoUrl] = useState('');
   const [category, setCategory] = useState<'General' | 'Finance' | 'Academics' | 'Admin'>('General');
   const [loading, setLoading] = useState(false);
+  const [editingTutorial, setEditingTutorial] = useState<any>(null);
 
   const tutorialsQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'tutorials'), orderBy('createdAt', 'desc')) : null, [firestore]);
   const { data: tutorials, forceRefetch } = useCollection<any>(tutorialsQuery);
@@ -151,6 +152,24 @@ function TutorialManager() {
     }
 
     return null;
+  };
+
+  
+  const handleStartEdit = (t: any) => {
+    setEditingTutorial(t);
+    setTitle(t.title || '');
+    setCategory(t.category || 'General');
+    setVideoUrl(t.youtubeId ? `https://www.youtube.com/watch?v=${t.youtubeId}` : '');
+    setDescription(t.description || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTutorial(null);
+    setTitle('');
+    setDescription('');
+    setVideoUrl('');
+    setCategory('General');
   };
 
   const handleAdd = async (e: React.FormEvent) => {
@@ -193,7 +212,7 @@ function TutorialManager() {
     <div className="space-y-8 animate-in fade-in duration-500">
       <Card className="border-t-4 border-t-red-500 shadow-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Video className="h-5 w-5 text-red-500"/> Add New Tutorial</CardTitle>
+          <CardTitle className="flex items-center gap-2"><Video className="h-5 w-5 text-red-500"/> {editingTutorial ? "Edit Tutorial" : "Add New Tutorial"}</CardTitle>
           <CardDescription>Publish a new video guide to the Help Center.</CardDescription>
         </CardHeader>
         <CardContent>

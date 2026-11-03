@@ -1,18 +1,22 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { 
     BookOpen, Video, FileQuestion, GraduationCap, Users, Banknote, Shield, Brain, School, 
     UserPlus, Calculator, ClipboardCheck, BookCopy, Library, Bus, Boxes, BarChart, 
-    MessageSquare, Activity, FileText, UserCog, Loader2, Search, Keyboard, Mail, Phone, MessageCircle
+    MessageSquare, Activity, FileText, UserCog, Loader2, Search, ChevronDown, ChevronUp, CheckCircle2, ListOrdered, Keyboard, Mail, Phone, MessageCircle
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Tutorial } from '@/lib/types';
 import { Button } from '@/components/ui/button';
+import ReactMarkdown from 'react-markdown';
 
 function GuideCard({ icon: Icon, title, desc, steps }: any) {
     return (
@@ -31,6 +35,102 @@ function GuideCard({ icon: Icon, title, desc, steps }: any) {
             </CardContent>
         </Card>
     );
+}
+
+
+// Enhanced Markdown & Formatted List renderer for Video Guides
+function FormattedDescription({ content }: { content: string }) {
+  if (!content) return null;
+
+  // Format clumped markdown into organized headings and lists
+  let formatted = content
+    .replace(/(#{1,6}\s+[^\n\r]+)/g, '\n$1\n\n')
+    .replace(/(\s+)(\d+\.\s+\*\*)/g, '\n\n$2')
+    .trim();
+
+  return (
+    <div className="prose prose-slate prose-sm max-w-none text-slate-700 leading-relaxed font-normal">
+      <ReactMarkdown
+        components={{
+          h1: ({ children }) => <h1 className="text-lg font-black text-slate-900 mt-4 mb-2 pb-1 border-b border-slate-200">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-base font-black text-slate-900 mt-3 mb-2">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-sm font-bold uppercase tracking-wide text-indigo-700 mt-3 mb-2 flex items-center gap-2">{children}</h3>,
+          p: ({ children }) => <p className="mb-3 leading-relaxed text-slate-600 text-sm">{children}</p>,
+          strong: ({ children }) => <strong className="font-bold text-slate-900">{children}</strong>,
+          ol: ({ children }) => <ol className="list-none pl-0 space-y-2.5 my-3">{children}</ol>,
+          ul: ({ children }) => <ul className="list-disc pl-5 space-y-2 my-2 text-slate-600">{children}</ul>,
+          li: ({ children }) => (
+            <li className="flex items-start gap-2.5 text-sm text-slate-700 bg-white/80 p-3 rounded-xl border border-slate-200/80 shadow-xs">
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+              <div className="flex-1">{children}</div>
+            </li>
+          ),
+          code: ({ children }) => (
+            <code className="bg-indigo-50/80 text-indigo-800 px-1.5 py-0.5 rounded text-xs font-mono font-semibold border border-indigo-100">
+              {children}
+            </code>
+          ),
+        }}
+      >
+        {formatted}
+      </ReactMarkdown>
+    </div>
+  );
+}
+
+function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="group space-y-4 bg-white p-5 rounded-[2.5rem] border border-slate-200/80 shadow-md hover:shadow-xl transition-all duration-300">
+      {/* Video Player */}
+      <div className="rounded-[2rem] overflow-hidden shadow-lg border-2 border-slate-100 aspect-video bg-black relative group-hover:scale-[1.01] transition-transform duration-500">
+        <iframe 
+          width="100%" height="100%" 
+          src={`https://www.youtube.com/embed/${tutorial.youtubeId}?rel=0&modestbranding=1`} 
+          title={tutorial.title} frameBorder="0" allowFullScreen
+          className="absolute inset-0"
+        ></iframe>
+      </div>
+
+      {/* Video Details & Collapsible Notes */}
+      <div className="px-1 space-y-3">
+        <div className="flex justify-between items-start gap-3">
+          <h3 className="font-black text-lg md:text-xl text-slate-800 leading-tight uppercase tracking-tight">
+            {tutorial.title}
+          </h3>
+          <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold px-3 py-1 rounded-full shrink-0">
+            {tutorial.category}
+          </Badge>
+        </div>
+
+        {tutorial.description && (
+          <Collapsible open={isOpen} onOpenChange={setIsOpen} className="w-full">
+            <CollapsibleTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-between rounded-xl border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 h-auto text-xs"
+              >
+                <span className="flex items-center gap-2">
+                  <ListOrdered className="h-3.5 w-3.5 text-indigo-600" />
+                  {isOpen ? 'Hide Step-by-Step Details' : 'View Step-by-Step Guide & Details'}
+                </span>
+                {isOpen ? (
+                  <ChevronUp className="h-4 w-4 text-slate-500 transition-transform duration-200" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-slate-500 transition-transform duration-200" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 bg-slate-50/80 border border-slate-200/80 rounded-2xl p-4 md:p-5 shadow-inner transition-all animate-in fade-in-50 duration-200">
+              <FormattedDescription content={tutorial.description} />
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function HelpPage() {
@@ -236,27 +336,7 @@ export default function HelpPage() {
                 ) : tutorials && tutorials.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         {tutorials.map(t => (
-                            <div key={t.id} className="group space-y-4">
-                                <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-100 aspect-video bg-black relative group-hover:scale-[1.02] transition-transform duration-500">
-                                    <iframe 
-                                        width="100%" height="100%" 
-                                        src={`https://www.youtube.com/embed/${t.youtubeId}?rel=0&modestbranding=1`} 
-                                        title={t.title} frameBorder="0" allowFullScreen
-                                        className="absolute inset-0"
-                                    ></iframe>
-                                </div>
-                                <div className="px-2">
-                                    <div className="flex justify-between items-start gap-4 mb-2">
-                                        <h3 className="font-black text-xl text-slate-800 leading-tight uppercase italic">{t.title}</h3>
-                                        <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold px-3 py-1 rounded-full shrink-0">
-                                            {t.category}
-                                        </Badge>
-                                    </div>
-                                    <p className="text-sm text-slate-500 leading-relaxed font-medium">
-                                        {t.description}
-                                    </p>
-                                </div>
-                            </div>
+                            <TutorialCard key={t.id} tutorial={t} />
                         ))}
                     </div>
                 ) : (
