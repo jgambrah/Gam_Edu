@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -13,6 +14,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { Tutorial } from '@/lib/types';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { VideoTutorialCard } from '@/components/help/VideoTutorialCard';
 
 function GuideCard({ icon: Icon, title, desc, steps }: any) {
     return (
@@ -41,6 +44,19 @@ export default function HelpPage() {
   [firestore]);
   
   const { data: tutorials, isLoading: tutorialsLoading } = useCollection<Tutorial>(tutorialsQuery);
+
+  const [videoSearch, setVideoSearch] = React.useState('');
+  const [videoCategory, setVideoCategory] = React.useState<string>('All');
+  const videoCategories = React.useMemo(
+    () => ['All', ...Array.from(new Set((tutorials || []).map(t => t.category).filter(Boolean)))],
+    [tutorials]
+  );
+  const filteredTutorials = React.useMemo(() => {
+    const q = videoSearch.trim().toLowerCase();
+    return (tutorials || []).filter(t =>
+      (videoCategory === 'All' || t.category === videoCategory) &&
+      (!q || `${t.title || ''} ${t.description || ''}`.toLowerCase().includes(q)));
+  }, [tutorials, videoSearch, videoCategory]);
 
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
@@ -234,30 +250,38 @@ export default function HelpPage() {
                         <p className="font-bold uppercase tracking-widest text-xs">Loading training modules...</p>
                     </div>
                 ) : tutorials && tutorials.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {tutorials.map(t => (
-                            <div key={t.id} className="group space-y-4">
-                                <div className="rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-slate-100 aspect-video bg-black relative group-hover:scale-[1.02] transition-transform duration-500">
-                                    <iframe 
-                                        width="100%" height="100%" 
-                                        src={`https://www.youtube.com/embed/${t.youtubeId}?rel=0&modestbranding=1`} 
-                                        title={t.title} frameBorder="0" allowFullScreen
-                                        className="absolute inset-0"
-                                    ></iframe>
-                                </div>
-                                <div className="px-2">
-                                    <div className="flex justify-between items-start gap-4 mb-2">
-                                        <h3 className="font-black text-xl text-slate-800 leading-tight uppercase italic">{t.title}</h3>
-                                        <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100 font-bold px-3 py-1 rounded-full shrink-0">
-                                            {t.category}
-                                        </Badge>
-                                    </div>
-                                    <p className="text-sm text-slate-500 leading-relaxed font-medium">
-                                        {t.description}
-                                    </p>
-                                </div>
+                    <div className="space-y-8">
+                        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter videos by category">
+                                {videoCategories.map(c => (
+                                    <button
+                                        key={c}
+                                        type="button"
+                                        onClick={() => setVideoCategory(c)}
+                                        aria-pressed={videoCategory === c}
+                                        className={`rounded-full border px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-colors ${videoCategory === c ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-300 hover:text-indigo-700'}`}
+                                    >
+                                        {c}
+                                    </button>
+                                ))}
                             </div>
-                        ))}
+                            <div className="relative w-full md:w-72">
+                                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                                <Input value={videoSearch} onChange={e => setVideoSearch(e.target.value)} placeholder="Search videos..." className="rounded-full pl-9" />
+                            </div>
+                        </div>
+                        <p className="text-xs font-bold uppercase tracking-widest text-slate-400">
+                            {filteredTutorials.length} of {tutorials.length} video{tutorials.length === 1 ? '' : 's'}
+                        </p>
+                        {filteredTutorials.length > 0 ? (
+                            <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
+                                {filteredTutorials.map(t => <VideoTutorialCard key={t.id} tutorial={t} />)}
+                            </div>
+                        ) : (
+                            <div className="py-16 text-center text-slate-400">
+                                <p className="text-sm font-bold">No videos match your search.</p>
+                            </div>
+                        )}
                     </div>
                 ) : (
                     <div className="text-center py-32 text-slate-300">
