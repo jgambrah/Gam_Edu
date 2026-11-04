@@ -115,7 +115,30 @@ export default function StaffAttendancePage() {
   }, [toast]);
 
   useEffect(() => {
-    if (isStaff) locate();
+    if (!isStaff) return;
+    locate();
+    if (typeof navigator === 'undefined' || !('geolocation' in navigator)) return;
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const nextAcc = Number.isFinite(position.coords.accuracy) ? position.coords.accuracy : null;
+        setLocation((prev) => {
+          // Keep the new fix if we had none, or if the new fix is more accurate (or already sharp <= 50m)
+          if (!prev || prev.accuracy === null || (nextAcc !== null && (nextAcc <= prev.accuracy || nextAcc <= 50))) {
+            return {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: nextAcc,
+              at: Date.now(),
+            };
+          }
+          return prev;
+        });
+        setLocationError(null);
+      },
+      () => {},
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 }
+    );
+    return () => navigator.geolocation.clearWatch(watchId);
   }, [isStaff, locate]);
 
   // --- Campus distance (shown before clocking; the server works it out again when saving) ---
@@ -128,7 +151,9 @@ export default function StaffAttendancePage() {
   const distance = useMemo(() => (
     location && campus.isSet ? getDistanceInMeters(campus.lat!, campus.lng!, location.latitude, location.longitude) : null
   ), [location, campus]);
-  const isOffSite = distance !== null && distance > campus.radius;
+  const accuracyMargin = location?.accuracy && location.accuracy > 0 ? Math.min(Math.round(location.accuracy), 600) : 0;
+  const effectiveDistance = distance !== null ? Math.max(0, distance - accuracyMargin) : null;
+  const isOffSite = effectiveDistance !== null && effectiveDistance > campus.radius;
   const isAdminUser = ADMIN_ROLES.includes(String(role || '').toLowerCase());
 
   // Today's records (the feed holds the last 10, newest first).
@@ -352,11 +377,10 @@ export default function StaffAttendancePage() {
                     )}
                   </div>
 
-                  {/* Very far away usually means the saved campus location is wrong, not that the person is 200 km off. */}
-                  {distance !== null && distance > 20000 && (
+                  {isOffSite && distance !== null && (
                     <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-[11px] font-semibold text-amber-800 leading-relaxed">
-                      You appear to be {fmtDistance(distance)} from the saved campus location. If you are on campus right now, the school's saved location is probably wrong
-                      {isAdminUser ? <> — fix it in <a href="/dashboard/admin/school-profile" className="underline font-bold">School Profile → Geofencing</a> (stand on campus and press “Get Current Location”).</> : <> — please tell your administrator.</>}
+                      Your GPS currently reads {fmtDistance(distance)} from the saved campus pin. If you are inside the school, include your classroom or school compound in the photo background so AI can verify you on-campus, or press <strong>Refresh location</strong> near a window.
+                      {isAdminUser ? <> If the school's saved pin is wrong, update it in <a href="/dashboard/admin/school-profile" className="underline font-bold">School Profile → Geofencing</a> (using a phone on campus).</> : null}
                     </div>
                   )}
                   {!campus.isSet && schoolSettings && (

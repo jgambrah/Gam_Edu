@@ -82,13 +82,18 @@ async function profilePhotoBase64(src: unknown): Promise<string | null> {
 const FaceSchema = z.object({
   isMatch: z.boolean().describe('True if the two photos show the same person.'),
   confidence: z.string().describe('One short sentence on why.'),
+  showsSchoolEnvironment: z.boolean().describe('True if the background of the live selfie clearly shows a school compound, classroom, chalkboard/whiteboard, school desks, school office, noticeboard, or school signage/uniforms.'),
+});
+
+const EnvironmentSchema = z.object({
+  showsSchoolEnvironment: z.boolean().describe('True if the background of the selfie clearly shows a school compound, classroom, chalkboard/whiteboard, school desks, school office, noticeboard, or school signage/uniforms.'),
 });
 
 async function compareFaces(profileB64: string, selfieB64: string) {
   const { output } = await ai.generate({
     model: 'googleai/gemini-3-flash-preview',
     prompt: [
-      { text: 'You are an HR security assistant. Image 1 is the official staff profile photo; Image 2 is a live selfie taken to clock in. Are they the same person? Focus on facial features; ignore lighting, glasses, head-wear and clothing. If Image 2 shows no clear face, answer false.' },
+      { text: 'You are an HR security assistant. Image 1 is the official staff profile photo; Image 2 is a live selfie taken to clock in. 1) Are they the same person? Focus on facial features; ignore lighting, glasses, head-wear and clothing. If Image 2 shows no clear face, answer false. 2) Does the background of Image 2 clearly show a school environment (classroom, whiteboard/chalkboard, school desks, school office/noticeboard, or school compound)?' },
       { media: { url: `data:image/jpeg;base64,${profileB64}` } },
       { media: { url: `data:image/jpeg;base64,${selfieB64}` } },
     ],
@@ -96,6 +101,18 @@ async function compareFaces(profileB64: string, selfieB64: string) {
   });
   if (!output) throw new Error('No answer from the face check.');
   return output;
+}
+
+async function checkSchoolBackground(selfieB64: string) {
+  const { output } = await ai.generate({
+    model: 'googleai/gemini-3-flash-preview',
+    prompt: [
+      { text: 'You are an HR security assistant reviewing a staff clock-in selfie. Does the background clearly show a school environment (such as a classroom, chalkboard/whiteboard, school desks, school office/noticeboard, or school compound/corridor)? Answer true only if school/classroom/office features are visible.' },
+      { media: { url: `data:image/jpeg;base64,${selfieB64}` } },
+    ],
+    output: { schema: EnvironmentSchema },
+  });
+  return Boolean(output?.showsSchoolEnvironment);
 }
 
 async function uploadSelfie(schoolId: string, uid: string, day: string, type: string, b64: string): Promise<string | null> {
@@ -182,34 +199,59 @@ export async function clockStaffAction(input: {
       leftEarly = true;
     }
 
-    // --- Geofence ---
+    // --- Geofence (accounts for indoor GPS uncertainty radius up to 600m) ---
     const sLat = num(settings.schoolLat), sLng = num(settings.schoolLng);
     const radius = num(settings.allowedRadius) && num(settings.allowedRadius)! > 0 ? num(settings.allowedRadius)! : DEFAULT_RADIUS;
     const geofence: 'checked' | 'not_set' = sLat !== null && sLng !== null && !(sLat === 0 && sLng === 0) ? 'checked' : 'not_set';
     const distance = geofence === 'checked' ? Math.round(getDistanceInMeters(sLat!, sLng!, lat, lng)) : null;
-    const isFlagged = geofence === 'checked' && distance! > radius;
     const accuracy = num(input.accuracy);
+    const accuracyMargin = accuracy !== null && accuracy > 0 ? Math.min(Math.round(accuracy), 600) : 0;
+    const effectiveDistance = distance !== null ? Math.max(0, distance - accuracyMargin) : null;
+    let isFlagged = geofence === 'checked' && effectiveDistance! > radius;
 
-    // --- Selfie + face check (in parallel) ---
+    // --- Selfie + face/background check (in parallel) ---
     const profileSrc = staff.photoURL || staff.profilePic || staff.avatar || usr.photoURL || null;
     const [photoUrl, identity] = await Promise.all([
       uploadSelfie(schoolId, user.uid, day, type, selfieB64),
       (async () => {
         const profileB64 = await profilePhotoBase64(profileSrc);
         if (!profileB64) {
-          return { status: 'unchecked' as const, notes: profileSrc ? 'Profile photo could not be opened, so the face was not checked.' : 'No profile photo on record, so the face was not checked.' };
+          let showsSchool = false;
+          if (isFlagged) {
+            try { showsSchool = await checkSchoolBackground(selfieB64); } catch {}
+          }
+          const baseNotes = profileSrc ? 'Profile photo could not be opened, so the face was not checked.' : 'No profile photo on record, so the face was not checked.';
+          return {
+            status: 'unchecked' as const,
+            notes: showsSchool ? `${baseNotes} School environment verified in background photo.` : baseNotes,
+            showsSchoolEnvironment: showsSchool,
+          };
         }
         try {
           const r = await compareFaces(profileB64, selfieB64);
           return r.isMatch
-            ? { status: 'verified' as const, notes: 'Identity Verified by AI.' }
-            : { status: 'mismatch' as const, notes: r.confidence || 'Face does not match the profile photo.' };
+            ? {
+                status: 'verified' as const,
+                notes: r.showsSchoolEnvironment ? 'Identity & school background verified by AI.' : 'Identity Verified by AI.',
+                showsSchoolEnvironment: Boolean(r.showsSchoolEnvironment),
+              }
+            : {
+                status: 'mismatch' as const,
+                notes: r.confidence || 'Face does not match the profile photo.',
+                showsSchoolEnvironment: Boolean(r.showsSchoolEnvironment),
+              };
         } catch (e) {
           console.error('[staff-clock] face check failed', e);
-          return { status: 'unchecked' as const, notes: 'Face check was unavailable. Manual review required.' };
+          return { status: 'unchecked' as const, notes: 'Face check was unavailable. Manual review required.', showsSchoolEnvironment: false };
         }
       })(),
     ]);
+
+    // If GPS drifted outside the radius (indoor cell/Wi-Fi fallback or slight campus pin offset)
+    // but the live selfie background clearly shows a classroom/school environment, do not flag off-campus.
+    if (isFlagged && identity.showsSchoolEnvironment) {
+      isFlagged = false;
+    }
 
     await db.collection('staff_attendance').add({
       staffId: user.uid,
@@ -245,5 +287,108 @@ export async function clockStaffAction(input: {
     if (e instanceof SessionError) return { success: false, error: e.message };
     console.error('[staff-clock] failed', e);
     return { success: false, error: 'Could not record your attendance. Please try again.' };
+  }
+}
+
+const ADMIN_OVERRIDE_ROLES = ['director', 'administrator', 'admin', 'principal', 'headmaster', 'headmistress', 'head teacher', 'owner', 'hr', 'secretary'];
+
+export async function overrideStaffGeofenceAction(input: {
+  schoolId: string;
+  logId: string;
+  mode: 'approve_log' | 'reanchor_campus';
+}): Promise<{ success: boolean; updatedCount?: number; error?: string }> {
+  try {
+    const user = await requireSignedIn();
+    const { schoolId, logId, mode } = input || ({} as any);
+    if (!schoolId || !logId || (mode !== 'approve_log' && mode !== 'reanchor_campus')) {
+      return { success: false, error: 'Invalid request parameters.' };
+    }
+    if (!user.isSuperAdmin) {
+      const schools = await schoolsOfUser(user);
+      if (!schools.includes(schoolId)) return { success: false, error: 'Unauthorized school access.' };
+    }
+
+    const db = getAdminDb();
+    const [staffSnap, userSnap, logSnap, settingsSnap] = await Promise.all([
+      db.collection('staff').doc(user.uid).get(),
+      db.collection('users').doc(user.uid).get(),
+      db.collection('staff_attendance').doc(logId).get(),
+      db.collection('schoolSettings').doc(schoolId).get(),
+    ]);
+
+    const role = String(
+      (staffSnap.exists ? staffSnap.data()?.role : '') ||
+      (userSnap.exists ? userSnap.data()?.role : '') ||
+      user.claims?.role || ''
+    ).toLowerCase();
+
+    if (!user.isSuperAdmin && !ADMIN_OVERRIDE_ROLES.includes(role)) {
+      return { success: false, error: 'Only school administrators can override geofence flags.' };
+    }
+    if (!logSnap.exists || logSnap.data()?.schoolId !== schoolId) {
+      return { success: false, error: 'Attendance record not found.' };
+    }
+
+    const logData: any = logSnap.data() || {};
+    const settings: any = settingsSnap.exists ? settingsSnap.data() : {};
+    const radius = num(settings.allowedRadius) && num(settings.allowedRadius)! > 0 ? num(settings.allowedRadius)! : DEFAULT_RADIUS;
+
+    if (mode === 'approve_log') {
+      await logSnap.ref.update({
+        isFlagged: false,
+        geofenceOverrideBy: user.uid,
+        identityNotes: logData.identityNotes
+          ? `${logData.identityNotes} (Confirmed on-campus by admin)`
+          : 'Confirmed on-campus by admin photo review.',
+      });
+      return { success: true, updatedCount: 1 };
+    }
+
+    // mode === 'reanchor_campus': Use this verified scan's GPS as the school's master coordinates
+    const newLat = num(logData.latitude), newLng = num(logData.longitude);
+    if (newLat === null || newLng === null) {
+      return { success: false, error: 'This attendance record does not have GPS coordinates.' };
+    }
+
+    await db.collection('schoolSettings').doc(schoolId).set(
+      { schoolLat: newLat, schoolLng: newLng },
+      { merge: true }
+    );
+
+    // Re-evaluate recent flagged logs for this school against the corrected campus coordinates
+    const recentFlaggedSnap = await db.collection('staff_attendance')
+      .where('schoolId', '==', schoolId)
+      .orderBy('timestamp', 'desc')
+      .limit(60)
+      .get();
+
+    const batch = db.batch();
+    let updatedCount = 0;
+    for (const d of recentFlaggedSnap.docs) {
+      const data = d.data() as any;
+      const dLat = num(data.latitude), dLng = num(data.longitude);
+      if (dLat !== null && dLng !== null) {
+        const dist = Math.round(getDistanceInMeters(newLat, newLng, dLat, dLng));
+        const acc = num(data.gpsAccuracyMeters);
+        const accMargin = acc !== null && acc > 0 ? Math.min(Math.round(acc), 600) : 0;
+        const nextFlagged = Math.max(0, dist - accMargin) > radius;
+        if (data.isFlagged !== nextFlagged || data.distanceMeters !== dist || d.id === logId) {
+          batch.update(d.ref, {
+            distanceMeters: dist,
+            isFlagged: d.id === logId ? false : nextFlagged,
+          });
+          updatedCount++;
+        }
+      }
+    }
+    if (updatedCount > 0) {
+      await batch.commit();
+    }
+
+    return { success: true, updatedCount };
+  } catch (e: any) {
+    if (e instanceof SessionError) return { success: false, error: e.message };
+    console.error('[staff-clock] overrideStaffGeofenceAction failed', e);
+    return { success: false, error: e?.message || 'Failed to update geofence status.' };
   }
 }

@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useToast } from '@/hooks/use-toast';
 import type { Staff, StaffAttendance } from '@/lib/types';
+import { overrideStaffGeofenceAction } from '@/app/actions/staff-clock';
 
 // Compact serialized record for the 1-read aggregate basket
 interface StaffAttendanceBasketRecord {
@@ -71,6 +72,7 @@ export default function StaffAttendanceRecordsPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [hudLog, setHudLog] = useState<StaffAttendance | null>(null);
   const [isLoadingProofPhoto, setIsLoadingProofPhoto] = useState(false);
+  const [isOverridingGeofence, setIsOverridingGeofence] = useState(false);
 
   // ── 1-READ AGGREGATED BASKET & HISTORICAL STATE ──
   const [cachedBasket, setCachedBasket] = useState<StaffAttendanceBasketDoc | null>(null);
@@ -1023,8 +1025,71 @@ export default function StaffAttendanceRecordsPage() {
                     )}
                 </div>
             </div>
-            <div className="bg-slate-950 p-5 border-t border-white/5 text-center">
-                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] font-mono">Biometric HUD engine v1.0.4 · CampusConnect</p>
+            <div className="bg-slate-950 p-5 border-t border-white/5 space-y-3">
+                {hudLog?.isFlagged && hudLog?.id && schoolId && (
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      size="sm"
+                      disabled={isOverridingGeofence}
+                      onClick={async () => {
+                        setIsOverridingGeofence(true);
+                        try {
+                          const res = await overrideStaffGeofenceAction({
+                            schoolId,
+                            logId: hudLog.id,
+                            mode: 'approve_log',
+                          });
+                          if (!res.success) {
+                            toast({ variant: 'destructive', title: 'Could not update flag', description: res.error });
+                            return;
+                          }
+                          setHudLog(prev => prev ? { ...prev, isFlagged: false } : null);
+                          setHistoricalLogs(prev => prev ? prev.map(l => l.id === hudLog.id ? { ...l, isFlagged: false } : l) : prev);
+                          toast({ title: 'Marked On-Campus', description: `${hudLog.staffName}'s attendance record has been verified as On-Campus.` });
+                        } finally {
+                          setIsOverridingGeofence(false);
+                        }
+                      }}
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl"
+                    >
+                      {isOverridingGeofence ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" />}
+                      Approve On-Campus (Photo Verified)
+                    </Button>
+                    {hudLog.latitude !== undefined && hudLog.longitude !== undefined && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={isOverridingGeofence}
+                        onClick={async () => {
+                          setIsOverridingGeofence(true);
+                          try {
+                            const res = await overrideStaffGeofenceAction({
+                              schoolId,
+                              logId: hudLog.id,
+                              mode: 'reanchor_campus',
+                            });
+                            if (!res.success) {
+                              toast({ variant: 'destructive', title: 'Could not update campus GPS', description: res.error });
+                              return;
+                            }
+                            setHudLog(prev => prev ? { ...prev, isFlagged: false, distanceMeters: 0 } : null);
+                            toast({
+                              title: 'Campus GPS Re-Anchored',
+                              description: `School coordinates updated to this scan's location and ${res.updatedCount ?? 1} recent record(s) re-evaluated.`,
+                            });
+                          } finally {
+                            setIsOverridingGeofence(false);
+                          }
+                        }}
+                        className="flex-1 border-indigo-400/40 bg-indigo-950/60 hover:bg-indigo-900 text-indigo-200 font-bold text-xs rounded-xl"
+                      >
+                        <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                        Set School GPS to This Scan
+                      </Button>
+                    )}
+                  </div>
+                )}
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] font-mono text-center">Biometric HUD engine v1.0.4 · CampusConnect</p>
             </div>
         </DialogContent>
       </Dialog>

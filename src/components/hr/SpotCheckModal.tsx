@@ -22,7 +22,7 @@ export function SpotCheckModal() {
     const [activeCheck, setActiveCheck] = useState<any>(null);
     const [isVerifying, setIsVerifying] = useState(false);
     const [imageDataUri, setImageDataUri] = useState<string | null>(null);
-    const [location, setLocation] = useState<{latitude: number, longitude: number} | null>(null);
+    const [location, setLocation] = useState<{latitude: number, longitude: number, accuracy?: number | null} | null>(null);
     const [cameraActive, setCameraActive] = useState(false);
     
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -109,7 +109,11 @@ export function SpotCheckModal() {
     useEffect(() => {
         if (activeCheck && "geolocation" in navigator) {
             navigator.geolocation.getCurrentPosition(
-                (pos) => setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+                (pos) => setLocation({
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude,
+                    accuracy: Number.isFinite(pos.coords.accuracy) ? pos.coords.accuracy : null,
+                }),
                 () => toast({ variant: 'destructive', title: "GPS Error", description: "Enable location services to verify." }),
                 { 
                     enableHighAccuracy: true, 
@@ -135,7 +139,8 @@ export function SpotCheckModal() {
             let distance = 0;
             if (schoolLat && schoolLng) {
                 distance = getDistanceInMeters(schoolLat, schoolLng, location.latitude, location.longitude);
-                isOffCampus = distance > (allowedRadius || 200);
+                const accMargin = location.accuracy && location.accuracy > 0 ? Math.min(Math.round(location.accuracy), 600) : 0;
+                isOffCampus = Math.max(0, distance - accMargin) > (allowedRadius || 200);
             }
 
             await updateDoc(doc(firestore, 'spot_checks', activeCheck.id), {

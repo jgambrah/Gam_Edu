@@ -673,7 +673,14 @@ export default function SchoolProfilePage() {
                                             navigator.geolocation.getCurrentPosition((pos) => {
                                                 setSchoolLat(pos.coords.latitude);
                                                 setSchoolLng(pos.coords.longitude);
-                                                toast({ title: "Coordinates Captured", description: "School location set based on your current position." });
+                                                const acc = Math.round(pos.coords.accuracy || 0);
+                                                toast({
+                                                    variant: acc > 150 ? "destructive" : undefined,
+                                                    title: acc > 150 ? `Low GPS Accuracy (±${acc}m)` : `Coordinates Captured (±${acc}m)`,
+                                                    description: acc > 150
+                                                        ? "This device gave an approximate network/ISP location. For best accuracy, set this from a phone while standing on the school compound."
+                                                        : "School location set based on your current GPS position. Remember to click Save Changes.",
+                                                });
                                             }, () => toast({ variant: "destructive", title: "Error", description: "Could not get location. Ensure GPS is enabled." }), { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
                                         }
                                     }}
@@ -682,8 +689,20 @@ export default function SchoolProfilePage() {
                                 </Button>
                             </div>
                             <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
-                                Set the official GPS coordinates of the school. When staff clock in, the system will calculate their distance and flag those outside the allowed radius.
+                                Set the official GPS coordinates of the school (best captured on a mobile phone on campus). When staff clock in, the system accounts for indoor GPS drift and AI classroom/campus background checks before flagging off-campus check-ins.
                             </p>
+                            {schoolLat !== '' && schoolLng !== '' && (
+                                <div className="pt-1">
+                                    <a
+                                        href={`https://www.google.com/maps?q=${schoolLat},${schoolLng}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-xs font-bold text-indigo-600 hover:underline inline-flex items-center gap-1"
+                                    >
+                                        🗺️ View Saved School Pin on Google Maps ↗
+                                    </a>
+                                </div>
+                            )}
                             
                             <div className="grid md:grid-cols-3 gap-4 pt-2">
                                 <div className="space-y-2">
