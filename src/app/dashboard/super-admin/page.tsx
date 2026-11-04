@@ -1,5 +1,6 @@
 'use client';
 
+import { effectivePaidUntil, paymentCoversUntil, daysForPayment } from '@/lib/subscription';
 import { useState, useEffect, useCallback } from 'react';
 import { useFirestore, useCollection, useMemoFirebase, useAuth } from '@/firebase';
 import { collection, getDocs, addDoc, serverTimestamp, setDoc, doc, deleteDoc, query, where, orderBy, updateDoc, limit, getDoc } from 'firebase/firestore'; 
@@ -338,8 +339,8 @@ export default function SuperAdminPage() {
   useEffect(() => {
     if (!planSchool) return;
     setNewPlan(planSchool.plan as 'Trial' | 'Premium');
-    const pu: any = (planSchool as any).paidUntil;
-    const d = pu?.toDate ? pu.toDate() : null;
+    // Start from the date the school is actually paid to (a recorded yearly payment counts as a year).
+    const d = effectivePaidUntil(planSchool);
     setPaidUntilInput(d ? d.toISOString().slice(0, 10) : new Date(Date.now() + 31 * 86400000).toISOString().slice(0, 10));
   }, [planSchool]);
 
@@ -450,6 +451,7 @@ export default function SuperAdminPage() {
             updates.status = 'active';
             // End of that day; the school is locked 7 days after this date unless it renews.
             updates.paidUntil = new Date(`${paidUntilInput}T23:59:59Z`);
+            updates.paidUntilManual = true; // set on purpose here: the automatic "recorded payment" safety net steps aside
         } else {
             updates.trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
             updates.status = 'active';
@@ -594,8 +596,7 @@ export default function SuperAdminPage() {
                                 <TableCell>
                                     <Badge variant="secondary" className="bg-indigo-50 text-indigo-700 border-indigo-100">{s.plan}</Badge>
                                     {s.plan === 'Premium' && (() => {
-                                        const pu: any = (s as any).paidUntil;
-                                        const d = pu?.toDate ? pu.toDate() : null;
+                                        const d = effectivePaidUntil(s);
                                         if (!d) return <span className="block text-[10px] text-rose-600 font-semibold">no paid-up date</span>;
                                         const overdue = d.getTime() < Date.now();
                                         return <span className={`block text-[10px] font-semibold ${overdue ? 'text-rose-600' : 'text-slate-500'}`}>{overdue ? 'ended' : 'paid to'} {d.toISOString().slice(0, 10)}</span>;
@@ -667,6 +668,28 @@ export default function SuperAdminPage() {
                     <div className="space-y-1.5">
                         <Label className="text-xs font-semibold">Paid up to</Label>
                         <Input type="date" value={paidUntilInput} onChange={e => setPaidUntilInput(e.target.value)} />
+                        {(() => {
+                            const covers = planSchool ? paymentCoversUntil(planSchool) : null;
+                            const amt = Number((planSchool as any)?.lastPaymentAmount) || 0;
+                            const addYear = () => setPaidUntilInput(new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10));
+                            return (
+                                <div className="space-y-1.5 pt-1">
+                                    {covers && (
+                                        <p className="text-[11px] text-slate-600">
+                                            Last recorded payment: <strong>GHS {amt.toLocaleString()}</strong> covers {daysForPayment(amt)} days, to <strong>{covers.toISOString().slice(0, 10)}</strong>.
+                                        </p>
+                                    )}
+                                    <div className="flex flex-wrap gap-2">
+                                        {covers && (
+                                            <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => setPaidUntilInput(covers.toISOString().slice(0, 10))}>
+                                                Use date from recorded payment
+                                            </Button>
+                                        )}
+                                        <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={addYear}>1 year from today</Button>
+                                    </div>
+                                </div>
+                            );
+                        })()}
                         <p className="text-[11px] text-slate-500">The school is reminded 7 days before this date and locked 7 days after it, unless it renews. Paystack renewals extend it automatically.</p>
                     </div>
                 )}

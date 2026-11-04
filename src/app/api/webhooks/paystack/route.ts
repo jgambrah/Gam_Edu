@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { MONTHLY_FEE, daysForPayment } from '@/lib/subscription';
 
 // 1. Initialize Admin SDK (Bypasses Security Rules)
 function getAdminApp() {
@@ -65,17 +66,16 @@ export async function POST(req: NextRequest) {
       // The amount actually paid decides the period: GHS 3,000+ = 1 year, GHS 300+ = 1 month (per GHS 300).
       // Less than one month's fee upgrades nothing (before, ANY amount unlocked Premium for ever).
       if (metadata?.type === 'school_upgrade' && metadata?.schoolId) {
-        const MONTHLY = 300, ANNUAL = 3000;
         const paid = Number(data.amount || 0) / 100;
         const currency = String(data.currency || 'GHS').toUpperCase();
         const schoolRef = db.collection('schools').doc(metadata.schoolId);
         const eventRef = db.collection('paystackEvents').doc(`upgrade_${String(data.reference).replace(/[^A-Za-z0-9_-]/g, '')}`);
 
-        if (currency !== 'GHS' || paid < MONTHLY) {
+        if (currency !== 'GHS' || paid < MONTHLY_FEE) {
           console.warn(`[Subscription] ${metadata.schoolId}: payment ${data.reference} of ${currency} ${paid} is below one month's fee — not upgraded.`);
           await eventRef.set({ schoolId: metadata.schoolId, amount: paid, currency, upgraded: false, at: new Date() }, { merge: true });
         } else {
-          const days = paid >= ANNUAL ? 365 * Math.floor(paid / ANNUAL) + 31 * Math.floor((paid % ANNUAL) / MONTHLY) : 31 * Math.floor(paid / MONTHLY);
+          const days = daysForPayment(paid); // GHS 3,000 = 365 days, GHS 300 = 31 days (see lib/subscription.ts)
           await db.runTransaction(async (t) => {
             const ev = await t.get(eventRef);
             if (ev.exists) return; // Paystack retries: count each payment once
@@ -89,6 +89,7 @@ export async function POST(req: NextRequest) {
               status: 'active',
               trialEndsAt: null,
               paidUntil,
+              paidUntilManual: false, // this date now comes from a real payment
               lastPaymentDate: new Date(),
               lastPaymentAmount: paid,
               paymentReference: data.reference,

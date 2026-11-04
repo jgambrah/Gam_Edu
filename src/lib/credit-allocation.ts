@@ -134,8 +134,11 @@ export async function reallocateExistingOverpayments(params: {
 
     // Payment docs on the source bill, newest first (the latest payment is what created the surplus).
     const paySnap = await getDocs(collection(firestore, 'financialRecords', src.id, 'payments'));
+    // Keep the REAL document id (docId): a payment's stored `id` field can differ from it (online payments), and
+    // `{ id: d.id, ...d.data() }` lets the stored one win — the lookup below then found nothing and the surplus
+    // moved with no receipt for it.
     const srcPayments = paySnap.docs
-      .map(d => ({ id: d.id, ...(d.data() as any) }))
+      .map(d => ({ docId: d.id, ...(d.data() as any) }))
       .filter(p => p.status !== 'Reversed' && !p.isReversal && (Number(p.amount) || 0) > 0)
       .sort((a, b) => toMillis(b.paidAt) - toMillis(a.paidAt));
 
@@ -149,7 +152,7 @@ export async function reallocateExistingOverpayments(params: {
       const tgtSnaps = await Promise.all(tgtRefs.map(r => tx.get(r)));
       const tgtFresh = tgtSnaps.filter(s => s.exists()).map(s => ({ id: s.id, ...(s.data() as any) }));
 
-      const payRefs = srcPayments.map(p => doc(firestore, 'financialRecords', src.id, 'payments', p.id));
+      const payRefs = srcPayments.map(p => doc(firestore, 'financialRecords', src.id, 'payments', p.docId as string));
       const paySnaps = await Promise.all(payRefs.map(r => tx.get(r)));
       const payFresh = paySnaps.filter(s => s.exists()).map(s => ({ id: s.id, ref: s.ref, ...(s.data() as any) }));
 

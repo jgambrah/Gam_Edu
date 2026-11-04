@@ -1,6 +1,7 @@
 
 'use client';
 
+import { effectivePaidUntil, daysUntil } from '@/lib/subscription';
 import { useEffect, useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -46,9 +47,10 @@ export default function TrialBanner() {
                 
                 setDaysLeft(diffDays);
             }
-            if (schoolData.plan === 'Premium' && schoolData.paidUntil?.toDate) {
-                const ms = schoolData.paidUntil.toDate().getTime() - Date.now();
-                setPremiumDaysLeft(Math.ceil(ms / (1000 * 60 * 60 * 24)));
+            if (schoolData.plan === 'Premium') {
+                // Same date rule as the access lock and Super Admin (a recorded yearly payment is never shown as ending soon).
+                const paidTo = effectivePaidUntil(schoolData);
+                if (paidTo) setPremiumDaysLeft(daysUntil(paidTo));
             }
         }
       } catch (err) {

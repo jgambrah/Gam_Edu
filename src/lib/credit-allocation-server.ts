@@ -63,11 +63,14 @@ export async function applyHeldCreditAfterBillingServer(db: FirebaseFirestore.Fi
       if (targets.length === 0) break;
 
       const paySnap = await db.collection('financialRecords').doc(src.id).collection('payments').get();
+      // Look each payment up by its REAL document id. A payment's stored `id` field can differ from its document
+      // id (online payments store a short "ONLINE-XXXXXXXX" label), and `{ id: d.id, ...d.data() }` lets the
+      // stored one win — the lookup below then found nothing and the surplus moved with NO receipt for it.
       const payIds = paySnap.docs
-        .map(d => ({ id: d.id, ...(d.data() as any) }))
+        .map(d => ({ docId: d.id, ...(d.data() as any) }))
         .filter(p => p.status !== 'Reversed' && !p.isReversal && (Number(p.amount) || 0) > 0)
         .sort((a, b) => toMillis(b.paidAt) - toMillis(a.paidAt))
-        .map(p => p.id);
+        .map(p => p.docId as string);
 
       const movedHere = await db.runTransaction(async (tx) => {
         const srcRef = db.collection('financialRecords').doc(src.id);

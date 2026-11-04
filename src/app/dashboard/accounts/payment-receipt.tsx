@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { FinancialRecord, Student, PaymentTransaction } from '@/lib/types';
 import { formatStudentId } from '@/lib/student-utils';
 import { cn } from '@/lib/utils';
+import { partsTotal, type ReceiptPart } from '@/lib/receipt-parts';
 
 interface PaymentReceiptProps {
   transaction: FinancialRecord;
@@ -14,6 +15,8 @@ interface PaymentReceiptProps {
   totalBalance?: number; 
   isThermal?: boolean; 
   isPlainA5?: boolean;
+  /** Every bill this payment was applied to (only when one payment covered several bills). */
+  parts?: ReceiptPart[];
 }
 
 export function PaymentReceipt({
@@ -24,8 +27,12 @@ export function PaymentReceipt({
   totalBalance = 0,
   isThermal = false,
   isPlainA5 = false,
+  parts,
 }: PaymentReceiptProps) {
-  const amountPaid = payment.amount || 0;
+  // One payment spread over several bills (e.g. 800 = 500 + 300 arrears): show all of it on this receipt.
+  const multi = (parts?.length || 0) > 1;
+  const amountPaid = multi ? partsTotal(parts!) : (payment.amount || 0);
+  const thisBillId = transaction?.id;
   const paymentDate = payment.paidAt?.toDate ? format(payment.paidAt.toDate(), 'PPP') : 'N/A';
   
   const primaryTheme = schoolProfile?.brandColor || '#1e293b';
@@ -60,7 +67,7 @@ export function PaymentReceipt({
 
           <div className="border-b border-black border-dashed my-2"></div>
           <h2 className="text-sm font-bold tracking-widest">OFFICIAL RECEIPT</h2>
-          <p className="text-[10px] font-bold">#{payment.id}</p>
+          <p className="text-[10px] font-bold">#{(payment as any).receiptNo || payment.id}</p>
           <div className="border-b border-black border-dashed my-2"></div>
         </div>
         <div className="space-y-1 mb-3 text-[10px]">
@@ -72,10 +79,16 @@ export function PaymentReceipt({
         </div>
         <div className="border-t border-black border-dashed pt-2 mb-2 text-[10px]">
           <span className="font-black block text-[9px] uppercase tracking-wider mb-0.5 text-black">Narration</span>
+          {multi ? parts!.map(pt => (
+            <div key={`${pt.recordId}-${pt.paymentDocId}`} className="flex justify-between items-start gap-1 font-bold mb-0.5">
+              <span className="text-black">{pt.description} ({pt.feeType})</span>
+              <span className="font-mono shrink-0">GH₵{pt.amount.toFixed(2)}</span>
+            </div>
+          )) : (
           <div className="flex justify-between items-start gap-1 font-bold">
             <span className="text-black">{payment.description || transaction.description} ({transaction.type})</span>
             <span className="font-mono shrink-0">GH₵{amountPaid.toFixed(2)}</span>
-          </div>
+          </div>)}
         </div>
         <div className="flex justify-between items-center py-1 border-t border-dashed border-black">
           <span className="font-bold">TOTAL PAID:</span>
@@ -150,7 +163,7 @@ export function PaymentReceipt({
           <div className="text-right">
             <h2 className="text-3xl font-black uppercase tracking-widest opacity-40 text-white">Receipt</h2>
             <p className="text-[8px] font-mono font-black mt-1 uppercase opacity-80 text-white">
-              #{payment.id.slice(0, 16)}
+              #{String((payment as any).receiptNo || payment.id).slice(0, 16)}
             </p>
           </div>
         </header>
@@ -183,7 +196,7 @@ export function PaymentReceipt({
           <div className="text-right">
             <h2 className="text-lg font-black uppercase tracking-wider text-slate-900">Official Receipt</h2>
             <p className="text-[8px] font-mono font-bold mt-1 text-slate-600">
-              #{payment.id.slice(0, 16).toUpperCase()}
+              #{String((payment as any).receiptNo || payment.id).slice(0, 16).toUpperCase()}
             </p>
           </div>
         </header>
@@ -219,6 +232,27 @@ export function PaymentReceipt({
                     </tr>
                 </thead>
                 <tbody>
+                    {multi ? (
+                      <>
+                        {parts!.map(pt => (
+                          <tr key={`${pt.recordId}-${pt.paymentDocId}`} className={pt.recordId === thisBillId ? 'bg-slate-50' : 'bg-white'}>
+                            <td className="p-3 border-r" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
+                                <p className="font-bold text-slate-800 leading-tight">{pt.description}</p>
+                                <p className="text-[9px] text-slate-650 font-black uppercase mt-0.5">FEE TYPE: {pt.feeType}</p>
+                            </td>
+                            <td className="text-right p-3 font-black text-slate-800 font-mono" style={isPlainA5 ? { color: '#0f172a' } : { color: primaryTheme }}>
+                                GH₵ {pt.amount.toFixed(2)}
+                            </td>
+                          </tr>
+                        ))}
+                        <tr className="bg-white border-t-2" style={isPlainA5 ? { borderTopColor: '#94a3b8' } : { borderTopColor: secondaryTheme }}>
+                            <td className="p-3 border-r font-black uppercase tracking-wide text-[10px] text-slate-800" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
+                                Total received (one payment)
+                            </td>
+                            <td className="text-right p-3 font-black text-slate-900 font-mono">GH₵ {amountPaid.toFixed(2)}</td>
+                        </tr>
+                      </>
+                    ) : (
                     <tr className="bg-white">
                         <td className="p-3 border-r" style={isPlainA5 ? { borderRightColor: '#cbd5e1' } : { borderRightColor: `${secondaryTheme}30` }}>
                             <p className="font-bold text-slate-800 leading-tight">{payment.description || transaction.description}</p>
@@ -227,7 +261,7 @@ export function PaymentReceipt({
                         <td className="text-right p-3 font-black text-slate-800 font-mono" style={isPlainA5 ? { color: '#0f172a' } : { color: primaryTheme }}>
                             GH₵ {amountPaid.toFixed(2)}
                         </td>
-                    </tr>
+                    </tr>)}
                 </tbody>
             </table>
         </section>

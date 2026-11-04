@@ -92,8 +92,17 @@ async function lookupPaystack(reference) {
       else { paidUntil = paidAt; basis = `Paystack GHS ${amount} on ${fmt(paidAt)} — less than one month's fee, so no paid period`; }
     } else if (s.lastPaymentDate) {
       paidAt = toDate(s.lastPaymentDate);
-      paidUntil = new Date(paidAt.getTime() + 31 * DAY);
-      basis = `ASSUMED 1 month from last payment ${fmt(paidAt)}${s.paymentReference ? ' (Paystack lookup failed)' : ''}`;
+      // The school record may already hold the amount paid: use it (GHS 3,000 = a year), only assume a month when it does not.
+      const recorded = Number(s.lastPaymentAmount) || 0;
+      const recDays = daysFor(recorded);
+      if (recDays > 0) {
+        amount = recorded;
+        paidUntil = new Date(paidAt.getTime() + recDays * DAY);
+        basis = `recorded payment GHS ${recorded} on ${fmt(paidAt)} → ${recDays} days${s.paymentReference ? ' (Paystack lookup failed)' : ''}`;
+      } else {
+        paidUntil = new Date(paidAt.getTime() + 31 * DAY);
+        basis = `ASSUMED 1 month from last payment ${fmt(paidAt)}${s.paymentReference ? ' (Paystack lookup failed)' : ''}`;
+      }
     } else {
       rows.push({ id: d.id, name: s.name, note: 'NO PAYMENT RECORD (made Premium by hand) — not changed; set "Paid up to" in Super Admin' });
       continue;

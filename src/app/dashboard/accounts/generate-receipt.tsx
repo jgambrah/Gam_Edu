@@ -13,6 +13,7 @@ import { FinancialRecord, Student, PaymentTransaction } from '@/lib/types';
 import { PaymentReceipt } from './payment-receipt';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Skeleton } from '@/components/ui/skeleton';
+import { fetchReceiptParts, mayHaveOtherParts, receiptKeyOf, type ReceiptPart } from '@/lib/receipt-parts';
 
 // Helper to get base64
 async function getBase64ImageFromUrl(imageUrl: string): Promise<string> {
@@ -105,7 +106,25 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
         }
     }, [schoolProfile]);
 
-    const isLoadingData = isLoadingProfile || isLoadingStudent || isLoadingAllRecords;
+    // One payment can be spread over several bills (e.g. 800 = 500 current + 300 owed from last term). Find all
+    // of its parts so this receipt shows the whole payment. Only payments known to be split cause any extra reads.
+    const [parts, setParts] = useState<ReceiptPart[]>([]);
+    const [isLoadingParts, setIsLoadingParts] = useState(false);
+    // Plain values (not the payment object itself): callers may pass a freshly built object on every render.
+    const receiptKey = receiptKeyOf(payment);
+    const maybeSplit = mayHaveOtherParts(payment);
+    useEffect(() => {
+        let active = true;
+        if (!open || !firestore || !allRecords || !maybeSplit || !receiptKey) { setParts(prev => (prev.length ? [] : prev)); return; }
+        setIsLoadingParts(true);
+        fetchReceiptParts(firestore, allRecords as any[], receiptKey)
+            .then(p => { if (active) setParts(p); })
+            .catch(err => { console.warn('Could not load the other parts of this receipt:', err); if (active) setParts([]); })
+            .finally(() => { if (active) setIsLoadingParts(false); });
+        return () => { active = false; };
+    }, [open, firestore, allRecords, maybeSplit, receiptKey]);
+
+    const isLoadingData = isLoadingProfile || isLoadingStudent || isLoadingAllRecords || isLoadingParts;
 
     const handleDownloadPdf = async () => {
         if (!printRef.current || !student) return;
@@ -299,6 +318,7 @@ export function GenerateReceipt({ transaction, payment, variant = 'icon' }: Gene
                                     totalBalance={totalBalance}
                                     isThermal={layoutStyle === 'thermal'}
                                     isPlainA5={layoutStyle === 'plain'}
+                                    parts={parts}
                                 />
                             )}
                         </div>

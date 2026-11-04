@@ -39,6 +39,31 @@ function BillPaymentsList({ record }: { record: FinancialRecord }) {
     }
 
     if (!payments || payments.length === 0) {
+        if ((Number((record as any).amountPaid) || 0) > 0.009) {
+            return (
+                <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-100 space-y-2 mt-2">
+                    <p className="text-[9px] font-black uppercase text-indigo-500 tracking-wider">Payment Transaction History</p>
+                    <div className="flex justify-between items-center text-xs p-2.5 bg-white rounded-lg border border-slate-150 shadow-sm">
+                        <div className="space-y-0.5">
+                            <p className="font-black text-slate-700">GH₵ {(Number((record as any).amountPaid) || 0).toFixed(2)}</p>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase">Recorded payment</p>
+                        </div>
+                        <GenerateReceipt
+                            transaction={record}
+                            payment={{
+                                id: 'legacy-' + record.id,
+                                amount: Number((record as any).amountPaid) || 0,
+                                method: 'Recorded Payment',
+                                paidAt: (record as any).lastPaymentDate || (record as any).createdAt,
+                                notes: 'Recorded payment',
+                                description: (record as any).paymentNarration || record.description,
+                            } as any}
+                            variant="icon"
+                        />
+                    </div>
+                </div>
+            );
+        }
         return <div className="text-[10px] text-slate-400 p-2 italic">No transactions recorded for this invoice.</div>;
     }
 
@@ -157,13 +182,29 @@ function StudentBillView({ studentId }: { studentId: string }) {
                         orderBy('paidAt', 'desc')
                     );
                     const snap = await getDocs(q);
-                    return snap.docs.map(doc => ({
+                    const list = snap.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data(),
                         recordDescription: rec.description,
                         recordId: rec.id,
                         record: rec
                     })) as any[];
+                    // Money is on this bill but it has no payment record (a payment that was moved onto it from
+                    // another bill, or recorded before payment records existed): still give the parent a receipt.
+                    if (list.length === 0 && (Number((rec as any).amountPaid) || 0) > 0.009) {
+                        list.push({
+                            id: `legacy-${rec.id}`,
+                            amount: Number((rec as any).amountPaid) || 0,
+                            method: 'Recorded Payment',
+                            paidAt: (rec as any).lastPaymentDate || (rec as any).createdAt,
+                            notes: 'Recorded payment',
+                            description: (rec as any).paymentNarration || rec.description,
+                            recordDescription: rec.description,
+                            recordId: rec.id,
+                            record: rec,
+                        } as any);
+                    }
+                    return list;
                 });
 
                 const results = await Promise.all(paymentPromises);
@@ -684,7 +725,7 @@ function StudentBillView({ studentId }: { studentId: string }) {
                                 {allPayments.map((p) => {
                                     const dateStr = p.paidAt?.toDate ? format(p.paidAt.toDate(), 'PPP p') : 'Unknown Date';
                                     return (
-                                        <div key={p.id} className="relative group">
+                                        <div key={`${(p as any).recordId}-${p.id}`} className="relative group">
                                             {/* Timeline dot */}
                                             <div className="absolute -left-[31px] top-1.5 bg-emerald-500 border-4 border-white h-4 w-4 rounded-full shadow-md group-hover:scale-125 transition-transform" />
                                             

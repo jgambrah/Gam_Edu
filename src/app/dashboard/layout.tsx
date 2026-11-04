@@ -1,5 +1,6 @@
 'use client';
 
+import { effectivePaidUntil, GRACE_DAYS } from '@/lib/subscription';
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Header from '@/components/navigation/header';
@@ -58,10 +59,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             } else {
               setIsLocked(false);
             }
-          } else if (data.plan === 'Premium' && data.paidUntil?.toDate) {
+          } else if (data.plan === 'Premium' && effectivePaidUntil(data)) {
             // Paid subscription: locks 7 days after the paid period ends (schools upgraded before paidUntil
             // existed have none and are not affected).
-            const graceEnd = data.paidUntil.toDate().getTime() + 7 * 24 * 60 * 60 * 1000;
+            const graceEnd = effectivePaidUntil(data)!.getTime() + GRACE_DAYS * 24 * 60 * 60 * 1000;
             if (Date.now() > graceEnd) {
               setIsLocked(true);
               if (!pathname.includes('/dashboard/subscription')) {
