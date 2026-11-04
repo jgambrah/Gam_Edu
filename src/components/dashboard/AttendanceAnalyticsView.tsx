@@ -13,7 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useCurrentSchool } from '@/hooks/use-current-school';
+import { buildRows, computeStudentFlags, dailyRates, toDateStr, windowStartStr, HISTORY_DAYS, CHRONIC_RATE, ABSENT_STREAK_MIN, LATE_MIN_COUNT } from '@/lib/attendance-flags';
 import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
 
@@ -32,6 +34,27 @@ export function AttendanceAnalyticsView({
   const staffAttendance = useMemo(() => rawStaffAttendance || [], [rawStaffAttendance]);
 
   const firestore = useFirestore();
+  const { schoolId: currentSchoolId } = useCurrentSchool();
+  const historySchoolId = currentSchoolId || schoolData?.id || schoolData?.schoolId;
+
+  // The last 30 days of CLASS REGISTERS (one document per class per day, each holding every student's status).
+  // The dashboard itself only loads today's records, which can never show who is absent or late over time.
+  // Uses the existing (schoolId, dateStr) index; per-student records have no dateStr so they are not read here.
+  const todayStr = toDateStr(new Date());
+  const historyQuery = useMemoFirebase(() => {
+    if (!firestore || !historySchoolId) return null;
+    return query(
+      collection(firestore, 'attendance'),
+      where('schoolId', '==', historySchoolId),
+      where('dateStr', '>=', windowStartStr(new Date(), HISTORY_DAYS)),
+      where('dateStr', '<=', todayStr),
+    );
+  }, [firestore, historySchoolId, todayStr]);
+  const { data: historyDocs, isLoading: isLoadingHistory, error: historyError } = useCollection<any>(historyQuery);
+
+  // One row per student per day: the registers plus today's per-student records (e.g. biometric scans).
+  const attendanceRows = useMemo(() => buildRows([...(historyDocs || []), ...attendance]), [historyDocs, attendance]);
+  const flags = useMemo(() => computeStudentFlags(attendanceRows, { students, classes }), [attendanceRows, students, classes]);
   const { toast } = useToast();
   const [isSyncingAttendance, setIsSyncingAttendance] = useState(false);
   const [selectedAbsentStudent, setSelectedAbsentStudent] = useState<any | null>(null);
@@ -120,52 +143,18 @@ export function AttendanceAnalyticsView({
   // Real-time Dynamic Computation of Attendance Metrics
   const stats = useMemo(() => {
     // 1. Today's Student Attendance
-    const todayStudentRecs = attendance?.filter((r: any) => {
-      if (!r.date) return false;
-      const d = r.date.toDate ? r.date.toDate() : new Date(r.date);
-      return d >= startOfToday;
-    }) || [];
+    // From the merged rows: class registers carry no studentId/status of their own and used to be counted as
+    // blank records, which dragged the rate down.
+    const todayStudentRecs = attendanceRows.filter((r) => r.dateStr === todayStr);
 
     const todayTotal = todayStudentRecs.length;
     const todayPresent = todayStudentRecs.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
     const todayAbsentCount = todayStudentRecs.filter((r: any) => r.status === 'Absent').length;
     const studentRate = todayTotal > 0 ? Math.round((todayPresent / todayTotal) * 100) : 0;
 
-    // 2. Chronic Absenteeism (Students < 85% attendance rate with >= 3 recorded registers)
-    const studentRates: Record<string, { present: number; total: number }> = {};
-    attendance?.forEach((r: any) => {
-      if (!r.studentId) return;
-      if (!studentRates[r.studentId]) {
-        studentRates[r.studentId] = { present: 0, total: 0 };
-      }
-      studentRates[r.studentId].total++;
-      if (r.status === 'Present' || r.status === 'Late') {
-        studentRates[r.studentId].present++;
-      }
-    });
-
-    const activeStudentIds = new Set(students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).map((s: any) => s.uid || s.id) || []);
-    
-    let chronicCount = 0;
-    const chronicList: any[] = [];
-
-    Object.entries(studentRates).forEach(([studentId, data]) => {
-      if (activeStudentIds.size > 0 && !activeStudentIds.has(studentId)) return;
-      const rate = data.total > 0 ? (data.present / data.total) * 100 : 100;
-      if (rate < 85 && data.total >= 3) {
-        chronicCount++;
-        const sObj = students.find((s: any) => (s.uid || s.id) === studentId);
-        const cObj = classes?.find((c: any) => c.id === sObj?.classId);
-        chronicList.push({
-          id: studentId,
-          name: sObj ? `${sObj.firstName || ""} ${sObj.lastName || ""}`.trim() : "Student",
-          className: cObj?.name || "Unassigned",
-          rate: Math.round(rate),
-          absences: data.total - data.present,
-          total: data.total
-        });
-      }
-    });
+    // 2. Chronic absence / absence streaks / punctuality — computed from the last 30 days (see attendance-flags.ts)
+    const chronicList = flags.absence;
+    const chronicCount = flags.absence.length;
 
     // 3. Teacher Attendance & Punctuality
     const todayStaffRecs = staffAttendance?.filter((r: any) => {
@@ -210,33 +199,15 @@ export function AttendanceAnalyticsView({
         }))
       : [];
 
-    // 4. Weekly Student Attendance Trend (last 7 active days)
-    const dailyRates: Record<string, { present: number; total: number; rawDate: Date }> = {};
-    attendance?.forEach((r: any) => {
-      if (!r.date) return;
-      const dObj = r.date.toDate ? r.date.toDate() : new Date(r.date);
-      const dateStr = format(dObj, 'yyyy-MM-dd');
-      if (!dailyRates[dateStr]) {
-        dailyRates[dateStr] = { present: 0, total: 0, rawDate: startOfDay(dObj) };
-      }
-      dailyRates[dateStr].total++;
-      if (r.status === 'Present' || r.status === 'Late') {
-        dailyRates[dateStr].present++;
-      }
+    // 4. Weekly Student Attendance Trend (last 7 recorded days)
+    const weeklyTrend = dailyRates(attendanceRows, 7).map(d => {
+      const rawDate = new Date(`${d.dateStr}T00:00:00`);
+      return { dateLabel: format(rawDate, 'MMM dd'), rate: d.rate, rawDate };
     });
-
-    const weeklyTrend = Object.entries(dailyRates)
-      .map(([dateStr, data]) => ({
-        dateLabel: format(data.rawDate, 'MMM dd'),
-        rate: data.total > 0 ? Math.round((data.present / data.total) * 100) : 0,
-        rawDate: data.rawDate
-      }))
-      .sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime())
-      .slice(-7);
 
     // 5. Class Stream Attendance Comparison
     const classAttendanceMap: Record<string, { present: number; total: number; name: string }> = {};
-    attendance?.forEach((r: any) => {
+    attendanceRows.forEach((r) => {
       if (!r.classId) return;
       const cls = classes?.find((c: any) => c.id === r.classId);
       const className = cls?.name || r.className || r.classId;
@@ -258,16 +229,16 @@ export function AttendanceAnalyticsView({
       studentRate,
       todayAbsentCount,
       chronicCount,
-      chronicList: chronicList.sort((a, b) => a.rate - b.rate),
+      chronicList,
       teacherRate,
       teacherPunctuality,
       lateTeachers,
       absentTeachers,
       weeklyTrend,
       classAttendanceData,
-      hasAttendanceData: attendance.length > 0 || staffAttendance.length > 0
+      hasAttendanceData: attendanceRows.length > 0 || attendance.length > 0 || staffAttendance.length > 0
     };
-  }, [students, staff, classes, attendance, staffAttendance, startOfToday, schoolData]);
+  }, [students, staff, classes, attendance, attendanceRows, flags, todayStr, staffAttendance, startOfToday, schoolData]);
 
   // Handlers for Parent Notification & Staff Reminders
   const handleDispatchParentSMS = () => {
@@ -404,7 +375,8 @@ export function AttendanceAnalyticsView({
               <AlertCircle className="h-5 w-5 text-rose-600" /> Chronic Absenteeism Registry
             </CardTitle>
             <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">
-              Students maintaining attendance records below 85% threshold
+              Below {CHRONIC_RATE}% attendance, or absent {ABSENT_STREAK_MIN}+ days in a row — last {HISTORY_DAYS} days
+              {isLoadingHistory ? ' · loading…' : historyError ? ' · history unavailable' : ` · ${flags.daysCovered} school day${flags.daysCovered === 1 ? '' : 's'} recorded`}
             </CardDescription>
           </div>
           <Badge variant="outline" className="bg-rose-50 text-rose-800 border-rose-200 font-black text-xs px-3 py-1 rounded-full">
@@ -420,7 +392,8 @@ export function AttendanceAnalyticsView({
                   <th className="pb-3">Student Name</th>
                   <th className="pb-3">Class Stream</th>
                   <th className="pb-3">Attendance Rate</th>
-                  <th className="pb-3">Total Absences</th>
+                  <th className="pb-3">Absences</th>
+                  <th className="pb-3">Latest</th>
                   <th className="pb-3">Status</th>
                   <th className="pb-3 text-right">Intervention Actions</th>
                 </tr>
@@ -432,9 +405,14 @@ export function AttendanceAnalyticsView({
                     <td className="py-3 text-slate-600">{s.className}</td>
                     <td className="py-3 text-rose-600 font-black">{s.rate}%</td>
                     <td className="py-3 text-slate-600">{s.absences} / {s.total} Days</td>
+                    <td className="py-3 text-slate-600">
+                      {s.streak >= ABSENT_STREAK_MIN
+                        ? <span className="text-rose-600 font-black">Absent {s.streak} days running</span>
+                        : s.lastAbsent ? `Last absent ${format(new Date(`${s.lastAbsent}T00:00:00`), 'MMM dd')}` : '—'}
+                    </td>
                     <td className="py-3">
-                      <Badge variant="outline" className="bg-rose-100 text-rose-800 border-rose-200 text-[9px] font-black uppercase">
-                        High Risk
+                      <Badge variant="outline" className={cn("text-[9px] font-black uppercase", s.severity === 'critical' ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-amber-100 text-amber-800 border-amber-200")}>
+                        {s.severity === 'critical' ? 'Critical' : 'High Risk'}
                       </Badge>
                     </td>
                     <td className="py-3 text-right space-x-2">
@@ -470,7 +448,92 @@ export function AttendanceAnalyticsView({
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <p className="text-sm font-black text-slate-700 uppercase tracking-tight">No Chronically Absent Students Flagged</p>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">All active enrolled students are currently maintaining attendance levels above the 85% threshold.</p>
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              {isLoadingHistory
+                ? 'Loading the last 30 days of class registers…'
+                : historyError
+                  ? 'The attendance history could not be loaded, so nobody can be flagged right now. Please refresh; if this continues, contact support.'
+                : flags.daysCovered < 3
+                  ? `Only ${flags.daysCovered} day${flags.daysCovered === 1 ? '' : 's'} of class registers found in the last ${HISTORY_DAYS} days — students are rated once they have at least 3 recorded days.`
+                  : `No student is below ${CHRONIC_RATE}% attendance or absent ${ABSENT_STREAK_MIN}+ days running over the last ${HISTORY_DAYS} days.`}
+            </p>
+          </div>
+        )}
+      </Card>
+
+      {/* ─────────────────────────────────────────────────────────────
+          ZONE 3B: STUDENT PUNCTUALITY WATCH (repeated late arrivals)
+          ───────────────────────────────────────────────────────────── */}
+      <Card className="rounded-3xl border border-slate-100 shadow-sm bg-white p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-4 gap-2">
+          <div>
+            <CardTitle className="text-base font-black uppercase tracking-tight text-slate-800 flex items-center gap-2">
+              <Clock className="h-5 w-5 text-amber-600" /> Punctuality Watch
+            </CardTitle>
+            <CardDescription className="text-xs font-bold uppercase tracking-widest text-slate-400">
+              Students late {LATE_MIN_COUNT}+ times in the last {HISTORY_DAYS} days
+            </CardDescription>
+          </div>
+          <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200 font-black text-xs px-3 py-1 rounded-full">
+            {flags.late.length} Student{flags.late.length === 1 ? '' : 's'} Flagged
+          </Badge>
+        </div>
+
+        {flags.late.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs font-bold">
+              <thead>
+                <tr className="border-b border-slate-100 text-[10px] font-black uppercase text-slate-400 tracking-wider">
+                  <th className="pb-3">Student Name</th>
+                  <th className="pb-3">Class Stream</th>
+                  <th className="pb-3">Times Late</th>
+                  <th className="pb-3">Share of Days Attended</th>
+                  <th className="pb-3">Last Late</th>
+                  <th className="pb-3">Status</th>
+                  <th className="pb-3 text-right">Follow-up</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {flags.late.map((l) => (
+                  <tr key={l.id} className="hover:bg-slate-50/50">
+                    <td className="py-3 text-slate-900 font-black">{l.name}</td>
+                    <td className="py-3 text-slate-600">{l.className}</td>
+                    <td className="py-3 text-amber-700 font-black">{l.lateCount}</td>
+                    <td className="py-3 text-slate-600">{l.lateRate}%</td>
+                    <td className="py-3 text-slate-600">{l.lastLate ? format(new Date(`${l.lastLate}T00:00:00`), 'MMM dd') : '—'}</td>
+                    <td className="py-3">
+                      <Badge variant="outline" className={cn("text-[9px] font-black uppercase", l.severity === 'high' ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-amber-100 text-amber-800 border-amber-200")}>
+                        {l.severity === 'high' ? 'Frequently Late' : 'Watch'}
+                      </Badge>
+                    </td>
+                    <td className="py-3 text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const schoolName = schoolData?.name || 'our school';
+                          const prompt = `Recommend a punctuality follow-up plan for ${l.name} (${l.className}), who arrived late ${l.lateCount} times in the last ${HISTORY_DAYS} days (${l.lateRate}% of the days attended) at ${schoolName}. Suggest how the school should speak with the parents and practical steps to improve arrival time.`;
+                          window.dispatchEvent(new CustomEvent('open-ai-chat', { detail: { prompt, autoSend: true } }));
+                        }}
+                        className="h-7 text-[10px] font-black border-slate-200 text-slate-700 hover:bg-slate-100"
+                      >
+                        Plan Follow-up
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="py-10 text-center space-y-2">
+            <div className="mx-auto w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6" />
+            </div>
+            <p className="text-sm font-black text-slate-700 uppercase tracking-tight">No Punctuality Concerns</p>
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              {isLoadingHistory ? 'Loading the last 30 days of class registers…' : historyError ? 'The attendance history could not be loaded, so nobody can be flagged right now. Please refresh.' : `No student has been marked late ${LATE_MIN_COUNT} or more times in the last ${HISTORY_DAYS} days.`}
+            </p>
           </div>
         )}
       </Card>
