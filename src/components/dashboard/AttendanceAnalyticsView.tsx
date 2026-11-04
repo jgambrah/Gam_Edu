@@ -14,8 +14,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { useOnceQuery } from '@/lib/firestore-once';
 import { sendStudentParentSMSAction, sendStaffSMSAction } from '@/app/actions/sms';
 import { generateSMSDraftAction } from '@/app/actions/sms-ai';
 import { buildRows, computeStudentFlags, dailyRates, toDateStr, windowStartStr, HISTORY_DAYS, CHRONIC_RATE, ABSENT_STREAK_MIN, LATE_MIN_COUNT } from '@/lib/attendance-flags';
@@ -42,19 +43,24 @@ export function AttendanceAnalyticsView({
   const historySchoolId = currentSchoolId || schoolData?.id || schoolData?.schoolId;
 
   // The last 30 days of CLASS REGISTERS (one document per class per day, each holding every student's status).
-  // The dashboard itself only loads today's records, which can never show who is absent or late over time.
+  // Read once and cached in memory for 10 minutes so switching tabs never re-reads the 30-day history.
   // Uses the existing (schoolId, dateStr) index; per-student records have no dateStr so they are not read here.
   const todayStr = toDateStr(new Date());
-  const historyQuery = useMemoFirebase(() => {
-    if (!firestore || !historySchoolId) return null;
-    return query(
-      collection(firestore, 'attendance'),
-      where('schoolId', '==', historySchoolId),
-      where('dateStr', '>=', windowStartStr(new Date(), HISTORY_DAYS)),
-      where('dateStr', '<=', todayStr),
-    );
-  }, [firestore, historySchoolId, todayStr]);
-  const { data: historyDocs, isLoading: isLoadingHistory, error: historyError } = useCollection<any>(historyQuery);
+  const { data: historyDocs, isLoading: isLoadingHistory, error: historyError, refresh: refreshHistory } = useOnceQuery<any>(
+    firestore && historySchoolId ? `attHistory:${historySchoolId}:${todayStr}` : null,
+    async () => {
+      const snap = await getDocs(
+        query(
+          collection(firestore!, 'attendance'),
+          where('schoolId', '==', historySchoolId),
+          where('dateStr', '>=', windowStartStr(new Date(), HISTORY_DAYS)),
+          where('dateStr', '<=', todayStr),
+        )
+      );
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    },
+    { ttlMs: 10 * 60 * 1000 }
+  );
 
   // One row per student per day: the registers plus today's per-student records (e.g. biometric scans).
   const attendanceRows = useMemo(() => buildRows([...(historyDocs || []), ...attendance]), [historyDocs, attendance]);
@@ -126,6 +132,7 @@ export function AttendanceAnalyticsView({
         lastUpdated: serverTimestamp()
       }, { merge: true });
 
+      refreshHistory();
       toast({ 
         title: "Attendance Analytics Synced", 
         description: `Updated today's attendance summary (${presentCount} present).` 
