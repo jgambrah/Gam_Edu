@@ -6,16 +6,19 @@ import { currentTermFromProfile, stampFromTermId, compareTermIds } from '@/lib/t
 import { 
   Award, BookOpen, BrainCircuit, CheckCircle2, ChevronRight, 
   Sparkles, TrendingUp, Users, AlertTriangle, AlertCircle, RefreshCw,
-  Send, FileText, ArrowUpRight, Check, X, ShieldAlert, GraduationCap
+  Send, FileText, ArrowUpRight, Check, X, ShieldAlert, GraduationCap, Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, AreaChart, Area, LineChart, Line, ReferenceLine } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore } from '@/firebase';
+import { useFirestore, useUser } from '@/firebase';
+import { sendStudentParentSMSAction } from '@/app/actions/sms';
+import { generateSMSDraftAction } from '@/app/actions/sms-ai';
 import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 
 export function AcademicPerformanceDashboardView({
@@ -41,9 +44,13 @@ export function AcademicPerformanceDashboardView({
   const financialRecords = useMemo(() => rawFinancialRecords || [], [rawFinancialRecords]);
 
   const firestore = useFirestore();
+  const { user } = useUser();
   const { toast } = useToast();
   const [isSyncingAcademics, setIsSyncingAcademics] = useState(false);
   const [selectedAtRiskStudent, setSelectedAtRiskStudent] = useState<any | null>(null);
+  const [academicSmsDraft, setAcademicSmsDraft] = useState('');
+  const [isGeneratingAcademicSms, setIsGeneratingAcademicSms] = useState(false);
+  const [isSendingAcademicSms, setIsSendingAcademicSms] = useState(false);
   const [activeRemediationModal, setActiveRemediationModal] = useState<any | null>(null);
 
   // Server-kept academic summary per term (every mark counted) — a few documents, read once and cached.
@@ -498,20 +505,71 @@ export function AcademicPerformanceDashboardView({
 
   // Handlers for Parent Notification & Remediation
   const handleDraftParentAlert = (student: any) => {
+    const schoolName = schoolData?.name || 'The school';
     setSelectedAtRiskStudent(student);
+    setAcademicSmsDraft(
+      `Dear Parent, ${schoolName} Academic Directorate requests a conference regarding ${student.name} (${student.class}). Current overall academic average stands at ${student.average} with low performance in ${student.subjects}. Remediation classes scheduled.`
+    );
   };
 
-  // Opens the SMS page to actually send the alert (this used to say "dispatched" without sending anything).
-  const handleDispatchParentSms = () => {
+  const handleGenerateAcademicAiDraft = async () => {
     if (!selectedAtRiskStudent) return;
-    const text = `Dear Parent, ${schoolData?.name || 'The school'} requests a conference regarding ${selectedAtRiskStudent.name} (${selectedAtRiskStudent.class}). Current academic average: ${selectedAtRiskStudent.average}.`;
-    try { navigator.clipboard?.writeText(text); } catch { /* ignore */ }
-    toast({
-      title: "Opening SMS",
-      description: `The message is copied. Paste it and send it to the parents of ${selectedAtRiskStudent.name}.`,
-    });
-    setSelectedAtRiskStudent(null);
-    if (typeof window !== 'undefined') window.location.href = '/dashboard/communication/sms';
+    setIsGeneratingAcademicSms(true);
+    try {
+      const schoolName = schoolData?.name || 'The school';
+      const topic = `Academic intervention notice from ${schoolName} for ${selectedAtRiskStudent.name} (${selectedAtRiskStudent.class}), overall average ${selectedAtRiskStudent.average} with low scores in ${selectedAtRiskStudent.subjects}`;
+      const res = await generateSMSDraftAction(topic, 'formal');
+      if (res.success && res.text) {
+        setAcademicSmsDraft(res.text.trim());
+      } else {
+        toast({ variant: 'destructive', title: 'AI Draft Failed', description: res.error || 'Could not generate AI draft.' });
+      }
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'AI Draft Error', description: err.message || 'Could not generate AI draft.' });
+    } finally {
+      setIsGeneratingAcademicSms(false);
+    }
+  };
+
+  const handleDispatchParentSms = async () => {
+    if (!selectedAtRiskStudent || !academicSmsDraft.trim()) return;
+    if (!summarySchoolId) {
+      toast({ variant: 'destructive', title: 'Missing School Context', description: 'Cannot determine school ID for SMS routing.' });
+      return;
+    }
+    setIsSendingAcademicSms(true);
+    try {
+      const idToken = await user?.getIdToken();
+      const res = await sendStudentParentSMSAction({
+        schoolId: summarySchoolId,
+        studentId: selectedAtRiskStudent.id,
+        studentName: selectedAtRiskStudent.name,
+        message: academicSmsDraft.trim(),
+        type: 'ACADEMIC_RISK_ALERT',
+        idToken,
+      });
+      if (res.success) {
+        toast({
+          title: 'Parent SMS Sent',
+          description: `Academic alert delivered to parent of ${selectedAtRiskStudent.name} (${res.phones?.join(', ')}).`,
+        });
+        setSelectedAtRiskStudent(null);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'SMS Not Sent',
+          description: res.error || 'Could not deliver SMS to parent.',
+        });
+      }
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'SMS Error',
+        description: err.message || 'An unexpected error occurred while sending SMS.',
+      });
+    } finally {
+      setIsSendingAcademicSms(false);
+    }
   };
 
   const handleRecommendRemediation = (student: any) => {
@@ -865,25 +923,49 @@ export function AcademicPerformanceDashboardView({
 
       {/* ─── PARENT ALERT MODAL ─── */}
       {selectedAtRiskStudent && (
-        <Dialog open={!!selectedAtRiskStudent} onOpenChange={() => setSelectedAtRiskStudent(null)}>
+        <Dialog open={!!selectedAtRiskStudent} onOpenChange={(open) => !open && !isSendingAcademicSms && setSelectedAtRiskStudent(null)}>
           <DialogContent className="max-w-md bg-white rounded-2xl p-6">
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold text-slate-900">Draft AI Parent Notification</DialogTitle>
+              <DialogTitle className="text-lg font-bold text-slate-900">Send Parent Academic Alert SMS</DialogTitle>
               <DialogDescription className="text-xs text-slate-500">
-                Automated academic intervention alert for parents of {selectedAtRiskStudent.name}
+                Review, edit, or regenerate with AI before sending to the parent of {selectedAtRiskStudent.name} ({selectedAtRiskStudent.class}).
               </DialogDescription>
             </DialogHeader>
 
-            <div className="pt-3 space-y-4 text-xs">
-              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-slate-800 leading-relaxed font-mono text-[11px]">
-                "Dear Parent, {schoolData?.name || 'The school'} Academic Directorate requests an urgent conference regarding {selectedAtRiskStudent.name} ({selectedAtRiskStudent.class}). Current overall academic average stands at {selectedAtRiskStudent.average} with low performance in {selectedAtRiskStudent.subjects}. Remediation classes scheduled."
-              </div>
-
-              <div className="flex gap-2">
-                <Button onClick={handleDispatchParentSms} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs py-2.5">
-                  <Send className="h-4 w-4 mr-2" /> Dispatch SMS Alert
+            <div className="pt-3 space-y-3 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-600">SMS Message ({academicSmsDraft.length} chars)</span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  disabled={isGeneratingAcademicSms || isSendingAcademicSms}
+                  onClick={handleGenerateAcademicAiDraft}
+                  className="h-7 text-[10px] font-black border-indigo-200 text-indigo-700 hover:bg-indigo-50 rounded-xl gap-1"
+                >
+                  {isGeneratingAcademicSms ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                  {isGeneratingAcademicSms ? 'Drafting…' : 'Draft with AI'}
                 </Button>
-                <Button variant="outline" onClick={() => setSelectedAtRiskStudent(null)} className="rounded-xl text-xs">
+              </div>
+              <Textarea
+                value={academicSmsDraft}
+                onChange={(e) => setAcademicSmsDraft(e.target.value)}
+                rows={4}
+                disabled={isSendingAcademicSms}
+                className="rounded-xl text-xs text-slate-800 bg-slate-50 border-slate-200"
+                placeholder="Write academic alert SMS…"
+              />
+
+              <div className="flex gap-2 pt-1">
+                <Button
+                  disabled={isSendingAcademicSms || !academicSmsDraft.trim()}
+                  onClick={handleDispatchParentSms}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs py-2.5 gap-1.5"
+                >
+                  {isSendingAcademicSms ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  {isSendingAcademicSms ? 'Sending…' : 'Send SMS Alert'}
+                </Button>
+                <Button variant="outline" disabled={isSendingAcademicSms} onClick={() => setSelectedAtRiskStudent(null)} className="rounded-xl text-xs">
                   Cancel
                 </Button>
               </div>

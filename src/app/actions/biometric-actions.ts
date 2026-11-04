@@ -311,15 +311,14 @@ export async function processBiometricScans(
     }
   }
 
-  // Keep each class's daily sheet in step: when a teacher already saved the sheet for this date, the scanned
-  // students' entries and the counts are updated (otherwise the sheet kept showing the teacher's earlier
-  // marks and a re-save would undo the scans). Closed-term days are left untouched. One read per class.
+  // Keep each class's daily sheet in step (and create it on biometric-only days so the 30-day attendance
+  // history query by (schoolId, dateStr) includes days where no teacher separately saved a register).
+  // Closed-term days are left untouched. One read per class.
   const closedClasses = new Set<string>();
   for (const [classId, scanned] of byClass.entries()) {
     const aggRef = db.collection('attendance').doc(`${schoolId}_${classId}_${dateStr}`);
     const aggSnap = await aggRef.get();
-    if (!aggSnap.exists) continue; // no sheet yet — the sheet reads the individual records instead
-    const agg: any = aggSnap.data() || {};
+    const agg: any = aggSnap.exists ? (aggSnap.data() || {}) : {};
     if (agg.isArchived === true) { closedClasses.add(classId); continue; }
     const map: Record<string, any> = { ...(agg.studentsMap || {}) };
     Object.values(scanned).forEach(r => {
@@ -330,6 +329,10 @@ export async function processBiometricScans(
     const entries = Object.values(map) as any[];
     const count = (st: string) => entries.filter(e => e.status === st).length;
     writes.push({ classId, fn: b => b.set(aggRef, {
+      schoolId,
+      classId,
+      date: normalizedDateStart,
+      dateStr,
       studentsMap: map,
       presentCount: count('Present'),
       lateCount: count('Late'),

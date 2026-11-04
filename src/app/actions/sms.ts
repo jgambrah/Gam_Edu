@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { getAdminDb, getAdminAuth, FieldValue } from '@/lib/firebaseAdmin';
 import { getSchoolSecrets } from '@/lib/school-secrets';
@@ -187,20 +187,20 @@ async function resolveParentPhonesForStudent(db: any, schoolId: string, studentI
     }
   }
 
-  // C. Query parents collection by studentIds array-contains studentDocId
-  if (studentDocId) {
-    const qParents = await db.collection('parents').where('schoolId', '==', schoolId).where('studentIds', 'array-contains', studentDocId).get();
-    qParents.forEach((p: any) => {
-      const pd = p.data();
-      const pPhone = pd.phone || pd.phoneNumber || pd.telephone || pd.contactNumber;
-      if (pPhone) candidatePhones.push(...extractAndFormatPhoneNumbers(pPhone));
-    });
-  }
+  // C. Query parents collection by any known student identifier (doc ID, uid, admission number)
+  const lookupIds = Array.from(new Set([
+    studentId,
+    studentDocId,
+    studentData?.uid,
+    studentData?.studentId,
+    studentData?.admissionNo,
+    studentData?.admissionNumber,
+    studentData?.id
+  ].filter(Boolean).map(String))).slice(0, 10);
 
-  // D. Query parents collection by student admission number
-  if (studentData && studentData.studentId && studentData.studentId !== studentDocId) {
-    const qParents2 = await db.collection('parents').where('schoolId', '==', schoolId).where('studentIds', 'array-contains', studentData.studentId).get();
-    qParents2.forEach((p: any) => {
+  if (lookupIds.length > 0) {
+    const qParents = await db.collection('parents').where('schoolId', '==', schoolId).where('studentIds', 'array-contains-any', lookupIds).get();
+    qParents.forEach((p: any) => {
       const pd = p.data();
       const pPhone = pd.phone || pd.phoneNumber || pd.telephone || pd.contactNumber;
       if (pPhone) candidatePhones.push(...extractAndFormatPhoneNumbers(pPhone));
@@ -693,6 +693,168 @@ export async function sendSchoolBulkSMSAction(schoolId: string, phones: string[]
   } catch (error: any) {
     console.error("[SMS Bulk Server Action] Critical Error:", error);
     return { success: false, error: error.message || "An unexpected server error occurred during SMS routing." };
+  }
+}
+
+export type SendStudentParentSMSParams = {
+  schoolId: string;
+  studentId: string;
+  studentName?: string;
+  message: string;
+  type?: string;
+  idToken?: string;
+};
+
+/**
+ * Resolves a student's parent phone number(s) on the server and dispatches an SMS alert.
+ * Logs delivery in sms_logs.
+ */
+export async function sendStudentParentSMSAction(params: SendStudentParentSMSParams) {
+  const { schoolId, studentId, studentName, message, type = 'PARENT_ALERT', idToken } = params;
+  if (!schoolId || !studentId || !message?.trim()) {
+    return { success: false, error: 'Missing school, student, or message content.' };
+  }
+  if (!idToken) {
+    return { success: false, error: 'Authentication required to send SMS.' };
+  }
+
+  try {
+    const db = getAdminDb();
+    const auth = getAdminAuth();
+
+    const authResult = await verifyCallerAuthorization(db, auth, idToken, schoolId);
+    if (!authResult.authorized) {
+      return { success: false, error: authResult.error };
+    }
+
+    const smsConfig = await resolveSchoolSMSSettings(db, schoolId);
+    if (!smsConfig.isEnabled || !smsConfig.apiKey || !smsConfig.senderId) {
+      return { success: false, error: 'SMS API is not enabled or credentials (API Key & Sender ID) are missing for this school.' };
+    }
+
+    const resolution = await resolveParentPhonesForStudent(db, schoolId, studentId, studentName);
+    const phones = resolution.phones;
+
+    if (!phones || phones.length === 0) {
+      return { success: false, error: `No parent phone number on file for ${studentName || 'this student'}.` };
+    }
+
+    const res = await sendSchoolBulkSMSAction(schoolId, phones, message.trim(), idToken);
+
+    try {
+      await db.collection('sms_logs').add({
+        schoolId,
+        type,
+        studentId: resolution.studentDocId || studentId,
+        studentName: studentName || null,
+        recipients: phones,
+        message: message.trim(),
+        provider: smsConfig.provider,
+        senderId: smsConfig.senderId,
+        status: res.success ? 'DELIVERED' : 'FAILED',
+        error: res.success ? null : (res.error || null),
+        sentByUid: authResult.callerUid,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    } catch (logErr) {
+      console.warn('[Parent SMS] Could not write sms_log:', logErr);
+    }
+
+    if (res.success) {
+      return { success: true, count: phones.length, phones };
+    }
+    return { success: false, error: res.error || 'Failed to deliver SMS.' };
+  } catch (error: any) {
+    console.error('[Student Parent SMS Action] Error:', error);
+    return { success: false, error: error.message || 'An unexpected error occurred during SMS routing.' };
+  }
+}
+
+export type SendStaffSMSParams = {
+  schoolId: string;
+  staffId: string;
+  staffName?: string;
+  phone?: string;
+  message: string;
+  type?: string;
+  idToken?: string;
+};
+
+/**
+ * Resolves a staff member's phone number (from passed phone, staff doc, or users doc) and sends an SMS.
+ */
+export async function sendStaffSMSAction(params: SendStaffSMSParams) {
+  const { schoolId, staffId, staffName, phone, message, type = 'STAFF_REMINDER', idToken } = params;
+  if (!schoolId || (!staffId && !phone) || !message?.trim()) {
+    return { success: false, error: 'Missing school, staff member, or message content.' };
+  }
+  if (!idToken) {
+    return { success: false, error: 'Authentication required to send SMS.' };
+  }
+
+  try {
+    const db = getAdminDb();
+    const auth = getAdminAuth();
+
+    const authResult = await verifyCallerAuthorization(db, auth, idToken, schoolId);
+    if (!authResult.authorized) {
+      return { success: false, error: authResult.error };
+    }
+
+    const candidatePhones: string[] = [];
+    if (phone) candidatePhones.push(...extractAndFormatPhoneNumbers(phone));
+
+    if (candidatePhones.length === 0 && staffId) {
+      const sDoc = await db.collection('staff').doc(staffId).get();
+      if (sDoc.exists) {
+        const sd = sDoc.data() || {};
+        for (const p of [sd.phone, sd.phoneNumber, sd.mobile, sd.contact, sd.telephone, sd.contactNumber]) {
+          if (p) candidatePhones.push(...extractAndFormatPhoneNumbers(p));
+        }
+      }
+      const uDoc = await db.collection('users').doc(staffId).get();
+      if (uDoc.exists) {
+        const ud = uDoc.data() || {};
+        for (const p of [ud.phone, ud.phoneNumber, ud.mobile, ud.contact, ud.telephone]) {
+          if (p) candidatePhones.push(...extractAndFormatPhoneNumbers(p));
+        }
+      }
+    }
+
+    const phones = Array.from(new Set(candidatePhones));
+    if (phones.length === 0) {
+      return { success: false, error: `No phone number on file for ${staffName || 'this staff member'}.` };
+    }
+
+    const res = await sendSchoolBulkSMSAction(schoolId, phones, message.trim(), idToken);
+
+    try {
+      const smsConfig = await resolveSchoolSMSSettings(db, schoolId);
+      await db.collection('sms_logs').add({
+        schoolId,
+        type,
+        staffId: staffId || null,
+        staffName: staffName || null,
+        recipients: phones,
+        message: message.trim(),
+        provider: smsConfig.provider,
+        senderId: smsConfig.senderId,
+        status: res.success ? 'DELIVERED' : 'FAILED',
+        error: res.success ? null : (res.error || null),
+        sentByUid: authResult.callerUid,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    } catch (logErr) {
+      console.warn('[Staff SMS] Could not write sms_log:', logErr);
+    }
+
+    if (res.success) {
+      return { success: true, count: phones.length, phones };
+    }
+    return { success: false, error: res.error || 'Failed to deliver SMS.' };
+  } catch (error: any) {
+    console.error('[Staff SMS Action] Error:', error);
+    return { success: false, error: error.message || 'An unexpected error occurred during SMS routing.' };
   }
 }
 

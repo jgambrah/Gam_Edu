@@ -4,17 +4,20 @@ import React, { useState, useMemo } from 'react';
 import { 
   CalendarCheck, Clock, Users, AlertTriangle, AlertCircle, RefreshCw, 
   CheckCircle2, XCircle, UserCheck, ShieldAlert, Sparkles, Send, FileText, 
-  ChevronRight, ArrowUpRight, TrendingUp, GraduationCap
+  ChevronRight, ArrowUpRight, TrendingUp, GraduationCap, Loader2
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { sendStudentParentSMSAction, sendStaffSMSAction } from '@/app/actions/sms';
+import { generateSMSDraftAction } from '@/app/actions/sms-ai';
 import { buildRows, computeStudentFlags, dailyRates, toDateStr, windowStartStr, HISTORY_DAYS, CHRONIC_RATE, ABSENT_STREAK_MIN, LATE_MIN_COUNT } from '@/lib/attendance-flags';
 import { collection, query, where, limit, getDocs, setDoc, doc, serverTimestamp, Timestamp } from 'firebase/firestore';
 import { format, startOfDay } from 'date-fns';
@@ -34,6 +37,7 @@ export function AttendanceAnalyticsView({
   const staffAttendance = useMemo(() => rawStaffAttendance || [], [rawStaffAttendance]);
 
   const firestore = useFirestore();
+  const { user } = useUser();
   const { schoolId: currentSchoolId } = useCurrentSchool();
   const historySchoolId = currentSchoolId || schoolData?.id || schoolData?.schoolId;
 
@@ -58,7 +62,13 @@ export function AttendanceAnalyticsView({
   const { toast } = useToast();
   const [isSyncingAttendance, setIsSyncingAttendance] = useState(false);
   const [selectedAbsentStudent, setSelectedAbsentStudent] = useState<any | null>(null);
+  const [smsKind, setSmsKind] = useState<'absence' | 'late'>('absence');
+  const [smsDraft, setSmsDraft] = useState('');
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+  const [isSendingSms, setIsSendingSms] = useState(false);
   const [selectedStaffReminder, setSelectedStaffReminder] = useState<any | null>(null);
+  const [staffReminderDraft, setStaffReminderDraft] = useState('');
+  const [isSendingStaffSms, setIsSendingStaffSms] = useState(false);
 
   // Sync Attendance Analytics to Firestore dashboard_summaries
   const handleSyncAttendanceSummary = async () => {
@@ -195,6 +205,7 @@ export function AttendanceAnalyticsView({
           id: t.uid || t.id,
           name: getStaffName(t),
           email: t.email || "No Email",
+          phone: t.phone || t.phoneNumber || t.mobile || t.contact || t.telephone || "",
           role: t.role || "Teacher"
         }))
       : [];
@@ -240,23 +251,135 @@ export function AttendanceAnalyticsView({
     };
   }, [students, staff, classes, attendance, attendanceRows, flags, todayStr, staffAttendance, startOfToday, schoolData]);
 
-  // Handlers for Parent Notification & Staff Reminders
-  const handleDispatchParentSMS = () => {
-    if (!selectedAbsentStudent) return;
-    toast({
-      title: "Parent Alert Dispatched",
-      description: `Absence notification SMS sent to parents of ${selectedAbsentStudent.name} (${selectedAbsentStudent.className}).`,
-    });
-    setSelectedAbsentStudent(null);
+  // Build default SMS text for a flagged student
+  const buildDefaultParentSms = (student: any, kind: 'absence' | 'late') => {
+    const schoolName = schoolData?.name || 'our school';
+    if (kind === 'late') {
+      return `Dear Parent, this is a punctuality notice from ${schoolName}. ${student.name} (${student.className}) has arrived late ${student.lateCount} times in the last ${HISTORY_DAYS} days. Please help ensure timely arrival.`;
+    }
+    if (student.streak >= ABSENT_STREAK_MIN) {
+      return `Dear Parent, this is an attendance notice from ${schoolName}. ${student.name} (${student.className}) has been absent for ${student.streak} consecutive school days (${student.rate}% attendance rate). Please contact the school office.`;
+    }
+    return `Dear Parent, this is an attendance notice from ${schoolName}. ${student.name} (${student.className}) currently has an attendance rate of ${student.rate}% (${student.absences}/${student.total} days absent). Please contact the school office.`;
   };
 
-  const handleSendStaffReminder = () => {
-    if (!selectedStaffReminder) return;
-    toast({
-      title: "Reminder Sent",
-      description: `Clock-in reminder notification sent to ${selectedStaffReminder.name}.`,
-    });
-    setSelectedStaffReminder(null);
+  const openParentSmsDialog = (student: any, kind: 'absence' | 'late' = 'absence') => {
+    setSmsKind(kind);
+    setSelectedAbsentStudent(student);
+    setSmsDraft(buildDefaultParentSms(student, kind));
+  };
+
+  const handleGenerateAiDraft = async () => {
+    if (!selectedAbsentStudent) return;
+    setIsGeneratingDraft(true);
+    try {
+      const schoolName = schoolData?.name || 'our school';
+      const topic = smsKind === 'late'
+        ? `Punctuality follow-up from ${schoolName} for ${selectedAbsentStudent.name} (${selectedAbsentStudent.className}), late ${selectedAbsentStudent.lateCount} times in ${HISTORY_DAYS} days`
+        : selectedAbsentStudent.streak >= ABSENT_STREAK_MIN
+          ? `Urgent absence notice from ${schoolName} for ${selectedAbsentStudent.name} (${selectedAbsentStudent.className}), absent ${selectedAbsentStudent.streak} consecutive days (${selectedAbsentStudent.rate}% attendance)`
+          : `Attendance notice from ${schoolName} for ${selectedAbsentStudent.name} (${selectedAbsentStudent.className}), attendance rate at ${selectedAbsentStudent.rate}% (${selectedAbsentStudent.absences} absences)`;
+      const res = await generateSMSDraftAction(topic, 'formal');
+      if (res.success && res.text) {
+        setSmsDraft(res.text.trim());
+      } else {
+        toast({ variant: 'destructive', title: 'AI Draft Failed', description: res.error || 'Could not generate AI draft.' });
+      }
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'AI Draft Error', description: err.message || 'Could not generate AI draft.' });
+    } finally {
+      setIsGeneratingDraft(false);
+    }
+  };
+
+  // Handlers for Parent Notification & Staff Reminders (real SMS gateway delivery)
+  const handleDispatchParentSMS = async () => {
+    if (!selectedAbsentStudent || !smsDraft.trim()) return;
+    if (!historySchoolId) {
+      toast({ variant: 'destructive', title: 'Missing School Context', description: 'Cannot determine school ID for SMS routing.' });
+      return;
+    }
+    setIsSendingSms(true);
+    try {
+      const idToken = await user?.getIdToken();
+      const res = await sendStudentParentSMSAction({
+        schoolId: historySchoolId,
+        studentId: selectedAbsentStudent.id,
+        studentName: selectedAbsentStudent.name,
+        message: smsDraft.trim(),
+        type: smsKind === 'late' ? 'PUNCTUALITY_ALERT' : 'ATTENDANCE_ALERT',
+        idToken,
+      });
+      if (res.success) {
+        toast({
+          title: 'Parent SMS Sent',
+          description: `Delivered to parent of ${selectedAbsentStudent.name} (${res.phones?.join(', ')}).`,
+        });
+        setSelectedAbsentStudent(null);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'SMS Not Sent',
+          description: res.error || 'Could not deliver SMS to parent.',
+        });
+      }
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'SMS Error',
+        description: err.message || 'An unexpected error occurred while sending SMS.',
+      });
+    } finally {
+      setIsSendingSms(false);
+    }
+  };
+
+  const openStaffReminderDialog = (staffMember: any) => {
+    const schoolName = schoolData?.name || 'our school';
+    setSelectedStaffReminder(staffMember);
+    setStaffReminderDraft(`Hello ${staffMember.name}, you have not yet logged your active clock-in for today at ${schoolName}. Please remember to log your check-in.`);
+  };
+
+  const handleSendStaffReminder = async () => {
+    if (!selectedStaffReminder || !staffReminderDraft.trim()) return;
+    if (!historySchoolId) {
+      toast({ variant: 'destructive', title: 'Missing School Context', description: 'Cannot determine school ID for SMS routing.' });
+      return;
+    }
+    setIsSendingStaffSms(true);
+    try {
+      const idToken = await user?.getIdToken();
+      const res = await sendStaffSMSAction({
+        schoolId: historySchoolId,
+        staffId: selectedStaffReminder.id,
+        staffName: selectedStaffReminder.name,
+        phone: selectedStaffReminder.phone,
+        message: staffReminderDraft.trim(),
+        type: 'STAFF_CLOCKIN_REMINDER',
+        idToken,
+      });
+      if (res.success) {
+        toast({
+          title: 'Reminder SMS Sent',
+          description: `Clock-in reminder delivered to ${selectedStaffReminder.name} (${res.phones?.join(', ')}).`,
+        });
+        setSelectedStaffReminder(null);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Reminder Not Sent',
+          description: res.error || 'Could not deliver SMS reminder to staff member.',
+        });
+      }
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'SMS Error',
+        description: err.message || 'An unexpected error occurred while sending reminder.',
+      });
+    } finally {
+      setIsSendingStaffSms(false);
+    }
   };
 
   return (
@@ -419,7 +542,7 @@ export function AttendanceAnalyticsView({
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => setSelectedAbsentStudent(s)}
+                        onClick={() => openParentSmsDialog(s, 'absence')}
                         className="h-7 text-[10px] font-black text-sky-600 hover:bg-sky-50"
                       >
                         Draft AI Parent SMS
@@ -506,7 +629,15 @@ export function AttendanceAnalyticsView({
                         {l.severity === 'high' ? 'Frequently Late' : 'Watch'}
                       </Badge>
                     </td>
-                    <td className="py-3 text-right">
+                    <td className="py-3 text-right space-x-2">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => openParentSmsDialog(l, 'late')}
+                        className="h-7 text-[10px] font-black text-sky-600 hover:bg-sky-50"
+                      >
+                        Draft AI Parent SMS
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
@@ -645,7 +776,7 @@ export function AttendanceAnalyticsView({
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setSelectedStaffReminder(t)}
+                    onClick={() => openStaffReminderDialog(t)}
                     className="h-7 text-[10px] font-black border-indigo-200 text-indigo-700 hover:bg-indigo-50"
                   >
                     Send Reminder
@@ -704,27 +835,51 @@ export function AttendanceAnalyticsView({
       </div>
 
       {/* ─── PARENT SMS DIALOG ─── */}
-      <Dialog open={Boolean(selectedAbsentStudent)} onOpenChange={(open) => !open && setSelectedAbsentStudent(null)}>
+      <Dialog open={Boolean(selectedAbsentStudent)} onOpenChange={(open) => !open && !isSendingSms && setSelectedAbsentStudent(null)}>
         <DialogContent className="rounded-3xl max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base font-black text-slate-900 uppercase">Draft Parent Absence SMS</DialogTitle>
+            <DialogTitle className="text-base font-black text-slate-900 uppercase">
+              {smsKind === 'late' ? 'Send Parent Punctuality SMS' : 'Send Parent Absence SMS'}
+            </DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
-              Send automated SMS notification to parents of {selectedAbsentStudent?.name}.
+              Review, edit, or regenerate with AI before sending to the parent of {selectedAbsentStudent?.name} ({selectedAbsentStudent?.className}).
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 pt-2">
-            <div className="p-3 bg-slate-50 border rounded-2xl text-xs space-y-1 text-slate-700">
-              <p className="font-bold">Message Preview:</p>
-              <p className="italic text-slate-600">
-                "Dear Parent, this is an automated attendance notice from {schoolData?.name || 'our school'}. {selectedAbsentStudent?.name} ({selectedAbsentStudent?.className}) is currently flagged under chronic attendance risk with an attendance rate of {selectedAbsentStudent?.rate}%. Please contact the school office."
-              </p>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold text-slate-600">SMS Message ({smsDraft.length} chars)</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={isGeneratingDraft || isSendingSms}
+                onClick={handleGenerateAiDraft}
+                className="h-7 text-[10px] font-black border-sky-200 text-sky-700 hover:bg-sky-50 rounded-xl gap-1"
+              >
+                {isGeneratingDraft ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
+                {isGeneratingDraft ? 'Drafting…' : 'Draft with AI'}
+              </Button>
             </div>
+            <Textarea
+              value={smsDraft}
+              onChange={(e) => setSmsDraft(e.target.value)}
+              rows={4}
+              disabled={isSendingSms}
+              className="rounded-2xl text-xs text-slate-800 bg-slate-50 border-slate-200"
+              placeholder="Write SMS message to parent…"
+            />
             <div className="flex justify-end gap-2 pt-2">
-              <Button size="sm" variant="outline" onClick={() => setSelectedAbsentStudent(null)} className="rounded-xl font-bold text-xs">
+              <Button size="sm" variant="outline" disabled={isSendingSms} onClick={() => setSelectedAbsentStudent(null)} className="rounded-xl font-bold text-xs">
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleDispatchParentSMS} className="bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs gap-1">
-                <Send className="h-3.5 w-3.5" /> Dispatch SMS
+              <Button
+                size="sm"
+                disabled={isSendingSms || !smsDraft.trim()}
+                onClick={handleDispatchParentSMS}
+                className="bg-sky-600 hover:bg-sky-500 text-white rounded-xl font-bold text-xs gap-1"
+              >
+                {isSendingSms ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                {isSendingSms ? 'Sending…' : 'Send SMS'}
               </Button>
             </div>
           </div>
@@ -732,27 +887,35 @@ export function AttendanceAnalyticsView({
       </Dialog>
 
       {/* ─── STAFF REMINDER DIALOG ─── */}
-      <Dialog open={Boolean(selectedStaffReminder)} onOpenChange={(open) => !open && setSelectedStaffReminder(null)}>
+      <Dialog open={Boolean(selectedStaffReminder)} onOpenChange={(open) => !open && !isSendingStaffSms && setSelectedStaffReminder(null)}>
         <DialogContent className="rounded-3xl max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-base font-black text-slate-900 uppercase">Send Clock-in Reminder</DialogTitle>
+            <DialogTitle className="text-base font-black text-slate-900 uppercase">Send Clock-in Reminder SMS</DialogTitle>
             <DialogDescription className="text-xs text-slate-500">
-              Send an active clock-in reminder notification to {selectedStaffReminder?.name}.
+              Send an SMS clock-in reminder to {selectedStaffReminder?.name}.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 pt-2">
-            <div className="p-3 bg-slate-50 border rounded-2xl text-xs space-y-1 text-slate-700">
-              <p className="font-bold">Notification Preview:</p>
-              <p className="italic text-slate-600">
-                "Hello {selectedStaffReminder?.name}, you have not yet logged your active clock-in for today at {schoolData?.name || 'our school'}. Please remember to log your check-in."
-              </p>
-            </div>
+            <Textarea
+              value={staffReminderDraft}
+              onChange={(e) => setStaffReminderDraft(e.target.value)}
+              rows={3}
+              disabled={isSendingStaffSms}
+              className="rounded-2xl text-xs text-slate-800 bg-slate-50 border-slate-200"
+              placeholder="Write reminder SMS…"
+            />
             <div className="flex justify-end gap-2 pt-2">
-              <Button size="sm" variant="outline" onClick={() => setSelectedStaffReminder(null)} className="rounded-xl font-bold text-xs">
+              <Button size="sm" variant="outline" disabled={isSendingStaffSms} onClick={() => setSelectedStaffReminder(null)} className="rounded-xl font-bold text-xs">
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleSendStaffReminder} className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs gap-1">
-                <Send className="h-3.5 w-3.5" /> Send Reminder
+              <Button
+                size="sm"
+                disabled={isSendingStaffSms || !staffReminderDraft.trim()}
+                onClick={handleSendStaffReminder}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-xs gap-1"
+              >
+                {isSendingStaffSms ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                {isSendingStaffSms ? 'Sending…' : 'Send SMS Reminder'}
               </Button>
             </div>
           </div>
