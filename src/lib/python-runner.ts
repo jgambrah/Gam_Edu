@@ -61,6 +61,8 @@ with open('/home/pyodide/little_women.txt', 'w') as _f:
     _f.write("Christmas won't be Christmas without any presents, grumbled Jo.\\n")
 with open('/home/pyodide/numbers.json', 'w') as _f:
     json.dump([2, 3, 5, 7, 11, 13], _f)
+with open('/home/pyodide/students.csv', 'w') as _f:
+    _f.write("name,subject,score\\nAma,Math,92\\nKofi,Science,88\\nEsi,Coding,97\\nYaw,Math,85\\n")
 
 # 2. Helper modules from Cheat Sheet (pizza.py, car.py, full_names.py, accountant.py)
 with open('/home/pyodide/pizza.py', 'w') as _f:

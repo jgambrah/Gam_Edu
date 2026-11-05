@@ -653,6 +653,90 @@ export const PYTHON_ACADEMY_CURRICULUM: PythonAcademyPhase[] = [
         ]
       }
     ]
+  },
+  {
+    phase: "Phase 9",
+    title: "Modern Python 3, Data Science & Algorithms",
+    mainTopics: [
+      {
+        title: "1. Modern Python 3 & Functional Tools",
+        lessons: [
+          {
+            id: "p9-1-1",
+            mustUse: ["f\"", ".split("],
+            title: "Modern f-Strings & Text Processing",
+            theory: "Formatted string literals (`f\"Hello {name}, score: {score:.1f}\"`) embed variables directly inside `{}`. `.split()`, `.join()`, `.replace()`, and `.strip()` clean and transform text.",
+            task: "Format student = 'Ama' and score = 94.56 using an f-string into summary, and split 'math,science,coding' by ',' into subjects.",
+            startingCode: "student = 'Ama'\nscore = 94.56\nsummary = f\"{student} scored {score:.1f}%\"\nsubjects = 'math,science,coding'.split(',')\nprint(summary)\nprint('Subjects:', ' | '.join(subjects))",
+            validation: "globals().get('summary') == 'Ama scored 94.6%' and globals().get('subjects') == ['math', 'science', 'coding']"
+          },
+          {
+            id: "p9-1-2",
+            mustUse: ["zip(", "for"],
+            title: "Dict Comprehensions, zip() & enumerate()",
+            theory: "`zip(names, scores)` pairs items from two lists; `{k: v for k, v in zip(names, scores)}` builds a dictionary in one line; `enumerate(items, 1)` gives `(index, item)`.",
+            task: "Pair names = ['Ama', 'Kofi', 'Esi'] and scores = [92, 88, 97] into a dictionary named scoreboard using zip().",
+            startingCode: "names = ['Ama', 'Kofi', 'Esi']\nscores = [92, 88, 97]\nscoreboard = {name: score for name, score in zip(names, scores)}\nfor rank, (name, score) in enumerate(scoreboard.items(), start=1):\n    print(f\"#{rank} {name}: {score}\")",
+            validation: "globals().get('scoreboard') == {'Ama': 92, 'Kofi': 88, 'Esi': 97}"
+          },
+          {
+            id: "p9-1-3",
+            mustUse: ["lambda", "filter("],
+            title: "Lambda Functions, map(), filter() & sorted()",
+            theory: "`lambda x: ...` creates a quick one-line function useful with `sorted(items, key=lambda x: ...)`, `map()`, and `filter()`.",
+            task: "Use filter() and a lambda function to keep scores >= 80 from raw_scores = [65, 92, 74, 88, 95] in high_scores.",
+            startingCode: "raw_scores = [65, 92, 74, 88, 95]\nhigh_scores = list(filter(lambda s: s >= 80, raw_scores))\nprint('High scores:', high_scores)",
+            validation: "globals().get('high_scores') == [92, 88, 95]"
+          }
+        ]
+      },
+      {
+        title: "2. CSV Gradebooks, Statistics & Charts",
+        lessons: [
+          {
+            id: "p9-2-1",
+            mustUse: ["import csv", "import statistics"],
+            title: "CSV Gradebooks & Statistics Module",
+            theory: "Use `csv.DictReader` to read tabular `.csv` files (like our pre-loaded `students.csv`) and `statistics.mean()` / `median()` to analyze scores.",
+            task: "Read 'students.csv' with csv.DictReader, collect integer scores into 'scores', and compute mean_score = statistics.mean(scores).",
+            startingCode: "import csv\nimport statistics\n\nwith open('students.csv') as f:\n    reader = csv.DictReader(f)\n    scores = [int(row['score']) for row in reader]\n\nmean_score = statistics.mean(scores)\nmedian_score = statistics.median(scores)\nprint(f\"Scores: {scores} | Mean: {mean_score} | Median: {median_score}\")",
+            validation: "globals().get('mean_score') == 90.5"
+          },
+          {
+            id: "p9-2-2",
+            needsPlot: true,
+            mustUse: ["plt.pie"],
+            title: "Pie Charts & Histograms in Matplotlib",
+            theory: "`plt.pie(sizes, labels=labels, autopct='%1.1f%%')` draws percentage breakdowns, while `plt.hist(data, bins=5)` shows score distributions.",
+            task: "Draw a pie chart of club enrollment using plt.pie() with clubs = ['Coding', 'Robotics', 'Debate'] and members = [45, 30, 25].",
+            startingCode: "import matplotlib.pyplot as plt\n\nclubs = ['Coding', 'Robotics', 'Debate']\nmembers = [45, 30, 25]\n\nplt.figure(figsize=(5, 5))\nplt.pie(members, labels=clubs, autopct='%1.1f%%', startangle=140)\nplt.title('School Club Enrollment')\nplt.show()"
+          }
+        ]
+      },
+      {
+        title: "3. Algorithms & STEM Problem Solving",
+        lessons: [
+          {
+            id: "p9-3-1",
+            mustUse: ["def factorial("],
+            title: "Recursion, Factorials & Prime Numbers",
+            theory: "A recursive function calls itself with a smaller input until reaching a base case (`if n <= 1: return 1`).",
+            task: "Define factorial(n) that returns n! (so factorial(5) == 120) and store factorial(5) in ans.",
+            startingCode: "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nans = factorial(5)\nprint('5! =', ans)",
+            validation: "globals().get('ans') == 120"
+          },
+          {
+            id: "p9-3-2",
+            mustUse: ["while", "//"],
+            title: "Binary Search Algorithm",
+            theory: "Binary search finds a target in a sorted list in O(log n) steps by halving the search range (`mid = (low + high) // 2`).",
+            task: "Implement binary_search(arr, target) that returns the index of target, and find 42 in nums = [10, 23, 35, 42, 58, 71] as idx.",
+            startingCode: "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1\n\nnums = [10, 23, 35, 42, 58, 71]\nidx = binary_search(nums, 42)\nprint('Found 42 at index:', idx)",
+            validation: "globals().get('idx') == 3"
+          }
+        ]
+      }
+    ]
   }
 ];
 
@@ -834,6 +918,114 @@ export const PYTHON_CHEAT_SHEETS: CheatSheetSection[] = [
         label: "Django Models, ForeignKey & Views",
         explanation: "Define Topic and Entry models and query them in a view function.",
         code: "from django.db import models\nfrom django.shortcuts import render\n\nclass Topic(models.Model):\n    text = models.CharField(max_length=200)\n    def __str__(self):\n        return self.text\n\nclass Entry(models.Model):\n    topic = models.ForeignKey(Topic)\n    text = models.TextField()\n    def __str__(self):\n        return self.text[:50] + '...'\n\nt = Topic.objects.create(text='Rock Climbing')\nEntry.objects.create(topic=t, text='Learned essential knots and belaying techniques today.')\nprint('Topics:', Topic.objects.all())\nprint('Entries:', Entry.objects.all())"
+      }
+    ]
+  },
+  {
+    id: "modern-fstrings-text",
+    title: "Modern f-Strings & Text Processing",
+    category: "Modern Python 3",
+    summary: "Format variables cleanly with f-strings, split/join sentences, strip whitespace, and replace substrings.",
+    snippets: [
+      {
+        label: "f-Strings & Number Formatting",
+        explanation: "Use f\"{var}\" with format specifiers like :.2f (2 decimals) and :, (thousands separator).",
+        code: "student = 'Kwame'\nscore = 93.456\npopulation = 34120000\nprint(f\"Student: {student.upper()} | Score: {score:.2f}%\")\nprint(f\"Population: {population:,}\")"
+      },
+      {
+        label: "Splitting, Joining, Replacing & Stripping Strings",
+        explanation: "Break strings into words with .split(), join lists with .join(), and clean text with .strip() / .replace().",
+        code: "raw_line = '   apple, banana, mango, orange   '\nitems = [w.strip() for w in raw_line.strip().split(',')]\nprint('Parsed list:', items)\nprint('Joined with arrows:', ' -> '.join(items))\nprint('Replaced:', raw_line.strip().replace('banana', 'pineapple'))"
+      }
+    ]
+  },
+  {
+    id: "dict-comp-sets-zip",
+    title: "Dict Comprehensions, zip(), enumerate() & Sets",
+    category: "Data Structures Plus (Page 6 + Sets)",
+    summary: "Build dictionaries from two lists with zip(), number loops with enumerate(), and compute set union/intersection.",
+    snippets: [
+      {
+        label: "Dictionary Comprehensions & zip()",
+        explanation: "Pair two lists with zip() or generate key-value mappings in a single line.",
+        code: "students = ['Ama', 'Kofi', 'Esi', 'Yaw']\nmarks = [92, 85, 97, 78]\ngradebook = {name: mark for name, mark in zip(students, marks)}\nsquares_dict = {x: x**2 for x in range(1, 6)}\nprint('Gradebook:', gradebook)\nprint('Squares dict:', squares_dict)"
+      },
+      {
+        label: "Set Union, Intersection & Difference",
+        explanation: "Use sets to find common items (&), all unique items (|), or differences (-) between two groups.",
+        code: "coding_club = {'Ama', 'Kofi', 'Esi', 'Bola'}\nrobotics_club = {'Kofi', 'Esi', 'Yaw', 'Tunde'}\nprint('Both clubs (&):', coding_club & robotics_club)\nprint('All members (|):', coding_club | robotics_club)\nprint('Only Coding (-):', coding_club - robotics_club)"
+      }
+    ]
+  },
+  {
+    id: "functional-lambda",
+    title: "Lambda Functions, map(), filter() & Custom Sorting",
+    category: "Functional Python",
+    summary: "Write concise anonymous functions with lambda and sort complex records by any field.",
+    snippets: [
+      {
+        label: "Sorting Dictionaries with key=lambda",
+        explanation: "Sort a list of student dictionaries by score from highest to lowest.",
+        code: "leaderboard = [\n    {'name': 'Ama', 'score': 92},\n    {'name': 'Kofi', 'score': 88},\n    {'name': 'Esi', 'score': 97},\n]\nranked = sorted(leaderboard, key=lambda s: s['score'], reverse=True)\nfor i, s in enumerate(ranked, 1):\n    print(f\"#{i} {s['name']} - {s['score']} pts\")"
+      },
+      {
+        label: "Transforming & Filtering Lists with map() and filter()",
+        explanation: "Apply a function to every item with map() or keep matching items with filter().",
+        code: "temps_c = [0, 20, 25, 30, 37]\ntemps_f = list(map(lambda c: round(c * 9/5 + 32, 1), temps_c))\nwarm_days = list(filter(lambda c: c >= 25, temps_c))\nprint('Fahrenheit:', temps_f)\nprint('Warm days (C):', warm_days)"
+      }
+    ]
+  },
+  {
+    id: "stdlib-csv-stats-regex",
+    title: "Standard Library (csv, statistics, Counter & re)",
+    category: "Built-in Power Tools",
+    summary: "Analyze CSV files, calculate mean/median/stdev, count word frequencies, and match patterns with regex.",
+    snippets: [
+      {
+        label: "Reading CSV Gradebooks & Computing Statistics",
+        explanation: "Read our pre-loaded students.csv file and compute mean, median, and standard deviation.",
+        code: "import csv\nimport statistics\n\nwith open('students.csv') as f:\n    rows = list(csv.DictReader(f))\n\nscores = [int(r['score']) for r in rows]\nprint('Students:', [r['name'] for r in rows])\nprint(f\"Mean: {statistics.mean(scores):.1f} | Median: {statistics.median(scores)} | StDev: {statistics.stdev(scores):.2f}\")"
+      },
+      {
+        label: "Word Frequency Counter & Regular Expressions (re)",
+        explanation: "Count top words with collections.Counter and extract numbers/emails with re.findall().",
+        code: "from collections import Counter\nimport re\n\ntext = 'python is fast python is fun coding in python is powerful'\nword_counts = Counter(text.split())\nprint('Top 2 words:', word_counts.most_common(2))\n\nreport = 'Order #1042 cost $45 and Order #1099 cost $120.'\nnumbers = re.findall(r'\\d+', report)\nprint('Extracted numbers:', numbers)"
+      }
+    ]
+  },
+  {
+    id: "matplotlib-pie-hist",
+    title: "Pie Charts & Histograms (Data Science)",
+    category: "Charts & Statistics",
+    summary: "Visualize proportions with plt.pie() and frequency distributions with plt.hist().",
+    snippets: [
+      {
+        label: "Pie Chart with Percentage Labels",
+        explanation: "Display category shares with autopct='%1.1f%%'.",
+        code: "import matplotlib.pyplot as plt\n\nlabels = ['Python', 'JavaScript', 'Scratch', 'HTML/CSS']\nsizes = [45, 25, 18, 12]\n\nplt.figure(figsize=(5, 5))\nplt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=140)\nplt.title('Coding Club Language Popularity')\nplt.show()"
+      },
+      {
+        label: "Histogram of Exam Scores",
+        explanation: "Plot a frequency distribution of class exam scores using plt.hist().",
+        code: "import matplotlib.pyplot as plt\n\nscores = [55, 62, 68, 70, 72, 74, 75, 78, 80, 82, 84, 85, 88, 90, 92, 95, 98]\nplt.figure(figsize=(7, 4))\nplt.hist(scores, bins=5, color='royalblue', edgecolor='black')\nplt.title('Class Exam Score Distribution')\nplt.xlabel('Score Range')\nplt.ylabel('Number of Students')\nplt.show()"
+      }
+    ]
+  },
+  {
+    id: "algorithms-stem",
+    title: "Algorithms & STEM Coding Challenges",
+    category: "Computer Science & Competitions",
+    summary: "Master recursion, Fibonacci sequences, prime number sieves, and O(log n) binary search.",
+    snippets: [
+      {
+        label: "Fibonacci Sequence & Prime Number Checker",
+        explanation: "Generate Fibonacci numbers and test whether numbers are prime.",
+        code: "def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\nprimes_under_30 = [n for n in range(2, 30) if is_prime(n)]\n\nfib = [0, 1]\nfor _ in range(8):\n    fib.append(fib[-1] + fib[-2])\n\nprint('Primes < 30:', primes_under_30)\nprint('First 10 Fibonacci:', fib)"
+      },
+      {
+        label: "Binary Search (Fast O(log n) Lookup)",
+        explanation: "Find the exact index of a target value in a sorted list by halving the search interval.",
+        code: "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    steps = 0\n    while low <= high:\n        steps += 1\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid, steps\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1, steps\n\nsorted_scores = [12, 24, 35, 48, 56, 67, 79, 88, 94, 100]\nidx, steps = binary_search(sorted_scores, 79)\nprint(f\"Found 79 at index {idx} in {steps} steps!\")"
       }
     ]
   }

@@ -40,8 +40,8 @@ export async function seedPythonAcademyCentralCurriculumAction(): Promise<{
 
     const payload = {
       id: 'python_academy_v1',
-      title: "Python Academy & Beginner's Python Cheat Sheet (Python Crash Course)",
-      version: '2.0.0',
+      title: "Python Academy & Beginner's Python Cheat Sheet (Complete Edition)",
+      version: '3.0.0',
       updatedAt: FieldValue.serverTimestamp(),
       updatedBy: user.uid,
       phaseCount: PYTHON_ACADEMY_CURRICULUM.length,
