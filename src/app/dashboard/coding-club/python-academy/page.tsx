@@ -309,8 +309,17 @@ function PythonAcademy() {
         setCheckNote(null);
         setPlotImage(null);
         try {
+            const trimmedCode = code.trim();
+            const isCheatSheetSnippet =
+                Boolean(sandboxSnippetTitle) ||
+                (cheatSheets || []).some((sec) =>
+                    (sec.snippets || (sec as any).items || []).some(
+                        (sn: any) => String(sn?.code || '').trim() === trimmedCode
+                    )
+                );
+
             const result = await runPython(code, {
-                validation: sandboxSnippetTitle ? undefined : activeLesson.validation,
+                validation: isCheatSheetSnippet ? undefined : activeLesson.validation,
                 stdin: stdinText,
                 timeoutMs: 10000
             });
@@ -323,12 +332,19 @@ function PythonAcademy() {
                 return;
             }
 
-            // If running a Cheat Sheet snippet in Sandbox Mode, skip lesson-specific grading checks.
-            if (sandboxSnippetTitle) {
+            // Celebrate every successful Python execution (output, chart, or valid run) with confetti!
+            const producedResult = Boolean(result.output.trim() || result.image || result.passed === true);
+            if (producedResult) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d946ef', '#4f46e5'] });
+                speak("Great job!");
+            }
+
+            // If running a Cheat Sheet snippet, skip lesson-specific grading checks.
+            if (isCheatSheetSnippet) {
                 return;
             }
 
-            // Every check the lesson asks for must pass.
+            // Every check the lesson asks for must pass to mark the specific lesson completed.
             const problems: string[] = [];
             // Comments don't count (the starter repeats the goal in a comment), except when the lesson is about comments.
             const codeOnly = code.split('\n').map(l => l.replace(/#.*$/, '')).join('\n');
@@ -345,8 +361,10 @@ function PythonAcademy() {
             if (problems.length) { setCheckNote(problems.join('\n')); return; }
 
             setIsPassed(true);
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d946ef', '#4f46e5'] });
-            speak("Great job!");
+            if (!producedResult) {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d946ef', '#4f46e5'] });
+                speak("Great job!");
+            }
 
             if (user && firestore && !completedMissions.includes(activeLesson.id)) {
                 const nextMissions = Array.from(new Set([...completedMissions, activeLesson.id]));

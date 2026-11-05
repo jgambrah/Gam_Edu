@@ -573,9 +573,16 @@ onmessage = async (e) => {
   const out = [];
   py.setStdout({ batched: s => out.push(s) });
   py.setStderr({ batched: s => out.push(s) });
-  const inputs = (stdin || '').split('\\n');
+  const rawStdin = (stdin || '').trim();
+  const inputs = rawStdin ? rawStdin.split('\\n') : [];
   let next = 0;
-  py.setStdin({ stdin: () => (next < inputs.length ? inputs[next++] : undefined) });
+  py.setStdin({ stdin: () => {
+    if (next < inputs.length) return inputs[next++];
+    next++;
+    if (next > 2 && /'quit'|"quit"/.test(code)) return 'quit';
+    if (/int\\s*\\(\\s*input|float\\s*\\(\\s*input|old|age|number|tall|many/i.test(code)) return '18';
+    return 'blue';
+  } });
   let ns = null;
   try {
     await py.loadPackagesFromImports(code);
