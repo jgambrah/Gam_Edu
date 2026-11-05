@@ -2163,6 +2163,276 @@ export const THINK_TANK_PARADOXES: ThinkTankParadoxItem[] = [
     "answer": "No, continuous observation freezes the quantum state and prevents decay (Quantum Zeno Effect).",
     "explanation": "Repeatedly collapsing the quantum wave function back to the initial undecayed state suppresses the transition probability to zero.",
     "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-801",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If you blow air out through a tiny straw into a clear bottle, can you see the air inside the bottle?",
+    "answer": "No, because the gases that make up air are transparent to human vision.",
+    "explanation": "Air consists of microscopic molecules like nitrogen and oxygen that do not absorb or reflect visible light, making them invisible even though they fill the space.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-802",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "When you dip your thumb into thick palm oil, your skin feels slippery and warm. If you run tap water over it, why does the water slide right off without washing the oil away?",
+    "answer": "Water and oil do not mix because oil molecules repel polar water molecules.",
+    "explanation": "Water is a polar molecule and oil is non-polar. Water molecules cling tightly to each other rather than adhering to the oily skin surface.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-803",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "If a sign on an empty classroom door reads: 'Only invisible pupils are inside', is the classroom truly empty?",
+    "answer": "Yes, because invisible pupils do not physically exist in the real world.",
+    "explanation": "Imaginary entities cannot fill physical space. The room contains zero real humans, leaving it completely unoccupied.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-804",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If you have a wooden toy train with four carriages and you detach two carriages from the rear, how many wheels are still rolling behind the engine?",
+    "answer": "Only the wheels on the two attached carriages remain rolling behind the engine.",
+    "explanation": "Detaching parts physically separates them from the moving locomotive system, leaving only the remaining connected carriages in tow.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-805",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "If you drop a dry palm kernel nut into a calabash of water, it sinks to the bottom. If you drop a whole dry coconut with its thick fibrous husk, it floats. Why?",
+    "answer": "The coconut's thick fibrous husk traps large amounts of air, lowering its overall density.",
+    "explanation": "Buoyancy depends on the average density of the object compared to water. Trapped air pockets in the coconut husk create enough upward buoyant force to keep it afloat.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-806",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "A village bell-ringer says: 'I only ring the bell when nobody is listening.' Does anyone ever hear the bell ring on purpose?",
+    "answer": "No, because the moment someone listens on purpose, the condition to ring the bell is broken.",
+    "explanation": "The action's prerequisite explicitly requires the absence of any listeners, creating a rule that cancels itself upon detection.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-807",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If Kofi stands on one foot on a weighing scale and then puts both feet down, does the number on the scale double?",
+    "answer": "No, the scale reading stays the exact same.",
+    "explanation": "A scale measures the total downward gravitational force of your body mass. Shifting weight between one or two feet changes surface pressure, not total mass.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-808",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "When you breathe out onto a cold glass louvre window on a harmattan morning, why does a white foggy patch appear and then fade away?",
+    "answer": "Warm water vapor from your breath condenses into tiny liquid droplets on the cold glass, then evaporates back into the air.",
+    "explanation": "Chilled glass cools breath vapor below its dew point, forming micro-droplets of mist that soon evaporate as room heat returns.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-809",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If you fold a long piece of kente ribbon in half and cut it right across the fold with scissors, how many separate pieces do you have?",
+    "answer": "You have two separate pieces.",
+    "explanation": "Cutting across the single folded midpoint divides the continuous ribbon into two equal distinct lengths.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-810",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "Can you ever truthfully say: 'I have never spoken a single word in my entire life'?",
+    "answer": "No, because speaking that sentence instantly breaks the claim.",
+    "explanation": "Uttering words directly contradicts the assertion that you have never spoken, making it self-refuting.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-801",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A carpenter in Kumasi builds a wooden stool out of Odum wood. If a termitaria mound degrades the legs and he carves four new legs out of Wawa wood, is it still an Odum stool?",
+    "answer": "It is now a composite stool retaining an Odum seat with Wawa supports.",
+    "explanation": "When an artifact's components are replaced with different materials, its material identity changes into a hybrid while its functional identity persists.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-802",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A vendor in Sunyani buys yams at 3 for 10 Cedis and sells them at 2 for 10 Cedis. How many yams must she sell to make a net profit of 50 Cedis?",
+    "answer": "She must sell 30 yams.",
+    "explanation": "Cost per yam is 10/3 Cedis, selling price is 5 Cedis (10/2). Profit per yam is 5 - 10/3 = 5/3 Cedis. To earn 50 Cedis profit: 50 / (5/3) = 30 yams.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-803",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A solid metal coin and a broad green plantain leaf are dropped inside a tall vacuum chamber where all air has been pumped out. Which lands first?",
+    "answer": "Both land at the exact same instant.",
+    "explanation": "In a vacuum, there is zero aerodynamic drag. Gravitational acceleration (g ≈ 9.8 m/s²) acts equally on all falling objects regardless of mass or shape.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-804",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A town chief decrees: 'No traveler may cross this bridge unless they first tell a truth.' A traveler steps up and says: 'I will be thrown into the river.' What must the guards do?",
+    "answer": "The guards face a logical contradiction and cannot enforce the decree.",
+    "explanation": "If they throw him in, his statement was true, meaning he should have crossed. If they let him cross, his statement was false, meaning he should have been thrown in.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-805",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A bus leaves Accra traveling at 60 km/h toward Kumasi (250 km away). Another bus leaves Kumasi at 40 km/h toward Accra along the same highway. After 2 hours, how far apart are they?",
+    "answer": "They are 50 kilometers apart.",
+    "explanation": "Bus 1 covers 60 × 2 = 120 km. Bus 2 covers 40 × 2 = 80 km. Together they have closed 120 + 80 = 200 km. The remaining distance is 250 - 200 = 50 km.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-806",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "You place a sealed glass flask containing cool air into a pot of boiling water. The glass doesn't crack, but what happens to the air pressure inside the flask?",
+    "answer": "The air pressure inside the flask increases significantly.",
+    "explanation": "According to Gay-Lussac's Law, when a gas in a rigid container of fixed volume is heated, its molecular kinetic energy increases, raising internal pressure proportionally.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-807",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A shepherd in the Upper West Region has to divide 17 cattle among 3 sons: 1/2 to the first, 1/3 to the second, and 1/9 to the third, without butchering any. How can this be done?",
+    "answer": "Borrow 1 cow to make 18: the sons receive 9, 6, and 2 cows (9+6+2=17), and the borrowed cow is returned.",
+    "explanation": "Because 1/2 + 1/3 + 1/9 = 17/18 (not a full whole 1), introducing a temporary common denominator unit resolves the fractional shares neatly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-808",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "If you connect two identical lightbulbs in series to a 6-volt battery, and then reconnect the same two bulbs in parallel to the same battery, which setup shines brighter?",
+    "answer": "The parallel circuit shines significantly brighter.",
+    "explanation": "In parallel, each bulb receives the full 6 volts and draws independent current, whereas in series, the bulbs split the voltage (3 volts each) and share higher total resistance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-809",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "If 6 weavers in Bonwire produce 6 yards of kente cloth in 6 days, how many yards of kente cloth will 12 weavers produce in 12 days?",
+    "answer": "They will produce 24 yards of cloth.",
+    "explanation": "Each weaver produces 1 yard per 6 days (1/6 yard per weaver per day). 12 weavers working for 12 days produce 12 × 12 × (1/6) = 24 yards.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-810",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A mother has two biological sons born at the exact same hospital, on the exact same date, hour, and year, but they are not fraternal or identical twins. How is this possible?",
+    "answer": "They are two surviving babies from a set of triplets or quadruplets.",
+    "explanation": "Being part of a higher-order multiple birth (such as triplets) means sharing the exact birth timing without being classified as twins.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-801",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "In the Unexpected Tiger Paradox (a variant of the Surprise Hanging), if a traveler is told a tiger waits behind one of five closed doors that will surprise him, can logic eliminate Door 5?",
+    "answer": "Deductively yes via backward induction, but the real-world execution still surprises the traveler when encountered.",
+    "explanation": "Eliminating each door by assuming the traveler will know in advance relies on the premise that the statement is predictable, creating an epistemic contradiction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-802",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "In the Three Prisoners Problem, Prisoners A, B, and C are on death row. The warden randomly pardons one. If the warden secretly tells Prisoner A that Prisoner B will be executed, did A's survival odds increase?",
+    "answer": "No, Prisoner A's survival probability remains 1/3, while Prisoner C's jumps to 2/3.",
+    "explanation": "The warden can always name at least one doomed co-prisoner regardless of whether A lives. This is isomorphic to the Monty Hall problem: probability concentrates in C.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-803",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "According to General Relativity, if an observer in a rocket ship accelerates at 9.8 m/s² in deep empty space, how does an onboard physics experiment compare to one performed on Earth's surface?",
+    "answer": "Every mechanical and optical experiment behaves identically due to the Equivalence Principle.",
+    "explanation": "Einstein's Equivalence Principle dictates that inertial acceleration and gravitational mass effects are locally indistinguishable in a closed reference frame.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-804",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "In the Bootstrap Paradox (causal loop), a time traveler takes a printed copy of Shakespeare's 'Hamlet' to 16th-century London and hands it to William Shakespeare, who copies it. Who composed the play?",
+    "answer": "The information has no origin, existing within a closed causal loop.",
+    "explanation": "Causal loops in closed timelike curves violate ontological causality: the literary information exists without ever undergoing creative inception.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-805",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "In Arrow's Impossibility Theorem, can any ranked voting electoral system convert individual multi-candidate preferences into a fair community ranking without violating basic democratic axioms?",
+    "answer": "No, Kenneth Arrow proved mathematically that no ranked voting system can satisfy all fair criteria simultaneously.",
+    "explanation": "Criteria such as non-dictatorship, Pareto efficiency, and independence of irrelevant alternatives cannot mathematically coexist in ranked voting.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-806",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "In the St. Petersburg Paradox, a fair coin is flipped until Tails appears. If Tails appears on flip n, the payout is 2ⁿ Cedis. Why will rational players not pay 10,000 Cedis to play despite infinite mathematical expected value?",
+    "answer": "Because expected monetary value diverges from subjective expected utility and finite human bankrolls.",
+    "explanation": "The infinite mathematical expectation is dominated by minuscule probabilities of astronomical payouts (1/2³⁰ of winning a billion), which practical utility discounts.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-807",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "In quantum mechanics, if a beam of light passes through two parallel slits, it forms an interference wave pattern on a screen. What happens if a detector is placed at one slit to see which slit each photon passes through?",
+    "answer": "The wave interference pattern instantly collapses into two classical particle bands.",
+    "explanation": "Measurement destroys the quantum phase coherence between alternative paths, collapsing the superposed wave function into localized particle behavior.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-808",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "In Russell's Paradox, let R be the set of all sets that do not contain themselves. Does R contain itself?",
+    "answer": "R contains itself if and only if it does not contain itself, exposing an inconsistency in naive set theory.",
+    "explanation": "If R ∈ R, then by its own definition R ∉ R. If R ∉ R, then by definition R ∈ R. This contradiction necessitated Zermelo-Fraenkel axiomatic set theory.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-809",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "You roll two fair six-sided dice. Given that at least one of the dice shows a 6, what is the probability that both dice show a 6?",
+    "answer": "The probability is 1/11 (approx 9.09%), not 1/6.",
+    "explanation": "Out of 36 dice outcomes, 11 contain at least one 6: {(1,6), (2,6), (3,6), (4,6), (5,6), (6,6), (6,1), (6,2), (6,3), (6,4), (6,5)}. Only (6,6) has both, giving 1/11.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-810",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "In Newcomb's Paradox, an infallible supercomputer predicts your choice between Box A (1,000 Cedis) and Box B (1,000,000 Cedis if predicted you take only B, or empty if predicted you take both). Which principle supports taking only Box B?",
+    "answer": "The Principle of Expected Utility (One-boxing) supports taking only Box B.",
+    "explanation": "One-boxers argue that an infallible predictor makes taking both yield only 1,000 Cedis, whereas two-boxers argue by Dominance that the money is already physically placed.",
+    "isCentral": true
   }
 ];
 
@@ -5973,6 +6243,486 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     ],
     "correctAnswer": "Copper (Cu²⁺)",
     "explanation": "Copper(II) ions react with excess aqueous ammonia to form the characteristic deep-blue tetraamminecopper(II) complex [Cu(NH₃)₄]²⁺.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-801",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Four pupils in Accra observe a flowering flamboyant tree growing near the assembly grounds.",
+    "question": "Which of these statements is an objective botanical FACT?",
+    "options": [
+      "Flamboyant tree flowers develop into long, woody seed pods.",
+      "The flamboyant tree is the most gorgeous shade tree in Ghana.",
+      "Sweeping flamboyant leaves off the compound is a terrible chore.",
+      "Red flowers smell much sweeter than white flowers."
+    ],
+    "correctAnswer": "Flamboyant tree flowers develop into long, woody seed pods.",
+    "explanation": "Leguminous flower fertilization and woody pod development are verifiable botanical facts; aesthetic beauty and chore difficulty are subjective opinions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-802",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A detective examines footprints pressed into damp sand near the school water pump. The marks show a rounded bare heel with five small distinct toe depressions.",
+    "question": "Who made these footprint tracks?",
+    "options": [
+      "A pupil walking barefoot across the sand",
+      "A teacher wearing heavy leather dress shoes",
+      "A stray sheep with two-toed split hooves",
+      "A student wearing rubber sandals with tire-tread lines"
+    ],
+    "correctAnswer": "A pupil walking barefoot across the sand",
+    "explanation": "Bare heel pads and five individual toe impressions confirm an unshod human foot, ruling out hooves and footwear.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-803",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "A student blows up a latex balloon and rubs it vigorously against her dry woolen school sweater, then holds it above small bits of paper.",
+    "question": "Why do the bits of paper jump up and stick to the balloon?",
+    "options": [
+      "Friction transferred electrical charges, creating static electricity that attracts neutral paper bits.",
+      "The balloon became sticky like tree sap.",
+      "Warm air leaked out of the balloon and sucked up the paper.",
+      "The paper was magnetic metal."
+    ],
+    "correctAnswer": "Friction transferred electrical charges, creating static electricity that attracts neutral paper bits.",
+    "explanation": "Triboelectric rubbing transfers electrons to the balloon, and the resulting electrostatic field induces dipole attraction in light paper scraps.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-804",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Morning assembly ran from 7:30 AM to 8:00 AM. English lesson ran from 8:00 AM to 9:00 AM. Physical Education ran from 9:00 AM to 10:00 AM. Kwame scraped his knee on the soccer pitch at 9:20 AM.",
+    "question": "What class activity was Kwame participating in when he scraped his knee?",
+    "options": [
+      "Physical Education on the sports field",
+      "English grammar inside the classroom",
+      "Morning assembly under the trees",
+      "Afternoon closing assembly"
+    ],
+    "correctAnswer": "Physical Education on the sports field",
+    "explanation": "9:20 AM falls squarely inside the scheduled Physical Education interval (9:00 AM to 10:00 AM).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-805",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Four friends in Cape Coast describe an African grey parrot resting on an avocado branch.",
+    "question": "Which of these statements represents a verifiable biological FACT?",
+    "options": [
+      "Parrots have zygodactyl feet with two toes facing forward and two toes facing backward.",
+      "Parrots are the most intelligent birds in the animal kingdom.",
+      "Grey parrots make much better pets than domestic pigeons.",
+      "Listening to birds mimic words is hilarious."
+    ],
+    "correctAnswer": "Parrots have zygodactyl feet with two toes facing forward and two toes facing backward.",
+    "explanation": "Zygodactyl avian anatomy is an objective biological trait; pet suitability and humor are personal opinions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-806",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A teacher discovers a dark green ink smear across an exam marking sheet on her desk.",
+    "question": "Which suspect left this marking clue?",
+    "options": [
+      "Kofi, who is writing with a leaking dark-green ballpoint pen",
+      "Ama, who is sharpening a lead graphite pencil",
+      "Yaw, who has dry white chalk dust on his fingers",
+      "Esi, who is using a red correction pen"
+    ],
+    "correctAnswer": "Kofi, who is writing with a leaking dark-green ballpoint pen",
+    "explanation": "The leaking dark-green ballpoint pen provides the direct physical source matching the green ink smear.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-807",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "A pupil leaves a slice of ripe red watermelon on an open outdoor bench during afternoon recess. Within thirty minutes, dozens of tiny fruit flies hover over it.",
+    "question": "What attracted the fruit flies to the watermelon?",
+    "options": [
+      "Volatile sweet sugar scents released by the sliced fruit attracted foraging flies.",
+      "The watermelon created flies out of its seeds.",
+      "Watermelon skin reflects sunlight into the sky.",
+      "The flies were trying to hide from the sun under the rind."
+    ],
+    "correctAnswer": "Volatile sweet sugar scents released by the sliced fruit attracted foraging flies.",
+    "explanation": "Fruit flies detect airborne ethanol and fructose vapors using antennal olfactory receptors to locate feeding and oviposition sites.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-808",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Breakfast was eaten at 6:45 AM, walking to school took from 7:00 AM to 7:30 AM, assembly ran from 7:30 AM to 8:00 AM, and handwriting began at 8:00 AM. Abena stained her fingers with blue ink at 8:15 AM.",
+    "question": "What lesson was Abena engaged in when she stained her fingers?",
+    "options": [
+      "Handwriting class inside the classroom",
+      "Walking along the road to school",
+      "Eating breakfast at home",
+      "Standing at morning assembly"
+    ],
+    "correctAnswer": "Handwriting class inside the classroom",
+    "explanation": "Handwriting class began at 8:00 AM, which directly encompasses the 8:15 AM ink spill.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-809",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A clay bowl containing water on the kitchen porch was knocked over. The ground nearby displays split two-toed hooves with small dewclaw marks behind.",
+    "question": "Which animal visited the porch and knocked over the bowl?",
+    "options": [
+      "A domestic pig or goat with cloven hooves",
+      "A stray cat with padded claw paws",
+      "A domestic chicken with three forward scaly toes",
+      "A human wearing flat-soled sneakers"
+    ],
+    "correctAnswer": "A domestic pig or goat with cloven hooves",
+    "explanation": "Cloven hooves with secondary dewclaw depressions are diagnostic anatomical imprints of artiodactyl ungulates.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-810",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils in Tamale examine shea nuts collected from a savanna shea tree.",
+    "question": "Which statement represents a verifiable agricultural FACT?",
+    "options": [
+      "Shea nuts contain vegetable fats that can be extracted to make shea butter.",
+      "Shea butter smells much nicer than cocoa butter.",
+      "Collecting shea nuts in the savanna is the most fun weekend activity.",
+      "Shea trees look far more majestic than baobab trees."
+    ],
+    "correctAnswer": "Shea nuts contain vegetable fats that can be extracted to make shea butter.",
+    "explanation": "The lipid chemical composition of Vitellaria paradoxa kernels is an objective agricultural fact; smell and tree appearance are opinions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-801",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A laboratory microscope disappeared from a secondary school prep room in Ho on October 14 at 1:30 PM. Suspect Dzifa claims she was outside stargazing and identifying the Orion constellation with her bare eyes at that exact time.",
+    "question": "What astronomical fact disproves Dzifa's alibi?",
+    "options": [
+      "At 1:30 PM in Ho, the sun is high in the sky and atmospheric solar scattering obscures all distant stars.",
+      "Microscopes use optical glass lenses to magnify specimens.",
+      "Ho is the administrative capital of the Volta Region.",
+      "October is a month in the secondary rainy season."
+    ],
+    "correctAnswer": "At 1:30 PM in Ho, the sun is high in the sky and atmospheric solar scattering obscures all distant stars.",
+    "explanation": "Daytime solar irradiance washes out faint stellar emissions, making optical naked-eye stargazing impossible at 1:30 PM.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-802",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A commercial brand of imported breakfast cereal publishes a brochure claiming: 'Children who eat processed corn flakes score 40% higher on mathematics tests than children who eat traditional millet porridge.'",
+    "question": "What fundamental bias should an apprentice analyst detect?",
+    "options": [
+      "Commercial marketing bias designed to boost cereal sales while making unsupported health claims against local cereals.",
+      "Corn flakes are manufactured from milled maize kernels.",
+      "Millet is an indigenous drought-resistant West African cereal grain.",
+      "Mathematics tests evaluate arithmetic calculation skills."
+    ],
+    "correctAnswer": "Commercial marketing bias designed to boost cereal sales while making unsupported health claims against local cereals.",
+    "explanation": "The commercial cereal manufacturer has a financial conflict of interest driving them to disparage traditional competing grains.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-803",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "A baker mixed bread dough at 5:00 AM, let it ferment until 6:30 AM, baked it in an oven from 6:30 AM to 7:15 AM, and left loaves on cooling racks until 8:00 AM. A gas burner failure caused bread to come out doughy and underbaked.",
+    "question": "During which operational interval did the gas burner fail?",
+    "options": [
+      "Between 6:30 AM and 7:15 AM",
+      "Between 5:00 AM and 6:30 AM",
+      "Between 7:15 AM and 8:00 AM",
+      "After 8:30 AM during morning sales"
+    ],
+    "correctAnswer": "Between 6:30 AM and 7:15 AM",
+    "explanation": "Baking thermal application occurred exclusively between 6:30 AM and 7:15 AM, restricting heat failure to that window.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-804",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A student measures the germination time of two bean seeds placed in sandy soil. Both sprout in exactly four days. He writes in his report: 'Every bean seed planted in sandy soil across Ghana germinates in exactly 96 hours.'",
+    "question": "Why is the student's conclusion invalid?",
+    "options": [
+      "A sample size of two seeds (N=2) is statistically inadequate to represent natural biological variation across diverse seed batches.",
+      "Bean seeds contain embryonic cotyledons and plumules.",
+      "Sandy soil has large pore spaces and low water retention.",
+      "The experiment was conducted during the third academic term."
+    ],
+    "correctAnswer": "A sample size of two seeds (N=2) is statistically inadequate to represent natural biological variation across diverse seed batches.",
+    "explanation": "Generalizing national biological germination rates from two specimens fails statistical power requirements and ignores moisture and temperature variance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-805",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A tool shed lock was cut with a mechanical hand tool. Forensic investigators recover metal shavings and observe striated shear marks angled at 45 degrees, matching the dual opposing blades of bolt cutters.",
+    "question": "Which tool produced these mechanical marks on the lock shackle?",
+    "options": [
+      "A heavy pair of mechanical bolt cutters with opposing hardened blades",
+      "A rotary angle grinder that creates melted abrasive slag burns",
+      "A hand wood chisel with a single beveled flat blade",
+      "A carpenter's claw hammer using blunt force"
+    ],
+    "correctAnswer": "A heavy pair of mechanical bolt cutters with opposing hardened blades",
+    "explanation": "Opposing 45-degree shear facets with pinch-point ridges are characteristic forensic signatures of mechanical bolt cutter jaws.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-806",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "Following the total removal of riparian trees along the banks of the Densu River, local fishermen reported that river water temperatures rose and dissolved oxygen levels plummeted.",
+    "question": "What caused the drop in dissolved oxygen?",
+    "options": [
+      "Loss of tree canopy exposed the river to direct solar heating, and warmer water holds significantly less dissolved oxygen gas.",
+      "The river water turned into solid ice.",
+      "Fish began consuming all the oxygen because they grew larger.",
+      "Trees pump oxygen into water through their submerged roots."
+    ],
+    "correctAnswer": "Loss of tree canopy exposed the river to direct solar heating, and warmer water holds significantly less dissolved oxygen gas.",
+    "explanation": "Gas solubility in water is inversely related to temperature; unshaded solar heating warms the water, driving dissolved oxygen out of solution.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-807",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A desktop computer was removed from a headmaster's office in Navrongo on December 15 at 10:00 PM. Suspect Akwasi claims he was sitting under a baobab tree watching the full moon rise at midday (12:00 PM) on that same date.",
+    "question": "What astronomical fact dismantles Akwasi's alibi?",
+    "options": [
+      "A full moon rises opposite the sun around sunset (approx 6:00 PM), never at 12:00 PM midday.",
+      "Desktop computers require alternating current electrical power.",
+      "Navrongo is situated in the Upper East Region.",
+      "Baobab trees store water in swollen trunk tissues."
+    ],
+    "correctAnswer": "A full moon rises opposite the sun around sunset (approx 6:00 PM), never at 12:00 PM midday.",
+    "explanation": "A full moon is at 180° opposition to the sun and rises at dusk, making a midday full moon rise an astronomical impossibility.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-808",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A commercial sports shoe brand sponsors a survey of 10 athletes on its payroll and announces: 'Our sneakers make runners 25% faster than any other brand on Earth.'",
+    "question": "What critical bias undermines the study?",
+    "options": [
+      "Financial compensation creates self-interest bias, and the cherry-picked sample of paid athletes lacks independent verification.",
+      "Running shoes have synthetic foam soles.",
+      "Sprinters run on rubberized asphalt tracks.",
+      "The survey took place on an outdoor stadium track."
+    ],
+    "correctAnswer": "Financial compensation creates self-interest bias, and the cherry-picked sample of paid athletes lacks independent verification.",
+    "explanation": "Athletes under financial contract to a footwear company represent an obvious conflict of interest that invalidates unblinded claims.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-809",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A health worker interviews two patients in a town clinic who contracted malaria and finds neither used a mosquito net. She concludes: 'Zero residents in this entire district own mosquito nets.'",
+    "question": "What logical fallacy did the health worker commit?",
+    "options": [
+      "Hasty generalization from a tiny, unrepresentative sample (N=2) to an entire municipal population.",
+      "Malaria is caused by Plasmodium parasites.",
+      "Mosquito nets are treated with pyrethroid insecticides.",
+      "The clinic was located in the Ashanti Region."
+    ],
+    "correctAnswer": "Hasty generalization from a tiny, unrepresentative sample (N=2) to an entire municipal population.",
+    "explanation": "Inferring district-wide bednet ownership from two self-selected symptomatic clinic patients is a severe hasty generalization.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-810",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A forged will written on legal paper displays an added clause. Chemical testing with thin-layer chromatography (TLC) reveals the added clause uses ballpoint ink with three dye components, while the original text uses gel ink with five dyes.",
+    "question": "What does this chemical separation prove?",
+    "options": [
+      "The added clause was inscribed using a different writing instrument with distinct chemical ink formulation, proving document tampering.",
+      "The document was stored inside an iron safe.",
+      "The paper was manufactured from unbleached wood pulp.",
+      "The author was writing while sitting in a car."
+    ],
+    "correctAnswer": "The added clause was inscribed using a different writing instrument with distinct chemical ink formulation, proving document tampering.",
+    "explanation": "Thin-layer chromatography separates distinct ink dye formulations, confirming that the added text was inserted with a different pen.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-801",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A statistical study across coastal towns in the Western Region shows that as sales of sunglasses increase, reported emergency hospitalizations for marine jellyfish stings also rise.",
+    "question": "What is the true underlying explanation for this correlation?",
+    "options": [
+      "Sunny weather acts as a common confounding variable that independently increases both beach attendance and sunglass purchases.",
+      "Wearing sunglasses attracts predatory jellyfish to swimmers.",
+      "Jellyfish stings compel victims to buy dark eyewear.",
+      "Sunglass frames leach chemicals that stimulate jellyfish breeding."
+    ],
+    "correctAnswer": "Sunny weather acts as a common confounding variable that independently increases both beach attendance and sunglass purchases.",
+    "explanation": "Solar irradiance drives beach recreation, concurrently raising eyewear sales and marine wildlife exposure without any direct causation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-802",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A sensational TikTok video claims: 'NASA confirms the Earth will lose gravity for three hours next Friday at 2:00 PM; all citizens must tie themselves to trees! Share with 20 friends!'",
+    "question": "Which combination of factors proves this video is viral clickbait misinformation?",
+    "options": [
+      "Physics impossibility (gravity cannot shut off), artificial apocalyptic panic, lack of institutional peer confirmation, and forced share quotas.",
+      "NASA employs astrophysicists and space engineers.",
+      "Gravitational attraction depends on mass and distance (F = G m₁ m₂ / r²).",
+      "TikTok transmits digital streaming video over cellular networks."
+    ],
+    "correctAnswer": "Physics impossibility (gravity cannot shut off), artificial apocalyptic panic, lack of institutional peer confirmation, and forced share quotas.",
+    "explanation": "Earth's mass generates invariant gravitational curvature; claims of gravity spontaneously deactivating are pseudoscience designed for viral engagement.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-803",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "During a debate on school uniform policy, Speaker A suggests: 'We should permit breathable cotton shirts during the hot dry harmattan season.' Speaker B responds: 'Speaker A wants our students to abandon uniforms and arrive in beachwear!'",
+    "question": "Which logical fallacy did Speaker B commit?",
+    "options": [
+      "Straw Man Fallacy (misrepresenting and exaggerating an opponent's argument to make it easier to attack)",
+      "Ad Hominem",
+      "Circular Reasoning",
+      "Appeal to Ignorance"
+    ],
+    "correctAnswer": "Straw Man Fallacy (misrepresenting and exaggerating an opponent's argument to make it easier to attack)",
+    "explanation": "Distorting a moderate proposal for breathable cotton into an extreme call for beachwear is a classic straw man fallacy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-804",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A forensic analyst tests an unknown white crystalline powder recovered from an illegal mining facility. Dissolving it in water and adding acidified barium chloride (BaCl₂) yields a dense, insoluble white precipitate.",
+    "question": "What anion is positively identified by this barium sulfate precipitation reaction?",
+    "options": [
+      "Sulfate (SO₄²⁻)",
+      "Chloride (Cl⁻)",
+      "Nitrate (NO₃⁻)",
+      "Carbonate (CO₃²⁻)"
+    ],
+    "correctAnswer": "Sulfate (SO₄²⁻)",
+    "explanation": "Barium ions react selectively with sulfate ions to form insoluble barium sulfate (BaSO₄), which remains insoluble in dilute mineral acid.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-805",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A private tutoring academy advertises: 'Our average student score improved by 400%!' An independent audit reveals that student scores rose from 1 point to 5 points out of 100.",
+    "question": "What deceptive statistical technique was used?",
+    "options": [
+      "Reporting a large relative percentage increase to conceal an objectively poor absolute performance gain.",
+      "Calculating the median rather than the arithmetic mean.",
+      "Plotting data using scatter diagrams.",
+      "Using standard deviation without variance."
+    ],
+    "correctAnswer": "Reporting a large relative percentage increase to conceal an objectively poor absolute performance gain.",
+    "explanation": "Touting a 400% relative jump masks the fact that an absolute score of 5/100 remains a severe failure.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-806",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A student prefect argues: 'We must not allow students to use mobile calculators during physics prep. If we do, students will forget all arithmetic, lose the ability to think, fail every national exam, and destroy Ghana's engineering future!'",
+    "question": "Which logical fallacy is demonstrated by this argument?",
+    "options": [
+      "Slippery Slope Fallacy",
+      "False Analogy",
+      "Equivocation",
+      "Red Herring"
+    ],
+    "correctAnswer": "Slippery Slope Fallacy",
+    "explanation": "Asserting without evidentiary justification that allowing calculators will inevitably cause an apocalyptic chain of educational collapses is a slippery slope.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-807",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A viral social media post displays a photo of a polar bear standing on a sand dune labeled: 'Arctic polar bear discovered migrating wild in Mole National Park, Ghana!'",
+    "question": "What biological and ecological reality disproves this image?",
+    "options": [
+      "Polar bears are hyper-specialized arctic marine mammals unable to survive savanna tropical heat or cross thousands of miles of tropical ocean.",
+      "Mole National Park is situated in the Savannah Region of Ghana.",
+      "Sand dunes occur in arid desert environments.",
+      "Digital cameras record high-resolution pixel matrices."
+    ],
+    "correctAnswer": "Polar bears are hyper-specialized arctic marine mammals unable to survive savanna tropical heat or cross thousands of miles of tropical ocean.",
+    "explanation": "Ursus maritimus is ecologically adapted strictly to arctic sea-ice biomes; physiological heat stress and vast geographic separation refute the claim.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-808",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "Municipal data in Accra reveals that as the number of traffic police officers deployed on major intersections increased, the number of registered traffic citations also increased.",
+    "question": "What is the true causal explanation for this relationship?",
+    "options": [
+      "Increased enforcement presence directly raised citation detection and issuance rates, rather than causing worse driving behavior.",
+      "Traffic police officers compel drivers to break road regulations.",
+      "Traffic citations attract police officers to intersections.",
+      "Intersections with police officers experience sudden brake failures."
+    ],
+    "correctAnswer": "Increased enforcement presence directly raised citation detection and issuance rates, rather than causing worse driving behavior.",
+    "explanation": "Detection bias explains the trend: more officers record a higher percentage of existing infractions that previously went unpenalized.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-809",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A company displays a bar chart comparing customer satisfaction between its product (51%) and a competitor's (49%). The Y-axis begins at 48% instead of 0%, making the 51% bar appear three times taller than the 49% bar.",
+    "question": "What misleading graphic design technique is being used?",
+    "options": [
+      "A truncated axis (suppressed zero baseline) that visually exaggerates a minor 2% difference into a massive visual gap.",
+      "Plotting discrete categorical variables as continuous data.",
+      "Converting percentages into radians.",
+      "Failing to compute the geometric mean."
+    ],
+    "correctAnswer": "A truncated axis (suppressed zero baseline) that visually exaggerates a minor 2% difference into a massive visual gap.",
+    "explanation": "Truncating the vertical axis baseline distorts geometric area proportions, magnifying an insignificant 2% margin into a false visual landslide.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-810",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A forensic analyst tests an unknown metal seized at an illegal smelting shed. Treating the metal shavings with concentrated nitric acid produces a brown toxic gas (NO₂) and a bright blue-green solution that turns deep blue when aqueous ammonia is added.",
+    "question": "What transition metal element was positively identified?",
+    "options": [
+      "Copper (Cu)",
+      "Iron (Fe)",
+      "Lead (Pb)",
+      "Zinc (Zn)"
+    ],
+    "correctAnswer": "Copper (Cu)",
+    "explanation": "Copper dissolves in nitric acid yielding nitrogen dioxide gas and aqueous Cu²⁺ ions, which form the deep blue [Cu(NH₃)₄]²⁺ complex in ammonia.",
     "isCentral": true
   }
 ];
@@ -11890,6 +12640,676 @@ export const THINK_TANK_RIDDLES: ThinkTankRiddleItem[] = [
     ],
     "explanation": "Both guards will point to the prison door (the liar will lie about the truth-teller; the truth-teller will honestly report the lie). You take the opposite door.",
     "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-801",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a bright flash across the storm clouds. My light strikes the classroom window seconds before thunder rattles the roof. What am I?",
+    "hint1": "Electrical discharge in the sky.",
+    "hint2": "Thunder is my noisy partner.",
+    "answer": "Lightning",
+    "acceptedKeywords": [
+      "lightning",
+      "a lightning bolt",
+      "lightning flash"
+    ],
+    "explanation": "Lightning is a massive electrostatic discharge between charged atmospheric regions or between a cloud and the ground.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-802",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am a perfectly round 2D shape with no corners and no straight edges. Coins, bicycle wheels, and the full moon share my shape. What am I?",
+    "hint1": "Drawn using a pair of compasses.",
+    "hint2": "All points are equal distance from my center.",
+    "answer": "A circle",
+    "acceptedKeywords": [
+      "circle",
+      "a circle"
+    ],
+    "explanation": "A circle is a 2D plane geometric curve consisting of all points equidistant from a central focal point.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-804",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am green in the tree canopy, turning yellow and brown when I dry up and flutter down to the soil. Plants breathe through my pores. What am I?",
+    "hint1": "Photosynthesis takes place within me.",
+    "hint2": "Branches carry thousands of me.",
+    "answer": "A leaf",
+    "acceptedKeywords": [
+      "leaf",
+      "a leaf",
+      "leaves"
+    ],
+    "explanation": "Leaves are the primary photosynthetic and gas-exchange organs of vascular plants.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-805",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am a traditional drum shaped like an hourglass. When drummers squeeze my leather tension strings under their arm, my pitch rises and mimics the human voice. What am I?",
+    "hint1": "Known as the talking drum.",
+    "hint2": "Called Donno in Akan.",
+    "answer": "A talking drum (Donno)",
+    "acceptedKeywords": [
+      "talking drum",
+      "donno",
+      "a talking drum",
+      "dundun"
+    ],
+    "explanation": "The Donno (talking drum) changes pitch via string tension, allowing players to mimic tonal West African languages.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-806",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "What has zippers or buckles, carries exercise books and pencils upon your shoulders, but never reads a single word?",
+    "hint1": "Strapped onto your back every morning.",
+    "hint2": "School bag.",
+    "answer": "A school bag (backpack)",
+    "acceptedKeywords": [
+      "school bag",
+      "backpack",
+      "a school bag",
+      "bag",
+      "a backpack"
+    ],
+    "explanation": "A school backpack is designed with straps to carry books and learning supplies.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-807",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I have 3 straight sides and 3 pointed corners. If you measure my three inside angles, they always add up to 180 degrees. What shape am I?",
+    "hint1": "Prefix 'Tri-' means three.",
+    "hint2": "Triangle.",
+    "answer": "A triangle",
+    "acceptedKeywords": [
+      "triangle",
+      "a triangle"
+    ],
+    "explanation": "A triangle is a 3-sided polygon whose interior angles sum to 180 degrees.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-808",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am the bright orb in the night sky. Sometimes I am a thin silver crescent, and sometimes a round glowing ball. What am I?",
+    "hint1": "Orbits planet Earth once every month.",
+    "hint2": "Reflects sunlight at night.",
+    "answer": "The moon",
+    "acceptedKeywords": [
+      "moon",
+      "the moon",
+      "lunar"
+    ],
+    "explanation": "The moon is Earth's only natural satellite, exhibiting cyclical phases as its illuminated hemisphere faces us.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-809",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "What has a head and a tail, but no body, legs, or eyes, and can be flipped into the air to settle a decision?",
+    "hint1": "Made of stamped metal.",
+    "hint2": "A Pesewa coin.",
+    "answer": "A coin",
+    "acceptedKeywords": [
+      "coin",
+      "a coin",
+      "pesewa",
+      "pesewa coin"
+    ],
+    "explanation": "The obverse side of a coin is colloquially called 'heads' and the reverse side 'tails'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-810",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "What can be heard by everyone across the compound, but can never be touched or picked up in your hand?",
+    "hint1": "Acoustic sound vibrations.",
+    "hint2": "Your voice produces it.",
+    "answer": "A sound (or voice)",
+    "acceptedKeywords": [
+      "sound",
+      "a sound",
+      "voice",
+      "a voice",
+      "noise"
+    ],
+    "explanation": "Sound is acoustic mechanical vibration through matter; it is energy, not a tangible solid object.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-811",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "Prepared from fermented white corn dough and wrapped in dry cornhusks, I am the popular coastal meal eaten with hot pepper shito and fried fish. What am I?",
+    "hint1": "Ga and Fante staple.",
+    "hint2": "Kenkey.",
+    "answer": "Kenkey",
+    "acceptedKeywords": [
+      "kenkey",
+      "ga kenkey",
+      "fante kenkey"
+    ],
+    "explanation": "Kenkey is a staple Ghanaian sourdough dumpling prepared from fermented cornmeal wrapped in dried cornhusks.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-813",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a feathered bird with a bright red comb upon my head. I flap my wings and crow loudly at dawn to wake the village. What am I?",
+    "hint1": "Male domestic chicken.",
+    "hint2": "Cock-a-doodle-doo.",
+    "answer": "A rooster (cock)",
+    "acceptedKeywords": [
+      "rooster",
+      "a rooster",
+      "cock",
+      "a cock"
+    ],
+    "explanation": "A rooster is an adult male chicken (Gallus gallus domesticus) renowned for territorial dawn crowing.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-814",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "What breaks the very second you speak its name out loud in an empty classroom?",
+    "hint1": "Libraries demand that you maintain it.",
+    "hint2": "The total absence of sound.",
+    "answer": "Silence",
+    "acceptedKeywords": [
+      "silence",
+      "quiet",
+      "quietness"
+    ],
+    "explanation": "The physical act of speaking generates sound vibrations, thereby breaking silence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-815",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "What has hinges and a handle, swings open to let pupils into the classroom, and shuts to keep the rain out?",
+    "hint1": "Knock on it before entering.",
+    "hint2": "Fits inside a door frame.",
+    "answer": "A door",
+    "acceptedKeywords": [
+      "door",
+      "a door",
+      "classroom door"
+    ],
+    "explanation": "A door is a hinged barrier used to open and close an entranceway.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-802",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am an Adinkra symbol depicting a carved wooden comb, symbolizing feminine beauty, hygiene, and caring tenderness. What symbol am I?",
+    "hint1": "Duafe in Akan.",
+    "hint2": "Represents cleanliness and grooming.",
+    "answer": "Duafe",
+    "acceptedKeywords": [
+      "duafe",
+      "the duafe",
+      "wooden comb symbol"
+    ],
+    "explanation": "Duafe is the Adinkra symbol of the wooden comb, representing cleanliness, hygiene, and beauty.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-803",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "What is the only 2D geometric shape where every point along its perimeter is at the exact same distance from its central point?",
+    "hint1": "The fixed distance is called the radius.",
+    "hint2": "Drawn with a compass.",
+    "answer": "A circle",
+    "acceptedKeywords": [
+      "circle",
+      "a circle"
+    ],
+    "explanation": "By definition, a circle is the locus of all coplanar points equidistant from a central origin.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-804",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the lowest temperature theoretically possible in the universe, where all thermal molecular kinetic motion ceases. What point am I on the Kelvin scale?",
+    "hint1": "Corresponds to -273.15°C.",
+    "hint2": "Zero Kelvin.",
+    "answer": "Absolute zero (0 Kelvin)",
+    "acceptedKeywords": [
+      "absolute zero",
+      "0 kelvin",
+      "0 k",
+      "zero kelvin"
+    ],
+    "explanation": "Absolute zero (0 K) is the thermodynamic limit where fundamental particles possess minimal zero-point vibrational energy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-805",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I am an English word of six letters. Remove my final letter and twelve items remain. What word am I?",
+    "hint1": "Twelve items make a dozen.",
+    "hint2": "D-O-Z-E-N-S.",
+    "answer": "Dozens",
+    "acceptedKeywords": [
+      "dozens",
+      "the word dozens"
+    ],
+    "explanation": "Removing the letter 's' from 'dozens' leaves 'dozen', which represents the number twelve.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-806",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "A girl kicks a football across a level compound. Without bouncing off any wall, fence, or obstacle, and without being touched by anyone, the ball rolls straight back to her feet. How?",
+    "hint1": "Consider vertical trajectory.",
+    "hint2": "She kicked it straight up into the air.",
+    "answer": "She kicked it straight up into the sky",
+    "acceptedKeywords": [
+      "kicked it up",
+      "straight up",
+      "up into the air",
+      "kicked it upwards"
+    ],
+    "explanation": "Kicking the football straight up causes gravity to decelerate it and return it straight back down.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-808",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the human sensory organ containing the cochlea, auditory nerve, and three tiny bones called the malleus, incus, and stapes. What am I?",
+    "hint1": "Organ of hearing.",
+    "hint2": "Maintains physical balance.",
+    "answer": "The ear",
+    "acceptedKeywords": [
+      "ear",
+      "the ear",
+      "human ear",
+      "ears"
+    ],
+    "explanation": "The ear transduces acoustic pressure waves into electrical nerve impulses via the tympanic membrane and cochlea.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-809",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "What is the area of a rectangular school plot that measures 12 meters long and 8 meters wide?",
+    "hint1": "Multiply length by width.",
+    "hint2": "12 × 8.",
+    "answer": "96 square metres",
+    "acceptedKeywords": [
+      "96",
+      "96 square metres",
+      "96 sq m",
+      "96m2"
+    ],
+    "explanation": "Area = length × width = 12 × 8 = 96 m².",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-811",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "A man pushes his car up to a hotel in Accra and immediately shouts that he is completely bankrupt. He wasn't injured and his car works perfectly. How?",
+    "answer": "He is playing the board game Monopoly",
+    "explanation": "In the game of Monopoly, landing on an opponent's hotel property with your car token can cause financial bankruptcy.",
+    "hint1": "Playing a board game with tokens.",
+    "hint2": "Monopoly.",
+    "acceptedKeywords": [
+      "monopoly",
+      "playing monopoly",
+      "board game monopoly"
+    ],
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-812",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the dense core of an atom that contains protons and neutrons, packing nearly 99.9% of the atom's total mass. What am I?",
+    "hint1": "Electrons orbit around me.",
+    "hint2": "Discovered by Ernest Rutherford.",
+    "answer": "The nucleus",
+    "acceptedKeywords": [
+      "nucleus",
+      "the nucleus",
+      "atomic nucleus"
+    ],
+    "explanation": "The atomic nucleus is the positive, dense central core composed of bound nucleons.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-813",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am Ghana's largest wildlife protected area, located near Damongo, where wild elephants, roan antelopes, and baboons roam the savanna. What national park am I?",
+    "hint1": "Located in the Savannah Region.",
+    "hint2": "Mole...",
+    "answer": "Mole National Park",
+    "acceptedKeywords": [
+      "mole national park",
+      "mole park",
+      "mole"
+    ],
+    "explanation": "Mole National Park is Ghana's primary wildlife reserve, spanning over 4,500 square kilometers of savanna.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-815",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "What has planetary rings around its body, but no fingers to wear jewelry? I am a planet in our solar system!",
+    "hint1": "Sixth planet from the sun.",
+    "hint2": "Famous for icy rings.",
+    "answer": "Saturn",
+    "acceptedKeywords": [
+      "saturn",
+      "planet saturn"
+    ],
+    "explanation": "Saturn is encircled by an extensive planetary ring system of ice particles, rocky debris, and dust.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-801",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the constant in quantum physics relating a photon's energy to its electromagnetic wave frequency, denoted by h. What constant am I?",
+    "hint1": "Value is approx 6.626 × 10⁻³⁴ J·s.",
+    "hint2": "Planck's...",
+    "answer": "Planck's constant",
+    "acceptedKeywords": [
+      "planck's constant",
+      "planck constant",
+      "plancks constant"
+    ],
+    "explanation": "Planck's constant relates the energy of a photon to its wave frequency (E = hν).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-802",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "In polynomial algebra, what is the discriminant formula for a quadratic equation ax² + bx + c = 0 that determines the nature of the roots?",
+    "hint1": "Appears under the square root in the quadratic formula.",
+    "hint2": "b² - 4ac.",
+    "answer": "b squared minus 4ac",
+    "acceptedKeywords": [
+      "b^2 - 4ac",
+      "b^2-4ac",
+      "b squared minus 4ac",
+      "discriminant"
+    ],
+    "explanation": "The discriminant Δ= b² - 4ac indicates two distinct real roots (Δ> 0), one repeated root (Δ= 0), or complex roots (Δ< 0).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-803",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the cellular reduction division that produces four genetically unique haploid gamete sex cells (sperm or egg). What cell division am I?",
+    "hint1": "Mitosis produces two diploid cells; I produce four haploid cells.",
+    "hint2": "Crossing over occurs in my Prophase I.",
+    "answer": "Meiosis",
+    "acceptedKeywords": [
+      "meiosis",
+      "meiotic division"
+    ],
+    "explanation": "Meiosis reduces chromosome ploidy from diploid (2n) to haploid (n), introducing genetic variation via independent assortment and recombination.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-804",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was the 19th-century Ashanti prince and diplomatic envoy who conducted sensitive negotiations with British envoys and documented early kingdom administrative treaties. Who was I?",
+    "hint1": "A royal diplomat.",
+    "hint2": "Prince John...",
+    "answer": "John Owusu-Ansa (or Okyeame Kwame Frimpon)",
+    "acceptedKeywords": [
+      "owusu-ansa",
+      "john owusu ansa",
+      "okyeame"
+    ],
+    "explanation": "Prince John Owusu-Ansa served as an influential Ashanti diplomatic envoy during Anglo-Ashanti negotiations in the late 19th century.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-805",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "A lightbulb sits inside a closed wooden box. Outside are three switches labeled 1, 2, and 3. Exactly one switch powers the bulb. You may open the box only ONCE. How do you find the switch?",
+    "answer": "Turn Switch 1 ON for 10 minutes, turn it OFF, turn Switch 2 ON, and enter immediately: if lit, it is 2; if dark but warm, it is 1; if dark and cold, it is 3.",
+    "hint1": "Lightbulbs generate both photons and thermal heat.",
+    "hint2": "Leave one switch on long enough to heat the glass filament.",
+    "acceptedKeywords": [
+      "turn on switch 1 then switch 2",
+      "turn switch 1 on feel heat",
+      "heat",
+      "feel the bulb",
+      "bulb is warm"
+    ],
+    "explanation": "Using heat as a second physical indicator isolates the three possibilities across a single visual entry test.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-806",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the property of a fluid representing its internal resistance to shear flow and deformation. Honey has a high measure of me compared to water. What am I?",
+    "hint1": "Measured in poise or pascal-seconds.",
+    "hint2": "Colloquially called fluid thickness.",
+    "answer": "Viscosity",
+    "acceptedKeywords": [
+      "viscosity",
+      "fluid viscosity"
+    ],
+    "explanation": "Viscosity measures a fluid's internal friction resisting adjacent shearing layers from sliding past one another.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-807",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "What 8-letter word begins with 'D-E-C', ends with 'I-O-N', and describes a cognitive conclusion reached after deliberating between options?",
+    "hint1": "Judges deliver it.",
+    "hint2": "D-E-C-I-S-I-O-N.",
+    "answer": "Decision",
+    "acceptedKeywords": [
+      "decision",
+      "decisions",
+      "declaration"
+    ],
+    "explanation": "A decision is the cognitive conclusion reached after deliberating over available choices.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-808",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "What is the logarithm of 10,000 to the base 10 (log₁₀ 10000)?",
+    "hint1": "What power must 10 be raised to in order to equal 10,000?",
+    "hint2": "10⁴ = 10000.",
+    "answer": "4",
+    "acceptedKeywords": [
+      "4",
+      "four"
+    ],
+    "explanation": "Because 10⁴ = 10,000, log₁₀(10000) = 4.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-809",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "A beaker filled with water weighs 600 grams. When palm oil is added, it floats on top and total weight is 750 grams. If the beaker is dumped and filled entirely with palm oil, does it weigh more or less than 600 grams?",
+    "answer": "It weighs less than 600 grams because oil is less dense than water.",
+    "hint1": "Why does oil float on water?",
+    "hint2": "Density of oil is approximately 0.9 g/cm³.",
+    "acceptedKeywords": [
+      "less",
+      "less than 600 grams",
+      "it weighs less",
+      "weighs less"
+    ],
+    "explanation": "Because oil floats on water, its density is lower (approx 0.9 g/cm³ vs 1.0 g/cm³). The identical volume of oil weighs less than that volume of water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-810",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the electrostatic law stating that the attractive or repulsive force between two charges is proportional to their product and inversely proportional to the square of their distance. What law am I?",
+    "hint1": "Formula: F = k |q₁ q₂| / r².",
+    "hint2": "Named after Charles-Augustin de...",
+    "answer": "Coulomb's Law",
+    "acceptedKeywords": [
+      "coulomb's law",
+      "coulombs law",
+      "coulomb law"
+    ],
+    "explanation": "Coulomb's Law quantifies the electrostatic force of attraction or repulsion between electrical charges.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-811",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was the first Prime Minister and President of Ghana who declared national independence in 1957 and co-founded the Organization of African Unity. Who was I?",
+    "hint1": "Founder of the CPP.",
+    "hint2": "His memorial park stands in Accra.",
+    "answer": "Dr. Kwame Nkrumah",
+    "acceptedKeywords": [
+      "kwame nkrumah",
+      "dr kwame nkrumah",
+      "nkrumah"
+    ],
+    "explanation": "Dr. Kwame Nkrumah led Ghana to sovereignty from British colonial rule on March 6, 1957, as the nation's inaugural Prime Minister and President.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-812",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "In probability theory, what is the probability of rolling a total sum of 2 when rolling two standard six-sided dice?",
+    "hint1": "Only one roll produces 2: (1, 1).",
+    "hint2": "There are 36 total outcomes.",
+    "answer": "1/36",
+    "acceptedKeywords": [
+      "1/36",
+      "one out of 36",
+      "1 in 36"
+    ],
+    "explanation": "Only one ordered pair (1,1) out of 36 possible outcomes yields a sum of 2, giving P = 1/36.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-813",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the gas that comprises roughly 78% of Earth's atmosphere by volume, diatomic in structure (N₂), and converted into nitrates by rhizobia bacteria in legume root nodules. What gas am I?",
+    "hint1": "Atomic number 7.",
+    "hint2": "Chemical symbol N.",
+    "answer": "Nitrogen",
+    "acceptedKeywords": [
+      "nitrogen",
+      "nitrogen gas",
+      "n2"
+    ],
+    "explanation": "Molecular nitrogen (N₂) forms 78.08% of Earth's air, requiring biological or industrial fixation to become bioavailable.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-814",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "I am a 7-letter English word that reads the exact same forward and backward, describing a fast racing vehicle. What palindrome am I?",
+    "hint1": "Spelled: R-A-C-E-C-A-R.",
+    "hint2": "Reverses to itself.",
+    "answer": "Racecar",
+    "acceptedKeywords": [
+      "racecar",
+      "a racecar"
+    ],
+    "explanation": "'Racecar' is a 7-letter palindrome that reads identically from left to right and right to left.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-815",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "A wooden cube with side length 4 cm is painted red on all exterior faces, then cut into 64 small 1-cm cubes. How many of the small cubes have paint on exactly zero faces?",
+    "answer": "8 small cubes",
+    "explanation": "The unpainted interior core forms a smaller cube with dimensions (4 - 2) = 2 cm per side. Total unpainted cubes: 2³ = 8.",
+    "hint1": "Calculate the dimensions of the unpainted inner core.",
+    "hint2": "(4 - 2)³.",
+    "acceptedKeywords": [
+      "8",
+      "8 cubes",
+      "eight",
+      "8 small cubes"
+    ],
+    "isCentral": true
   }
 ];
 
@@ -12718,6 +14138,111 @@ export const THINK_TANK_DEBATES: ThinkTankDebateItem[] = [
     "targetGroup": "Scholar (JHS)",
     "topic": "National governments should levy targeted excise taxes on sugary beverages and processed foods to fund national health care.",
     "context": "Proponents argue that public health taxes successfully reduce rates of diabetes, hypertension, and obesity while funding hospital care. Opponents argue that sin taxes disproportionately burden lower-income households and intrude on personal dietary freedom.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-801",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Primary schools should require pupils to take a mandatory 30-minute nap after afternoon lunch.",
+    "context": "Supporters argue that daytime sleep restores cognitive alertness and improves memory retention in young children. Opponents claim naps disrupt structured school schedules and interfere with normal nighttime bedtimes.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-802",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Classrooms should prioritize graphic novels and comic books over text-only reading books.",
+    "context": "Advocates claim comics engage struggling readers and decode visual contextual meaning. Critics argue that plain text storybooks build richer mental vocabulary and deeper imaginative focus.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-803",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Lower primary art classes should focus strictly on drawing realistic nature objects rather than cartoons.",
+    "context": "Proponents argue that realistic drawing builds spatial discipline and botanical observational skills. Opponents argue that art should be an expressive space for unbounded childhood fantasy and emotional play.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-804",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be required to greet their school teachers in indigenous Ghanaian languages each morning.",
+    "context": "Supporters believe mother-tongue greetings preserve ancestral cultural respect and linguistic pride. Opponents worry this may confuse students from diverse regional backgrounds or conflict with English language immersion policies.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-805",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Schools should replace chalkboards with whiteboards and dry-erase markers in all classrooms.",
+    "context": "Advocates point out that whiteboards eliminate airborne calcium carbonate chalk dust that aggravates respiratory allergies. Opponents emphasize the higher recurring cost and plastic waste of disposable chemical markers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-801",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Upper primary schools should operate on a four-day school week with slightly extended daily hours.",
+    "context": "Supporters argue that a four-day week lowers transit expenses, provides family time, and allows teachers better preparation time. Critics contend that longer school days induce severe child fatigue and strain working parents' childcare arrangements.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-802",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Commercial extra classes and private paid tutoring should be outlawed for primary school pupils.",
+    "context": "Advocates argue that evening tutoring worsens socioeconomic educational inequality and causes childhood burnout. Opponents maintain that parents have a fundamental right to purchase academic reinforcement for their children.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-803",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Practical vocational trade skills like masonry and carpentry should be compulsory alongside academic subjects.",
+    "context": "Proponents assert that manual trades develop entrepreneurial self-reliance, problem solving, and practical technical competence. Skeptics argue that primary school hours should remain dedicated to foundational STEM, numeracy, and digital literacy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-804",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Children under 13 should be legally banned from appearing in commercial advertising and social media branding.",
+    "context": "Supporters argue that commercial influencer work exploits child labor and invades minor privacy rights. Opponents argue that commercial opportunities provide financial security for families and build early performance confidence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-805",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "All school textbooks should be distributed as synchronized digital audiobooks alongside printed text.",
+    "context": "Advocates highlight that audio narration assists students with reading difficulties, aids pronunciation, and supports diverse learning styles. Opponents argue that passive listening reduces silent reading stamina and text orthography retention.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-801",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should replace its thermal fossil fuel plants entirely with commercial nuclear power reactors.",
+    "context": "Supporters argue that nuclear energy delivers continuous, high-output zero-carbon baseload electricity that ends industrial blackouts. Opponents emphasize high capital construction costs, multi-decade debt, and the regulatory challenges of radioactive waste storage.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-802",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Social media companies should face legal liability for psychological and mental health harm caused to teen users.",
+    "context": "Advocates argue that platforms deliberately engineer addictive algorithmic feedback loops that trigger adolescent depression and anxiety. Opponents maintain that platforms are neutral hosts and that parental oversight and personal digital literacy are the proper remedies.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-803",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "National governments should outlaw the development and deployment of autonomous lethal AI combat weapons.",
+    "context": "Proponents argue that delegating targeting and kill decisions to algorithms violates international humanitarian law and moral accountability. Opponents argue that autonomous defense drones react faster than humans, reducing friendly casualties and collateral error.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-804",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Secondary schools should replace tiered academic programs (General Science vs. General Arts) with an interdisciplinary curriculum.",
+    "context": "Advocates argue that early streaming forces premature career choices and deprives humanities students of STEM literacy and vice versa. Opponents argue that early specialization is required to master the advanced prerequisites needed for university medicine and engineering.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-805",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Developing nations should place heavy export tariffs on raw mineral ores to force local industrial refining.",
+    "context": "Proponents argue that unprocessed mineral exports perpetuate the resource curse, whereas domestic value addition creates industrial jobs. Economists caution that export taxes can deter foreign direct investment, violate trade treaties, and fail if domestic refining infrastructure is lacking.",
     "isCentral": true
   }
 ];
