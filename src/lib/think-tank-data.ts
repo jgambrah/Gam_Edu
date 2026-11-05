@@ -813,6 +813,276 @@ export const THINK_TANK_PARADOXES: ThinkTankParadoxItem[] = [
     "answer": "The information processing, measurement, and memory erasure by the demon generates entropy.",
     "explanation": "Landauer's Principle proves that erasing binary bits of stored information releases thermodynamic heat (kT ln 2), preserving the Second Law.",
     "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If you are running in the school sports race and you run past the person in second place, what position are you in now?",
+    "answer": "You are in second place.",
+    "explanation": "You took over the spot of the person who was second, so you become second, while the leader remains in first place.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "When you look at your clean hand in the bright morning sun, you see one dark shadow on the veranda floor. When you turn on two torches from different sides, why are there two shadows of the same hand?",
+    "answer": "Each separate beam of light creates its own shadow when blocked by your hand.",
+    "explanation": "A shadow forms wherever light rays cannot reach. Two distinct light sources mean two separate paths of light are blocked.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "Can a person write a letter using ink that is completely invisible and truthfully claim they have written nothing?",
+    "answer": "No, because words were still formed on the paper even if the eye cannot detect them yet.",
+    "explanation": "Writing refers to the action of composing and recording marks, regardless of whether special heat or light is needed to see them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If you stack three empty calabash bowls inside each other, how many bowls are holding another bowl?",
+    "answer": "Two bowls are holding another bowl.",
+    "explanation": "The bottom bowl holds the middle one, and the middle bowl holds the top one. The top bowl holds nothing inside it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "If you look through a clear glass window, you see the mango tree outside. If you cover the glass with black cloth, why do you see your own faint face instead?",
+    "answer": "The black cloth stops incoming outside light, allowing the faint reflection from the front glass surface to show.",
+    "explanation": "Glass always reflects a tiny amount of light. When bright sunlight from outside is blocked, the dimmer reflection becomes visible.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-306",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "A farmer says: 'I know for a fact that nobody knows anything.' Does the farmer know something?",
+    "answer": "Yes, which contradicts the claim that nobody knows anything.",
+    "explanation": "Claiming absolute knowledge that no knowledge exists is self-refuting.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-307",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If you hold a piece of ice in your warm palm until it turns entirely to liquid water, did the ice disappear?",
+    "answer": "No, the ice simply changed its physical state from solid to liquid.",
+    "explanation": "Matter does not vanish; heat causes ice molecules to melt into liquid water without changing what substance it is.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-308",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "When you put a straight wooden ruler into a clear jar of water, why does the ruler look bent or broken at the water's surface?",
+    "answer": "Light rays bend as they pass from water into air, creating an optical illusion.",
+    "explanation": "This is refraction: light changes speed and bends when moving between materials of different densities, distorting the image.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-309",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "If there are 4 papayas on a kitchen tray and you take 3 papayas, how many papayas do you have in your arms?",
+    "answer": "You have 3 papayas.",
+    "explanation": "The question asks what you took and currently hold, not what remains on the tray.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-310",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "Can you ever take a step forward into yesterday?",
+    "answer": "No, because time only moves forward and physical movement cannot travel into the past.",
+    "explanation": "Yesterday is a completed period of time; physical motion only occurs in the present moment.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A mud-brick house in the village has every single brick replaced with fired clay blocks over ten years. If the original mud bricks are stacked into a second hut nearby, which one is the original house?",
+    "answer": "The standing home keeps historical functional continuity, while the new pile holds the original materials.",
+    "explanation": "This demonstrates the duality of identity: continuity of place and form versus continuity of the physical atoms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A market trader doubles her money on Monday, then spends 40 Cedis on stock. On Tuesday she doubles her remaining money and spends 40 Cedis again, leaving her with zero. How many Cedis did she start with?",
+    "answer": "She started with 30 Cedis.",
+    "explanation": "Working backwards: Before spending 40 Cedis on Tuesday she had 40, meaning she had 20 before doubling. On Monday before spending 40, she had 60 (20 + 40), meaning she started with half of 60, which is 30 Cedis.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A heavy solid iron anchor and a light wooden log are placed into Lake Volta. Why does the giant log float while a tiny iron nail sinks immediately?",
+    "answer": "The wood is less dense than water, while solid iron is denser than water.",
+    "explanation": "Flotation depends on density (mass per unit volume) relative to water, not total weight.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A village head declares: 'Whoever speaks a true sentence will be rewarded with a hen, and whoever speaks a false sentence will be rewarded with a duck.' What sentence earns neither?",
+    "answer": "'You will reward me with a duck.'",
+    "explanation": "If it is true, he must receive a hen, making it false. If it is false, he must receive a duck, making it true. It creates an insoluble paradox.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-305",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A father is 36 years old and his daughter is 6 years old. In how many years will the father be exactly three times as old as his daughter?",
+    "answer": "In 9 years.",
+    "explanation": "In 9 years, the father is 45 (36 + 9) and the daughter is 15 (6 + 9). 45 is 3 × 15.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-306",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "If you hold an open umbrella upright while running forward through vertical raindrops, why do your knees get wet while your head stays dry?",
+    "answer": "Your forward speed creates a relative angle for incoming rain, making it hit you diagonally from the front.",
+    "explanation": "Relative velocity combines the downward velocity of the rain with your forward velocity, slanting the apparent angle of impact.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-307",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "Can an accurate weighing scale ever measure something that weighs less than zero grams?",
+    "answer": "No, because physical matter cannot have negative mass.",
+    "explanation": "Weight is the gravitational force acting on mass. Scales can read negative values only as an offset calibration error (tare), not physical negative matter.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-308",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "You place a large ice cube in a glass filled to the absolute brim with water. When the ice melts completely, will the water spill over the glass?",
+    "answer": "No, the water level remains exactly at the brim without spilling.",
+    "explanation": "Floating ice displaces an amount of liquid water equal to its own total mass. Melting turns it into that exact volume.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-309",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "If 3 weavers can weave 3 kente strips in 3 days, how many days will it take 9 weavers to weave 9 kente strips?",
+    "answer": "It will take 3 days.",
+    "explanation": "One weaver takes 3 days to weave 1 kente strip. Therefore, 9 weavers working simultaneously produce 9 strips in those same 3 days.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-310",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "Two boys are born to the same mother, at the same hour, on the same day of the same year, but they are not twins. How is this possible?",
+    "answer": "They are two of a set of triplets.",
+    "explanation": "Being born as part of a set of triplets, quadruplets, or more means they share birth timing without being twins.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-301",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "In Newcomb's Paradox, an omniscient predictor sets two boxes: Box A (containing 1,000 Cedis) and Box B (containing 1,000,000 Cedis if predicted you take only Box B, or empty if predicted you take both). Do you choose Box B or both?",
+    "answer": "The problem divides decision theorists between Dominance Principle (two-boxing) and Expected Utility (one-boxing).",
+    "explanation": "If the predictor is infallible, taking only Box B guarantees 1,000,000 Cedis, but at the moment of choice the money is already physically placed.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-302",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "In the Paradox of the Heap (Sorites), if removing one grain of sand never turns a heap into a non-heap, does removing 100,000 grains one-by-one mean zero grains is still a heap?",
+    "answer": "No, showing that inductive logic breaks down when applied to vague linguistic predicates.",
+    "explanation": "Vagueness creates boundary problems where small imperceptible steps lead to logically absurd outcomes via mathematical induction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-303",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A family in Accra has two children. You are informed that at least one of them is a girl. What is the probability that both children are girls?",
+    "answer": "The probability is 1/3 (approximately 33.3%).",
+    "explanation": "Sample space for two children is {BB, BG, GB, GG}. Eliminating BB leaves 3 equally likely outcomes, only one of which is GG.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-304",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "In special relativity, can an object with non-zero rest mass ever accelerate up to and surpass the speed of light in a vacuum (c)?",
+    "answer": "No, because its relativistic momentum and required kinetic energy approach infinity as speed approaches c.",
+    "explanation": "As velocity approaches c, the Lorentz factor γ = 1/√(1 - v²/c²) approaches infinity, requiring infinite work.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-305",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "In Russell's Paradox, consider the set R of all sets that do not contain themselves. Does R contain itself?",
+    "answer": "R contains itself if and only if it does not contain itself, exposing an inconsistency in naive set theory.",
+    "explanation": "If R ∈ R, then by definition R ∉ R. If R ∉ R, then by definition R ∈ R. This necessitated axiomatic set theory (ZFC).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-306",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "In the St. Petersburg Paradox, a fair coin is flipped until Tails appears. If Tails appears on flip n, you win 2ⁿ Cedis. What is the mathematically expected payout?",
+    "answer": "The expected value is mathematically infinite, yet people will only pay a small sum to play.",
+    "explanation": "E = Σ(n=1 to ∞) (1/2ⁿ)(2ⁿ) = 1 + 1 + 1 + … = ∈fty. Expected monetary value diverges from real human expected utility.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-307",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "In the Bootstrap Paradox (causal loop), a physicist travels back in time and hands Isaac Newton his own published Principia Mathematica, which Newton then copies and publishes. Who wrote the book?",
+    "answer": "The information has no origin, existing within a closed uncaused causal loop.",
+    "explanation": "Causal loops in closed timelike curves violate ontological causality: the information exists without ever being created.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-308",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "In Arrow's Impossibility Theorem, can any ranked voting system with 3 or more options convert individual preferences into a community-wide ranking while satisfying all fair democratic criteria?",
+    "answer": "No, Kenneth Arrow proved mathematically that no ranked voting system can satisfy all fair criteria simultaneously.",
+    "explanation": "Criteria like unrestricted domain, non-dictatorship, Pareto efficiency, and independence of irrelevant alternatives cannot coexist without dictatorship.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-309",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "In quantum mechanics, if you observe an unstable radioactive particle continuously with extremely rapid measurements, does it decay?",
+    "answer": "No, continuous measurement prevents the system from transitioning, freezing its state (the Quantum Zeno Effect).",
+    "explanation": "Repeatedly collapsing the wave function back to the initial undecayed state suppresses the transition probability to zero.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-310",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "You draw two cards from a standard deck without replacement. Event A: the first card is an Ace. Event B: the second card is an Ace. Are events A and B statistically independent?",
+    "answer": "No, they are dependent events because the outcome of the first draw alters the probabilities of the second draw.",
+    "explanation": "P(B|A) = 3/51, whereas P(B|not  A) = 4/51. Because P(B|A) ≠ P(B), the events are dependent.",
+    "isCentral": true
   }
 ];
 
@@ -2223,6 +2493,486 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     ],
     "correctAnswer": "Lead (Pb²⁺)",
     "explanation": "Lead(II) ions react with iodide ions to yield bright yellow lead(II) iodide (PbI₂), famous for forming shimmering 'golden rain' crystals upon cooling.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Four pupils in Kumasi discuss fresh fruits sold outside the school gate.",
+    "question": "Which of these statements is a verifiable scientific FACT?",
+    "options": [
+      "Mangoes contain vitamins and dietary fiber.",
+      "Pawpaw tastes much better than sweet orange.",
+      "Pineapples are the prettiest fruits in the market.",
+      "Watermelon slices look much nicer on blue plates."
+    ],
+    "correctAnswer": "Mangoes contain vitamins and dietary fiber.",
+    "explanation": "Nutritional content is a chemically proven biological fact, while taste preferences and appearance are subjective opinions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A detective finds a blue ink mark on the wooden desk. Suspect A has pencil shavings, Suspect B has dry chalk on his palms, Suspect C holds a leaking blue ballpoint pen, and Suspect D has red paint on her fingers.",
+    "question": "Which suspect left the blue ink mark?",
+    "options": [
+      "Suspect A",
+      "Suspect C holds a leaking blue ballpoint pen",
+      "Suspect B",
+      "Suspect D"
+    ],
+    "correctAnswer": "Suspect C holds a leaking blue ballpoint pen",
+    "explanation": "A leaking blue ballpoint pen provides the direct physical source matching the blue ink smudge.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Kofi plants a bean seed in a plastic cup with dry sand and puts it inside a completely dark cupboard without adding any water.",
+    "question": "Why does the bean seed fail to germinate after two weeks?",
+    "options": [
+      "Seeds require water and warmth to activate enzymatic germination.",
+      "The sand was too clean to hold seeds.",
+      "The cupboard door was made of timber wood.",
+      "The seed wanted to sleep during the term."
+    ],
+    "correctAnswer": "Seeds require water and warmth to activate enzymatic germination.",
+    "explanation": "Imbibition of water is the essential physiological trigger required for seeds to break dormancy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Assembly began at 7:30 AM and ended at 8:00 AM. Class lessons ran from 8:00 AM to 10:00 AM. Break time was from 10:00 AM to 10:30 AM. Yaw bought roasted groundnuts at 10:15 AM.",
+    "question": "During which school activity did Yaw buy the groundnuts?",
+    "options": [
+      "During assembly",
+      "During morning class lessons",
+      "During break time",
+      "After school dismissal"
+    ],
+    "correctAnswer": "During break time",
+    "explanation": "10:15 AM falls directly within the designated break period (10:00 AM to 10:30 AM).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils discuss weather phenomena during the harmattan season.",
+    "question": "Which statement about the harmattan is an objective meteorological FACT?",
+    "options": [
+      "The harmattan wind is boring and dull.",
+      "Harmattan winds carry dry, dusty continental air from the Sahara Desert.",
+      "Mornings in harmattan feel much nicer than rainy mornings.",
+      "Dust haze makes the sky look ugly."
+    ],
+    "correctAnswer": "Harmattan winds carry dry, dusty continental air from the Sahara Desert.",
+    "explanation": "The northeast trade winds transporting Saharan dust across West Africa is a proven geographical fact.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-306",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A wet footprint showing five toes without any shoe tread pattern was stamped on the dry floor tiles near the washroom.",
+    "question": "Who made this footprint?",
+    "options": [
+      "Someone wearing leather boots",
+      "Someone walking barefoot with wet feet",
+      "A stray sheep wandering from the field",
+      "Someone wearing rubber sandals"
+    ],
+    "correctAnswer": "Someone walking barefoot with wet feet",
+    "explanation": "Distinct individual toe impressions with no sole patterning confirm a bare human foot.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-307",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "An inflated bicycle tire left out in the blazing afternoon sun suddenly pops with a loud bang without touching any sharp nails.",
+    "question": "What caused the bicycle tire to pop?",
+    "options": [
+      "Heat caused the air inside to expand and increase pressure until the rubber burst.",
+      "The bright sunlight dissolved the rubber tire.",
+      "Termites crawled over the rim and chewed the valve.",
+      "Cold wind caused the air inside to collapse."
+    ],
+    "correctAnswer": "Heat caused the air inside to expand and increase pressure until the rubber burst.",
+    "explanation": "Heating trapped gas causes thermal expansion and pressure buildup until structural limits are exceeded.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-308",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Ama put on her clean socks at 6:30 AM, walked through muddy puddles at 7:15 AM, and sat at her school desk at 7:45 AM. Her teacher noticed mud on her socks at 8:00 AM.",
+    "question": "When did Ama's socks get muddy?",
+    "options": [
+      "At 6:30 AM while putting them on at home",
+      "At 7:15 AM while walking through puddles",
+      "At 8:00 AM during class registration",
+      "At 9:00 AM during math class"
+    ],
+    "correctAnswer": "At 7:15 AM while walking through puddles",
+    "explanation": "Stepping into puddles at 7:15 AM is the event that transferred mud to the socks before inspection at 8:00 AM.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-309",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A slice of sweet bread left on the staffroom table has tiny teeth marks and a tail trail left in fine flour dust on the counter.",
+    "question": "Which animal investigated the bread?",
+    "options": [
+      "A house mouse",
+      "A barking dog",
+      "A crow from the tree",
+      "A grasshopper"
+    ],
+    "correctAnswer": "A house mouse",
+    "explanation": "Small incisor bite marks and a dragging tail track in dust are diagnostic traces of rodents like mice.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-310",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Four friends talk about domestic farm animals kept in Ghanaian towns.",
+    "question": "Which of these statements represents a verifiable FACT?",
+    "options": [
+      "Goats are mammals that nurse their kids with milk.",
+      "Baby goats are cuter than baby chicks.",
+      "Goats are stubborn and difficult to herd.",
+      "Goat meat makes the best light soup."
+    ],
+    "correctAnswer": "Goats are mammals that nurse their kids with milk.",
+    "explanation": "Mammalian classification and lactation are biological facts, while cuteness and taste are opinions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A box of new football jerseys went missing from the sports shed in Sunyani on Wednesday between 2:00 PM and 3:00 PM. Suspect Kwame claims he was watching a live afternoon European football match on television at his uncle's house.",
+    "question": "What fact breaks Kwame's alibi?",
+    "options": [
+      "The football jerseys were dyed green and white.",
+      "The European football leagues only kick off evening matches after 7:00 PM GMT.",
+      "The sports shed door was made of wooden boards.",
+      "Kwame plays as a defender for the school team."
+    ],
+    "correctAnswer": "The European football leagues only kick off evening matches after 7:00 PM GMT.",
+    "explanation": "Time zones and league broadcasting schedules confirm there are no live European matches at 2:00 PM GMT on Wednesdays.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A commercial bakery issues a brochure stating: 'Children who eat three slices of our sugar-frosted white bread daily memorize poems three times faster!'",
+    "question": "What is the primary motive behind this bakery's claim?",
+    "options": [
+      "To teach children poetry recitation techniques.",
+      "To increase corporate bread sales and boost profits through biased health claims.",
+      "To help children improve their English exam marks.",
+      "To encourage pupils to eat local cassava dishes."
+    ],
+    "correctAnswer": "To increase corporate bread sales and boost profits through biased health claims.",
+    "explanation": "Commercial manufacturers have a direct financial incentive to market exaggerated claims that drive product sales.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "A school bus leaves the station at 6:45 AM, picks up students at Stop A at 7:05 AM, Stop B at 7:20 AM, and arrives at school at 7:40 AM. An umbrella was left on the bus by a student who boarded at Stop A and got off at Stop B.",
+    "question": "Between what times was the student with the umbrella on the bus?",
+    "options": [
+      "Between 6:45 AM and 7:05 AM",
+      "Between 7:05 AM and 7:20 AM",
+      "Between 7:20 AM and 7:40 AM",
+      "After 8:00 AM during lessons"
+    ],
+    "correctAnswer": "Between 7:05 AM and 7:20 AM",
+    "explanation": "The student boarded at Stop A (7:05 AM) and departed at Stop B (7:20 AM), framing their ride to that exact interval.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A pupil tests a solar battery torch on one rainy morning and finds it ran out of charge in 15 minutes. He writes: 'Solar batteries never last more than 15 minutes in Ghana.'",
+    "question": "Why is this conclusion invalid?",
+    "options": [
+      "Solar batteries only charge on Sundays.",
+      "Testing a single battery on an overcast day is an insufficient sample size under poor charging conditions.",
+      "Flashlight bulbs do not use electrical energy.",
+      "Rainwater prevents flashlights from turning on."
+    ],
+    "correctAnswer": "Testing a single battery on an overcast day is an insufficient sample size under poor charging conditions.",
+    "explanation": "Drawing conclusions from a single trial under atypical charging conditions ignores statistical reliability and variable controls.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-305",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A padlock on a garden tool shed was forced open. Investigators find traces of blue paint on the gouged iron latch matching the chipped paint on a crowbar found behind the workshop.",
+    "question": "What does this evidence indicate?",
+    "options": [
+      "The crowbar was manufactured in Germany.",
+      "The crowbar with matching paint transferred residue during forceful contact with the latch.",
+      "The padlock was damaged by rainwater rust.",
+      "The shed was painted blue last year."
+    ],
+    "correctAnswer": "The crowbar with matching paint transferred residue during forceful contact with the latch.",
+    "explanation": "Paint transfer analysis links the tool directly to the mechanical leverage marks on the forced lock.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-306",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "When builders dug up the grass lawn and replaced it with solid concrete paving, the nearby classroom flooded during the next heavy rainfall.",
+    "question": "What caused the increased flooding after paving?",
+    "options": [
+      "Concrete absorbs more rainwater than porous grass soil.",
+      "Impermeable concrete prevents rain from infiltrating the soil, generating heavy surface runoff.",
+      "Grass attracts more rainclouds from the Atlantic Ocean.",
+      "The concrete made the air cooler."
+    ],
+    "correctAnswer": "Impermeable concrete prevents rain from infiltrating the soil, generating heavy surface runoff.",
+    "explanation": "Replacing permeable vegetative cover with impermeable concrete eliminates infiltration, drastically raising surface runoff volume.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-307",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A radio went missing from the teachers' common room on Friday at 11:30 AM in Cape Coast. Suspect Esi claims she was outside drawing a tree shadow pointing directly toward the South.",
+    "question": "Why is Esi's shadow-drawing alibi impossible?",
+    "options": [
+      "Pencils do not work outside under sunlight.",
+      "In Cape Coast (Northern Hemisphere tropics), midday sun casts shadows toward the North, not the South.",
+      "Trees lose their leaves during Friday mornings.",
+      "Radios cannot play music without electricity."
+    ],
+    "correctAnswer": "In Cape Coast (Northern Hemisphere tropics), midday sun casts shadows toward the North, not the South.",
+    "explanation": "Solar positioning dictates shadow geometry: solar transit from the south casts shadows pointing north, debunking her claim.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-308",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A company selling plastic water tanks publishes a report stating: 'Clay storage pots are dangerous and modern plastic tanks are the only safe way to store water.'",
+    "question": "What bias should an apprentice investigator spot?",
+    "options": [
+      "Commercial interest bias designed to discredit traditional competitors and force sales of plastic tanks.",
+      "Clay pots are made by shaping natural wet earth.",
+      "Water tanks are installed on concrete platforms.",
+      "Rainwater harvesting is practiced in West Africa."
+    ],
+    "correctAnswer": "Commercial interest bias designed to discredit traditional competitors and force sales of plastic tanks.",
+    "explanation": "The business has a clear profit incentive to exaggerate flaws in traditional alternatives.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-309",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A pupil visits two houses in his neighborhood and finds both families own a pet cat. He announces: '100% of all households in Ghana own pet cats.'",
+    "question": "What is the flaw in this conclusion?",
+    "options": [
+      "Cats are carnivorous mammals.",
+      "Extrapolating national demographic statistics from two local homes is a hasty generalization with an unrepresentative sample.",
+      "Households in Ghana often keep watchdogs.",
+      "The survey was done on a Saturday afternoon."
+    ],
+    "correctAnswer": "Extrapolating national demographic statistics from two local homes is a hasty generalization with an unrepresentative sample.",
+    "explanation": "A sample size of two houses is statistically meaningless when generalizing across an entire country.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-310",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A letter was dropped in a damp forest. The handwritten note shows feathery ink spreading outward through capillary action across the paper fibers.",
+    "question": "What does the feathering ink tell the investigator?",
+    "options": [
+      "The writer was angry when writing.",
+      "The paper was subjected to moisture or was highly absorbent and un-sized, causing liquid bleeding.",
+      "The pen contained invisible lemon juice.",
+      "The note was written using a laser printer."
+    ],
+    "correctAnswer": "The paper was subjected to moisture or was highly absorbent and un-sized, causing liquid bleeding.",
+    "explanation": "Feathering occurs when liquid ink diffuses along cellulose paper fibers due to moisture exposure or low sizing.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-301",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A municipal data study in Takoradi reveals that neighborhoods with more street food stalls also report higher total foot traffic injuries.",
+    "question": "What is the most likely confounding variable explaining this relationship?",
+    "options": [
+      "Street food contains hot peppers that blind pedestrians.",
+      "Dense commercial pedestrian activity attracts food stalls and naturally increases pedestrian congestion and exposure to traffic.",
+      "Food vendors intentionally trip passing shoppers.",
+      "Eating food while walking impairs inner-ear vestibular balance."
+    ],
+    "correctAnswer": "Dense commercial pedestrian activity attracts food stalls and naturally increases pedestrian congestion and exposure to traffic.",
+    "explanation": "Pedestrian volume is the common confounding cause that simultaneously attracts food vendors and raises foot traffic accident counts.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-302",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "An online blog post claims: 'Scientists at the University of Ghana discover that eating raw charcoal cures all forms of cancer in 24 hours! Government hiding truth!'",
+    "question": "Which indicators prove this is dangerous medical misinformation?",
+    "options": [
+      "It mentions an accredited public university.",
+      "It promises an overnight cure for complex diseases, invokes conspiracy censorship, and cites zero peer-reviewed clinical trials.",
+      "Charcoal is used in traditional cooking stoves.",
+      "Activated charcoal is used in clinical poison decontamination."
+    ],
+    "correctAnswer": "It promises an overnight cure for complex diseases, invokes conspiracy censorship, and cites zero peer-reviewed clinical trials.",
+    "explanation": "Miracle cure claims, conspiracy framing ('government hiding truth'), and absence of clinical evidence are classic markers of fake health news.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-303",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "In a school council debate, an opponent argues: 'We cannot trust Kwame's proposal for science club funding because Kwame failed his term-one French quiz!'",
+    "question": "Which logical fallacy is committed here?",
+    "options": [
+      "Ad Hominem (attacking Kwame's personal academic record instead of evaluating the funding proposal)",
+      "Post Hoc Ergo Propter Hoc",
+      "Straw Man Fallacy",
+      "Appeal to Tradition"
+    ],
+    "correctAnswer": "Ad Hominem (attacking Kwame's personal academic record instead of evaluating the funding proposal)",
+    "explanation": "Dismissing an argument by attacking the speaker's unrelated personal shortcoming is an ad hominem fallacy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-304",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A clear liquid from an unlabelled bottle found in a chemistry prep room gives off gas bubbles when added to sodium carbonate (Na₂CO₃), and turns blue litmus paper bright red.",
+    "question": "What chemical property does this liquid exhibit?",
+    "options": [
+      "It is a strong base containing hydroxide ions.",
+      "It is an acid producing aqueous hydronium (H⁺) ions that liberate carbon dioxide gas from carbonates.",
+      "It is a neutral hydrocarbon solvent.",
+      "It is saturated sodium chloride solution."
+    ],
+    "correctAnswer": "It is an acid producing aqueous hydronium (H⁺) ions that liberate carbon dioxide gas from carbonates.",
+    "explanation": "Acids turn blue litmus red and react with carbonates to liberate carbon dioxide gas (2H⁺ + CO₃²⁻ → H₂O + CO₂).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-305",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "An advertising campaign states: 'Our coaching academy doubled student exam success rates!' Data reveals their student pass rate increased from 1% to 2%.",
+    "question": "What statistical technique is being used to exaggerate the outcome?",
+    "options": [
+      "Presenting a 100% relative percentage increase to obscure a negligible 1% absolute increase.",
+      "Calculating the median rather than the mean.",
+      "Plotting data using scatter diagrams.",
+      "Using standard deviation without variance."
+    ],
+    "correctAnswer": "Presenting a 100% relative percentage increase to obscure a negligible 1% absolute increase.",
+    "explanation": "Touting 'doubled' or a 100% relative rise conceals the fact that absolute performance rose by only 1 percentage point.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-306",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A debater asserts: 'Nobody has ever conclusively proven that extraterrestrial microorganisms do not exist on Mars; therefore, Martian life definitely exists!'",
+    "question": "What logical fallacy is present in this deduction?",
+    "options": [
+      "Appeal to Ignorance (Argumentum ad Ignorantiam)",
+      "False Analogy",
+      "Circular Reasoning",
+      "Slippery Slope"
+    ],
+    "correctAnswer": "Appeal to Ignorance (Argumentum ad Ignorantiam)",
+    "explanation": "Claiming that a proposition must be true simply because it has not yet been proven false is an appeal to ignorance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-307",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A shared image claims to show a tsunami wave hitting the shores of Lake Volta in central Ghana. A meteorologist notes that Lake Volta is an inland freshwater reservoir with no tectonic ocean-trench subduction zones.",
+    "question": "What geographical reality refutes this viral image?",
+    "options": [
+      "Lake Volta is an artificial inland reservoir lacking the oceanic seismic subduction mechanisms that produce tsunamis.",
+      "Freshwater cannot form waves of any height.",
+      "Rain clouds prevent tsunamis from striking land.",
+      "Boats on Lake Volta travel at slow speeds."
+    ],
+    "correctAnswer": "Lake Volta is an artificial inland reservoir lacking the oceanic seismic subduction mechanisms that produce tsunamis.",
+    "explanation": "True tsunamis require massive oceanic tectonic displacement, which cannot occur in an inland river basin reservoir.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-308",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A survey across several towns in Ghana finds that people who sleep with their shoes on are significantly more likely to wake up with headaches.",
+    "question": "What common antecedent condition is the real cause?",
+    "options": [
+      "Rubber shoe soles release toxic neurotoxins into the feet overnight.",
+      "Going to bed intoxicated or severely exhausted causes both sleeping without undressing and morning headaches.",
+      "Headaches induce sleepwalking into shoes.",
+      "Shoelaces compress blood circulation to the skull."
+    ],
+    "correctAnswer": "Going to bed intoxicated or severely exhausted causes both sleeping without undressing and morning headaches.",
+    "explanation": "Severe intoxication or fatigue is the common cause that results in both sleeping in one's clothes and waking with a hangover or headache.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-309",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A company reports an average annual worker salary of 20,000 Cedis across 10 staff members. However, the managing director earns 155,000 Cedis while 9 employees earn 5,000 Cedis each.",
+    "question": "Which metric should be used instead of the mean to reflect typical worker pay?",
+    "options": [
+      "The standard deviation",
+      "The median, which is unaffected by extreme skewing outliers",
+      "The maximum range",
+      "The harmonic variance"
+    ],
+    "correctAnswer": "The median, which is unaffected by extreme skewing outliers",
+    "explanation": "The median (5,000 Cedis) accurately represents the central tendency of skewed distributions with extreme high outliers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-310",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A forensic analyst tests an unknown white crystalline powder seized at a warehouse. A flame test produces a persistent, intense golden-yellow flame.",
+    "question": "What metal cation is positively identified by this flame emission?",
+    "options": [
+      "Potassium (K⁺)",
+      "Sodium (Na⁺)",
+      "Copper (Cu²⁺)",
+      "Barium (Ba²⁺)"
+    ],
+    "correctAnswer": "Sodium (Na⁺)",
+    "explanation": "The characteristic atomic emission spectrum of sodium yields an intense yellow flame at the 589 nm doublet line.",
     "isCentral": true
   }
 ];
@@ -4247,6 +4997,785 @@ export const THINK_TANK_RIDDLES: ThinkTankRiddleItem[] = [
     ],
     "explanation": "She took his photograph with a camera, dipped the film print in chemical wash solution, and hung it up to dry.",
     "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am white when I am pure, black when I am dirty from storm clouds, and I drift across the sky without wings. What am I?",
+    "hint1": "You look up at me during the day.",
+    "hint2": "I bring rain when I get dark and heavy.",
+    "answer": "A cloud",
+    "acceptedKeywords": [
+      "cloud",
+      "a cloud",
+      "clouds",
+      "raincloud"
+    ],
+    "explanation": "Clouds consist of tiny condensed water droplets or ice crystals floating in the atmosphere.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I have four equal straight sides and four sharp square corners. If you cut me across diagonally from corner to corner, I turn into two triangles. What am I?",
+    "hint1": "All my sides are the exact same length.",
+    "hint2": "I am a basic flat shape.",
+    "answer": "A square",
+    "acceptedKeywords": [
+      "square",
+      "a square"
+    ],
+    "explanation": "A square is a regular quadrilateral with four equal sides and four right angles.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "What gets sharper the more you use it to write, but gets smaller and shorter until it is just a tiny stub?",
+    "hint1": "It has a graphite lead core and a wooden coat.",
+    "hint2": "You use a sharpener on it.",
+    "answer": "A pencil",
+    "acceptedKeywords": [
+      "pencil",
+      "a pencil",
+      "lead pencil"
+    ],
+    "explanation": "Sharpening a pencil whittles away the outer wood and shapes the inner graphite core, reducing its overall length over time.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I have roots you cannot see, I am taller than the classroom, and every year I wear a crown of green leaves. What am I?",
+    "hint1": "Birds build nests in my branches.",
+    "hint2": "Mangoes and oranges grow on my arms.",
+    "answer": "A tree",
+    "acceptedKeywords": [
+      "tree",
+      "a tree",
+      "trees"
+    ],
+    "explanation": "Trees are perennial plants with an elongated wooden trunk, branches, and root systems.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am a hollow dried gourd. When filled with small seeds or beads and shaken with rhythm, I make music for dancers in the village. What am I?",
+    "hint1": "In Ghana, musicians call me a shekere or rattle.",
+    "hint2": "I shake to make rhythmic sounds.",
+    "answer": "A shekere (calabash rattle)",
+    "acceptedKeywords": [
+      "shekere",
+      "rattle",
+      "a rattle",
+      "calabash rattle",
+      "sekere"
+    ],
+    "explanation": "The shekere is a traditional West African percussion instrument fashioned from a dried gourd wrapped in bead netting.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-306",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "What has a thumb and four fingers, but is not alive and has no flesh or bones of its own?",
+    "hint1": "You slip your hand inside it on cold or working days.",
+    "hint2": "It covers your hand like clothing.",
+    "answer": "A glove",
+    "acceptedKeywords": [
+      "glove",
+      "a glove",
+      "gloves"
+    ],
+    "explanation": "A glove is manufactured to fit the anatomy of a human hand, with four finger sheaths and one thumb sheath.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-307",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "If you have 10 ripe bananas and eat 4 of them during morning break, how many bananas do you have left?",
+    "hint1": "Subtract 4 from 10.",
+    "hint2": "Count up from 4 to 10.",
+    "answer": "6 bananas",
+    "acceptedKeywords": [
+      "6",
+      "six",
+      "6 bananas",
+      "six bananas"
+    ],
+    "explanation": "10 - 4 = 6. Six bananas remain.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-308",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I come out at night without being called, and I disappear at dawn without being stolen. What sparkling jewels in the sky am I?",
+    "hint1": "Look above you on a clear dark night.",
+    "hint2": "The sun is one of my closest cousins.",
+    "answer": "The stars",
+    "acceptedKeywords": [
+      "stars",
+      "the stars",
+      "star",
+      "a star"
+    ],
+    "explanation": "Stars are luminous astronomical spheres of plasma visible in the night sky when sunlight is absent.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-309",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "What has a neck, wears a round metal or plastic cap, but has no head or shoulders?",
+    "hint1": "You drink water or juice from it.",
+    "hint2": "It is made of glass or plastic.",
+    "answer": "A bottle",
+    "acceptedKeywords": [
+      "bottle",
+      "a bottle",
+      "water bottle"
+    ],
+    "explanation": "A bottle features an upper narrow section called a bottle neck, leading to its opening.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-310",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "What has legs, four of them in fact, but can never walk, run, or jump?",
+    "hint1": "You sit on a chair right next to it.",
+    "hint2": "You place your books and plates on its flat top.",
+    "answer": "A table",
+    "acceptedKeywords": [
+      "table",
+      "a table",
+      "desk",
+      "a desk"
+    ],
+    "explanation": "Tables and desks are supported by vertical structural posts traditionally referred to as legs.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-311",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am dried cassava flakes roasted until crisp and golden. When soaked in cold water with sugar, milk, and roasted groundnuts, I am a favorite quick student meal. What am I?",
+    "hint1": "Students call my meal 'gari soakings'.",
+    "hint2": "Made from grated fermented cassava root.",
+    "answer": "Gari",
+    "acceptedKeywords": [
+      "gari",
+      "garri",
+      "cassava gari"
+    ],
+    "explanation": "Gari is a traditional West African staple made from fermented, grated, and roasted cassava tubers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-312",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "How many days are in one full calendar week?",
+    "hint1": "From Monday all the way through Sunday.",
+    "hint2": "It is an odd number between 5 and 9.",
+    "answer": "7 days",
+    "acceptedKeywords": [
+      "7",
+      "seven",
+      "7 days",
+      "seven days"
+    ],
+    "explanation": "A standard calendar week consists of seven 24-hour solar days.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-313",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I hatch from an egg as a tiny swimming tadpole with gills and a tail, but when I grow up, I lose my tail and hop on land with four legs. What am I?",
+    "hint1": "I croak near ponds and ditches.",
+    "hint2": "I am an amphibian.",
+    "answer": "A frog (or toad)",
+    "acceptedKeywords": [
+      "frog",
+      "a frog",
+      "toad",
+      "a toad"
+    ],
+    "explanation": "Frogs undergo metamorphosis from aquatic, gill-breathing tadpoles into air-breathing, four-legged adult amphibians.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-314",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "If you throw a white pebble into the blue water of Lake Bosomtwe, what does it become?",
+    "hint1": "Think about what water does to dry things.",
+    "hint2": "It does not change color.",
+    "answer": "It becomes wet",
+    "acceptedKeywords": [
+      "wet",
+      "it becomes wet",
+      "it gets wet"
+    ],
+    "explanation": "Submerging any solid rock into a lake makes it wet.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-315",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "What starts with the letter 'T', is filled with 'T', and ends with 'T'?",
+    "hint1": "You pour hot breakfast brew from it.",
+    "hint2": "It holds tea inside.",
+    "answer": "A teapot",
+    "acceptedKeywords": [
+      "teapot",
+      "a teapot"
+    ],
+    "explanation": "The word 'TEAPOT' begins with T, ends with T, and holds tea ('T') inside.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the green organelle inside plant leaf cells where light energy is captured to convert water and carbon dioxide into glucose. What am I?",
+    "hint1": "I contain chlorophyll pigments.",
+    "hint2": "My name starts with 'chloro-'.",
+    "answer": "A chloroplast",
+    "acceptedKeywords": [
+      "chloroplast",
+      "a chloroplast",
+      "chloroplasts"
+    ],
+    "explanation": "Chloroplasts are specialized plant organelles that conduct photosynthesis.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am an Adinkra symbol shaped like two interlocking crocodile bodies sharing a single stomach. My proverb warns that fighting over food is foolish when the food goes to the same belly. What am I?",
+    "hint1": "Funtunfunefu Denkyemfunefu.",
+    "hint2": "It represents unity and shared destiny.",
+    "answer": "Funtunfunefu Denkyemfunefu (Siamese Crocodiles)",
+    "acceptedKeywords": [
+      "funtunfunefu",
+      "funtunfunefu denkyemfunefu",
+      "siamese crocodiles",
+      "denkyemfunefu"
+    ],
+    "explanation": "This Akan symbol teaches the senselessness of tribal conflict, as people share a common community existence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "What is the smallest positive prime number that is also an even integer?",
+    "hint1": "It has exactly two factors: 1 and itself.",
+    "hint2": "It is the only even prime number in all of mathematics.",
+    "answer": "Two (2)",
+    "acceptedKeywords": [
+      "2",
+      "two",
+      "number 2"
+    ],
+    "explanation": "2 is the only even prime number; every subsequent even number is divisible by 2.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the transfer of heat through fluids caused by the upward movement of hotter, less dense material and the downward sinking of cooler, denser material. What thermal process am I?",
+    "hint1": "It happens when water boils in a pot.",
+    "hint2": "Not conduction or radiation.",
+    "answer": "Convection",
+    "acceptedKeywords": [
+      "convection",
+      "thermal convection"
+    ],
+    "explanation": "Convection is bulk heat transfer driven by density differences within fluid masses.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-305",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "Forward I am an action of looking or gazing, backward I am a small round spot on a garment or dice. What four-letter word am I?",
+    "hint1": "Look at: P-E-E-K or S-P-O-T / T-O-P-S.",
+    "hint2": "P-O-O-P or T-O-O-T.",
+    "answer": "Tops / Spot (or Peek / Keep)",
+    "acceptedKeywords": [
+      "spot",
+      "tops",
+      "stop",
+      "pots"
+    ],
+    "explanation": "Reversing 'spot' forms 'tops', while 'stop' reverses into 'pots'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-306",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "A farmer has a rectangular garden measuring 20 metres by 10 metres. If he places a wooden fence post every 5 metres along the perimeter, how many fence posts does he need in total?",
+    "hint1": "Calculate the perimeter first: 2 × (20 + 10) = 60 metres.",
+    "hint2": "Divide 60 by 5.",
+    "answer": "12 posts",
+    "acceptedKeywords": [
+      "12",
+      "12 posts",
+      "twelve",
+      "twelve posts"
+    ],
+    "explanation": "In a closed loop, the number of posts equals the perimeter divided by spacing: 60 / 5 = 12.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-307",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am an ancient salt-mining and trade oasis city on the edge of the Sahara, home to the historic Sankore University with thousands of ancient Islamic manuscripts. What city am I?",
+    "hint1": "Located along the Niger River in Mali.",
+    "hint2": "Famous across medieval trade routes.",
+    "answer": "Timbuktu",
+    "acceptedKeywords": [
+      "timbuktu",
+      "tombouctou"
+    ],
+    "explanation": "Timbuktu flourished as a world-renowned scholarly hub and trans-Saharan trading post in the Mali and Songhai Empires.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-308",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the muscular pump inside your chest with four chambers: two atria and two ventricles. I circulate blood continuously through arteries and veins. What organ am I?",
+    "hint1": "Doctors listen to me with a stethoscope.",
+    "hint2": "My rhythm beats around 70 times per minute.",
+    "answer": "The heart",
+    "acceptedKeywords": [
+      "heart",
+      "the heart",
+      "human heart"
+    ],
+    "explanation": "The heart is the primary organ of the circulatory system, pumping deoxygenated blood to the lungs and oxygenated blood to the body.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-309",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "What is the perimeter of an equilateral triangle whose individual sides each measure 15 centimetres?",
+    "hint1": "An equilateral triangle has 3 sides of identical length.",
+    "hint2": "Multiply 15 by 3.",
+    "answer": "45 centimetres",
+    "acceptedKeywords": [
+      "45",
+      "45 cm",
+      "45 centimetres",
+      "forty-five"
+    ],
+    "explanation": "15 + 15 + 15 = 45 cm.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-310",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "What 5-letter English word becomes shorter when you add two more letters to it?",
+    "hint1": "Look at the word 'short'.",
+    "hint2": "Add '-er' to the end.",
+    "answer": "Short",
+    "acceptedKeywords": [
+      "short",
+      "the word short"
+    ],
+    "explanation": "Adding 'er' to 'short' spells 'shorter'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-311",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "Before Mount Everest was measured and surveyed by geographers, what was the highest mountain peak on Earth?",
+    "hint1": "Did another mountain shrink?",
+    "hint2": "The mountain was already physically there.",
+    "answer": "Mount Everest",
+    "acceptedKeywords": [
+      "mount everest",
+      "everest"
+    ],
+    "explanation": "Mount Everest was still the highest peak on Earth even before humans surveyed and named it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-312",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the electrical device that steps up or steps down alternating current (AC) voltage via electromagnetic induction between two coils of wire. What am I?",
+    "hint1": "You see me mounted on power poles in town.",
+    "hint2": "My name starts with 'trans-'.",
+    "answer": "A transformer",
+    "acceptedKeywords": [
+      "transformer",
+      "a transformer",
+      "electrical transformer"
+    ],
+    "explanation": "Transformers adjust voltage levels across electrical grids using Faraday's law of mutual electromagnetic induction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-313",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am the famous Akan woman warrior and queen mother of Ejisu who led the War of the Golden Stool against British colonial forces in 1900. Who am I?",
+    "hint1": "Famous for her rallying call to Ashanti men.",
+    "hint2": "Her first name is Yaa.",
+    "answer": "Nana Yaa Asantewaa",
+    "acceptedKeywords": [
+      "yaa asantewaa",
+      "nana yaa asantewaa",
+      "queen yaa asantewaa"
+    ],
+    "explanation": "Nana Yaa Asantewaa was the Queen Mother of Ejisu who commanded the Ashanti rebellion to defend the sacred Golden Stool in 1900.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-314",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "If you count from 1 to 100, how many times does the digit '7' appear in total?",
+    "hint1": "Count: 7, 17, 27, 37, 47, 57, 67, 70-79, 87, 97.",
+    "hint2": "Remember that 77 contains two sevens.",
+    "answer": "20 times",
+    "acceptedKeywords": [
+      "20",
+      "20 times",
+      "twenty"
+    ],
+    "explanation": "Units position: 10 times (7, 17, 27... 97). Tens position: 10 times (70 through 79). 10 + 10 = 20.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-315",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "What kind of room has no walls, no windows, no floor, and no door, but grows wild in damp forest shade?",
+    "hint1": "It is an edible fungus.",
+    "hint2": "Its name ends with 'room'.",
+    "answer": "A mushroom",
+    "acceptedKeywords": [
+      "mushroom",
+      "a mushroom",
+      "mushrooms"
+    ],
+    "explanation": "A mushroom is the fruiting body of a fungus; its name contains the word 'room'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-301",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the constant speed of light in a vacuum, represented by the letter c. What is my approximate value in kilometres per second?",
+    "hint1": "It takes about 8 minutes for sunlight to reach Earth.",
+    "hint2": "Approximately 300,000 km/s.",
+    "answer": "300,000 kilometres per second",
+    "acceptedKeywords": [
+      "300000 km/s",
+      "300,000 km/s",
+      "300000",
+      "300,000 kilometres per second",
+      "3x10^8 m/s"
+    ],
+    "explanation": "Light travels at exactly 299,792,458 m/s (approx 300,000 km/s) in a vacuum.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-302",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "In algebra, what is the value of any non-zero real number raised to the power of zero (x⁰)?",
+    "hint1": "Consider index laws: xⁿ / xⁿ = xⁿ⁻ⁿ.",
+    "hint2": "Any number divided by itself equals...",
+    "answer": "One (1)",
+    "acceptedKeywords": [
+      "1",
+      "one"
+    ],
+    "explanation": "By exponent quotient rules: xᵃ / xᵃ = xᵃ⁻ᵃ = x⁰ = 1 for all x ≠ 0.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-303",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the organelle responsible for sorting, modifying, and packaging proteins synthesized by the rough endoplasmic reticulum into vesicles for secretion. What am I?",
+    "hint1": "Named after an Italian biologist who stained it with silver nitrate.",
+    "hint2": "Golgi...",
+    "answer": "The Golgi apparatus (Golgi body)",
+    "acceptedKeywords": [
+      "golgi apparatus",
+      "golgi body",
+      "the golgi apparatus",
+      "golgi complex"
+    ],
+    "explanation": "The Golgi apparatus modifies, sorts, and packages macromolecules for cellular secretion or delivery to lysosomes.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-304",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am the medieval West African empire founded by Sundiata Keita after the Battle of Kirina in 1235, codified under the Kurukan Fuga charter. What empire was I?",
+    "hint1": "Mansa Musa later ruled over me.",
+    "hint2": "Named after the modern nation of Mali.",
+    "answer": "The Mali Empire",
+    "acceptedKeywords": [
+      "mali empire",
+      "the mali empire",
+      "mali"
+    ],
+    "explanation": "The Mali Empire was founded by Sundiata Keita, establishing an influential federation across West Africa.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-305",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "A spherical ball of solid copper with a small hollow cavity in its center is heated evenly in a furnace. Does the volume of the internal cavity expand or shrink?",
+    "answer": "The internal cavity expands in volume.",
+    "explanation": "Thermal expansion occurs proportionally in all directions as if the hole were filled with copper.",
+    "hint1": "Think about what happens to a photo when you enlarge it.",
+    "hint2": "The material expands outward in every direction.",
+    "acceptedKeywords": [
+      "expands",
+      "it expands",
+      "expands in volume",
+      "increases",
+      "it gets bigger"
+    ],
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-306",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the type of chemical bond formed when two non-metal atoms share one or more pairs of valence electrons to achieve stable octet configurations. What bond am I?",
+    "hint1": "Found in water (H₂O) and methane (CH₄).",
+    "hint2": "Contrasted with ionic bonds.",
+    "answer": "A covalent bond",
+    "acceptedKeywords": [
+      "covalent bond",
+      "covalent",
+      "a covalent bond",
+      "covalent bonding"
+    ],
+    "explanation": "Covalent bonding involves the electrostatic attraction between shared pairs of electrons and the positive nuclei of non-metal atoms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-307",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "I am an eight-letter word that contains only one vowel, yet I am what a person does when they move their shoulders upward in doubt. What word am I?",
+    "hint1": "Spelled: S-H-R-U-G-G-E-D has two vowels.",
+    "hint2": "Past tense of shrug: S-H-R-U-G-S has only 'U'.",
+    "answer": "Shrugs (or Strengths)",
+    "acceptedKeywords": [
+      "strengths",
+      "shrugs"
+    ],
+    "explanation": "'Strengths' is nine letters with only one vowel ('E'), making it the longest single-vowel common English word.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-308",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "In coordinate geometry, what is the slope (gradient) of a completely horizontal line plotted on the Cartesian plane?",
+    "hint1": "Gradient is change in y divided by change in x (Δy / Δx).",
+    "hint2": "For a flat horizontal line, Δy = 0.",
+    "answer": "Zero (0)",
+    "acceptedKeywords": [
+      "0",
+      "zero",
+      "slope of zero"
+    ],
+    "explanation": "Horizontal lines have a constant y-value; thus Δy = 0, yielding a gradient of m = 0 / Δx = 0.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-309",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "You have a 3-litre jug and a 5-litre jug with unlimited water from a tap. How do you measure out exactly 4 litres of water?",
+    "answer": "Fill the 5L jug, pour into the 3L jug until full (leaving 2L in 5L jug), empty the 3L jug, pour the 2L into the 3L jug, fill the 5L jug again, and pour into 3L jug until full, leaving exactly 4L.",
+    "explanation": "This classic problem relies on modular arithmetic: 5 - 3 = 2; transfer 2 to the 3L jug, then 5 - (3 - 2) = 4 litres remaining in the 5L jug.",
+    "hint1": "Use the difference between the capacities of both containers.",
+    "hint2": "Leaves 2 litres first, then transfer.",
+    "acceptedKeywords": [
+      "fill 5l pour into 3l",
+      "fill 5 litre pour into 3 litre",
+      "fill the 5l jug",
+      "fill 5l",
+      "4 litres"
+    ],
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-310",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am Newton's law of motion stating that for every action, there is an equal and opposite reaction force. Which law am I?",
+    "hint1": "It explains rocket propulsion and recoil.",
+    "hint2": "It is his third law.",
+    "answer": "Newton's Third Law of Motion",
+    "acceptedKeywords": [
+      "newton's third law",
+      "third law",
+      "newton's 3rd law",
+      "third law of motion"
+    ],
+    "explanation": "Newton's Third Law states that mutual forces of action and reaction between two bodies are equal in magnitude and opposite in direction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-311",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am the ancient trading empire located in present-day southeastern Mauritania and western Mali that was famed as the 'Land of Gold' before the rise of Mali. What was my indigenous Soninke name?",
+    "hint1": "Known to Arab chroniclers as ancient Ghana.",
+    "hint2": "Its capital was Koumbi Saleh; Soninke name Wagadou.",
+    "answer": "Wagadou (Ancient Ghana Empire)",
+    "acceptedKeywords": [
+      "wagadou",
+      "ancient ghana",
+      "ghana empire",
+      "ancient ghana empire"
+    ],
+    "explanation": "The ancient Wagadou Empire (Ghana Empire) controlled the trans-Saharan gold-salt trade routes between the 6th and 13th centuries.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-312",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "What is the sum of the interior angles of any planar four-sided polygon (quadrilateral)?",
+    "hint1": "A quadrilateral can be split into two triangles.",
+    "hint2": "Each triangle has interior angles summing to 180°.",
+    "answer": "360 degrees",
+    "acceptedKeywords": [
+      "360",
+      "360 degrees",
+      "360°",
+      "three hundred and sixty"
+    ],
+    "explanation": "Formula (n - 2) × 180°: for n = 4, (4 - 2) × 180° = 360°.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-313",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the scale ranging from 0 to 14 used to specify the acidity or basicity of an aqueous solution. Pure water at 25°C has a rating of 7 on me. What scale am I?",
+    "hint1": "Values below 7 are acidic, above 7 are alkaline.",
+    "hint2": "P stands for potential of hydrogen.",
+    "answer": "The pH scale",
+    "acceptedKeywords": [
+      "ph scale",
+      "ph",
+      "the ph scale"
+    ],
+    "explanation": "pH is the negative logarithm of the hydrogen ion activity: pH = -log₁₀[H⁺].",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-314",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "What English word has three consecutive double letters in a row?",
+    "hint1": "Think of someone who manages financial ledger accounts.",
+    "hint2": "B-O-O-K-K-E-E-P-E-R.",
+    "answer": "Bookkeeper",
+    "acceptedKeywords": [
+      "bookkeeper",
+      "bookkeeping"
+    ],
+    "explanation": "'Bookkeeper' (and 'bookkeeping') features consecutive double letters: 'oo', 'kk', and 'ee'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-315",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "A hunter walks 1 kilometre due South, turns and walks 1 kilometre due East, and then walks 1 kilometre due North, ending up at the exact point he started. He shoots a bear. What color is the bear?",
+    "hint1": "Where on Earth can you walk South, East, and North to return to your starting position?",
+    "hint2": "Think of the Earth's geographic poles.",
+    "answer": "White (a polar bear)",
+    "acceptedKeywords": [
+      "white",
+      "polar bear",
+      "it is white"
+    ],
+    "explanation": "The hunter started at the geographic North Pole, where polar bears are white.",
+    "isCentral": true
   }
 ];
 
@@ -4557,6 +6086,111 @@ export const THINK_TANK_DEBATES: ThinkTankDebateItem[] = [
     "targetGroup": "Scholar (JHS)",
     "topic": "National governments should impose legal price caps on essential foodstuffs during inflationary surges.",
     "context": "Supporters argue price controls protect low-income households from malnutrition and prevent exploitative retail price gouging. Classical economists argue price ceilings create severe hoarding, black markets, and disincentivize farmers from producing crops.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be allowed to speak their local Ghanaian languages during all school play breaks.",
+    "context": "Supporters believe speaking indigenous languages builds cultural pride and emotional communication among young children. Opponents argue that maintaining English immersion during school hours helps master the official language of instruction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Classrooms should keep indoor live plants that pupils water every morning.",
+    "context": "Advocates claim caring for classroom plants teaches daily responsibility and environmental appreciation. Critics argue that potting soil creates mess, attracts insects, and can trigger pollen allergies.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "School bags should only contain books needed for that specific day rather than all subjects.",
+    "context": "Proponents point out that heavy bags strain developing children's spines and cause postural fatigue. Opponents argue that carrying all books prevents forgotten supplies when class timetables change unexpectedly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Primary schools should hold storytelling sessions instead of written grammar drills on Friday afternoons.",
+    "context": "Advocates argue that oral storytelling sparks creativity, verbal confidence, and narrative understanding. Opponents argue that early reading and handwriting accuracy require consistent structured practice.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Schools should replace plastic lunch bowls and cups with metal or calabash alternatives.",
+    "context": "Supporters point out that reducing single-use and cheap plastics instills sustainable ecological habits early. Opponents note that metal cups can become uncomfortably hot with warm meals and traditional calabashes are fragile.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Upper primary students should be graded on group project teamwork rather than individual performance.",
+    "context": "Advocates emphasize that collaboration mirrors real-world workplace problem solving and fosters interpersonal skills. Critics contend that group grading unfairly penalizes hard-working students when peers contribute unevenly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "All school sports should be mixed-gender teams rather than separated by gender.",
+    "context": "Proponents argue that mixed teams build mutual respect, dissolve gender stereotypes, and promote athletic camaraderie. Skeptics suggest that physical developmental variations create competitive imbalances and safety issues.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Schools should mandate that all textbooks use open-source digital copies accessible on low-cost ereaders.",
+    "context": "Supporters point out massive textbook cost savings for parents and rapid curriculum update cycles. Skeptics argue that device charging, screen breakage, and rural electricity unreliability disrupt schooling.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Basic 4 to 6 students should participate in community sanitation and tree planting for two hours each week.",
+    "context": "Advocates assert that civic environmental service develops practical patriotism and cleans local ecosystems. Opponents argue that scheduled academic instructional hours should not be replaced by municipal labor.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-305",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Cursive handwriting should no longer be formally taught or graded in primary schools.",
+    "context": "Supporters argue that digital typing and neat print handwriting are the only skills demanded by modern life. Opponents maintain that cursive develops fine motor neurological connections, reading fluency, and historical document literacy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-301",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should enforce an immediate legal ban on the importation of second-hand electronic goods and clothing.",
+    "context": "Environmentalists argue that imported e-waste and castoff textiles cause toxic fires at Agbogbloshie and stifle local textile manufacturing. Economists warn that bans would destroy livelihoods for thousands of small traders and raise prices for lower-income families.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-302",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "JHS curricula should teach financial literacy and stock investing instead of Euclidean geometry.",
+    "context": "Advocates argue that personal budgeting, inflation mitigation, and entrepreneurial investment prepare students directly for economic survival. Mathematicians maintain that Euclidean proofs instill deductive rigor, spatial logic, and structural abstraction vital for STEM engineering.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-303",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Standardized national high-stakes examinations like BECE should be abolished in favor of continuous district assessments.",
+    "context": "Opponents of high-stakes testing cite exam malpractice, chronic psychological anxiety, and regional infrastructure disparities. Proponents counter that centralized standardized exams provide objective merit-based criteria unaffected by local school grading favoritism.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-304",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Autonomous generative AI systems should be granted intellectual property copyright over creative works they generate.",
+    "context": "Proponents suggest recognizing AI authorship incentivizes algorithm investment and acknowledges novel machine creative synthesis. Critics argue that copyright is fundamentally a human economic right and that AI models rely on uncredited human training datasets.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-305",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "African countries should prioritize space satellite programs over expanded rural road construction.",
+    "context": "Supporters demonstrate that earth-observation satellites provide critical weather forecasting, telecommunication bandwidth, and precision agriculture monitoring across large regions. Critics maintain that physical all-weather farm-to-market roads address immediate food post-harvest losses and rural poverty far more effectively.",
     "isCentral": true
   }
 ];
