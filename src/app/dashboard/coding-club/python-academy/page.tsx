@@ -391,10 +391,28 @@ function PythonAcademy() {
     }
     setIsAiLoading(true);
     try {
+      const trimmedCode = code.trim();
+      let matchedSectionTitle: string | null = null;
+      let matchedSnippetLabel: string | null = sandboxSnippetTitle;
+      let matchedSnippetDesc: string | null = null;
+
+      for (const sec of cheatSheets || []) {
+        const list = sec.snippets || (sec as any).items || [];
+        for (const sn of list) {
+          if (String(sn?.code || '').trim() === trimmedCode || (sandboxSnippetTitle && (sn?.label || sn?.heading) === sandboxSnippetTitle)) {
+            matchedSectionTitle = sec.title;
+            matchedSnippetLabel = sn?.label || sn?.heading || sandboxSnippetTitle;
+            matchedSnippetDesc = sn?.explanation || sn?.description || sec.summary;
+            break;
+          }
+        }
+        if (matchedSnippetDesc) break;
+      }
+
       const res = await getPythonTutorHelp({
-        phase: activeLesson.phase || "Fundamentals",
-        lesson: activeLesson.title,
-        task: activeLesson.task,
+        phase: matchedSectionTitle || activeLesson.phase || "Fundamentals",
+        lesson: matchedSnippetLabel || activeLesson.title,
+        task: matchedSnippetDesc || activeLesson.task,
         userCode: code,
         question: aiQuestion,
         schoolId: schoolId
