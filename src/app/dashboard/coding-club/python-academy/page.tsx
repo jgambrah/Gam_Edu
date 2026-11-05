@@ -177,6 +177,7 @@ function PythonAcademy() {
   const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false);
   const [cheatSearch, setCheatSearch] = useState('');
   const [isSeedingCentral, setIsSeedingCentral] = useState(false);
+  const [sandboxSnippetTitle, setSandboxSnippetTitle] = useState<string | null>(null);
 
   const canManageCentralRepo = role && ['Director', 'Administrator', 'Teacher', 'SuperAdmin'].includes(role);
 
@@ -274,6 +275,7 @@ function PythonAcademy() {
   // Opening a lesson brings back the pupil's own draft for it (kept on this device), or the starter.
   useEffect(() => {
     if (!activeLesson) return;
+    setSandboxSnippetTitle(null);
     let draft: string | null = null;
     try { draft = localStorage.getItem(draftKey(user?.uid, activeLesson.id)); } catch {}
     setCode(draft ?? starterFor(activeLesson));
@@ -286,16 +288,16 @@ function PythonAcademy() {
     setConsoleTab('console');
   }, [activeLesson, user?.uid]);
 
-  // Keep the draft as the pupil types.
+  // Keep the draft as the pupil types (only when working on the lesson, not in Cheat Sheet Sandbox mode).
   useEffect(() => {
-    if (!activeLesson) return;
+    if (!activeLesson || sandboxSnippetTitle) return;
     const t = setTimeout(() => {
       try {
         if (code && code !== starterFor(activeLesson)) localStorage.setItem(draftKey(user?.uid, activeLesson.id), code);
       } catch {}
     }, 500);
     return () => clearTimeout(t);
-  }, [code, activeLesson, user?.uid]);
+  }, [code, activeLesson, user?.uid, sandboxSnippetTitle]);
 
   const usesInput = /\binput\s*\(/.test(code);
 
@@ -307,7 +309,11 @@ function PythonAcademy() {
         setCheckNote(null);
         setPlotImage(null);
         try {
-            const result = await runPython(code, { validation: activeLesson.validation, stdin: stdinText, timeoutMs: 10000 });
+            const result = await runPython(code, {
+                validation: sandboxSnippetTitle ? undefined : activeLesson.validation,
+                stdin: stdinText,
+                timeoutMs: 10000
+            });
             const lines = result.output ? result.output.split('\n') : [];
             if (result.error) lines.push(`❌ ${result.error}`);
             setOutput(lines);
@@ -317,12 +323,17 @@ function PythonAcademy() {
                 return;
             }
 
+            // If running a Cheat Sheet snippet in Sandbox Mode, skip lesson-specific grading checks.
+            if (sandboxSnippetTitle) {
+                return;
+            }
+
             // Every check the lesson asks for must pass.
             const problems: string[] = [];
             // Comments don't count (the starter repeats the goal in a comment), except when the lesson is about comments.
             const codeOnly = code.split('\n').map(l => l.replace(/#.*$/, '')).join('\n');
             const missing = (activeLesson.mustUse || []).filter(t => !(t === '#' ? code : codeOnly).includes(t));
-            if (missing.length) problems.push(`Use ${missing.map(m => `"${m}"`).join(' and ')} in your code.`);
+            if (missing.length) problems.push(`Use ${missing.map(m => `"${m}"`).join(' and ')} in your code (Current Lesson: ${activeLesson.title}).`);
             if (activeLesson.validation && result.passed !== true) problems.push('Your variables do not match the goal yet. Read the goal again.');
             if (activeLesson.expectOutput !== undefined && !outputMatches(result.output, activeLesson.expectOutput)) {
                 problems.push(`Expected output:\n${activeLesson.expectOutput}`);
@@ -386,6 +397,7 @@ function PythonAcademy() {
 
   const goToNextLesson = () => {
     setIsPassed(false);
+    setSandboxSnippetTitle(null);
     const currentIndex = allMissions.findIndex(l => l.id === activeLesson?.id);
     if (currentIndex < allMissions.length - 1) {
       setCurrentMissionId(allMissions[currentIndex + 1].id);
@@ -396,12 +408,15 @@ function PythonAcademy() {
 
   const showExample = () => {
     if (!activeLesson) return;
+    setSandboxSnippetTitle(null);
+    setCheckNote(null);
     setCode(activeLesson.startingCode || '');
     toast({ description: 'Example loaded. Read it, change it, then run it.' });
   };
 
   const resetLesson = () => {
     if (!activeLesson) return;
+    setSandboxSnippetTitle(null);
     try { localStorage.removeItem(draftKey(user?.uid, activeLesson.id)); } catch {}
     setCode(starterFor(activeLesson));
     setOutput([]); setPlotImage(null); setCheckNote(null);
@@ -541,15 +556,37 @@ function PythonAcademy() {
         <main className="lg:col-span-6 flex flex-col gap-4 overflow-hidden min-h-[500px]">
           <Card className="bg-slate-950 border border-slate-900 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col h-full">
             <div className="bg-slate-900/80 px-6 py-3.5 flex flex-col gap-2 border-b border-slate-950 shrink-0">
-              <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">{activeLesson.phase} · {activeLesson.title}</div>
-              {activeLesson.theory && (
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  {sandboxSnippetTitle ? `Cheat Sheet Sandbox · ${sandboxSnippetTitle}` : `${activeLesson.phase} · ${activeLesson.title}`}
+                </div>
+                {sandboxSnippetTitle && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={resetLesson}
+                    className="h-6 px-2.5 text-[10px] font-bold bg-slate-900 border-fuchsia-500/40 text-fuchsia-300 hover:bg-fuchsia-500/20 hover:text-white rounded-lg"
+                  >
+                    Back to Lesson ({activeLesson.title})
+                  </Button>
+                )}
+              </div>
+              {activeLesson.theory && !sandboxSnippetTitle && (
                 <div className="text-[11px] text-slate-300 bg-slate-950/70 border border-slate-800/80 px-3 py-2 rounded-xl leading-relaxed">
                   <span className="text-violet-400 font-bold uppercase tracking-wider text-[10px] mr-1.5">Cheat Sheet Tip:</span>
                   {activeLesson.theory}
                 </div>
               )}
               <div className="text-xs text-slate-400 font-bold bg-slate-950/40 border border-slate-900/80 p-3 rounded-xl">
-                Goal: <span className="text-fuchsia-400 font-extrabold">{activeLesson.task}</span>
+                {sandboxSnippetTitle ? (
+                  <span>
+                    Sandbox Mode: <span className="text-emerald-400 font-extrabold">Run and experiment with &ldquo;{sandboxSnippetTitle}&rdquo; freely without lesson grading rules.</span>
+                  </span>
+                ) : (
+                  <span>
+                    Goal: <span className="text-fuchsia-400 font-extrabold">{activeLesson.task}</span>
+                  </span>
+                )}
               </div>
               <div className="flex flex-wrap justify-between items-center gap-2 mt-1">
                 <Badge variant="outline" className={`text-[10px] py-0.5 font-bold flex items-center gap-1 ${
@@ -563,11 +600,11 @@ function PythonAcademy() {
                   <Button variant="ghost" onClick={showExample} className="h-10 px-3 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl">
                     <BookOpen className="h-3.5 w-3.5 mr-1" /> Show example
                   </Button>
-                  <Button variant="ghost" onClick={resetLesson} title="Start this lesson again" className="h-10 px-3 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl">
+                  <Button variant="ghost" onClick={resetLesson} title="Reset to current lesson starter" className="h-10 px-3 text-[11px] font-bold text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl">
                     <RefreshCw className="h-3.5 w-3.5" />
                   </Button>
                   <Button onClick={runAndValidate} disabled={isRunning || pyState === 'failed'} className="bg-gradient-to-r from-fuchsia-500 to-violet-500 hover:from-fuchsia-600 hover:to-violet-600 text-white font-bold rounded-xl px-6 h-10 shadow-lg shadow-fuchsia-500/20 transition-all active:scale-95 text-xs flex items-center gap-1.5">
-                    {isRunning ? <Loader2 className="animate-spin h-4 w-4" /> : <><Play className="h-4 w-4 fill-current text-white" /> Run &amp; Check</>}
+                    {isRunning ? <Loader2 className="animate-spin h-4 w-4" /> : <><Play className="h-4 w-4 fill-current text-white" /> {sandboxSnippetTitle ? 'Run Snippet' : 'Run & Check'}</>}
                   </Button>
                 </div>
               </div>
@@ -808,11 +845,14 @@ function PythonAcademy() {
                               size="sm"
                               variant="ghost"
                               onClick={() => {
+                                setSandboxSnippetTitle(titleText);
+                                setCheckNote(null);
+                                setIsPassed(false);
                                 setCode(item.code);
                                 setIsCheatSheetOpen(false);
                                 toast({
-                                  title: 'Snippet Loaded into Editor',
-                                  description: `Loaded "${titleText}". Click Run & Check to execute it!`,
+                                  title: 'Cheat Sheet Sandbox Active',
+                                  description: `Loaded "${titleText}". Click "Run Snippet" to execute it freely!`,
                                 });
                               }}
                               className="h-6 px-2 text-[10px] font-bold text-fuchsia-400 hover:text-white hover:bg-fuchsia-600/20 rounded-lg"
