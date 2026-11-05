@@ -14,7 +14,7 @@ import {
 import { useOnceQuery } from '@/lib/firestore-once';
 import { seedPythonAcademyCentralCurriculumAction } from '@/app/actions/python-academy-seed';
 import { 
-  Play, CheckCircle2, Code2, BookOpen, ArrowRight, Loader2, Trophy, Sparkles, Github, ChevronRight, RefreshCw, Database, FileText, Search
+  Play, CheckCircle2, Code2, BookOpen, ArrowRight, Loader2, Trophy, Sparkles, Github, ChevronRight, RefreshCw, Database, FileText, Search, Lightbulb
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
