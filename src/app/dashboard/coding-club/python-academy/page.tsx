@@ -727,27 +727,55 @@ function PythonAcademy() {
 
       {/* --- INTERACTIVE 26-PAGE PYTHON CHEAT SHEET MODAL --- */}
       <Dialog open={isCheatSheetOpen} onOpenChange={setIsCheatSheetOpen}>
-        <DialogContent className="max-w-4xl bg-slate-950 border border-slate-800 text-slate-200 max-h-[85vh] flex flex-col">
-          <DialogHeader>
+        <DialogContent className="max-w-4xl bg-slate-950 border border-slate-800 text-slate-200 max-h-[88vh] overflow-hidden flex flex-col">
+          <DialogHeader className="shrink-0">
             <DialogTitle className="text-lg font-black text-white flex items-center gap-2">
               <FileText className="h-5 w-5 text-fuchsia-400" />
               Beginner&apos;s Python Cheat Sheet — Complete Reference
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
-              Covers Variables, Lists, Dictionaries, Loops, Functions, Classes, Files &amp; Exceptions, unittest, Pygame, Matplotlib/Pygal, and Django. Click &ldquo;Try in Editor&rdquo; on any snippet to run it immediately.
+              Covers Variables, Lists, Dictionaries, Loops, Functions, Classes, Files &amp; Exceptions, unittest, Pygame, Matplotlib/Pygal, and Django. Scroll down or click a topic tab below, then click &ldquo;Try in Editor&rdquo; on any snippet.
             </DialogDescription>
           </DialogHeader>
-          <div className="relative my-2">
-            <Search className="h-4 w-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-            <Input
-              value={cheatSearch}
-              onChange={(e) => setCheatSearch(e.target.value)}
-              placeholder="Search syntax, methods, pygame, unittest, json, matplotlib, django..."
-              className="pl-9 bg-slate-900 border-slate-800 text-xs text-slate-200 rounded-xl"
-            />
+          <div className="space-y-2 my-2 shrink-0">
+            <div className="relative">
+              <Search className="h-4 w-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Input
+                value={cheatSearch}
+                onChange={(e) => setCheatSearch(e.target.value)}
+                placeholder="Search syntax, methods, pygame, unittest, json, matplotlib, django..."
+                className="pl-9 bg-slate-900 border-slate-800 text-xs text-slate-200 rounded-xl"
+              />
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              <button
+                type="button"
+                onClick={() => setCheatSearch('')}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all ${
+                  !cheatSearch
+                    ? 'bg-fuchsia-600 text-white border-fuchsia-500'
+                    : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+                }`}
+              >
+                All ({(cheatSheets || []).length})
+              </button>
+              {(cheatSheets || []).map((sec) => (
+                <button
+                  key={sec.id}
+                  type="button"
+                  onClick={() => {
+                    setCheatSearch('');
+                    const el = document.getElementById(`cheat-sec-${sec.id}`);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-slate-900 text-slate-300 border border-slate-800 hover:border-fuchsia-500/50 hover:text-fuchsia-300 transition-all"
+                >
+                  {sec.title.split('&')[0].trim()}
+                </button>
+              ))}
+            </div>
           </div>
-          <ScrollArea className="flex-1 pr-3 max-h-[60vh]">
-            <div className="space-y-6 py-2">
+          <div className="flex-1 min-h-0 max-h-[60vh] overflow-y-auto pr-2 space-y-6 py-2">
               {(filteredCheatSheets || []).map((section) => {
                 const sectionSnippets: any[] = Array.isArray(section.snippets)
                   ? section.snippets
@@ -755,7 +783,7 @@ function PythonAcademy() {
                     ? (section as any).items
                     : [];
                 return (
-                <div key={section.id} className="space-y-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4">
+                <div id={`cheat-sec-${section.id}`} key={section.id} className="space-y-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                     <div>
                       <h3 className="text-sm font-black text-fuchsia-400">{section.title}</h3>
@@ -804,8 +832,7 @@ function PythonAcademy() {
                 </div>
                 );
               })}
-            </div>
-          </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
