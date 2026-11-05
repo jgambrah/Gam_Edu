@@ -8,7 +8,7 @@ import { runPython, preparePython, outputMatches } from '@/lib/python-runner';
 import {
   PYTHON_ACADEMY_CURRICULUM,
   PYTHON_CHEAT_SHEETS,
-  type PythonPhase,
+  type PythonAcademyPhase,
   type CheatSheetSection,
 } from '@/lib/python-academy-data';
 import { useOnceQuery } from '@/lib/firestore-once';
@@ -117,7 +117,8 @@ function PythonAcademy() {
 
   // Central Repository Fetch (1 Firestore read per 30-min session across all schools, instant local fallback)
   const { data: centralDoc, refresh: refreshCentralDoc } = useOnceQuery<{
-    phases?: PythonPhase[];
+    phases?: PythonAcademyPhase[];
+    curriculum?: PythonAcademyPhase[];
     cheatSheets?: CheatSheetSection[];
     version?: string;
   } | null>(
@@ -130,9 +131,10 @@ function PythonAcademy() {
     { ttlMs: 30 * 60 * 1000 }
   );
 
-  const curriculumPhases: PythonPhase[] = useMemo(() => {
-    if (centralDoc?.phases && Array.isArray(centralDoc.phases) && centralDoc.phases.length > 0) {
-      return centralDoc.phases;
+  const curriculumPhases: PythonAcademyPhase[] = useMemo(() => {
+    const remotePhases = centralDoc?.phases || centralDoc?.curriculum;
+    if (Array.isArray(remotePhases) && remotePhases.length > 0) {
+      return remotePhases;
     }
     return PYTHON_ACADEMY_CURRICULUM;
   }, [centralDoc]);
@@ -144,9 +146,9 @@ function PythonAcademy() {
     return PYTHON_CHEAT_SHEETS;
   }, [centralDoc]);
 
-  const allMissions: Mission[] = useMemo(() => curriculumPhases.flatMap(phase =>
-      phase.mainTopics.flatMap(mainTopic =>
-          mainTopic.lessons.map((lesson: any) => ({
+  const allMissions: Mission[] = useMemo(() => (curriculumPhases || []).flatMap(phase =>
+      (phase.mainTopics || []).flatMap(mainTopic =>
+          (mainTopic.lessons || []).map((lesson: any) => ({
               ...lesson,
               phase: phase.title,
               mainTopicTitle: mainTopic.title
@@ -208,18 +210,27 @@ function PythonAcademy() {
 
   const filteredCheatSheets = useMemo(() => {
     const q = cheatSearch.trim().toLowerCase();
-    if (!q) return cheatSheets;
-    return cheatSheets
-      .map((sec) => ({
-        ...sec,
-        items: sec.items.filter(
-          (it) =>
-            it.heading.toLowerCase().includes(q) ||
-            it.description.toLowerCase().includes(q) ||
-            it.code.toLowerCase().includes(q)
-        ),
-      }))
-      .filter((sec) => sec.title.toLowerCase().includes(q) || sec.items.length > 0);
+    const list = Array.isArray(cheatSheets) ? cheatSheets : [];
+    if (!q) return list;
+    return list
+      .map((sec) => {
+        const rawSnippets: any[] = Array.isArray(sec.snippets)
+          ? sec.snippets
+          : Array.isArray((sec as any).items)
+            ? (sec as any).items
+            : [];
+        const matched = rawSnippets.filter((it) => {
+          const label = String(it?.label || it?.heading || '').toLowerCase();
+          const explanation = String(it?.explanation || it?.description || '').toLowerCase();
+          const codeStr = String(it?.code || '').toLowerCase();
+          return label.includes(q) || explanation.includes(q) || codeStr.includes(q);
+        });
+        return {
+          ...sec,
+          snippets: matched,
+        };
+      })
+      .filter((sec) => String(sec.title || '').toLowerCase().includes(q) || (sec.snippets && sec.snippets.length > 0));
   }, [cheatSheets, cheatSearch]);
 
   const speak = (text: string) => {
@@ -482,8 +493,8 @@ function PythonAcademy() {
 
           <ScrollArea className="flex-grow max-h-[420px] lg:max-h-none rounded-3xl border border-slate-900 bg-slate-950/60 p-3 shadow-inner">
             <div className="p-1 space-y-2">
-              {curriculumPhases.map((phase) => {
-                const phaseLessons = phase.mainTopics.flatMap((t: any) => t.lessons);
+              {(curriculumPhases || []).map((phase) => {
+                const phaseLessons = (phase.mainTopics || []).flatMap((t: any) => t.lessons || []);
                 const phaseDone = phaseLessons.filter((l: any) => completedMissions.includes(l.id)).length;
                 return (
                 <Accordion key={phase.phase} type="single" collapsible defaultValue={phase.phase === activePhase ? phase.phase : undefined} className="w-full">
@@ -493,14 +504,14 @@ function PythonAcademy() {
                       <span className="mr-2 text-[9px] font-mono text-slate-500">{phaseDone}/{phaseLessons.length}</span>
                     </AccordionTrigger>
                     <AccordionContent className="pt-1 pl-3 space-y-1">
-                      {phase.mainTopics.map((mainTopic: any) => (
+                      {(phase.mainTopics || []).map((mainTopic: any) => (
                         <Accordion key={mainTopic.title} type="single" collapsible defaultValue={mainTopic.title === activeLesson.mainTopicTitle && phase.title === activeLesson.phase ? mainTopic.title : undefined}>
                           <AccordionItem value={mainTopic.title} className="border-none">
                             <AccordionTrigger className="text-[11px] font-extrabold text-slate-500 py-2.5 hover:text-fuchsia-400 hover:no-underline px-2 transition-all">
                                 {mainTopic.title}
                             </AccordionTrigger>
                             <AccordionContent className="space-y-1 pl-2">
-                                {mainTopic.lessons.map((lesson: any) => {
+                                {(mainTopic.lessons || []).map((lesson: any) => {
                                     const isCompleted = completedMissions.includes(lesson.id);
                                     const isActive = activeLesson?.id === lesson.id;
                                     return (
@@ -737,20 +748,34 @@ function PythonAcademy() {
           </div>
           <ScrollArea className="flex-1 pr-3 max-h-[60vh]">
             <div className="space-y-6 py-2">
-              {filteredCheatSheets.map((section) => (
+              {(filteredCheatSheets || []).map((section) => {
+                const sectionSnippets: any[] = Array.isArray(section.snippets)
+                  ? section.snippets
+                  : Array.isArray((section as any).items)
+                    ? (section as any).items
+                    : [];
+                return (
                 <div key={section.id} className="space-y-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                     <div>
                       <h3 className="text-sm font-black text-fuchsia-400">{section.title}</h3>
                       <p className="text-[11px] text-slate-400">{section.summary}</p>
                     </div>
+                    {section.category && (
+                      <Badge className="bg-slate-800 text-slate-300 border border-slate-700 text-[9px]">
+                        {section.category}
+                      </Badge>
+                    )}
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {section.items.map((item, idx) => (
+                    {sectionSnippets.map((item, idx) => {
+                      const titleText = item.label || item.heading || 'Code Example';
+                      const descText = item.explanation || item.description || '';
+                      return (
                       <div key={idx} className="bg-slate-950 border border-slate-800/80 rounded-xl p-3 flex flex-col justify-between gap-2">
                         <div>
                           <div className="flex items-center justify-between gap-2 mb-1">
-                            <span className="text-xs font-bold text-white">{item.heading}</span>
+                            <span className="text-xs font-bold text-white">{titleText}</span>
                             <Button
                               size="sm"
                               variant="ghost"
@@ -759,7 +784,7 @@ function PythonAcademy() {
                                 setIsCheatSheetOpen(false);
                                 toast({
                                   title: 'Snippet Loaded into Editor',
-                                  description: `Loaded "${item.heading}". Click Run & Check to execute it!`,
+                                  description: `Loaded "${titleText}". Click Run & Check to execute it!`,
                                 });
                               }}
                               className="h-6 px-2 text-[10px] font-bold text-fuchsia-400 hover:text-white hover:bg-fuchsia-600/20 rounded-lg"
@@ -767,16 +792,18 @@ function PythonAcademy() {
                               Try in Editor
                             </Button>
                           </div>
-                          <p className="text-[11px] text-slate-400 mb-2">{item.description}</p>
+                          <p className="text-[11px] text-slate-400 mb-2">{descText}</p>
                         </div>
                         <pre className="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-[11px] font-mono text-emerald-300 overflow-x-auto whitespace-pre-wrap">
                           {item.code}
                         </pre>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </ScrollArea>
         </DialogContent>
