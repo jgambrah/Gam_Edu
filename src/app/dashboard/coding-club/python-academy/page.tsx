@@ -103,7 +103,7 @@ const dayKey = () => {
 /** A lesson's starter: the goal as a comment, plus a half-written line when the lesson gives one ("year = "). */
 const starterFor = (lesson: Mission) => {
     const partial = /=\s*$/.test(lesson.startingCode || '') ? lesson.startingCode : '';
-    return `# Goal: ${lesson.task}\n# Write your code below. Stuck? Press "Show example".\n\n${partial}`;
+    return `# Goal: ${lesson.task}\n# Write your code below. Stuck? Press "Show example" or ask Dr. Gam AI Coach for explanations, examples & bug fixes!\n\n${partial}`;
 };
 
 const draftKey = (uid: string | undefined, lessonId: string) => `gam:pyacademy:${uid || 'guest'}:${lessonId}`;
@@ -740,6 +740,16 @@ function PythonAcademy() {
               <Badge className="bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/25 text-[9px] py-0.5">1 credit / question</Badge>
             </div>
             <CardContent className="p-4 space-y-4">
+              <div className="bg-fuchsia-500/10 border border-fuchsia-500/25 rounded-xl p-3 space-y-1">
+                <p className="text-[11px] font-bold text-fuchsia-300 flex items-center gap-1.5">
+                  <Lightbulb className="h-3.5 w-3.5 text-fuchsia-400 shrink-0" />
+                  Need help with your code?
+                </p>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  You can always ask <span className="text-white font-semibold">Dr. Gam AI Coach</span> to <span className="text-fuchsia-300 font-semibold">explain any code step-by-step</span>, give you <span className="text-fuchsia-300 font-semibold">extra examples</span>, or <span className="text-fuchsia-300 font-semibold">find &amp; fix bugs</span> in your script!
+                </p>
+              </div>
+
               {tutorHistory.length > 0 && (
                 <div className="space-y-3 max-h-[260px] overflow-y-auto pr-1 animate-in fade-in">
                   {tutorHistory.map((turn, idx) => (
@@ -771,18 +781,37 @@ function PythonAcademy() {
               )}
 
               <div className="space-y-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isAiLoading || !code.trim()}
-                  onClick={() => askTutor("Please explain how my current code in the editor works step-by-step in simple terms.")}
-                  className="w-full h-9 text-[11px] font-bold bg-slate-900 border-fuchsia-500/30 text-fuchsia-300 hover:bg-fuchsia-500/15 hover:text-white rounded-xl flex items-center justify-center gap-1.5"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />
-                  Explain This Code Step-by-Step
-                </Button>
+                <div className="grid grid-cols-3 gap-1.5">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isAiLoading || !code.trim()}
+                    onClick={() => askTutor("Please explain how my current code in the editor works step-by-step in simple terms.")}
+                    className="h-8 px-2 text-[10px] font-bold bg-slate-900 border-fuchsia-500/30 text-fuchsia-300 hover:bg-fuchsia-500/15 hover:text-white rounded-xl"
+                  >
+                    ✨ Explain
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isAiLoading}
+                    onClick={() => askTutor("Please show me 2 simple, practical Python examples for this topic and explain how they work.")}
+                    className="h-8 px-2 text-[10px] font-bold bg-slate-900 border-violet-500/30 text-violet-300 hover:bg-violet-500/15 hover:text-white rounded-xl"
+                  >
+                    💡 Examples
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isAiLoading || !code.trim()}
+                    onClick={() => askTutor("Please check my code and any error message, find the bug, explain what caused it, and show me how to fix it.")}
+                    className="h-8 px-2 text-[10px] font-bold bg-slate-900 border-amber-500/30 text-amber-300 hover:bg-amber-500/15 hover:text-white rounded-xl"
+                  >
+                    🛠️ Fix Bug
+                  </Button>
+                </div>
                 <Textarea
-                  placeholder={tutorHistory.length > 0 ? "Ask a follow-up question about this code..." : "Type a coding question or ask Dr. Gam to explain a line..."}
+                  placeholder={tutorHistory.length > 0 ? "Ask a follow-up question, request an example, or paste an error..." : "Ask Dr. Gam to explain code, show examples, or fix a bug..."}
                   value={aiQuestion}
                   onChange={(e) => setAiQuestion(e.target.value)}
                   className="bg-slate-900 border border-slate-800 rounded-xl text-xs min-h-[76px] focus:ring-1 focus:ring-fuchsia-500 focus:outline-none p-3 text-slate-200"
