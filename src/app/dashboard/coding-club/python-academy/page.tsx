@@ -1,17 +1,25 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { doc, getDoc, setDoc, increment } from 'firebase/firestore';
 import { runPython, preparePython, outputMatches } from '@/lib/python-runner';
+import {
+  PYTHON_ACADEMY_CURRICULUM,
+  PYTHON_CHEAT_SHEETS,
+  type PythonPhase,
+  type CheatSheetSection,
+} from '@/lib/python-academy-data';
+import { useOnceQuery } from '@/lib/firestore-once';
+import { seedPythonAcademyCentralCurriculumAction } from '@/app/actions/python-academy-seed';
 import { 
-  Play, CheckCircle2, Code2, BookOpen, ArrowRight, Loader2, Eraser, Trophy, Info, Sparkles, Github, Terminal, BarChart3, ChevronRight, RefreshCw, XCircle
+  Play, CheckCircle2, Code2, BookOpen, ArrowRight, Loader2, Trophy, Sparkles, Github, ChevronRight, RefreshCw, Database, FileText, Search
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
@@ -19,7 +27,6 @@ import { getPythonTutorHelp } from '@/ai/flows/senior-actions';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
@@ -30,277 +37,11 @@ const Editor = dynamic(() => import('@monaco-editor/react'), {
   loading: () => <div className="flex h-64 items-center justify-center bg-slate-950 text-slate-400">Loading editor compiler...</div>,
 });
 
-const PYTHON_ACADEMY_CURRICULUM = [
-  {
-    phase: "Phase 1",
-    title: "Python Fundamentals",
-    mainTopics: [
-      {
-        title: "1. Environment Setup",
-        lessons: [
-          { id: "p1-1-1", mustUse: ["print("], title: "Install Python & VS Code", task: "Run your first script to confirm Python is in your PATH.", startingCode: "import sys\nprint('Python Version:', sys.version)\nprint('Environment Ready!')" },
-        ]
-      },
-      {
-        title: "2. The Basics",
-        lessons: [
-          { id: "p1-2-1", mustUse: ["#", "print("], title: "Print & Comments", task: "Use a # to write a comment and print a message.", startingCode: "# This is a secret note\nprint('Hello World')" },
-          { 
-            id: "p1-2-2", 
-            title: "Variables", 
-            task: "Create a variable named 'year' and set it to 2025.", 
-            startingCode: "year = ",
-            validation: "globals().get('year') == 2025" 
-          },
-          { id: "p1-2-3", mustUse: ["input(", "print("], title: "Input/Output (I/O)", task: "Use input() to ask for a color and print it.", startingCode: "color = input('Favorite color? ')\nprint('You chose: ' + color)" },
-          {
-            id: "p1-2-4", mustUse: ["*"],
-            title: "Arithmetic",
-            task: "Calculate 5 times 5 and name the variable 'result'.",
-            startingCode: "result = ",
-            validation: "globals().get('result') == 25"
-          },
-          { id: "p1-2-5", expectOutput: "True", mustUse: [">"], title: "Comparison Operators", task: "Check if 10 is greater than 5 using >.", startingCode: "print(10 > 5)" }
-        ]
-      },
-      {
-        title: "3. Data Types",
-        lessons: [
-          { id: "p1-3-1", title: "Numbers (Int & Float)", task: "Create an integer named my_int and a decimal (float) named my_float.", startingCode: "my_int = 10\nmy_float = 10.5\nprint(type(my_float))", validation: "type(globals().get('my_int')) is int and isinstance(globals().get('my_float'), float)" },
-          { id: "p1-3-2", title: "Strings", task: "Create a string named msg using double quotes and print it.", startingCode: "msg = \"Python is fun\"\nprint(msg)", validation: "isinstance(globals().get('msg'), str)", mustUse: ['"', "print("] },
-          { id: "p1-3-3", title: "Booleans", task: "Set a variable named is_sunny to True and print it.", startingCode: "is_sunny = True\nprint(is_sunny)", validation: "globals().get('is_sunny') is True" }
-        ]
-      }
-    ]
-  },
-  {
-    phase: "Phase 2",
-    title: "Decision Making & Loops",
-    mainTopics: [
-      {
-        title: "1. If/Else Conditions",
-        lessons: [
-          {
-            id: "p2-1-1", expectOutput: "Positive", mustUse: ["if"],
-            title: "If Statements",
-            task: "Check if 'num' is positive and print 'Positive'.",
-            startingCode: "num = 10\nif num > 0:\n    print('Positive')"
-          },
-          {
-            id: "p2-1-2", expectOutput: "Even", mustUse: ["if", "else"],
-            title: "If-Else Blocks",
-            task: "Create a variable 'x' equal to 4. If x is even, print 'Even', else print 'Odd'.",
-            startingCode: "x = 4\nif x % 2 == 0:\n    print('Even')\nelse:\n    print('Odd')",
-            validation: "globals().get('x') == 4"
-          },
-          {
-            id: "p2-1-3", expectOutput: "B", mustUse: ["elif"],
-            title: "Elif Ladder",
-            task: "Set 'score' to 85. If score >= 90 print 'A', elif score >= 80 print 'B', else print 'C'.",
-            startingCode: "score = 85\nif score >= 90:\n    print('A')\nelif score >= 80:\n    print('B')\nelse:\n    print('C')",
-            validation: "globals().get('score') == 85"
-          }
-        ]
-      },
-      {
-        title: "2. Loops",
-        lessons: [
-          {
-            id: "p2-2-1", expectOutput: "1\n2\n3", mustUse: ["while"],
-            title: "While Loops",
-            task: "Print numbers from 1 to 3 using a while loop.",
-            startingCode: "count = 1\nwhile count <= 3:\n    print(count)\n    count += 1",
-            validation: "globals().get('count') == 4"
-          },
-          {
-            id: "p2-2-2", expectOutput: "0\n1\n2", mustUse: ["for", "range("],
-            title: "For Loops",
-            task: "Print numbers 0, 1, 2 using range().",
-            startingCode: "for i in range(3):\n    print(i)"
-          },
-          {
-            id: "p2-2-3", expectOutput: "0\n1\n2", mustUse: ["break"],
-            title: "Break & Continue",
-            task: "Loop through range(5). If the number is 3, break. Otherwise print it.",
-            startingCode: "for i in range(5):\n    if i == 3:\n        break\n    print(i)"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    phase: "Phase 3",
-    title: "Data Structures",
-    mainTopics: [
-      {
-        title: "1. Lists",
-        lessons: [
-          {
-            id: "p3-1-1",
-            title: "List Basics",
-            task: "Create a list named 'fruits' with 'apple' and 'banana'.",
-            startingCode: "fruits = ['apple', 'banana']\nprint(fruits)",
-            validation: "'fruits' in globals() and isinstance(globals()['fruits'], list) and 'apple' in globals()['fruits'] and 'banana' in globals()['fruits']"
-          },
-          {
-            id: "p3-1-2",
-            title: "List Operations",
-            task: "Create an empty list 'colors' and append 'red'.",
-            startingCode: "colors = []\ncolors.append('red')\nprint(colors)",
-            validation: "'colors' in globals() and globals()['colors'] == ['red']"
-          }
-        ]
-      },
-      {
-        title: "2. Tuples & Sets",
-        lessons: [
-          {
-            id: "p3-2-1",
-            title: "Tuples",
-            task: "Create a tuple named 'coords' with values 10 and 20.",
-            startingCode: "coords = (10, 20)\nprint(coords)",
-            validation: "'coords' in globals() and isinstance(globals()['coords'], tuple) and globals()['coords'] == (10, 20)"
-          },
-          {
-            id: "p3-2-2",
-            title: "Sets",
-            task: "Create a set named 'unique_nums' with values 1, 2, and 2 (note duplicate removal).",
-            startingCode: "unique_nums = {1, 2, 2}\nprint(unique_nums)",
-            validation: "'unique_nums' in globals() and isinstance(globals()['unique_nums'], set) and globals()['unique_nums'] == {1, 2}"
-          }
-        ]
-      },
-      {
-        title: "3. Dictionaries",
-        lessons: [
-          {
-            id: "p3-3-1",
-            title: "Dictionaries",
-            task: "Create a dict 'grades' mapping 'Alice' to 95.",
-            startingCode: "grades = {'Alice': 95}\nprint(grades)",
-            validation: "'grades' in globals() and isinstance(globals()['grades'], dict) and globals()['grades'].get('Alice') == 95"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    phase: "Phase 4",
-    title: "Functions & Modules",
-    mainTopics: [
-      {
-        title: "1. Functions",
-        lessons: [
-          {
-            id: "p4-1-1",
-            title: "Defining Functions",
-            task: "Define a function 'greet(name)' that returns 'Hello ' + name.",
-            startingCode: "def greet(name):\n    return 'Hello ' + name\n\nprint(greet('Sam'))",
-            validation: "'greet' in globals() and callable(globals()['greet']) and globals()['greet']('Sam') == 'Hello Sam'"
-          },
-          {
-            id: "p4-1-2",
-            title: "Return Values",
-            task: "Define a function 'square(x)' that returns x times x.",
-            startingCode: "def square(x):\n    return x * x\n\nprint(square(4))",
-            validation: "'square' in globals() and callable(globals()['square']) and globals()['square'](4) == 16"
-          }
-        ]
-      },
-      {
-        title: "2. Modules",
-        lessons: [
-          {
-            id: "p4-2-1",
-            title: "Math Module",
-            task: "Import the 'math' module and calculate square root of 64 as 'ans'.",
-            startingCode: "import math\nans = math.sqrt(64)\nprint(ans)",
-            validation: "'ans' in globals() and globals()['ans'] == 8.0"
-          },
-          {
-            id: "p4-2-2",
-            title: "Random Module",
-            task: "Import 'random' and use randint(1, 100) to get a number 'num'.",
-            startingCode: "import random\nnum = random.randint(1, 100)\nprint(num)",
-            validation: "'num' in globals() and isinstance(globals()['num'], int) and 1 <= globals()['num'] <= 100"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    phase: "Phase 5",
-    title: "Object-Oriented Python",
-    mainTopics: [
-      {
-        title: "1. Classes & Objects",
-        lessons: [
-          {
-            id: "p5-1-1",
-            title: "Defining Classes",
-            task: "Define a class 'Robot' with attribute 'name'. Set 'r = Robot(\"Dexter\")'.",
-            startingCode: "class Robot:\n    def __init__(self, name):\n        self.name = name\n\nr = Robot('Dexter')",
-            validation: "'r' in globals() and 'Robot' in globals() and isinstance(globals()['r'], globals()['Robot']) and globals()['r'].name == 'Dexter'"
-          },
-          {
-            id: "p5-1-2",
-            title: "Methods",
-            task: "Add a method 'greet(self)' to 'Robot' returning 'I am ' + self.name. Call it on 'r'.",
-            startingCode: "class Robot:\n    def __init__(self, name):\n        self.name = name\n    def greet(self):\n        return 'I am ' + self.name\n\nr = Robot('Dexter')\nmsg = r.greet()",
-            validation: "'msg' in globals() and globals()['msg'] == 'I am Dexter'"
-          },
-          {
-            id: "p5-1-3",
-            title: "Inheritance",
-            task: "Create class 'MedicalRobot' that inherits from 'Robot' and has a method 'heal()'.",
-            startingCode: "class Robot:\n    def __init__(self, name):\n        self.name = name\n\nclass MedicalRobot(Robot):\n    def heal(self):\n        return 'Healed!'\n\nmr = MedicalRobot('Helper')",
-            validation: "'mr' in globals() and 'MedicalRobot' in globals() and isinstance(globals()['mr'], globals()['MedicalRobot']) and globals()['mr'].heal() == 'Healed!' and globals()['mr'].name == 'Helper'"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    phase: "Phase 6",
-    title: "Data Visualization & Libraries",
-    mainTopics: [
-      {
-        title: "1. NumPy Arrays",
-        lessons: [
-          {
-            id: "p6-1-1",
-            title: "NumPy Basics",
-            task: "Import numpy as np. Create a 1D array 'arr' with values [10, 20, 30].",
-            startingCode: "import numpy as np\narr = np.array([10, 20, 30])\nprint(arr)",
-            validation: "import numpy as np; 'arr' in globals() and isinstance(globals()['arr'], np.ndarray) and list(globals()['arr']) == [10, 20, 30]"
-          }
-        ]
-      },
-      {
-        title: "2. Matplotlib Plots",
-        lessons: [
-          {
-            id: "p6-2-1", needsPlot: true, mustUse: ["plt.plot"],
-            title: "Line Plots",
-            task: "Import matplotlib.pyplot as plt and numpy as np. Plot y = sin(x) for x from 0 to 10.",
-            startingCode: "import matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 10, 100)\ny = np.sin(x)\nplt.plot(x, y)\nplt.title('Sine Wave')\nplt.show()"
-          },
-          {
-            id: "p6-2-2", needsPlot: true, mustUse: ["plt.bar"],
-            title: "Bar Charts",
-            task: "Create a bar chart showing category values. labels = ['Apples', 'Bananas'], values = [12, 18].",
-            startingCode: "import matplotlib.pyplot as plt\nlabels = ['Apples', 'Bananas']\nvalues = [12, 18]\nplt.bar(labels, values)\nplt.title('Fruit Count')\nplt.show()"
-          }
-        ]
-      }
-    ]
-  }
-];
-
 interface Mission {
   id: string;
   title: string;
   task: string;
+  theory?: string;
   startingCode: string;
   phase: string;
   mainTopicTitle: string;
@@ -372,8 +113,38 @@ function PythonAcademy() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const { schoolId } = useCurrentSchool();
+  const { role } = useRole();
 
-  const allMissions: Mission[] = useMemo(() => PYTHON_ACADEMY_CURRICULUM.flatMap(phase =>
+  // Central Repository Fetch (1 Firestore read per 30-min session across all schools, instant local fallback)
+  const { data: centralDoc, refresh: refreshCentralDoc } = useOnceQuery<{
+    phases?: PythonPhase[];
+    cheatSheets?: CheatSheetSection[];
+    version?: string;
+  } | null>(
+    firestore ? 'global_curriculum:python_academy_v1' : null,
+    async () => {
+      if (!firestore) return null;
+      const snap = await getDoc(doc(firestore, 'global_curriculum', 'python_academy_v1'));
+      return snap.exists() ? (snap.data() as any) : null;
+    },
+    { ttlMs: 30 * 60 * 1000 }
+  );
+
+  const curriculumPhases: PythonPhase[] = useMemo(() => {
+    if (centralDoc?.phases && Array.isArray(centralDoc.phases) && centralDoc.phases.length > 0) {
+      return centralDoc.phases;
+    }
+    return PYTHON_ACADEMY_CURRICULUM;
+  }, [centralDoc]);
+
+  const cheatSheets: CheatSheetSection[] = useMemo(() => {
+    if (centralDoc?.cheatSheets && Array.isArray(centralDoc.cheatSheets) && centralDoc.cheatSheets.length > 0) {
+      return centralDoc.cheatSheets;
+    }
+    return PYTHON_CHEAT_SHEETS;
+  }, [centralDoc]);
+
+  const allMissions: Mission[] = useMemo(() => curriculumPhases.flatMap(phase =>
       phase.mainTopics.flatMap(mainTopic =>
           mainTopic.lessons.map((lesson: any) => ({
               ...lesson,
@@ -381,7 +152,7 @@ function PythonAcademy() {
               mainTopicTitle: mainTopic.title
           }))
       )
-  ), []);
+  ), [curriculumPhases]);
 
   // --- STATE ---
   const [currentMissionId, setCurrentMissionId] = useState("p1-1-1");
@@ -400,6 +171,56 @@ function PythonAcademy() {
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
+
+  const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false);
+  const [cheatSearch, setCheatSearch] = useState('');
+  const [isSeedingCentral, setIsSeedingCentral] = useState(false);
+
+  const canManageCentralRepo = role && ['Director', 'Administrator', 'Teacher', 'SuperAdmin'].includes(role);
+
+  const handleSeedCentralRepo = async () => {
+    setIsSeedingCentral(true);
+    try {
+      const res = await seedPythonAcademyCentralCurriculumAction();
+      if (res.success) {
+        await refreshCentralDoc();
+        toast({
+          title: 'Central Repository Synced',
+          description: res.message,
+        });
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Central Sync Failed',
+          description: res.error || 'Could not seed global_curriculum/python_academy_v1.',
+        });
+      }
+    } catch (e: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Central Sync Error',
+        description: e?.message || 'Unexpected error.',
+      });
+    } finally {
+      setIsSeedingCentral(false);
+    }
+  };
+
+  const filteredCheatSheets = useMemo(() => {
+    const q = cheatSearch.trim().toLowerCase();
+    if (!q) return cheatSheets;
+    return cheatSheets
+      .map((sec) => ({
+        ...sec,
+        items: sec.items.filter(
+          (it) =>
+            it.heading.toLowerCase().includes(q) ||
+            it.description.toLowerCase().includes(q) ||
+            it.code.toLowerCase().includes(q)
+        ),
+      }))
+      .filter((sec) => sec.title.toLowerCase().includes(q) || sec.items.length > 0);
+  }, [cheatSheets, cheatSearch]);
 
   const speak = (text: string) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -593,16 +414,23 @@ function PythonAcademy() {
       );
   }
 
-  const activePhase = PYTHON_ACADEMY_CURRICULUM.find(p => p.title === activeLesson.phase)?.phase;
+  const activePhase = curriculumPhases.find(p => p.title === activeLesson.phase)?.phase;
 
   return (
     <div className="bg-slate-900/40 backdrop-blur-md border border-slate-900 text-slate-300 p-1 font-sans rounded-3xl overflow-hidden flex flex-col min-h-[600px] shadow-2xl relative">
-      {/* --- TOP BAR: GAMIFICATION --- */}
+      {/* --- TOP BAR: GAMIFICATION & CENTRAL REPO --- */}
       <div className="flex flex-col sm:flex-row items-center justify-between bg-slate-950 p-4 rounded-2xl border border-slate-900 shadow-xl gap-4 mb-4 shrink-0 mx-4 mt-4">
         <div className="flex items-center gap-3">
              <div className="bg-fuchsia-500/10 border border-fuchsia-500/20 p-2.5 rounded-full"><Trophy className="h-5 w-5 text-fuchsia-400" /></div>
              <div>
-                 <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Student Rank</div>
+                 <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                     Student Rank
+                     {centralDoc?.version && (
+                       <span className="text-[9px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">
+                         Central Repo v{centralDoc.version}
+                       </span>
+                     )}
+                 </div>
                  <div className="text-sm font-bold text-white flex items-center gap-2">
                      {studentRank}
                      <Badge className="bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20 text-[9px] py-0.5 font-mono">{solvedCount} / {allMissions.length} Solved</Badge>
@@ -618,6 +446,28 @@ function PythonAcademy() {
                  <div className="bg-gradient-to-r from-fuchsia-500 to-violet-500 h-2.5 rounded-full transition-all duration-1000" style={{ width: `${progressPercentage}%` }}></div>
              </div>
         </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="outline"
+            onClick={() => setIsCheatSheetOpen(true)}
+            className="h-9 px-3 text-[11px] font-bold bg-slate-900 border-fuchsia-500/30 text-fuchsia-300 hover:bg-fuchsia-500/15 hover:text-white rounded-xl flex items-center gap-1.5"
+          >
+            <FileText className="h-3.5 w-3.5 text-fuchsia-400" />
+            Cheat Sheet (26p Guide)
+          </Button>
+          {canManageCentralRepo && (
+            <Button
+              variant="outline"
+              onClick={handleSeedCentralRepo}
+              disabled={isSeedingCentral}
+              title="Publish/Sync this curriculum to the Central Firestore Repository for all schools"
+              className="h-9 px-3 text-[11px] font-bold bg-slate-900 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/15 hover:text-white rounded-xl flex items-center gap-1.5"
+            >
+              {isSeedingCentral ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Database className="h-3.5 w-3.5 text-emerald-400" />}
+              Sync Central Repo
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 p-4 md:p-6 flex-grow items-stretch">
@@ -632,7 +482,7 @@ function PythonAcademy() {
 
           <ScrollArea className="flex-grow max-h-[420px] lg:max-h-none rounded-3xl border border-slate-900 bg-slate-950/60 p-3 shadow-inner">
             <div className="p-1 space-y-2">
-              {PYTHON_ACADEMY_CURRICULUM.map((phase) => {
+              {curriculumPhases.map((phase) => {
                 const phaseLessons = phase.mainTopics.flatMap((t: any) => t.lessons);
                 const phaseDone = phaseLessons.filter((l: any) => completedMissions.includes(l.id)).length;
                 return (
@@ -681,6 +531,12 @@ function PythonAcademy() {
           <Card className="bg-slate-950 border border-slate-900 rounded-[2rem] shadow-2xl overflow-hidden flex flex-col h-full">
             <div className="bg-slate-900/80 px-6 py-3.5 flex flex-col gap-2 border-b border-slate-950 shrink-0">
               <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">{activeLesson.phase} · {activeLesson.title}</div>
+              {activeLesson.theory && (
+                <div className="text-[11px] text-slate-300 bg-slate-950/70 border border-slate-800/80 px-3 py-2 rounded-xl leading-relaxed">
+                  <span className="text-violet-400 font-bold uppercase tracking-wider text-[10px] mr-1.5">Cheat Sheet Tip:</span>
+                  {activeLesson.theory}
+                </div>
+              )}
               <div className="text-xs text-slate-400 font-bold bg-slate-950/40 border border-slate-900/80 p-3 rounded-xl">
                 Goal: <span className="text-fuchsia-400 font-extrabold">{activeLesson.task}</span>
               </div>
@@ -832,6 +688,16 @@ function PythonAcademy() {
               <CardTitle className="text-[10px] font-black text-slate-500 uppercase tracking-wider">Developer Resources</CardTitle>
             </CardHeader>
             <CardContent className="p-2 space-y-1">
+              <button
+                onClick={() => setIsCheatSheetOpen(true)}
+                className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-900 transition-colors group text-left"
+              >
+                <div className="flex items-center gap-2">
+                  <FileText className="h-3.5 w-3.5 text-fuchsia-400" />
+                  <span className="text-[11px] font-bold group-hover:text-fuchsia-400 text-slate-300">Python Crash Course Cheat Sheet</span>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
+              </button>
               <a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-900 transition-colors group">
                 <span className="text-[11px] font-bold group-hover:text-fuchsia-400 text-slate-300">Official Python Docs</span>
                 <ChevronRight className="h-3.5 w-3.5 text-slate-500" />
@@ -847,6 +713,74 @@ function PythonAcademy() {
           </Card>
         </aside>
       </div>
+
+      {/* --- INTERACTIVE 26-PAGE PYTHON CHEAT SHEET MODAL --- */}
+      <Dialog open={isCheatSheetOpen} onOpenChange={setIsCheatSheetOpen}>
+        <DialogContent className="max-w-4xl bg-slate-950 border border-slate-800 text-slate-200 max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-black text-white flex items-center gap-2">
+              <FileText className="h-5 w-5 text-fuchsia-400" />
+              Beginner&apos;s Python Cheat Sheet — Complete Reference
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Covers Variables, Lists, Dictionaries, Loops, Functions, Classes, Files &amp; Exceptions, unittest, Pygame, Matplotlib/Pygal, and Django. Click &ldquo;Try in Editor&rdquo; on any snippet to run it immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="relative my-2">
+            <Search className="h-4 w-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Input
+              value={cheatSearch}
+              onChange={(e) => setCheatSearch(e.target.value)}
+              placeholder="Search syntax, methods, pygame, unittest, json, matplotlib, django..."
+              className="pl-9 bg-slate-900 border-slate-800 text-xs text-slate-200 rounded-xl"
+            />
+          </div>
+          <ScrollArea className="flex-1 pr-3 max-h-[60vh]">
+            <div className="space-y-6 py-2">
+              {filteredCheatSheets.map((section) => (
+                <div key={section.id} className="space-y-3 bg-slate-900/50 border border-slate-800/80 rounded-2xl p-4">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <div>
+                      <h3 className="text-sm font-black text-fuchsia-400">{section.title}</h3>
+                      <p className="text-[11px] text-slate-400">{section.summary}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {section.items.map((item, idx) => (
+                      <div key={idx} className="bg-slate-950 border border-slate-800/80 rounded-xl p-3 flex flex-col justify-between gap-2">
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <span className="text-xs font-bold text-white">{item.heading}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => {
+                                setCode(item.code);
+                                setIsCheatSheetOpen(false);
+                                toast({
+                                  title: 'Snippet Loaded into Editor',
+                                  description: `Loaded "${item.heading}". Click Run & Check to execute it!`,
+                                });
+                              }}
+                              className="h-6 px-2 text-[10px] font-bold text-fuchsia-400 hover:text-white hover:bg-fuchsia-600/20 rounded-lg"
+                            >
+                              Try in Editor
+                            </Button>
+                          </div>
+                          <p className="text-[11px] text-slate-400 mb-2">{item.description}</p>
+                        </div>
+                        <pre className="bg-slate-900/90 border border-slate-800 rounded-lg p-2.5 text-[11px] font-mono text-emerald-300 overflow-x-auto whitespace-pre-wrap">
+                          {item.code}
+                        </pre>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
