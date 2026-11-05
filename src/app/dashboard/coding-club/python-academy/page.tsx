@@ -172,6 +172,7 @@ function PythonAcademy() {
 
   const [aiQuestion, setAiQuestion] = useState("");
   const [tutorResponse, setTutorResponse] = useState<any>(null);
+  const [tutorHistory, setTutorHistory] = useState<{ question: string; explanation: string; hint?: string }[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   const [isCheatSheetOpen, setIsCheatSheetOpen] = useState(false);
@@ -383,8 +384,9 @@ function PythonAcademy() {
         }
   };
 
-  const askTutor = async () => {
-    if (!aiQuestion.trim() || !activeLesson) return;
+  const askTutor = async (overrideQuestion?: string) => {
+    const questionText = (typeof overrideQuestion === 'string' ? overrideQuestion : aiQuestion).trim();
+    if (!questionText || !activeLesson) return;
     if (!schoolId) {
         toast({ variant: 'destructive', title: "School not found", description: "Reload the page and try again." });
         return;
@@ -414,11 +416,13 @@ function PythonAcademy() {
         lesson: matchedSnippetLabel || activeLesson.title,
         task: matchedSnippetDesc || activeLesson.task,
         userCode: code,
-        question: aiQuestion,
-        schoolId: schoolId
+        question: questionText,
+        schoolId: schoolId,
+        history: tutorHistory.map(h => ({ question: h.question, explanation: h.explanation }))
       });
       if (res.success && res.data) {
         setTutorResponse(res.data);
+        setTutorHistory(prev => [...prev, { question: questionText, explanation: res.data.explanation, hint: res.data.hint }]);
         setAiQuestion("");
         speak(res.data.explanation);
       } else {
@@ -736,34 +740,58 @@ function PythonAcademy() {
               <Badge className="bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/25 text-[9px] py-0.5">1 credit / question</Badge>
             </div>
             <CardContent className="p-4 space-y-4">
-              {tutorResponse ? (
-                <div className="space-y-4 animate-in fade-in">
-                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-inner space-y-2">
-                     <p className="text-[10px] text-fuchsia-400 font-bold uppercase tracking-wider">Tutor Explanation</p>
-                     <p className="text-xs leading-relaxed text-slate-300">{tutorResponse.explanation}</p>
-                     {tutorResponse.hint && (
-                          <div className="pt-2 border-t border-slate-800/80">
-                              <p className="text-[10px] text-violet-400 font-bold uppercase tracking-wider">Hint</p>
-                              <p className="text-xs leading-relaxed text-slate-400 italic">"{tutorResponse.hint}"</p>
-                          </div>
-                     )}
-                  </div>
-                  <Button variant="ghost" onClick={() => setTutorResponse(null)} className="w-full text-[10px] font-bold text-slate-500 hover:text-white rounded-xl hover:bg-slate-900">Ask another question</Button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <Textarea
-                    placeholder="Type a coding question or explain your script error..."
-                    value={aiQuestion}
-                    onChange={(e) => setAiQuestion(e.target.value)}
-                    className="bg-slate-900 border border-slate-800 rounded-xl text-xs min-h-[90px] focus:ring-1 focus:ring-fuchsia-500 focus:outline-none p-3 text-slate-200"
-                  />
-                  <Button onClick={askTutor} disabled={isAiLoading || !aiQuestion.trim()} className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold rounded-xl h-10 text-xs shadow-lg shadow-fuchsia-500/10">
-                    {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : "Request AI Assistance"}
+              {tutorHistory.length > 0 && (
+                <div className="space-y-3 max-h-[260px] overflow-y-auto pr-1 animate-in fade-in">
+                  {tutorHistory.map((turn, idx) => (
+                    <div key={idx} className="bg-slate-900 border border-slate-800 p-3.5 rounded-xl shadow-inner space-y-2">
+                      <p className="text-[10px] text-slate-400 font-bold border-b border-slate-800/80 pb-1">
+                        You: <span className="text-slate-200 font-semibold">{turn.question}</span>
+                      </p>
+                      <p className="text-[10px] text-fuchsia-400 font-bold uppercase tracking-wider">Dr. Gam Explanation</p>
+                      <p className="text-xs leading-relaxed text-slate-300 whitespace-pre-wrap">{turn.explanation}</p>
+                      {turn.hint && (
+                        <div className="pt-2 border-t border-slate-800/80">
+                          <p className="text-[10px] text-violet-400 font-bold uppercase tracking-wider">Try Next / Hint</p>
+                          <p className="text-xs leading-relaxed text-slate-400 italic">&ldquo;{turn.hint}&rdquo;</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setTutorHistory([]);
+                      setTutorResponse(null);
+                    }}
+                    className="w-full h-7 text-[10px] font-bold text-slate-500 hover:text-white rounded-xl hover:bg-slate-900"
+                  >
+                    Clear Conversation
                   </Button>
-                  <p className="text-[10px] text-slate-500 leading-relaxed">Running your code is free. Only questions to the coach use AI credits.</p>
                 </div>
               )}
+
+              <div className="space-y-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isAiLoading || !code.trim()}
+                  onClick={() => askTutor("Please explain how my current code in the editor works step-by-step in simple terms.")}
+                  className="w-full h-9 text-[11px] font-bold bg-slate-900 border-fuchsia-500/30 text-fuchsia-300 hover:bg-fuchsia-500/15 hover:text-white rounded-xl flex items-center justify-center gap-1.5"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-fuchsia-400" />
+                  Explain This Code Step-by-Step
+                </Button>
+                <Textarea
+                  placeholder={tutorHistory.length > 0 ? "Ask a follow-up question about this code..." : "Type a coding question or ask Dr. Gam to explain a line..."}
+                  value={aiQuestion}
+                  onChange={(e) => setAiQuestion(e.target.value)}
+                  className="bg-slate-900 border border-slate-800 rounded-xl text-xs min-h-[76px] focus:ring-1 focus:ring-fuchsia-500 focus:outline-none p-3 text-slate-200"
+                />
+                <Button onClick={() => askTutor()} disabled={isAiLoading || !aiQuestion.trim()} className="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-bold rounded-xl h-10 text-xs shadow-lg shadow-fuchsia-500/10">
+                  {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : tutorHistory.length > 0 ? "Ask Follow-Up Question" : "Request AI Assistance"}
+                </Button>
+                <p className="text-[10px] text-slate-500 leading-relaxed">Running your code is free. Only questions to the coach use AI credits.</p>
+              </div>
             </CardContent>
           </Card>
 

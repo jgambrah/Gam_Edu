@@ -134,7 +134,8 @@ export async function getPythonTutorHelp(context: {
   task: string, 
   userCode: string, 
   question: string,
-  schoolId: string
+  schoolId: string,
+  history?: { question: string; explanation: string }[]
 }) {
   await requireSignedInAction();
   try {
@@ -143,6 +144,13 @@ export async function getPythonTutorHelp(context: {
       return { success: false, error: creditResult.error || "Not enough AI credits to ask Dr. Gam." };
     }
 
+    const historyText = Array.isArray(context.history) && context.history.length > 0
+      ? `\n    Previous Conversation in this Session:\n${context.history
+          .slice(-4)
+          .map((h, i) => `    [Turn ${i + 1}] Student: "${h.question}"\n    [Turn ${i + 1}] Dr. Gam: "${h.explanation}"`)
+          .join('\n')}\n`
+      : '';
+
     const prompt = `You are Dr. Gam, a friendly Python Tutor inside GAM Edu's built-in browser Python Academy IDE for a student in ${context.phase}.
     Current Topic / Lesson: ${context.lesson}
     Current Goal / Description: ${context.task}
@@ -150,8 +158,8 @@ export async function getPythonTutorHelp(context: {
     """
     ${context.userCode}
     """
-    
-    Student's Question: "${context.question}"
+    ${historyText}
+    Student's New Question / Follow-up: "${context.question}"
     
     Environment Context (Important):
     - The student is coding directly inside GAM Edu's web browser editor (NOT desktop VS Code or a desktop terminal).
@@ -161,9 +169,10 @@ export async function getPythonTutorHelp(context: {
     - Output appears automatically in the "Terminal Output" or "Matplotlib Graph" tab below the editor.
     
     Instructions:
-    1. Directly answer the student's question and explain how their current code works (or how to fix any error in it).
-    2. Do not simply hand over a full solution if they are solving an incomplete exercise, but if they loaded a complete Cheat Sheet snippet and asked what it does or how to modify it, explain it clearly line-by-line and suggest a fun experiment they can try next.
-    3. Maintain a warm, encouraging tone.`;
+    1. Directly answer the student's question or follow-up question, building naturally on any previous conversation turns above.
+    2. Explain how their current code works clearly and step-by-step (or how to fix any error in it).
+    3. In the "hint" field, suggest a helpful tip or a small experiment/follow-up they can try next in the editor.
+    4. Maintain a warm, encouraging tone.`;
 
     const { output } = await ai.generate({ model: 'googleai/gemini-3-flash-preview', prompt, output: { schema: TutorSchema } });
     return { success: true, data: output };
