@@ -46,9 +46,9 @@ export const PYTHON_ACADEMY_CURRICULUM: PythonAcademyPhase[] = [
           {
             id: "p1-1-1",
             mustUse: ["print("],
-            title: "Install Python & VS Code",
-            theory: "Variables store values, and `print()` displays output in the console. Let's verify our Python 3 environment is ready.",
-            task: "Run your first script to confirm Python is in your PATH.",
+            title: "Python Environment & First Script",
+            theory: "In GAM Edu Python Academy, Python 3 runs directly in your browser. Write a `print()` statement below (or click 'Show example') and press the purple '▶ Run & Check' button at the top right of the editor.",
+            task: "Use print() to display a message (or click 'Show example') and press 'Run & Check' to confirm your browser Python environment is ready.",
             startingCode: "import sys\nprint('Python Version:', sys.version)\nprint('Environment Ready!')"
           }
         ]
