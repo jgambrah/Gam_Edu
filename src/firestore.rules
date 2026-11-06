@@ -915,7 +915,18 @@ service cloud.firestore {
     }
 
     match /student_progress/{userId} {
-      allow read, write: if request.auth.uid == userId;
+      allow read: if isSignedIn() && (request.auth.uid == userId || isTeacher() || isAdmin());
+      allow create: if isSignedIn() && request.auth.uid == userId
+        && request.resource.data.get('thinkTankScore', 0) >= 0
+        && request.resource.data.get('thinkTankScore', 0) <= 50;
+      allow update: if isAdmin() || isTeacher() || (
+        isSignedIn() && request.auth.uid == userId
+        && request.resource.data.get('thinkTankScore', 0) >= resource.data.get('thinkTankScore', 0)
+        && (request.resource.data.get('thinkTankScore', 0) - resource.data.get('thinkTankScore', 0)) <= 50
+        && request.resource.data.get('thinkTankLockedBlueprints', []).hasAll(resource.data.get('thinkTankLockedBlueprints', []))
+        && request.resource.data.get('thinkTankCompleted', []).hasAll(resource.data.get('thinkTankCompleted', []))
+      );
+      allow delete: if isAdmin();
     }
 
     match /math_problems/{problemId} {

@@ -14,6 +14,7 @@ import {
   where,
   setDoc,
   getDoc,
+  runTransaction,
   limit,
 } from 'firebase/firestore';
 import {
@@ -55,6 +56,7 @@ import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-comp
 // Types, Central Bank, and AI Functions
 import type { Paradox, DebateTopic, Student } from '@/lib/types';
 import {
+  THINK_TANK_DATA_VERSION,
   THINK_TANK_PARADOXES,
   THINK_TANK_DETECTIVE_CASES,
   THINK_TANK_RIDDLES,
@@ -64,6 +66,12 @@ import {
   type ThinkTankRiddleItem,
   type ThinkTankDebateItem,
 } from '@/lib/think-tank-data';
+import {
+  assembleAndVerifyRemoteCurriculum,
+  compareCurriculumVersions,
+  computeAtomicProgressTransition,
+  type ShardDocumentData,
+} from '@/lib/think-tank-sync-utils';
 import { useOnceQuery } from '@/lib/firestore-once';
 import { seedThinkTankCentralRepoAction } from '@/app/actions/think-tank-seed';
 import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from '@/ai/flows/think-tank';
@@ -1453,8 +1461,9 @@ export default function ThinkTankPage() {
   const [logicPoints, setLogicPoints] = useState(0);
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
 
-  // Central Repository Fetch (loads Firestore shards when sharded manifest is current or newer)
+  // Central Repository Fetch (version-aware + shard completeness verification)
   const { data: centralDoc, refresh: refreshCentralDoc } = useOnceQuery<{
+    isVerifiedRemote?: boolean;
     version?: string;
     sharded?: boolean;
     shardIds?: string[];
@@ -1464,55 +1473,57 @@ export default function ThinkTankPage() {
     riddles?: ThinkTankRiddleItem[];
     debates?: ThinkTankDebateItem[];
   }>(
-    'think-tank:central:v19.1',
+    `think-tank:central:v${THINK_TANK_DATA_VERSION}`,
     async () => {
       if (!firestore) return null;
       const snap = await getDoc(doc(firestore, 'global_curriculum', 'think_tank_v1'));
       if (!snap.exists()) return null;
       const manifest = snap.data() as any;
-      const localTotal =
-        THINK_TANK_PARADOXES.length +
-        THINK_TANK_DETECTIVE_CASES.length +
-        THINK_TANK_RIDDLES.length +
-        THINK_TANK_DEBATES.length;
+
+      // Version-aware guard: do not load stale Firestore shards if remote version < THINK_TANK_DATA_VERSION
       if (
         manifest.sharded &&
         Array.isArray(manifest.shardIds) &&
-        typeof manifest.totalCount === 'number' &&
-        manifest.totalCount >= localTotal
+        manifest.shardIds.length > 0 &&
+        compareCurriculumVersions(manifest.version, THINK_TANK_DATA_VERSION) >= 0
       ) {
         const shardSnaps = await Promise.all(
           manifest.shardIds.map((id: string) => getDoc(doc(firestore, 'global_curriculum', id)))
         );
-        const paradoxes: ThinkTankParadoxItem[] = [];
-        const detectiveCases: ThinkTankDetectiveCaseItem[] = [];
-        const riddles: ThinkTankRiddleItem[] = [];
-        const debates: ThinkTankDebateItem[] = [];
-        for (const s of shardSnaps) {
-          if (!s.exists()) continue;
-          const d = s.data() as any;
-          if (!Array.isArray(d.items)) continue;
-          if (d.kind === 'paradoxes') paradoxes.push(...d.items);
-          else if (d.kind === 'detectiveCases') detectiveCases.push(...d.items);
-          else if (d.kind === 'riddles') riddles.push(...d.items);
-          else if (d.kind === 'debates') debates.push(...d.items);
-        }
+        const shardDocs: Array<ShardDocumentData | null> = shardSnaps.map((s) =>
+          s.exists() ? ({ id: s.id, ...(s.data() as any) } as ShardDocumentData) : null
+        );
+        const verified = assembleAndVerifyRemoteCurriculum(
+          manifest,
+          shardDocs,
+          THINK_TANK_DATA_VERSION,
+          {
+            paradoxes: THINK_TANK_PARADOXES,
+            detectiveCases: THINK_TANK_DETECTIVE_CASES,
+            riddles: THINK_TANK_RIDDLES,
+            debates: THINK_TANK_DEBATES,
+          }
+        );
         return {
           ...manifest,
-          paradoxes,
-          detectiveCases,
-          riddles,
-          debates,
+          isVerifiedRemote: verified.isVerifiedRemote,
+          paradoxes: verified.paradoxes,
+          detectiveCases: verified.detectiveCases,
+          riddles: verified.riddles,
+          debates: verified.debates,
         };
       }
-      return manifest;
+      return {
+        ...manifest,
+        isVerifiedRemote: false,
+      };
     },
     [firestore]
   );
 
   const centralParadoxes = useMemo(
     () =>
-      centralDoc?.paradoxes && centralDoc.paradoxes.length >= THINK_TANK_PARADOXES.length
+      centralDoc?.isVerifiedRemote && centralDoc.paradoxes?.length
         ? centralDoc.paradoxes
         : THINK_TANK_PARADOXES,
     [centralDoc]
@@ -1520,7 +1531,7 @@ export default function ThinkTankPage() {
 
   const centralCases = useMemo(
     () =>
-      centralDoc?.detectiveCases && centralDoc.detectiveCases.length >= THINK_TANK_DETECTIVE_CASES.length
+      centralDoc?.isVerifiedRemote && centralDoc.detectiveCases?.length
         ? centralDoc.detectiveCases
         : THINK_TANK_DETECTIVE_CASES,
     [centralDoc]
@@ -1528,7 +1539,7 @@ export default function ThinkTankPage() {
 
   const centralRiddles = useMemo(
     () =>
-      centralDoc?.riddles && centralDoc.riddles.length >= THINK_TANK_RIDDLES.length
+      centralDoc?.isVerifiedRemote && centralDoc.riddles?.length
         ? centralDoc.riddles
         : THINK_TANK_RIDDLES,
     [centralDoc]
@@ -1536,7 +1547,7 @@ export default function ThinkTankPage() {
 
   const centralDebates = useMemo(
     () =>
-      centralDoc?.debates && centralDoc.debates.length >= THINK_TANK_DEBATES.length
+      centralDoc?.isVerifiedRemote && centralDoc.debates?.length
         ? centralDoc.debates
         : THINK_TANK_DEBATES,
     [centralDoc]
@@ -1605,18 +1616,30 @@ export default function ThinkTankPage() {
     if (!user || !firestore || canManage) return;
     if (lockedBlueprints.includes(activityId)) return;
 
-    const nextLocked = [...lockedBlueprints, activityId];
-    setLockedBlueprints(nextLocked);
+    setLockedBlueprints((prev) => (prev.includes(activityId) ? prev : [...prev, activityId]));
 
     try {
       const progressRef = doc(firestore, 'student_progress', user.uid);
-      await setDoc(
-        progressRef,
-        {
-          thinkTankLockedBlueprints: nextLocked,
-        },
-        { merge: true }
-      );
+      const updatedLocked = await runTransaction(firestore, async (tx) => {
+        const snap = await tx.get(progressRef);
+        const existingLocked: string[] = snap.exists()
+          ? Array.isArray(snap.data().thinkTankLockedBlueprints)
+            ? snap.data().thinkTankLockedBlueprints
+            : []
+          : [];
+        const merged = existingLocked.includes(activityId)
+          ? existingLocked
+          : [...existingLocked, activityId];
+        tx.set(
+          progressRef,
+          {
+            thinkTankLockedBlueprints: merged,
+          },
+          { merge: true }
+        );
+        return merged;
+      });
+      setLockedBlueprints(updatedLocked);
     } catch (e) {
       console.error('Failed to persist blueprint lock:', e);
     }
@@ -1632,79 +1655,43 @@ export default function ThinkTankPage() {
 
     try {
       const progressRef = doc(firestore, 'student_progress', user.uid);
-      const remoteSnap = await getDoc(progressRef);
-      const remoteData = remoteSnap.exists() ? remoteSnap.data() : {};
+      const txResult = await runTransaction(firestore, async (tx) => {
+        const remoteSnap = await tx.get(progressRef);
+        const remoteData = remoteSnap.exists() ? (remoteSnap.data() as any) : undefined;
 
-      const mergedLocked = Array.from(
-        new Set([...lockedBlueprints, ...(remoteData.thinkTankLockedBlueprints || [])])
-      );
-      if (mergedLocked.includes(activityId)) {
-        setLockedBlueprints(mergedLocked);
-        return;
-      }
+        const transition = computeAtomicProgressTransition(remoteData, {
+          activityId,
+          points,
+          maxPoints,
+          targetTotalXp,
+        });
 
-      const mergedSolved = Array.from(
-        new Set([...solvedActivities, ...(remoteData.thinkTankCompleted || [])])
-      );
-      const mergedAwardedMap: Record<string, number> = {
-        ...(remoteData.thinkTankAwardedXp || {}),
-        ...awardedXpByActivity,
-      };
-      if (remoteData.thinkTankAwardedXp?.[activityId] !== undefined) {
-        mergedAwardedMap[activityId] = Math.max(
-          mergedAwardedMap[activityId] ?? 0,
-          remoteData.thinkTankAwardedXp[activityId]
-        );
-      }
+        if (transition.effectiveDelta > 0) {
+          tx.set(
+            progressRef,
+            {
+              thinkTankCompleted: transition.nextState.thinkTankCompleted,
+              thinkTankAwardedXp: transition.nextState.thinkTankAwardedXp,
+              thinkTankLockedBlueprints: transition.nextState.thinkTankLockedBlueprints,
+              thinkTankScore: transition.nextState.thinkTankScore,
+            },
+            { merge: true }
+          );
+        }
 
-      const cap = maxPoints ?? points;
-      const alreadyAwarded = Math.max(
-        mergedAwardedMap[activityId] ?? 0,
-        mergedSolved.includes(activityId) ? cap : 0
-      );
+        return transition;
+      });
 
-      const desiredTotal =
-        targetTotalXp !== undefined
-          ? Math.min(cap, targetTotalXp)
-          : Math.min(cap, alreadyAwarded + points);
+      setSolvedActivities(txResult.nextState.thinkTankCompleted);
+      setAwardedXpByActivity(txResult.nextState.thinkTankAwardedXp);
+      setLockedBlueprints(txResult.nextState.thinkTankLockedBlueprints);
+      setLogicPoints(txResult.nextState.thinkTankScore);
 
-      const effectiveDelta = Math.max(0, desiredTotal - alreadyAwarded);
-      if (effectiveDelta <= 0) {
-        setSolvedActivities(mergedSolved);
-        setAwardedXpByActivity(mergedAwardedMap);
-        return;
-      }
-
-      const newTotalForActivity = alreadyAwarded + effectiveDelta;
-      const isNowFullySolved = newTotalForActivity >= cap;
-      const nextSolved =
-        isNowFullySolved && !mergedSolved.includes(activityId)
-          ? [...mergedSolved, activityId]
-          : mergedSolved;
-      const nextAwardedMap = {
-        ...mergedAwardedMap,
-        [activityId]: newTotalForActivity,
-      };
-      const baseScore = Math.max(logicPoints, Number(remoteData.thinkTankScore || 0));
-      const nextPoints = baseScore + effectiveDelta;
-
-      setSolvedActivities(nextSolved);
-      setAwardedXpByActivity(nextAwardedMap);
-      setLogicPoints(nextPoints);
-
-      await setDoc(
-        progressRef,
-        {
-          thinkTankCompleted: nextSolved,
-          thinkTankAwardedXp: nextAwardedMap,
-          thinkTankScore: nextPoints,
-        },
-        { merge: true }
-      );
+      if (txResult.effectiveDelta <= 0) return;
 
       const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
-      await awardActivityXP(firestore, targetStudentId, effectiveDelta, 'Think Tank Logic Module');
-      if (isNowFullySolved) {
+      await awardActivityXP(firestore, targetStudentId, txResult.effectiveDelta, 'Think Tank Logic Module');
+      if (txResult.isNowFullySolved) {
         await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
         confetti({ particleCount: 120, spread: 60, colors: ['#6366f1', '#a855f7', '#ec4899'] });
       }

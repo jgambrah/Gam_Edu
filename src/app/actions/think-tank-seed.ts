@@ -3,6 +3,7 @@
 import { getAdminDb, FieldValue } from '@/lib/firebaseAdmin';
 import { requireSignedIn, SessionError } from '@/lib/session-guard';
 import {
+  THINK_TANK_DATA_VERSION,
   THINK_TANK_PARADOXES,
   THINK_TANK_DETECTIVE_CASES,
   THINK_TANK_RIDDLES,
@@ -89,6 +90,7 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
           data: {
             id: shardId,
             parentId: 'think_tank_v1',
+            version: THINK_TANK_DATA_VERSION,
             kind: cat.key,
             index: idx,
             count: chunk.length,
@@ -106,7 +108,7 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
     const manifestPayload = {
       id: 'think_tank_v1',
       title: 'Think Tank Central Critical Thinking & Riddle Bank',
-      version: '19.1.0',
+      version: THINK_TANK_DATA_VERSION,
       sharded: true,
       shardIds,
       updatedAt: FieldValue.serverTimestamp(),
