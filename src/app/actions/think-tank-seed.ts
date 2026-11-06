@@ -63,7 +63,7 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
     const payload = {
       id: 'think_tank_v1',
       title: 'Think Tank Central Critical Thinking & Riddle Bank',
-      version: '11.1.0',
+      version: '12.0.0',
       updatedAt: FieldValue.serverTimestamp(),
       updatedBy: user.uid,
       paradoxCount,
