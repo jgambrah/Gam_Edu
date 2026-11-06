@@ -175,15 +175,36 @@ service cloud.firestore {
     // 1B. GLOBAL SHARED CURRICULUM REPOSITORY
     // =========================================================
 
-    match /global_curriculum/{document=**} {
-      // The shared question bank: readable by any signed-in user of any school (not by anonymous visitors).
-      allow read, list: if isSignedIn();
+    function isLegacyThinkTankDocument(documentId) {
+      return documentId == "think_tank_v1"
+        || documentId.matches("^think_tank_v1_.*");
+    }
+
+    function isPublicThinkTankV2Document(documentId) {
+      return documentId == "think_tank_v2"
+        || documentId.matches("^think_tank_v2_.*");
+    }
+
+    match /global_curriculum/{documentId} {
+      // Public Think Tank v2 manifest and shards, plus other non-legacy curriculum documents,
+      // are readable by any signed-in user. Legacy answer-bearing Think Tank v1 documents are denied.
+      allow read, list: if isSignedIn()
+        && !isLegacyThinkTankDocument(documentId)
+        && (isPublicThinkTankV2Document(documentId) || !documentId.matches("^think_tank_.*"));
 
       // Restrict all write, update, and delete access to platform super-admins only
       allow write, create, update, delete: if request.auth != null && (
         request.auth.token.role == 'super_admin' ||
         isSuperAdmin()
       );
+
+      match /{subcollection}/{subDocId}/{rest=**} {
+        allow read, list: if isSignedIn() && !isLegacyThinkTankDocument(documentId);
+        allow write, create, update, delete: if request.auth != null && (
+          request.auth.token.role == 'super_admin' ||
+          isSuperAdmin()
+        );
+      }
     }
 
     // =========================================================
@@ -456,7 +477,7 @@ service cloud.firestore {
     // by the server (src/app/actions/gamification.ts); identity, class, school and billing fields by staff.
     function studentProtectedFields() {
       return ['totalPoints', 'earnedBadges', 'attendanceStreak', 'quizStreak90', 'booksReadCount', 'stemCount',
-              'xpEarnedToday', 'xpEarnedDay', 'lastGamificationUpdate',
+              'xpEarnedToday', 'xpEarnedDay', 'lastGamificationUpdate', 'verifiedQuizBadgeCount',
               'schoolId', 'classId', 'uid', 'studentId', 'enrollmentStatus', 'status', 'parentId', 'parentIds',
               'isSponsored', 'sponsorId', 'sponsorName', 'biometricId', 'usesBusService', 'usesCanteen',
               'transportBillingModel', 'canteenBillingMode', 'isArchived'];
@@ -471,7 +492,15 @@ service cloud.firestore {
       // pupil LIST may be read only within the school or by the pupil themself (it used to be open to anyone).
       allow get: if true;
       allow list: if isSuperAdmin() || (isSignedIn() && resource.data.uid == request.auth.uid) || inMySchool();
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() && (
+        isSuperAdmin() ||
+        ((isAdmin() || isTeacher()) && (request.resource.data.get('schoolId', '') == '' || request.resource.data.get('schoolId', '') == getUserSchoolId())) ||
+        (!request.resource.data.keys().hasAny([
+          'totalPoints', 'earnedBadges', 'attendanceStreak', 'quizStreak90',
+          'booksReadCount', 'stemCount', 'xpEarnedToday', 'xpEarnedDay',
+          'lastGamificationUpdate', 'verifiedQuizBadgeCount'
+        ]))
+      );
       // Staff of the student's school can edit everything; the pupil, their parent or other users of the same
       // school can still save other fields but cannot touch XP/badges or identity/billing fields.
       allow update: if isSignedIn() && (
@@ -1504,19 +1533,42 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    function studentAllowedProgressFields() {
+      return [
+        'logicLabCompleted',
+        'pythonAcademyCompleted',
+        'codingActivity',
+        'arcadeCompleted',
+        'arcadeScore'
+      ];
+    }
+
+    function thinkTankProtectedProgressFields() {
+      return [
+        'thinkTankScore',
+        'thinkTankCompleted',
+        'thinkTankAwardedXp',
+        'thinkTankLockedBlueprints',
+        'thinkTankDetectiveCompletedIds',
+        'thinkTankRiddleCompletedIds',
+        'thinkTankRiddleRevealedIds',
+        'thinkTankDebateCompletedIds',
+        'stemCreditedActivityIds',
+        'updatedAt'
+      ];
+    }
+
     match /student_progress/{userId} {
       allow read: if isSignedIn() && (request.auth.uid == userId || isTeacher() || isAdmin());
-      allow create: if isSignedIn() && request.auth.uid == userId
-        && request.resource.data.get('thinkTankScore', 0) >= 0
-        && request.resource.data.get('thinkTankScore', 0) <= 50;
-      allow update: if isAdmin() || isTeacher() || (
-        isSignedIn() && request.auth.uid == userId
-        && request.resource.data.get('thinkTankScore', 0) >= resource.data.get('thinkTankScore', 0)
-        && (request.resource.data.get('thinkTankScore', 0) - resource.data.get('thinkTankScore', 0)) <= 50
-        && request.resource.data.get('thinkTankLockedBlueprints', []).hasAll(resource.data.get('thinkTankLockedBlueprints', []))
-        && request.resource.data.get('thinkTankCompleted', []).hasAll(resource.data.get('thinkTankCompleted', []))
-      );
-      allow delete: if isAdmin();
+      allow create: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(studentAllowedProgressFields())
+        && !request.resource.data.keys().hasAny(thinkTankProtectedProgressFields());
+      allow update: if isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(studentAllowedProgressFields())
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(thinkTankProtectedProgressFields());
+      allow delete: if false;
     }
 
     match /math_problems/{problemId} {
@@ -1615,20 +1667,46 @@ service cloud.firestore {
       allow write: if isOwner(userId) || isAdmin();
     }
 
-    // Logic/Think Tank
+    // Logic/Think Tank — Private Server-Only Challenge Answer Records
+    match /think_tank_private_paradoxes/{id} {
+      allow read, write: if false;
+    }
+
+    match /think_tank_private_detective_cases/{id} {
+      allow read, write: if false;
+    }
+
+    match /think_tank_private_riddles/{id} {
+      allow read, write: if false;
+    }
+
+    // Logic/Think Tank — Public School-Created Challenges (Server-Authoritative Writes Only)
     match /think_tank_paradoxes/{paradoxId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn() && getUserSchoolId() != '' && resource.data.schoolId == getUserSchoolId();
+      allow write: if false;
     }
 
     match /think_tank_detective_cases/{caseId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn() && getUserSchoolId() != '' && resource.data.schoolId == getUserSchoolId();
+      allow write: if false;
+    }
+
+    match /think_tank_riddles/{riddleId} {
+      allow read: if isSignedIn() && getUserSchoolId() != '' && resource.data.schoolId == getUserSchoolId();
+      allow write: if false;
     }
 
     match /think_tank_debates/{debateId} {
-      allow read: if isSignedIn();
-      allow write: if isTeacher() || isAdmin();
+      allow read: if isSignedIn() && getUserSchoolId() != '' && resource.data.schoolId == getUserSchoolId();
+      allow write: if false;
+    }
+
+    match /think_tank_debate_sessions/{sessionId} {
+      allow read: if isSignedIn()
+        && resource.data.studentUid == request.auth.uid
+        && getUserSchoolId() != ''
+        && resource.data.schoolId == getUserSchoolId();
+      allow write: if false;
     }
 
     match /think_tank_crosswords/{puzzleId} {
@@ -1637,10 +1715,20 @@ service cloud.firestore {
     }
 
     match /think_tank_submissions/{submissionId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isTeacher() || isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow delete: if isTeacher() || isAdmin();
+      allow read: if isSignedIn()
+        && getUserSchoolId() != ''
+        && resource.data.schoolId == getUserSchoolId()
+        && (resource.data.userId == request.auth.uid || resource.data.studentId == request.auth.uid || isTeacher() || isAdmin());
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid
+        && getUserSchoolId() != ''
+        && request.resource.data.schoolId == getUserSchoolId();
+      allow update: if (isTeacher() || isAdmin())
+        && getUserSchoolId() != ''
+        && resource.data.schoolId == getUserSchoolId();
+      allow delete: if (isTeacher() || isAdmin())
+        && getUserSchoolId() != ''
+        && resource.data.schoolId == getUserSchoolId();
     }
 
     match /think_tank_responses/{responseId} {
@@ -1878,8 +1966,32 @@ service cloud.firestore {
     // =========================================================
     // 9. CATCH-ALL (Platform Super-Admin only — keep at bottom)
     // =========================================================
-    match /{document=**} {
-      allow read, write: if isSuperAdmin();
+    function isProtectedThinkTankCollection(collectionId) {
+      return collectionId in [
+        'think_tank_private_paradoxes',
+        'think_tank_private_detective_cases',
+        'think_tank_private_riddles',
+        'think_tank_paradoxes',
+        'think_tank_detective_cases',
+        'think_tank_riddles',
+        'think_tank_debates',
+        'think_tank_debate_sessions',
+        'think_tank_submissions', 'student_progress', 'students'
+      ];
+    }
+
+    match /{collectionId}/{documentId} {
+      allow read: if isSuperAdmin()
+        && !isProtectedThinkTankCollection(collectionId)
+        && !(collectionId == 'global_curriculum' && isLegacyThinkTankDocument(documentId));
+      allow write: if isSuperAdmin()
+        && !isProtectedThinkTankCollection(collectionId);
+
+      match /{subcollection}/{subDocId}/{rest=**} {
+        allow read, write: if isSuperAdmin()
+          && !isProtectedThinkTankCollection(collectionId)
+          && !(collectionId == 'global_curriculum' && isLegacyThinkTankDocument(documentId));
+      }
     }
 
   }

@@ -9,12 +9,9 @@ import {
   orderBy,
   addDoc,
   serverTimestamp,
-  deleteDoc,
   doc,
   where,
-  setDoc,
   getDoc,
-  runTransaction,
   limit,
 } from 'firebase/firestore';
 import {
@@ -33,8 +30,8 @@ import {
   Database,
   Sparkles,
   Eye,
+  RefreshCw,
 } from 'lucide-react';
-import { getAuth } from 'firebase/auth';
 
 // UI Components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -53,23 +50,18 @@ import confetti from 'canvas-confetti';
 // Custom Components
 import { ParadoxCard, DebateArena } from '@/components/academics/think-tank-components';
 
-// Types, Central Bank, and AI Functions
-import type { Paradox, DebateTopic, Student } from '@/lib/types';
+// Public v2 Curriculum Types & Validator (no private answer bank bundled)
+import type { Student } from '@/lib/types';
 import {
-  THINK_TANK_DATA_VERSION,
-  THINK_TANK_PARADOXES,
-  THINK_TANK_DETECTIVE_CASES,
-  THINK_TANK_RIDDLES,
-  THINK_TANK_DEBATES,
-  type ThinkTankParadoxItem,
-  type ThinkTankDetectiveCaseItem,
-  type ThinkTankRiddleItem,
-  type ThinkTankDebateItem,
-} from '@/lib/think-tank-data';
+  THINK_TANK_PUBLIC_V2_VERSION,
+  verifyAndAssemblePublicV2Curriculum,
+  type PublicParadox,
+  type PublicDetectiveCase,
+  type PublicRiddle,
+  type PublicDebate,
+} from '@/lib/think-tank-public-curriculum';
 import {
-  assembleAndVerifyRemoteCurriculum,
   compareCurriculumVersions,
-  computeAtomicProgressTransition,
   type ShardDocumentData,
 } from '@/lib/think-tank-sync-utils';
 import { useOnceQuery } from '@/lib/firestore-once';
@@ -78,9 +70,19 @@ import {
   submitThinkTankParadoxAction,
   lockThinkTankBlueprintAction,
 } from '@/app/actions/think-tank-submit';
-import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from '@/ai/flows/think-tank';
-import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { submitThinkTankDetectiveAction } from '@/app/actions/think-tank-detective-submit';
+import {
+  submitThinkTankRiddleAction,
+  revealThinkTankRiddleAction,
+} from '@/app/actions/think-tank-riddle-submit';
+import {
+  generateSchoolParadoxAction,
+  deleteSchoolParadoxAction,
+  generateSchoolDetectiveCaseAction,
+  deleteSchoolDetectiveCaseAction,
+  generateSchoolDebateTopicAction,
+  deleteSchoolDebateTopicAction,
+} from '@/app/actions/think-tank-school-paradoxes';
 import { cn } from '@/lib/utils';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 
@@ -232,59 +234,68 @@ function DetectiveCard({
   caseData,
   onDelete,
   isStaff,
-  onSolve,
 }: {
-  caseData: any;
+  caseData: PublicDetectiveCase & { createdAt?: any; schoolId?: string };
   onDelete?: () => void;
   isStaff: boolean;
-  onSolve?: (points: number, id: string) => void;
 }) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
 
   const [selectedOption, setSelectedOption] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSolved, setIsSolved] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-
-  const { data: studentRecord } = useCollection<Student>(
-    useMemoFirebase(
-      () =>
-        user && schoolId && firestore
-          ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId))
-          : null,
-      [user, schoolId, firestore]
-    )
-  );
+  const [awardedXp, setAwardedXp] = useState(0);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  const [serverFeedback, setServerFeedback] = useState('');
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const handleCheck = async () => {
-    setIsSolved(true);
-    const correct = selectedOption === caseData.correctAnswer;
-    setIsCorrect(correct);
-    if (correct && onSolve) {
-      onSolve(25, caseData.id);
-    }
+    if (!selectedOption || isSubmitting || isSolved) return;
 
-    if (user && firestore && schoolId) {
-      try {
-        await addDoc(collection(firestore, 'think_tank_submissions'), {
-          studentId: user.uid,
-          userId: user.uid,
-          studentName: user.displayName || user.email,
-          type: 'Detective Case',
-          activityId: caseData.id,
-          response: `Selected Option: "${selectedOption}" (${correct ? 'Correct' : 'Incorrect'})`,
-          timestamp: serverTimestamp(),
-          schoolId: schoolId,
-        });
-        if (correct) {
-          const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
-          await awardActivityXP(firestore, targetStudentId, 25, 'Think Tank Case', 'stem_explorer');
-          await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
-        }
-      } catch (e) {
-        console.error('Failed to add case submission:', e);
+    setIsSubmitting(true);
+    setActionError(null);
+
+    try {
+      const result = await submitThinkTankDetectiveAction({
+        caseId: caseData.id,
+        selectedOption,
+      });
+
+      if (!result.success) {
+        setActionError(result.error || 'Unable to verify detective analysis.');
+        return;
       }
+
+      const correct = Boolean(result.correct);
+      setIsSolved(true);
+      setIsCorrect(correct);
+      setAwardedXp(result.awardedXp ?? 0);
+      setAlreadyCompleted(Boolean(result.alreadyCompleted));
+      setServerFeedback(result.feedback ?? result.explanation ?? '');
+
+      if (user && firestore && schoolId) {
+        try {
+          await addDoc(collection(firestore, 'think_tank_submissions'), {
+            studentId: user.uid,
+            userId: user.uid,
+            studentName: user.displayName || user.email,
+            type: 'Detective Case',
+            activityId: caseData.id,
+            response: `Selected Option: "${selectedOption}" (${correct ? 'Correct' : 'Incorrect'})`,
+            timestamp: serverTimestamp(),
+            schoolId: schoolId,
+          });
+        } catch (e) {
+          console.error('Failed to add case submission:', e);
+        }
+      }
+    } catch (e: any) {
+      setActionError(e?.message || 'Unable to verify detective analysis.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -342,8 +353,8 @@ function DetectiveCard({
                       ? 'bg-amber-500 text-slate-950 hover:bg-amber-600 border-amber-500 shadow-lg'
                       : 'bg-slate-900 hover:bg-slate-800 text-slate-200'
                   )}
-                  onClick={() => !isSolved && setSelectedOption(opt)}
-                  disabled={isSolved}
+                  onClick={() => !isSolved && !isSubmitting && setSelectedOption(opt)}
+                  disabled={isSolved || isSubmitting}
                 >
                   {isSelected && <CheckCircle2 className="mr-2 h-4 w-4 text-slate-950 shrink-0" />}
                   {opt}
@@ -352,6 +363,16 @@ function DetectiveCard({
             })}
           </div>
         </div>
+
+        {actionError && (
+          <Alert className="rounded-2xl border bg-rose-950/20 border-rose-900/30 text-rose-300">
+            <AlertTriangle className="h-5 w-5 text-rose-400" />
+            <AlertTitle className="font-bold text-sm">Submission Error</AlertTitle>
+            <AlertDescription className="text-slate-300 mt-1 text-xs">
+              {actionError}
+            </AlertDescription>
+          </Alert>
+        )}
 
         {isSolved && (
           <Alert
@@ -368,10 +389,14 @@ function DetectiveCard({
               <AlertTriangle className="h-5 w-5 text-rose-400" />
             )}
             <AlertTitle className="font-bold text-sm">
-              {isCorrect ? 'Case Solved! (+25 Logic XP)' : 'Incorrect Analysis'}
+              {isCorrect
+                ? alreadyCompleted
+                  ? 'Case Solved! (Already Completed)'
+                  : `Case Solved! (+${awardedXp} Logic XP)`
+                : 'Incorrect Analysis'}
             </AlertTitle>
             <AlertDescription className="text-slate-300 mt-2 leading-relaxed text-xs">
-              {caseData.explanation}
+              {serverFeedback}
             </AlertDescription>
           </Alert>
         )}
@@ -380,10 +405,16 @@ function DetectiveCard({
         {!isSolved && (
           <Button
             onClick={handleCheck}
-            disabled={!selectedOption}
+            disabled={!selectedOption || isSubmitting}
             className="w-full h-11 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black rounded-xl shadow-lg active:scale-95 text-xs"
           >
-            Analyze Evidence File
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Analyzing Evidence...
+              </>
+            ) : (
+              'Analyze Evidence File'
+            )}
           </Button>
         )}
       </CardFooter>
@@ -396,12 +427,10 @@ function DetectiveDeskTab({
   schoolId,
   centralCases,
   solvedActivities,
-  onSolve,
 }: {
   schoolId: string | null;
-  centralCases: ThinkTankDetectiveCaseItem[];
+  centralCases: PublicDetectiveCase[];
   solvedActivities: string[];
-  onSolve?: (points: number, id: string) => void;
 }) {
   const { user } = useUser();
   const { role } = useRole();
@@ -438,9 +467,20 @@ function DetectiveDeskTab({
   const { data: schoolCases, isLoading, forceRefetch } = useCollection<any>(casesQuery);
 
   const groupCases = useMemo(() => {
+    const getCreatedAtMs = (val: any): number => {
+      if (!val) return 0;
+      if (typeof val === 'string') {
+        const parsed = Date.parse(val);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      if (typeof val.seconds === 'number') {
+        return val.seconds * 1000;
+      }
+      return 0;
+    };
     const customList = (schoolCases || [])
       .slice()
-      .sort((a: any, b: any) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+      .sort((a: any, b: any) => getCreatedAtMs(b.createdAt) - getCreatedAtMs(a.createdAt))
       .filter((c: any) => c.targetGroup === activeGroup);
     const centralList = centralCases.filter((c) => c.targetGroup === activeGroup);
     return [...customList, ...centralList];
@@ -452,22 +492,21 @@ function DetectiveDeskTab({
   }, [groupCases, selectedCaseId]);
 
   const handleGenerateCase = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser || user;
-    if (!currentUser || !schoolId) return;
+    if (!canManage) return;
     setIsGenerating(true);
     toast({ title: 'Investigating...', description: 'Gathering evidence for a new school case.' });
 
     try {
-      const result = await generateDetectiveCase({ targetGroup: activeGroup, schoolId });
-      const docRef = await addDoc(collection(firestore!, 'think_tank_detective_cases'), {
-        ...result,
-        createdAt: serverTimestamp(),
-        createdBy: currentUser.uid,
-        schoolId: schoolId,
+      const result = await generateSchoolDetectiveCaseAction({
+        targetGroup: activeGroup,
       });
+
+      if (!result.success || !result.detectiveCase) {
+        throw new Error(result.error || 'Failed to generate school detective case.');
+      }
+
       toast({ title: 'Case File Opened', description: 'New investigation ready.' });
-      setSelectedCaseId(docRef.id);
+      setSelectedCaseId(result.detectiveCase.id);
       forceRefetch();
     } catch (e: any) {
       toast({ variant: 'destructive', title: 'Error', description: e.message });
@@ -477,14 +516,21 @@ function DetectiveDeskTab({
   };
 
   const handleDeleteCase = async (id: string) => {
-    if (!firestore) return;
+    if (!canManage) return;
     try {
-      await deleteDoc(doc(firestore, 'think_tank_detective_cases', id));
+      const result = await deleteSchoolDetectiveCaseAction(id);
+      if (!result.success) {
+        throw new Error(result.error || 'Could not delete detective case.');
+      }
       toast({ title: 'Case Closed', description: 'File deleted.' });
       if (selectedCaseId === id) setSelectedCaseId(null);
       forceRefetch();
-    } catch (e) {
-      toast({ variant: 'destructive', title: 'Error' });
+    } catch (e: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: e?.message || 'Could not delete detective case.',
+      });
     }
   };
 
@@ -530,7 +576,6 @@ function DetectiveDeskTab({
             caseData={activeCase}
             isStaff={canManage}
             onDelete={activeCase.isCentral ? undefined : () => handleDeleteCase(activeCase.id)}
-            onSolve={onSolve}
           />
         ) : (
           <Card className="text-center py-12 border-2 border-dashed border-slate-800 h-full flex flex-col justify-center items-center bg-slate-950/20 rounded-3xl">
@@ -615,16 +660,12 @@ function DailyParadoxTab({
   solvedActivities,
   awardedXpByActivity = {},
   lockedBlueprints = [],
-  onSolve,
-  onLockBlueprint,
 }: {
   schoolId: string | null;
-  centralParadoxes: ThinkTankParadoxItem[];
+  centralParadoxes: PublicParadox[];
   solvedActivities: string[];
   awardedXpByActivity?: Record<string, number>;
   lockedBlueprints?: string[];
-  onSolve?: (points: number, id: string, maxPoints?: number, targetTotalXp?: number) => void;
-  onLockBlueprint?: (id: string) => void;
 }) {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
@@ -658,16 +699,27 @@ function DailyParadoxTab({
     return query(collection(firestore, 'think_tank_paradoxes'), where('schoolId', '==', schoolId), limit(50));
   }, [firestore, schoolId]);
 
-  const { data: schoolParadoxes, isLoading, forceRefetch } = useCollection<Paradox>(paradoxQuery);
+  const { data: schoolParadoxes, isLoading, forceRefetch } = useCollection<PublicParadox & { createdAt?: any; schoolId?: string }>(paradoxQuery);
 
   const groupParadoxes = useMemo(() => {
+    const getCreatedAtMs = (val: any): number => {
+      if (!val) return 0;
+      if (typeof val === 'string') {
+        const parsed = Date.parse(val);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      if (typeof val.seconds === 'number') {
+        return val.seconds * 1000;
+      }
+      return 0;
+    };
     const customList = (schoolParadoxes || [])
       .slice()
-      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+      .sort((a, b) => getCreatedAtMs(b.createdAt) - getCreatedAtMs(a.createdAt))
       .filter((p) => p.targetGroup === activeGroup);
     const centralList = centralParadoxes
       .filter((p) => p.targetGroup === activeGroup)
-      .map((p) => ({ ...p, createdAt: null } as unknown as Paradox & { isCentral?: boolean }));
+      .map((p) => ({ ...p, createdAt: null }));
     return [...customList, ...centralList];
   }, [schoolParadoxes, centralParadoxes, activeGroup]);
 
@@ -726,39 +778,53 @@ function DailyParadoxTab({
     return result;
   };
 
-  const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
+  const handleDeleteParadox = async (paradoxId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (!firestore) return;
+    if (!canManage) return;
+
     try {
-      await deleteDoc(doc(firestore, 'think_tank_paradoxes', id));
+      const result = await deleteSchoolParadoxAction(paradoxId);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
       toast({ title: 'Deleted', description: 'Puzzle removed.' });
-      if (selectedParadoxId === id) setSelectedParadoxId(null);
+      if (selectedParadoxId === paradoxId) setSelectedParadoxId(null);
       forceRefetch();
-    } catch (err: any) {
-      console.error('Delete failed:', err);
-      toast({ variant: 'destructive', title: 'Error', description: 'Could not delete puzzle.' });
+    } catch (error: any) {
+      console.error('Failed to delete school paradox:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: error?.message || 'Could not delete puzzle.',
+      });
     }
   };
 
   const handleGenerateParadox = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser || user;
-    if (!currentUser || !schoolId) return;
+    if (!canManage) return;
     setIsGenerating(true);
+
     try {
-      const result = await generateDailyParadox({ targetGroup: activeGroup, schoolId });
-      if (!result) throw new Error('AI returned no data');
-      const docRef = await addDoc(collection(firestore!, 'think_tank_paradoxes'), {
-        ...result,
-        createdAt: serverTimestamp(),
-        createdBy: currentUser.uid,
-        schoolId: schoolId,
+      const result = await generateSchoolParadoxAction({
+        targetGroup: activeGroup,
       });
+
+      if (!result.success || !result.paradox) {
+        throw new Error(result.error);
+      }
+
       toast({ title: 'New Paradox Added!' });
-      setSelectedParadoxId(docRef.id);
+      setSelectedParadoxId(result.paradox.id);
       forceRefetch();
-    } catch (e: any) {
-      toast({ variant: 'destructive', title: 'AI Error', description: e.message });
+    } catch (error: any) {
+      console.error('Failed to generate school paradox:', error);
+      toast({
+        variant: 'destructive',
+        title: 'AI Error',
+        description: error?.message || 'Failed to generate school paradox.',
+      });
     } finally {
       setIsGenerating(false);
     }
@@ -898,10 +964,8 @@ function DailyParadoxTab({
 // --- COMPONENT: Interactive Riddle Card ---
 function RiddleCard({
   riddle,
-  onSolve,
 }: {
-  riddle: ThinkTankRiddleItem;
-  onSolve?: (points: number, id: string) => void;
+  riddle: PublicRiddle;
 }) {
   const { user } = useUser();
   const firestore = useFirestore();
@@ -910,44 +974,101 @@ function RiddleCard({
   const [guess, setGuess] = useState('');
   const [hintsShown, setHintsShown] = useState(0);
   const [status, setStatus] = useState<'idle' | 'correct' | 'wrong' | 'revealed'>('idle');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [awardedXp, setAwardedXp] = useState(0);
+  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  const [alreadyRevealed, setAlreadyRevealed] = useState(false);
+  const [revealedAnswer, setRevealedAnswer] = useState('');
+  const [revealedExplanation, setRevealedExplanation] = useState('');
+  const [serverFeedback, setServerFeedback] = useState('');
+  const [actionError, setActionError] = useState<string | null>(null);
 
   const checkAnswer = async () => {
-    const cleanGuess = guess.trim().toLowerCase();
-    if (!cleanGuess) return;
+    const cleanGuess = guess.trim();
+    if (!cleanGuess || isSubmitting || isRevealing) return;
 
-    const matched =
-      riddle.acceptedKeywords.some((kw) => cleanGuess.includes(kw.toLowerCase())) ||
-      riddle.answer.toLowerCase().includes(cleanGuess);
+    setIsSubmitting(true);
+    setActionError(null);
 
-    if (matched) {
-      setStatus('correct');
-      confetti({ particleCount: 110, spread: 65, colors: ['#10b981', '#a855f7', '#f59e0b'] });
-      if (onSolve) onSolve(15, riddle.id);
-    } else {
-      setStatus('wrong');
-    }
+    try {
+      const result = await submitThinkTankRiddleAction({
+        riddleId: riddle.id,
+        guess: cleanGuess,
+      });
 
-    if (user && firestore && schoolId) {
-      try {
-        await addDoc(collection(firestore, 'think_tank_submissions'), {
-          studentId: user.uid,
-          userId: user.uid,
-          studentName: user.displayName || user.email,
-          type: 'Riddle',
-          activityId: riddle.id,
-          response: `Guess: "${guess}" (${matched ? 'Solved!' : 'Try again'})`,
-          timestamp: serverTimestamp(),
-          schoolId,
-        });
-      } catch (e) {
-        console.error('Failed to log riddle attempt:', e);
+      if (!result.success) {
+        setActionError(result.error || 'Unable to verify riddle guess.');
+        return;
       }
+
+      const matched = Boolean(result.correct);
+      setAwardedXp(result.awardedXp ?? 0);
+      setAlreadyCompleted(Boolean(result.alreadyCompleted));
+      setAlreadyRevealed(Boolean(result.alreadyRevealed));
+      setServerFeedback(result.feedback ?? '');
+
+      if (matched) {
+        setStatus('correct');
+        setRevealedAnswer(result.answer ?? '');
+        setRevealedExplanation(result.explanation ?? '');
+        if ((result.awardedXp ?? 0) > 0) {
+          confetti({ particleCount: 110, spread: 65, colors: ['#10b981', '#a855f7', '#f59e0b'] });
+        }
+      } else {
+        setStatus('wrong');
+      }
+
+      if (user && firestore && schoolId) {
+        try {
+          await addDoc(collection(firestore, 'think_tank_submissions'), {
+            studentId: user.uid,
+            userId: user.uid,
+            studentName: user.displayName || user.email,
+            type: 'Riddle',
+            activityId: riddle.id,
+            response: `Guess: "${cleanGuess}" (${matched ? 'Solved!' : 'Try again'})`,
+            timestamp: serverTimestamp(),
+            schoolId,
+          });
+        } catch (e) {
+          console.error('Failed to log riddle attempt:', e);
+        }
+      }
+    } catch (e: any) {
+      setActionError(e?.message || 'Unable to verify riddle guess.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleReveal = () => {
-    setStatus('revealed');
-    if (onSolve) onSolve(5, riddle.id);
+  const handleReveal = async () => {
+    if (isSubmitting || isRevealing) return;
+
+    setIsRevealing(true);
+    setActionError(null);
+
+    try {
+      const result = await revealThinkTankRiddleAction({
+        riddleId: riddle.id,
+      });
+
+      if (!result.success || !result.revealed) {
+        setActionError(result.error || 'Unable to reveal riddle solution.');
+        return;
+      }
+
+      setStatus('revealed');
+      setAwardedXp(0);
+      setAlreadyCompleted(Boolean(result.alreadyCompleted));
+      setAlreadyRevealed(true);
+      setRevealedAnswer(result.answer ?? '');
+      setRevealedExplanation(result.explanation ?? '');
+    } catch (e: any) {
+      setActionError(e?.message || 'Unable to reveal riddle solution.');
+    } finally {
+      setIsRevealing(false);
+    }
   };
 
   return (
@@ -1023,6 +1144,16 @@ function RiddleCard({
           )}
         </div>
 
+        {actionError && (
+          <Alert className="rounded-2xl border bg-rose-950/25 border-rose-500/30 text-rose-300">
+            <AlertTriangle className="h-5 w-5 text-rose-400" />
+            <AlertTitle className="font-bold text-sm">Action Error</AlertTitle>
+            <AlertDescription className="text-slate-300 mt-1 text-xs">
+              {actionError}
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Answer Input */}
         {status !== 'correct' && status !== 'revealed' && (
           <div className="space-y-3">
@@ -1033,26 +1164,35 @@ function RiddleCard({
                 onChange={(e) => {
                   setGuess(e.target.value);
                   if (status === 'wrong') setStatus('idle');
+                  if (actionError) setActionError(null);
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
+                disabled={isSubmitting || isRevealing}
                 className="bg-slate-900 border-slate-800 text-white rounded-xl h-11 text-xs focus:ring-1 focus:ring-emerald-500"
               />
               <Button
                 onClick={checkAnswer}
-                disabled={!guess.trim()}
+                disabled={!guess.trim() || isSubmitting || isRevealing}
                 className="h-11 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 font-black rounded-xl text-xs shrink-0"
               >
-                Check Answer
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking...
+                  </>
+                ) : (
+                  'Check Answer'
+                )}
               </Button>
             </div>
 
             {status === 'wrong' && (
               <div className="flex items-center justify-between bg-rose-950/25 border border-rose-500/30 rounded-xl p-3 text-xs text-rose-300">
-                <span>Not quite! Try unlocking a clue or phrasing your answer simply.</span>
+                <span>{serverFeedback || 'Not quite! Try unlocking a clue or phrasing your answer simply.'}</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleReveal}
+                  disabled={isSubmitting || isRevealing}
                   className="text-amber-300 hover:text-white text-xs h-7 px-2.5"
                 >
                   <Eye className="h-3.5 w-3.5 mr-1" /> Reveal Answer
@@ -1066,6 +1206,7 @@ function RiddleCard({
                   variant="ghost"
                   size="sm"
                   onClick={handleReveal}
+                  disabled={isSubmitting || isRevealing}
                   className="text-slate-400 hover:text-white text-[11px] h-7"
                 >
                   <Eye className="h-3.5 w-3.5 mr-1" /> Stumped? Reveal Answer
@@ -1086,13 +1227,21 @@ function RiddleCard({
           >
             <ShieldCheck className="h-5 w-5 text-emerald-400" />
             <AlertTitle className="font-bold text-sm text-emerald-400">
-              {status === 'correct' ? 'Spot On! Riddle Cracked (+15 Logic XP) 🎉' : 'Riddle Solution Revealed (+5 XP)'}
+              {status === 'correct'
+                ? alreadyRevealed
+                  ? 'Spot On! (Solution Previously Revealed — 0 XP)'
+                  : alreadyCompleted
+                  ? 'Spot On! (Already Completed — 0 Additional XP)'
+                  : `Spot On! Riddle Cracked (+${awardedXp} Logic XP) 🎉`
+                : 'Riddle Solution Revealed (0 XP)'}
             </AlertTitle>
             <AlertDescription className="text-slate-300 mt-2 space-y-2">
               <p className="font-bold text-white text-sm">
-                Answer: <span className="text-emerald-300">{riddle.answer}</span>
+                Answer: <span className="text-emerald-300">{revealedAnswer}</span>
               </p>
-              <p className="text-xs leading-relaxed text-slate-300">{riddle.explanation}</p>
+              <p className="text-xs leading-relaxed text-slate-300">
+                {serverFeedback || revealedExplanation}
+              </p>
             </AlertDescription>
           </Alert>
         )}
@@ -1106,12 +1255,10 @@ function RiddleVaultTab({
   schoolId,
   centralRiddles,
   solvedActivities,
-  onSolve,
 }: {
   schoolId: string | null;
-  centralRiddles: ThinkTankRiddleItem[];
+  centralRiddles: PublicRiddle[];
   solvedActivities: string[];
-  onSolve?: (points: number, id: string) => void;
 }) {
   const { user } = useUser();
   const { role } = useRole();
@@ -1208,7 +1355,7 @@ function RiddleVaultTab({
         </div>
 
         {activeRiddle ? (
-          <RiddleCard key={activeRiddle.id} riddle={activeRiddle} onSolve={onSolve} />
+          <RiddleCard key={activeRiddle.id} riddle={activeRiddle} />
         ) : (
           <Card className="text-center py-12 border-2 border-dashed border-slate-800 bg-slate-950/20 rounded-3xl">
             <CardTitle className="text-white font-bold text-md">No Riddles in This Category</CardTitle>
@@ -1270,12 +1417,10 @@ function DebateArenaTab({
   schoolId,
   centralDebates,
   solvedActivities,
-  onSolve,
 }: {
   schoolId: string | null;
-  centralDebates: ThinkTankDebateItem[];
+  centralDebates: PublicDebate[];
   solvedActivities: string[];
-  onSolve?: (points: number, id: string) => void;
 }) {
   const { user } = useUser();
   const { role } = useRole();
@@ -1312,15 +1457,26 @@ function DebateArenaTab({
         : null,
     [firestore, schoolId]
   );
-  const { data: schoolTopics, isLoading, forceRefetch } = useCollection<DebateTopic>(topicsQuery);
+  const { data: schoolTopics, isLoading, forceRefetch } = useCollection<PublicDebate & { createdAt?: any; schoolId?: string }>(topicsQuery);
 
   const groupTopics = useMemo(() => {
+    const getCreatedAtMs = (val: any): number => {
+      if (!val) return 0;
+      if (typeof val === 'string') {
+        const parsed = Date.parse(val);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+      if (typeof val.seconds === 'number') {
+        return val.seconds * 1000;
+      }
+      return 0;
+    };
     const customList = (schoolTopics || [])
       .filter((t) => t.targetGroup === activeGroup)
-      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      .sort((a, b) => getCreatedAtMs(b.createdAt) - getCreatedAtMs(a.createdAt));
     const centralList = centralDebates
       .filter((t) => t.targetGroup === activeGroup)
-      .map((t) => ({ ...t, createdAt: null } as unknown as DebateTopic & { isCentral?: boolean }));
+      .map((t) => ({ ...t, createdAt: null }));
     return [...customList, ...centralList];
   }, [schoolTopics, centralDebates, activeGroup]);
 
@@ -1330,9 +1486,7 @@ function DebateArenaTab({
   }, [groupTopics, selectedTopicId]);
 
   const handleAiGenerate = async () => {
-    const auth = getAuth();
-    const currentUser = auth.currentUser || user;
-    if (!currentUser || !schoolId) return;
+    if (!canManage) return;
 
     if (!customTopic.trim()) {
       toast({
@@ -1345,25 +1499,41 @@ function DebateArenaTab({
 
     setIsGenerating(true);
     try {
-      const result = await generateDebateTopic({
+      const result = await generateSchoolDebateTopicAction({
         targetGroup: activeGroup,
-        schoolId,
         topic: customTopic,
       });
-      const docRef = await addDoc(collection(firestore!, 'think_tank_debates'), {
-        ...result,
-        createdAt: serverTimestamp(),
-        createdBy: currentUser.uid,
-        schoolId: schoolId,
-      });
+      if (!result.success || !result.debate) {
+        throw new Error(result.error || 'Failed to generate debate motion.');
+      }
       toast({ title: 'AI Generated Debate Motion!' });
-      setSelectedTopicId(docRef.id);
+      setSelectedTopicId(result.debate.id);
       forceRefetch();
       setCustomTopic('');
     } catch (e: any) {
       toast({ variant: 'destructive', title: 'AI Error', description: e.message });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleDeleteDebate = async (debateId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (!canManage) return;
+    try {
+      const result = await deleteSchoolDebateTopicAction(debateId);
+      if (!result.success) {
+        throw new Error(result.error || 'Could not delete debate motion.');
+      }
+      toast({ title: 'Motion Removed', description: 'School debate motion deleted.' });
+      if (selectedTopicId === debateId) setSelectedTopicId(null);
+      forceRefetch();
+    } catch (err: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: err?.message || 'Could not delete debate motion.',
+      });
     }
   };
 
@@ -1404,7 +1574,7 @@ function DebateArenaTab({
         {isLoading && groupTopics.length === 0 ? (
           <Skeleton className="h-96 w-full bg-slate-900 rounded-[2.5rem] animate-pulse" />
         ) : activeTopic ? (
-          <DebateArena key={activeTopic.id} topic={activeTopic} onSolve={onSolve} />
+          <DebateArena key={activeTopic.id} topic={activeTopic} />
         ) : (
           <Card className="text-center py-12 border-2 border-dashed border-slate-800 bg-slate-950/20 rounded-3xl">
             <CardHeader>
@@ -1451,13 +1621,13 @@ function DebateArenaTab({
           <CardContent className="p-0 flex-1 min-h-0">
             <ScrollArea className="h-[380px] lg:h-[460px]">
               <div className="flex flex-col p-2 gap-1.5">
-                {groupTopics.map((t, idx) => {
+                {groupTopics.map((t: any, idx) => {
                   const isCompleted = solvedActivities.includes(t.id);
                   return (
-                    <button
+                    <div
                       key={t.id}
                       onClick={() => setSelectedTopicId(t.id)}
-                      className={`text-left p-3.5 rounded-2xl text-xs transition-all border flex justify-between items-center gap-2 ${
+                      className={`text-left p-3.5 rounded-2xl text-xs transition-all border flex justify-between items-center cursor-pointer gap-2 ${
                         t.id === activeTopic?.id
                           ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400 font-bold shadow-md'
                           : 'bg-slate-900/30 border-transparent hover:bg-slate-900/60 hover:border-slate-800 text-slate-400 hover:text-slate-200'
@@ -1474,8 +1644,19 @@ function DebateArenaTab({
                         </div>
                         <span className="line-clamp-2 text-slate-200 font-semibold">{t.topic}</span>
                       </div>
-                      {t.id === activeTopic?.id && <CheckCircle2 className="h-4.5 w-4.5 text-indigo-400 shrink-0" />}
-                    </button>
+                      {canManage && !t.isCentral ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl shrink-0"
+                          onClick={(e) => handleDeleteDebate(t.id, e)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      ) : (
+                        t.id === activeTopic?.id && <CheckCircle2 className="h-4.5 w-4.5 text-indigo-400 shrink-0" />
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -1502,31 +1683,46 @@ export default function ThinkTankPage() {
   const [logicPoints, setLogicPoints] = useState(0);
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
 
-  // Central Repository Fetch (version-aware + shard completeness verification)
-  const { data: centralDocs, refresh: refreshCentralDoc } = useOnceQuery<{
-    isVerifiedRemote?: boolean;
+  // Central Repository Fetch (sanitized v2 manifest + 8 public shards; fails closed with no v1 or private fallback)
+  const {
+    data: centralDocs,
+    isLoading: isLoadingCentral,
+    refresh: refreshCentralDoc,
+  } = useOnceQuery<{
+    isVerifiedRemote: boolean;
+    reason?: string;
     version?: string;
     sharded?: boolean;
     shardIds?: string[];
     totalCount?: number;
-    paradoxes?: ThinkTankParadoxItem[];
-    detectiveCases?: ThinkTankDetectiveCaseItem[];
-    riddles?: ThinkTankRiddleItem[];
-    debates?: ThinkTankDebateItem[];
+    paradoxes: PublicParadox[];
+    detectiveCases: PublicDetectiveCase[];
+    riddles: PublicRiddle[];
+    debates: PublicDebate[];
   }>(
-    firestore ? `think-tank:central:v${THINK_TANK_DATA_VERSION}` : null,
+    firestore ? `think-tank:central:v2:${THINK_TANK_PUBLIC_V2_VERSION}` : null,
     async () => {
       if (!firestore) return [];
-      const snap = await getDoc(doc(firestore, 'global_curriculum', 'think_tank_v1'));
-      if (!snap.exists()) return [];
+      const snap = await getDoc(doc(firestore, 'global_curriculum', 'think_tank_v2'));
+      if (!snap.exists()) {
+        return [
+          {
+            isVerifiedRemote: false,
+            reason: 'Public v2 curriculum manifest not found.',
+            paradoxes: [],
+            detectiveCases: [],
+            riddles: [],
+            debates: [],
+          },
+        ];
+      }
       const manifest = snap.data() as any;
 
-      // Version-aware guard: do not load stale Firestore shards if remote version < THINK_TANK_DATA_VERSION
       if (
         manifest.sharded &&
         Array.isArray(manifest.shardIds) &&
         manifest.shardIds.length > 0 &&
-        compareCurriculumVersions(manifest.version, THINK_TANK_DATA_VERSION) >= 0
+        compareCurriculumVersions(manifest.version, THINK_TANK_PUBLIC_V2_VERSION) >= 0
       ) {
         const shardSnaps = await Promise.all(
           manifest.shardIds.map((id: string) => getDoc(doc(firestore, 'global_curriculum', id)))
@@ -1534,21 +1730,16 @@ export default function ThinkTankPage() {
         const shardDocs: Array<ShardDocumentData | null> = shardSnaps.map((s) =>
           s.exists() ? ({ id: s.id, ...(s.data() as any) } as ShardDocumentData) : null
         );
-        const verified = assembleAndVerifyRemoteCurriculum(
+        const verified = verifyAndAssemblePublicV2Curriculum(
           manifest,
           shardDocs,
-          THINK_TANK_DATA_VERSION,
-          {
-            paradoxes: THINK_TANK_PARADOXES,
-            detectiveCases: THINK_TANK_DETECTIVE_CASES,
-            riddles: THINK_TANK_RIDDLES,
-            debates: THINK_TANK_DEBATES,
-          }
+          THINK_TANK_PUBLIC_V2_VERSION
         );
         return [
           {
             ...manifest,
             isVerifiedRemote: verified.isVerifiedRemote,
+            reason: verified.reason,
             paradoxes: verified.paradoxes,
             detectiveCases: verified.detectiveCases,
             riddles: verified.riddles,
@@ -1560,42 +1751,36 @@ export default function ThinkTankPage() {
         {
           ...manifest,
           isVerifiedRemote: false,
+          reason: 'Public v2 curriculum manifest failed version or shard structure check.',
+          paradoxes: [],
+          detectiveCases: [],
+          riddles: [],
+          debates: [],
         },
       ];
     }
   );
   const centralDoc = centralDocs?.[0] ?? null;
+  const publicCurriculumVerified = Boolean(centralDoc?.isVerifiedRemote);
 
   const centralParadoxes = useMemo(
-    () =>
-      centralDoc?.isVerifiedRemote && centralDoc.paradoxes?.length
-        ? centralDoc.paradoxes
-        : THINK_TANK_PARADOXES,
-    [centralDoc]
+    () => (publicCurriculumVerified ? centralDoc?.paradoxes ?? [] : []),
+    [publicCurriculumVerified, centralDoc]
   );
 
   const centralCases = useMemo(
-    () =>
-      centralDoc?.isVerifiedRemote && centralDoc.detectiveCases?.length
-        ? centralDoc.detectiveCases
-        : THINK_TANK_DETECTIVE_CASES,
-    [centralDoc]
+    () => (publicCurriculumVerified ? centralDoc?.detectiveCases ?? [] : []),
+    [publicCurriculumVerified, centralDoc]
   );
 
   const centralRiddles = useMemo(
-    () =>
-      centralDoc?.isVerifiedRemote && centralDoc.riddles?.length
-        ? centralDoc.riddles
-        : THINK_TANK_RIDDLES,
-    [centralDoc]
+    () => (publicCurriculumVerified ? centralDoc?.riddles ?? [] : []),
+    [publicCurriculumVerified, centralDoc]
   );
 
   const centralDebates = useMemo(
-    () =>
-      centralDoc?.isVerifiedRemote && centralDoc.debates?.length
-        ? centralDoc.debates
-        : THINK_TANK_DEBATES,
-    [centralDoc]
+    () => (publicCurriculumVerified ? centralDoc?.debates ?? [] : []),
+    [publicCurriculumVerified, centralDoc]
   );
 
   const handleSyncCentralRepo = async () => {
@@ -1647,104 +1832,6 @@ export default function ThinkTankPage() {
     fetchProgress();
   }, [user, firestore]);
 
-  const { data: studentRecord } = useCollection<Student>(
-    useMemoFirebase(
-      () =>
-        role === 'Student' && user && schoolId && firestore
-          ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId))
-          : null,
-      [role, user, schoolId, firestore]
-    )
-  );
-
-  const handleLockBlueprint = async (activityId: string) => {
-    if (!user || !firestore || canManage) return;
-    if (lockedBlueprints.includes(activityId)) return;
-
-    setLockedBlueprints((prev) => (prev.includes(activityId) ? prev : [...prev, activityId]));
-
-    try {
-      const progressRef = doc(firestore, 'student_progress', user.uid);
-      const updatedLocked = await runTransaction(firestore, async (tx) => {
-        const snap = await tx.get(progressRef);
-        const existingLocked: string[] = snap.exists()
-          ? Array.isArray(snap.data().thinkTankLockedBlueprints)
-            ? snap.data().thinkTankLockedBlueprints
-            : []
-          : [];
-        const merged = existingLocked.includes(activityId)
-          ? existingLocked
-          : [...existingLocked, activityId];
-        tx.set(
-          progressRef,
-          {
-            thinkTankLockedBlueprints: merged,
-          },
-          { merge: true }
-        );
-        return merged;
-      });
-      setLockedBlueprints(updatedLocked);
-    } catch (e) {
-      console.error('Failed to persist blueprint lock:', e);
-    }
-  };
-
-  const handleSolve = async (
-    points: number,
-    activityId: string,
-    maxPoints?: number,
-    targetTotalXp?: number
-  ) => {
-    if (!user || !firestore || canManage) return;
-
-    try {
-      const progressRef = doc(firestore, 'student_progress', user.uid);
-      const txResult = await runTransaction(firestore, async (tx) => {
-        const remoteSnap = await tx.get(progressRef);
-        const remoteData = remoteSnap.exists() ? (remoteSnap.data() as any) : undefined;
-
-        const transition = computeAtomicProgressTransition(remoteData, {
-          activityId,
-          points,
-          maxPoints,
-          targetTotalXp,
-        });
-
-        if (transition.effectiveDelta > 0) {
-          tx.set(
-            progressRef,
-            {
-              thinkTankCompleted: transition.nextState.thinkTankCompleted,
-              thinkTankAwardedXp: transition.nextState.thinkTankAwardedXp,
-              thinkTankLockedBlueprints: transition.nextState.thinkTankLockedBlueprints,
-              thinkTankScore: transition.nextState.thinkTankScore,
-            },
-            { merge: true }
-          );
-        }
-
-        return transition;
-      });
-
-      setSolvedActivities(txResult.nextState.thinkTankCompleted);
-      setAwardedXpByActivity(txResult.nextState.thinkTankAwardedXp);
-      setLockedBlueprints(txResult.nextState.thinkTankLockedBlueprints);
-      setLogicPoints(txResult.nextState.thinkTankScore);
-
-      if (txResult.effectiveDelta <= 0) return;
-
-      const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
-      await awardActivityXP(firestore, targetStudentId, txResult.effectiveDelta, 'Think Tank Logic Module');
-      if (txResult.isNowFullySolved) {
-        await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
-        confetti({ particleCount: 120, spread: 60, colors: ['#6366f1', '#a855f7', '#ec4899'] });
-      }
-    } catch (e) {
-      console.error('Failed to save progress:', e);
-    }
-  };
-
   const nextMilestone = logicPoints < 30 ? 30 : logicPoints < 100 ? 100 : logicPoints < 200 ? 200 : 400;
   const currentThreshold = logicPoints < 30 ? 0 : logicPoints < 100 ? 30 : logicPoints < 200 ? 100 : 200;
   const xpPercentage =
@@ -1762,10 +1849,56 @@ export default function ThinkTankPage() {
   const totalCentralItems =
     centralParadoxes.length + centralCases.length + centralRiddles.length + centralDebates.length;
 
-  if (isLoadingSchool) {
+  if (isLoadingSchool || isLoadingCentral) {
     return (
       <div className="flex h-64 w-full items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+      </div>
+    );
+  }
+
+  if (!publicCurriculumVerified) {
+    return (
+      <div
+        role="alert"
+        className="space-y-4 p-8 min-h-[320px] bg-slate-950 text-slate-100 rounded-3xl border border-slate-900 shadow-2xl flex flex-col items-center justify-center text-center"
+      >
+        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+          <AlertTriangle className="w-6 h-6 text-amber-400" />
+        </div>
+        <div className="space-y-1 max-w-md">
+          <h2 className="text-lg font-extrabold text-white">
+            The Think Tank challenges are temporarily unavailable. Please try again.
+          </h2>
+          <p className="text-xs text-slate-400">
+            Could not verify the public curriculum shards from the server.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            onClick={() => refreshCentralDoc()}
+            className="h-9 px-4 text-xs font-bold bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 rounded-xl flex items-center gap-2"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Try Again
+          </Button>
+          {canManage && (
+            <Button
+              variant="outline"
+              onClick={handleSyncCentralRepo}
+              disabled={isSyncingCentral}
+              className="h-9 px-4 text-xs font-bold bg-slate-900 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/15 hover:text-white rounded-xl flex items-center gap-2"
+            >
+              {isSyncingCentral ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Database className="h-3.5 w-3.5 text-emerald-400" />
+              )}
+              Sync Central Repo
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -1894,8 +2027,6 @@ export default function ThinkTankPage() {
             solvedActivities={solvedActivities}
             awardedXpByActivity={awardedXpByActivity}
             lockedBlueprints={lockedBlueprints}
-            onSolve={handleSolve}
-            onLockBlueprint={handleLockBlueprint}
           />
         </TabsContent>
         <TabsContent value="detective" className="mt-6 flex-1">
@@ -1903,7 +2034,6 @@ export default function ThinkTankPage() {
             schoolId={schoolId}
             centralCases={centralCases}
             solvedActivities={solvedActivities}
-            onSolve={handleSolve}
           />
         </TabsContent>
         <TabsContent value="riddles" className="mt-6 flex-1">
@@ -1911,7 +2041,6 @@ export default function ThinkTankPage() {
             schoolId={schoolId}
             centralRiddles={centralRiddles}
             solvedActivities={solvedActivities}
-            onSolve={handleSolve}
           />
         </TabsContent>
         <TabsContent value="debate" className="mt-6 flex-1">
@@ -1919,7 +2048,6 @@ export default function ThinkTankPage() {
             schoolId={schoolId}
             centralDebates={centralDebates}
             solvedActivities={solvedActivities}
-            onSolve={handleSolve}
           />
         </TabsContent>
         {canManage && (

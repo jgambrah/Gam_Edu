@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { generateDebateResponse, evaluateDebateAction } from '@/ai/flows/debate-flow';
+import {
+  startThinkTankDebateAction,
+  submitThinkTankDebateTurnAction,
+  concludeThinkTankDebateAction,
+} from '@/app/actions/think-tank-debate-submit';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -10,7 +14,10 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Send, Bot, User, Swords, Loader2, RefreshCw, Gavel, Star, TrendingUp, AlertCircle, Eye, CheckCircle, Trash2, HelpCircle, ShieldCheck, Sparkles, Lightbulb, RotateCcw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Paradox, DebateTopic } from '@/lib/types';
+import type {
+  PublicParadox,
+  PublicDebate,
+} from '@/lib/think-tank-public-curriculum';
 import type { ParadoxEvaluationResult } from '@/lib/think-tank-evaluator';
 import type {
   SubmitThinkTankParadoxResponse,
@@ -23,7 +30,7 @@ import confetti from 'canvas-confetti';
 
 // --- PARADOX CARD ---
 export type ParadoxCardProps = {
-  paradox: Paradox;
+  paradox: PublicParadox & { createdAt?: any; schoolId?: string };
 
   initialAwardedXp: number;
   isInitiallyLocked: boolean;
@@ -406,8 +413,9 @@ interface EvaluationResult {
     areaForImprovement: string;
 }
 
-export function DebateArena({ topic, onSolve }: { topic: DebateTopic; onSolve?: (points: number, id: string) => void }) {
-    const { schoolId } = useCurrentSchool();
+export function DebateArena({ topic }: { topic: PublicDebate & { createdAt?: any; schoolId?: string } }) {
+    const [sessionId, setSessionId] = useState<string | null>(null);
+    const [revision, setRevision] = useState<number>(1);
     const [messages, setMessages] = useState<Message[]>([
         { role: 'model', text: `Welcome to the debate! The motion is: "${topic.topic}". \n\nI will represent the opposing view. Are you For or Against this motion? State your stance to begin!` }
     ]);
@@ -415,82 +423,153 @@ export function DebateArena({ topic, onSolve }: { topic: DebateTopic; onSolve?: 
     const [isLoading, setIsLoading] = useState(false);
     const [isJudging, setIsJudging] = useState(false);
     const [evaluation, setEvaluation] = useState<EvaluationResult | null>(null);
+    const [awardedXp, setAwardedXp] = useState<number>(0);
+    const [alreadyCompleted, setAlreadyCompleted] = useState<boolean>(false);
     
     const scrollRef = useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        let cancelled = false;
+        const initSession = async () => {
+            if (!topic?.id) return;
+            try {
+                const res = await startThinkTankDebateAction(topic.id);
+                if (!cancelled && res.success && res.sessionId) {
+                    setSessionId(res.sessionId);
+                    setRevision(res.revision ?? 1);
+                    if (res.messages && res.messages.length > 0) {
+                        setMessages(res.messages);
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to start/resume debate session:', err);
+            }
+        };
+        initSession();
+        return () => {
+            cancelled = true;
+        };
+    }, [topic?.id]);
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+        if (!input.trim() || isLoading || isJudging) return;
 
-        const userMsg: Message = { role: 'user', text: input };
-        const newHistory = [...messages, userMsg];
-        
-        setMessages(newHistory);
+        const cleanInput = input.trim();
         setInput('');
         setIsLoading(true);
 
         try {
-            const historyForAi = newHistory.map(m => ({ role: m.role, text: m.text }));
+            let activeSessionId = sessionId;
+            let activeRevision = revision;
 
-            const result = await generateDebateResponse({
-                topic: topic.topic,
-                history: historyForAi.slice(0, -1),
-                lastMessage: input,
-                schoolId: schoolId || ''
+            if (!activeSessionId) {
+                const started = await startThinkTankDebateAction(topic.id);
+                if (!started.success || !started.sessionId) {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Debate Session Error',
+                        description: started.error || 'Could not initialize debate session.',
+                    });
+                    return;
+                }
+                activeSessionId = started.sessionId;
+                activeRevision = started.revision ?? 1;
+                setSessionId(activeSessionId);
+                setRevision(activeRevision);
+            }
+
+            const result = await submitThinkTankDebateTurnAction({
+                sessionId: activeSessionId,
+                message: cleanInput,
+                expectedRevision: activeRevision,
             });
 
-            if (result.success) {
-                setMessages(prev => [...prev, { role: 'model', text: result.text }]);
+            if (result.success && result.messages) {
+                setMessages(result.messages);
+                if (typeof result.revision === 'number') {
+                    setRevision(result.revision);
+                }
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Turn Error',
+                    description: result.error || 'Could not submit argument.',
+                });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Debate Error',
+                description: error?.message || 'Unexpected error during turn.',
+            });
         } finally {
             setIsLoading(false);
         }
     };
 
-    const { toast } = useToast();
-
     const handleConclude = async () => {
-        if (messages.length < 3) return;
+        if (messages.length < 3 || !sessionId || isJudging || isLoading) return;
 
         setIsJudging(true);
         try {
-            const historyForAi = messages.map(m => ({ 
-                role: m.role, 
-                text: m.text 
-            }));
+            const result = await concludeThinkTankDebateAction(sessionId);
             
-            const result = await evaluateDebateAction(historyForAi, schoolId || '');
-            
-            if (result.success && result.data) {
-                setEvaluation(result.data);
-                confetti({ particleCount: 150, spread: 80, colors: ['#eab308', '#a855f7'] });
-                
-                const awardedPoints = Math.max(30, Number(result.data.logicScore || 30) + 10);
-                if (onSolve) {
-                    onSolve(awardedPoints, topic.id || `debate-${Date.now()}`);
+            if (result.success && result.evaluation) {
+                setEvaluation(result.evaluation);
+                setAwardedXp(result.awardedXp ?? 0);
+                setAlreadyCompleted(Boolean(result.alreadyCompleted));
+
+                if ((result.awardedXp ?? 0) > 0) {
+                    confetti({ particleCount: 150, spread: 80, colors: ['#eab308', '#a855f7'] });
                 }
 
                 toast({
                     title: "Debate Gavel Judged! ⚔️",
-                    description: `+${awardedPoints} Logic XP saved to your profile! STEM Pioneer badge evaluated.`
+                    description: result.alreadyCompleted
+                        ? 'Debate evaluated! (Already completed — 0 additional XP.)'
+                        : `+${result.awardedXp ?? 0} Logic XP saved to your profile!`,
+                });
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Evaluation Failed',
+                    description: result.error || 'Unable to conclude debate session.',
                 });
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Evaluation Error',
+                description: error?.message || 'Unexpected error evaluating debate.',
+            });
         } finally {
             setIsJudging(false);
         }
     };
 
-    const handleReset = () => {
-        setMessages([{ role: 'model', text: `Welcome to the debate! The motion is: "${topic.topic}". \n\nI will represent the opposing view. Are you For or Against this motion? State your stance to begin!` }]);
+    const handleReset = async () => {
         setInput('');
         setEvaluation(null);
+        setAwardedXp(0);
+        setAlreadyCompleted(false);
+        if (!topic?.id) return;
+        try {
+            const res = await startThinkTankDebateAction(topic.id, { reset: true });
+            if (res.success && res.sessionId && res.messages) {
+                setSessionId(res.sessionId);
+                setRevision(res.revision ?? 1);
+                setMessages(res.messages);
+            }
+        } catch (err) {
+            console.error('Failed to reset debate session:', err);
+        }
     };
 
     return (

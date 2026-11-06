@@ -80,11 +80,11 @@ export function assembleAndVerifyRemoteCurriculum(
     riddles: any[];
     debates: any[];
   } = {
-    paradoxes: [],
-    detectiveCases: [],
-    riddles: [],
-    debates: [],
-  }
+      paradoxes: [],
+      detectiveCases: [],
+      riddles: [],
+      debates: [],
+    }
 ): VerifiedCurriculumPayload {
   if (!manifest || !manifest.sharded || !Array.isArray(manifest.shardIds) || manifest.shardIds.length === 0) {
     return {

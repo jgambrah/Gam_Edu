@@ -23,33 +23,6 @@ async function callAi(prompt: string, schema: any) {
 
 // --- ACTIONS ---
 
-export async function generateDailyParadox(input: { targetGroup: string; schoolId: string; }) {
-  await requireSignedInAction();
-    const creditResult = await checkAndSpendCredits(input.schoolId, 2);
-    if (!creditResult.success) {
-        throw new Error(creditResult.error || "Insufficient AI credits.");
-    }
-    const schema = z.object({
-        question: z.string(),
-        answer: z.string(),
-        explanation: z.string(),
-        difficulty: z.string(),
-    });
-    
-    const complexityInstruction = {
-        'Novice (Basic 1-3)': "Target audience: Kids 6-8. Simple, fun logic.",
-        'Apprentice (Basic 4-6)': "Target audience: Kids 9-11. Wordplay, math logic.",
-        'Scholar (JHS)': "Target audience: Teens 12-15. Lateral thinking.",
-        'Master (SHS)': "Target audience: Young Adults 16+. Complex paradoxes."
-    }[input.targetGroup] || "General audience.";
-
-    const output = await callAi(
-        `Generate a logic puzzle/riddle. ${complexityInstruction} Output JSON.`, 
-        schema
-    );
-    return { ...output, targetGroup: input.targetGroup };
-}
-
 export async function generateDetectiveCase(input: { targetGroup: string; schoolId: string; }) {
   await requireSignedInAction();
     const creditResult = await checkAndSpendCredits(input.schoolId, 2);
@@ -124,4 +97,3 @@ export async function generateTriviaQuiz(input: { targetGroup: string; category:
     );
     return output;
 }
-

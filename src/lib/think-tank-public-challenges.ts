@@ -94,3 +94,4 @@ export function toPublicDebates(
 ): PublicDebate[] {
   return items.map(toPublicDebate);
 }
+
