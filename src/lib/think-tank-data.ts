@@ -3585,6 +3585,276 @@ export const THINK_TANK_PARADOXES: ThinkTankParadoxItem[] = [
     "answer": "2/6 or 1/3.",
     "explanation": "The numbers greater than 4 are 5 and 6. There are 2 favorable outcomes out of 6 total.",
     "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "A farmer plants five maize seeds in five separate holes. Four grow into tall plants, but the fifth grows into a short plant. All five received the same rain. How can this happen?",
+    "answer": "The fifth seed may have had less stored energy or a weaker starting condition.",
+    "explanation": "Even when plants receive the same rain, they may grow differently because seeds are not always identical. Soil conditions, seed quality and sunlight can also affect growth.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Number Sense",
+    "question": "Ama has three baskets. Each basket contains three oranges. She gives one orange from each basket to her friend. Why does she still have three baskets even though she gave away some oranges?",
+    "answer": "Giving away oranges does not mean giving away the baskets.",
+    "explanation": "The number of containers and the number of objects inside them are different things. Removing something from a container does not remove the container itself.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "A large wooden canoe floats on Lake Volta, but a small stone thrown into the lake sinks. Why can something as heavy as a canoe float while a much smaller stone sinks?",
+    "answer": "The canoe spreads its weight over a large volume and displaces enough water to float.",
+    "explanation": "Floating depends on the relationship between an object's weight and the water it displaces, not simply its size. The hollow canoe contains air and has a lower average density than water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "A teacher says, 'The more you take away from this number, the bigger it becomes.' What number could the teacher be talking about?",
+    "answer": "A hole.",
+    "explanation": "Removing more soil from a hole makes the hole larger. The trick is that the question refers to empty space rather than a number in a mathematics exercise.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Kojo places a wet cloth in the sunshine. After some time, the cloth becomes dry, but nobody has squeezed the water out. Where did the water go?",
+    "answer": "The water evaporated into the air.",
+    "explanation": "Heat from the sun gives water energy to change into water vapour. The water has not disappeared; it has changed from liquid into gas.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3106",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "A classroom has ten pupils. Every pupil is standing, but the teacher says that nobody is standing alone. How is this possible?",
+    "answer": "The pupils are standing in pairs or groups.",
+    "explanation": "Nobody standing alone means every pupil has another pupil nearby. It does not mean that nobody is standing.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3107",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "A girl looks at her reflection in a spoon. When she turns the spoon around, her reflection changes direction and shape. Has her face changed?",
+    "answer": "No, the curved spoon changes how light reflects from her face.",
+    "explanation": "A curved reflective surface bends reflected light differently from a flat mirror. The reflection can therefore appear stretched, upside down or distorted.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3108",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "A mango falls from a tree and lands on soft grass without making a loud sound. Another mango falls onto a metal roof and makes a loud bang. Why does the same kind of fruit make different sounds?",
+    "answer": "The surfaces produce different vibrations and sounds when struck.",
+    "explanation": "A hard metal roof vibrates and produces a louder sound than soft grass. The material receiving the impact affects the sound produced.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3109",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Number Sense",
+    "question": "A market seller has six eggs. She puts two eggs in each of three bowls. She now says she has three eggs left in the kitchen. How could she be correct?",
+    "answer": "She may mean that three bowls are left in the kitchen, not three individual eggs.",
+    "explanation": "Words can create confusion when a speaker changes the meaning of what is being counted. Careful listeners must identify whether the statement refers to eggs or bowls.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-3110",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Two children walk from the same classroom to the school gate. One takes many small steps and the other takes fewer large steps. They arrive together. How can they take different numbers of steps but travel the same distance?",
+    "answer": "Their step lengths are different.",
+    "explanation": "A person taking longer steps covers more distance with each step. The total distance depends on both step length and the number of steps.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A kente weaver uses a large gear with 40 teeth connected to a smaller gear with 10 teeth. The smaller gear turns four times while the larger gear turns once. The smaller gear turns faster, yet both gears are connected. Is this possible?",
+    "answer": "Yes. The smaller gear rotates four times for every one rotation of the larger gear.",
+    "explanation": "Connected gears transfer motion through their teeth, and their rotational speeds depend on their tooth counts. A gear with one-quarter as many teeth rotates four times as fast.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A trotro conductor collects fares from 20 passengers. Later, 10 passengers leave and 10 new passengers enter. The number of passengers remains 20, but the people inside the vehicle have changed. How can the same number describe two different groups?",
+    "answer": "The total count stayed the same even though the identities of the passengers changed.",
+    "explanation": "A quantity can remain constant while its individual members change. This illustrates the difference between the size of a group and the identity of its members.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A farmer uses a long wooden lever to lift a heavy stone. He applies a small force far from the supporting point, yet the stone rises. How can a small force move something much heavier?",
+    "answer": "The long lever arm multiplies the turning effect of the applied force.",
+    "explanation": "A lever creates mechanical advantage when the effort is applied farther from the fulcrum than the load. It reduces the force needed, although the effort must move through a greater distance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "A student puts a dry paper towel into a cup of water with one corner touching the water. Without pouring or squeezing, water slowly climbs upward through the towel. How can water move upward against gravity?",
+    "answer": "Capillary action pulls water through the tiny spaces between the paper fibres.",
+    "explanation": "Water molecules are attracted to the fibres, and cohesion helps pull additional water along. Capillary action allows water to move through narrow spaces, even against gravity over short distances.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Probability Logic",
+    "question": "A school surveys five pupils about their favourite subject. All five choose mathematics. The headteacher announces that 100% of the school's pupils love mathematics. Is the percentage correct?",
+    "answer": "It is correct for the five pupils surveyed, but not necessarily for the whole school.",
+    "explanation": "A percentage calculated from a small sample cannot automatically represent a much larger population. A representative sample containing pupils from different classes would provide stronger evidence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3106",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A sealed plastic bottle is pushed underwater in a basin. When released, it rises to the surface even though gravity is pulling it downward. What makes it rise?",
+    "answer": "The upward buoyant force from the displaced water is greater than the bottle's weight.",
+    "explanation": "An object submerged in water experiences an upward buoyant force. A sealed bottle containing air has a low average density, allowing it to rise.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3107",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "Two equal-sized plantain pieces are placed in separate cups. One cup contains fresh water and the other contains very salty water. After some time, the pieces may have different firmness. Why does water move differently in the two cups?",
+    "answer": "Osmosis causes water to move across cell membranes towards the solution with the higher solute concentration.",
+    "explanation": "Plantain cells have selectively permeable membranes through which water can move. Differences in salt concentration can change the movement of water and the firmness of the tissue.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3108",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A cocoa buyer increases the amount paid per kilogram by 20% and later reduces it by 20%. The buyer claims the original price has been restored. Is this correct?",
+    "answer": "No. The final price is 96% of the original price.",
+    "explanation": "If the original price is GHS100, a 20% increase gives GHS120. A 20% reduction of GHS120 gives GHS96 because the second percentage is calculated from a different starting amount.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3109",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Lateral Logic",
+    "question": "A school has three classrooms and three teachers. Every teacher teaches a different classroom, yet all three teachers can be teaching at the same time without meeting one another. How is this possible?",
+    "answer": "They teach in separate classrooms.",
+    "explanation": "Being at the same time does not require people to occupy the same place. Different activities can occur simultaneously in separate locations.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-3110",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Two identical drums are struck with equal force, but one produces a higher-pitched sound. The drums look exactly the same. What could explain the difference?",
+    "answer": "The drum membranes may have different tension.",
+    "explanation": "A tightly stretched membrane generally vibrates faster and produces a higher pitch. Similar-looking instruments can sound different because of differences in tension and vibration.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3101",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A wildlife researcher visits Mole National Park and records 12 antelopes in one hour. On the following visit, the researcher records 30. The researcher concludes that the antelope population has more than doubled. Why might this conclusion be logically unsound?",
+    "answer": "The number observed depends on sampling conditions and does not necessarily represent the total population.",
+    "explanation": "Animal visibility, location, weather and observation effort can change the number counted without a population change. A reliable population estimate requires a consistent sampling method and appropriate statistical analysis.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3102",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "On an island, truth-tellers always tell the truth and tricksters always lie. Three islanders, K, L and M, make these statements: K says, 'L is a trickster.' L says, 'M is a trickster.' M says, 'K and L are different types.' Can all three statements be true?",
+    "answer": "No. The only consistent arrangement is that K and M are truth-tellers and L is a trickster.",
+    "explanation": "If K is truthful, L must be a trickster. L's statement that M is a trickster is therefore false, so M is truthful. M's statement that K and L are different types is then true, confirming the arrangement.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3103",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A school introduces a rule to reduce examination cheating by rewarding invigilators according to the number of cheating incidents they detect. After a term, reported cheating incidents increase dramatically. Does this prove that cheating has increased?",
+    "answer": "No. The reward system may have increased detection and reporting rather than actual cheating.",
+    "explanation": "The number of recorded incidents is influenced by both the underlying behaviour and the incentive to report it. This illustrates how measurement systems can distort the behaviour they are intended to monitor.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3104",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "Two students stand at opposite ends of a very long railway platform. A train passes between them. A lightning flash reaches one student before the other. Could both students disagree about whether the lightning struck the front and rear of the train simultaneously?",
+    "answer": "Yes. Observers moving relative to one another can disagree about the simultaneity of distant events.",
+    "explanation": "In Einstein's special theory of relativity, simultaneity depends on the observer's reference frame. This effect is negligible in everyday life but becomes important at speeds approaching the speed of light.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3105",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A medical screening test is 95% accurate for detecting a rare disease. A student assumes that someone who tests positive has a 95% chance of having the disease. Why can this reasoning be wrong?",
+    "answer": "The probability of having the disease after a positive result also depends on how common the disease is in the population.",
+    "explanation": "When a condition is rare, false positives can outnumber true positives even with a highly accurate test. This is a base-rate problem and requires Bayesian reasoning to calculate the actual probability.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3106",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "A school has 30 pupils. Every pupil studies at least one of English, French or Twi. There are 20 English learners, 18 Twi learners and 12 French learners. The total of these subject counts is 50. How can 30 pupils generate 50 subject memberships?",
+    "answer": "Some pupils study more than one language.",
+    "explanation": "The sum of group memberships can exceed the number of individuals when groups overlap. This is the principle behind inclusion-exclusion and Venn diagram reasoning.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3107",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Number Sense",
+    "question": "A researcher examines the first digit of thousands of financial transactions and discovers that the digit 1 appears much more often than the digit 9. The researcher initially suspects that the records are manipulated. Could the pattern occur naturally?",
+    "answer": "Yes. Many naturally occurring numerical datasets approximately follow Benford's law.",
+    "explanation": "Benford's law predicts that smaller leading digits occur more frequently than larger ones in many datasets spanning several orders of magnitude. It is a useful screening tool but does not prove fraud or guarantee that a dataset should follow the law.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3108",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A district builds a new road to reduce traffic congestion. At first, journeys become faster. Later, more drivers begin using the road, and congestion returns. How can a road designed to reduce traffic eventually become crowded?",
+    "answer": "The improved road may encourage additional journeys and attract traffic from other routes.",
+    "explanation": "This is an example of induced demand, where increasing road capacity can encourage more vehicle travel. The resulting extra traffic may reduce or eliminate the original time savings.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3109",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A student tosses a fair coin six times and obtains heads on every toss. The student argues that tails must now be more likely on the seventh toss because heads has appeared too often. Is the argument valid?",
+    "answer": "No. The probability of tails remains 1/2 on the seventh independent toss.",
+    "explanation": "The gambler's fallacy is the mistaken belief that independent random events must compensate for earlier outcomes. Each fair coin toss has the same probability regardless of previous results.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-3110",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "A community protects a shared forest by allowing every household to collect as much firewood as it wants. Each household benefits from collecting more, but the forest gradually disappears. Why can individually sensible decisions produce a harmful result for everyone?",
+    "answer": "Each household ignores the combined environmental cost of its individual actions.",
+    "explanation": "This is a version of the tragedy of the commons, where individuals overuse a shared resource because they receive private benefits while sharing the wider costs. Sustainable rules and collective responsibility can protect common resources.",
+    "isCentral": true
   }
 ];
 
@@ -3612,9 +3882,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Someone ate the last slice of mango cake from the kitchen table between 2:00 PM and 2:30 PM. Muddy footprints lead from the back garden door straight to the table. Kofi was reading in his clean socks upstairs, Amina just came in from playing football in the muddy garden, and Dad was at work.",
     "question": "Based on the physical evidence, who is the most likely suspect?",
     "options": [
-      "Dad, who was away at work",
       "A bird flying outside the window",
       "Kofi, who was reading upstairs in clean socks",
+      "Dad, who was away at work",
       "Amina, who was playing in the muddy garden"
     ],
     "correctAnswer": "Amina, who was playing in the muddy garden",
@@ -3628,10 +3898,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A school poster reads: (1) \"Ghana gained independence on 6th March 1957.\" (2) \"Red is the prettiest colour on the Ghana flag.\"",
     "question": "How should a Junior Detective classify these two sentences?",
     "options": [
-      "Both are Opinions",
+      "Both are Facts",
       "Sentence 1 is a Fact; Sentence 2 is an Opinion",
-      "Sentence 1 is an Opinion; Sentence 2 is a Fact",
-      "Both are Facts"
+      "Both are Opinions",
+      "Sentence 1 is an Opinion; Sentence 2 is a Fact"
     ],
     "correctAnswer": "Sentence 1 is a Fact; Sentence 2 is an Opinion",
     "explanation": "6th March 1957 is a historical date that can be verified in records (Fact). Which colour looks \"prettiest\" is a personal preference (Opinion).",
@@ -3660,10 +3930,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Every morning when the school bell rings at 8:00 AM, the birds in the mango tree fly away. Little Kwesi says, \"The birds flying away is what makes the school bell ring!\"",
     "question": "What mistake did Kwesi make?",
     "options": [
-      "Mango trees do not have branches",
-      "He mixed up the cause (the loud bell) and the effect (the birds flying away)",
       "School bells only ring at night",
-      "Birds cannot hear loud bells"
+      "He mixed up the cause (the loud bell) and the effect (the birds flying away)",
+      "Birds cannot hear loud bells",
+      "Mango trees do not have branches"
     ],
     "correctAnswer": "He mixed up the cause (the loud bell) and the effect (the birds flying away)",
     "explanation": "The loud sound of the bell startles the birds (cause), making them fly away (effect) — not the other way around!",
@@ -3676,9 +3946,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Araba walks into the classroom carrying a dripping wet umbrella and wearing a raincoat covered in water droplets. The floor outside the door is dry.",
     "question": "What is the most reasonable deduction about where Araba just came from?",
     "options": [
+      "It hasn’t rained for a month",
       "The classroom roof is made of glass",
       "She went swimming with her umbrella",
-      "It hasn’t rained for a month",
       "It is raining outside"
     ],
     "correctAnswer": "It is raining outside",
@@ -3708,9 +3978,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Mrs. Mensah left 4 blue markers on her desk before break. After break, only 3 blue markers are on the desk, and Kojo is drawing a bright blue sky on his poster using a marker that has Mrs. Mensah’s name sticker on it.",
     "question": "What is the best conclusion?",
     "options": [
-      "Mrs. Mensah only had 2 markers before break",
       "Blue markers turn invisible at break time",
       "The marker vanished into thin air",
+      "Mrs. Mensah only had 2 markers before break",
       "Kojo borrowed the 4th blue marker from Mrs. Mensah’s desk"
     ],
     "correctAnswer": "Kojo borrowed the 4th blue marker from Mrs. Mensah’s desk",
@@ -3740,9 +4010,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "The school trophy case was opened on Saturday. Suspect A says: \"I was at the library reading on Page 45 and 46 of the Science textbook, and I put a bookmark between pages 45 and 46 before closing the book.\"",
     "question": "How does the detective immediately know Suspect A is making up the story?",
     "options": [
-      "Science textbooks only have 30 pages",
       "Bookmarks cannot fit inside textbooks",
       "Libraries are never open on Saturdays",
+      "Science textbooks only have 30 pages",
       "In standard books, odd page 45 is on the right and even page 46 is printed on the back of the exact same sheet!"
     ],
     "correctAnswer": "In standard books, odd page 45 is on the right and even page 46 is printed on the back of the exact same sheet!",
@@ -3756,10 +4026,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Bola asked her 2 best friends if they want the school canteen to serve only banku every day. Both friends said yes, so Bola wrote in the school newsletter: \"100% of students in our school want banku every single day!\"",
     "question": "What is the flaw in Bola’s conclusion?",
     "options": [
-      "Her friends do not attend the school",
+      "Newsletters cannot print percentages",
       "Her sample size (only 2 friends) is way too small to represent the whole school",
-      "2 out of 2 is actually 50%",
-      "Newsletters cannot print percentages"
+      "Her friends do not attend the school",
+      "2 out of 2 is actually 50%"
     ],
     "correctAnswer": "Her sample size (only 2 friends) is way too small to represent the whole school",
     "explanation": "Surveying only 2 friends out of hundreds of students is an unrepresentative, tiny sample size.",
@@ -3788,10 +4058,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A survey asks students: \"Don’t you agree that reckless, noisy football games during break should be banned so peaceful, hardworking students can relax?\"",
     "question": "What kind of bias is built into this survey question?",
     "options": [
-      "Time bias: break time is in the afternoon",
-      "Loaded / Leading Question: it uses emotional words (\"reckless, noisy\" vs \"peaceful, hardworking\") to push one answer",
       "There is no bias at all",
-      "Math error: it does not include numbers"
+      "Loaded / Leading Question: it uses emotional words (\"reckless, noisy\" vs \"peaceful, hardworking\") to push one answer",
+      "Math error: it does not include numbers",
+      "Time bias: break time is in the afternoon"
     ],
     "correctAnswer": "Loaded / Leading Question: it uses emotional words (\"reckless, noisy\" vs \"peaceful, hardworking\") to push one answer",
     "explanation": "A fair survey uses neutral wording (\"Should football be allowed in the main yard during break?\"). Emotional adjectives steer people toward a predetermined answer.",
@@ -3804,9 +4074,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A window in the science classroom was broken by a stone. All the broken glass shards are lying OUTSIDE on the veranda grass rather than inside the classroom floor.",
     "question": "What does the position of the broken glass tell the detective?",
     "options": [
+      "Someone threw the stone from outside in the garden",
       "Glass always falls toward the sun",
       "A strong wind sucked the glass through the wall",
-      "Someone threw the stone from outside in the garden",
       "The window was broken from the INSIDE pushing outward, not from outside"
     ],
     "correctAnswer": "The window was broken from the INSIDE pushing outward, not from outside",
@@ -3836,9 +4106,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "You are writing a science report on how malaria is transmitted. You find two sources: Source A is a peer-reviewed guide from the Ghana Health Service & WHO; Source B is an anonymous WhatsApp voice note claiming eating spicy pepper prevents mosquito bites.",
     "question": "Which source is credible and why?",
     "options": [
-      "Both sources are equally reliable",
       "Neither, because mosquitoes do not transmit malaria",
       "Source B, because voice notes are faster to listen to",
+      "Both sources are equally reliable",
       "Source A, because it comes from verified medical experts backed by scientific research"
     ],
     "correctAnswer": "Source A, because it comes from verified medical experts backed by scientific research",
@@ -3868,10 +4138,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "City records show that in months when ice cream sales are highest, swimming pool accidents also increase. A commentator claims: \"Eating ice cream causes people to have accidents in swimming pools!\"",
     "question": "What is the hidden third variable (confounding factor) that explains both trends?",
     "options": [
-      "Swimming pools sell all the ice cream in the city",
       "Accidents make people hungry for dessert",
+      "Ice cream makes water heavier",
       "Hot weather: sunny, hot months cause more people to buy ice cream AND more people to go swimming",
-      "Ice cream makes water heavier"
+      "Swimming pools sell all the ice cream in the city"
     ],
     "correctAnswer": "Hot weather: sunny, hot months cause more people to buy ice cream AND more people to go swimming",
     "explanation": "Just because two variables rise together (correlation) does not mean one causes the other (causation). Hot weather independently drives both.",
@@ -3885,9 +4155,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What does the lab report prove?",
     "options": [
       "Suspect A’s beach alibi is false — his boots were soaked in freshwater pond water, not salty ocean water",
+      "Freshwater algae only grow inside bronze statues",
       "Boots naturally produce pond algae when dry",
-      "The Atlantic Ocean at Ada has no salt at night",
-      "Freshwater algae only grow inside bronze statues"
+      "The Atlantic Ocean at Ada has no salt at night"
     ],
     "correctAnswer": "Suspect A’s beach alibi is false — his boots were soaked in freshwater pond water, not salty ocean water",
     "explanation": "Seawater contains ~3.5% dissolved salt. Absence of salt plus freshwater algae links his boots directly to the museum’s freshwater pond.",
@@ -3917,9 +4187,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the most logical conclusion?",
     "options": [
       "The screenshot was edited or staged after the deadline because a file cannot be submitted two days before it was created",
-      "Thursday comes before Tuesday",
       "Screenshots automatically erase server logs",
-      "Servers always record dates two days in the future"
+      "Servers always record dates two days in the future",
+      "Thursday comes before Tuesday"
     ],
     "correctAnswer": "The screenshot was edited or staged after the deadline because a file cannot be submitted two days before it was created",
     "explanation": "Client-side screenshots can be easily altered, whereas server creation timestamps and audit logs record the actual chronological event.",
@@ -3932,10 +4202,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A viral photo shows a giant shark swimming down a flooded street in Accra after heavy rain. You perform a reverse image search and discover the exact same shark photo appeared in a 2011 magazine article, and in fake posts about hurricanes in Miami, Houston, and Sydney.",
     "question": "What media literacy technique just solved this case?",
     "options": [
+      "Measuring the rainfall in Accra",
       "Asking the person who forwarded the photo",
-      "Counting the shark’s teeth",
       "Reverse image searching / provenance verification to expose recycled doctored imagery",
-      "Measuring the rainfall in Accra"
+      "Counting the shark’s teeth"
     ],
     "correctAnswer": "Reverse image searching / provenance verification to expose recycled doctored imagery",
     "explanation": "Checking the original source and date of viral images (provenance) quickly reveals recycled hoaxes that get re-shared during every storm.",
@@ -3964,10 +4234,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Mensah watches one video claiming the Moon is made of hollow titanium. Within two days, his video feed shows 50 more videos making the same claim. Mensah says, \"Every video on the internet agrees, so it must be true!\"",
     "question": "Why is Mensah seeing only those videos?",
     "options": [
-      "The internet deleted all astronomy textbooks",
       "His phone screen can only display titanium videos",
+      "All scientists recently agreed the Moon is hollow",
       "Algorithmic filter bubble: recommendation algorithms feed him more of what he clicked on, not a balanced view of reality",
-      "All scientists recently agreed the Moon is hollow"
+      "The internet deleted all astronomy textbooks"
     ],
     "correctAnswer": "Algorithmic filter bubble: recommendation algorithms feed him more of what he clicked on, not a balanced view of reality",
     "explanation": "Social media recommendation engines optimize for watch time by showing similar content, creating an illusion of consensus called a filter bubble.",
@@ -3996,10 +4266,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A nutritionist presents clinical data showing that excessive trans-fat intake raises cardiovascular risk. A commentator responds: \"Why should anyone listen to her data? She wore mismatched shoes to the conference last year!\"",
     "question": "Identify the logical fallacy in the commentator’s rebuttal.",
     "options": [
-      "Post Hoc Ergo Propter Hoc (assuming sequence equals cause)",
-      "Ad Hominem (attacking the person’s appearance/character instead of refuting their evidence)",
       "Sunk Cost Fallacy (continuing because of past investment)",
-      "False Dilemma (presenting only two extremes)"
+      "Ad Hominem (attacking the person’s appearance/character instead of refuting their evidence)",
+      "False Dilemma (presenting only two extremes)",
+      "Post Hoc Ergo Propter Hoc (assuming sequence equals cause)"
     ],
     "correctAnswer": "Ad Hominem (attacking the person’s appearance/character instead of refuting their evidence)",
     "explanation": "Ad Hominem (\"against the person\") attempts to discredit an argument by attacking irrelevant personal traits of the speaker rather than addressing the data.",
@@ -4012,9 +4282,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During a policy meeting, a speaker declares: \"Either we ban all smartphones from the entire country today, or every single teenager will fail their WASSCE exams!\"",
     "question": "Which logical fallacy is operating here?",
     "options": [
+      "Equivocation (shifting the meaning of a word mid-argument)",
       "Appeal to Ignorance (claiming something is true because it hasn’t been disproven)",
       "Bandwagon Fallacy (claiming it is true because it is popular)",
-      "Equivocation (shifting the meaning of a word mid-argument)",
       "False Dilemma / False Dichotomy (forcing a choice between two extreme options while ignoring middle-ground solutions)"
     ],
     "correctAnswer": "False Dilemma / False Dichotomy (forcing a choice between two extreme options while ignoring middle-ground solutions)",
@@ -4044,9 +4314,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An investor says: \"I already spent GH₵ 50,000 repairing this broken generator that still doesn’t work and costs more to fix than buying a new GH₵ 15,000 solar system. I MUST spend another GH₵ 25,000 on the old generator so my first GH₵ 50,000 isn’t wasted!\"",
     "question": "What cognitive trap is the investor caught in?",
     "options": [
-      "The Gambler’s Fallacy (believing a coin flip is due for heads)",
       "Appeal to Tradition (doing it because it is old)",
       "Confirmation Bias (only reading positive reviews)",
+      "The Gambler’s Fallacy (believing a coin flip is due for heads)",
       "The Sunk Cost Fallacy (making poor future decisions to justify past unrecoverable spending)"
     ],
     "correctAnswer": "The Sunk Cost Fallacy (making poor future decisions to justify past unrecoverable spending)",
@@ -4060,10 +4330,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A pharmaceutical trial tests a new memory tea on 100 volunteers. All 100 volunteers are told they are drinking a \"genius memory formula\", and there is no control group drinking a placebo tea. After a week, 60% say they feel sharper.",
     "question": "Why does this study fail scientific standards?",
     "options": [
-      "A week is 10 days long",
+      "Tea cannot be served warm in a laboratory",
       "Lack of a blinded Placebo Control Group and reliance on subjective self-reporting instead of objective memory tests",
-      "100 volunteers is an odd number",
-      "Tea cannot be served warm in a laboratory"
+      "A week is 10 days long",
+      "100 volunteers is an odd number"
     ],
     "correctAnswer": "Lack of a blinded Placebo Control Group and reliance on subjective self-reporting instead of objective memory tests",
     "explanation": "Without a double-blind placebo control group and objective cognitive testing, the improvement can be entirely explained by the Placebo Effect and expectation bias.",
@@ -4092,10 +4362,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A researcher tests 20 different herbal extracts against bacteria using a significance threshold of p < 0.05 (a 1-in-20 chance of a random fluke). 19 extracts show zero effect, and 1 extract crosses p = 0.04. The researcher hides the 19 failed tests and publishes only the 1 positive result as a breakthrough.",
     "question": "What unethical statistical practice is this?",
     "options": [
-      "Peer review replication",
-      "P-Hacking / Cherry-Picking (testing many hypotheses and reporting only the random false positive while hiding negative trials)",
       "Standard deviation normalization",
-      "Double-blind randomization"
+      "P-Hacking / Cherry-Picking (testing many hypotheses and reporting only the random false positive while hiding negative trials)",
+      "Double-blind randomization",
+      "Peer review replication"
     ],
     "correctAnswer": "P-Hacking / Cherry-Picking (testing many hypotheses and reporting only the random false positive while hiding negative trials)",
     "explanation": "At p < 0.05, testing 20 ineffective substances will produce ~1 false positive purely by chance. Hiding the other 19 tests misleads readers unless a multiple-testing correction (like Bonferroni) is applied.",
@@ -4108,10 +4378,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four children shared roasted plantain during break time at school. Each child made one statement about the snack.",
     "question": "Which statement is a verifiable FACT rather than a personal opinion?",
     "options": [
-      "Yellow ripe plantain is much prettier than green plantain.",
       "Plantain tastes much better when eaten with groundnuts.",
+      "Roasted plantain is the tastiest snack in Ghana.",
       "Plantains grow on large herbaceous plants with broad leaves.",
-      "Roasted plantain is the tastiest snack in Ghana."
+      "Yellow ripe plantain is much prettier than green plantain."
     ],
     "correctAnswer": "Plantains grow on large herbaceous plants with broad leaves.",
     "explanation": "A fact can be scientifically observed and proven. Taste preferences and attractiveness are personal opinions.",
@@ -4125,9 +4395,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "The detective notices deep heel prints with curved lines like tire treads. Who made the tracks?",
     "options": [
       "A person wearing rubber-soled car-tire sandals (kyorkyor)",
+      "A stray goat searching for dropped bread",
       "A domestic cat chasing a field mouse",
-      "A barefoot pupil rushing to class",
-      "A stray goat searching for dropped bread"
+      "A barefoot pupil rushing to class"
     ],
     "correctAnswer": "A person wearing rubber-soled car-tire sandals (kyorkyor)",
     "explanation": "Tire-tread patterns indicate footwear carved from rubber tires, ruling out bare feet and animals.",
@@ -4157,9 +4427,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Between which two times did Ama most likely stain her fingers with ink?",
     "options": [
       "Between 7:00 AM and 7:45 AM while packing her bag",
-      "Before 6:30 AM before waking up",
       "At 12:00 PM during lunch break",
-      "After 9:00 AM during the spelling test"
+      "After 9:00 AM during the spelling test",
+      "Before 6:30 AM before waking up"
     ],
     "correctAnswer": "Between 7:00 AM and 7:45 AM while packing her bag",
     "explanation": "Since the ink was spotted right after assembly at 7:45 AM, the stain had to occur before assembly and after waking up.",
@@ -4172,10 +4442,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During nature walk, four pupils observed an African honeybee landing on a bright yellow sunflower.",
     "question": "Which of these statements represents a scientifically verifiable FACT?",
     "options": [
+      "Honey is the most delicious food on earth.",
       "Yellow flowers are far friendlier than red flowers.",
-      "Honeybees are scary creatures that should be avoided.",
       "Honeybees have six legs and two pairs of wings.",
-      "Honey is the most delicious food on earth."
+      "Honeybees are scary creatures that should be avoided."
     ],
     "correctAnswer": "Honeybees have six legs and two pairs of wings.",
     "explanation": "Anatomical counts (six legs, four wings) are objective facts, while emotional reactions and taste preferences are opinions.",
@@ -4204,10 +4474,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "The classroom clock suddenly stopped ticking at exactly 10:15 AM on Tuesday morning.",
     "question": "What is the most direct and logical reason for the wall clock stopping?",
     "options": [
-      "The teacher closed her textbook on the front desk.",
       "The pupils recited their multiplication tables too loudly.",
+      "The wind blew through the open window.",
       "The chemical energy in its AA battery was fully depleted.",
-      "The wind blew through the open window."
+      "The teacher closed her textbook on the front desk."
     ],
     "correctAnswer": "The chemical energy in its AA battery was fully depleted.",
     "explanation": "Battery-powered quartz wall clocks stop when their internal electrical power source runs out of energy.",
@@ -4221,9 +4491,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why were the earthworms on the surface at 5:00 PM?",
     "options": [
       "They emerged after the rain flooded their underground soil burrows.",
+      "They climbed out before the rain started at 1:00 PM.",
       "The dry soil at 2:00 PM pushed them out.",
-      "They wanted to sunbathe before sunset.",
-      "They climbed out before the rain started at 1:00 PM."
+      "They wanted to sunbathe before sunset."
     ],
     "correctAnswer": "They emerged after the rain flooded their underground soil burrows.",
     "explanation": "Waterlogged soil depletes oxygen in worm burrows, prompting earthworms to surface directly after heavy rainfall.",
@@ -4252,10 +4522,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A detective examines four cups of water left on the sill. Cup A is crystal clear, Cup B has floating oil droplets, Cup C is warm, and Cup D smells strongly of fresh palm fruit.",
     "question": "Which cup definitely had palm oil mixed into it?",
     "options": [
-      "Cup C",
-      "Cup D",
       "Cup B",
-      "Cup A"
+      "Cup D",
+      "Cup A",
+      "Cup C"
     ],
     "correctAnswer": "Cup D",
     "explanation": "The distinct aroma of fresh palm fruit provides direct sensory evidence linking the liquid to palm oil.",
@@ -4269,9 +4539,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which evidence instantly breaks Kweku's alibi?",
     "options": [
       "The entire township experienced a scheduled electrical blackout from 7:00 PM to 10:00 PM.",
-      "The ICT room door was locked with a brass key.",
       "The solar battery weighed 15 kilograms.",
-      "His neighbor saw him drinking water at 6:00 PM."
+      "His neighbor saw him drinking water at 6:00 PM.",
+      "The ICT room door was locked with a brass key."
     ],
     "correctAnswer": "The entire township experienced a scheduled electrical blackout from 7:00 PM to 10:00 PM.",
     "explanation": "A complete area power outage without backup power makes watching home television at 8:30 PM impossible.",
@@ -4300,10 +4570,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student tested a new organic fertilizer on just two maize plants in his backyard. One grew 10 cm taller than the other. He concluded: 'This fertilizer guarantees double crop yield across all farms in Ghana.'",
     "question": "Why is the student's scientific deduction flawed?",
     "options": [
-      "Organic fertilizer should never be applied to cereal crops.",
-      "Testing two plants is an insignificantly small sample size that cannot rule out natural variation.",
       "Backyard soil contains too many minerals.",
-      "Maize only grows in the northern savannah."
+      "Testing two plants is an insignificantly small sample size that cannot rule out natural variation.",
+      "Maize only grows in the northern savannah.",
+      "Organic fertilizer should never be applied to cereal crops."
     ],
     "correctAnswer": "Testing two plants is an insignificantly small sample size that cannot rule out natural variation.",
     "explanation": "Generalizing an outcome from a sample size of two fails elementary scientific rigour and statistical significance.",
@@ -4316,9 +4586,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A thief broke into the biology laboratory through a high glass louvre window. Investigators found bright red clay mud smeared on the window ledge.",
     "question": "Which suspect is most strongly connected to this physical clue?",
     "options": [
+      "The computer teacher wearing clean leather dress shoes",
       "A student who was sitting on the concrete assembly court",
       "The library prefect who spent the afternoon in the air-conditioned reading room",
-      "The computer teacher wearing clean leather dress shoes",
       "A groundskeeper who spent the afternoon weeding by the red clay drainage ditch"
     ],
     "correctAnswer": "A groundskeeper who spent the afternoon weeding by the red clay drainage ditch",
@@ -4348,9 +4618,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A laboratory thermometer was broken during prep on Monday at 3:30 PM. Suspect Mansa claims she was walking across the school football field under bright sunshine at that exact time.",
     "question": "What official record would dismantle Mansa's alibi?",
     "options": [
-      "Mansa owns a blue school uniform dress.",
       "The laboratory thermometer contained colored alcohol instead of mercury.",
       "The football pitch was cut with a lawnmower on Saturday morning.",
+      "Mansa owns a blue school uniform dress.",
       "The school weather station recorded torrential rain and thunder between 3:00 PM and 4:00 PM."
     ],
     "correctAnswer": "The school weather station recorded torrential rain and thunder between 3:00 PM and 4:00 PM.",
@@ -4364,10 +4634,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A review of a school canteen by the canteen manager's own son awarded the food a perfect 10/10 rating, while 80% of independent students rated it 4/10.",
     "question": "What factor best explains why the son's review contradicts the majority?",
     "options": [
-      "The survey was carried out on a Wednesday afternoon.",
+      "The canteen uses too much salt in the jollof rice.",
       "Personal familial bias and loyalty distorted his objective assessment.",
-      "The son has superior taste buds compared to all other pupils.",
-      "The canteen uses too much salt in the jollof rice."
+      "The survey was carried out on a Wednesday afternoon.",
+      "The son has superior taste buds compared to all other pupils."
     ],
     "correctAnswer": "Personal familial bias and loyalty distorted his objective assessment.",
     "explanation": "Close family ties create strong personal bias that undermines objective evaluation.",
@@ -4396,10 +4666,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A white cotton handkerchief left at a crime scene contains traces of yellow pollen grains that only bloom from the Baobab tree between November and December.",
     "question": "What does this botanical evidence tell the forensic team?",
     "options": [
-      "Baobab trees cannot survive in the savanna regions of West Africa.",
       "The crime occurred inside an enclosed concrete basement.",
+      "The owner of the handkerchief must be a licensed farmer.",
       "The handkerchief was exposed to blooming Baobab trees during that specific dry season window.",
-      "The owner of the handkerchief must be a licensed farmer."
+      "Baobab trees cannot survive in the savanna regions of West Africa."
     ],
     "correctAnswer": "The handkerchief was exposed to blooming Baobab trees during that specific dry season window.",
     "explanation": "Specific seasonal pollen establishes environmental contact linked to that exact botanical blooming timeline.",
@@ -4412,10 +4682,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A sensational WhatsApp forward claims: 'Drinking boiled neem leaf tea mixed with battery acid kills 100% of all viruses instantly! Share before the Ministry deletes this!'",
     "question": "Which critical red flag indicates this message is dangerous misinformation?",
     "options": [
-      "It was transmitted via a mobile messaging application.",
-      "It promotes consuming highly toxic corrosive substances alongside urgency and conspiracy tropes without medical peer review.",
       "It does not list the Latin binomial botanical name for neem.",
-      "It uses words from a local indigenous tree species."
+      "It promotes consuming highly toxic corrosive substances alongside urgency and conspiracy tropes without medical peer review.",
+      "It uses words from a local indigenous tree species.",
+      "It was transmitted via a mobile messaging application."
     ],
     "correctAnswer": "It promotes consuming highly toxic corrosive substances alongside urgency and conspiracy tropes without medical peer review.",
     "explanation": "Urgency framing, conspiracy claims ('Ministry deletes this'), and recommending deadly corrosive chemicals are hallmarks of dangerous fake news.",
@@ -4428,9 +4698,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During a JHS parliamentary debate on school uniforms, Speaker A argues: 'We should consider lighter fabrics for the hot season.' Speaker B responds: 'Speaker A wants our students to come to school in beachwear and destroy our cultural morals!'",
     "question": "Which logical fallacy did Speaker B commit?",
     "options": [
+      "Circular Reasoning, by repeating the premise as the conclusion",
       "Appeal to Ignorance, by demanding unprovable evidence",
       "Ad Hominem attack on Speaker A's ancestry",
-      "Circular Reasoning, by repeating the premise as the conclusion",
       "Straw Man fallacy, by exaggerating and misrepresenting the original argument into an extreme stance"
     ],
     "correctAnswer": "Straw Man fallacy, by exaggerating and misrepresenting the original argument into an extreme stance",
@@ -4460,9 +4730,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A private academy advertises: 'Our average graduating teacher salary is 15,000 Cedis per month!' Investigation reveals the owner earns 110,000 Cedis, while the remaining nine teachers earn 4,444 Cedis each.",
     "question": "Why is the school's advertised statistic deceptive?",
     "options": [
-      "Nine teachers is an uneven number for calculating percentages.",
       "Private schools are legally forbidden from calculating averages.",
       "They should have reported the salary in US Dollars.",
+      "Nine teachers is an uneven number for calculating percentages.",
       "The extreme outlier (the owner's salary) severely skews the arithmetic mean upward, misrepresenting the median experience."
     ],
     "correctAnswer": "The extreme outlier (the owner's salary) severely skews the arithmetic mean upward, misrepresenting the median experience.",
@@ -4476,10 +4746,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student prefect argues: 'We must ban all ball games during break time. If we allow football, students will kick balls into windows, shattering all the glass, leading to the collapse of the school buildings and the permanent closure of the school!'",
     "question": "Which logical fallacy is illustrated here?",
     "options": [
-      "False Dilemma",
+      "Equivocation",
       "Slippery Slope fallacy",
-      "Red Herring fallacy",
-      "Equivocation"
+      "False Dilemma",
+      "Red Herring fallacy"
     ],
     "correctAnswer": "Slippery Slope fallacy",
     "explanation": "A Slippery Slope fallacy assumes without evidence that one minor event will inevitably trigger a chain reaction of catastrophic consequences.",
@@ -4493,9 +4763,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why would villages with clinics register more malaria cases?",
     "options": [
       "Villages with clinics have diagnostic testing and record-keeping, whereas cases in remote villages go undiagnosed and unrecorded.",
-      "Medical doctors attract malaria parasites to their offices.",
       "Rural villagers without clinics have biological immunity to Plasmodium.",
-      "Health clinics actively manufacture and release mosquitoes."
+      "Health clinics actively manufacture and release mosquitoes.",
+      "Medical doctors attract malaria parasites to their offices."
     ],
     "correctAnswer": "Villages with clinics have diagnostic testing and record-keeping, whereas cases in remote villages go undiagnosed and unrecorded.",
     "explanation": "Diagnostic infrastructure increases case reporting (detection bias). The lack of clinics leads to underreporting, not lower actual disease rates.",
@@ -4524,10 +4794,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils in Kumasi examine a baobab tree seedling growing near the school gate. Each makes a claim.",
     "question": "Which pupil states a verifiable FACT rather than a subjective opinion?",
     "options": [
-      "Green leaves look friendlier than dry brown bark.",
+      "Planting baobab trees is much more fun than planting mango trees.",
       "Baobab tree trunks store water to survive dry savanna seasons.",
-      "The baobab seedling is the most beautiful plant in the school garden.",
-      "Planting baobab trees is much more fun than planting mango trees."
+      "Green leaves look friendlier than dry brown bark.",
+      "The baobab seedling is the most beautiful plant in the school garden."
     ],
     "correctAnswer": "Baobab tree trunks store water to survive dry savanna seasons.",
     "explanation": "Botanical water storage in trunk tissues is a scientifically proven fact. Beauty and enjoyment are personal opinions.",
@@ -4556,10 +4826,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A bowl of water left outside on a concrete table under the blazing midday sun in Tamale was half empty by 4:00 PM.",
     "question": "What is the direct physical cause for the missing water?",
     "options": [
-      "The wind carried the plastic bowl away.",
-      "Solar heat caused liquid water molecules to evaporate into water vapor.",
       "The water turned into solid ice cubes.",
-      "The concrete table soaked all the water through the bottom of the bowl."
+      "Solar heat caused liquid water molecules to evaporate into water vapor.",
+      "The concrete table soaked all the water through the bottom of the bowl.",
+      "The wind carried the plastic bowl away."
     ],
     "correctAnswer": "Solar heat caused liquid water molecules to evaporate into water vapor.",
     "explanation": "Heat energy from direct sunlight provides latent heat of vaporization, turning liquid water into airborne vapor.",
@@ -4572,9 +4842,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Kweku woke up at 6:00 AM, brushed his teeth at 6:15 AM, ate breakfast at 6:45 AM, and arrived at school at 7:30 AM. He dropped his toothbrush on the bathroom floor.",
     "question": "At what time did Kweku drop his toothbrush?",
     "options": [
+      "At 6:45 AM while eating porridge",
       "At 8:00 AM during morning assembly",
       "At 7:30 AM upon reaching school",
-      "At 6:45 AM while eating porridge",
       "At 6:15 AM while brushing his teeth"
     ],
     "correctAnswer": "At 6:15 AM while brushing his teeth",
@@ -4604,9 +4874,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During an ICT lesson, pupils discuss computers and mobile phones.",
     "question": "Which of these statements is an objective FACT?",
     "options": [
-      "Playing computer games is more educational than reading storybooks.",
       "Laptops are nicer to carry than spiral notebooks.",
       "Keyboards with blue letters are much cooler than black ones.",
+      "Playing computer games is more educational than reading storybooks.",
       "Computer monitors use electrical energy to display images."
     ],
     "correctAnswer": "Computer monitors use electrical energy to display images.",
@@ -4620,10 +4890,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student blows into a whistle during physical education class, producing a loud, piercing sound across the field.",
     "question": "What is the physical cause of the whistling sound?",
     "options": [
-      "The whistle changing color due to air pressure.",
+      "The ground reacting to the student's running shoes.",
       "Vibrations created in the air column as forced air splits across the whistle edge.",
-      "The plastic shell of the whistle absorbing sunlight.",
-      "The ground reacting to the student's running shoes."
+      "The whistle changing color due to air pressure.",
+      "The plastic shell of the whistle absorbing sunlight."
     ],
     "correctAnswer": "Vibrations created in the air column as forced air splits across the whistle edge.",
     "explanation": "Sound is produced by mechanical acoustic vibrations. Rushing air across the edge sets up standing wave oscillations.",
@@ -4652,10 +4922,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher finds a piece of chalk snapped into three pieces on the floor. White chalk powder dusts the hem of Kwabena's shorts.",
     "question": "What does the chalk dust on Kwabena's shorts suggest to the detective?",
     "options": [
-      "Kwabena was sweeping leaves in the mango orchard.",
-      "Kwabena had direct physical contact with the chalk around the time it broke.",
       "Kwabena was playing football in damp red mud.",
-      "Kwabena was drinking milk in the cafeteria."
+      "Kwabena had direct physical contact with the chalk around the time it broke.",
+      "Kwabena was drinking milk in the cafeteria.",
+      "Kwabena was sweeping leaves in the mango orchard."
     ],
     "correctAnswer": "Kwabena had direct physical contact with the chalk around the time it broke.",
     "explanation": "Locard's exchange principle shows that physical contact transfers residue: the white calcium carbonate dust links him to the broken chalk.",
@@ -4669,9 +4939,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which statement is an indisputable agricultural FACT?",
     "options": [
       "Cassava tubers contain dietary carbohydrates.",
+      "Plantains should always be fried rather than boiled.",
       "Cocoyam leaves make the most delicious stew in West Africa.",
-      "Fufu is far more enjoyable than banku.",
-      "Plantains should always be fried rather than boiled."
+      "Fufu is far more enjoyable than banku."
     ],
     "correctAnswer": "Cassava tubers contain dietary carbohydrates.",
     "explanation": "The biochemical composition of cassava tubers is a verifiable scientific fact, whereas food preference is subjective.",
@@ -4684,9 +4954,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A laboratory scale went missing from the science store room between 4:00 PM and 4:30 PM on Thursday. Suspect Kofi claims he was in the school library reading under the fluorescent lights.",
     "question": "Which clue dismantles Kofi's alibi?",
     "options": [
+      "The science store room has an iron padlock.",
       "The laboratory scale weighs 2.5 kilograms.",
       "Kofi borrowed a mathematics textbook on Wednesday morning.",
-      "The science store room has an iron padlock.",
       "The librarian logged that the library was locked and closed all Thursday afternoon for pest fumigation."
     ],
     "correctAnswer": "The librarian logged that the library was locked and closed all Thursday afternoon for pest fumigation.",
@@ -4716,9 +4986,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A batch of dough was mixed at 8:00 AM, set to rise until 9:30 AM, baked until 10:15 AM, and left to cool. A baker noticed the oven thermostat broke while loaves were actively baking.",
     "question": "Between what times did the oven thermostat malfunction?",
     "options": [
-      "Between 8:00 AM and 9:30 AM while rising",
       "After 11:00 AM while bread was in display glass",
       "Between 7:00 AM and 8:00 AM before mixing",
+      "Between 8:00 AM and 9:30 AM while rising",
       "Between 9:30 AM and 10:15 AM during baking"
     ],
     "correctAnswer": "Between 9:30 AM and 10:15 AM during baking",
@@ -4732,10 +5002,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student in Takoradi tastes one green orange from a market crate and finds it sour. He announces to the school: 'Every single orange grown in the Western Region is sour.'",
     "question": "What logical flaw did the student commit?",
     "options": [
-      "He tested an orange grown during the minor rainy season.",
+      "He failed to peel the orange with a kitchen knife.",
       "He assumed the quality of an entire regional harvest based on a single unrepresentative specimen.",
-      "He forgot that oranges contain citric acid.",
-      "He failed to peel the orange with a kitchen knife."
+      "He tested an orange grown during the minor rainy season.",
+      "He forgot that oranges contain citric acid."
     ],
     "correctAnswer": "He assumed the quality of an entire regional harvest based on a single unrepresentative specimen.",
     "explanation": "Extrapolating a conclusion across millions of oranges from an N=1 sample is an unwarranted hasty generalization.",
@@ -4764,10 +5034,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "After a community cleared all the mangroves along a coastal lagoon in Keta, severe beach erosion and tidal flooding rapidly destroyed nearby footpaths.",
     "question": "Why did clearing the mangroves lead directly to accelerated coastal erosion?",
     "options": [
-      "Local fishermen caught fewer tilapia in the deep sea.",
-      "Mangrove tree roots anchor shoreline sediment and absorb incoming wave energy.",
       "The sand along the beach grew hotter under the sun.",
-      "Mangrove leaves attract rainclouds from the Atlantic Ocean."
+      "Mangrove tree roots anchor shoreline sediment and absorb incoming wave energy.",
+      "Mangrove leaves attract rainclouds from the Atlantic Ocean.",
+      "Local fishermen caught fewer tilapia in the deep sea."
     ],
     "correctAnswer": "Mangrove tree roots anchor shoreline sediment and absorb incoming wave energy.",
     "explanation": "Mangrove root systems physically bind coastal soils and dissipate wave kinetic energy, preventing coastal erosion.",
@@ -4780,9 +5050,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A generator was drained of diesel at a workshop in Cape Coast at 1:00 PM on Tuesday. Suspect Kwadwo claims he was watching the total solar eclipse from the beach at 1:00 PM.",
     "question": "What astronomical fact destroys Kwadwo's alibi?",
     "options": [
+      "The beach in Cape Coast faces the Atlantic Ocean.",
       "Generators convert mechanical energy into electricity.",
       "Diesel fuel produces black exhaust fumes when burned.",
-      "The beach in Cape Coast faces the Atlantic Ocean.",
       "No solar eclipse occurred anywhere on Earth on that calendar date."
     ],
     "correctAnswer": "No solar eclipse occurred anywhere on Earth on that calendar date.",
@@ -4812,9 +5082,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A headteacher surveys two students in Basic 5 regarding the school lunch menu. Both students say they dislike cabbage stew. The headteacher announces: 'No student in our 600-pupil school likes cabbage stew.'",
     "question": "What is the key methodological failure?",
     "options": [
-      "The survey took place before Friday sports afternoon.",
       "The headteacher should have surveyed teachers instead of students.",
       "Cabbage stew contains vitamin C and fiber.",
+      "The survey took place before Friday sports afternoon.",
       "A sample of 2 out of 600 students (0.33%) is statistically inadequate to represent school-wide preferences."
     ],
     "correctAnswer": "A sample of 2 out of 600 students (0.33%) is statistically inadequate to represent school-wide preferences.",
@@ -4828,10 +5098,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A document signed with blue fountain pen ink was altered. Chemical testing of the added numbers reveals iron gall ink, while the original text was written with synthetic dye ink.",
     "question": "What does this chemical discrepancy prove?",
     "options": [
+      "The document was stored in a damp drawer.",
       "The writer was left-handed.",
-      "The paper was manufactured from bamboo pulp.",
       "The added text was written with a completely different ink formulation, confirming document forgery.",
-      "The document was stored in a damp drawer."
+      "The paper was manufactured from bamboo pulp."
     ],
     "correctAnswer": "The added text was written with a completely different ink formulation, confirming document forgery.",
     "explanation": "Different chemical ink formulations prove that alterations were introduced using a separate writing instrument.",
@@ -4845,9 +5115,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the logical flaw in the researcher's conclusion?",
     "options": [
       "Higher power consumption directly increases total bills under existing rates; the appliances consume power rather than setting utility rates.",
-      "Utility companies generate electricity using thermal power plants.",
       "Household electricity meters measure kilowatt-hours.",
-      "Air conditioners reduce humidity in tropical climates."
+      "Air conditioners reduce humidity in tropical climates.",
+      "Utility companies generate electricity using thermal power plants."
     ],
     "correctAnswer": "Higher power consumption directly increases total bills under existing rates; the appliances consume power rather than setting utility rates.",
     "explanation": "Running high-wattage air conditioners increases kilowatt-hour usage, driving up the bill without changing the rate itself.",
@@ -4860,10 +5130,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A trending social media post claims: 'NASA confirms an asteroid will strike Lake Volta next Tuesday at 3:15 PM, evaporating all water in Ghana! Share immediately with 20 groups!'",
     "question": "Which set of indicators proves this post is fraudulent clickbait?",
     "options": [
+      "NASA employs astrophysicists and operates space telescopes.",
       "Asteroids orbit the Sun within the solar system.",
-      "It names a real lake located in the Eastern Region of Ghana.",
       "It uses hyperbolic apocalyptic claims, artificial urgency, and demands viral forwarding without links to NASA peer databases.",
-      "NASA employs astrophysicists and operates space telescopes."
+      "It names a real lake located in the Eastern Region of Ghana."
     ],
     "correctAnswer": "It uses hyperbolic apocalyptic claims, artificial urgency, and demands viral forwarding without links to NASA peer databases.",
     "explanation": "Sensationalist claims, chain-letter share quotas, and unverified attribution to agencies are key signs of misinformation.",
@@ -4892,10 +5162,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A white powder collected from an illegal mining site suspected of leaching gold is dissolved in water and tested with silver nitrate solution (AgNO₃). A curdy white precipitate forms that dissolves in dilute ammonia.",
     "question": "What halide anion is positively identified by this reaction?",
     "options": [
-      "Sulfate (SO₄²⁻)",
       "Bromide (Br⁻)",
+      "Iodide (I⁻)",
       "Chloride (Cl⁻)",
-      "Iodide (I⁻)"
+      "Sulfate (SO₄²⁻)"
     ],
     "correctAnswer": "Chloride (Cl⁻)",
     "explanation": "Silver nitrate reacts with chloride ions to precipitate white silver chloride (AgCl), which dissolves readily in dilute aqueous ammonia.",
@@ -4909,9 +5179,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why is the clinic's published percentage misleading?",
     "options": [
       "Reporting percentages on an extremely small sample (N=2) conceals the lack of statistical power and high margin of error.",
+      "Patients should never be given pharmaceutical placebos.",
       "Symptoms must be measured in numerical units.",
-      "Clinical trials must be conducted in public university hospitals.",
-      "Patients should never be given pharmaceutical placebos."
+      "Clinical trials must be conducted in public university hospitals."
     ],
     "correctAnswer": "Reporting percentages on an extremely small sample (N=2) conceals the lack of statistical power and high margin of error.",
     "explanation": "Converting 1 out of 2 into 50% gives a misleading impression of efficacy while obscuring an inadequate sample size.",
@@ -4941,9 +5211,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What technology was used to produce this deceptive media?",
     "options": [
       "Deepfake AI synthetic video generation",
-      "Closed-circuit analog security recording",
       "Infrared thermal imaging",
-      "Standard high-definition video camera zoom"
+      "Standard high-definition video camera zoom",
+      "Closed-circuit analog security recording"
     ],
     "correctAnswer": "Deepfake AI synthetic video generation",
     "explanation": "Facial boundary flickering, digital texture smoothing, and desynchronized speech phonemes are classic signs of AI deepfakes.",
@@ -4956,10 +5226,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Data from Accra reveals a strong positive correlation between the number of umbrellas carried by pedestrians and the number of vehicle traffic delays on the George Walker Bush Highway.",
     "question": "What common factor accounts for this correlation?",
     "options": [
+      "Traffic delays cause rainfall from the atmosphere.",
       "Umbrellas create physical blockades on overhead highway ramps.",
-      "Pedestrians using umbrellas distract commercial minibus drivers.",
       "Rainfall independently prompts pedestrians to carry umbrellas while slowing traffic due to wet roads and poor visibility.",
-      "Traffic delays cause rainfall from the atmosphere."
+      "Pedestrians using umbrellas distract commercial minibus drivers."
     ],
     "correctAnswer": "Rainfall independently prompts pedestrians to carry umbrellas while slowing traffic due to wet roads and poor visibility.",
     "explanation": "Rain acts as an underlying confounding variable that simultaneously increases umbrella usage and road delays.",
@@ -4988,9 +5258,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Soil around an industrial site suspected of toxic battery dumping is acidified and treated with potassium iodide (KI). A brilliant canary-yellow precipitate forms that dissolves upon boiling in water and recrystallizes into sparkling golden crystals on cooling.",
     "question": "What toxic heavy metal cation is confirmed by this lead iodide reaction?",
     "options": [
-      "Sodium (Na⁺)",
       "Iron (Fe³⁺)",
       "Calcium (Ca²⁺)",
+      "Sodium (Na⁺)",
       "Lead (Pb²⁺)"
     ],
     "correctAnswer": "Lead (Pb²⁺)",
@@ -5020,10 +5290,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A detective finds a blue ink mark on the wooden desk. Suspect A has pencil shavings, Suspect B has dry chalk on his palms, Suspect C holds a leaking blue ballpoint pen, and Suspect D has red paint on her fingers.",
     "question": "Which suspect left the blue ink mark?",
     "options": [
-      "Suspect B",
       "Suspect D",
+      "Suspect A",
       "Suspect C holds a leaking blue ballpoint pen",
-      "Suspect A"
+      "Suspect B"
     ],
     "correctAnswer": "Suspect C holds a leaking blue ballpoint pen",
     "explanation": "A leaking blue ballpoint pen provides the direct physical source matching the blue ink smudge.",
@@ -5037,9 +5307,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why does the bean seed fail to germinate after two weeks?",
     "options": [
       "Seeds require water and warmth to activate enzymatic germination.",
+      "The cupboard door was made of timber wood.",
       "The seed wanted to sleep during the term.",
-      "The sand was too clean to hold seeds.",
-      "The cupboard door was made of timber wood."
+      "The sand was too clean to hold seeds."
     ],
     "correctAnswer": "Seeds require water and warmth to activate enzymatic germination.",
     "explanation": "Imbibition of water is the essential physiological trigger required for seeds to break dormancy.",
@@ -5069,9 +5339,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which statement about the harmattan is an objective meteorological FACT?",
     "options": [
       "Harmattan winds carry dry, dusty continental air from the Sahara Desert.",
-      "Mornings in harmattan feel much nicer than rainy mornings.",
       "Dust haze makes the sky look ugly.",
-      "The harmattan wind is boring and dull."
+      "The harmattan wind is boring and dull.",
+      "Mornings in harmattan feel much nicer than rainy mornings."
     ],
     "correctAnswer": "Harmattan winds carry dry, dusty continental air from the Sahara Desert.",
     "explanation": "The northeast trade winds transporting Saharan dust across West Africa is a proven geographical fact.",
@@ -5084,10 +5354,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A wet footprint showing five toes without any shoe tread pattern was stamped on the dry floor tiles near the washroom.",
     "question": "Who made this footprint?",
     "options": [
+      "A stray sheep wandering from the field",
       "Someone wearing rubber sandals",
-      "Someone wearing leather boots",
       "Someone walking barefoot with wet feet",
-      "A stray sheep wandering from the field"
+      "Someone wearing leather boots"
     ],
     "correctAnswer": "Someone walking barefoot with wet feet",
     "explanation": "Distinct individual toe impressions with no sole patterning confirm a bare human foot.",
@@ -5116,10 +5386,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Ama put on her clean socks at 6:30 AM, walked through muddy puddles at 7:15 AM, and sat at her school desk at 7:45 AM. Her teacher noticed mud on her socks at 8:00 AM.",
     "question": "When did Ama's socks get muddy?",
     "options": [
-      "At 8:00 AM during class registration",
       "At 9:00 AM during math class",
+      "At 6:30 AM while putting them on at home",
       "At 7:15 AM while walking through puddles",
-      "At 6:30 AM while putting them on at home"
+      "At 8:00 AM during class registration"
     ],
     "correctAnswer": "At 7:15 AM while walking through puddles",
     "explanation": "Stepping into puddles at 7:15 AM is the event that transferred mud to the socks before inspection at 8:00 AM.",
@@ -5133,9 +5403,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which animal investigated the bread?",
     "options": [
       "A house mouse",
+      "A crow from the tree",
       "A grasshopper",
-      "A barking dog",
-      "A crow from the tree"
+      "A barking dog"
     ],
     "correctAnswer": "A house mouse",
     "explanation": "Small incisor bite marks and a dragging tail track in dust are diagnostic traces of rodents like mice.",
@@ -5181,9 +5451,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the primary motive behind this bakery's claim?",
     "options": [
       "To increase corporate bread sales and boost profits through biased health claims.",
-      "To help children improve their English exam marks.",
       "To encourage pupils to eat local cassava dishes.",
-      "To teach children poetry recitation techniques."
+      "To teach children poetry recitation techniques.",
+      "To help children improve their English exam marks."
     ],
     "correctAnswer": "To increase corporate bread sales and boost profits through biased health claims.",
     "explanation": "Commercial manufacturers have a direct financial incentive to market exaggerated claims that drive product sales.",
@@ -5196,10 +5466,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A school bus leaves the station at 6:45 AM, picks up students at Stop A at 7:05 AM, Stop B at 7:20 AM, and arrives at school at 7:40 AM. An umbrella was left on the bus by a student who boarded at Stop A and got off at Stop B.",
     "question": "Between what times was the student with the umbrella on the bus?",
     "options": [
+      "Between 7:20 AM and 7:40 AM",
       "After 8:00 AM during lessons",
-      "Between 6:45 AM and 7:05 AM",
       "Between 7:05 AM and 7:20 AM",
-      "Between 7:20 AM and 7:40 AM"
+      "Between 6:45 AM and 7:05 AM"
     ],
     "correctAnswer": "Between 7:05 AM and 7:20 AM",
     "explanation": "The student boarded at Stop A (7:05 AM) and departed at Stop B (7:20 AM), framing their ride to that exact interval.",
@@ -5228,10 +5498,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A padlock on a garden tool shed was forced open. Investigators find traces of blue paint on the gouged iron latch matching the chipped paint on a crowbar found behind the workshop.",
     "question": "What does this evidence indicate?",
     "options": [
-      "The padlock was damaged by rainwater rust.",
       "The shed was painted blue last year.",
+      "The crowbar was manufactured in Germany.",
       "The crowbar with matching paint transferred residue during forceful contact with the latch.",
-      "The crowbar was manufactured in Germany."
+      "The padlock was damaged by rainwater rust."
     ],
     "correctAnswer": "The crowbar with matching paint transferred residue during forceful contact with the latch.",
     "explanation": "Paint transfer analysis links the tool directly to the mechanical leverage marks on the forced lock.",
@@ -5245,9 +5515,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What caused the increased flooding after paving?",
     "options": [
       "Impermeable concrete prevents rain from infiltrating the soil, generating heavy surface runoff.",
+      "Grass attracts more rainclouds from the Atlantic Ocean.",
       "The concrete made the air cooler.",
-      "Concrete absorbs more rainwater than porous grass soil.",
-      "Grass attracts more rainclouds from the Atlantic Ocean."
+      "Concrete absorbs more rainwater than porous grass soil."
     ],
     "correctAnswer": "Impermeable concrete prevents rain from infiltrating the soil, generating heavy surface runoff.",
     "explanation": "Replacing permeable vegetative cover with impermeable concrete eliminates infiltration, drastically raising surface runoff volume.",
@@ -5277,9 +5547,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What bias should an apprentice investigator spot?",
     "options": [
       "Commercial interest bias designed to discredit traditional competitors and force sales of plastic tanks.",
-      "Water tanks are installed on concrete platforms.",
       "Rainwater harvesting is practiced in West Africa.",
-      "Clay pots are made by shaping natural wet earth."
+      "Clay pots are made by shaping natural wet earth.",
+      "Water tanks are installed on concrete platforms."
     ],
     "correctAnswer": "Commercial interest bias designed to discredit traditional competitors and force sales of plastic tanks.",
     "explanation": "The business has a clear profit incentive to exaggerate flaws in traditional alternatives.",
@@ -5292,10 +5562,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A pupil visits two houses in his neighborhood and finds both families own a pet cat. He announces: '100% of all households in Ghana own pet cats.'",
     "question": "What is the flaw in this conclusion?",
     "options": [
+      "Households in Ghana often keep watchdogs.",
       "The survey was done on a Saturday afternoon.",
-      "Cats are carnivorous mammals.",
       "Extrapolating national demographic statistics from two local homes is a hasty generalization with an unrepresentative sample.",
-      "Households in Ghana often keep watchdogs."
+      "Cats are carnivorous mammals."
     ],
     "correctAnswer": "Extrapolating national demographic statistics from two local homes is a hasty generalization with an unrepresentative sample.",
     "explanation": "A sample size of two houses is statistically meaningless when generalizing across an entire country.",
@@ -5324,9 +5594,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A municipal data study in Takoradi reveals that neighborhoods with more street food stalls also report higher total foot traffic injuries.",
     "question": "What is the most likely confounding variable explaining this relationship?",
     "options": [
+      "Food vendors intentionally trip passing shoppers.",
       "Eating food while walking impairs inner-ear vestibular balance.",
       "Street food contains hot peppers that blind pedestrians.",
-      "Food vendors intentionally trip passing shoppers.",
       "Dense commercial pedestrian activity attracts food stalls and naturally increases pedestrian congestion and exposure to traffic."
     ],
     "correctAnswer": "Dense commercial pedestrian activity attracts food stalls and naturally increases pedestrian congestion and exposure to traffic.",
@@ -5356,9 +5626,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "In a school council debate, an opponent argues: 'We cannot trust Kwame's proposal for science club funding because Kwame failed his term-one French quiz!'",
     "question": "Which logical fallacy is committed here?",
     "options": [
-      "Straw Man Fallacy",
       "Appeal to Tradition",
       "Post Hoc Ergo Propter Hoc",
+      "Straw Man Fallacy",
       "Ad Hominem (attacking Kwame's personal academic record instead of evaluating the funding proposal)"
     ],
     "correctAnswer": "Ad Hominem (attacking Kwame's personal academic record instead of evaluating the funding proposal)",
@@ -5372,10 +5642,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A clear liquid from an unlabelled bottle found in a chemistry prep room gives off gas bubbles when added to sodium carbonate (Na₂CO₃), and turns blue litmus paper bright red.",
     "question": "What chemical property does this liquid exhibit?",
     "options": [
-      "It is saturated sodium chloride solution.",
+      "It is a neutral hydrocarbon solvent.",
       "It is an acid producing aqueous hydronium (H⁺) ions that liberate carbon dioxide gas from carbonates.",
-      "It is a strong base containing hydroxide ions.",
-      "It is a neutral hydrocarbon solvent."
+      "It is saturated sodium chloride solution.",
+      "It is a strong base containing hydroxide ions."
     ],
     "correctAnswer": "It is an acid producing aqueous hydronium (H⁺) ions that liberate carbon dioxide gas from carbonates.",
     "explanation": "Acids turn blue litmus red and react with carbonates to liberate carbon dioxide gas (2H⁺ + CO₃²⁻ → H₂O + CO₂).",
@@ -5404,10 +5674,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A debater asserts: 'Nobody has ever conclusively proven that extraterrestrial microorganisms do not exist on Mars; therefore, Martian life definitely exists!'",
     "question": "What logical fallacy is present in this deduction?",
     "options": [
-      "Circular Reasoning",
-      "Appeal to Ignorance (Argumentum ad Ignorantiam)",
       "Slippery Slope",
-      "False Analogy"
+      "Appeal to Ignorance (Argumentum ad Ignorantiam)",
+      "False Analogy",
+      "Circular Reasoning"
     ],
     "correctAnswer": "Appeal to Ignorance (Argumentum ad Ignorantiam)",
     "explanation": "Claiming that a proposition must be true simply because it has not yet been proven false is an appeal to ignorance.",
@@ -5420,9 +5690,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A shared image claims to show a tsunami wave hitting the shores of Lake Volta in central Ghana. A meteorologist notes that Lake Volta is an inland freshwater reservoir with no tectonic ocean-trench subduction zones.",
     "question": "What geographical reality refutes this viral image?",
     "options": [
+      "Rain clouds prevent tsunamis from striking land.",
       "Boats on Lake Volta travel at slow speeds.",
       "Freshwater cannot form waves of any height.",
-      "Rain clouds prevent tsunamis from striking land.",
       "Lake Volta is an artificial inland reservoir lacking the oceanic seismic subduction mechanisms that produce tsunamis."
     ],
     "correctAnswer": "Lake Volta is an artificial inland reservoir lacking the oceanic seismic subduction mechanisms that produce tsunamis.",
@@ -5452,9 +5722,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A company reports an average annual worker salary of 20,000 Cedis across 10 staff members. However, the managing director earns 155,000 Cedis while 9 employees earn 5,000 Cedis each.",
     "question": "Which metric should be used instead of the mean to reflect typical worker pay?",
     "options": [
-      "The maximum range",
       "The harmonic variance",
       "The standard deviation",
+      "The maximum range",
       "The median, which is unaffected by extreme skewing outliers"
     ],
     "correctAnswer": "The median, which is unaffected by extreme skewing outliers",
@@ -5468,10 +5738,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A forensic analyst tests an unknown white crystalline powder seized at a warehouse. A flame test produces a persistent, intense golden-yellow flame.",
     "question": "What metal cation is positively identified by this flame emission?",
     "options": [
+      "Copper (Cu²⁺)",
       "Barium (Ba²⁺)",
-      "Potassium (K⁺)",
       "Sodium (Na⁺)",
-      "Copper (Cu²⁺)"
+      "Potassium (K⁺)"
     ],
     "correctAnswer": "Sodium (Na⁺)",
     "explanation": "The characteristic atomic emission spectrum of sodium yields an intense yellow flame at the 589 nm doublet line.",
@@ -5484,9 +5754,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils in Accra inspect an African giant land snail crawling across the damp botanical garden wall.",
     "question": "Which of these statements is an objective biological FACT?",
     "options": [
-      "Snails move much too slowly to be interesting pets.",
       "Watching snails crawl is more relaxing than watching birds fly.",
       "Snails are the slimy and disgusting creatures of the forest.",
+      "Snails move much too slowly to be interesting pets.",
       "The snail carries an exoskeleton spiral shell made of calcium carbonate."
     ],
     "correctAnswer": "The snail carries an exoskeleton spiral shell made of calcium carbonate.",
@@ -5500,10 +5770,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher notices that someone drank the sweet orange juice from a cup on the shelf. The cup has a bright red circular lipstick smudge on its rim.",
     "question": "Who drank the orange juice?",
     "options": [
-      "Esi, who was writing her spelling words with a green pencil",
+      "Yaw, who was chewing sugarcane in the compound",
       "Madam Afua, who applied red cosmetic lipstick before assembly",
-      "Master Kwesi, the sports master wearing track shoes",
-      "Yaw, who was chewing sugarcane in the compound"
+      "Esi, who was writing her spelling words with a green pencil",
+      "Master Kwesi, the sports master wearing track shoes"
     ],
     "correctAnswer": "Madam Afua, who applied red cosmetic lipstick before assembly",
     "explanation": "The red lipstick residue on the rim matches the cosmetic lipstick worn by Madam Afua, directly identifying the user.",
@@ -5532,10 +5802,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "The morning school bell rang at 7:15 AM. The class marched into assembly at 7:30 AM, concluded prayers at 7:55 AM, and began English class at 8:00 AM. Kofi dropped his library book under the assembly mango tree at 7:40 AM.",
     "question": "What was happening when Kofi dropped his library book?",
     "options": [
-      "The morning school bell had not yet rung",
-      "Pupils were actively assembled at morning prayers under the mango tree",
       "Pupils were eating lunch during afternoon break",
-      "English class had already begun inside the classroom"
+      "Pupils were actively assembled at morning prayers under the mango tree",
+      "English class had already begun inside the classroom",
+      "The morning school bell had not yet rung"
     ],
     "correctAnswer": "Pupils were actively assembled at morning prayers under the mango tree",
     "explanation": "7:40 AM falls squarely within the morning assembly duration (7:30 AM to 7:55 AM).",
@@ -5548,9 +5818,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four friends talk about the Atlantic Ocean coastline along Cape Coast.",
     "question": "Which of these statements is an indisputable geographical FACT?",
     "options": [
+      "Swimming in saltwater is more enjoyable than swimming in swimming pools.",
       "Seaside breezes smell far better than inland forest breezes.",
       "The ocean is much more frightening than Lake Volta.",
-      "Swimming in saltwater is more enjoyable than swimming in swimming pools.",
       "Ocean water has a high concentration of dissolved mineral salts like sodium chloride."
     ],
     "correctAnswer": "Ocean water has a high concentration of dissolved mineral salts like sodium chloride.",
@@ -5580,9 +5850,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student leaves an iron nail submerged in clean boiled water inside a test tube that is sealed with a layer of mineral oil on top. After three weeks, the nail has zero rust.",
     "question": "Why did the nail fail to form rust?",
     "options": [
-      "The test tube glass reflected away all ambient light.",
       "Mineral oil chemically dissolves iron oxide overnight.",
       "Iron cannot form rust when submerged under any liquid.",
+      "The test tube glass reflected away all ambient light.",
       "Boiling expelled dissolved oxygen, and the oil barrier prevented atmospheric oxygen from contacting the iron."
     ],
     "correctAnswer": "Boiling expelled dissolved oxygen, and the oil barrier prevented atmospheric oxygen from contacting the iron.",
@@ -5596,10 +5866,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Kwabena ate his lunch at 12:00 PM, washed his plate at 12:20 PM, played football from 12:30 PM to 1:00 PM, and returned to class at 1:05 PM. He ripped his school shorts while diving for a goal.",
     "question": "Between what times did Kwabena rip his shorts?",
     "options": [
-      "After 2:00 PM during closing assembly",
+      "Between 12:00 PM and 12:20 PM",
       "Between 12:30 PM and 1:00 PM",
-      "Between 11:30 AM and 12:00 PM",
-      "Between 12:00 PM and 12:20 PM"
+      "After 2:00 PM during closing assembly",
+      "Between 11:30 AM and 12:00 PM"
     ],
     "correctAnswer": "Between 12:30 PM and 1:00 PM",
     "explanation": "Diving for a goal happened during his football game, which occurred between 12:30 PM and 1:00 PM.",
@@ -5628,10 +5898,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils in Kumasi examine a metal copper wire used in a simple battery circuit.",
     "question": "Which statement is a verifiable physical FACT?",
     "options": [
-      "Electric circuits are the most thrilling science experiments to build.",
       "Working with copper wires is much easier than drawing graphs.",
+      "Copper looks far more elegant than aluminum metal.",
       "Copper is an electrical conductor that permits the free flow of electric charge.",
-      "Copper looks far more elegant than aluminum metal."
+      "Electric circuits are the most thrilling science experiments to build."
     ],
     "correctAnswer": "Copper is an electrical conductor that permits the free flow of electric charge.",
     "explanation": "Electrical conductivity is an intrinsic physical property of elemental copper, whereas beauty and excitement are subjective opinions.",
@@ -5644,10 +5914,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A box of solar lanterns was stolen from a clinic in Navrongo on December 21 at 9:00 PM. Suspect Salifu claims he was sitting outside his house watching the sun setting behind the hills at that exact moment.",
     "question": "What geographical fact destroys Salifu's alibi?",
     "options": [
-      "Navrongo is located in the Upper East Region of Ghana.",
-      "In Ghana (near the equator), the sun sets between 5:45 PM and 6:30 PM, making a 9:00 PM sunset impossible.",
       "The clinic doors were secured with steel bolts.",
-      "Solar lanterns convert sunlight into electrical potential energy."
+      "In Ghana (near the equator), the sun sets between 5:45 PM and 6:30 PM, making a 9:00 PM sunset impossible.",
+      "Solar lanterns convert sunlight into electrical potential energy.",
+      "Navrongo is located in the Upper East Region of Ghana."
     ],
     "correctAnswer": "In Ghana (near the equator), the sun sets between 5:45 PM and 6:30 PM, making a 9:00 PM sunset impossible.",
     "explanation": "Equatorial twilight and sunset never occur at 9:00 PM in Ghana, proving his visual alibi was completely fabricated.",
@@ -5660,9 +5930,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An import company that sells plastic packaging publishes an article entitled: 'Why Biodegradable Paper Bags Harm Forest Trees More Than Plastic Sacks.'",
     "question": "What fundamental bias should an apprentice analyst detect in this publication?",
     "options": [
+      "Plastic bags are synthesized from petrochemical polymers.",
       "Paper bags degrade naturally when exposed to soil moisture.",
       "The paper bags are manufactured in West Africa.",
-      "Plastic bags are synthesized from petrochemical polymers.",
       "Commercial vested interest bias aiming to protect plastic sales revenue against paper bag competition."
     ],
     "correctAnswer": "Commercial vested interest bias aiming to protect plastic sales revenue against paper bag competition.",
@@ -5692,9 +5962,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student plants 3 cowpea seeds in pot X with mineral fertilizer and 3 cowpea seeds in pot Y with plain soil. One plant in pot X dies from an insect bite. He concludes: 'Mineral fertilizer kills cowpea crops.'",
     "question": "Why is the student's experimental deduction invalid?",
     "options": [
-      "Pot X was painted terracotta red.",
       "Fertilizers contain nitrogen, phosphorus, and potassium.",
       "Cowpea is an indigenous leguminous crop.",
+      "Pot X was painted terracotta red.",
       "The tiny sample size of 3 plants failed to control for extraneous variables like insect pests."
     ],
     "correctAnswer": "The tiny sample size of 3 plants failed to control for extraneous variables like insect pests.",
@@ -5708,10 +5978,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An intruder climbed through an attic window above an oil-palm warehouse. Forensic investigators find palm fruit fibers and dark orange-red oil grease on the suspect's trousers.",
     "question": "What does this chemical and material evidence show?",
     "options": [
-      "The suspect was painting classroom walls orange.",
+      "The attic window was made of aluminum louvres.",
       "The suspect's clothing had direct physical contact with unrefined palm oil materials matching the crime scene.",
-      "The suspect purchased fresh plantains at the market.",
-      "The attic window was made of aluminum louvres."
+      "The suspect was painting classroom walls orange.",
+      "The suspect purchased fresh plantains at the market."
     ],
     "correctAnswer": "The suspect's clothing had direct physical contact with unrefined palm oil materials matching the crime scene.",
     "explanation": "Carotenoid-rich unrefined crude palm oil grease and pericarp fibers link the suspect's clothing directly to the processing warehouse.",
@@ -5740,10 +6010,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A copper wire spool disappeared from a workshop in Ho on August 15 at 1:00 PM. Suspect Mawuli claims he was outside staring directly at the North Star (Polaris) to navigate home.",
     "question": "What astronomical fact dismantles Mawuli's alibi?",
     "options": [
-      "Ho is the regional capital of the Volta Region.",
-      "The North Star is only visible during the dark night, never at 1:00 PM in broad daylight.",
       "Spools of copper wire can be recycled.",
-      "Copper is a ductile transition metal."
+      "The North Star is only visible during the dark night, never at 1:00 PM in broad daylight.",
+      "Copper is a ductile transition metal.",
+      "Ho is the regional capital of the Volta Region."
     ],
     "correctAnswer": "The North Star is only visible during the dark night, never at 1:00 PM in broad daylight.",
     "explanation": "Starlight from Polaris cannot penetrate the brightly scattered daytime solar sky, making optical sighting at 1:00 PM impossible.",
@@ -5756,9 +6026,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A privately funded laboratory owned by a tobacco conglomerate releases a paper claiming: 'Second-hand smoke causes zero respiratory irritation in young children.'",
     "question": "What severe bias undermines the credibility of this finding?",
     "options": [
+      "Children inhale air through their respiratory passages.",
       "The laboratory had air conditioners installed.",
       "Tobacco contains the stimulant alkaloid nicotine.",
-      "Children inhale air through their respiratory passages.",
       "Funding bias and corporate conflict of interest intended to protect cigarette manufacturers from health liability."
     ],
     "correctAnswer": "Funding bias and corporate conflict of interest intended to protect cigarette manufacturers from health liability.",
@@ -5789,9 +6059,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What part of the vehicle did this broken glass originate from?",
     "options": [
       "A regular side window of an automobile designed with tempered safety glass.",
-      "A glass soda bottle thrown from the roadside.",
       "A clear plastic headlamp lens cover.",
-      "An antique hand mirror carried by a passenger."
+      "An antique hand mirror carried by a passenger.",
+      "A glass soda bottle thrown from the roadside."
     ],
     "correctAnswer": "A regular side window of an automobile designed with tempered safety glass.",
     "explanation": "Side automotive windows are fabricated from tempered glass engineered to fracture into dull cubic pebbles rather than lacerating shards.",
@@ -5821,9 +6091,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which combination of elements proves this message is fraudulent disinformation?",
     "options": [
       "Absurd chemical claims (water transmuting to gold), panic generation, military invasion tropes, and chain-forwarding demands.",
-      "The World Health Organization focuses on international public health.",
       "The audio file was transmitted via digital cellular networks.",
-      "Lake Bosomtwe is a natural impact crater lake in the Ashanti Region."
+      "Lake Bosomtwe is a natural impact crater lake in the Ashanti Region.",
+      "The World Health Organization focuses on international public health."
     ],
     "correctAnswer": "Absurd chemical claims (water transmuting to gold), panic generation, military invasion tropes, and chain-forwarding demands.",
     "explanation": "Scientific impossibility combined with urgency, fear-mongering, and viral forwarding quotas are hallmark indicators of digital hoaxes.",
@@ -5836,10 +6106,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During a debate on city transit in Accra, a transport minister argues: 'We should invest in bus rapid transit because it is the policy that our transit ministry has decided to implement.'",
     "question": "Which logical fallacy is committed in this statement?",
     "options": [
+      "Straw Man Fallacy",
       "Appeal to Pity",
-      "Post Hoc Ergo Propter Hoc",
       "Begging the Question (Petitio Principii / Circular Reasoning)",
-      "Straw Man Fallacy"
+      "Post Hoc Ergo Propter Hoc"
     ],
     "correctAnswer": "Begging the Question (Petitio Principii / Circular Reasoning)",
     "explanation": "Circular reasoning assumes the truth of the conclusion within the premise itself, providing zero external justification.",
@@ -5868,10 +6138,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An online retail platform displays a banner stating: 'Over 99% customer satisfaction!' The survey methodology reveals they only surveyed customers who voluntarily signed up for the VIP Loyalty Club.",
     "question": "What statistical distortion undermines this claim?",
     "options": [
-      "Percentages should only be reported for sample sizes under 50.",
       "Online platforms use secure hypertext transfer protocol.",
+      "The survey was calculated using standard deviations.",
       "Selection bias (sampling only the most dedicated brand enthusiasts rather than a randomized cross-section of all purchasers).",
-      "The survey was calculated using standard deviations."
+      "Percentages should only be reported for sample sizes under 50."
     ],
     "correctAnswer": "Selection bias (sampling only the most dedicated brand enthusiasts rather than a randomized cross-section of all purchasers).",
     "explanation": "Surveying only the loyalty club introduces severe selection bias, omitting dissatisfied customers who abandon the platform.",
@@ -5885,9 +6155,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which logical fallacy does this argument exemplify?",
     "options": [
       "Slippery Slope Fallacy",
+      "Hasty Generalization",
       "False Analogy",
-      "Equivocation",
-      "Hasty Generalization"
+      "Equivocation"
     ],
     "correctAnswer": "Slippery Slope Fallacy",
     "explanation": "A Slippery Slope asserts without evidence that a small initial step will inevitably cascade into catastrophic extremes.",
@@ -5917,9 +6187,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What common seasonal variable explains this correlation?",
     "options": [
       "Hot dry dry-season weather allows municipal road paving while simultaneously driving dehydration and water demand.",
-      "Asphalt fumes compel pedestrians to drink bottled water.",
       "Paved roads directly cause rainfall levels to decrease.",
-      "Bottled water is used by civil engineers to dilute asphalt bitumen."
+      "Bottled water is used by civil engineers to dilute asphalt bitumen.",
+      "Asphalt fumes compel pedestrians to drink bottled water."
     ],
     "correctAnswer": "Hot dry dry-season weather allows municipal road paving while simultaneously driving dehydration and water demand.",
     "explanation": "The hot dry season is the common confounding season that enables road paving projects while boosting beverage sales.",
@@ -5932,10 +6202,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A company advertises that its battery lasts 500% longer than a competitor's. In truth, the competitor battery runs for 1 minute, and theirs runs for 6 minutes.",
     "question": "What deceptive framing is being used?",
     "options": [
+      "Using direct current voltage instead of alternating current.",
       "Failing to compute the geometric median.",
-      "Reporting runtime in minutes instead of seconds.",
       "Using a massive relative percentage multiplier to disguise an operational lifespan difference of just 5 trivial minutes.",
-      "Using direct current voltage instead of alternating current."
+      "Reporting runtime in minutes instead of seconds."
     ],
     "correctAnswer": "Using a massive relative percentage multiplier to disguise an operational lifespan difference of just 5 trivial minutes.",
     "explanation": "A 500% gain sounds massive, but an absolute operational runtime of 6 minutes remains practically useless for real consumers.",
@@ -5964,10 +6234,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four Basic 2 pupils examine a domestic honeybee hive built in the branch of an acacia tree.",
     "question": "Which statement about the honeybee is an objective scientific FACT?",
     "options": [
+      "Listening to bees buzzing is very scary.",
       "Worker bees work much harder than queen bees.",
-      "Honey produced by bees is the sweetest substance in the universe.",
       "Bees are insects that possess an exoskeleton and segmented bodies.",
-      "Listening to bees buzzing is very scary."
+      "Honey produced by bees is the sweetest substance in the universe."
     ],
     "correctAnswer": "Bees are insects that possess an exoskeleton and segmented bodies.",
     "explanation": "Arthropod anatomy with an exoskeleton and three tagmata body segments is an objective biological fact, whereas emotional fear and sweetness ratings are opinions.",
@@ -5996,10 +6266,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A pupil puts an open plastic bottle of clean drinking water into the school freezer overnight. The next morning, the bottle has expanded and cracked open.",
     "question": "What physical cause made the bottle crack?",
     "options": [
-      "The freezer motor chewed on the bottle.",
       "The air inside the freezer sucked the water out.",
+      "The plastic bottle dissolved in cold air.",
       "Water expands in volume when it crystallizes from liquid into solid ice.",
-      "The plastic bottle dissolved in cold air."
+      "The freezer motor chewed on the bottle."
     ],
     "correctAnswer": "Water expands in volume when it crystallizes from liquid into solid ice.",
     "explanation": "Water's anomalous expansion upon freezing creates a crystalline lattice that occupies greater volume, generating force that fractures rigid plastic.",
@@ -6013,9 +6283,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What activity was actively happening when Kofi slipped?",
     "options": [
       "Classrooms were being mopped with water",
+      "Compound sweeping was starting",
       "Morning lessons were being taught",
-      "The school gates were being locked",
-      "Compound sweeping was starting"
+      "The school gates were being locked"
     ],
     "correctAnswer": "Classrooms were being mopped with water",
     "explanation": "2:45 PM falls directly inside the scheduled floor mopping timeframe (2:30 PM to 3:00 PM).",
@@ -6045,9 +6315,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What does the puddle prove about that specific umbrella?",
     "options": [
       "It was recently used outdoors during rainfall or washed with water.",
-      "It is made of heavy metal iron.",
       "It belongs to the headteacher.",
-      "It was kept in a sealed cupboard all morning."
+      "It was kept in a sealed cupboard all morning.",
+      "It is made of heavy metal iron."
     ],
     "correctAnswer": "It was recently used outdoors during rainfall or washed with water.",
     "explanation": "Water shedding from the umbrella fabric onto the dry floor confirms recent physical exposure to precipitation.",
@@ -6060,10 +6330,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher strikes a metal tuning fork and touches it to the surface of a bowl of water, causing water droplets to splash outward violently.",
     "question": "What physical phenomenon caused the water to splash?",
     "options": [
+      "The water was frightened by the sound.",
       "Static electricity drained all the liquid.",
-      "The metal tuning fork melted the water instantly.",
       "The rapid mechanical vibrations of the tuning fork prongs transferred kinetic energy to the water.",
-      "The water was frightened by the sound."
+      "The metal tuning fork melted the water instantly."
     ],
     "correctAnswer": "The rapid mechanical vibrations of the tuning fork prongs transferred kinetic energy to the water.",
     "explanation": "Rapid oscillation of the metal tines transfers acoustic kinetic energy into surface water, causing cavitation and splashing.",
@@ -6092,10 +6362,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A piece of paper on the teacher's desk was marked with red ink. Pen A has blue ink, Pen B has green ink, Pen C has red ink, and Pen D has black ink.",
     "question": "Which pen was used to make the mark?",
     "options": [
-      "Pen B",
       "Pen D",
+      "Pen A",
       "Pen C",
-      "Pen A"
+      "Pen B"
     ],
     "correctAnswer": "Pen C",
     "explanation": "Matching ink color traces directly isolates Pen C as the sole instrument capable of making red marks.",
@@ -6108,10 +6378,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils in Sunyani discuss the sun and shadows on the playground.",
     "question": "Which statement is an observational FACT?",
     "options": [
-      "Bright sunlight feels much nicer than gentle morning breeze.",
+      "Long afternoon shadows look spooky.",
       "Shadows are cast on the side opposite to the light source.",
-      "Playing with your shadow is much more fun than playing soccer.",
-      "Long afternoon shadows look spooky."
+      "Bright sunlight feels much nicer than gentle morning breeze.",
+      "Playing with your shadow is much more fun than playing soccer."
     ],
     "correctAnswer": "Shadows are cast on the side opposite to the light source.",
     "explanation": "Geometric occlusion of rectilinear light rays always produces shadows on the anti-source side, confirming an objective scientific fact.",
@@ -6125,9 +6395,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What scientific fact invalidates Mensah's alibi?",
     "options": [
       "Direct tropical solar radiation cannot raise ocean seawater to its boiling point of 100°C.",
+      "Projectors require electrical wattage to operate.",
       "July is a month in the rainy season.",
-      "Tema Harbour is a commercial deepwater seaport.",
-      "Projectors require electrical wattage to operate."
+      "Tema Harbour is a commercial deepwater seaport."
     ],
     "correctAnswer": "Direct tropical solar radiation cannot raise ocean seawater to its boiling point of 100°C.",
     "explanation": "Ambient tropical solar irradiance cannot heat open oceanic bodies to 100°C, proving his alibi scenario is physically impossible.",
@@ -6157,9 +6427,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "In what timeframe was the thermometer shattered?",
     "options": [
       "Between 8:15 AM and 8:25 AM",
-      "Between 8:30 AM and 9:00 AM",
       "After 9:30 AM during morning break",
-      "Between 7:30 AM and 8:00 AM"
+      "Between 7:30 AM and 8:00 AM",
+      "Between 8:30 AM and 9:00 AM"
     ],
     "correctAnswer": "Between 8:15 AM and 8:25 AM",
     "explanation": "The beaker was boiling actively strictly between 8:15 AM and 8:25 AM, bounding the incident to that interval.",
@@ -6172,10 +6442,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student tests the battery life of one brand-new smartwatch on a rainy afternoon and finds it lasted 18 hours. She concludes: 'Every smartwatch made by this company runs for exactly 18 hours.'",
     "question": "Why is her deduction statistically unsound?",
     "options": [
+      "Smartwatches tell time using quartz crystal oscillations.",
       "The student wore the watch on her left wrist.",
-      "Smartwatches contain microprocessors and optical sensors.",
       "Testing a single unit (N=1) under specific usage conditions fails to account for battery variance, display settings, and network load.",
-      "Smartwatches tell time using quartz crystal oscillations."
+      "Smartwatches contain microprocessors and optical sensors."
     ],
     "correctAnswer": "Testing a single unit (N=1) under specific usage conditions fails to account for battery variance, display settings, and network load.",
     "explanation": "A single observation cannot establish a population parameter or control for variable usage factors like screen brightness.",
@@ -6204,10 +6474,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Farmers along an inland stream in the Ashanti Region began washing empty agrochemical spray tanks in the water, and within days, all frogs and fish downstream were dead.",
     "question": "What was the direct causal factor behind the aquatic die-off?",
     "options": [
-      "Water temperature dropped below zero degrees Celsius.",
       "Fish need land plants to survive.",
+      "The frog population decided to migrate upstream.",
       "Synthetic chemical pesticides dissolved in the water, poisoning cellular respiration and nervous systems in aquatic organisms.",
-      "The frog population decided to migrate upstream."
+      "Water temperature dropped below zero degrees Celsius."
     ],
     "correctAnswer": "Synthetic chemical pesticides dissolved in the water, poisoning cellular respiration and nervous systems in aquatic organisms.",
     "explanation": "Pesticide residues washed into freshwater introduce toxic compounds like organophosphates or pyrethroids that trigger aquatic mortality.",
@@ -6221,9 +6491,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What meteorological and astronomical fact breaks Ayisha's alibi?",
     "options": [
       "Total solar eclipses are rare, documented astronomical events, and none occurred on that date in Ghana.",
+      "Market stalls operate under metal roofing sheets.",
       "Cash drawers contain coins and banknotes.",
-      "Bolgatanga is the capital of the Upper East Region.",
-      "Market stalls operate under metal roofing sheets."
+      "Bolgatanga is the capital of the Upper East Region."
     ],
     "correctAnswer": "Total solar eclipses are rare, documented astronomical events, and none occurred on that date in Ghana.",
     "explanation": "Astronomical ephemerides verify solar eclipses precisely; fabricating an eclipse contradicts empirical astronomical records.",
@@ -6253,9 +6523,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What reasoning error did the farmer make?",
     "options": [
       "A hasty generalization based on an insignificant sample (N=2) that cannot represent thousands of trees across diverse field zones.",
-      "Black pod is caused by Phytophthora species.",
       "Cocoa beans are fermented in plantain leaves.",
-      "Cocoa was introduced by Tetteh Quarshie."
+      "Cocoa was introduced by Tetteh Quarshie.",
+      "Black pod is caused by Phytophthora species."
     ],
     "correctAnswer": "A hasty generalization based on an insignificant sample (N=2) that cannot represent thousands of trees across diverse field zones.",
     "explanation": "Extrapolating total plantation infection from an unrepresentative sample of two pods violates scientific sampling methodologies.",
@@ -6268,9 +6538,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A document written on paper shows embossed indentations in the sheet underneath it, matching the handwriting of a vanished suspect.",
     "question": "What forensic document examination method can recover this indented text?",
     "options": [
+      "Burning the paper with a candle flame.",
       "Freezing the document in liquid nitrogen.",
       "Soaking the paper in hot palm oil.",
-      "Burning the paper with a candle flame.",
       "Electrostatic Detection Apparatus (ESDA) or oblique angled lighting to reveal indented impressions."
     ],
     "correctAnswer": "Electrostatic Detection Apparatus (ESDA) or oblique angled lighting to reveal indented impressions.",
@@ -6284,10 +6554,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A municipal report in Accra shows that fire department expenditure and the financial damage from urban fires are strongly positively correlated.",
     "question": "What is the true causal explanation for this positive correlation?",
     "options": [
-      "Firefighters start fires to justify annual municipal budget increases.",
-      "Larger, more devastating fires naturally require greater firefighter deployments and simultaneously cause greater property destruction.",
       "Fire trucks emit heat that ignites nearby wooden buildings.",
-      "Spending money on fire departments directly causes structural fires."
+      "Larger, more devastating fires naturally require greater firefighter deployments and simultaneously cause greater property destruction.",
+      "Spending money on fire departments directly causes structural fires.",
+      "Firefighters start fires to justify annual municipal budget increases."
     ],
     "correctAnswer": "Larger, more devastating fires naturally require greater firefighter deployments and simultaneously cause greater property destruction.",
     "explanation": "Fire magnitude is the underlying driver that causes both elevated response costs and elevated monetary destruction.",
@@ -6300,9 +6570,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A viral social media message states: 'Government secret decree mandates all citizens surrender their SIM cards tomorrow or face immediate drone strikes! Forward to 30 contacts!'",
     "question": "Which indicators prove this is synthetic panic misinformation?",
     "options": [
+      "Cellular networks operate via base transceiver stations.",
       "Drones are unmanned aerial vehicles.",
       "SIM cards contain integrated circuit chips.",
-      "Cellular networks operate via base transceiver stations.",
       "Extreme apocalyptic threats, lack of official gazette verification, forced viral forward quotas, and urgent fear-mongering."
     ],
     "correctAnswer": "Extreme apocalyptic threats, lack of official gazette verification, forced viral forward quotas, and urgent fear-mongering.",
@@ -6332,9 +6602,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An unknown clear solution recovered from an industrial effluent pipe produces a dense white precipitate when treated with barium chloride (BaCl₂) in the presence of dilute hydrochloric acid (HCl).",
     "question": "What anion is positively identified by this barium test?",
     "options": [
-      "Nitrate (NO₃⁻)",
       "Carbonate (CO₃²⁻)",
       "Chloride (Cl⁻)",
+      "Nitrate (NO₃⁻)",
       "Sulfate (SO₄²⁻)"
     ],
     "correctAnswer": "Sulfate (SO₄²⁻)",
@@ -6348,10 +6618,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A fitness club advertises: 'Our members lost an average of 10 kilograms!' A data audit shows 1 member had surgery and lost 91 kilograms, while the other 9 members lost 1 kilogram each.",
     "question": "Why is the club's advertised mean figure misleading?",
     "options": [
-      "Ten members is an even integer.",
+      "Fitness clubs require commercial trade licenses.",
       "The arithmetic mean was severely skewed by a single massive outlier, misrepresenting the typical member outcome of 1 kilogram.",
-      "Kilograms should be converted to imperial pounds.",
-      "Fitness clubs require commercial trade licenses."
+      "Ten members is an even integer.",
+      "Kilograms should be converted to imperial pounds."
     ],
     "correctAnswer": "The arithmetic mean was severely skewed by a single massive outlier, misrepresenting the typical member outcome of 1 kilogram.",
     "explanation": "The mean ((91 + 9)/10 = 10 kg) is distorted by the extreme outlier; the median (1 kg) reflects the true typical experience.",
@@ -6380,10 +6650,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A shared video depicts a prominent international leader declaring immediate war on Ghana. Spectral audio analysis indicates unnatural robotic phoneme pacing, zero throat micro-movements, and digital artifacts around the lips.",
     "question": "What digital manipulation technology generated this synthetic video?",
     "options": [
-      "High-definition optical zoom photography",
-      "Deepfake AI synthetic audiovisual generation",
       "Satellite thermal imaging",
-      "Analog closed-circuit television recording"
+      "Deepfake AI synthetic audiovisual generation",
+      "Analog closed-circuit television recording",
+      "High-definition optical zoom photography"
     ],
     "correctAnswer": "Deepfake AI synthetic audiovisual generation",
     "explanation": "Phoneme pacing defects and lip-boundary blending artifacts characterize neural generative adversarial (GAN) deepfake video synthesis.",
@@ -6396,9 +6666,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Data from educational testing in Ghana shows that students with larger shoe sizes generally achieve higher reading comprehension scores.",
     "question": "What developmental variable accounts for this correlation?",
     "options": [
+      "Reading books stimulates foot bone growth.",
       "Small shoes impair optical vision.",
       "Large shoes expand brain capacity.",
-      "Reading books stimulates foot bone growth.",
       "Student age and grade level: older students have physically larger feet and have received more years of reading instruction."
     ],
     "correctAnswer": "Student age and grade level: older students have physically larger feet and have received more years of reading instruction.",
@@ -6429,9 +6699,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What chemical functional group is oxidized in this reaction (such as in breathalyzer tests for ethanol)?",
     "options": [
       "A primary or secondary alcohol group oxidized to an aldehyde, ketone, or carboxylic acid while reducing chromium(VI) to chromium(III).",
-      "A stable quaternary ammonium salt.",
       "An inert noble gas element.",
-      "An alkane hydrocarbon forming carbon dioxide."
+      "An alkane hydrocarbon forming carbon dioxide.",
+      "A stable quaternary ammonium salt."
     ],
     "correctAnswer": "A primary or secondary alcohol group oxidized to an aldehyde, ketone, or carboxylic acid while reducing chromium(VI) to chromium(III).",
     "explanation": "Potassium dichromate oxidizes alcohols; in doing so, orange hexavalent Cr₆⁺ is reduced to green trivalent Cr³⁺ ions.",
@@ -6460,9 +6730,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A detective examines muddy footprints leading into the school canteen. The prints show a flat rubber sole with diamond-shaped grip patterns.",
     "question": "Which suspect left these prints?",
     "options": [
-      "Kwame, who is wearing leather dress shoes with smooth flat soles",
       "Esi, who is wearing sandals with parallel horizontal bar lines",
       "Ama, who is walking barefoot",
+      "Kwame, who is wearing leather dress shoes with smooth flat soles",
       "Kweku, who is wearing shoes with diamond-patterned rubber soles"
     ],
     "correctAnswer": "Kweku, who is wearing shoes with diamond-patterned rubber soles",
@@ -6476,10 +6746,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A pupil leaves a fresh slice of sweet mango on the veranda table for two hours on a warm afternoon. When she returns, hundreds of tiny black ants cover the slice.",
     "question": "What caused the ants to gather on the mango?",
     "options": [
-      "The mango turned into ants.",
+      "Ants only walk on wooden veranda tables.",
       "The sweet sugary scent of the mango attracted foraging worker ants.",
-      "The mango fell from the tree onto the ant nest.",
-      "Ants only walk on wooden veranda tables."
+      "The mango turned into ants.",
+      "The mango fell from the tree onto the ant nest."
     ],
     "correctAnswer": "The sweet sugary scent of the mango attracted foraging worker ants.",
     "explanation": "Worker ants detect volatile organic sugar molecules using antennal chemoreceptors and lay pheromone trails for the colony.",
@@ -6508,10 +6778,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four friends talk about the weather during a heavy rainy season storm.",
     "question": "Which statement is an observational FACT?",
     "options": [
-      "Rainy days are much worse than sunny harmattan days.",
-      "Rainwater falls from clouds when condensed droplets become heavy enough.",
       "Cold rain feels unpleasant on the skin.",
-      "Thunderstorms are the scariest weather events in nature."
+      "Rainwater falls from clouds when condensed droplets become heavy enough.",
+      "Thunderstorms are the scariest weather events in nature.",
+      "Rainy days are much worse than sunny harmattan days."
     ],
     "correctAnswer": "Rainwater falls from clouds when condensed droplets become heavy enough.",
     "explanation": "Precipitation physics is an objective meteorological fact; fear and comfort assessments are personal feelings.",
@@ -6524,9 +6794,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A desk drawer was opened without permission. A dusting of black charcoal dust is left on the brass handle.",
     "question": "Which suspect left this residue?",
     "options": [
+      "Ama, who was reading an English storybook in the library",
       "Esi, who was cutting clean white paper shapes",
       "Kofi, who was washing clean water cups at the tap",
-      "Ama, who was reading an English storybook in the library",
       "Yaw, who was carrying a bag of cooking charcoal to the school kitchen"
     ],
     "correctAnswer": "Yaw, who was carrying a bag of cooking charcoal to the school kitchen",
@@ -6556,9 +6826,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Kojo woke up at 6:00 AM, brushed his teeth at 6:15 AM, ate breakfast at 6:30 AM, and walked out the door at 7:00 AM. He dropped his toothpaste cap on the bathroom floor.",
     "question": "At what time was the toothpaste cap dropped?",
     "options": [
-      "At 6:30 AM during breakfast",
       "At 7:00 AM while leaving the house",
       "At 6:00 AM while waking up",
+      "At 6:30 AM during breakfast",
       "At 6:15 AM during teeth brushing"
     ],
     "correctAnswer": "At 6:15 AM during teeth brushing",
@@ -6572,10 +6842,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A ripe pawpaw on a kitchen tray has three small triangular bird-peck indentations on its side.",
     "question": "What creature caused these marks?",
     "options": [
-      "A snail with a soft muscular foot",
+      "A human using a round spoon",
       "A wild bird with a sharp pointed beak",
-      "A dog with flat molar teeth",
-      "A human using a round spoon"
+      "A snail with a soft muscular foot",
+      "A dog with flat molar teeth"
     ],
     "correctAnswer": "A wild bird with a sharp pointed beak",
     "explanation": "Pointed triangular gouges match the anatomical morphology of an avian keratinous bill.",
@@ -6620,10 +6890,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A commercial dairy farm publishes a newsletter stating: 'Children must drink five glasses of cow milk daily to survive, and plant-based foods provide zero calcium.'",
     "question": "What bias should an apprentice investigator identify?",
     "options": [
-      "Green leafy vegetables grow in agricultural soil.",
-      "Commercial sales bias promoting dairy products while making demonstrably false claims about plant calcium sources.",
       "Calcium is a chemical element.",
-      "Cow milk contains lactose sugar."
+      "Commercial sales bias promoting dairy products while making demonstrably false claims about plant calcium sources.",
+      "Cow milk contains lactose sugar.",
+      "Green leafy vegetables grow in agricultural soil."
     ],
     "correctAnswer": "Commercial sales bias promoting dairy products while making demonstrably false claims about plant calcium sources.",
     "explanation": "The dairy producer has a financial incentive to drive sales; vegetables like kontomire (cocoyam leaves) and moringa provide rich plant calcium.",
@@ -6636,9 +6906,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A loaf of dough was mixed at 6:00 AM, proofed until 7:30 AM, baked in an oven until 8:15 AM, and cooled on a rack until 9:00 AM. A power outage stopped the electric oven midway through baking.",
     "question": "Between what times did the power outage occur?",
     "options": [
+      "Between 8:15 AM and 9:00 AM",
       "After 9:30 AM during morning sales",
       "Between 6:00 AM and 7:30 AM",
-      "Between 8:15 AM and 9:00 AM",
       "Between 7:30 AM and 8:15 AM"
     ],
     "correctAnswer": "Between 7:30 AM and 8:15 AM",
@@ -6668,9 +6938,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A wooden window frame was pried open during a burglary. Investigators recover blue paint chips with a thickness of 0.4 mm from the damaged sill that match paint chipped from the tip of a crowbar.",
     "question": "What conclusion does this physical evidence support?",
     "options": [
-      "The burglar wore leather gloves.",
       "The window frame was built from cedar timber.",
       "The window was painted with water-based acrylic paint.",
+      "The burglar wore leather gloves.",
       "The crowbar was in direct mechanical contact with the window sill during the forced entry."
     ],
     "correctAnswer": "The crowbar was in direct mechanical contact with the window sill during the forced entry.",
@@ -6684,10 +6954,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "After a community clear-cut all bamboo stands along the steep riverbank of the Pra River, heavy seasonal rains triggered severe bank collapses and siltation.",
     "question": "What caused the increased bank collapse?",
     "options": [
-      "Fish in the river undermined the mud.",
+      "The river water turned alkaline.",
       "Removing the dense, interlocking bamboo root system destabilized the soil against hydraulic erosion.",
-      "Bamboo plants generate river water.",
-      "The river water turned alkaline."
+      "Fish in the river undermined the mud.",
+      "Bamboo plants generate river water."
     ],
     "correctAnswer": "Removing the dense, interlocking bamboo root system destabilized the soil against hydraulic erosion.",
     "explanation": "Riparian root networks bind alluvial sediment; clearing vegetation leaves soil vulnerable to sheer stress from runoff.",
@@ -6716,10 +6986,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A flashlight manufacturer issues a test report stating: 'Battery-powered torches are 100 times safer and brighter than all solar-powered lamps on the market.'",
     "question": "What bias should be flagged?",
     "options": [
-      "Solar panels absorb photons from sunlight.",
-      "Manufacturer conflict of interest designed to discourage competition from renewable solar lighting.",
       "Batteries undergo chemical redox reactions.",
-      "Flashlights use light-emitting diodes."
+      "Manufacturer conflict of interest designed to discourage competition from renewable solar lighting.",
+      "Flashlights use light-emitting diodes.",
+      "Solar panels absorb photons from sunlight."
     ],
     "correctAnswer": "Manufacturer conflict of interest designed to discourage competition from renewable solar lighting.",
     "explanation": "The manufacturer's financial interest in selling battery-powered lamps skews their comparative reporting.",
@@ -6732,9 +7002,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A farmer inspects one ear of maize from a 10-acre farm, finds corn borers inside, and concludes: 'Every single ear of maize on all 10 acres is infested.'",
     "question": "What is the logical flaw in the farmer's conclusion?",
     "options": [
+      "Maize is a staple cereal grain.",
       "Ten acres equals roughly 40,000 square meters.",
       "Corn borers are insect larvae.",
-      "Maize is a staple cereal grain.",
       "Hasty generalization from a single specimen (N=1) to thousands of plants across an entire plantation."
     ],
     "correctAnswer": "Hasty generalization from a single specimen (N=1) to thousands of plants across an entire plantation.",
@@ -6765,9 +7035,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the true underlying explanation for this correlation?",
     "options": [
       "Higher population density and urban development attract both healthcare facilities and pharmacies while registering more medical cases.",
+      "Hospital admissions compel pharmacies to relocate out of towns.",
       "People only buy medicine after being admitted to a hospital.",
-      "Pharmacies sell medicines that directly cause chronic diseases in healthy residents.",
-      "Hospital admissions compel pharmacies to relocate out of towns."
+      "Pharmacies sell medicines that directly cause chronic diseases in healthy residents."
     ],
     "correctAnswer": "Higher population density and urban development attract both healthcare facilities and pharmacies while registering more medical cases.",
     "explanation": "Population density and diagnostic infrastructure act as common confounding variables driving both pharmacy counts and hospital visits.",
@@ -6797,9 +7067,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which logical fallacy did the speaker commit?",
     "options": [
       "Guilt by Association / Ad Hominem",
-      "False Dilemma",
       "Begging the Question",
-      "Slippery Slope"
+      "Slippery Slope",
+      "False Dilemma"
     ],
     "correctAnswer": "Guilt by Association / Ad Hominem",
     "explanation": "Attacking an argument based on the unrelated alleged misconduct of an associate or family member is guilt by association.",
@@ -6812,10 +7082,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A suspect denies handling sulfur powder. Forensic analysts swab his fingers and add dilute nitric acid followed by barium nitrate solution (Ba(NO₃)₂), producing an insoluble dense white precipitate.",
     "question": "What chemical ion was confirmed by this test?",
     "options": [
+      "Carbonate (CO₃²⁻)",
       "Sodium (Na⁺)",
-      "Chloride (Cl⁻)",
       "Sulfate (SO₄²⁻)",
-      "Carbonate (CO₃²⁻)"
+      "Chloride (Cl⁻)"
     ],
     "correctAnswer": "Sulfate (SO₄²⁻)",
     "explanation": "Barium ions react with sulfate ions to form insoluble barium sulfate (BaSO₄), which resists dissolution in dilute nitric acid.",
@@ -6844,10 +7114,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A debater asserts: 'Either we completely shut down all internet infrastructure nationwide, or every student will fail their BECE exams!'",
     "question": "Which logical fallacy is illustrated by this statement?",
     "options": [
-      "Straw Man",
       "Equivocation",
+      "Appeal to Nature",
       "False Dilemma (Bifurcation)",
-      "Appeal to Nature"
+      "Straw Man"
     ],
     "correctAnswer": "False Dilemma (Bifurcation)",
     "explanation": "Artificially constraining a complex issue to two extreme either/or choices while ignoring moderate solutions is a false dilemma.",
@@ -6861,9 +7131,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What geological fact refutes this viral image?",
     "options": [
       "The regional geology of Kumasi is a stable non-volcanic continental shield lacking active subduction or magma plumes.",
+      "Kumasi has asphalt roads.",
       "Harmattan winds prevent volcanic activity.",
-      "Volcanoes only erupt in ocean basins.",
-      "Kumasi has asphalt roads."
+      "Volcanoes only erupt in ocean basins."
     ],
     "correctAnswer": "The regional geology of Kumasi is a stable non-volcanic continental shield lacking active subduction or magma plumes.",
     "explanation": "The West African Craton is tectonically stable with no active volcanic mechanisms, confirming the image is fabricated.",
@@ -6893,9 +7163,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What misleading graphic design technique is being used?",
     "options": [
       "A truncated axis (suppressed zero baseline) that exaggerates negligible numerical variations visually.",
-      "Using metric currency units.",
       "Calculating moving averages.",
-      "Plotting discrete variables as continuous data."
+      "Plotting discrete variables as continuous data.",
+      "Using metric currency units."
     ],
     "correctAnswer": "A truncated axis (suppressed zero baseline) that exaggerates negligible numerical variations visually.",
     "explanation": "Truncating the vertical axis to an ultra-narrow band inflates minor baseline variations into visually dramatic swings.",
@@ -6908,9 +7178,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A forensic investigator recovers an unknown clear liquid from an illegal fuel depot. When tested with anhydrous copper(II) sulfate (CuSO₄), the white powder turns brilliant blue.",
     "question": "What chemical compound is positively identified by this hydration reaction?",
     "options": [
+      "Pure ethanol",
       "Acetone solvent",
       "Diesel fuel hydrocarbons",
-      "Pure ethanol",
       "Water (H₂O)"
     ],
     "correctAnswer": "Water (H₂O)",
@@ -6925,9 +7195,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which of these statements is an objective biological FACT?",
     "options": [
       "Chameleons possess eyes that can swivel independently in two directions.",
-      "Watching chameleons hunt is the most exciting activity in school.",
       "Green chameleons are prettier than brown chameleons.",
-      "Chameleons look much scarier than wall geckos."
+      "Chameleons look much scarier than wall geckos.",
+      "Watching chameleons hunt is the most exciting activity in school."
     ],
     "correctAnswer": "Chameleons possess eyes that can swivel independently in two directions.",
     "explanation": "Independent eye motion and binocular depth perception are verifiable biological facts; fear and beauty are subjective feelings.",
@@ -6940,10 +7210,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A detective inspects footprints left in soft red soil near the school library door. The tracks show alternating zigzag wave treads with a deep heel block.",
     "question": "Which footwear left this track pattern?",
     "options": [
+      "A flat-soled leather school shoe with zero pattern",
       "A goat with two-toed split hooves",
-      "A pupil walking in bare feet with round heel pads",
       "A heavy hiking boot with molded zigzag rubber soles",
-      "A flat-soled leather school shoe with zero pattern"
+      "A pupil walking in bare feet with round heel pads"
     ],
     "correctAnswer": "A heavy hiking boot with molded zigzag rubber soles",
     "explanation": "Zigzag tread grooves and a raised heel block match molded lug soles, excluding flat leather footwear and bare feet.",
@@ -6972,10 +7242,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Morning assembly ran from 7:30 AM to 8:00 AM. Class cleaning took place from 8:00 AM to 8:30 AM. Reading time began at 8:30 AM and ended at 9:30 AM. Esi tore her notebook page at 8:15 AM.",
     "question": "What activity was underway when Esi tore her page?",
     "options": [
-      "Quiet reading time",
       "Afternoon closing prayers",
+      "Morning assembly under the mango tree",
       "Class cleaning was actively taking place",
-      "Morning assembly under the mango tree"
+      "Quiet reading time"
     ],
     "correctAnswer": "Class cleaning was actively taking place",
     "explanation": "8:15 AM falls directly within the scheduled cleaning window (8:00 AM to 8:30 AM).",
@@ -6989,9 +7259,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which of these statements represents a verifiable agricultural FACT?",
     "options": [
       "Goats are ruminant herbivores with four-chambered stomachs.",
+      "Baby goats are far cuter than baby piglets.",
       "Goat milk tastes much better than cow milk.",
-      "Goats are the most stubborn animals in Ghana.",
-      "Baby goats are far cuter than baby piglets."
+      "Goats are the most stubborn animals in Ghana."
     ],
     "correctAnswer": "Goats are ruminant herbivores with four-chambered stomachs.",
     "explanation": "Ruminant digestive anatomy is an objective biological classification, unlike personality descriptors and taste preferences.",
@@ -7021,9 +7291,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Where did the external water droplets come from?",
     "options": [
       "Water vapor in the warm surrounding air cooled and condensed against the cold glass.",
-      "The sun produced water droplets inside the glass.",
       "Rain fell invisibly onto the bottle.",
-      "Water leaked directly through the solid glass wall."
+      "Water leaked directly through the solid glass wall.",
+      "The sun produced water droplets inside the glass."
     ],
     "correctAnswer": "Water vapor in the warm surrounding air cooled and condensed against the cold glass.",
     "explanation": "Warm ambient water vapor reaches dew point upon contacting the chilled bottle surface, condensing into liquid droplets.",
@@ -7036,10 +7306,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "School started at 8:00 AM. Science class ran from 8:00 AM to 9:00 AM. Maths ran from 9:00 AM to 10:00 AM. Break ran from 10:00 AM to 10:30 AM. Kofi bought roasted groundnuts at 10:10 AM.",
     "question": "During which scheduled period did Kofi buy the groundnuts?",
     "options": [
+      "During maths class",
       "Before school started",
-      "During science class",
       "During school break time",
-      "During maths class"
+      "During science class"
     ],
     "correctAnswer": "During school break time",
     "explanation": "10:10 AM falls directly within the scheduled break interval (10:00 AM to 10:30 AM).",
@@ -7068,9 +7338,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils in Sunyani discuss the cocoa tree growing in the agricultural garden.",
     "question": "Which of these statements is an indisputable agricultural FACT?",
     "options": [
-      "Chocolate made from cocoa is the most delicious food on Earth.",
       "Yellow cocoa pods look nicer than red cocoa pods.",
       "Cocoa farming is much harder work than maize farming.",
+      "Chocolate made from cocoa is the most delicious food on Earth.",
       "Cocoa flowers grow directly on the tree trunk and mature branches (cauliflory)."
     ],
     "correctAnswer": "Cocoa flowers grow directly on the tree trunk and mature branches (cauliflory).",
@@ -7084,10 +7354,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A digital tablet disappeared from an ICT lab in Koforidua on August 20 at 2:00 PM. Suspect Kweku claims he was outside watching a total solar eclipse that turned the afternoon pitch dark.",
     "question": "What astronomical fact disproves Kweku's alibi?",
     "options": [
-      "Koforidua is the regional capital of the Eastern Region.",
       "August is a month in the secondary rainy season.",
+      "ICT tablets contain rechargeable lithium-ion battery cells.",
       "Astronomical records confirm zero solar eclipses occurred anywhere in West Africa on that date.",
-      "ICT tablets contain rechargeable lithium-ion battery cells."
+      "Koforidua is the regional capital of the Eastern Region."
     ],
     "correctAnswer": "Astronomical records confirm zero solar eclipses occurred anywhere in West Africa on that date.",
     "explanation": "Solar eclipses are exact, astronomically mapped events; none occurred in Ghana on that date, refuting the claim.",
@@ -7101,9 +7371,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What primary bias must an investigator flag in this report?",
     "options": [
       "Commercial vested interest bias aiming to maximize beverage profits while ignoring dental science.",
+      "Carbonic acid dissolves in water under pressure.",
       "Children have deciduous milk teeth.",
-      "Soda drinks are packaged in aluminum cans.",
-      "Carbonic acid dissolves in water under pressure."
+      "Soda drinks are packaged in aluminum cans."
     ],
     "correctAnswer": "Commercial vested interest bias aiming to maximize beverage profits while ignoring dental science.",
     "explanation": "The company has a financial conflict of interest that invalidates its claim that acidic, sugary syrup protects enamel.",
@@ -7133,9 +7403,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why is her deduction statistically unsound?",
     "options": [
       "A sample size of two units (1%) is too small to account for manufacturing defects across 200 items.",
-      "Flashlights contain light-emitting diodes.",
       "The test was performed on a Tuesday afternoon.",
-      "Batteries produce direct electric current via redox chemistry."
+      "Batteries produce direct electric current via redox chemistry.",
+      "Flashlights contain light-emitting diodes."
     ],
     "correctAnswer": "A sample size of two units (1%) is too small to account for manufacturing defects across 200 items.",
     "explanation": "Sampling two items from a batch of 200 cannot reliably detect defect rates or establish consistent battery lifespan.",
@@ -7148,10 +7418,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Investigators examine a broken wooden louvre window at a school science store. Fine red clay mud containing crushed quartz fragments matches mud from a suspect's boot soles.",
     "question": "What does this geological soil evidence indicate?",
     "options": [
+      "The science store window was constructed from mahogany timber.",
       "The suspect was washing hands at the tap.",
-      "The suspect purchased new rubber boots in Accra.",
       "The suspect walked through the specific localized red clay trench surrounding the science store window.",
-      "The science store window was constructed from mahogany timber."
+      "The suspect purchased new rubber boots in Accra."
     ],
     "correctAnswer": "The suspect walked through the specific localized red clay trench surrounding the science store window.",
     "explanation": "Mineralogical match of quartz fragments in red clay links the boot soil directly to the localized trench at the scene.",
@@ -7180,10 +7450,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A generator battery was stolen from a clinic in Ho on May 12 at 11:30 PM. Suspect Senyo claims he was reading a paperback novel outdoors under direct natural sunlight with no lamps.",
     "question": "What geographical fact destroys Senyo's alibi?",
     "options": [
-      "Ho is the capital of the Volta Region.",
       "Paperback books are bound with thermal glue.",
+      "Clinics use diesel generators for emergency backup power.",
       "At 11:30 PM in Ghana, it is nighttime and natural solar illumination is absent.",
-      "Clinics use diesel generators for emergency backup power."
+      "Ho is the capital of the Volta Region."
     ],
     "correctAnswer": "At 11:30 PM in Ghana, it is nighttime and natural solar illumination is absent.",
     "explanation": "Sunlight is impossible at 11:30 PM near the equator, proving the alibi was fabricated.",
@@ -7197,9 +7467,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What bias should an apprentice researcher flag?",
     "options": [
       "Commercial motive bias designed to discredit traditional potters and increase plastic tank sales.",
+      "Plastic polymers are derived from refined crude oil.",
       "Pottery has been practiced in Ghana for centuries.",
-      "Clay pots cool drinking water via evaporative pores.",
-      "Plastic polymers are derived from refined crude oil."
+      "Clay pots cool drinking water via evaporative pores."
     ],
     "correctAnswer": "Commercial motive bias designed to discredit traditional potters and increase plastic tank sales.",
     "explanation": "The plastic vendor has a direct commercial conflict of interest, making their health warning against clay pots biased.",
@@ -7228,10 +7498,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A forensic document examiner inspects a suspicious check. Under ultraviolet lighting, altered ink strokes glow fluorescent yellow, while original entries remain dull black.",
     "question": "What does this optical fluorescence prove?",
     "options": [
-      "The account holder was left-handed.",
-      "The altered figures were written using a completely different ink formulation than the original text.",
       "The check was written on a rainy morning.",
-      "The check paper was manufactured from bamboo pulp."
+      "The altered figures were written using a completely different ink formulation than the original text.",
+      "The check paper was manufactured from bamboo pulp.",
+      "The account holder was left-handed."
     ],
     "correctAnswer": "The altered figures were written using a completely different ink formulation than the original text.",
     "explanation": "Differential UV fluorescence confirms the presence of two distinct chemical ink formulations, proving alteration.",
@@ -7260,10 +7530,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A viral WhatsApp post claims: 'University researchers prove that inhaling crushed dry batteries completely destroys all viruses in human lungs! Share with 25 groups before authorities ban it!'",
     "question": "Which combination of factors confirms this post is dangerous disinformation?",
     "options": [
-      "Viral respiratory infections affect human pulmonary passages.",
-      "Recommending toxic heavy metal inhalation, universal cure claims, suppression conspiracy framing, and viral share quotas.",
       "University departments operate research laboratories.",
-      "Batteries contain zinc, carbon, and manganese dioxide."
+      "Recommending toxic heavy metal inhalation, universal cure claims, suppression conspiracy framing, and viral share quotas.",
+      "Batteries contain zinc, carbon, and manganese dioxide.",
+      "Viral respiratory infections affect human pulmonary passages."
     ],
     "correctAnswer": "Recommending toxic heavy metal inhalation, universal cure claims, suppression conspiracy framing, and viral share quotas.",
     "explanation": "Promoting toxic chemical inhalation combined with conspiracy suppression claims and chain forwarding are markers of fake health news.",
@@ -7276,9 +7546,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "In a municipal council debate, a member argues: 'We cannot support Engineer Mensah's drainage proposal because his brother was once convicted of tax evasion!'",
     "question": "Which logical fallacy did the speaker commit?",
     "options": [
+      "Straw Man Fallacy",
       "Begging the Question",
       "Post Hoc Ergo Propter Hoc",
-      "Straw Man Fallacy",
       "Guilt by Association (Ad Hominem)"
     ],
     "correctAnswer": "Guilt by Association (Ad Hominem)",
@@ -7308,9 +7578,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An academy advertises: 'Our graduating teacher average salary is 15,000 Cedis per month!' An audit reveals the director earns 110,000 Cedis while nine staff teachers earn 4,444 Cedis each.",
     "question": "What statistical distortion makes this claim deceptive?",
     "options": [
-      "Nine teachers is an odd number for percentage calculations.",
       "Private schools are legally barred from computing averages.",
       "Salaries should be converted to foreign currencies.",
+      "Nine teachers is an odd number for percentage calculations.",
       "The arithmetic mean is distorted by an extreme high outlier, concealing the typical median salary of 4,444 Cedis."
     ],
     "correctAnswer": "The arithmetic mean is distorted by an extreme high outlier, concealing the typical median salary of 4,444 Cedis.",
@@ -7324,10 +7594,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student prefect argues: 'If we allow students to wear casual sandals on Friday, next term they will refuse uniforms entirely, destroying discipline and forcing the school to close permanently!'",
     "question": "Which logical fallacy does this argument illustrate?",
     "options": [
-      "Appeal to Ignorance",
+      "Circular Reasoning",
       "Slippery Slope Fallacy",
-      "False Analogy",
-      "Circular Reasoning"
+      "Appeal to Ignorance",
+      "False Analogy"
     ],
     "correctAnswer": "Slippery Slope Fallacy",
     "explanation": "A Slippery Slope asserts without evidence that a minor initial step will trigger a catastrophic chain reaction.",
@@ -7356,10 +7626,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Public health records in the Northern Region show that villages with established medical clinics report higher total malaria cases than remote villages without clinics.",
     "question": "Why do villages with clinics register more malaria cases?",
     "options": [
-      "Doctors introduce malaria parasites to patients.",
-      "Villages with clinics have diagnostic testing and record-keeping, whereas cases in remote villages go undiagnosed and unrecorded.",
       "Rural villagers without clinics have biological immunity.",
-      "Medical clinics attract and breed Anopheles mosquitoes."
+      "Villages with clinics have diagnostic testing and record-keeping, whereas cases in remote villages go undiagnosed and unrecorded.",
+      "Medical clinics attract and breed Anopheles mosquitoes.",
+      "Doctors introduce malaria parasites to patients."
     ],
     "correctAnswer": "Villages with clinics have diagnostic testing and record-keeping, whereas cases in remote villages go undiagnosed and unrecorded.",
     "explanation": "Diagnostic infrastructure increases case reporting (detection bias); the lack of clinics leads to underreporting, not lower actual disease rates.",
@@ -7372,9 +7642,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A disinfectant company advertises: 'Our spray reduced classroom illness rates by 100%!' An audit reveals the school had only one absent pupil the previous term and zero this term.",
     "question": "What statistical manipulation makes this claim deceptive?",
     "options": [
+      "Taking attendance on Mondays rather than Fridays.",
       "Disinfectants cannot kill airborne bacteria.",
       "Failing to convert percentages to decimal fractions.",
-      "Taking attendance on Mondays rather than Fridays.",
       "Using relative percentage reduction on a baseline of a single occurrence to exaggerate an insignificant absolute change."
     ],
     "correctAnswer": "Using relative percentage reduction on a baseline of a single occurrence to exaggerate an insignificant absolute change.",
@@ -7404,9 +7674,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils in Accra observe a flowering flamboyant tree growing near the assembly grounds.",
     "question": "Which of these statements is an objective botanical FACT?",
     "options": [
+      "Sweeping flamboyant leaves off the compound is a terrible chore.",
       "Red flowers smell much sweeter than white flowers.",
       "The flamboyant tree is the most gorgeous shade tree in Ghana.",
-      "Sweeping flamboyant leaves off the compound is a terrible chore.",
       "Flamboyant tree flowers develop into long, woody seed pods."
     ],
     "correctAnswer": "Flamboyant tree flowers develop into long, woody seed pods.",
@@ -7436,9 +7706,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student blows up a latex balloon and rubs it vigorously against her dry woolen school sweater, then holds it above small bits of paper.",
     "question": "Why do the bits of paper jump up and stick to the balloon?",
     "options": [
-      "Warm air leaked out of the balloon and sucked up the paper.",
       "The paper was magnetic metal.",
       "The balloon became sticky like tree sap.",
+      "Warm air leaked out of the balloon and sucked up the paper.",
       "Friction transferred electrical charges, creating static electricity that attracts neutral paper bits."
     ],
     "correctAnswer": "Friction transferred electrical charges, creating static electricity that attracts neutral paper bits.",
@@ -7452,10 +7722,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Morning assembly ran from 7:30 AM to 8:00 AM. English lesson ran from 8:00 AM to 9:00 AM. Physical Education ran from 9:00 AM to 10:00 AM. Kwame scraped his knee on the soccer pitch at 9:20 AM.",
     "question": "What class activity was Kwame participating in when he scraped his knee?",
     "options": [
-      "Afternoon closing assembly",
+      "Morning assembly under the trees",
       "Physical Education on the sports field",
-      "English grammar inside the classroom",
-      "Morning assembly under the trees"
+      "Afternoon closing assembly",
+      "English grammar inside the classroom"
     ],
     "correctAnswer": "Physical Education on the sports field",
     "explanation": "9:20 AM falls squarely inside the scheduled Physical Education interval (9:00 AM to 10:00 AM).",
@@ -7484,10 +7754,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher discovers a dark green ink smear across an exam marking sheet on her desk.",
     "question": "Which suspect left this marking clue?",
     "options": [
-      "Yaw, who has dry white chalk dust on his fingers",
-      "Kofi, who is writing with a leaking dark-green ballpoint pen",
       "Esi, who is using a red correction pen",
-      "Ama, who is sharpening a lead graphite pencil"
+      "Kofi, who is writing with a leaking dark-green ballpoint pen",
+      "Ama, who is sharpening a lead graphite pencil",
+      "Yaw, who has dry white chalk dust on his fingers"
     ],
     "correctAnswer": "Kofi, who is writing with a leaking dark-green ballpoint pen",
     "explanation": "The leaking dark-green ballpoint pen provides the direct physical source matching the green ink smear.",
@@ -7500,9 +7770,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A pupil leaves a slice of ripe red watermelon on an open outdoor bench during afternoon recess. Within thirty minutes, dozens of tiny fruit flies hover over it.",
     "question": "What attracted the fruit flies to the watermelon?",
     "options": [
+      "Watermelon skin reflects sunlight into the sky.",
       "The flies were trying to hide from the sun under the rind.",
       "The watermelon created flies out of its seeds.",
-      "Watermelon skin reflects sunlight into the sky.",
       "Volatile sweet sugar scents released by the sliced fruit attracted foraging flies."
     ],
     "correctAnswer": "Volatile sweet sugar scents released by the sliced fruit attracted foraging flies.",
@@ -7532,9 +7802,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A clay bowl containing water on the kitchen porch was knocked over. The ground nearby displays split two-toed hooves with small dewclaw marks behind.",
     "question": "Which animal visited the porch and knocked over the bowl?",
     "options": [
-      "A domestic chicken with three forward scaly toes",
       "A human wearing flat-soled sneakers",
       "A stray cat with padded claw paws",
+      "A domestic chicken with three forward scaly toes",
       "A domestic pig or goat with cloven hooves"
     ],
     "correctAnswer": "A domestic pig or goat with cloven hooves",
@@ -7548,10 +7818,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Pupils in Tamale examine shea nuts collected from a savanna shea tree.",
     "question": "Which statement represents a verifiable agricultural FACT?",
     "options": [
+      "Collecting shea nuts in the savanna is the most fun weekend activity.",
       "Shea trees look far more majestic than baobab trees.",
-      "Shea butter smells much nicer than cocoa butter.",
       "Shea nuts contain vegetable fats that can be extracted to make shea butter.",
-      "Collecting shea nuts in the savanna is the most fun weekend activity."
+      "Shea butter smells much nicer than cocoa butter."
     ],
     "correctAnswer": "Shea nuts contain vegetable fats that can be extracted to make shea butter.",
     "explanation": "The lipid chemical composition of Vitellaria paradoxa kernels is an objective agricultural fact; smell and tree appearance are opinions.",
@@ -7564,10 +7834,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A laboratory microscope disappeared from a secondary school prep room in Ho on October 14 at 1:30 PM. Suspect Dzifa claims she was outside stargazing and identifying the Orion constellation with her bare eyes at that exact time.",
     "question": "What astronomical fact disproves Dzifa's alibi?",
     "options": [
-      "October is a month in the secondary rainy season.",
+      "Ho is the administrative capital of the Volta Region.",
       "At 1:30 PM in Ho, the sun is high in the sky and atmospheric solar scattering obscures all distant stars.",
-      "Microscopes use optical glass lenses to magnify specimens.",
-      "Ho is the administrative capital of the Volta Region."
+      "October is a month in the secondary rainy season.",
+      "Microscopes use optical glass lenses to magnify specimens."
     ],
     "correctAnswer": "At 1:30 PM in Ho, the sun is high in the sky and atmospheric solar scattering obscures all distant stars.",
     "explanation": "Daytime solar irradiance washes out faint stellar emissions, making optical naked-eye stargazing impossible at 1:30 PM.",
@@ -7596,10 +7866,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A baker mixed bread dough at 5:00 AM, let it ferment until 6:30 AM, baked it in an oven from 6:30 AM to 7:15 AM, and left loaves on cooling racks until 8:00 AM. A gas burner failure caused bread to come out doughy and underbaked.",
     "question": "During which operational interval did the gas burner fail?",
     "options": [
-      "Between 7:15 AM and 8:00 AM",
-      "Between 6:30 AM and 7:15 AM",
       "After 8:30 AM during morning sales",
-      "Between 5:00 AM and 6:30 AM"
+      "Between 6:30 AM and 7:15 AM",
+      "Between 5:00 AM and 6:30 AM",
+      "Between 7:15 AM and 8:00 AM"
     ],
     "correctAnswer": "Between 6:30 AM and 7:15 AM",
     "explanation": "Baking thermal application occurred exclusively between 6:30 AM and 7:15 AM, restricting heat failure to that window.",
@@ -7612,9 +7882,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student measures the germination time of two bean seeds placed in sandy soil. Both sprout in exactly four days. He writes in his report: 'Every bean seed planted in sandy soil across Ghana germinates in exactly 96 hours.'",
     "question": "Why is the student's conclusion invalid?",
     "options": [
+      "Sandy soil has large pore spaces and low water retention.",
       "The experiment was conducted during the third academic term.",
       "Bean seeds contain embryonic cotyledons and plumules.",
-      "Sandy soil has large pore spaces and low water retention.",
       "A sample size of two seeds (N=2) is statistically inadequate to represent natural biological variation across diverse seed batches."
     ],
     "correctAnswer": "A sample size of two seeds (N=2) is statistically inadequate to represent natural biological variation across diverse seed batches.",
@@ -7644,9 +7914,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Following the total removal of riparian trees along the banks of the Densu River, local fishermen reported that river water temperatures rose and dissolved oxygen levels plummeted.",
     "question": "What caused the drop in dissolved oxygen?",
     "options": [
-      "Fish began consuming all the oxygen because they grew larger.",
       "Trees pump oxygen into water through their submerged roots.",
       "The river water turned into solid ice.",
+      "Fish began consuming all the oxygen because they grew larger.",
       "Loss of tree canopy exposed the river to direct solar heating, and warmer water holds significantly less dissolved oxygen gas."
     ],
     "correctAnswer": "Loss of tree canopy exposed the river to direct solar heating, and warmer water holds significantly less dissolved oxygen gas.",
@@ -7660,10 +7930,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A desktop computer was removed from a headmaster's office in Navrongo on December 15 at 10:00 PM. Suspect Akwasi claims he was sitting under a baobab tree watching the full moon rise at midday (12:00 PM) on that same date.",
     "question": "What astronomical fact dismantles Akwasi's alibi?",
     "options": [
-      "Baobab trees store water in swollen trunk tissues.",
+      "Navrongo is situated in the Upper East Region.",
       "A full moon rises opposite the sun around sunset (approx 6:00 PM), never at 12:00 PM midday.",
-      "Desktop computers require alternating current electrical power.",
-      "Navrongo is situated in the Upper East Region."
+      "Baobab trees store water in swollen trunk tissues.",
+      "Desktop computers require alternating current electrical power."
     ],
     "correctAnswer": "A full moon rises opposite the sun around sunset (approx 6:00 PM), never at 12:00 PM midday.",
     "explanation": "A full moon is at 180° opposition to the sun and rises at dusk, making a midday full moon rise an astronomical impossibility.",
@@ -7692,10 +7962,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A health worker interviews two patients in a town clinic who contracted malaria and finds neither used a mosquito net. She concludes: 'Zero residents in this entire district own mosquito nets.'",
     "question": "What logical fallacy did the health worker commit?",
     "options": [
-      "Mosquito nets are treated with pyrethroid insecticides.",
-      "Hasty generalization from a tiny, unrepresentative sample (N=2) to an entire municipal population.",
       "The clinic was located in the Ashanti Region.",
-      "Malaria is caused by Plasmodium parasites."
+      "Hasty generalization from a tiny, unrepresentative sample (N=2) to an entire municipal population.",
+      "Malaria is caused by Plasmodium parasites.",
+      "Mosquito nets are treated with pyrethroid insecticides."
     ],
     "correctAnswer": "Hasty generalization from a tiny, unrepresentative sample (N=2) to an entire municipal population.",
     "explanation": "Inferring district-wide bednet ownership from two self-selected symptomatic clinic patients is a severe hasty generalization.",
@@ -7709,9 +7979,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What does this chemical separation prove?",
     "options": [
       "The added clause was inscribed using a different writing instrument with distinct chemical ink formulation, proving document tampering.",
+      "The paper was manufactured from unbleached wood pulp.",
       "The author was writing while sitting in a car.",
-      "The document was stored inside an iron safe.",
-      "The paper was manufactured from unbleached wood pulp."
+      "The document was stored inside an iron safe."
     ],
     "correctAnswer": "The added clause was inscribed using a different writing instrument with distinct chemical ink formulation, proving document tampering.",
     "explanation": "Thin-layer chromatography separates distinct ink dye formulations, confirming that the added text was inserted with a different pen.",
@@ -7724,10 +7994,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A statistical study across coastal towns in the Western Region shows that as sales of sunglasses increase, reported emergency hospitalizations for marine jellyfish stings also rise.",
     "question": "What is the true underlying explanation for this correlation?",
     "options": [
-      "Jellyfish stings compel victims to buy dark eyewear.",
       "Sunglass frames leach chemicals that stimulate jellyfish breeding.",
+      "Wearing sunglasses attracts predatory jellyfish to swimmers.",
       "Sunny weather acts as a common confounding variable that independently increases both beach attendance and sunglass purchases.",
-      "Wearing sunglasses attracts predatory jellyfish to swimmers."
+      "Jellyfish stings compel victims to buy dark eyewear."
     ],
     "correctAnswer": "Sunny weather acts as a common confounding variable that independently increases both beach attendance and sunglass purchases.",
     "explanation": "Solar irradiance drives beach recreation, concurrently raising eyewear sales and marine wildlife exposure without any direct causation.",
@@ -7741,9 +8011,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which combination of factors proves this video is viral clickbait misinformation?",
     "options": [
       "Physics impossibility (gravity cannot shut off), artificial apocalyptic panic, lack of institutional peer confirmation, and forced share quotas.",
+      "Gravitational attraction depends on mass and distance (F = G m₁ m₂ / r²).",
       "TikTok transmits digital streaming video over cellular networks.",
-      "NASA employs astrophysicists and space engineers.",
-      "Gravitational attraction depends on mass and distance (F = G m₁ m₂ / r²)."
+      "NASA employs astrophysicists and space engineers."
     ],
     "correctAnswer": "Physics impossibility (gravity cannot shut off), artificial apocalyptic panic, lack of institutional peer confirmation, and forced share quotas.",
     "explanation": "Earth's mass generates invariant gravitational curvature; claims of gravity spontaneously deactivating are pseudoscience designed for viral engagement.",
@@ -7773,9 +8043,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What anion is positively identified by this barium sulfate precipitation reaction?",
     "options": [
       "Sulfate (SO₄²⁻)",
-      "Nitrate (NO₃⁻)",
       "Carbonate (CO₃²⁻)",
-      "Chloride (Cl⁻)"
+      "Chloride (Cl⁻)",
+      "Nitrate (NO₃⁻)"
     ],
     "correctAnswer": "Sulfate (SO₄²⁻)",
     "explanation": "Barium ions react selectively with sulfate ions to form insoluble barium sulfate (BaSO₄), which remains insoluble in dilute mineral acid.",
@@ -7788,10 +8058,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A private tutoring academy advertises: 'Our average student score improved by 400%!' An independent audit reveals that student scores rose from 1 point to 5 points out of 100.",
     "question": "What deceptive statistical technique was used?",
     "options": [
+      "Plotting data using scatter diagrams.",
       "Using standard deviation without variance.",
-      "Calculating the median rather than the arithmetic mean.",
       "Reporting a large relative percentage increase to conceal an objectively poor absolute performance gain.",
-      "Plotting data using scatter diagrams."
+      "Calculating the median rather than the arithmetic mean."
     ],
     "correctAnswer": "Reporting a large relative percentage increase to conceal an objectively poor absolute performance gain.",
     "explanation": "Touting a 400% relative jump masks the fact that an absolute score of 5/100 remains a severe failure.",
@@ -7820,10 +8090,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A viral social media post displays a photo of a polar bear standing on a sand dune labeled: 'Arctic polar bear discovered migrating wild in Mole National Park, Ghana!'",
     "question": "What biological and ecological reality disproves this image?",
     "options": [
-      "Sand dunes occur in arid desert environments.",
       "Digital cameras record high-resolution pixel matrices.",
+      "Mole National Park is situated in the Savannah Region of Ghana.",
       "Polar bears are hyper-specialized arctic marine mammals unable to survive savanna tropical heat or cross thousands of miles of tropical ocean.",
-      "Mole National Park is situated in the Savannah Region of Ghana."
+      "Sand dunes occur in arid desert environments."
     ],
     "correctAnswer": "Polar bears are hyper-specialized arctic marine mammals unable to survive savanna tropical heat or cross thousands of miles of tropical ocean.",
     "explanation": "Ursus maritimus is ecologically adapted strictly to arctic sea-ice biomes; physiological heat stress and vast geographic separation refute the claim.",
@@ -7837,9 +8107,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the true causal explanation for this relationship?",
     "options": [
       "Increased enforcement presence directly raised citation detection and issuance rates, rather than causing worse driving behavior.",
+      "Traffic citations attract police officers to intersections.",
       "Intersections with police officers experience sudden brake failures.",
-      "Traffic police officers compel drivers to break road regulations.",
-      "Traffic citations attract police officers to intersections."
+      "Traffic police officers compel drivers to break road regulations."
     ],
     "correctAnswer": "Increased enforcement presence directly raised citation detection and issuance rates, rather than causing worse driving behavior.",
     "explanation": "Detection bias explains the trend: more officers record a higher percentage of existing infractions that previously went unpenalized.",
@@ -7868,10 +8138,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A forensic analyst tests an unknown metal seized at an illegal smelting shed. Treating the metal shavings with concentrated nitric acid produces a brown toxic gas (NO₂) and a bright blue-green solution that turns deep blue when aqueous ammonia is added.",
     "question": "What transition metal element was positively identified?",
     "options": [
-      "Lead (Pb)",
-      "Copper (Cu)",
       "Zinc (Zn)",
-      "Iron (Fe)"
+      "Copper (Cu)",
+      "Iron (Fe)",
+      "Lead (Pb)"
     ],
     "correctAnswer": "Copper (Cu)",
     "explanation": "Copper dissolves in nitric acid yielding nitrogen dioxide gas and aqueous Cu²⁺ ions, which form the deep blue [Cu(NH₃)₄]²⁺ complex in ammonia.",
@@ -7901,9 +8171,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which footwear produced these tracks?",
     "options": [
       "A pair of rubber bathroom flip-flops with horizontal wavy grooves",
-      "A leather dress boot with a thick raised heel block",
       "A goat with two-toed split hooves",
-      "A barefoot child with round heel prints and five toes"
+      "A barefoot child with round heel prints and five toes",
+      "A leather dress boot with a thick raised heel block"
     ],
     "correctAnswer": "A pair of rubber bathroom flip-flops with horizontal wavy grooves",
     "explanation": "Flat-soled continuous wavy horizontal ridges match lightweight rubber flip-flops, excluding barefoot marks and heeled boots.",
@@ -7916,10 +8186,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student leaves a piece of moist bread inside a dark wooden cupboard for twelve days during the warm rainy season. When inspected, it is covered in dark fuzzy patches.",
     "question": "What is the physical cause of these fuzzy patches?",
     "options": [
+      "The wooden cupboard melted onto the bread.",
       "Bread naturally turns into black soot in the dark.",
-      "Spiders painted the crust with dark silk threads.",
       "Airborne fungal mold spores germinated and grew on the moist organic starch.",
-      "The wooden cupboard melted onto the bread."
+      "Spiders painted the crust with dark silk threads."
     ],
     "correctAnswer": "Airborne fungal mold spores germinated and grew on the moist organic starch.",
     "explanation": "Warmth and moisture provide optimal environmental conditions for microscopic fungal spores to colonize and form visible mold mycelia.",
@@ -7948,10 +8218,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four friends talk about an African honey badger observed in a nature documentary.",
     "question": "Which statement about the honey badger is an objective scientific FACT?",
     "options": [
-      "Honey badgers look much nicer than wild boars.",
       "Wild animals with black and white fur are always fun to watch.",
+      "The honey badger is the bravest animal in the entire world.",
       "The honey badger possesses thick, loose skin and sharp claws for digging.",
-      "The honey badger is the bravest animal in the entire world."
+      "Honey badgers look much nicer than wild boars."
     ],
     "correctAnswer": "The honey badger possesses thick, loose skin and sharp claws for digging.",
     "explanation": "Anatomical traits like skin thickness and claw structure are verifiable zoological facts; bravery is a humanized characterization.",
@@ -7965,9 +8235,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which suspect left this trace clue?",
     "options": [
       "Ama, who was using a purple felt-tip marker that leaked on her fingers",
+      "Yaw, who was sweeping dry brown dust from the floor",
       "Esi, who was cutting clean white cardboard with scissors",
-      "Kofi, who was sharpening a black graphite pencil",
-      "Yaw, who was sweeping dry brown dust from the floor"
+      "Kofi, who was sharpening a black graphite pencil"
     ],
     "correctAnswer": "Ama, who was using a purple felt-tip marker that leaked on her fingers",
     "explanation": "Direct physical contact transfers residue: the purple ink on Ama's fingers matches the colored dye found on the keyhole.",
@@ -7997,9 +8267,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What chore was Kwame doing when he scratched his hand?",
     "options": [
       "Sweeping the veranda with a palm broom",
-      "Waking up in his bedroom",
       "Bathing in the bathhouse",
-      "Walking along the road to school"
+      "Walking along the road to school",
+      "Waking up in his bedroom"
     ],
     "correctAnswer": "Sweeping the veranda with a palm broom",
     "explanation": "Sweeping occurred between 6:30 AM and 7:00 AM, directly containing the 6:35 AM scratch incident.",
@@ -8012,10 +8282,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A ripe pawpaw sitting on an outdoor table has small, round, toothless peck marks where fruit flesh was scooped away.",
     "question": "What creature produced these feeding marks?",
     "options": [
+      "A mouse with paired gnawing incisor teeth",
       "A person using a steel fork",
-      "A stray hunting dog with sharp pointed canine teeth",
       "A wild garden bird using its hard beak to peck flesh",
-      "A mouse with paired gnawing incisor teeth"
+      "A stray hunting dog with sharp pointed canine teeth"
     ],
     "correctAnswer": "A wild garden bird using its hard beak to peck flesh",
     "explanation": "Small, curved, toothless gouges without incisor or canine indentations match avian beak-pecking feeding behavior.",
@@ -8060,10 +8330,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A commercial agrochemical company publishes a sponsored pamphlet stating: 'Synthetic chemical weedicides are completely harmless to all river fish and must be sprayed directly along all streams.'",
     "question": "What fundamental bias must an investigator identify in this publication?",
     "options": [
-      "Fish breathe using aquatic gill filaments.",
       "Streams flow into larger regional rivers.",
+      "Weedicides are designed to kill invasive plant species.",
       "Commercial profit bias encouraging chemical sales while downplaying documented ecotoxicity to aquatic wildlife.",
-      "Weedicides are designed to kill invasive plant species."
+      "Fish breathe using aquatic gill filaments."
     ],
     "correctAnswer": "Commercial profit bias encouraging chemical sales while downplaying documented ecotoxicity to aquatic wildlife.",
     "explanation": "The chemical manufacturer has a direct financial incentive to market high usage, masking known runoff toxicity to aquatic life.",
@@ -8077,9 +8347,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "In which timeframe did the thermal stress fracture occur?",
     "options": [
       "Between 8:30 AM and 9:15 AM",
+      "Between 9:15 AM and 10:00 AM",
       "After 10:30 AM during morning break",
-      "Between 8:00 AM and 8:30 AM",
-      "Between 9:15 AM and 10:00 AM"
+      "Between 8:00 AM and 8:30 AM"
     ],
     "correctAnswer": "Between 8:30 AM and 9:15 AM",
     "explanation": "Thermal energy from the burner was applied exclusively between 8:30 AM and 9:15 AM, bounding the thermal stress failure to that period.",
@@ -8109,9 +8379,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What does this soil evidence indicate?",
     "options": [
       "The suspect walked through the localized trench directly beneath the broken science store window.",
-      "The science store window was constructed from timber wood.",
       "The suspect was washing hands at the school tap.",
-      "The suspect bought new running shoes in Kumasi."
+      "The suspect bought new running shoes in Kumasi.",
+      "The science store window was constructed from timber wood."
     ],
     "correctAnswer": "The suspect walked through the localized trench directly beneath the broken science store window.",
     "explanation": "Matching mineralogical and grain-size profiles of soil trace evidence links the footwear directly to the specific crime scene location.",
@@ -8124,10 +8394,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Following the total removal of riverbank bamboo stands along the Birim River, local farmers reported that seasonal floods washed away their fertile topsoil.",
     "question": "What caused the increased topsoil loss?",
     "options": [
+      "Bamboo plants generate underground river water.",
       "Fish in the river pushed the mud away.",
-      "The river water changed into acid.",
       "Removing the dense fibrous bamboo root network eliminated the mechanical barrier binding the bank soil.",
-      "Bamboo plants generate underground river water."
+      "The river water changed into acid."
     ],
     "correctAnswer": "Removing the dense fibrous bamboo root network eliminated the mechanical barrier binding the bank soil.",
     "explanation": "Riparian root matrices bind alluvial soils; removing vegetation exposes loose soil to hydraulic shear forces during flooding.",
@@ -8156,10 +8426,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A commercial brand selling bottled spring water publishes an advertisement claiming: 'Tap water boiled in domestic kettles contains zero minerals and leads to severe bone weakness.'",
     "question": "What bias should an apprentice researcher flag?",
     "options": [
-      "Bottled water is packaged in polyethylene containers.",
       "Bones require calcium and phosphorus minerals.",
+      "Boiling water destroys pathogenic microorganisms.",
       "Commercial motive bias designed to frighten consumers away from affordable municipal tap water to buy bottled water.",
-      "Boiling water destroys pathogenic microorganisms."
+      "Bottled water is packaged in polyethylene containers."
     ],
     "correctAnswer": "Commercial motive bias designed to frighten consumers away from affordable municipal tap water to buy bottled water.",
     "explanation": "The bottled water seller has a financial conflict of interest driving them to fabricate false nutritional hazards about boiled tap water.",
@@ -8173,9 +8443,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What reasoning error did the gardener commit?",
     "options": [
       "Hasty generalization from a tiny sample (N=2) to an entire agricultural tree population.",
+      "Citrus trees belong to the Rutaceae plant family.",
       "Orchards require weeding and seasonal irrigation.",
-      "Scale insects feed on plant phloem sap.",
-      "Citrus trees belong to the Rutaceae plant family."
+      "Scale insects feed on plant phloem sap."
     ],
     "correctAnswer": "Hasty generalization from a tiny sample (N=2) to an entire agricultural tree population.",
     "explanation": "Sampling two trees out of 600 cannot establish population-wide infestation rates or justify clearing an entire orchard.",
@@ -8204,10 +8474,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A municipal data survey in Takoradi finds that neighborhoods with higher monthly sales of bottled water also report higher total foot-traffic pedestrian hospitalizations.",
     "question": "What is the primary lurking confounding variable driving both metrics?",
     "options": [
-      "Bottled water vendors intentionally trip pedestrians along the sidewalk.",
+      "Pedestrian hospitalizations compel market shoppers to purchase bottled water.",
       "High-density commercial market zones concentrate heavy pedestrian volumes, which naturally drives beverage sales and increases vehicle collision risks.",
-      "Drinking bottled water causes dizziness that makes pedestrians walk into traffic.",
-      "Pedestrian hospitalizations compel market shoppers to purchase bottled water."
+      "Bottled water vendors intentionally trip pedestrians along the sidewalk.",
+      "Drinking bottled water causes dizziness that makes pedestrians walk into traffic."
     ],
     "correctAnswer": "High-density commercial market zones concentrate heavy pedestrian volumes, which naturally drives beverage sales and increases vehicle collision risks.",
     "explanation": "Urban foot-traffic density is the common confounding cause that simultaneously raises beverage demand and pedestrian exposure to traffic.",
@@ -8236,10 +8506,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During a debate on city transit in Accra, a transport advocate suggests: 'We should introduce bus rapid transit lanes.' An opponent retorts: 'How can we take advice from someone whose personal car broke down on the highway last month?'",
     "question": "Which logical fallacy did the opponent commit?",
     "options": [
-      "Straw Man Fallacy",
-      "Ad Hominem (attacking the person's private circumstance instead of evaluating the transit policy merit)",
       "Begging the Question",
-      "Post Hoc Ergo Propter Hoc"
+      "Ad Hominem (attacking the person's private circumstance instead of evaluating the transit policy merit)",
+      "Post Hoc Ergo Propter Hoc",
+      "Straw Man Fallacy"
     ],
     "correctAnswer": "Ad Hominem (attacking the person's private circumstance instead of evaluating the transit policy merit)",
     "explanation": "Dismissing an urban transit proposal by attacking the speaker's personal vehicle maintenance issues is an ad hominem fallacy.",
@@ -8252,9 +8522,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A clear liquid recovered from an illegal gold refining workshop turns blue litmus paper bright red and liberates dense brown toxic fumes (NO₂) when reacted with copper wire shavings.",
     "question": "What concentrated mineral acid is positively identified by this reaction?",
     "options": [
+      "Sulfuric acid (H₂SO₄)",
       "Acetic acid (CH₃COOH)",
       "Hydrochloric acid (HCl)",
-      "Sulfuric acid (H₂SO₄)",
       "Nitric acid (HNO₃)"
     ],
     "correctAnswer": "Nitric acid (HNO₃)",
@@ -8284,9 +8554,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A debater asserts: 'Either we completely shut down all school computer labs, or every single student will fail their BECE exams and become illiterate!'",
     "question": "What logical fallacy is illustrated by this statement?",
     "options": [
-      "Genetic Fallacy",
       "Equivocation",
       "Appeal to Authority",
+      "Genetic Fallacy",
       "False Dilemma (bifurcation, ignoring balanced intermediate solutions)"
     ],
     "correctAnswer": "False Dilemma (bifurcation, ignoring balanced intermediate solutions)",
@@ -8300,10 +8570,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A shared video shows a government minister announcing free laptop distributions to every citizen. Software analysis reveals unnatural facial boundary flickering, robotic phoneme pacing, and desynchronized teeth textures.",
     "question": "What technology was used to produce this deceptive media?",
     "options": [
-      "Infrared thermal environmental imaging",
+      "Standard high-definition optical camera zoom",
       "Deepfake AI synthetic generative audiovisual manipulation",
-      "Analog closed-circuit security camera recording",
-      "Standard high-definition optical camera zoom"
+      "Infrared thermal environmental imaging",
+      "Analog closed-circuit security camera recording"
     ],
     "correctAnswer": "Deepfake AI synthetic generative audiovisual manipulation",
     "explanation": "Facial boundary blending artifacts, texture smoothing, and desynchronized phonemes are classic signs of AI deepfake generation.",
@@ -8332,10 +8602,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An energy company publishes a bar chart of solar output increasing from 48% to 50%. The vertical axis begins at 47% rather than 0%, making the 50% bar appear five times taller than the 48% bar.",
     "question": "What deceptive graphic technique was employed here?",
     "options": [
-      "Using 3D drop shadows along bar borders.",
-      "Truncated graph axis (suppressed zero baseline) to visually exaggerate minor numerical differences.",
       "Failing to convert percentages to degrees of a circle.",
-      "Plotting discrete variables on a Cartesian plane."
+      "Truncated graph axis (suppressed zero baseline) to visually exaggerate minor numerical differences.",
+      "Plotting discrete variables on a Cartesian plane.",
+      "Using 3D drop shadows along bar borders."
     ],
     "correctAnswer": "Truncated graph axis (suppressed zero baseline) to visually exaggerate minor numerical differences.",
     "explanation": "Truncating the vertical axis baseline distorts geometric proportions, making a 2% change appear like a massive surge.",
@@ -8349,9 +8619,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What toxic heavy metal cation is confirmed by this reaction?",
     "options": [
       "Lead (Pb²⁺)",
+      "Sodium (Na⁺)",
       "Iron (Fe³⁺)",
-      "Calcium (Ca²⁺)",
-      "Sodium (Na⁺)"
+      "Calcium (Ca²⁺)"
     ],
     "correctAnswer": "Lead (Pb²⁺)",
     "explanation": "Lead(II) ions react with iodide ions to form bright yellow lead(II) iodide (PbI₂), famous for forming shimmering 'golden rain' crystals upon cooling.",
@@ -8380,9 +8650,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A plate of fried plantain (kelewele) was eaten on the kitchen table. Fine white powdery flour dust is found on the table edge and on the cupboard handle.",
     "question": "Which suspect left this powdery clue?",
     "options": [
-      "Yaw, who was polishing black leather school shoes",
       "Esi, who was sweeping dry brown leaves in the yard",
       "Abena, who was washing ripe red tomatoes in a bowl of water",
+      "Yaw, who was polishing black leather school shoes",
       "Kojo, who was kneading wheat flour dough for meat pies"
     ],
     "correctAnswer": "Kojo, who was kneading wheat flour dough for meat pies",
@@ -8396,10 +8666,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Ama planted two identical cowpea seedlings in pots. She placed Pot A on the sunny veranda and locked Pot B inside a dark windowless storeroom, watering both equally. After two weeks, Pot B had pale yellow leaves and a weak, spindly stem.",
     "question": "Why did the seedling in Pot B turn pale yellow?",
     "options": [
-      "The clay pot absorbed the green color through the roots.",
+      "Water turns plant leaves yellow when poured in the dark.",
       "Without sunlight, the plant could not produce green chlorophyll or perform photosynthesis.",
-      "The dark storeroom was full of invisible insects that ate the green color.",
-      "Water turns plant leaves yellow when poured in the dark."
+      "The clay pot absorbed the green color through the roots.",
+      "The dark storeroom was full of invisible insects that ate the green color."
     ],
     "correctAnswer": "Without sunlight, the plant could not produce green chlorophyll or perform photosynthesis.",
     "explanation": "Plants require light energy to synthesize green chlorophyll pigment and manufacture sugars through photosynthesis (etiolation occurs in darkness).",
@@ -8428,10 +8698,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Wet tracks lead across the dry cement veranda from the garden Pond. Each footprint shows four long toes joined together by thin skin webs.",
     "question": "Which animal walked across the veranda?",
     "options": [
-      "A house cat with soft padded paws",
-      "A domestic duck with webbed swimming feet",
       "A nanny goat with split hard hooves",
-      "A speckled guinea fowl with unwebbed scratching toes"
+      "A domestic duck with webbed swimming feet",
+      "A speckled guinea fowl with unwebbed scratching toes",
+      "A house cat with soft padded paws"
     ],
     "correctAnswer": "A domestic duck with webbed swimming feet",
     "explanation": "Webbed membranes between the toes are an aquatic adaptation characteristic of waterfowl like ducks.",
@@ -8444,9 +8714,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During the dry Harmattan season in January, Kofi hangs his wet school uniform shirt outside on the line. It dries in just 25 minutes, whereas in the rainy June season it took 2 hours.",
     "question": "Why did the shirt dry so much faster during Harmattan?",
     "options": [
+      "The sun moves closer to Ghana in January than in June.",
       "Uniform shirts shrink and squeeze water out in January.",
       "Harmattan dust eats the water out of cotton cloth.",
-      "The sun moves closer to Ghana in January than in June.",
       "Dry, windy Harmattan air has very low humidity, allowing liquid water to evaporate rapidly."
     ],
     "correctAnswer": "Dry, windy Harmattan air has very low humidity, allowing liquid water to evaporate rapidly.",
@@ -8476,9 +8746,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Grandmother put the pot of yam on the coal pot fire at 4:00 PM. She boiled the yam from 4:00 PM to 4:35 PM, pounded the fufu from 4:35 PM to 5:00 PM, and served dinner at 5:05 PM. The neighbors heard loud rhythmic pounding at 4:45 PM.",
     "question": "What was Grandmother doing at 4:45 PM?",
     "options": [
-      "Peeling raw yam tubers",
       "Washing dishes after dinner",
       "Lighting the charcoal fire",
+      "Peeling raw yam tubers",
       "Pounding fufu in the wooden mortar"
     ],
     "correctAnswer": "Pounding fufu in the wooden mortar",
@@ -8492,10 +8762,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Someone borrowed the class bell without asking. On the wooden handle of the bell, the prefect finds sticky orange-yellow oil stains that smell like ripe palm nuts.",
     "question": "Who touched the class bell?",
     "options": [
-      "Nana, who was folding clean white notebook paper",
+      "Fifi, who was erasing the chalkboard with a dry duster",
       "Adwoa, who just finished eating abe nkwan (palm nut soup) with her fingers",
-      "Kwabena, who was drinking clear sachet water",
-      "Fifi, who was erasing the chalkboard with a dry duster"
+      "Nana, who was folding clean white notebook paper",
+      "Kwabena, who was drinking clear sachet water"
     ],
     "correctAnswer": "Adwoa, who just finished eating abe nkwan (palm nut soup) with her fingers",
     "explanation": "Reddish-orange carotenoid-rich oil with a palm aroma directly matches residue from palm nut soup.",
@@ -8524,9 +8794,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A solar battery inverter was taken from a community clinic in Wa at 3:00 PM on Wednesday. Suspectatah claims he was in London (which is on Greenwich Mean Time, UTC+0, the exact same time zone as Ghana in November) watching a live sunset at 11:00 AM local time.",
     "question": "What geographical and astronomical fact exposes his alibi as false?",
     "options": [
+      "Solar inverters convert direct current (DC) into alternating current (AC).",
       "Wa is the regional capital of the Upper West Region.",
       "Ghana and London both lie near the Prime Meridian (0° longitude).",
-      "Solar inverters convert direct current (DC) into alternating current (AC).",
       "The sun never sets at 11:00 AM before midday in either Ghana or London."
     ],
     "correctAnswer": "The sun never sets at 11:00 AM before midday in either Ghana or London.",
@@ -8556,9 +8826,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An apprentice carpenter tests 2 nails from a box of 5,000 nails, sees that neither is bent, and certifies: 'Zero nails in this entire 5,000-nail crate have manufacturing defects.'",
     "question": "Why is this quality-control guarantee unreliable?",
     "options": [
-      "Carpenters use hammers to drive nails into timber.",
       "Nails can rust when exposed to oxygen and moisture.",
       "Iron nails are manufactured from drawn steel wire.",
+      "Carpenters use hammers to drive nails into timber.",
       "Inspecting only 2 items out of 5,000 is far too small a sample to detect a 1% or 5% defect rate."
     ],
     "correctAnswer": "Inspecting only 2 items out of 5,000 is far too small a sample to detect a 1% or 5% defect rate.",
@@ -8572,10 +8842,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A bicycle was ridden away from the school shed across a muddy path toward the main gate. Investigators examine the overlapping tire tracks where the front and rear wheels turned a corner.",
     "question": "How can detectives tell which direction the bicycle was traveling?",
     "options": [
-      "All bicycles have exactly 36 spokes per wheel.",
+      "Mud is a mixture of clay, silt, and water.",
       "The rear wheel track cuts across and overwrites the front wheel track, and curves on a slightly tighter inner radius.",
-      "Bicycle tires are inflated with compressed air.",
-      "Mud is a mixture of clay, silt, and water."
+      "All bicycles have exactly 36 spokes per wheel.",
+      "Bicycle tires are inflated with compressed air."
     ],
     "correctAnswer": "The rear wheel track cuts across and overwrites the front wheel track, and curves on a slightly tighter inner radius.",
     "explanation": "Because the rear wheel trails behind the steering front wheel, its impression is laid down second (overprinting the front track) and follows a shorter turning arc.",
@@ -8604,10 +8874,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A cocoa farmer fermented beans under banana leaves from Monday 8:00 AM to Saturday 8:00 AM, sun-dried them on raised bamboo mats from Saturday 8:00 AM to Thursday 4:00 PM, and bagged them on Thursday at 5:00 PM. A sudden rainstorm soaked the beans while they were spread out on the bamboo mats.",
     "question": "During which stage of processing did the rainstorm strike?",
     "options": [
-      "Between Monday and Friday while covered in fermentation heaps",
-      "Between Saturday 8:00 AM and Thursday 4:00 PM during the sun-drying phase",
       "On Friday evening after the bags were sealed in the warehouse",
-      "On Monday morning before fermentation started"
+      "Between Saturday 8:00 AM and Thursday 4:00 PM during the sun-drying phase",
+      "On Monday morning before fermentation started",
+      "Between Monday and Friday while covered in fermentation heaps"
     ],
     "correctAnswer": "Between Saturday 8:00 AM and Thursday 4:00 PM during the sun-drying phase",
     "explanation": "The beans were spread on the raised bamboo drying mats exclusively between Saturday 8:00 AM and Thursday 4:00 PM.",
@@ -8620,9 +8890,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A storehouse padlock in Tema was broken at 2:00 PM. Suspect Yao claims he was locked inside the walk-in freezer for three hours and that when he poured a cup of boiling water into a metal tray, it froze into solid ice in 10 seconds while the freezer thermometer read +15°C.",
     "question": "What physical contradiction proves Yao's story is fabricated?",
     "options": [
+      "Tema is a major industrial port city in Greater Accra.",
       "Walk-in freezers have insulated walls.",
       "Metal trays conduct heat faster than plastic trays.",
-      "Tema is a major industrial port city in Greater Accra.",
       "Pure water freezes at 0°C at standard pressure; it cannot freeze into solid ice in an environment at +15°C."
     ],
     "correctAnswer": "Pure water freezes at 0°C at standard pressure; it cannot freeze into solid ice in an environment at +15°C.",
@@ -8652,9 +8922,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A school prefect wants to know whether students prefer football or basketball. He interviews only the 15 players standing on the basketball court after school and reports: '100% of students in our school prefer basketball!'",
     "question": "What sampling error ruined the prefect's survey?",
     "options": [
-      "Fifteen is an odd number.",
       "The survey was conducted in the afternoon instead of the morning.",
       "Basketballs are inflated to a higher pressure than footballs.",
+      "Fifteen is an odd number.",
       "Selection bias: surveying only students actively playing on the basketball court guarantees a biased, non-random sample."
     ],
     "correctAnswer": "Selection bias: surveying only students actively playing on the basketball court guarantees a biased, non-random sample.",
@@ -8668,10 +8938,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An electrician notices that when a 1,500-watt electric iron, a 2,000-watt kettle, and a 1,200-watt microwave are all plugged into a single 13-ampere extension board and switched on together, the circuit breaker immediately trips off.",
     "question": "Why did the circuit breaker trip?",
     "options": [
+      "Electricity slows down when three plugs share one cord.",
       "The kettle boiled away the electrons in the wire.",
-      "The appliances cancelled out each other's magnetic fields.",
       "Connecting high-power appliances in parallel drew excessive total electric current that exceeded the safe limit of the circuit.",
-      "Electricity slows down when three plugs share one cord."
+      "The appliances cancelled out each other's magnetic fields."
     ],
     "correctAnswer": "Connecting high-power appliances in parallel drew excessive total electric current that exceeded the safe limit of the circuit.",
     "explanation": "In a parallel household circuit, total current is the sum of each appliance's current (4,700 W ÷ 230 V ≈ 20.4 A > 13 A), triggering the breaker to prevent wire overheating and fire.",
@@ -8684,10 +8954,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "An auditor suspects a clerk of inventing fake daily expense receipts for a school canteen project. When the auditor plots the leading (first) digit of all 800 submitted receipts, digits 8 and 9 appear as the first digit on 65% of the receipts, while digit 1 appears on only 3%.",
     "question": "Which mathematical principle flags these receipts as likely fabricated?",
     "options": [
-      "The Law of Conservation of Mass.",
       "Newton's Third Law of Motion.",
+      "Pythagoras's Theorem on right-angled triangles.",
       "Benford's Law (First-Digit Law), which states that in genuine financial datasets spanning multiple orders of magnitude, small leading digits like 1 and 2 occur far more often than 8 and 9.",
-      "Pythagoras's Theorem on right-angled triangles."
+      "The Law of Conservation of Mass."
     ],
     "correctAnswer": "Benford's Law (First-Digit Law), which states that in genuine financial datasets spanning multiple orders of magnitude, small leading digits like 1 and 2 occur far more often than 8 and 9.",
     "explanation": "Human fabricators often cluster fake numbers just below reimbursement thresholds (e.g., 89 or 95 Cedis), violating Benford's logarithmic first-digit distribution.",
@@ -8701,9 +8971,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which cognitive and logical fallacy is driving this argument?",
     "options": [
       "The Sunk Cost Fallacy (continuing a doomed endeavor because of unrecoverable past expenditures rather than future expected value)",
+      "Appeal to Pity (Ad Misericordiam)",
       "False Cause (Post Hoc)",
-      "Equivocation Fallacy",
-      "Appeal to Pity (Ad Misericordiam)"
+      "Equivocation Fallacy"
     ],
     "correctAnswer": "The Sunk Cost Fallacy (continuing a doomed endeavor because of unrecoverable past expenditures rather than future expected value)",
     "explanation": "Past expenditures (sunk costs) cannot be recovered regardless of future action; rational decisions must evaluate only prospective costs and benefits.",
@@ -8733,9 +9003,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why is it an error to conclude that ambulances are dangerous to patients?",
     "options": [
       "Severity confounding (selection bias): critically injured or life-threatened patients are selectively transported by ambulance, whereas mild cases walk or take taxis.",
-      "Taxis travel faster than emergency ambulances.",
       "Hospitals treat taxi passengers before ambulance patients.",
-      "Ambulance sirens raise patient blood pressure to fatal levels."
+      "Ambulance sirens raise patient blood pressure to fatal levels.",
+      "Taxis travel faster than emergency ambulances."
     ],
     "correctAnswer": "Severity confounding (selection bias): critically injured or life-threatened patients are selectively transported by ambulance, whereas mild cases walk or take taxis.",
     "explanation": "Underlying condition severity is a confounding variable that determines both the mode of transport and survival probability.",
@@ -8748,10 +9018,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A website with the URL 'ghana-education-ministry-free-grants.xyz' sends a WhatsApp link stating: 'All JHS students qualify for a 2,500-Cedi cash grant! Enter your mother's Mobile Money PIN within 10 minutes to claim!'",
     "question": "Which cybersecurity red flags identify this message as a phishing scam?",
     "options": [
+      "WhatsApp uses end-to-end encryption for text messages.",
       "2,500 Cedis is an even number.",
-      "The message mentions JHS students in Ghana.",
       "Look-alike non-governmental domain (.xyz instead of .gov.gh), artificial time urgency, and requesting a secret Mobile Money PIN.",
-      "WhatsApp uses end-to-end encryption for text messages."
+      "The message mentions JHS students in Ghana."
     ],
     "correctAnswer": "Look-alike non-governmental domain (.xyz instead of .gov.gh), artificial time urgency, and requesting a secret Mobile Money PIN.",
     "explanation": "Legitimate government agencies in Ghana use '.gov.gh' domains and never request private Mobile Money PINs to disburse funds.",
@@ -8780,10 +9050,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A food safety inspector suspects a dishonest market vendor of adulterating palm oil with Sudan IV, a banned industrial textile dye, or starch thickeners. Adding a few drops of iodine solution to an aqueous extract of a food sample turns it an intense blue-black color.",
     "question": "Which macromolecule is confirmed by the blue-black iodine complex?",
     "options": [
-      "Pure triglycerides (lipids)",
       "Sodium chloride salt",
+      "Simple reducing sugars like glucose",
       "Starch (amylose polysaccharide)",
-      "Simple reducing sugars like glucose"
+      "Pure triglycerides (lipids)"
     ],
     "correctAnswer": "Starch (amylose polysaccharide)",
     "explanation": "Triiodide ions (I₃⁻) slip inside the helical coils of amylose starch molecules, forming a charge-transfer complex with an intense blue-black color.",
@@ -8797,9 +9067,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why is the arithmetic mean misleading in this salary distribution?",
     "options": [
       "An extreme outlier (91,000 Cedis) skews the mean upward; the median salary of 1,000 Cedis accurately represents 90% of the workforce.",
+      "Apprentices should not be counted as human beings.",
       "Monthly salaries cannot be measured in Ghana Cedis.",
-      "100,000 divided by 10 was calculated incorrectly.",
-      "Apprentices should not be counted as human beings."
+      "100,000 divided by 10 was calculated incorrectly."
     ],
     "correctAnswer": "An extreme outlier (91,000 Cedis) skews the mean upward; the median salary of 1,000 Cedis accurately represents 90% of the workforce.",
     "explanation": "In heavily skewed distributions with extreme outliers, the arithmetic mean distorts typical values, whereas the median is robust against outliers.",
@@ -8828,10 +9098,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Longitudinal school records across 50 districts show that basic school pupils with larger shoe sizes score significantly higher on standardized English reading comprehension tests than pupils with smaller shoe sizes.",
     "question": "What confounding variable explains this statistical correlation?",
     "options": [
-      "Reading English textbooks causes foot bones to grow faster.",
-      "Child chronological age and grade level: older pupils naturally have larger feet and more years of reading instruction.",
       "Shoe manufacturers print vocabulary lists inside larger shoes.",
-      "Tight shoes restrict blood flow to the brain's language center."
+      "Child chronological age and grade level: older pupils naturally have larger feet and more years of reading instruction.",
+      "Tight shoes restrict blood flow to the brain's language center.",
+      "Reading English textbooks causes foot bones to grow faster."
     ],
     "correctAnswer": "Child chronological age and grade level: older pupils naturally have larger feet and more years of reading instruction.",
     "explanation": "Age is a confounding variable that independently drives physical growth (shoe size) and cumulative schooling (reading score).",
@@ -8844,10 +9114,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Ama's lunch box is missing from her bag. She sees crumbs on Kofi's desk and a banana peel in the bin. Kofi says he did not take it.",
     "question": "What is the most likely clue that Kofi took the lunch?",
     "options": [
-      "The banana peel in the bin",
       "Kofi's denial",
+      "Ama's empty bag",
       "The crumbs on Kofi's desk",
-      "Ama's empty bag"
+      "The banana peel in the bin"
     ],
     "correctAnswer": "The crumbs on Kofi's desk",
     "explanation": "Crumbs on Kofi's desk suggest he was eating something there. The banana peel could be from anyone, and denial is not evidence.",
@@ -8861,9 +9131,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the most likely cause of the wet floor?",
     "options": [
       "Rain came through the open window",
+      "A pipe burst",
       "Someone spilled water",
-      "The floor is sweating",
-      "A pipe burst"
+      "The floor is sweating"
     ],
     "correctAnswer": "Rain came through the open window",
     "explanation": "The open window and recent rain strongly suggest rain came in. Other options are less likely given the evidence.",
@@ -8893,9 +9163,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why might Kwame's story be unlikely?",
     "options": [
       "Rainbows only appear after rain or with water droplets in the air",
-      "Rainbows only appear at night",
       "Rainbows are always red",
-      "Rainbows cannot be seen by children"
+      "Rainbows cannot be seen by children",
+      "Rainbows only appear at night"
     ],
     "correctAnswer": "Rainbows only appear after rain or with water droplets in the air",
     "explanation": "Rainbows need water droplets and sunlight. On a sunny day with no rain, there may be no droplets to make a rainbow.",
@@ -8908,10 +9178,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Adwoa says she was at the library all afternoon. The librarian says the library was closed all afternoon.",
     "question": "What does this tell us about Adwoa's alibi?",
     "options": [
+      "Adwoa was at the library",
       "Her alibi is true",
-      "The librarian is lying",
       "Her alibi is false",
-      "Adwoa was at the library"
+      "The librarian is lying"
     ],
     "correctAnswer": "Her alibi is false",
     "explanation": "If the library was closed, Adwoa could not have been there. Her alibi is contradicted by the librarian.",
@@ -8940,10 +9210,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A window is broken from the outside. Glass is found on the outside ground. The inside floor has no glass.",
     "question": "What does the glass pattern suggest?",
     "options": [
-      "The window was broken from the inside",
       "The window was not broken",
+      "The glass was placed there",
       "The window was broken from the outside",
-      "The glass was placed there"
+      "The window was broken from the inside"
     ],
     "correctAnswer": "The window was broken from the outside",
     "explanation": "When glass breaks, it falls on the side of the force. Glass outside means the force came from outside.",
@@ -8957,9 +9227,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why is the plant leaning?",
     "options": [
       "It is growing towards the light",
+      "It is sick",
       "It is trying to escape",
-      "The wind pushed it",
-      "It is sick"
+      "The wind pushed it"
     ],
     "correctAnswer": "It is growing towards the light",
     "explanation": "Plants grow towards light, a process called phototropism. The plant leans towards the window to get more sunlight.",
@@ -8988,10 +9258,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher's pen is missing. She sees ink on Yaw's fingers and a pen cap under his chair.",
     "question": "What is the most likely clue that Yaw has the pen?",
     "options": [
-      "Yaw is sitting quietly",
-      "Ink on his fingers and a pen cap under his chair",
       "The teacher is angry",
-      "The pen is blue"
+      "Ink on his fingers and a pen cap under his chair",
+      "The pen is blue",
+      "Yaw is sitting quietly"
     ],
     "correctAnswer": "Ink on his fingers and a pen cap under his chair",
     "explanation": "Ink on fingers and a pen cap nearby are strong physical clues linking Yaw to the pen.",
@@ -9020,10 +9290,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Ice cream sales and drowning incidents both increase in summer. A newspaper says ice cream causes drowning.",
     "question": "What is the error in this reasoning?",
     "options": [
-      "Ice cream is dangerous",
       "Drowning is not real",
+      "Summer does not exist",
       "Correlation does not imply causation",
-      "Summer does not exist"
+      "Ice cream is dangerous"
     ],
     "correctAnswer": "Correlation does not imply causation",
     "explanation": "Both increase in summer because more people swim and eat ice cream. The heat is the underlying cause.",
@@ -9037,9 +9307,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why should you be suspicious of this post?",
     "options": [
       "It has no credible source or evidence",
+      "Taller people do not eat gari",
       "Gari is not real",
-      "Scientists do not exist",
-      "Taller people do not eat gari"
+      "Scientists do not exist"
     ],
     "correctAnswer": "It has no credible source or evidence",
     "explanation": "Claims without sources or evidence are often fake. Real scientific discoveries are published and reviewed.",
@@ -9069,9 +9339,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What does the footprint suggest about the person's movement?",
     "options": [
       "The person was running",
-      "The person was standing still",
       "The person was walking backwards",
-      "The person was crawling"
+      "The person was crawling",
+      "The person was standing still"
     ],
     "correctAnswer": "The person was running",
     "explanation": "A deeper heel print suggests the person was pushing off, which happens when running.",
@@ -9084,10 +9354,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A suspect says he was at a movie from 7 pm to 9 pm. The movie ticket shows 7 pm, but the cinema closed at 8 pm that day.",
     "question": "What is wrong with the suspect's alibi?",
     "options": [
+      "The suspect was at home",
       "The movie was too short",
-      "The ticket is fake",
       "The cinema was closed before the movie ended",
-      "The suspect was at home"
+      "The ticket is fake"
     ],
     "correctAnswer": "The cinema was closed before the movie ended",
     "explanation": "If the cinema closed at 8 pm, the suspect could not have been there until 9 pm. His alibi is false.",
@@ -9116,10 +9386,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A school claims, 'Our students score 20% higher on average!' But they only count students who passed the entrance exam.",
     "question": "What is misleading about this statistic?",
     "options": [
-      "The school is not real",
       "The exam was too easy",
+      "The students did not study",
       "It only includes a select group of students",
-      "The students did not study"
+      "The school is not real"
     ],
     "correctAnswer": "It only includes a select group of students",
     "explanation": "By only counting students who passed the entrance exam, the school excludes weaker students, making the average look better.",
@@ -9133,9 +9403,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the most likely cause of the clearer river?",
     "options": [
       "The trees reduced soil erosion into the river",
+      "The village stopped fishing",
       "The fish cleaned the river",
-      "The river changed direction",
-      "The village stopped fishing"
+      "The river changed direction"
     ],
     "correctAnswer": "The trees reduced soil erosion into the river",
     "explanation": "Tree roots hold soil in place, preventing it from washing into the river. This keeps the water clearer.",
@@ -9164,9 +9434,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A white powder is found at a crime scene. It dissolves in water and conducts electricity. When vinegar is added, bubbles form.",
     "question": "What type of substance is the powder most likely to be?",
     "options": [
+      "An oil",
       "A sugar",
       "A metal",
-      "An oil",
       "A carbonate salt"
     ],
     "correctAnswer": "A carbonate salt",
@@ -9196,9 +9466,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A report says, 'Crime has doubled in our town!' The actual numbers went from 2 to 4 crimes per year.",
     "question": "Why is this statistic misleading?",
     "options": [
-      "Crime is not real",
       "The town is too small",
       "The report is fake",
+      "Crime is not real",
       "The absolute numbers are very small"
     ],
     "correctAnswer": "The absolute numbers are very small",
@@ -9212,10 +9482,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A politician says, 'Either you support my policy or you want the country to fail.'",
     "question": "What fallacy is this?",
     "options": [
-      "Ad hominem",
+      "Slippery slope",
       "False dilemma",
-      "Appeal to authority",
-      "Slippery slope"
+      "Ad hominem",
+      "Appeal to authority"
     ],
     "correctAnswer": "False dilemma",
     "explanation": "The politician presents only two options when there are many other possibilities. This is a false dilemma.",
@@ -9244,10 +9514,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A body is found in a room. Rigor mortis has set in completely. The room is warm.",
     "question": "What does rigor mortis suggest about the time of death?",
     "options": [
-      "Death just occurred",
-      "Death occurred several hours earlier",
       "The person is still alive",
-      "The room temperature is irrelevant"
+      "Death occurred several hours earlier",
+      "The room temperature is irrelevant",
+      "Death just occurred"
     ],
     "correctAnswer": "Death occurred several hours earlier",
     "explanation": "Rigor mortis takes several hours to fully develop. Its presence indicates the person died hours ago.",
@@ -9260,9 +9530,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A new drug is tested on 5 patients. All 5 recover. The company claims the drug is 100% effective.",
     "question": "Why is this claim unreliable?",
     "options": [
+      "The company is not real",
       "The patients were not sick",
       "The drug is too expensive",
-      "The company is not real",
       "The sample size is too small"
     ],
     "correctAnswer": "The sample size is too small",
@@ -9292,9 +9562,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A town installs streetlights. Reported crime rates drop by 30%. However, the town also hired more police at the same time.",
     "question": "What makes it difficult to conclude that streetlights caused the drop in crime?",
     "options": [
-      "Streetlights are expensive",
       "Crime is not real",
       "The town is too small",
+      "Streetlights are expensive",
       "More police were also hired, which could be the cause"
     ],
     "correctAnswer": "More police were also hired, which could be the cause",
@@ -9308,10 +9578,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A student says, 'If we allow students to use phones in school, soon they will be playing games all day and no one will learn anything.'",
     "question": "What fallacy is the student using?",
     "options": [
+      "False dilemma",
       "Ad hominem",
-      "Bandwagon",
       "Slippery slope",
-      "False dilemma"
+      "Bandwagon"
     ],
     "correctAnswer": "Slippery slope",
     "explanation": "The student assumes one action will lead to extreme consequences without evidence. This is a slippery slope fallacy.",
@@ -9324,10 +9594,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During break time, three pupils report seeing a ball roll into the school garden. Ama finds a ball beside a flowerpot with fresh soil scattered around it. The flowerpot is broken.",
     "question": "Which observation best suggests that the ball may have struck the flowerpot?",
     "options": [
-      "The headteacher is in the office.",
       "Ama is wearing a blue uniform.",
+      "The classroom windows are open.",
       "The ball is beside the broken flowerpot.",
-      "The classroom windows are open."
+      "The headteacher is in the office."
     ],
     "correctAnswer": "The ball is beside the broken flowerpot.",
     "explanation": "The ball's position and the scattered soil are relevant clues connecting it to the broken pot. The other observations do not establish any connection to the damage.",
@@ -9341,9 +9611,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What information would best help check Kofi's story?",
     "options": [
       "The time Kofi entered the school compound.",
+      "The colour of Kofi's schoolbag.",
       "The number of flowers in the garden.",
-      "The name of Kofi's favourite subject.",
-      "The colour of Kofi's schoolbag."
+      "The name of Kofi's favourite subject."
     ],
     "correctAnswer": "The time Kofi entered the school compound.",
     "explanation": "The arrival time helps determine whether Kofi could have watered the garden before sunrise. The other details do not help establish the sequence of events.",
@@ -9373,9 +9643,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which part of her statement is a fact that can be checked?",
     "options": [
       "The garden has twelve tomato plants.",
-      "Everyone loves the garden.",
       "It is the most beautiful garden in Ghana.",
-      "The garden is wonderful."
+      "The garden is wonderful.",
+      "Everyone loves the garden."
     ],
     "correctAnswer": "The garden has twelve tomato plants.",
     "explanation": "The number of plants can be counted and verified. Beauty and universal admiration are opinions that require subjective judgement.",
@@ -9388,10 +9658,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher finds wet footprints leading from the school tap to a classroom. The pupils are investigating why the floor is wet. One pupil notices that the footprints become smaller as they approach the classroom.",
     "question": "What is the most reasonable explanation?",
     "options": [
+      "The classroom produced the water.",
       "The footprints were made by a flying bird.",
-      "The floor was painted with water.",
       "Someone walked from the tap towards the classroom.",
-      "The classroom produced the water."
+      "The floor was painted with water."
     ],
     "correctAnswer": "Someone walked from the tap towards the classroom.",
     "explanation": "The footprints form a trail between the tap and the classroom. This is evidence of someone's movement, although it does not identify the person.",
@@ -9420,10 +9690,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Four pupils visit a school garden. One says the mango tree has no fruit, but another points to three small green mangoes hidden among its leaves.",
     "question": "What mistake did the first pupil make?",
     "options": [
-      "The leaves changed into fruit.",
       "The mangoes disappeared when nobody watched.",
+      "The tree was planted upside down.",
       "The pupil did not look carefully enough.",
-      "The tree was planted upside down."
+      "The leaves changed into fruit."
     ],
     "correctAnswer": "The pupil did not look carefully enough.",
     "explanation": "The mangoes were present but partly hidden by the leaves. Careful observation helps us avoid making conclusions too quickly.",
@@ -9437,9 +9707,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "What is the main problem with his story?",
     "options": [
       "His story places lunchtime before the morning school arrival.",
+      "He forgot to bring his exercise book.",
       "He has a new lunchbox.",
-      "He ate food with his friends.",
-      "He forgot to bring his exercise book."
+      "He ate food with his friends."
     ],
     "correctAnswer": "His story places lunchtime before the morning school arrival.",
     "explanation": "The stated sequence conflicts with the school's normal timetable. Checking the order of events can expose an inconsistent account.",
@@ -9468,10 +9738,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A classroom has four windows. After a strong wind, a pile of dry leaves appears near the door. The teacher notices that the window closest to the pile is open.",
     "question": "Which explanation is most reasonable?",
     "options": [
-      "The pupils turned into leaves.",
-      "The wind may have blown leaves through the open window.",
       "The leaves were growing inside the classroom.",
-      "The door produced the leaves."
+      "The wind may have blown leaves through the open window.",
+      "The door produced the leaves.",
+      "The pupils turned into leaves."
     ],
     "correctAnswer": "The wind may have blown leaves through the open window.",
     "explanation": "Wind can carry light leaves through an open window. The location of the leaves and the open window provide a reasonable explanation, although further checking could confirm it.",
@@ -9500,10 +9770,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A teacher discovers that a classroom chalkboard has been wiped clean. A pupil claims nobody entered the classroom after lessons. However, fresh chalk dust is visible on the floor beneath the board, and the classroom door was unlocked.",
     "question": "Which conclusion is best supported by the available evidence?",
     "options": [
-      "The chalkboard cleaned itself.",
       "The class captain definitely wiped the board.",
+      "The teacher must have wiped the board.",
       "Someone may have wiped the board, but the evidence does not identify the person.",
-      "The teacher must have wiped the board."
+      "The chalkboard cleaned itself."
     ],
     "correctAnswer": "Someone may have wiped the board, but the evidence does not identify the person.",
     "explanation": "The chalk dust supports the possibility that the board was recently cleaned. An unlocked door and chalk dust cannot establish who performed the action.",
@@ -9517,9 +9787,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Why is the neighbour's warning reasonable?",
     "options": [
       "Other factors, including water, soil condition and excessive fertiliser, affect crop growth.",
+      "Fertiliser never helps plants grow.",
       "All maize plants produce the same harvest.",
-      "The largest harvest always comes from the smallest field.",
-      "Fertiliser never helps plants grow."
+      "The largest harvest always comes from the smallest field."
     ],
     "correctAnswer": "Other factors, including water, soil condition and excessive fertiliser, affect crop growth.",
     "explanation": "Crop yield depends on several interacting conditions, and excessive fertiliser can damage plants or soil. An observed relationship does not establish a simple doubling rule.",
@@ -9549,9 +9819,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which bias most clearly affects the research?",
     "options": [
       "Selection bias because customers were chosen from a shop selling local juice.",
-      "Random error because the researcher used a notebook.",
       "A calculation error because 40 is an even number.",
-      "Memory loss because customers answered questions."
+      "Memory loss because customers answered questions.",
+      "Random error because the researcher used a notebook."
     ],
     "correctAnswer": "Selection bias because customers were chosen from a shop selling local juice.",
     "explanation": "Customers at a local juice shop are more likely to favour the product sold there. Their preferences cannot automatically represent the entire town.",
@@ -9564,10 +9834,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A pupil finds a red stain on a laboratory table and claims that someone spilled red paint. The laboratory assistant notes that the stain dissolves in water and leaves no visible solid particles.",
     "question": "What should the pupil do before deciding that the stain is paint?",
     "options": [
+      "Immediately accuse the last pupil who used the table.",
       "Assume every red stain is paint.",
-      "Wash the entire laboratory floor.",
       "Carry out an appropriate identification test or consult the laboratory assistant.",
-      "Immediately accuse the last pupil who used the table."
+      "Wash the entire laboratory floor."
     ],
     "correctAnswer": "Carry out an appropriate identification test or consult the laboratory assistant.",
     "explanation": "Appearance alone cannot identify an unknown substance because several materials can produce red stains. Appropriate tests and safe laboratory procedures are needed before drawing conclusions.",
@@ -9596,10 +9866,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A message circulating on a class WhatsApp group claims that all schools in Ghana will close tomorrow because of an emergency. It contains no official announcement, date of publication or identifiable source.",
     "question": "What is the most responsible action?",
     "options": [
-      "Add a frightening photograph to make it more convincing.",
       "Forward it to every class group immediately.",
+      "Believe it because many people have shared it.",
       "Check official education authority announcements before sharing the message.",
-      "Believe it because many people have shared it."
+      "Add a frightening photograph to make it more convincing."
     ],
     "correctAnswer": "Check official education authority announcements before sharing the message.",
     "explanation": "Repeated sharing does not make an unverified claim true. Reliable information should be checked against official sources before it is circulated.",
@@ -9613,9 +9883,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "question": "Which reasoning error does the second pupil make?",
     "options": [
       "Attacking the person instead of addressing the argument.",
+      "Providing scientific evidence.",
       "Comparing two measurements fairly.",
-      "Explaining the benefits of trees.",
-      "Providing scientific evidence."
+      "Explaining the benefits of trees."
     ],
     "correctAnswer": "Attacking the person instead of addressing the argument.",
     "explanation": "This is an ad hominem fallacy because the pupil attacks the speaker rather than evaluating the proposal. A person's past mistake does not automatically invalidate a reasonable argument.",
@@ -9644,9 +9914,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A district analyst discovers that communities with more mobile phone towers report more road accidents. He concludes that mobile phone towers cause accidents and recommends removing them. However, larger communities tend to have both more towers and more vehicles.",
     "question": "What is the most important flaw in the analyst's conclusion?",
     "options": [
+      "Mobile phone towers cannot be counted accurately.",
       "Road accidents are always caused by poor weather.",
       "The analyst should compare only communities without roads.",
-      "Mobile phone towers cannot be counted accurately.",
       "Population size and vehicle numbers may be confounding variables affecting both measures."
     ],
     "correctAnswer": "Population size and vehicle numbers may be confounding variables affecting both measures.",
@@ -9676,9 +9946,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A district health report shows that the percentage of students who exercise regularly increased from 40% to 60%. However, the first survey included 500 students, while the second included only 50 students selected from a school sports club.",
     "question": "What is the strongest criticism of the report's conclusion?",
     "options": [
-      "The second survey proves that every student exercises more.",
       "Percentages cannot be used in health research.",
       "The first survey must have been incorrect because it was larger.",
+      "The second survey proves that every student exercises more.",
       "The samples differ greatly in size and selection, so the apparent increase may not represent the district."
     ],
     "correctAnswer": "The samples differ greatly in size and selection, so the apparent increase may not represent the district.",
@@ -9692,10 +9962,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "During a debate on school uniforms, a speaker argues that uniforms should be compulsory because every respected school in the country uses them. Another pupil points out that the argument does not establish whether uniforms improve learning.",
     "question": "Which fallacy best describes the original argument?",
     "options": [
-      "A valid mathematical deduction.",
+      "False cause based on a controlled experiment.",
       "Appeal to popularity or common practice as proof of effectiveness.",
-      "An appeal to scientific measurement.",
-      "False cause based on a controlled experiment."
+      "A valid mathematical deduction.",
+      "An appeal to scientific measurement."
     ],
     "correctAnswer": "Appeal to popularity or common practice as proof of effectiveness.",
     "explanation": "A practice being common or popular does not prove that it produces the claimed benefit. Evidence about learning outcomes would be needed to support the conclusion.",
@@ -9724,10 +9994,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A research team tests a new malaria awareness poster in one school. Out of 20 pupils, 18 correctly answer a health quiz after seeing the poster. The team announces that the poster will improve knowledge by 90% among all Ghanaian children.",
     "question": "Which additional research step would most strengthen this claim?",
     "options": [
-      "Remove all pupils who answer incorrectly.",
-      "Test the poster with larger, representative groups from different communities and compare results appropriately.",
       "Repeat the same quiz with the same 20 pupils until they remember every answer.",
-      "Ask only the poster designer whether it works."
+      "Test the poster with larger, representative groups from different communities and compare results appropriately.",
+      "Ask only the poster designer whether it works.",
+      "Remove all pupils who answer incorrectly."
     ],
     "correctAnswer": "Test the poster with larger, representative groups from different communities and compare results appropriately.",
     "explanation": "One small school sample cannot establish effectiveness across a diverse national population. Broader sampling and a suitable comparison design would strengthen the evidence.",
@@ -9740,9 +10010,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A laboratory assistant finds a white powder near a school science cupboard. Three students suggest it is salt, sugar or chalk based only on its appearance. The teacher prevents anyone from tasting or touching it.",
     "question": "What is the safest and most scientifically sound next step?",
     "options": [
+      "Taste a small amount to identify its flavour.",
       "Mix it with every chemical in the cupboard.",
       "Assume it is salt because salt is common in Ghana.",
-      "Taste a small amount to identify its flavour.",
       "Use appropriate supervised laboratory identification tests while following safety procedures."
     ],
     "correctAnswer": "Use appropriate supervised laboratory identification tests while following safety procedures.",
@@ -9772,9 +10042,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A district evaluates the performance of hospitals. One hospital appears to have a higher death rate than another. However, the first hospital receives many critically ill patients referred from smaller facilities, while the second mostly handles routine cases.",
     "question": "Which analytical problem must be addressed before ranking the hospitals?",
     "options": [
-      "All hospitals must treat exactly the same number of patients.",
       "The hospitals should be ranked alphabetically.",
       "The hospital with more doctors must always have fewer deaths.",
+      "All hospitals must treat exactly the same number of patients.",
       "Differences in patient severity and referral patterns may create confounding."
     ],
     "correctAnswer": "Differences in patient severity and referral patterns may create confounding.",
@@ -9788,10 +10058,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "A community installs a new rubbish collection system. After three months, illegal dumping increases in one neighbourhood. A councillor argues that the new system is responsible because dumping increased after its introduction, although the neighbourhood also lost its regular collection point.",
     "question": "Which reasoning error is most relevant to the councillor's conclusion?",
     "options": [
+      "A valid conclusion from a randomised controlled trial.",
       "An accurate calculation of population density.",
-      "An appeal to the authority of environmental science.",
       "Post hoc reasoning that assumes sequence alone proves causation.",
-      "A valid conclusion from a randomised controlled trial."
+      "An appeal to the authority of environmental science."
     ],
     "correctAnswer": "Post hoc reasoning that assumes sequence alone proves causation.",
     "explanation": "The increase occurred after the new system, but that does not prove the system caused it. The loss of the collection point is a competing explanation that must be investigated.",
@@ -9804,10 +10074,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Ama's pencil is missing. She sees graphite dust on Kwame's desk and a broken pencil tip under his chair.",
     "question": "What is the most likely clue that Kwame has the pencil?",
     "options": [
-      "The pencil is yellow",
+      "Ama is crying",
       "Graphite dust on his desk and a broken tip under his chair",
-      "Kwame is sitting quietly",
-      "Ama is crying"
+      "The pencil is yellow",
+      "Kwame is sitting quietly"
     ],
     "correctAnswer": "Graphite dust on his desk and a broken tip under his chair",
     "explanation": "Graphite dust and a broken tip are physical evidence linking Kwame to the pencil.",
@@ -9836,10 +10106,10 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Kofi says, 'Football is the best sport.' Ama says, 'Football is played with a ball.'",
     "question": "Which statement is a fact?",
     "options": [
-      "Football is boring.",
-      "Football is played with a ball.",
       "Football is the most fun.",
-      "Football is the best sport."
+      "Football is played with a ball.",
+      "Football is the best sport.",
+      "Football is boring."
     ],
     "correctAnswer": "Football is played with a ball.",
     "explanation": "Football being played with a ball can be observed and verified. 'Best' and 'boring' are opinions.",
@@ -9852,9 +10122,9 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     "scenario": "Yaw says he saw a chicken lay an egg at midnight. His friend says that is unlikely.",
     "question": "Why might Yaw's story be unlikely?",
     "options": [
+      "Eggs are not real",
       "Midnight is not a real time",
       "Chickens do not lay eggs",
-      "Eggs are not real",
       "Chickens usually lay eggs during the day"
     ],
     "correctAnswer": "Chickens usually lay eggs during the day",
@@ -9875,6 +10145,486 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     ],
     "correctAnswer": "Her alibi is false",
     "explanation": "If the market is closed on Mondays, Adwoa could not have been there. Her alibi is contradicted.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A pupil finds a wet footprint near the classroom door after break time. The floor outside is wet because it has just rained, but the classroom roof is dry. The teacher wants to know where the footprint probably came from.",
+    "question": "Which explanation is best supported by the evidence?",
+    "options": [
+      "Someone probably walked in from the wet playground.",
+      "The footprint proves that someone spilled paint.",
+      "The classroom ceiling produced the footprint.",
+      "The footprint was made by a flying bird."
+    ],
+    "correctAnswer": "Someone probably walked in from the wet playground.",
+    "explanation": "Wet shoes can leave footprints after someone walks across wet ground. The other explanations are not supported by the available evidence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "A class plants two bean seeds in separate pots. One pot receives water every day, while the other receives no water. After several days, the watered seed grows better.",
+    "question": "What is the most reasonable explanation?",
+    "options": [
+      "The seed without water received too much sunlight.",
+      "Plants grow better when nobody observes them.",
+      "Water helped the growing seed carry out essential life processes.",
+      "The dry pot must have contained invisible insects."
+    ],
+    "correctAnswer": "Water helped the growing seed carry out essential life processes.",
+    "explanation": "Water is necessary for seed germination and plant growth. The observation supports the importance of water, although a more controlled experiment would improve the evidence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "A school bell rings at 8:00 in the morning. Kofi says he heard the bell at 7:30, while Ama says she arrived at 7:45 and heard it ring later. The school clock confirms that the bell rang at 8:00.",
+    "question": "Which statement agrees with the confirmed timeline?",
+    "options": [
+      "The bell rang at 8:00.",
+      "The bell rang at 7:30.",
+      "The bell rang at 9:00.",
+      "The bell rang at 7:00."
+    ],
+    "correctAnswer": "The bell rang at 8:00.",
+    "explanation": "The confirmed clock time is stronger evidence than an inaccurate recollection. Ama's arrival time does not change when the bell actually rang.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Forensic Observation",
+    "scenario": "A pupil discovers that a classroom window is open and a paper notice is on the floor. The notice was originally pinned beside the window. There is a breeze blowing through the room.",
+    "question": "What is the most reasonable explanation for the notice falling?",
+    "options": [
+      "The notice became too heavy because it was read.",
+      "The notice walked away by itself.",
+      "The breeze may have blown the notice down.",
+      "The floor pulled the notice down with a rope."
+    ],
+    "correctAnswer": "The breeze may have blown the notice down.",
+    "explanation": "Moving air can exert force on lightweight paper and cause it to fall. This is a reasonable explanation based on the observed breeze, although other causes are possible.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Two pupils are discussing a mango tree in their school compound. Adwoa says the tree is 4 metres tall, while Yaw says it is the most beautiful tree in Ghana.",
+    "question": "Which statement is an opinion?",
+    "options": [
+      "The tree is the most beautiful tree in Ghana.",
+      "The tree is in the school compound.",
+      "The tree is 4 metres tall.",
+      "The tree has branches."
+    ],
+    "correctAnswer": "The tree is the most beautiful tree in Ghana.",
+    "explanation": "Beauty is a matter of personal judgement, so the statement is an opinion. The other statements can be checked through observation or measurement.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3106",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "A pupil leaves a cup of ice water outside on a warm afternoon. After a while, tiny water drops appear on the outside of the cup. The pupil believes the cup has developed a leak.",
+    "question": "What most likely caused the water drops?",
+    "options": [
+      "The ice escaped through the cup wall.",
+      "The sun changed the cup into a water container.",
+      "Water vapour in the air cooled and condensed on the cup.",
+      "The cup produced water from its plastic."
+    ],
+    "correctAnswer": "Water vapour in the air cooled and condensed on the cup.",
+    "explanation": "Water vapour in the surrounding air condenses into liquid droplets when it touches the cold cup. The droplets are not necessarily leaking from inside the cup.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3107",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A teacher places three objects on a table: a metal spoon, a wooden ruler and a plastic cup. A magnet attracts only the spoon. The pupils must identify the object containing magnetic material.",
+    "question": "Which object provides the strongest evidence of containing magnetic material?",
+    "options": [
+      "The metal spoon.",
+      "All three objects equally.",
+      "The wooden ruler.",
+      "The plastic cup."
+    ],
+    "correctAnswer": "The metal spoon.",
+    "explanation": "The magnet's attraction indicates that the spoon contains a magnetic material, such as iron or certain types of steel. Not every metal is magnetic.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3108",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "A pupil says that she planted a seed on Monday and saw a fully grown maize plant on Tuesday morning. Her teacher explains that maize takes much longer to grow.",
+    "question": "What is the main problem with the pupil's story?",
+    "options": [
+      "Maize seeds cannot be planted in soil.",
+      "Monday always comes after Tuesday.",
+      "A maize plant cannot normally grow fully in one night.",
+      "Plants grow only when the moon is visible."
+    ],
+    "correctAnswer": "A maize plant cannot normally grow fully in one night.",
+    "explanation": "Maize requires time to germinate and develop into a mature plant. The timeline is biologically unrealistic.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3109",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A school garden has three plants. One plant has been eaten around its leaves, and a trail of slime is visible nearby. The gardener suspects a visitor from the garden.",
+    "question": "Which animal is the most likely suspect?",
+    "options": [
+      "A snail.",
+      "A butterfly.",
+      "A grasscutter.",
+      "A chicken."
+    ],
+    "correctAnswer": "A snail.",
+    "explanation": "Snails feed on leaves and leave a characteristic slime trail as they move. The combination of damaged leaves and slime provides useful clues.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-3110",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "A pupil reads a notice saying that the school library contains 500 books. Another pupil says that the library is the best library in the country. They are asked to identify which claim can be checked by counting.",
+    "question": "Which claim can be verified by counting?",
+    "options": [
+      "The library has the happiest readers.",
+      "The library is the most exciting place.",
+      "The library is better than every other library.",
+      "The library contains 500 books."
+    ],
+    "correctAnswer": "The library contains 500 books.",
+    "explanation": "The number of books can be checked by counting the collection. Claims about excitement, happiness and superiority are subjective unless clearly defined and measured.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A market researcher interviews eight customers at one fruit stall in Kumasi. All eight prefer oranges to pineapples. The researcher publishes a report claiming that 100% of Ghanaian fruit buyers prefer oranges.",
+    "question": "What is the main weakness in the researcher's conclusion?",
+    "options": [
+      "All fruit buyers must have identical preferences.",
+      "The researcher should have interviewed only the fruit seller.",
+      "The researcher used a sample that was too small and too narrowly selected.",
+      "Oranges cannot be compared with pineapples."
+    ],
+    "correctAnswer": "The researcher used a sample that was too small and too narrowly selected.",
+    "explanation": "Eight customers at one stall cannot reliably represent all fruit buyers in Ghana. A larger, more diverse and representative sample would improve the research.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A school laboratory contains three unidentified liquids. Liquid A turns blue litmus paper red, Liquid B turns red litmus paper blue, and Liquid C does not change either paper. The laboratory assistant labels them acid, base and neutral solution.",
+    "question": "Which liquid is most likely the base?",
+    "options": [
+      "Liquid B.",
+      "All three liquids.",
+      "Liquid A.",
+      "Liquid C."
+    ],
+    "correctAnswer": "Liquid B.",
+    "explanation": "A basic solution turns red litmus paper blue. Liquid A behaves as an acid, while Liquid C shows no colour change in this test.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "A cocoa cooperative records that fermentation began on Monday morning. The beans were turned on Wednesday and dried on Thursday. A manager claims that the beans were dried before fermentation started.",
+    "question": "Which evidence exposes the manager's mistake?",
+    "options": [
+      "The beans were brown.",
+      "The cooperative has many members.",
+      "The recorded sequence shows fermentation began before drying.",
+      "The drying mats were made of wood."
+    ],
+    "correctAnswer": "The recorded sequence shows fermentation began before drying.",
+    "explanation": "The documented dates establish that fermentation began on Monday and drying occurred on Thursday. The manager's claim reverses the recorded sequence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A teacher observes that pupils who carry umbrellas often arrive at school on rainy days. She concludes that carrying umbrellas causes rainfall. The pupils laugh because they know something is wrong with her conclusion.",
+    "question": "What is the logical error?",
+    "options": [
+      "Assuming that an association proves that one event causes the other.",
+      "Observing pupils carrying umbrellas.",
+      "Comparing rainy and sunny days.",
+      "Using a calendar to record rainy days."
+    ],
+    "correctAnswer": "Assuming that an association proves that one event causes the other.",
+    "explanation": "Rain causes people to use umbrellas, not the other way around. The teacher confuses a relationship between two events with a causal relationship.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A school wants to know whether pupils enjoy the new school lunch. The headteacher asks only pupils who belong to the cooking club. Every pupil interviewed says the lunch is excellent.",
+    "question": "What is the main source of bias?",
+    "options": [
+      "The headteacher asked a question.",
+      "The school has too many classrooms.",
+      "The pupils selected may have unusually positive views because of their connection to the cooking club.",
+      "The lunch was served before midday."
+    ],
+    "correctAnswer": "The pupils selected may have unusually positive views because of their connection to the cooking club.",
+    "explanation": "The cooking club members may be more supportive of the lunch than other pupils. Their responses may therefore not represent the views of the entire school.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3106",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A science class places equal amounts of sugar and sand in separate beakers of water. After stirring, the sugar seems to disappear, while the sand settles at the bottom. A pupil says both substances have been destroyed.",
+    "question": "Which explanation is scientifically correct?",
+    "options": [
+      "Sugar dissolves in water, while sand remains largely undissolved and settles.",
+      "Both substances have turned into gases.",
+      "The sand has become sugar.",
+      "The water has destroyed the atoms in both substances."
+    ],
+    "correctAnswer": "Sugar dissolves in water, while sand remains largely undissolved and settles.",
+    "explanation": "Dissolving distributes sugar particles throughout the water, even though they are no longer visible. Sand does not dissolve significantly under these conditions and settles under gravity.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3107",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Misleading Statistics",
+    "scenario": "Two schools report their examination results. School A has 90% passes from 20 pupils, while School B has 85% passes from 400 pupils. A newspaper declares that School A is unquestionably the better school.",
+    "question": "Why is the newspaper's conclusion too strong?",
+    "options": [
+      "School B must have no successful pupils.",
+      "The number of pupils never matters in statistical comparisons.",
+      "School A's percentage comes from a much smaller group, and other factors should also be considered.",
+      "Percentages cannot be used to compare schools."
+    ],
+    "correctAnswer": "School A's percentage comes from a much smaller group, and other factors should also be considered.",
+    "explanation": "Small samples can produce percentages that are less stable and representative. School performance should be assessed using broader evidence, including pupil backgrounds, subjects and consistency over time.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3108",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "A farmer sprays an insecticide on maize plants. The number of caterpillars falls, but several days later the farmer notices fewer birds feeding in the field. The farmer wonders whether the two observations are connected.",
+    "question": "Which explanation is most scientifically reasonable?",
+    "options": [
+      "The insecticide may have reduced insect food or affected organisms in the food web.",
+      "Birds cannot eat insects.",
+      "The birds have permanently forgotten how to fly.",
+      "The maize has changed into a different crop."
+    ],
+    "correctAnswer": "The insecticide may have reduced insect food or affected organisms in the food web.",
+    "explanation": "Birds may depend on insects for food, so reducing insect populations can affect them. Chemicals can also have unintended effects on other organisms in an ecosystem.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3109",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Logical Fallacy",
+    "scenario": "During a school debate, Kwaku argues that a new playground should not be built because the oldest pupil in the school dislikes it. He gives no evidence about the cost, safety or usefulness of the playground.",
+    "question": "What is the main weakness in Kwaku's argument?",
+    "options": [
+      "He uses too many scientific measurements.",
+      "He provides evidence from a national survey.",
+      "He treats one person's preference as sufficient evidence for a decision affecting everyone.",
+      "He compares two playground designs."
+    ],
+    "correctAnswer": "He treats one person's preference as sufficient evidence for a decision affecting everyone.",
+    "explanation": "One person's opinion does not establish what is best for the entire school. A sound decision requires broader evidence and consideration of different pupils' needs.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-3110",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Clue Observation",
+    "scenario": "A solar-powered school light works during the afternoon but fails to operate at night. The battery indicator shows that the battery is empty, although the solar panel appears undamaged.",
+    "question": "Which investigation should be carried out first?",
+    "options": [
+      "Paint the battery black.",
+      "Check whether the panel receives sufficient sunlight and whether the charging connections work.",
+      "Disconnect the solar panel permanently.",
+      "Replace every classroom window."
+    ],
+    "correctAnswer": "Check whether the panel receives sufficient sunlight and whether the charging connections work.",
+    "explanation": "The battery depends on energy supplied by the solar panel through the charging system. Checking sunlight exposure, wiring and the charge controller is a logical first diagnostic step.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3101",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A district assembly proposes a tree-planting programme. During a public meeting, one speaker argues that the programme must be rejected because the assembly member supporting it once failed an examination in science. No evidence about the programme's environmental or financial merits is presented.",
+    "question": "Which logical fallacy best describes the speaker's argument?",
+    "options": [
+      "Straw man, because the speaker exaggerates the environmental benefits.",
+      "Ad hominem, because the speaker attacks the person's character or background instead of addressing the proposal.",
+      "False dilemma, because the speaker presents only two choices.",
+      "Slippery slope, because the speaker predicts an unavoidable chain of events."
+    ],
+    "correctAnswer": "Ad hominem, because the speaker attacks the person's character or background instead of addressing the proposal.",
+    "explanation": "The speaker attacks the advocate rather than examining the evidence supporting the tree-planting programme. A person's examination history does not establish whether a policy is sound.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3102",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "An environmental science team investigates a stream near an industrial area. One sample has a pH of 3, another has a pH of 7, and a third has a pH of 9. A local resident claims that the sample with pH 9 must be the most acidic because 9 is the largest number.",
+    "question": "Which interpretation is scientifically correct?",
+    "options": [
+      "All three samples have equal acidity.",
+      "The pH 7 sample is the most acidic.",
+      "The pH 9 sample is the most acidic because it has the highest number.",
+      "The pH 3 sample is the most acidic, while the pH 9 sample is alkaline."
+    ],
+    "correctAnswer": "The pH 3 sample is the most acidic, while the pH 9 sample is alkaline.",
+    "explanation": "The pH scale generally becomes more acidic as its value decreases and more alkaline as it increases. A pH of 7 is neutral under standard conditions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3103",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A hospital reports that the average waiting time in its outpatient department has fallen from 90 minutes to 45 minutes. However, the hospital has stopped recording patients who leave before being attended to. Management announces that patient service has improved by 50%.",
+    "question": "What is the most important measurement problem?",
+    "options": [
+      "A reduction in waiting time is mathematically impossible.",
+      "Excluding patients who leave creates a potentially biased measure of waiting time.",
+      "Averages cannot be used to describe waiting times.",
+      "The hospital should report only the longest waiting time."
+    ],
+    "correctAnswer": "Excluding patients who leave creates a potentially biased measure of waiting time.",
+    "explanation": "The average may fall because dissatisfied patients who leave are no longer included in the calculation. The reported statistic may therefore misrepresent the experience of all patients who sought care.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3104",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A social media post claims that a new solar invention can produce electricity forever without sunlight, fuel or any energy input. The post includes a dramatic video but provides no independent scientific test, technical explanation or verifiable source.",
+    "question": "What is the strongest reason to question the claim?",
+    "options": [
+      "Videos can never contain scientific information.",
+      "Solar technology cannot produce electricity.",
+      "Every invention must be false until it becomes popular.",
+      "It conflicts with the conservation of energy and lacks independently verifiable evidence."
+    ],
+    "correctAnswer": "It conflicts with the conservation of energy and lacks independently verifiable evidence.",
+    "explanation": "Energy cannot be created from nothing, so a machine producing unlimited energy without an input contradicts established physics. A dramatic video is not a substitute for independent testing and reproducible evidence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3105",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A research team studies school performance and finds that pupils who own more books tend to obtain higher examination scores. A newspaper concludes that buying books alone will automatically improve every pupil's performance.",
+    "question": "Which missing consideration most seriously weakens the newspaper's conclusion?",
+    "options": [
+      "Every pupil who owns books must achieve the same score.",
+      "Other factors such as family income, reading habits, school resources and parental support may influence both variables.",
+      "Higher examination scores always cause pupils to buy fewer books.",
+      "Books and examinations cannot be studied together."
+    ],
+    "correctAnswer": "Other factors such as family income, reading habits, school resources and parental support may influence both variables.",
+    "explanation": "An observed association does not establish that book ownership alone causes better results. Confounding variables and the quality of reading experiences must be considered before making causal claims.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3106",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Alibi Verification",
+    "scenario": "A museum guard claims to have been inside a locked exhibition room at 14:00. An access log records that the guard's identification card was used to exit the building at 13:55, while a verified external camera shows someone entering a taxi at 13:57 wearing the guard's uniform. The guard insists the access card must have been used by someone else.",
+    "question": "What is the most defensible conclusion from the evidence?",
+    "options": [
+      "The camera footage is irrelevant because it was recorded outside.",
+      "The guard is certainly guilty because every uniform identifies its wearer.",
+      "The access log proves the guard was inside the room.",
+      "The evidence strongly challenges the guard's alibi, but further investigation is needed to establish who used the card and appeared on camera."
+    ],
+    "correctAnswer": "The evidence strongly challenges the guard's alibi, but further investigation is needed to establish who used the card and appeared on camera.",
+    "explanation": "The time-stamped records are inconsistent with the claimed location, but identification cards and uniforms can potentially be used by other people. Reliable identification and corroborating evidence are necessary before assigning guilt.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3107",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A student argues that the school must either ban all mobile phones or allow pupils to use phones during every lesson. The student dismisses suggestions such as supervised educational use, restricted access or designated study periods.",
+    "question": "Which fallacy does this argument demonstrate?",
+    "options": [
+      "Appeal to authority, because it relies on expert opinion.",
+      "False dilemma, because it ignores reasonable alternatives between two extreme positions.",
+      "Post hoc reasoning, because it confuses sequence with causation.",
+      "Hasty generalisation, because it uses a representative sample."
+    ],
+    "correctAnswer": "False dilemma, because it ignores reasonable alternatives between two extreme positions.",
+    "explanation": "The argument presents only two choices even though several intermediate policies are possible. Recognising alternatives is essential to balanced decision-making.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3108",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Observation",
+    "scenario": "Investigators examine a damaged solar battery installation. The positive and negative cables show different melting patterns, and the fuse has blown. A technician immediately claims that the battery exploded because it was old. No maintenance records or electrical measurements have been examined.",
+    "question": "What should investigators do before accepting the technician's explanation?",
+    "options": [
+      "Replace the battery and destroy the damaged components.",
+      "Conclude that lightning caused the damage without further investigation.",
+      "Accept the technician's explanation because age always causes electrical failures.",
+      "Examine the circuit, fuse rating, wiring, battery condition and maintenance records to test competing explanations."
+    ],
+    "correctAnswer": "Examine the circuit, fuse rating, wiring, battery condition and maintenance records to test competing explanations.",
+    "explanation": "Electrical damage can result from short circuits, overloads, faulty connections, battery defects or other causes. A sound forensic investigation preserves evidence and tests alternative hypotheses before reaching a conclusion.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3109",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A district reports that reported malaria cases increased by 40% after introducing free community screening. A commentator claims that the screening programme has made malaria more widespread. The programme also increased the number of people tested substantially.",
+    "question": "What is the best interpretation of the increase?",
+    "options": [
+      "An increase in reported cases proves that screening has failed.",
+      "The increase may partly reflect improved detection, and infection rates should be assessed using appropriate population and testing data.",
+      "The screening programme definitely caused every additional infection.",
+      "Reported cases always equal the actual number of infections in a community."
+    ],
+    "correctAnswer": "The increase may partly reflect improved detection, and infection rates should be assessed using appropriate population and testing data.",
+    "explanation": "More testing can reveal infections that previously went undetected, increasing reported cases without an equivalent rise in actual prevalence. Researchers should compare appropriate testing rates and population-based measures.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-3110",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A research team studies the relationship between rainfall and cocoa yields using records from only two farms in one district. It discovers that higher rainfall coincides with higher yields and claims that the relationship applies to every cocoa-growing region in Ghana.",
+    "question": "Which research limitation most directly affects this conclusion?",
+    "options": [
+      "Limited external validity because two farms in one district cannot adequately represent all cocoa-growing regions.",
+      "The research is invalid because rainfall cannot affect agriculture.",
+      "The study has too many independent variables.",
+      "The team should replace rainfall measurements with personal opinions."
+    ],
+    "correctAnswer": "Limited external validity because two farms in one district cannot adequately represent all cocoa-growing regions.",
+    "explanation": "Climate, soil, farming practices and cocoa varieties can differ across regions. A broader and more representative sample is required before generalising the findings nationally.",
     "isCentral": true
   }
 ];
@@ -19493,6 +20243,773 @@ export const THINK_TANK_RIDDLES: ThinkTankRiddleItem[] = [
     ],
     "explanation": "Orange is a fruit and also a color. Removing the first letter gives 'range', which is not a color, but the riddle plays on the dual meaning.",
     "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a tiny visitor that travels from flower to flower. I collect sweet nectar, carry pollen and help plants make fruits and seeds. Who am I?",
+    "hint1": "I have wings and visit flowers.",
+    "hint2": "I make honey from the nectar I collect.",
+    "answer": "Honeybee",
+    "acceptedKeywords": [
+      "honeybee",
+      "bee",
+      "honey bee"
+    ],
+    "explanation": "Honeybees collect nectar and pollen from flowers. As they move between flowers, they help pollinate plants.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am a special symbol used in Ghana to remind people that wisdom can be found in learning from the past. My name means 'go back and get it'. What am I?",
+    "hint1": "I come from Akan cultural symbolism.",
+    "hint2": "My symbol often looks like a bird looking backwards.",
+    "answer": "Sankofa",
+    "acceptedKeywords": [
+      "sankofa",
+      "sankofa symbol",
+      "sankofa philosophy"
+    ],
+    "explanation": "Sankofa is an Akan concept encouraging people to learn from the past while moving forward. Its familiar bird symbol looks backwards while moving forwards.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am a number. When you add me to myself, the answer is 14. What number am I?",
+    "hint1": "I am smaller than 14.",
+    "hint2": "Half of 14 gives my value.",
+    "answer": "7",
+    "acceptedKeywords": [
+      "7",
+      "seven",
+      "number seven"
+    ],
+    "explanation": "Seven added to seven equals fourteen. The puzzle introduces the idea of finding an unknown number through a simple equation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am found in a plant's roots. I drink water from the soil and help the plant stay alive. I am very tiny and have a hair-like name. What am I?",
+    "hint1": "I help a plant take in water.",
+    "hint2": "My name includes the word hair.",
+    "answer": "Root hair",
+    "acceptedKeywords": [
+      "root hair",
+      "root hairs",
+      "plant root hair"
+    ],
+    "explanation": "Root hairs are tiny extensions of root cells that increase the surface area for absorbing water and mineral salts from the soil.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "A school gardener has four watering cans. Each can has two handles. How many watering cans does the gardener have if every handle is counted?",
+    "hint1": "Count the objects, not their parts.",
+    "hint2": "The number of handles does not change the number of cans.",
+    "answer": "4 watering cans",
+    "acceptedKeywords": [
+      "4",
+      "four",
+      "four watering cans"
+    ],
+    "explanation": "The gardener still has four watering cans. Counting their handles gives eight handles, but the number of cans remains four.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3106",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I appear in the sky after rain when sunlight shines through tiny water drops. I have many beautiful colours and look like a curved bridge. What am I?",
+    "hint1": "You may see me when rain and sunshine occur together.",
+    "hint2": "My colours include red, orange, yellow, green, blue and violet.",
+    "answer": "Rainbow",
+    "acceptedKeywords": [
+      "rainbow",
+      "coloured rainbow",
+      "rainbow arc"
+    ],
+    "explanation": "A rainbow forms when sunlight is refracted, reflected and dispersed inside water droplets. Different colours emerge at different angles.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3107",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I have a face and two hands, but I cannot smile or clap. I help pupils know when lessons begin and end. What am I?",
+    "hint1": "You can find me on a classroom wall.",
+    "hint2": "My hands point to numbers that tell the time.",
+    "answer": "Clock",
+    "acceptedKeywords": [
+      "clock",
+      "wall clock",
+      "time clock"
+    ],
+    "explanation": "A clock has a face and hands that indicate the time. Its hands are not real human hands.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3108",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am a Ghanaian traditional cloth made from colourful woven strips. My patterns and colours can communicate identity and culture. What am I?",
+    "hint1": "I am associated with the Ashanti people and other Ghanaian communities.",
+    "hint2": "I am woven on a loom using threads.",
+    "answer": "Kente",
+    "acceptedKeywords": [
+      "kente",
+      "kente cloth",
+      "kente fabric"
+    ],
+    "explanation": "Kente is a traditional Ghanaian woven textile with distinctive colours and patterns. Different designs can carry cultural, historical and symbolic meanings.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3109",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am an even number. I am greater than 10 but smaller than 15. If you divide me by two, you get 6. What number am I?",
+    "hint1": "Double 6 to find me.",
+    "hint2": "I am the even number between 11 and 13.",
+    "answer": "12",
+    "acceptedKeywords": [
+      "12",
+      "twelve",
+      "number twelve"
+    ],
+    "explanation": "Twelve divided by two equals six. It is an even number between ten and fifteen.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3110",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a part of your body that pumps blood around you day and night. You can feel me beating when you place a hand on your chest. What am I?",
+    "hint1": "I am inside your chest.",
+    "hint2": "I beat continuously to move blood.",
+    "answer": "Heart",
+    "acceptedKeywords": [
+      "heart",
+      "human heart",
+      "body heart"
+    ],
+    "explanation": "The heart is a muscular organ that pumps blood around the body. Its continuous pumping supplies cells with oxygen and nutrients.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3111",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "A farmer has five chickens. Each chicken lays one egg on Monday. How many eggs does the farmer collect on Monday?",
+    "hint1": "Every chicken contributes one egg.",
+    "hint2": "Multiply five by one.",
+    "answer": "5 eggs",
+    "acceptedKeywords": [
+      "5",
+      "five eggs",
+      "five"
+    ],
+    "explanation": "Five chickens laying one egg each produce five eggs. The question checks whether the learner can identify the relevant information and calculate a total.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3112",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a natural material that bees make. People use me in some candles, and I can help protect the honeycomb. What am I?",
+    "hint1": "I come from honeybees.",
+    "hint2": "I am used to make beeswax candles.",
+    "answer": "Beeswax",
+    "acceptedKeywords": [
+      "beeswax",
+      "bee wax",
+      "wax from bees"
+    ],
+    "explanation": "Worker honeybees produce beeswax to construct their honeycomb. People also use it in candles and other products.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3113",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I am a 5-letter word for a tool made of palm fronds used to sweep the compound. Remove my first letter and I become a place inside a house where you sleep or study. What word am I?",
+    "hint1": "Used for sweeping every morning.",
+    "hint2": "B-R-O-O-M without 'B' is R-O-O-M.",
+    "answer": "Broom",
+    "acceptedKeywords": [
+      "broom",
+      "a broom",
+      "room"
+    ],
+    "explanation": "Removing the first letter 'B' from 'BROOM' leaves 'ROOM'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3114",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a tiny living thing that helps turn fallen leaves into nutrients in the soil. I cannot be seen easily without a microscope. What am I?",
+    "hint1": "I help break down dead material.",
+    "hint2": "I belong to a group that includes moulds and mushrooms.",
+    "answer": "Fungus",
+    "acceptedKeywords": [
+      "fungus",
+      "fungi",
+      "decomposer fungus"
+    ],
+    "explanation": "Fungi act as decomposers, breaking down dead organic matter and returning nutrients to the environment. Some fungi are microscopic, while others form visible structures such as mushrooms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-3115",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am a shape with three straight sides and three corners. You can find me in some roof designs and road signs. What am I?",
+    "hint1": "I have fewer sides than a square.",
+    "hint2": "My name begins with the word 'tri'.",
+    "answer": "Triangle",
+    "acceptedKeywords": [
+      "triangle",
+      "triangular shape",
+      "three-sided shape"
+    ],
+    "explanation": "A triangle is a polygon with three sides and three angles. Triangular shapes are used in construction because they can provide structural strength.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I help water travel from the roots of a tall cocoa tree towards its leaves. I am a narrow pathway inside the plant, and I also carry dissolved mineral salts. What am I?",
+    "hint1": "I am part of the plant's transport system.",
+    "hint2": "I carry water upwards through the stem.",
+    "answer": "Xylem",
+    "acceptedKeywords": [
+      "xylem",
+      "xylem tissue",
+      "water conducting tissue"
+    ],
+    "explanation": "Xylem transports water and dissolved mineral salts from the roots to the stems and leaves. Its specialised vessels help support the plant as well.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "A market woman sells 3 baskets of tomatoes for GHS120 in total. Every basket has the same price. I am the price of one basket. What am I?",
+    "hint1": "The total is shared equally among three baskets.",
+    "hint2": "Divide 120 by 3.",
+    "answer": "GHS40",
+    "acceptedKeywords": [
+      "40",
+      "ghs40",
+      "40 cedis",
+      "forty cedis"
+    ],
+    "explanation": "Each basket costs GHS40 because 120 divided by 3 equals 40. This is an example of equal sharing and unit-price calculation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the process that allows water to move through a plant's leaves and escape into the atmosphere as vapour. I also help pull water upwards from the roots. What am I?",
+    "hint1": "I involve water loss from leaves.",
+    "hint2": "My name begins with the letters 'trans'.",
+    "answer": "Transpiration",
+    "acceptedKeywords": [
+      "transpiration",
+      "plant transpiration",
+      "transpiration process"
+    ],
+    "explanation": "Transpiration is the loss of water vapour from plant surfaces, especially through stomata. It contributes to the movement of water through the plant.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "A trotro travels 120 kilometres in 3 hours at a constant speed. I tell you how many kilometres it travels in one hour. What am I?",
+    "hint1": "I measure distance travelled per unit of time.",
+    "hint2": "Divide 120 kilometres by 3 hours.",
+    "answer": "40 km/h",
+    "acceptedKeywords": [
+      "40 km/h",
+      "40 kilometres per hour",
+      "40 kilometers per hour"
+    ],
+    "explanation": "Speed is calculated by dividing distance by time. The trotro's average speed is 40 kilometres per hour.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am an Adinkra symbol that represents unity and human relations. My design is made from two interlocking circles or loops. I remind people that human beings need one another. What am I?",
+    "hint1": "I am an Akan symbol associated with community.",
+    "hint2": "My name means 'unity and human relations'.",
+    "answer": "Nkonsonkonson",
+    "acceptedKeywords": [
+      "nkonsonkonson",
+      "nkonsonkonson symbol",
+      "chain link symbol"
+    ],
+    "explanation": "Nkonsonkonson is an Adinkra symbol representing unity, interconnectedness and human relations. It reminds communities of the value of cooperation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3106",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the force that opposes the movement of two surfaces sliding against each other. I help your shoes grip the ground, but I can also make machine parts wear out. What am I?",
+    "hint1": "I act when surfaces touch.",
+    "hint2": "I can prevent slipping.",
+    "answer": "Friction",
+    "acceptedKeywords": [
+      "friction",
+      "frictional force",
+      "force of friction"
+    ],
+    "explanation": "Friction opposes relative motion between surfaces in contact. It provides grip for walking but can also cause heat and wear in machines.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3107",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "A school has 24 pupils. Half are girls, and one-third of the pupils are members of the science club. I am the number of pupils in the science club. What am I?",
+    "hint1": "A third means one out of three equal groups.",
+    "hint2": "Divide 24 by 3.",
+    "answer": "8 pupils",
+    "acceptedKeywords": [
+      "8",
+      "eight",
+      "8 pupils",
+      "eight pupils"
+    ],
+    "explanation": "One-third of 24 is 8. The number of girls is not needed to solve the science club question.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3108",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the change in which a liquid becomes a gas at its surface, even before the liquid reaches its boiling point. I help wet clothes dry in the harmattan. What am I?",
+    "hint1": "I happen more quickly in warm, dry and windy conditions.",
+    "hint2": "I turn liquid water into water vapour.",
+    "answer": "Evaporation",
+    "acceptedKeywords": [
+      "evaporation",
+      "water evaporation",
+      "evaporating"
+    ],
+    "explanation": "Evaporation occurs when molecules escape from the surface of a liquid into the air. Warmth, low humidity and air movement can increase its rate.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3109",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am a number between 20 and 40. When divided by 5, I leave no remainder. When divided by 3, I also leave no remainder. I am the smallest number that fits these clues. What am I?",
+    "hint1": "I must be a multiple of both 3 and 5.",
+    "hint2": "Find the first common multiple of 3 and 5 that is greater than 20.",
+    "answer": "30",
+    "acceptedKeywords": [
+      "30",
+      "thirty",
+      "number 30"
+    ],
+    "explanation": "Thirty is divisible by both 3 and 5. It is the smallest common multiple greater than 20.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3110",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a large artificial lake in Ghana, created when the Akosombo Dam was built across the Volta River. I support transport, fishing and electricity generation. What am I?",
+    "hint1": "I am one of the world's largest man-made lakes by surface area.",
+    "hint2": "My name includes the word Volta.",
+    "answer": "Lake Volta",
+    "acceptedKeywords": [
+      "lake volta",
+      "volta lake",
+      "the volta lake"
+    ],
+    "explanation": "Lake Volta was formed following the construction of the Akosombo Dam. It supports fishing, transportation, water resources and hydroelectric power generation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3111",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am an instrument used to measure the temperature of the air, water or a person's body. My reading is often expressed in degrees Celsius. What am I?",
+    "hint1": "You may use me when someone has a fever.",
+    "hint2": "I contain a temperature scale.",
+    "answer": "Thermometer",
+    "acceptedKeywords": [
+      "thermometer",
+      "temperature thermometer",
+      "clinical thermometer"
+    ],
+    "explanation": "A thermometer measures temperature. Different types are designed for different uses, including weather observation and medical examination.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3112",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am a machine made from a wheel with a rope running over it. I can help lift a heavy load by changing the direction of the applied force. What am I?",
+    "hint1": "You may see me on a flagpole or at a construction site.",
+    "hint2": "I am one of the simple machines used for lifting.",
+    "answer": "Pulley",
+    "acceptedKeywords": [
+      "pulley",
+      "wheel and rope",
+      "simple pulley"
+    ],
+    "explanation": "A pulley is a simple machine that uses a grooved wheel and rope or cable. A fixed pulley changes the direction of the force, while pulley systems can also provide mechanical advantage.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3113",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the natural process in which green plants use sunlight, water and carbon dioxide to produce food and release oxygen. What am I?",
+    "hint1": "I take place mainly in green leaves.",
+    "hint2": "My name begins with photo, meaning light.",
+    "answer": "Photosynthesis",
+    "acceptedKeywords": [
+      "photosynthesis",
+      "plant photosynthesis",
+      "photosynthetic process"
+    ],
+    "explanation": "Photosynthesis converts light energy into chemical energy stored in sugars. Green plants use carbon dioxide and water, releasing oxygen as a by-product.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3114",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "Three cocoa farmers share 12 bags of cocoa. The first farmer receives twice as many bags as the second, and the third receives the same number as the second. How many bags does each farmer receive?",
+    "hint1": "The first farmer gets twice the amount of either of the others.",
+    "hint2": "Think of the ratio 2:1:1.",
+    "answer": "6 bags, 3 bags and 3 bags",
+    "acceptedKeywords": [
+      "6 3 3",
+      "6 bags 3 bags 3 bags",
+      "six three three"
+    ],
+    "explanation": "The ratio 2:1:1 has four equal parts. Twelve divided by four gives three bags per part, so the shares are six, three and three.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-3115",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the part of the human ear that changes sound vibrations into signals that the brain can interpret. I am found deep inside the ear and have a spiral shape. What am I?",
+    "hint1": "I am located in the inner ear.",
+    "hint2": "My shape resembles a small snail shell.",
+    "answer": "Cochlea",
+    "acceptedKeywords": [
+      "cochlea",
+      "inner ear cochlea",
+      "cochlear organ"
+    ],
+    "explanation": "The cochlea is a spiral-shaped structure in the inner ear. Hair cells inside it convert mechanical vibrations into electrical signals carried by the auditory nerve.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3101",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a mathematical principle. If you place 13 objects into 12 boxes, at least one box must contain more than one object. I prove this without needing to know how the objects were arranged. What am I?",
+    "hint1": "I am used in counting and combinatorics.",
+    "hint2": "My name compares birds with holes.",
+    "answer": "Pigeonhole principle",
+    "acceptedKeywords": [
+      "pigeonhole principle",
+      "pigeon hole principle",
+      "Dirichlet principle"
+    ],
+    "explanation": "The pigeonhole principle states that placing more objects than containers guarantees that at least one container holds multiple objects. It is a powerful method for proving that a particular arrangement must occur.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3102",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a logical tool that helps solve a problem by checking whether a statement remains true after every permitted move. In a puzzle involving coloured tiles, I may show that the target arrangement is impossible. What am I?",
+    "hint1": "I do not necessarily tell you how to solve a puzzle.",
+    "hint2": "I remain unchanged despite the permitted operations.",
+    "answer": "Invariant",
+    "acceptedKeywords": [
+      "invariant",
+      "mathematical invariant",
+      "invariant property"
+    ],
+    "explanation": "An invariant is a property that remains unchanged under a set of permitted transformations. It can prove that some target states cannot be reached.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3103",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I describe the relationship between the number of individuals in a population and the amount of a chemical substance present in their bodies. I explain why a toxic substance can become increasingly concentrated at higher levels of a food chain. What am I?",
+    "hint1": "I involve predators and prey.",
+    "hint2": "My name includes the word magnification.",
+    "answer": "Biomagnification",
+    "acceptedKeywords": [
+      "biomagnification",
+      "biological magnification",
+      "food chain magnification"
+    ],
+    "explanation": "Biomagnification occurs when persistent pollutants become more concentrated at higher trophic levels in a food chain. Top predators can therefore accumulate higher concentrations than organisms lower down.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3104",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a mathematical arrangement where a number is represented by letters. Each letter stands for a different digit, and the same letter always represents the same digit. Solve puzzles such as SEND + MORE = MONEY using me. What am I?",
+    "hint1": "I combine arithmetic with logical deduction.",
+    "hint2": "My name combines cryptography and arithmetic.",
+    "answer": "Cryptarithm",
+    "acceptedKeywords": [
+      "cryptarithm",
+      "cryptarithmetic",
+      "alphametic puzzle"
+    ],
+    "explanation": "A cryptarithm is a mathematical puzzle in which letters represent digits. Solving it requires respecting place value, digit uniqueness and arithmetic constraints.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3105",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am a biological process in which an organism maintains a relatively stable internal environment despite changes outside its body. I help regulate temperature, water balance and blood glucose. What am I?",
+    "hint1": "I help keep the body's internal conditions balanced.",
+    "hint2": "My name includes the word stasis.",
+    "answer": "Homeostasis",
+    "acceptedKeywords": [
+      "homeostasis",
+      "biological homeostasis",
+      "internal balance"
+    ],
+    "explanation": "Homeostasis involves regulating internal conditions within suitable limits. It allows cells and organs to function effectively despite changes in the external environment.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3106",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a reasoning error in which someone continues investing money, time or effort in a failing project simply because so much has already been spent. I remind decision-makers that past costs cannot be recovered. What am I?",
+    "hint1": "I affect business and personal decisions.",
+    "hint2": "My name includes the word sunk.",
+    "answer": "Sunk cost fallacy",
+    "acceptedKeywords": [
+      "sunk cost fallacy",
+      "sunk cost bias",
+      "sunk cost error"
+    ],
+    "explanation": "The sunk cost fallacy occurs when irrecoverable past investments improperly influence future decisions. Rational decision-making should focus on future costs and benefits.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3107",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I describe the point in the Moon's shadow where the Sun is completely hidden during a total solar eclipse. An observer outside me may see only part of the Sun covered. What am I?",
+    "hint1": "I am the darkest part of a shadow.",
+    "hint2": "I am the central region of the Moon's shadow.",
+    "answer": "Umbra",
+    "acceptedKeywords": [
+      "umbra",
+      "umbra shadow",
+      "central shadow"
+    ],
+    "explanation": "The umbra is the darkest central region of a shadow where the light source is completely blocked. During a total solar eclipse, observers inside the Moon's umbra experience totality.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3108",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a property of integers. If an odd number is added to another odd number, the result is always even. If you keep adding pairs of odd numbers, I help explain why the result has this property. What mathematical idea am I?",
+    "hint1": "I classify numbers according to whether they divide evenly by two.",
+    "hint2": "My two main categories are odd and even.",
+    "answer": "Parity",
+    "acceptedKeywords": [
+      "parity",
+      "odd even parity",
+      "integer parity"
+    ],
+    "explanation": "Parity describes whether an integer is odd or even. The sum of two odd integers is always even because each can be expressed as twice an integer plus one.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3109",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the movement of water through a selectively permeable membrane from a region of higher water potential to a region of lower water potential. I help explain how plant cells respond to salty soil. What am I?",
+    "hint1": "I involve water movement between solutions.",
+    "hint2": "My name begins with the letter O.",
+    "answer": "Osmosis",
+    "acceptedKeywords": [
+      "osmosis",
+      "water osmosis",
+      "cellular osmosis"
+    ],
+    "explanation": "Osmosis is the net movement of water through a selectively permeable membrane down a water potential gradient. It influences cell turgidity and the movement of water in plant tissues.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3110",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a logical method that starts by temporarily assuming the opposite of what you want to prove. If that assumption leads to a contradiction, your original claim is supported. What am I?",
+    "hint1": "I am used in mathematical proofs.",
+    "hint2": "My name means reducing an argument to an absurdity.",
+    "answer": "Proof by contradiction",
+    "acceptedKeywords": [
+      "proof by contradiction",
+      "reductio ad absurdum",
+      "contradiction proof"
+    ],
+    "explanation": "Proof by contradiction assumes that a proposition is false and shows that this assumption produces an impossibility. The contradiction establishes that the original proposition must be true within the stated logical system.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3111",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am an Akan philosophical principle represented by the idea that a person becomes a person through other people. I emphasise mutual care, shared responsibility and community. What am I?",
+    "hint1": "I am associated with African humanism.",
+    "hint2": "My widely recognised name comes from Southern Africa, although similar values exist in Akan philosophy.",
+    "answer": "Ubuntu",
+    "acceptedKeywords": [
+      "ubuntu",
+      "ubuntu philosophy",
+      "humanity towards others"
+    ],
+    "explanation": "Ubuntu expresses the idea that human identity and well-being are interconnected with those of other people. Similar principles of communal responsibility and human dignity are present in many African philosophical traditions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3112",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am a scientific principle stating that energy cannot be created or destroyed, although it can change from one form to another. I explain why a hydroelectric dam converts moving water into electrical energy. What am I?",
+    "hint1": "I am one of the fundamental principles of physics.",
+    "hint2": "My name includes the word conservation.",
+    "answer": "Law of conservation of energy",
+    "acceptedKeywords": [
+      "law of conservation of energy",
+      "conservation of energy",
+      "energy conservation law"
+    ],
+    "explanation": "The law of conservation of energy states that the total energy of an isolated system remains constant. At a hydroelectric dam, gravitational potential energy is converted into kinetic, mechanical and electrical energy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3113",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I occur when a statistical analysis produces an association between two variables because both are influenced by a third variable. If researchers ignore me, they may mistake an association for a direct causal relationship. What am I?",
+    "hint1": "I am important in research design.",
+    "hint2": "My name describes a variable that confuses the relationship.",
+    "answer": "Confounding variable",
+    "acceptedKeywords": [
+      "confounding variable",
+      "confounder",
+      "confounding factor"
+    ],
+    "explanation": "A confounding variable is associated with both the explanatory variable and the outcome, potentially distorting their apparent relationship. Researchers must consider confounding when interpreting observational evidence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3114",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a sampling bias that can occur when researchers study only people selected because they possess a particular characteristic. The sample may then exclude important experiences of those who were not selected. What am I?",
+    "hint1": "I can affect surveys and scientific studies.",
+    "hint2": "My name refers to the process of choosing or selecting participants.",
+    "answer": "Selection bias",
+    "acceptedKeywords": [
+      "selection bias",
+      "sampling selection bias",
+      "selection effect"
+    ],
+    "explanation": "Selection bias occurs when the process of including participants produces a sample that differs systematically from the population of interest. It can lead to misleading conclusions and poor generalisation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-3115",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the ecological relationship in which two species compete for the same limited resource. If one species uses the resource more efficiently, it may eventually displace the other. What am I?",
+    "hint1": "I involve competition between different species.",
+    "hint2": "My name includes the word competitive.",
+    "answer": "Interspecific competition",
+    "acceptedKeywords": [
+      "interspecific competition",
+      "competition between species",
+      "species competition"
+    ],
+    "explanation": "Interspecific competition occurs when different species use the same limited resources. Strong competition can reduce population sizes and, under some conditions, contribute to competitive exclusion.",
+    "isCentral": true
   }
 ];
 
@@ -20818,6 +22335,111 @@ export const THINK_TANK_DEBATES: ThinkTankDebateItem[] = [
     "targetGroup": "Scholar (JHS)",
     "topic": "Schools should prioritise teaching critical thinking and information verification over memorising large amounts of factual information.",
     "context": "Supporters argue that learners need to evaluate misinformation, recognise flawed arguments and apply knowledge to unfamiliar problems in a rapidly changing world. Opponents argue that critical thinking depends on a strong foundation of factual knowledge, and reducing content coverage may leave learners without the information needed to reason effectively.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-3101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every pupil should help keep the school compound clean every day.",
+    "context": "Supporters argue that keeping the compound clean teaches responsibility, teamwork and respect for the environment. Opponents argue that pupils should concentrate on learning and that cleaning should mainly be handled by designated school workers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-3102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Schoolchildren should be allowed to grow vegetables in their school gardens.",
+    "context": "Supporters believe school gardens teach pupils about plants, healthy food and responsibility while providing practical science lessons. Opponents argue that gardening takes time away from academic work and may require tools, water and supervision that schools cannot always provide.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-3103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be allowed to choose their own classroom reading books.",
+    "context": "Supporters argue that choosing books increases enjoyment, curiosity and confidence in reading. Opponents believe teachers should select books that match learning objectives, reading levels and the values of the school.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-3104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every school should have a special day for traditional Ghanaian games.",
+    "context": "Supporters argue that traditional games preserve culture, encourage physical activity and bring pupils together. Opponents contend that school time is limited and that modern sports and academic activities should receive greater attention.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-3105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be allowed to bring their pets to school on special learning days.",
+    "context": "Supporters argue that seeing animals helps pupils learn about living things, care and responsibility. Opponents raise concerns about allergies, animal welfare, safety and possible classroom disruption.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-3101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Every basic school should have a vegetable garden that supplies part of its school meals.",
+    "context": "Supporters argue that school gardens encourage practical agricultural learning, improve nutrition awareness and may reduce some food costs. Opponents contend that maintaining gardens requires land, water, labour and agricultural expertise that may be unavailable in some schools.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-3102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Mobile phones should be permitted in basic schools for supervised educational activities.",
+    "context": "Supporters believe phones can provide access to educational videos, digital libraries, research tools and interactive learning. Opponents argue that phones can distract pupils, facilitate cyberbullying, increase inequality and expose children to inappropriate content.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-3103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Schools should replace some traditional examinations with practical projects and presentations.",
+    "context": "Supporters argue that projects assess creativity, communication, collaboration and real-world problem-solving. Opponents believe written examinations provide a more standardised way to compare individual performance and may be easier to administer fairly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-3104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Ghanaian schools should teach pupils how to manage money before they enter secondary school.",
+    "context": "Supporters argue that financial education develops saving habits, budgeting skills and responsible spending from an early age. Opponents contend that the curriculum is already crowded and that parents should primarily teach children about household money management.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-3105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Communities should impose penalties on households that regularly dump rubbish into public drains.",
+    "context": "Supporters argue that penalties discourage irresponsible behaviour, reduce flooding and protect public health. Opponents believe that penalties are unfair where waste collection services are inadequate and that authorities should first provide accessible disposal facilities.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-3101",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Artificial intelligence should be introduced as a compulsory subject in Ghanaian basic schools.",
+    "context": "Supporters argue that AI education prepares learners for changing labour markets, develops computational thinking and helps young people understand the technologies shaping society. Opponents contend that many schools lack electricity, devices, internet access and trained teachers, potentially widening educational inequalities unless foundational resources are addressed first.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-3102",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should prioritise renewable energy investment over expanding fossil-fuel electricity generation.",
+    "context": "Supporters argue that solar, wind and other renewable technologies can reduce emissions, improve long-term energy security and support decentralised electricity access. Opponents contend that renewable generation requires storage, grid upgrades and substantial investment, while reliable dispatchable power remains important for industrial development and economic stability.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-3103",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Social media companies should be legally responsible for limiting the spread of demonstrably false information on their platforms.",
+    "context": "Supporters argue that platform accountability can reduce harmful misinformation, protect public health and strengthen democratic discussion. Opponents warn that excessive regulation could encourage censorship, restrict legitimate expression and give powerful institutions too much control over public debate.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-3104",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghanaian communities should prioritise protecting natural forests even when doing so limits short-term commercial opportunities.",
+    "context": "Supporters argue that forests protect biodiversity, regulate water systems, store carbon and sustain livelihoods for future generations. Opponents contend that strict restrictions can affect employment, farming and local development, and that conservation policies must provide realistic economic alternatives for affected communities.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-3105",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Schools should use continuous assessment and demonstrated competencies rather than a single final examination as the main basis for progression.",
+    "context": "Supporters argue that continuous assessment recognises consistent effort, practical skills, creativity and different ways of demonstrating knowledge. Opponents believe that ongoing assessment may introduce teacher bias, inconsistent standards and opportunities for unfair assistance, while common examinations provide a more comparable measure of individual achievement.",
     "isCentral": true
   }
 ];
