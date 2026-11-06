@@ -106,7 +106,7 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
     const manifestPayload = {
       id: 'think_tank_v1',
       title: 'Think Tank Central Critical Thinking & Riddle Bank',
-      version: '17.0.0',
+      version: '18.0.0',
       sharded: true,
       shardIds,
       updatedAt: FieldValue.serverTimestamp(),
