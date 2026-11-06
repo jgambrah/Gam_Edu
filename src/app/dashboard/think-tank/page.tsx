@@ -1436,9 +1436,12 @@ export default function ThinkTankPage() {
   const [logicPoints, setLogicPoints] = useState(0);
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
 
-  // Central Repository Fetch (1 Firestore read per 30-min session across all schools, instant local fallback)
+  // Central Repository Fetch (1 Firestore manifest read per 30-min session; loads shards only if remote > bundled)
   const { data: centralDoc, refresh: refreshCentralDoc } = useOnceQuery<{
     version?: string;
+    sharded?: boolean;
+    shardIds?: string[];
+    totalCount?: number;
     paradoxes?: ThinkTankParadoxItem[];
     detectiveCases?: ThinkTankDetectiveCaseItem[];
     riddles?: ThinkTankRiddleItem[];
@@ -1448,7 +1451,44 @@ export default function ThinkTankPage() {
     async () => {
       if (!firestore) return null;
       const snap = await getDoc(doc(firestore, 'global_curriculum', 'think_tank_v1'));
-      return snap.exists() ? (snap.data() as any) : null;
+      if (!snap.exists()) return null;
+      const manifest = snap.data() as any;
+      const localTotal =
+        THINK_TANK_PARADOXES.length +
+        THINK_TANK_DETECTIVE_CASES.length +
+        THINK_TANK_RIDDLES.length +
+        THINK_TANK_DEBATES.length;
+      if (
+        manifest.sharded &&
+        Array.isArray(manifest.shardIds) &&
+        typeof manifest.totalCount === 'number' &&
+        manifest.totalCount > localTotal
+      ) {
+        const shardSnaps = await Promise.all(
+          manifest.shardIds.map((id: string) => getDoc(doc(firestore, 'global_curriculum', id)))
+        );
+        const paradoxes: ThinkTankParadoxItem[] = [];
+        const detectiveCases: ThinkTankDetectiveCaseItem[] = [];
+        const riddles: ThinkTankRiddleItem[] = [];
+        const debates: ThinkTankDebateItem[] = [];
+        for (const s of shardSnaps) {
+          if (!s.exists()) continue;
+          const d = s.data() as any;
+          if (!Array.isArray(d.items)) continue;
+          if (d.kind === 'paradoxes') paradoxes.push(...d.items);
+          else if (d.kind === 'detectiveCases') detectiveCases.push(...d.items);
+          else if (d.kind === 'riddles') riddles.push(...d.items);
+          else if (d.kind === 'debates') debates.push(...d.items);
+        }
+        return {
+          ...manifest,
+          paradoxes,
+          detectiveCases,
+          riddles,
+          debates,
+        };
+      }
+      return manifest;
     },
     [firestore]
   );

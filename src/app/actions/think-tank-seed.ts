@@ -60,10 +60,55 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
     const debateCount = THINK_TANK_DEBATES.length;
     const totalCount = paradoxCount + caseCount + riddleCount + debateCount;
 
-    const payload = {
+    const SHARD_SIZE = 400;
+    const shardIds: string[] = [];
+    const shardWrites: Array<{ id: string; data: Record<string, unknown> }> = [];
+
+    const chunkArray = <T>(arr: T[], size: number): T[][] => {
+      const chunks: T[][] = [];
+      for (let i = 0; i < arr.length; i += size) {
+        chunks.push(arr.slice(i, i + size));
+      }
+      return chunks;
+    };
+
+    const categories: Array<{ key: string; prefix: string; items: unknown[] }> = [
+      { key: 'paradoxes', prefix: 'think_tank_v1_paradoxes', items: THINK_TANK_PARADOXES },
+      { key: 'detectiveCases', prefix: 'think_tank_v1_cases', items: THINK_TANK_DETECTIVE_CASES },
+      { key: 'riddles', prefix: 'think_tank_v1_riddles', items: THINK_TANK_RIDDLES },
+      { key: 'debates', prefix: 'think_tank_v1_debates', items: THINK_TANK_DEBATES },
+    ];
+
+    for (const cat of categories) {
+      const chunks = chunkArray(cat.items, SHARD_SIZE);
+      chunks.forEach((chunk, idx) => {
+        const shardId = `${cat.prefix}_${idx}`;
+        shardIds.push(shardId);
+        shardWrites.push({
+          id: shardId,
+          data: {
+            id: shardId,
+            parentId: 'think_tank_v1',
+            kind: cat.key,
+            index: idx,
+            count: chunk.length,
+            items: chunk,
+            updatedAt: FieldValue.serverTimestamp(),
+          },
+        });
+      });
+    }
+
+    await Promise.all(
+      shardWrites.map((s) => db.collection('global_curriculum').doc(s.id).set(s.data))
+    );
+
+    const manifestPayload = {
       id: 'think_tank_v1',
       title: 'Think Tank Central Critical Thinking & Riddle Bank',
-      version: '15.0.0',
+      version: '16.0.0',
+      sharded: true,
+      shardIds,
       updatedAt: FieldValue.serverTimestamp(),
       updatedBy: user.uid,
       paradoxCount,
@@ -71,13 +116,9 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
       riddleCount,
       debateCount,
       totalCount,
-      paradoxes: THINK_TANK_PARADOXES,
-      detectiveCases: THINK_TANK_DETECTIVE_CASES,
-      riddles: THINK_TANK_RIDDLES,
-      debates: THINK_TANK_DEBATES,
     };
 
-    await db.collection('global_curriculum').doc('think_tank_v1').set(payload, { merge: true });
+    await db.collection('global_curriculum').doc('think_tank_v1').set(manifestPayload);
 
     return {
       success: true,
@@ -86,7 +127,7 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
       riddleCount,
       debateCount,
       totalCount,
-      message: `Published ${totalCount} items (${paradoxCount} paradoxes, ${caseCount} detective cases, ${riddleCount} riddles, ${debateCount} debate motions) to global_curriculum/think_tank_v1.`,
+      message: `Published ${totalCount} items across ${shardIds.length} shards (${paradoxCount} paradoxes, ${caseCount} detective cases, ${riddleCount} riddles, ${debateCount} debate motions) to global_curriculum/think_tank_v1.`,
     };
   } catch (e: any) {
     if (e instanceof SessionError) return { success: false, error: e.message };
