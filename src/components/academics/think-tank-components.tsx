@@ -7,10 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Send, Bot, User, Swords, Loader2, RefreshCw, Gavel, Star, TrendingUp, AlertCircle, Eye, CheckCircle, Trash2, HelpCircle, ShieldCheck } from 'lucide-react';
+import { Send, Bot, User, Swords, Loader2, RefreshCw, Gavel, Star, TrendingUp, AlertCircle, Eye, CheckCircle, Trash2, HelpCircle, ShieldCheck, Sparkles, Lightbulb, RotateCcw } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Paradox, DebateTopic } from '@/lib/types';
+import { evaluateParadoxSubmission, ParadoxEvaluationResult } from '@/lib/think-tank-evaluator';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -19,8 +20,8 @@ import confetti from 'canvas-confetti';
 // --- PARADOX CARD ---
 interface ParadoxCardProps {
   paradox: Paradox;
-  onComplete: () => void;
-  onAttempt?: (answer: string) => void;
+  onComplete: (awardedXp?: number, maxXp?: number) => void;
+  onAttempt?: (answer: string, evaluation?: ParadoxEvaluationResult) => void;
   onDelete?: () => void;
   isStaff?: boolean;
 }
@@ -28,16 +29,55 @@ interface ParadoxCardProps {
 export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff }: ParadoxCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [userTheory, setUserTheory] = useState('');
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [evaluationResult, setEvaluationResult] = useState<ParadoxEvaluationResult | null>(null);
+  const [isBlueprintRevealed, setIsBlueprintRevealed] = useState(false);
+  const [highestAwardedXp, setHighestAwardedXp] = useState(0);
 
-  const handleReveal = () => {
-    setIsRevealed(true);
-    confetti({ particleCount: 100, spread: 60, colors: ['#6366f1', '#a855f7', '#ec4899'] });
-    if (onAttempt && userAnswer) {
-        onAttempt(`${userAnswer} (Theory: ${userTheory})`);
+  const handleEvaluate = () => {
+    if (!userAnswer.trim()) return;
+
+    const result = evaluateParadoxSubmission({
+      id: paradox.id,
+      question: paradox.question,
+      answer: paradox.answer,
+      explanation: paradox.explanation,
+      userConclusion: userAnswer,
+      userTheory,
+      evaluation: (paradox as any).evaluation,
+    });
+
+    setEvaluationResult(result);
+
+    if (onAttempt) {
+      onAttempt(
+        `${userAnswer}${userTheory.trim() ? ` (Theory: ${userTheory.trim()})` : ''} [${result.tier}]`,
+        result
+      );
     }
-    onComplete();
+
+    if (result.tier === 'Mastered') {
+      setIsBlueprintRevealed(true);
+      confetti({ particleCount: 100, spread: 60, colors: ['#10b981', '#6366f1', '#a855f7'] });
+    }
+
+    // Cap total XP earned for this paradox at maxXp (15 XP)
+    const targetXp = Math.min(result.maxXp, result.xpAwarded);
+    if (targetXp > highestAwardedXp) {
+      const deltaXp = targetXp - highestAwardedXp;
+      setHighestAwardedXp(targetXp);
+      onComplete(deltaXp, result.maxXp);
+    }
   };
+
+  const handleRevise = () => {
+    setEvaluationResult(null);
+  };
+
+  const handleRevealBlueprint = () => {
+    setIsBlueprintRevealed(true);
+  };
+
+  const isLocked = isBlueprintRevealed || evaluationResult?.tier === 'Mastered';
 
   return (
     <Card className="border border-slate-900 bg-slate-950/80 backdrop-blur-md rounded-[2rem] shadow-2xl relative overflow-hidden transition-all duration-300">
@@ -55,6 +95,11 @@ export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff 
             </div>
             <div className="flex items-center gap-2">
                 <Badge className="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold">{paradox.difficulty || 'General'}</Badge>
+                {highestAwardedXp > 0 && (
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 text-xs font-bold">
+                    +{highestAwardedXp}/15 XP
+                  </Badge>
+                )}
                 {isStaff && onDelete && (
                     <Button variant="ghost" size="sm" onClick={onDelete} className="text-rose-400 hover:text-rose-350 hover:bg-slate-900/60 rounded-xl"><Trash2 className="h-4 w-4" /></Button>
                 )}
@@ -76,41 +121,131 @@ export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff 
               <Input 
                   placeholder="State your main conclusion..." 
                   value={userAnswer}
-                  onChange={(e) => setUserAnswer(e.target.value)}
-                  disabled={isRevealed}
+                  onChange={(e) => {
+                    setUserAnswer(e.target.value);
+                    if (evaluationResult && !isLocked) setEvaluationResult(null);
+                  }}
+                  disabled={isLocked}
                   className="bg-slate-900 border-slate-800 text-white rounded-xl h-11 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
             
             <div className="space-y-2">
-              <label className="text-[10px] uppercase font-black tracking-widest text-slate-500">Supporting Theory (Optional)</label>
+              <label className="text-[10px] uppercase font-black tracking-widest text-slate-500">Supporting Theory (Recommended for Full Mastery)</label>
               <Input 
-                  placeholder="Explain your logical reasoning..." 
+                  placeholder="Explain why your conclusion holds under the rules..." 
                   value={userTheory}
-                  onChange={(e) => setUserTheory(e.target.value)}
-                  disabled={isRevealed}
+                  onChange={(e) => {
+                    setUserTheory(e.target.value);
+                    if (evaluationResult && !isLocked) setEvaluationResult(null);
+                  }}
+                  disabled={isLocked}
                   className="bg-slate-900 border-slate-800 text-white rounded-xl h-11 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
 
-            {!isRevealed ? (
+            {!isLocked && (
                 <Button 
-                  onClick={handleReveal} 
+                  onClick={handleEvaluate} 
                   disabled={!userAnswer.trim()} 
                   className="w-full h-12 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/10 active:scale-95 text-sm flex items-center justify-center gap-2"
                 >
-                    <Eye className="h-4.5 w-4.5" /> Submit & Reveal Theory
+                    <Sparkles className="h-4 w-4" /> Evaluate Reasoning
                 </Button>
-            ) : (
+            )}
+
+            {evaluationResult && (
                 <div className="space-y-4 animate-in slide-in-from-bottom duration-300">
-                    <Alert className="bg-emerald-950/20 border-emerald-500/20 rounded-2xl p-5 shadow-inner">
-                        <CheckCircle className="h-5 w-5 text-emerald-400" />
-                        <AlertTitle className="text-emerald-400 font-bold text-sm tracking-tight">Revealed Logic Blueprint</AlertTitle>
-                        <AlertDescription className="text-slate-300 mt-2 space-y-2">
-                          <p className="font-semibold text-white">Answer Concept: <span className="text-emerald-350 text-emerald-300">{paradox.answer}</span></p>
-                          <p className="text-xs leading-relaxed text-slate-400">{paradox.explanation}</p>
+                    <Alert
+                      className={
+                        evaluationResult.tier === 'Mastered'
+                          ? 'bg-emerald-950/25 border-emerald-500/30 rounded-2xl p-5 shadow-inner'
+                          : evaluationResult.tier === 'Partially Correct'
+                          ? 'bg-amber-950/25 border-amber-500/30 rounded-2xl p-5 shadow-inner'
+                          : evaluationResult.tier === 'Uncertain'
+                          ? 'bg-indigo-950/25 border-indigo-500/30 rounded-2xl p-5 shadow-inner'
+                          : 'bg-rose-950/25 border-rose-500/30 rounded-2xl p-5 shadow-inner'
+                      }
+                    >
+                        {evaluationResult.tier === 'Mastered' ? (
+                          <CheckCircle className="h-5 w-5 text-emerald-400" />
+                        ) : evaluationResult.tier === 'Partially Correct' || evaluationResult.tier === 'Uncertain' ? (
+                          <Lightbulb className="h-5 w-5 text-amber-400" />
+                        ) : (
+                          <AlertCircle className="h-5 w-5 text-rose-400" />
+                        )}
+                        <div className="flex items-center justify-between gap-2 flex-wrap">
+                          <AlertTitle
+                            className={
+                              evaluationResult.tier === 'Mastered'
+                                ? 'text-emerald-400 font-bold text-sm tracking-tight'
+                                : evaluationResult.tier === 'Partially Correct'
+                                ? 'text-amber-400 font-bold text-sm tracking-tight'
+                                : evaluationResult.tier === 'Uncertain'
+                                ? 'text-indigo-300 font-bold text-sm tracking-tight'
+                                : 'text-rose-400 font-bold text-sm tracking-tight'
+                            }
+                          >
+                            {evaluationResult.headline}
+                          </AlertTitle>
+                          <Badge
+                            variant="outline"
+                            className={
+                              evaluationResult.tier === 'Mastered'
+                                ? 'border-emerald-500/30 text-emerald-300 text-[10px]'
+                                : evaluationResult.tier === 'Partially Correct'
+                                ? 'border-amber-500/30 text-amber-300 text-[10px]'
+                                : evaluationResult.tier === 'Uncertain'
+                                ? 'border-indigo-500/30 text-indigo-300 text-[10px]'
+                                : 'border-rose-500/30 text-rose-300 text-[10px]'
+                            }
+                          >
+                            {evaluationResult.tier} • {highestAwardedXp}/{evaluationResult.maxXp} XP
+                          </Badge>
+                        </div>
+                        <AlertDescription className="text-slate-300 mt-2 space-y-2.5">
+                          <p className="text-xs leading-relaxed text-slate-200">{evaluationResult.feedback}</p>
+                          {evaluationResult.coachingHint && evaluationResult.tier !== 'Mastered' && (
+                            <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 text-xs text-indigo-200 flex items-start gap-2">
+                              <Lightbulb className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+                              <span><strong>Coaching Hint:</strong> {evaluationResult.coachingHint}</span>
+                            </div>
+                          )}
+                          {evaluationResult.tier !== 'Mastered' && !isBlueprintRevealed && (
+                            <div className="flex flex-wrap items-center gap-2 pt-2">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={handleRevise}
+                                className="border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-200 rounded-xl text-xs h-8"
+                              >
+                                <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Revise My Reasoning
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={handleRevealBlueprint}
+                                className="text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl text-xs h-8"
+                              >
+                                <Eye className="h-3.5 w-3.5 mr-1.5" /> Study Logic Blueprint (Locks Revisions)
+                              </Button>
+                            </div>
+                          )}
                         </AlertDescription>
                     </Alert>
+
+                    {isBlueprintRevealed && (
+                      <Alert className="bg-slate-900/80 border-indigo-500/25 rounded-2xl p-5 shadow-inner">
+                          <ShieldCheck className="h-5 w-5 text-indigo-400" />
+                          <AlertTitle className="text-indigo-300 font-bold text-sm tracking-tight">Revealed Logic Blueprint</AlertTitle>
+                          <AlertDescription className="text-slate-300 mt-2 space-y-2">
+                            <p className="font-semibold text-white">Canonical Answer: <span className="text-emerald-300">{paradox.answer}</span></p>
+                            <p className="text-xs leading-relaxed text-slate-400">{paradox.explanation}</p>
+                          </AlertDescription>
+                      </Alert>
+                    )}
                 </div>
             )}
         </div>

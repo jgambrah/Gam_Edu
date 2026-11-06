@@ -606,7 +606,7 @@ function DailyParadoxTab({
   schoolId: string | null;
   centralParadoxes: ThinkTankParadoxItem[];
   solvedActivities: string[];
-  onSolve?: (points: number, id: string) => void;
+  onSolve?: (points: number, id: string, maxPoints?: number) => void;
 }) {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
@@ -660,10 +660,6 @@ function DailyParadoxTab({
 
   const handleAttempt = async (answer: string) => {
     if (!user || canManage || !schoolId) return;
-
-    if (onSolve && activeParadox?.id) {
-      onSolve(10, activeParadox.id);
-    }
 
     await addDocumentNonBlocking(collection(firestore!, 'think_tank_submissions'), {
       studentId: user.uid,
@@ -754,7 +750,9 @@ function DailyParadoxTab({
           <ParadoxCard
             key={activeParadox.id}
             paradox={activeParadox}
-            onComplete={() => onSolve && activeParadox && onSolve(30, activeParadox.id)}
+            onComplete={(deltaXp, maxXp) =>
+              onSolve && activeParadox && onSolve(deltaXp ?? 15, activeParadox.id, maxXp ?? 15)
+            }
             onAttempt={handleAttempt}
             onDelete={(activeParadox as any).isCentral ? undefined : () => handleDeleteParadox(activeParadox.id)}
             isStaff={canManage && !(activeParadox as any).isCentral}
@@ -1433,6 +1431,7 @@ export default function ThinkTankPage() {
   const { schoolId, loading: isLoadingSchool } = useCurrentSchool();
 
   const [solvedActivities, setSolvedActivities] = useState<string[]>([]);
+  const [awardedXpByActivity, setAwardedXpByActivity] = useState<Record<string, number>>({});
   const [logicPoints, setLogicPoints] = useState(0);
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
 
@@ -1563,6 +1562,7 @@ export default function ThinkTankPage() {
         if (snap.exists()) {
           const data = snap.data();
           if (data.thinkTankCompleted) setSolvedActivities(data.thinkTankCompleted);
+          if (data.thinkTankAwardedXp) setAwardedXpByActivity(data.thinkTankAwardedXp);
           if (data.thinkTankScore) setLogicPoints(data.thinkTankScore);
         }
       } catch (e) {
@@ -1582,14 +1582,30 @@ export default function ThinkTankPage() {
     )
   );
 
-  const handleSolve = async (points: number, activityId: string) => {
+  const handleSolve = async (points: number, activityId: string, maxPoints?: number) => {
     if (!user || !firestore || canManage) return;
-    if (solvedActivities.includes(activityId)) return;
 
-    const nextSolved = [...solvedActivities, activityId];
-    const nextPoints = logicPoints + points;
+    const cap = maxPoints ?? points;
+    const alreadyAwarded =
+      awardedXpByActivity[activityId] ?? (solvedActivities.includes(activityId) ? cap : 0);
+
+    const effectiveDelta = Math.max(0, Math.min(points, cap - alreadyAwarded));
+    if (effectiveDelta <= 0) return;
+
+    const newTotalForActivity = alreadyAwarded + effectiveDelta;
+    const isNowFullySolved = newTotalForActivity >= cap;
+    const nextSolved =
+      isNowFullySolved && !solvedActivities.includes(activityId)
+        ? [...solvedActivities, activityId]
+        : solvedActivities;
+    const nextAwardedMap = {
+      ...awardedXpByActivity,
+      [activityId]: newTotalForActivity,
+    };
+    const nextPoints = logicPoints + effectiveDelta;
 
     setSolvedActivities(nextSolved);
+    setAwardedXpByActivity(nextAwardedMap);
     setLogicPoints(nextPoints);
 
     try {
@@ -1598,16 +1614,18 @@ export default function ThinkTankPage() {
         progressRef,
         {
           thinkTankCompleted: nextSolved,
+          thinkTankAwardedXp: nextAwardedMap,
           thinkTankScore: nextPoints,
         },
         { merge: true }
       );
 
       const targetStudentId = studentRecord && studentRecord[0]?.id ? studentRecord[0].id : user.uid;
-      await awardActivityXP(firestore, targetStudentId, points, 'Think Tank Logic Module');
-      await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
-
-      confetti({ particleCount: 120, spread: 60, colors: ['#6366f1', '#a855f7', '#ec4899'] });
+      await awardActivityXP(firestore, targetStudentId, effectiveDelta, 'Think Tank Logic Module');
+      if (isNowFullySolved) {
+        await triggerStudentBadgeEvent(firestore, targetStudentId, { type: 'STEM_CHALLENGE_COMPLETED' });
+        confetti({ particleCount: 120, spread: 60, colors: ['#6366f1', '#a855f7', '#ec4899'] });
+      }
     } catch (e) {
       console.error('Failed to save progress:', e);
     }
