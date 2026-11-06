@@ -9,6 +9,16 @@ import {
   THINK_TANK_RIDDLES,
   THINK_TANK_DEBATES,
 } from '@/lib/think-tank-data';
+import { toPublicParadoxes, type PublicParadox } from '@/lib/think-tank-public-paradox';
+import {
+  THINK_TANK_PUBLIC_V2_VERSION,
+  toPublicDetectiveCases,
+  toPublicRiddles,
+  toPublicDebates,
+  type PublicDetectiveCase,
+  type PublicRiddle,
+  type PublicDebate,
+} from '@/lib/think-tank-public-challenges';
 
 const ALLOWED_ROLES = [
   'director',
@@ -121,6 +131,73 @@ export async function seedThinkTankCentralRepoAction(): Promise<{
     };
 
     await db.collection('global_curriculum').doc('think_tank_v1').set(manifestPayload);
+
+    // Publish v2 public shards (sanitized allowlist without answers, explanations, or rubrics)
+    const publicParadoxes: PublicParadox[] = toPublicParadoxes(THINK_TANK_PARADOXES);
+    const publicCases: PublicDetectiveCase[] = toPublicDetectiveCases(THINK_TANK_DETECTIVE_CASES);
+    const publicRiddles: PublicRiddle[] = toPublicRiddles(THINK_TANK_RIDDLES);
+    const publicDebates: PublicDebate[] = toPublicDebates(THINK_TANK_DEBATES);
+
+    const v2Categories: Array<{ key: string; prefix: string; items: unknown[] }> = [
+      { key: 'paradoxes', prefix: 'think_tank_v2_paradoxes', items: publicParadoxes },
+      { key: 'detectiveCases', prefix: 'think_tank_v2_cases', items: publicCases },
+      { key: 'riddles', prefix: 'think_tank_v2_riddles', items: publicRiddles },
+      { key: 'debates', prefix: 'think_tank_v2_debates', items: publicDebates },
+    ];
+
+    const v2ShardIds: string[] = [];
+    const v2ShardWrites: Array<{ id: string; data: Record<string, unknown> }> = [];
+
+    const splitIntoTwoShards = <T>(arr: T[]): [T[], T[]] => {
+      const mid = Math.ceil(arr.length / 2);
+      return [arr.slice(0, mid), arr.slice(mid)];
+    };
+
+    for (const cat of v2Categories) {
+      const chunks = splitIntoTwoShards(cat.items);
+      chunks.forEach((chunk, idx) => {
+        const shardId = `${cat.prefix}_${idx}`;
+        v2ShardIds.push(shardId);
+        v2ShardWrites.push({
+          id: shardId,
+          data: {
+            id: shardId,
+            parentId: 'think_tank_v2',
+            version: THINK_TANK_PUBLIC_V2_VERSION,
+            schemaVersion: 2,
+            isPublicSanitized: true,
+            kind: cat.key,
+            index: idx,
+            count: chunk.length,
+            items: chunk,
+            updatedAt: FieldValue.serverTimestamp(),
+          },
+        });
+      });
+    }
+
+    await Promise.all(
+      v2ShardWrites.map((s) => db.collection('global_curriculum').doc(s.id).set(s.data))
+    );
+
+    const v2TotalCount =
+      publicParadoxes.length + publicCases.length + publicRiddles.length + publicDebates.length;
+
+    await db.collection('global_curriculum').doc('think_tank_v2').set({
+      id: 'think_tank_v2',
+      title: 'Think Tank Public Critical Thinking Bank (v2 Sanitized)',
+      version: THINK_TANK_PUBLIC_V2_VERSION,
+      schemaVersion: 2,
+      sharded: true,
+      shardIds: v2ShardIds,
+      paradoxCount: publicParadoxes.length,
+      caseCount: publicCases.length,
+      riddleCount: publicRiddles.length,
+      debateCount: publicDebates.length,
+      totalCount: v2TotalCount,
+      updatedAt: FieldValue.serverTimestamp(),
+      updatedBy: user.uid,
+    });
 
     return {
       success: true,

@@ -75,10 +75,15 @@ export function assembleAndVerifyRemoteCurriculum(
   shards: Array<ShardDocumentData | null | undefined>,
   localVersion: string,
   localFallback: {
-    paradoxes: ThinkTankParadoxItem[];
-    detectiveCases: ThinkTankDetectiveCaseItem[];
-    riddles: ThinkTankRiddleItem[];
-    debates: ThinkTankDebateItem[];
+    paradoxes: any[];
+    detectiveCases: any[];
+    riddles: any[];
+    debates: any[];
+  } = {
+    paradoxes: [],
+    detectiveCases: [],
+    riddles: [],
+    debates: [],
   }
 ): VerifiedCurriculumPayload {
   if (!manifest || !manifest.sharded || !Array.isArray(manifest.shardIds) || manifest.shardIds.length === 0) {
@@ -156,6 +161,30 @@ export function assembleAndVerifyRemoteCurriculum(
     return {
       isVerifiedRemote: false,
       reason: `Paradox count mismatch (${paradoxes.length} vs ${manifest.paradoxCount})`,
+      version: localVersion,
+      ...localFallback,
+    };
+  }
+  if (typeof manifest.caseCount === 'number' && detectiveCases.length !== manifest.caseCount) {
+    return {
+      isVerifiedRemote: false,
+      reason: `Detective Case count mismatch (${detectiveCases.length} vs ${manifest.caseCount})`,
+      version: localVersion,
+      ...localFallback,
+    };
+  }
+  if (typeof manifest.riddleCount === 'number' && riddles.length !== manifest.riddleCount) {
+    return {
+      isVerifiedRemote: false,
+      reason: `Riddle count mismatch (${riddles.length} vs ${manifest.riddleCount})`,
+      version: localVersion,
+      ...localFallback,
+    };
+  }
+  if (typeof manifest.debateCount === 'number' && debates.length !== manifest.debateCount) {
+    return {
+      isVerifiedRemote: false,
+      reason: `Debate count mismatch (${debates.length} vs ${manifest.debateCount})`,
       version: localVersion,
       ...localFallback,
     };

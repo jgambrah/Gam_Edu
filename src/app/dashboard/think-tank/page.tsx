@@ -74,6 +74,10 @@ import {
 } from '@/lib/think-tank-sync-utils';
 import { useOnceQuery } from '@/lib/firestore-once';
 import { seedThinkTankCentralRepoAction } from '@/app/actions/think-tank-seed';
+import {
+  submitThinkTankParadoxAction,
+  lockThinkTankBlueprintAction,
+} from '@/app/actions/think-tank-submit';
 import { generateDailyParadox, generateDebateTopic, generateDetectiveCase } from '@/ai/flows/think-tank';
 import { awardActivityXP, triggerStudentBadgeEvent } from '@/lib/achievement-utils';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -672,19 +676,54 @@ function DailyParadoxTab({
     return (selectedParadoxId ? groupParadoxes.find((p) => p.id === selectedParadoxId) : null) || groupParadoxes[0];
   }, [groupParadoxes, selectedParadoxId]);
 
-  const handleAttempt = async (answer: string) => {
-    if (!user || canManage || !schoolId) return;
+  const handleParadoxSubmit = async (
+    paradoxId: string,
+    conclusion: string,
+    theory: string
+  ) => {
+    if (!user || canManage || !schoolId) {
+      throw new Error('Submission not permitted.');
+    }
 
-    await addDocumentNonBlocking(collection(firestore!, 'think_tank_submissions'), {
-      studentId: user.uid,
-      userId: user.uid,
-      studentName: user.displayName || user.email,
-      type: 'Paradox',
-      activityId: activeParadox?.id,
-      response: answer,
-      timestamp: serverTimestamp(),
-      schoolId: schoolId,
+    if (!activeParadox || activeParadox.id !== paradoxId) {
+      throw new Error('Invalid active paradox.');
+    }
+
+    const result = await submitThinkTankParadoxAction({
+      paradoxId,
+      conclusion,
+      theory,
     });
+
+    if (!result.success) {
+      throw new Error(
+        result.error ?? 'Unable to submit paradox.'
+      );
+    }
+
+    return result;
+  };
+
+  const handleParadoxBlueprint = async (
+    paradoxId: string
+  ) => {
+    if (!user || canManage || !schoolId) {
+      throw new Error('Blueprint access not permitted.');
+    }
+
+    if (!activeParadox || activeParadox.id !== paradoxId) {
+      throw new Error('Invalid active paradox.');
+    }
+
+    const result = await lockThinkTankBlueprintAction(paradoxId);
+
+    if (!result.success || !result.locked) {
+      throw new Error(
+        result.error ?? 'Unable to unlock blueprint.'
+      );
+    }
+
+    return result;
   };
 
   const handleDeleteParadox = async (id: string, e?: React.MouseEvent) => {
@@ -772,15 +811,17 @@ function DailyParadoxTab({
               lockedBlueprints.includes(activeParadox.id) ||
               solvedActivities.includes(activeParadox.id)
             }
-            onComplete={(deltaXp, maxXp, targetTotalXp) =>
-              onSolve &&
-              activeParadox &&
-              onSolve(deltaXp ?? 15, activeParadox.id, maxXp ?? 15, targetTotalXp)
+            onSubmitParadox={handleParadoxSubmit}
+            onRequestBlueprint={handleParadoxBlueprint}
+            onDelete={
+              (activeParadox as any).isCentral
+                ? undefined
+                : () => handleDeleteParadox(activeParadox.id)
             }
-            onLockBlueprint={onLockBlueprint}
-            onAttempt={handleAttempt}
-            onDelete={(activeParadox as any).isCentral ? undefined : () => handleDeleteParadox(activeParadox.id)}
-            isStaff={canManage && !(activeParadox as any).isCentral}
+            isStaff={
+              canManage &&
+              !(activeParadox as any).isCentral
+            }
           />
         ) : (
           <Card className="text-center py-12 border-2 border-dashed border-slate-800 bg-slate-950/20 rounded-3xl">
@@ -1462,7 +1503,7 @@ export default function ThinkTankPage() {
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
 
   // Central Repository Fetch (version-aware + shard completeness verification)
-  const { data: centralDoc, refresh: refreshCentralDoc } = useOnceQuery<{
+  const { data: centralDocs, refresh: refreshCentralDoc } = useOnceQuery<{
     isVerifiedRemote?: boolean;
     version?: string;
     sharded?: boolean;
@@ -1473,11 +1514,11 @@ export default function ThinkTankPage() {
     riddles?: ThinkTankRiddleItem[];
     debates?: ThinkTankDebateItem[];
   }>(
-    `think-tank:central:v${THINK_TANK_DATA_VERSION}`,
+    firestore ? `think-tank:central:v${THINK_TANK_DATA_VERSION}` : null,
     async () => {
-      if (!firestore) return null;
+      if (!firestore) return [];
       const snap = await getDoc(doc(firestore, 'global_curriculum', 'think_tank_v1'));
-      if (!snap.exists()) return null;
+      if (!snap.exists()) return [];
       const manifest = snap.data() as any;
 
       // Version-aware guard: do not load stale Firestore shards if remote version < THINK_TANK_DATA_VERSION
@@ -1504,22 +1545,26 @@ export default function ThinkTankPage() {
             debates: THINK_TANK_DEBATES,
           }
         );
-        return {
-          ...manifest,
-          isVerifiedRemote: verified.isVerifiedRemote,
-          paradoxes: verified.paradoxes,
-          detectiveCases: verified.detectiveCases,
-          riddles: verified.riddles,
-          debates: verified.debates,
-        };
+        return [
+          {
+            ...manifest,
+            isVerifiedRemote: verified.isVerifiedRemote,
+            paradoxes: verified.paradoxes,
+            detectiveCases: verified.detectiveCases,
+            riddles: verified.riddles,
+            debates: verified.debates,
+          },
+        ];
       }
-      return {
-        ...manifest,
-        isVerifiedRemote: false,
-      };
-    },
-    [firestore]
+      return [
+        {
+          ...manifest,
+          isVerifiedRemote: false,
+        },
+      ];
+    }
   );
+  const centralDoc = centralDocs?.[0] ?? null;
 
   const centralParadoxes = useMemo(
     () =>
@@ -1605,7 +1650,7 @@ export default function ThinkTankPage() {
   const { data: studentRecord } = useCollection<Student>(
     useMemoFirebase(
       () =>
-        role === 'Student' && user && schoolId
+        role === 'Student' && user && schoolId && firestore
           ? query(collection(firestore, 'students'), where('uid', '==', user.uid), where('schoolId', '==', schoolId))
           : null,
       [role, user, schoolId, firestore]

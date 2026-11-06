@@ -323,6 +323,7 @@ const BUILTIN_PARADOX_RUBRICS: Record<string, ThinkTankParadoxEvaluation> = {
     ],
     partialConcepts: [
       'if his nose grows he was telling the truth',
+      'if his nose grows then he was telling the truth',
       'if his nose grows he is telling the truth',
       'if his nose grows then it was true',
       'if his nose grows it was not a lie',

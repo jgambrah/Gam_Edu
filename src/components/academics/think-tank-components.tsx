@@ -11,99 +11,149 @@ import { Send, Bot, User, Swords, Loader2, RefreshCw, Gavel, Star, TrendingUp, A
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Paradox, DebateTopic } from '@/lib/types';
-import { evaluateParadoxSubmission, ParadoxEvaluationResult } from '@/lib/think-tank-evaluator';
+import type { ParadoxEvaluationResult } from '@/lib/think-tank-evaluator';
+import type {
+  SubmitThinkTankParadoxResponse,
+  LockThinkTankBlueprintResponse,
+} from '@/app/actions/think-tank-submit';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import confetti from 'canvas-confetti';
 
 // --- PARADOX CARD ---
-interface ParadoxCardProps {
+export type ParadoxCardProps = {
   paradox: Paradox;
-  onComplete: (awardedXp?: number, maxXp?: number, targetTotalXp?: number) => void;
-  onAttempt?: (answer: string, evaluation?: ParadoxEvaluationResult) => void;
-  onLockBlueprint?: (paradoxId: string) => void;
-  initialAwardedXp?: number;
-  isInitiallyLocked?: boolean;
-  onDelete?: () => void;
+
+  initialAwardedXp: number;
+  isInitiallyLocked: boolean;
+
+  onSubmitParadox: (
+    paradoxId: string,
+    conclusion: string,
+    theory: string
+  ) => Promise<SubmitThinkTankParadoxResponse>;
+
+  onRequestBlueprint: (
+    paradoxId: string
+  ) => Promise<LockThinkTankBlueprintResponse>;
+
   isStaff?: boolean;
-}
+  onDelete?: () => void;
+};
 
 export function ParadoxCard({
   paradox,
-  onComplete,
-  onAttempt,
-  onLockBlueprint,
   initialAwardedXp = 0,
   isInitiallyLocked = false,
+  onSubmitParadox,
+  onRequestBlueprint,
   onDelete,
   isStaff,
 }: ParadoxCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [userTheory, setUserTheory] = useState('');
   const [evaluationResult, setEvaluationResult] = useState<ParadoxEvaluationResult | null>(null);
-  const [isBlueprintRevealed, setIsBlueprintRevealed] = useState(
+  const [isServerLocked, setIsServerLocked] = useState(
     Boolean(isInitiallyLocked || initialAwardedXp >= 15)
   );
+  const [isBlueprintRevealed, setIsBlueprintRevealed] = useState(false);
+  const [revealedBlueprint, setRevealedBlueprint] = useState<{
+    answer: string;
+    explanation: string;
+  } | null>(null);
   const [highestAwardedXp, setHighestAwardedXp] = useState(Math.max(0, initialAwardedXp));
+  const [pendingDailyRolloverXp, setPendingDailyRolloverXp] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLockingBlueprint, setIsLockingBlueprint] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialAwardedXp > highestAwardedXp) {
       setHighestAwardedXp(initialAwardedXp);
     }
     if (isInitiallyLocked || initialAwardedXp >= 15) {
-      setIsBlueprintRevealed(true);
+      setIsServerLocked(true);
     }
   }, [initialAwardedXp, isInitiallyLocked, highestAwardedXp]);
 
-  const isLocked = isBlueprintRevealed || evaluationResult?.tier === 'Mastered' || highestAwardedXp >= 15;
+  const isLocked = isServerLocked || highestAwardedXp >= 15;
 
-  const handleEvaluate = () => {
-    if (!userAnswer.trim() || isLocked) return;
+  const handleEvaluate = async () => {
+    if (!userAnswer.trim() || isLocked || isSubmitting || isLockingBlueprint) return;
 
-    const result = evaluateParadoxSubmission({
-      id: paradox.id,
-      question: paradox.question,
-      answer: paradox.answer,
-      explanation: paradox.explanation,
-      userConclusion: userAnswer,
-      userTheory,
-      evaluation: (paradox as any).evaluation,
-    });
+    setIsSubmitting(true);
+    setActionError(null);
 
-    setEvaluationResult(result);
-
-    if (onAttempt) {
-      onAttempt(
-        `${userAnswer}${userTheory.trim() ? ` (Theory: ${userTheory.trim()})` : ''} [${result.tier}]`,
-        result
+    try {
+      const result = await onSubmitParadox(
+        paradox.id,
+        userAnswer,
+        userTheory
       );
-    }
 
-    if (result.tier === 'Mastered') {
-      setIsBlueprintRevealed(true);
-      confetti({ particleCount: 100, spread: 60, colors: ['#10b981', '#6366f1', '#a855f7'] });
-    }
+      if (result.evaluation) {
+        setEvaluationResult(result.evaluation);
+      }
 
-    // Cap total XP earned for this paradox at maxXp (15 XP) across the session and persisted state
-    const effectivePrevXp = Math.max(highestAwardedXp, initialAwardedXp);
-    const targetXp = Math.min(result.maxXp, result.xpAwarded);
-    if (targetXp > effectivePrevXp) {
-      const deltaXp = targetXp - effectivePrevXp;
-      setHighestAwardedXp(targetXp);
-      onComplete(deltaXp, result.maxXp, targetXp);
+      if (typeof result.totalParadoxXp === 'number') {
+        setHighestAwardedXp(result.totalParadoxXp);
+      }
+
+      setPendingDailyRolloverXp(
+        result.masteryAchieved && result.fullyCredited === false
+          ? Number(result.pendingXp ?? 0)
+          : 0
+      );
+
+      if (result.isBlueprintLocked || result.isCompleted) {
+        setIsServerLocked(true);
+      }
+
+      if (result.blueprint) {
+        setRevealedBlueprint(result.blueprint);
+        setIsBlueprintRevealed(true);
+      }
+
+      if (
+        (result.evaluation?.tier === 'Mastered' || result.masteryAchieved) &&
+        (result.awarded ?? 0) > 0
+      ) {
+        confetti({ particleCount: 100, spread: 60, colors: ['#10b981', '#6366f1', '#a855f7'] });
+      }
+    } catch (err: any) {
+      setActionError(
+        err?.message || 'Unable to submit paradox response. No XP was awarded.'
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleRevise = () => {
-    if (isLocked) return;
+    if (isLocked || isSubmitting || isLockingBlueprint) return;
     setEvaluationResult(null);
+    setActionError(null);
   };
 
-  const handleRevealBlueprint = () => {
-    setIsBlueprintRevealed(true);
-    if (onLockBlueprint && paradox.id) {
-      onLockBlueprint(paradox.id);
+  const handleRevealBlueprint = async () => {
+    if (!paradox.id || isLockingBlueprint || isSubmitting) return;
+
+    setIsLockingBlueprint(true);
+    setActionError(null);
+
+    try {
+      const result = await onRequestBlueprint(paradox.id);
+      if (!result.success || !result.locked || !result.blueprint) {
+        throw new Error(result.error || 'Unable to unlock blueprint.');
+      }
+      setIsServerLocked(true);
+      setRevealedBlueprint(result.blueprint);
+      setIsBlueprintRevealed(true);
+    } catch (err: any) {
+      setActionError(err?.message || 'Unable to unlock blueprint.');
+    } finally {
+      setIsLockingBlueprint(false);
     }
   };
 
@@ -152,8 +202,9 @@ export function ParadoxCard({
                   onChange={(e) => {
                     setUserAnswer(e.target.value);
                     if (evaluationResult && !isLocked) setEvaluationResult(null);
+                    if (actionError) setActionError(null);
                   }}
-                  disabled={isLocked}
+                  disabled={isLocked || isSubmitting || isLockingBlueprint}
                   className="bg-slate-900 border-slate-800 text-white rounded-xl h-11 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
@@ -166,8 +217,9 @@ export function ParadoxCard({
                   onChange={(e) => {
                     setUserTheory(e.target.value);
                     if (evaluationResult && !isLocked) setEvaluationResult(null);
+                    if (actionError) setActionError(null);
                   }}
-                  disabled={isLocked}
+                  disabled={isLocked || isSubmitting || isLockingBlueprint}
                   className="bg-slate-900 border-slate-800 text-white rounded-xl h-11 focus:ring-1 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
@@ -175,11 +227,31 @@ export function ParadoxCard({
             {!isLocked && (
                 <Button 
                   onClick={handleEvaluate} 
-                  disabled={!userAnswer.trim()} 
+                  disabled={!userAnswer.trim() || isSubmitting || isLockingBlueprint} 
                   className="w-full h-12 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-500/10 active:scale-95 text-sm flex items-center justify-center gap-2"
                 >
-                    <Sparkles className="h-4 w-4" /> Evaluate Reasoning
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" /> Evaluating Reasoning...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4" /> Evaluate Reasoning
+                      </>
+                    )}
                 </Button>
+            )}
+
+            {actionError && (
+              <Alert className="bg-rose-950/30 border-rose-500/40 rounded-2xl p-4 shadow-inner">
+                <AlertCircle className="h-4 w-4 text-rose-400" />
+                <AlertTitle className="text-rose-400 font-bold text-xs">
+                  Action Could Not Complete
+                </AlertTitle>
+                <AlertDescription className="text-slate-300 text-xs mt-1">
+                  {actionError}
+                </AlertDescription>
+              </Alert>
             )}
 
             {evaluationResult && (
@@ -228,24 +300,30 @@ export function ParadoxCard({
                                 : 'border-rose-500/30 text-rose-300 text-[10px]'
                             }
                           >
-                            {evaluationResult.tier} • {highestAwardedXp}/{evaluationResult.maxXp} XP
+                            {evaluationResult.tier} • {highestAwardedXp}/{evaluationResult.maxXp} XP Credited
                           </Badge>
                         </div>
                         <AlertDescription className="text-slate-300 mt-2 space-y-2.5">
                           <p className="text-xs leading-relaxed text-slate-200">{evaluationResult.feedback}</p>
+                          {pendingDailyRolloverXp > 0 && (
+                            <p className="text-xs text-amber-300 font-semibold">
+                              You demonstrated full mastery! Because of the 1,000 daily self-XP cap, {highestAwardedXp}/{evaluationResult.maxXp} XP has been credited so far and the remaining +{pendingDailyRolloverXp} XP stays eligible after the daily reset.
+                            </p>
+                          )}
                           {evaluationResult.coachingHint && evaluationResult.tier !== 'Mastered' && (
                             <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 text-xs text-indigo-200 flex items-start gap-2">
                               <Lightbulb className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
                               <span><strong>Coaching Hint:</strong> {evaluationResult.coachingHint}</span>
                             </div>
                           )}
-                          {evaluationResult.tier !== 'Mastered' && !isBlueprintRevealed && (
+                          {!isLocked && !isBlueprintRevealed && (
                             <div className="flex flex-wrap items-center gap-2 pt-2">
                               <Button
                                 type="button"
                                 size="sm"
                                 variant="outline"
                                 onClick={handleRevise}
+                                disabled={isSubmitting || isLockingBlueprint}
                                 className="border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-200 rounded-xl text-xs h-8"
                               >
                                 <RotateCcw className="h-3.5 w-3.5 mr-1.5" /> Revise My Reasoning
@@ -255,9 +333,18 @@ export function ParadoxCard({
                                 size="sm"
                                 variant="ghost"
                                 onClick={handleRevealBlueprint}
+                                disabled={isSubmitting || isLockingBlueprint}
                                 className="text-slate-400 hover:text-white hover:bg-slate-900 rounded-xl text-xs h-8"
                               >
-                                <Eye className="h-3.5 w-3.5 mr-1.5" /> Study Logic Blueprint (Locks Revisions)
+                                {isLockingBlueprint ? (
+                                  <>
+                                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> Locking Blueprint...
+                                  </>
+                                ) : (
+                                  <>
+                                    <Eye className="h-3.5 w-3.5 mr-1.5" /> Study Logic Blueprint (Locks Revisions)
+                                  </>
+                                )}
                               </Button>
                             </div>
                           )}
@@ -266,15 +353,35 @@ export function ParadoxCard({
                 </div>
             )}
 
-            {isBlueprintRevealed && (
+            {isLocked && !isBlueprintRevealed && !isStaff && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleRevealBlueprint}
+                disabled={isLockingBlueprint || isSubmitting}
+                className="w-full border-indigo-500/30 bg-slate-900/60 hover:bg-slate-900 text-indigo-300 rounded-xl h-10 text-xs"
+              >
+                {isLockingBlueprint ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> Loading Official Blueprint...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-3.5 w-3.5 mr-1.5" /> View Official Logic Blueprint
+                  </>
+                )}
+              </Button>
+            )}
+
+            {isBlueprintRevealed && revealedBlueprint && (
               <Alert className="bg-slate-900/80 border-indigo-500/25 rounded-2xl p-5 shadow-inner animate-in slide-in-from-bottom duration-300">
                   <ShieldCheck className="h-5 w-5 text-indigo-400" />
                   <AlertTitle className="text-indigo-300 font-bold text-sm tracking-tight">
                     Revealed Logic Blueprint {highestAwardedXp >= 15 ? '• Mastered' : '• Revisions Locked'}
                   </AlertTitle>
                   <AlertDescription className="text-slate-300 mt-2 space-y-2">
-                    <p className="font-semibold text-white">Canonical Answer: <span className="text-emerald-300">{paradox.answer}</span></p>
-                    <p className="text-xs leading-relaxed text-slate-400">{paradox.explanation}</p>
+                    <p className="font-semibold text-white">Canonical Answer: <span className="text-emerald-300">{revealedBlueprint.answer}</span></p>
+                    <p className="text-xs leading-relaxed text-slate-400">{revealedBlueprint.explanation}</p>
                   </AlertDescription>
               </Alert>
             )}
