@@ -26,9 +26,6 @@ const NEGATION_TOKENS = new Set([
   'not',
   'no',
   'never',
-  'neither',
-  'nor',
-  'without',
   'cannot',
   'cant',
   'isnt',
@@ -41,7 +38,33 @@ const NEGATION_TOKENS = new Set([
   'wont',
   'wouldnt',
   'shouldnt',
-  'false',
+]);
+
+const NEGATION_BRIDGE_TOKENS = new Set([
+  'a',
+  'an',
+  'the',
+  'any',
+  'really',
+  'actually',
+  'even',
+  'simply',
+  'just',
+  'logical',
+  'logically',
+  'self',
+  'referential',
+  'true',
+  'real',
+  'valid',
+  'at',
+  'all',
+  'be',
+  'have',
+  'create',
+  'creates',
+  'produce',
+  'produces',
 ]);
 
 const STOPWORDS = new Set([
@@ -148,7 +171,9 @@ export function normalizeReasoningText(input: string): string {
   let s = input
     .toLowerCase()
     .replace(/['’]/g, '')
+    .replace(/(?<![0-9])\.|\.(?![0-9])/g, ' ')
     .replace(/[^a-z0-9.%/-]+/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
 
   // Normalize number words so "forty" and "40" match consistently
@@ -159,38 +184,113 @@ export function normalizeReasoningText(input: string): string {
   return s;
 }
 
+const CONDITIONAL_TOKENS = new Set([
+  'if',
+  'suppose',
+  'assuming',
+  'assume',
+  'whether',
+  'when',
+  'whenever',
+  'case',
+]);
+
 /**
- * Checks whether `phrase` appears in `normalizedText` WITHOUT being preceded by a negation word
- * within the 4 tokens immediately before the match.
+ * Checks whether `phrase` appears in `normalizedText` WITHOUT being directly negated
+ * (where a negation word precedes `phrase` separated only by optional bridge/determiner words).
  */
 export function matchesAffirmativePhrase(normalizedText: string, rawPhrase: string): boolean {
   const phrase = normalizeReasoningText(rawPhrase);
   if (!phrase) return false;
-  const idx = normalizedText.indexOf(phrase);
-  if (idx === -1) return false;
+  let searchStart = 0;
+  while (searchStart < normalizedText.length) {
+    const idx = normalizedText.indexOf(phrase, searchStart);
+    if (idx === -1) return false;
 
-  const prefixTokens = normalizedText.slice(0, idx).trim().split(/\s+/).filter(Boolean);
+    const beforeChar = idx > 0 ? normalizedText[idx - 1] : ' ';
+    const afterChar =
+      idx + phrase.length < normalizedText.length ? normalizedText[idx + phrase.length] : ' ';
+    const isWordBoundary = beforeChar === ' ' && afterChar === ' ';
+
+    if (isWordBoundary) {
+      if (!isMatchAtIndexNegated(normalizedText, idx)) {
+        return true;
+      }
+    }
+    searchStart = idx + 1;
+  }
+  return false;
+}
+
+function isMatchAtIndexNegated(normalizedText: string, matchIdx: number): boolean {
+  const prefixTokens = normalizedText.slice(0, matchIdx).trim().split(/\s+/).filter(Boolean);
   const windowTokens = prefixTokens.slice(-4);
-  for (const tok of windowTokens) {
+  for (let i = windowTokens.length - 1; i >= 0; i--) {
+    const tok = windowTokens[i];
     if (NEGATION_TOKENS.has(tok)) {
+      return true;
+    }
+    if (!NEGATION_BRIDGE_TOKENS.has(tok)) {
+      // Hit a content word (e.g. "growing" in "not growing contradict"), so any earlier "not" modified that word, not our target phrase
       return false;
     }
   }
-  return true;
+  return false;
 }
 
 /**
- * Checks whether `phrase` appears in `normalizedText` AND IS negated within the 4 preceding tokens.
+ * Checks whether a trap phrase is asserted as an unconditioned conclusion (not inside an "if/suppose" hypothesis).
+ */
+export function matchesUnconditionedTrap(normalizedText: string, rawTrap: string): boolean {
+  const phrase = normalizeReasoningText(rawTrap);
+  if (!phrase) return false;
+  let searchStart = 0;
+  while (searchStart < normalizedText.length) {
+    const idx = normalizedText.indexOf(phrase, searchStart);
+    if (idx === -1) return false;
+
+    const beforeChar = idx > 0 ? normalizedText[idx - 1] : ' ';
+    const afterChar =
+      idx + phrase.length < normalizedText.length ? normalizedText[idx + phrase.length] : ' ';
+    const isWordBoundary = beforeChar === ' ' && afterChar === ' ';
+
+    if (isWordBoundary) {
+      const prefixTokens = normalizedText.slice(0, idx).trim().split(/\s+/).filter(Boolean);
+      const windowTokens = prefixTokens.slice(-5);
+      const isNegated = isMatchAtIndexNegated(normalizedText, idx);
+      const isConditional = windowTokens.some((tok) => CONDITIONAL_TOKENS.has(tok));
+      const forcesSingleOutcome = /\b(definitely|simply|certainly|because he is lying|about to)\b/.test(phrase);
+      if (!isNegated && (!isConditional || forcesSingleOutcome)) {
+        return true;
+      }
+    }
+    searchStart = idx + 1;
+  }
+  return false;
+}
+
+/**
+ * Checks whether `phrase` appears in `normalizedText` AND IS directly negated.
  */
 export function isPhraseExplicitlyNegated(normalizedText: string, rawPhrase: string): boolean {
   const phrase = normalizeReasoningText(rawPhrase);
   if (!phrase) return false;
-  const idx = normalizedText.indexOf(phrase);
-  if (idx === -1) return false;
+  let searchStart = 0;
+  while (searchStart < normalizedText.length) {
+    const idx = normalizedText.indexOf(phrase, searchStart);
+    if (idx === -1) return false;
 
-  const prefixTokens = normalizedText.slice(0, idx).trim().split(/\s+/).filter(Boolean);
-  const windowTokens = prefixTokens.slice(-4);
-  return windowTokens.some((tok) => NEGATION_TOKENS.has(tok));
+    const beforeChar = idx > 0 ? normalizedText[idx - 1] : ' ';
+    const afterChar =
+      idx + phrase.length < normalizedText.length ? normalizedText[idx + phrase.length] : ' ';
+    const isWordBoundary = beforeChar === ' ' && afterChar === ' ';
+
+    if (isWordBoundary && isMatchAtIndexNegated(normalizedText, idx)) {
+      return true;
+    }
+    searchStart = idx + 1;
+  }
+  return false;
 }
 
 /**
@@ -353,13 +453,13 @@ export function evaluateParadoxSubmission(
 
   // 1. If an explicit structured rubric exists, evaluate with negation-aware phrase matching
   if (rubric) {
-    // Check explicit negation of required/accepted concepts first (e.g. "It is not a paradox")
-    const flattenedRequired = (rubric.requiredConcepts || []).flatMap((c) => (Array.isArray(c) ? c : [c]));
-    const allMasteryPhrases = [
-      ...flattenedRequired,
+    // Check explicit negation of core mastery/paradox expressions first (e.g. "It is not a paradox")
+    const coreOutcomePhrases = [
       ...(rubric.acceptedExpressions || []),
+      'paradox',
+      'contradiction',
     ];
-    const negatedCore = allMasteryPhrases.some((phrase) => isPhraseExplicitlyNegated(normUser, phrase));
+    const negatedCore = coreOutcomePhrases.some((phrase) => isPhraseExplicitlyNegated(normUser, phrase));
     if (negatedCore) {
       return {
         tier: 'Needs Revision',
@@ -373,10 +473,41 @@ export function evaluateParadoxSubmission(
       };
     }
 
-    // Check affirmative mastery expressions
     const matchedMastery = (rubric.acceptedExpressions || []).some((phrase) =>
       matchesAffirmativePhrase(normUser, phrase)
     );
+    const mentionsParadoxKeyword = matchesAffirmativePhrase(normUser, 'paradox');
+    const matchedTrap = (rubric.commonTraps || []).some((trap) => matchesUnconditionedTrap(normUser, trap));
+
+    // Guard against self-contradictory answers (e.g. "This is a paradox, but his nose will definitely grow because he is lying")
+    if (matchedTrap && (matchedMastery || mentionsParadoxKeyword)) {
+      return {
+        tier: 'Needs Revision',
+        xpAwarded: 0,
+        xpEarned: 0,
+        maxXp,
+        headline: 'Needs Revision — Self-Contradictory Conclusion',
+        feedback:
+          'You referred to a paradox, but then asserted a single definitive outcome (such as his nose growing because he is lying). In a true paradox, neither outcome can occur consistently under the rule.',
+        coachingHint: defaultHint,
+      };
+    }
+
+    // Check common traps before awarding mastery or partial credit
+    if (matchedTrap) {
+      return {
+        tier: 'Needs Revision',
+        xpAwarded: 0,
+        xpEarned: 0,
+        maxXp,
+        headline: 'Needs Revision — Intuitive Trap Detected',
+        feedback:
+          'That conclusion assumes a single outcome without checking whether that outcome contradicts the rule stated in the prompt.',
+        coachingHint: defaultHint,
+      };
+    }
+
+    // Check affirmative mastery expressions
     if (matchedMastery) {
       return {
         tier: 'Mastered',
@@ -403,21 +534,6 @@ export function evaluateParadoxSubmission(
         headline: `Partially Correct (+${partialXp} XP earned — Revise for +${maxXp - partialXp} more XP)`,
         feedback:
           'You correctly traced one branch of the problem, but you have not yet explained what happens when both possibilities are tested against the rule.',
-        coachingHint: defaultHint,
-      };
-    }
-
-    // Check common traps (e.g., "he is about to tell a lie", "his nose will definitely grow")
-    const matchedTrap = (rubric.commonTraps || []).some((trap) => matchesAffirmativePhrase(normUser, trap));
-    if (matchedTrap) {
-      return {
-        tier: 'Needs Revision',
-        xpAwarded: 0,
-        xpEarned: 0,
-        maxXp,
-        headline: 'Needs Revision — Intuitive Trap Detected',
-        feedback:
-          'That conclusion assumes a single outcome without checking whether that outcome contradicts the rule stated in the prompt.',
         coachingHint: defaultHint,
       };
     }

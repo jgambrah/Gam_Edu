@@ -601,12 +601,18 @@ function DailyParadoxTab({
   schoolId,
   centralParadoxes,
   solvedActivities,
+  awardedXpByActivity = {},
+  lockedBlueprints = [],
   onSolve,
+  onLockBlueprint,
 }: {
   schoolId: string | null;
   centralParadoxes: ThinkTankParadoxItem[];
   solvedActivities: string[];
-  onSolve?: (points: number, id: string, maxPoints?: number) => void;
+  awardedXpByActivity?: Record<string, number>;
+  lockedBlueprints?: string[];
+  onSolve?: (points: number, id: string, maxPoints?: number, targetTotalXp?: number) => void;
+  onLockBlueprint?: (id: string) => void;
 }) {
   const { user, isUserLoading } = useUser();
   const { role } = useRole();
@@ -750,9 +756,20 @@ function DailyParadoxTab({
           <ParadoxCard
             key={activeParadox.id}
             paradox={activeParadox}
-            onComplete={(deltaXp, maxXp) =>
-              onSolve && activeParadox && onSolve(deltaXp ?? 15, activeParadox.id, maxXp ?? 15)
+            initialAwardedXp={
+              awardedXpByActivity[activeParadox.id] ??
+              (solvedActivities.includes(activeParadox.id) ? 15 : 0)
             }
+            isInitiallyLocked={
+              lockedBlueprints.includes(activeParadox.id) ||
+              solvedActivities.includes(activeParadox.id)
+            }
+            onComplete={(deltaXp, maxXp, targetTotalXp) =>
+              onSolve &&
+              activeParadox &&
+              onSolve(deltaXp ?? 15, activeParadox.id, maxXp ?? 15, targetTotalXp)
+            }
+            onLockBlueprint={onLockBlueprint}
             onAttempt={handleAttempt}
             onDelete={(activeParadox as any).isCentral ? undefined : () => handleDeleteParadox(activeParadox.id)}
             isStaff={canManage && !(activeParadox as any).isCentral}
@@ -1432,10 +1449,11 @@ export default function ThinkTankPage() {
 
   const [solvedActivities, setSolvedActivities] = useState<string[]>([]);
   const [awardedXpByActivity, setAwardedXpByActivity] = useState<Record<string, number>>({});
+  const [lockedBlueprints, setLockedBlueprints] = useState<string[]>([]);
   const [logicPoints, setLogicPoints] = useState(0);
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
 
-  // Central Repository Fetch (1 Firestore manifest read per 30-min session; loads shards only if remote > bundled)
+  // Central Repository Fetch (loads Firestore shards when sharded manifest is current or newer)
   const { data: centralDoc, refresh: refreshCentralDoc } = useOnceQuery<{
     version?: string;
     sharded?: boolean;
@@ -1446,7 +1464,7 @@ export default function ThinkTankPage() {
     riddles?: ThinkTankRiddleItem[];
     debates?: ThinkTankDebateItem[];
   }>(
-    'think-tank:central:v1',
+    'think-tank:central:v19.1',
     async () => {
       if (!firestore) return null;
       const snap = await getDoc(doc(firestore, 'global_curriculum', 'think_tank_v1'));
@@ -1461,7 +1479,7 @@ export default function ThinkTankPage() {
         manifest.sharded &&
         Array.isArray(manifest.shardIds) &&
         typeof manifest.totalCount === 'number' &&
-        manifest.totalCount > localTotal
+        manifest.totalCount >= localTotal
       ) {
         const shardSnaps = await Promise.all(
           manifest.shardIds.map((id: string) => getDoc(doc(firestore, 'global_curriculum', id)))
@@ -1563,6 +1581,7 @@ export default function ThinkTankPage() {
           const data = snap.data();
           if (data.thinkTankCompleted) setSolvedActivities(data.thinkTankCompleted);
           if (data.thinkTankAwardedXp) setAwardedXpByActivity(data.thinkTankAwardedXp);
+          if (Array.isArray(data.thinkTankLockedBlueprints)) setLockedBlueprints(data.thinkTankLockedBlueprints);
           if (data.thinkTankScore) setLogicPoints(data.thinkTankScore);
         }
       } catch (e) {
@@ -1582,34 +1601,97 @@ export default function ThinkTankPage() {
     )
   );
 
-  const handleSolve = async (points: number, activityId: string, maxPoints?: number) => {
+  const handleLockBlueprint = async (activityId: string) => {
     if (!user || !firestore || canManage) return;
+    if (lockedBlueprints.includes(activityId)) return;
 
-    const cap = maxPoints ?? points;
-    const alreadyAwarded =
-      awardedXpByActivity[activityId] ?? (solvedActivities.includes(activityId) ? cap : 0);
-
-    const effectiveDelta = Math.max(0, Math.min(points, cap - alreadyAwarded));
-    if (effectiveDelta <= 0) return;
-
-    const newTotalForActivity = alreadyAwarded + effectiveDelta;
-    const isNowFullySolved = newTotalForActivity >= cap;
-    const nextSolved =
-      isNowFullySolved && !solvedActivities.includes(activityId)
-        ? [...solvedActivities, activityId]
-        : solvedActivities;
-    const nextAwardedMap = {
-      ...awardedXpByActivity,
-      [activityId]: newTotalForActivity,
-    };
-    const nextPoints = logicPoints + effectiveDelta;
-
-    setSolvedActivities(nextSolved);
-    setAwardedXpByActivity(nextAwardedMap);
-    setLogicPoints(nextPoints);
+    const nextLocked = [...lockedBlueprints, activityId];
+    setLockedBlueprints(nextLocked);
 
     try {
       const progressRef = doc(firestore, 'student_progress', user.uid);
+      await setDoc(
+        progressRef,
+        {
+          thinkTankLockedBlueprints: nextLocked,
+        },
+        { merge: true }
+      );
+    } catch (e) {
+      console.error('Failed to persist blueprint lock:', e);
+    }
+  };
+
+  const handleSolve = async (
+    points: number,
+    activityId: string,
+    maxPoints?: number,
+    targetTotalXp?: number
+  ) => {
+    if (!user || !firestore || canManage) return;
+
+    try {
+      const progressRef = doc(firestore, 'student_progress', user.uid);
+      const remoteSnap = await getDoc(progressRef);
+      const remoteData = remoteSnap.exists() ? remoteSnap.data() : {};
+
+      const mergedLocked = Array.from(
+        new Set([...lockedBlueprints, ...(remoteData.thinkTankLockedBlueprints || [])])
+      );
+      if (mergedLocked.includes(activityId)) {
+        setLockedBlueprints(mergedLocked);
+        return;
+      }
+
+      const mergedSolved = Array.from(
+        new Set([...solvedActivities, ...(remoteData.thinkTankCompleted || [])])
+      );
+      const mergedAwardedMap: Record<string, number> = {
+        ...(remoteData.thinkTankAwardedXp || {}),
+        ...awardedXpByActivity,
+      };
+      if (remoteData.thinkTankAwardedXp?.[activityId] !== undefined) {
+        mergedAwardedMap[activityId] = Math.max(
+          mergedAwardedMap[activityId] ?? 0,
+          remoteData.thinkTankAwardedXp[activityId]
+        );
+      }
+
+      const cap = maxPoints ?? points;
+      const alreadyAwarded = Math.max(
+        mergedAwardedMap[activityId] ?? 0,
+        mergedSolved.includes(activityId) ? cap : 0
+      );
+
+      const desiredTotal =
+        targetTotalXp !== undefined
+          ? Math.min(cap, targetTotalXp)
+          : Math.min(cap, alreadyAwarded + points);
+
+      const effectiveDelta = Math.max(0, desiredTotal - alreadyAwarded);
+      if (effectiveDelta <= 0) {
+        setSolvedActivities(mergedSolved);
+        setAwardedXpByActivity(mergedAwardedMap);
+        return;
+      }
+
+      const newTotalForActivity = alreadyAwarded + effectiveDelta;
+      const isNowFullySolved = newTotalForActivity >= cap;
+      const nextSolved =
+        isNowFullySolved && !mergedSolved.includes(activityId)
+          ? [...mergedSolved, activityId]
+          : mergedSolved;
+      const nextAwardedMap = {
+        ...mergedAwardedMap,
+        [activityId]: newTotalForActivity,
+      };
+      const baseScore = Math.max(logicPoints, Number(remoteData.thinkTankScore || 0));
+      const nextPoints = baseScore + effectiveDelta;
+
+      setSolvedActivities(nextSolved);
+      setAwardedXpByActivity(nextAwardedMap);
+      setLogicPoints(nextPoints);
+
       await setDoc(
         progressRef,
         {
@@ -1778,7 +1860,10 @@ export default function ThinkTankPage() {
             schoolId={schoolId}
             centralParadoxes={centralParadoxes}
             solvedActivities={solvedActivities}
+            awardedXpByActivity={awardedXpByActivity}
+            lockedBlueprints={lockedBlueprints}
             onSolve={handleSolve}
+            onLockBlueprint={handleLockBlueprint}
           />
         </TabsContent>
         <TabsContent value="detective" className="mt-6 flex-1">

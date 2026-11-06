@@ -20,21 +20,46 @@ import confetti from 'canvas-confetti';
 // --- PARADOX CARD ---
 interface ParadoxCardProps {
   paradox: Paradox;
-  onComplete: (awardedXp?: number, maxXp?: number) => void;
+  onComplete: (awardedXp?: number, maxXp?: number, targetTotalXp?: number) => void;
   onAttempt?: (answer: string, evaluation?: ParadoxEvaluationResult) => void;
+  onLockBlueprint?: (paradoxId: string) => void;
+  initialAwardedXp?: number;
+  isInitiallyLocked?: boolean;
   onDelete?: () => void;
   isStaff?: boolean;
 }
 
-export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff }: ParadoxCardProps) {
+export function ParadoxCard({
+  paradox,
+  onComplete,
+  onAttempt,
+  onLockBlueprint,
+  initialAwardedXp = 0,
+  isInitiallyLocked = false,
+  onDelete,
+  isStaff,
+}: ParadoxCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [userTheory, setUserTheory] = useState('');
   const [evaluationResult, setEvaluationResult] = useState<ParadoxEvaluationResult | null>(null);
-  const [isBlueprintRevealed, setIsBlueprintRevealed] = useState(false);
-  const [highestAwardedXp, setHighestAwardedXp] = useState(0);
+  const [isBlueprintRevealed, setIsBlueprintRevealed] = useState(
+    Boolean(isInitiallyLocked || initialAwardedXp >= 15)
+  );
+  const [highestAwardedXp, setHighestAwardedXp] = useState(Math.max(0, initialAwardedXp));
+
+  useEffect(() => {
+    if (initialAwardedXp > highestAwardedXp) {
+      setHighestAwardedXp(initialAwardedXp);
+    }
+    if (isInitiallyLocked || initialAwardedXp >= 15) {
+      setIsBlueprintRevealed(true);
+    }
+  }, [initialAwardedXp, isInitiallyLocked, highestAwardedXp]);
+
+  const isLocked = isBlueprintRevealed || evaluationResult?.tier === 'Mastered' || highestAwardedXp >= 15;
 
   const handleEvaluate = () => {
-    if (!userAnswer.trim()) return;
+    if (!userAnswer.trim() || isLocked) return;
 
     const result = evaluateParadoxSubmission({
       id: paradox.id,
@@ -60,24 +85,27 @@ export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff 
       confetti({ particleCount: 100, spread: 60, colors: ['#10b981', '#6366f1', '#a855f7'] });
     }
 
-    // Cap total XP earned for this paradox at maxXp (15 XP)
+    // Cap total XP earned for this paradox at maxXp (15 XP) across the session and persisted state
+    const effectivePrevXp = Math.max(highestAwardedXp, initialAwardedXp);
     const targetXp = Math.min(result.maxXp, result.xpAwarded);
-    if (targetXp > highestAwardedXp) {
-      const deltaXp = targetXp - highestAwardedXp;
+    if (targetXp > effectivePrevXp) {
+      const deltaXp = targetXp - effectivePrevXp;
       setHighestAwardedXp(targetXp);
-      onComplete(deltaXp, result.maxXp);
+      onComplete(deltaXp, result.maxXp, targetXp);
     }
   };
 
   const handleRevise = () => {
+    if (isLocked) return;
     setEvaluationResult(null);
   };
 
   const handleRevealBlueprint = () => {
     setIsBlueprintRevealed(true);
+    if (onLockBlueprint && paradox.id) {
+      onLockBlueprint(paradox.id);
+    }
   };
-
-  const isLocked = isBlueprintRevealed || evaluationResult?.tier === 'Mastered';
 
   return (
     <Card className="border border-slate-900 bg-slate-950/80 backdrop-blur-md rounded-[2rem] shadow-2xl relative overflow-hidden transition-all duration-300">
@@ -235,18 +263,20 @@ export function ParadoxCard({ paradox, onComplete, onAttempt, onDelete, isStaff 
                           )}
                         </AlertDescription>
                     </Alert>
-
-                    {isBlueprintRevealed && (
-                      <Alert className="bg-slate-900/80 border-indigo-500/25 rounded-2xl p-5 shadow-inner">
-                          <ShieldCheck className="h-5 w-5 text-indigo-400" />
-                          <AlertTitle className="text-indigo-300 font-bold text-sm tracking-tight">Revealed Logic Blueprint</AlertTitle>
-                          <AlertDescription className="text-slate-300 mt-2 space-y-2">
-                            <p className="font-semibold text-white">Canonical Answer: <span className="text-emerald-300">{paradox.answer}</span></p>
-                            <p className="text-xs leading-relaxed text-slate-400">{paradox.explanation}</p>
-                          </AlertDescription>
-                      </Alert>
-                    )}
                 </div>
+            )}
+
+            {isBlueprintRevealed && (
+              <Alert className="bg-slate-900/80 border-indigo-500/25 rounded-2xl p-5 shadow-inner animate-in slide-in-from-bottom duration-300">
+                  <ShieldCheck className="h-5 w-5 text-indigo-400" />
+                  <AlertTitle className="text-indigo-300 font-bold text-sm tracking-tight">
+                    Revealed Logic Blueprint {highestAwardedXp >= 15 ? '• Mastered' : '• Revisions Locked'}
+                  </AlertTitle>
+                  <AlertDescription className="text-slate-300 mt-2 space-y-2">
+                    <p className="font-semibold text-white">Canonical Answer: <span className="text-emerald-300">{paradox.answer}</span></p>
+                    <p className="text-xs leading-relaxed text-slate-400">{paradox.explanation}</p>
+                  </AlertDescription>
+              </Alert>
             )}
         </div>
       </CardContent>
