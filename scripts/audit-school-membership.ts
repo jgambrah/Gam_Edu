@@ -10,7 +10,8 @@
  *                     (sha256 + a random salt that is printed once and not stored), so the report can be shared safely.
  *   --show-ids      : writes the real uids instead of hashes, for the person who will fix the accounts. Keep that file private.
  *
- * Usage:  npx ts-node scripts/audit-school-membership.ts [--report] [--show-ids]
+ * Usage:  npx tsx scripts/audit-school-membership.ts --confirm-project=<project id> [--report] [--show-ids]
+ *   The run REFUSES to start unless --confirm-project exactly matches the project the credentials belong to.
  * To run it against the Firebase emulator instead of production, set FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 first.
  */
 import * as dotenv from 'dotenv';
@@ -18,7 +19,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { classifyMembership, type Profile } from '../src/lib/membership-audit';
+import { classifyMembership, checkProjectConfirmation, type Profile } from '../src/lib/membership-audit';
 
 dotenv.config();
 if (!getApps().length) {
@@ -29,7 +30,9 @@ if (!getApps().length) {
     : { projectId: process.env.FIREBASE_PROJECT_ID || 'demo-gam-edu' });
 }
 const db = getFirestore();
-const args = new Set(process.argv.slice(2));
+const rawArgs = process.argv.slice(2);
+const args = new Set(rawArgs);
+const confirmArg = rawArgs.find(a => a.startsWith('--confirm-project='))?.split('=')[1];
 
 async function load(c: string): Promise<Map<string, Profile>> {
   const snap = await db.collection(c).select('schoolId', 'role').get(); // field mask: nothing else is read
@@ -37,6 +40,10 @@ async function load(c: string): Promise<Map<string, Profile>> {
 }
 
 async function main() {
+  const projectId = getApps()[0]?.options.projectId || process.env.FIREBASE_PROJECT_ID;
+  const problem = checkProjectConfirmation(projectId, confirmArg, { emulator: !!process.env.FIRESTORE_EMULATOR_HOST });
+  if (problem) { console.error(problem); process.exit(2); }
+  console.log(`Project: ${projectId}${process.env.FIRESTORE_EMULATOR_HOST ? ' (EMULATOR)' : ''} — read-only run.`);
   const [users, staff, students, parents] = await Promise.all(['users', 'staff', 'students', 'parents'].map(load));
   const schoolIds = new Set((await db.collection('schools').select().get()).docs.map(d => d.id));
   const findings = classifyMembership({ users, staff, students, parents, schoolIds });

@@ -21,3 +21,15 @@ export function classifyMembership(s: Snapshot): Finding[] {
     }
   return out;
 }
+
+/**
+ * Safety check before the audit touches anything: the project the credentials point at must be the one the operator
+ * explicitly confirmed on the command line. Returns an error message, or null when it is safe to proceed.
+ */
+export function checkProjectConfirmation(resolvedProjectId: string | undefined, confirmArg: string | undefined, opts: { emulator: boolean }): string | null {
+  if (opts.emulator) return null; // emulator runs hold no real data
+  if (!resolvedProjectId) return 'Could not determine which Firebase project these credentials belong to. Set FIREBASE_PROJECT_ID.';
+  if (!confirmArg) return `Refusing to run: pass --confirm-project=${resolvedProjectId} to confirm this is the project you mean to audit.`;
+  if (confirmArg !== resolvedProjectId) return `Refusing to run: you confirmed "${confirmArg}" but the credentials belong to "${resolvedProjectId}".`;
+  return null;
+}
