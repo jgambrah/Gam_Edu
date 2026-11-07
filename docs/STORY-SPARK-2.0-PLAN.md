@@ -411,3 +411,17 @@ Each stage is its own commit set on `story-spark-2.0-central-library`, with a CI
 - Two things I could not verify are listed in 3.2; Option C is the one they affect.
 - Existing `junior_stories` content is untouched and remains readable through `normalizeStory()`.
 - This design adds no scheduled job; anything periodic (retention sweep, rollups, licence-expiry report) is proposed as a manual or approved-schedule action.
+
+## 3.16 Stage 1 status and decisions recorded (see `docs/STORY-LIBRARY-STAGE-1-REPORT.md`)
+
+**Your decisions:** D1 JSON story manifest + separately addressable immutable media, lazy-loaded and cached. D2 publishers only publish; authenticated, eligible schools read published content; drafts and student data private; no unprotected public URLs for sensitive content. D3 inspect, do not change (not possible without credentials; commands in the report). D6 support shared and personal devices; cache assumptions provisional until measured. D8 defer a dedicated CDN, stay CDN-compatible.
+
+**Where the implementation differs from the design above (read these before relying on sections 3.6 to 3.11):**
+1. **Storage read gating is a membership lookup, not signed-in only** (per D2). A school member is found in `users/{uid}` or `staff/{uid}` (2 lookups, about 1.5 billed reads per file). Per-school `storyLibraryEnabled` is enforced at the Firestore catalogue and pointer only, not in Storage (a rule may do only two lookups).
+2. **`withdrawn` became `archived`** everywhere (types, rules, tests).
+3. **Super admins are bound by the library workflow.** A pre-existing blanket super-admin write rule would have overridden every library restriction; the four library collections are now excluded from it (writes only).
+4. **`library_meta` cannot be listed** and is only readable by `get`; catalogue lists require `limit <= 50` and `status == 'published'`.
+5. **Workflow detail:** `draft <-> review`; `review -> approved` by a different publisher recording `approvedBy`; `approved -> published | review`; `published -> archived`; `archived -> review`. Approved and published admin documents are frozen except for the status trail.
+6. **Cost model** moved to `src/lib/story-library/cost-model.ts` (run `node --experimental-strip-types src/lib/story-library/cost-model.ts`; add `--first-pass` for the original assumptions). The estimate for the implemented design is revised from about $153 to about $116 per month at target; see the report for how much to trust it.
+7. **Pricing correction:** Firestore stored data is more plausibly about $0.15/GiB-month than $0.075 (unit unverified; no effect on totals).
+
