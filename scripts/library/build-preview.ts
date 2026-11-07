@@ -17,6 +17,9 @@ import { ageTiersFor, READING_LEVELS, toCatalogueFacets } from '../../src/lib/st
 import { effectiveHighlight, splitSentences } from '../../src/lib/story-library/premium';
 import type { CatalogueEntry, StoryPackage } from '../../src/lib/story-library/types';
 import { PREVIEW_BASE } from '../../src/lib/story-library/preview-source';
+import { GHANAIAN_PRONUNCIATIONS } from '../../src/lib/story-library/pronunciation/dictionary';
+import { buildSpokenScript, indexDictionary, splitToken } from '../../src/lib/story-library/pronunciation/apply';
+import { illustrationStatus } from '../../src/lib/story-library/illustration/plan';
 
 const root = path.resolve(__dirname, '../..');
 const out = path.join(root, 'public/story-spark-preview');
@@ -25,7 +28,8 @@ const sha = (b: Buffer | string) => createHash('sha256').update(b).digest('hex')
 
 // 1) narration (placeholder voice + exact engine word marks)
 const pagesJson = path.join(tmp, 'pages.json');
-writeFileSync(pagesJson, JSON.stringify(Object.fromEntries(PILOT_STORIES.map((s) => [s.key, s.pages.map((p) => p.text)]))));
+// Pronunciation: the voice is given the dictionary's CANDIDATE respellings (this is placeholder audio); the written text is untouched.
+writeFileSync(pagesJson, JSON.stringify(Object.fromEntries(PILOT_STORIES.map((s) => [s.key, s.pages.map((p) => ({ display: p.text, spoken: buildSpokenScript(p.text, GHANAIAN_PRONUNCIATIONS, 'espeak', { allowUnverified: true }).spoken }))]))));
 execFileSync('python3', [path.join(root, 'scripts/library/build-preview-audio.py'), pagesJson, path.join(tmp, 'audio')], { stdio: 'inherit' });
 const timing = JSON.parse(readFileSync(path.join(tmp, 'audio/timing.json'), 'utf8')) as Record<string, Array<{ file: string; sha256: string; bytes: number; durationMs: number; words: Array<[number, number]>; sentences: Array<[number, number]> }>>;
 
@@ -35,6 +39,15 @@ mkdirSync(path.join(out, 'packages'), { recursive: true });
 for (const f of readdirSync(path.join(tmp, 'audio')).filter((f) => f.endsWith('.mp3'))) copyFileSync(path.join(tmp, 'audio', f), path.join(out, 'audio', f));
 
 // 2) packages, catalogue entries and preview side-car
+const dictIndex = indexDictionary(GHANAIAN_PRONUNCIATIONS);
+const pronunciationFor = (texts: string[]) => {
+  const seen = new Map<string, { written: string; language: string; status: string; guidance: string; reviewerNotes: string[] }>();
+  for (const t of texts) for (const tok of t.split(/\s+/)) {
+    const core = splitToken(tok)[1]; const e = core ? dictIndex.get(core) : undefined;
+    if (e && !seen.has(e.id)) seen.set(e.id, { written: e.written, language: e.language, status: e.status, guidance: e.guidance, reviewerNotes: e.reviewerNotes });
+  }
+  return [...seen.values()];
+};
 const entries: CatalogueEntry[] = [];
 const previewInfo: Record<string, unknown> = {};
 PILOT_STORIES.forEach((s, idx) => {
@@ -80,8 +93,15 @@ PILOT_STORIES.forEach((s, idx) => {
     set: s.set, palette: s.palette, classification: s.classification, characters: s.characters, narrationPlan: s.narrationPlan, music: s.music,
     culturalNotes: s.culturalNotes, reviewQuestions: s.reviewQuestions,
     pages: s.pages.map((p) => ({ motif: p.motif, brief: p.brief, narration: p.narration })),
+    teacherGuide: s.teacherGuide,
+    pronunciation: pronunciationFor(s.pages.map((p) => p.text)),
+    illustration: s.illustrationPlan ? illustrationStatus(s.illustrationPlan, s.illustrationPlan.shots.map((x) => ({ page: x.page, status: 'placeholder' as const }))) : undefined,
     assetStatus: {
-      text: 'original-draft-unreviewed', illustrations: 'placeholder', narration: 'placeholder-tts (espeak-ng, robotic)', timing: 'engine word marks, not human verified',
+      text: s.set === 'benchmark' ? 'revised draft (premium benchmark), awaiting editorial, cultural and financial-literacy review' : 'original-draft-unreviewed',
+      illustrations: s.illustrationPlan ? 'placeholder art only; briefs, character sheets and a shot list exist; NO image has been generated or approved' : 'placeholder',
+      narration: 'placeholder-tts (espeak-ng, robotic); not production narration',
+      pronunciation: 'dictionary candidates applied to the placeholder voice; NONE verified by a native speaker',
+      timing: 'engine word marks, not human verified',
       activities: 'draft-unreviewed', music: 'none', licences: 'not-applicable-to-placeholders',
     },
   };

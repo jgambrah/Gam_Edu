@@ -8,11 +8,12 @@ import { aspectHashes } from '../aspects';
 import { evaluateReadiness } from '../readiness';
 
 describe('pilot stories', () => {
-  it('are the five named stories plus one labelled extension sample', () => {
+  it('are the five named stories, the Efua benchmark, and two labelled editorial samples', () => {
     expect(PILOT_STORIES.filter((s) => s.set === 'pilot').map((s) => s.title)).toEqual([
       'Ama and the Lost Little Goat', 'Kofi’s Colourful Garden', 'The Clever Tortoise and the Rain', 'Amina’s First Day at School', 'The Little Star That Loved to Shine',
     ]);
-    expect(PILOT_STORIES.filter((s) => s.set === 'extension')).toHaveLength(1);
+    expect(PILOT_STORIES.filter((s) => s.set === 'benchmark').map((s) => s.title)).toEqual(['Efua’s Honest Business']);
+    expect(PILOT_STORIES.filter((s) => s.set === 'sample').map((s) => s.title)).toEqual(['Yaa and the Blocked Drain', 'Kofi Counts the Market']);
     expect(new Set(PILOT_STORIES.map((s) => s.key)).size).toBe(PILOT_STORIES.length);
   });
 

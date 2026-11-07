@@ -13,6 +13,10 @@
 import type { Classification } from '../classification';
 import { CLASSIFICATION_VERSION } from '../classification';
 import type { Activity, GlossaryEntry } from '../premium';
+import type { IllustrationPlan } from '../illustration/plan';
+import { EFUA_ACTIVITIES, EFUA_GLOSSARY, EFUA_ILLUSTRATION_PLAN, EFUA_PAGES, EFUA_TEACHER_GUIDE } from './efua-premium';
+import { KOFI_MARKET, YAA_DRAIN } from './editorial-samples';
+import type { TeacherGuide } from './teacher-guide';
 
 export interface PilotPage {
   text: string;
@@ -28,8 +32,8 @@ export interface PilotPage {
 
 export interface PilotStory {
   key: string;
-  /** 'pilot' = one of the five stories you named; 'extension' = additional sample to exercise upper-primary/JHS. */
-  set: 'pilot' | 'extension';
+  /** 'pilot' = the five stories you named; 'benchmark' = the first fully developed premium story (Efua); 'sample' = additional stories prepared for editorial review. */
+  set: 'pilot' | 'benchmark' | 'extension' | 'sample';
   title: string;
   summary: string;
   classification: Classification;
@@ -38,6 +42,8 @@ export interface PilotStory {
   activities: Activity[];
   glossary: GlossaryEntry[];
   characters: string[];
+  teacherGuide?: TeacherGuide;
+  illustrationPlan?: IllustrationPlan;
   narrationPlan: { voice: string; pace: string; notes: string[] };
   music: string;
   culturalNotes: string[];
@@ -263,43 +269,54 @@ export const PILOT_STORIES: PilotStory[] = [
   },
   // --------------------------------------------------------------------------------------------------------------------
   {
-    key: 'efuas-honest-business', set: 'extension', title: 'Efua’s Honest Business',
+    key: 'efuas-honest-business', set: 'benchmark', title: 'Efua’s Honest Business',
     summary: 'Efua starts a small after-school business selling groundnut cakes and must decide how far to go to win more customers.',
     classification: base({
       classIds: ['primary-6', 'jhs-1', 'jhs-2'], ageMin: 11, ageMax: 14, readingLevel: 'proficient', difficulty: 4,
       genres: ['realistic-fiction', 'school-life'], themes: ['money-and-enterprise', 'peer-pressure', 'community'], objectives: ['inference', 'critical-thinking', 'financial-literacy', 'honesty', 'reasoning'],
-      ghanaianContext: 'central', culturalTags: ['local-food', 'market', 'local-names'], estimatedDurationSec: 240,
+      ghanaianContext: 'central', culturalTags: ['local-food', 'market', 'local-names'], estimatedDurationSec: 330,
     }),
     palette: ['#f1faee', '#e76f51'],
-    characters: ['Efua: a girl of thirteen, JHS uniform, practical and thoughtful.', 'Kwabena: her classmate, confident and always looking for shortcuts.', 'Auntie Dede: a market trader who gives Efua advice.'],
-    pages: [
-      { text: 'Efua had a plan. Her grandmother made the best groundnut cakes in the neighbourhood, and Efua had asked to learn the recipe. If she could sell twenty packs after school each day, she might earn enough to pay for her own school supplies.', alt: 'A thirteen-year-old girl in a school uniform kneels beside her grandmother, who shows her how to shape groundnut cakes.', motif: '🥜👵', brief: 'Kitchen scene, grandmother teaching Efua to shape cakes, cooking pot, warm light.', narration: 'Calm, thoughtful teen narrator.' },
-      { text: 'She did the arithmetic carefully in her exercise book. The ingredients for twenty packs cost twelve cedis. If she sold each pack for one cedi, she would make eight cedis profit. ‘Eight cedis a day,’ she whispered. ‘That is forty cedis a week.’', alt: 'Efua writes calculations in an exercise book at a table.', motif: '🧮📒', brief: 'Close view of the exercise book with simple costing sums (legible but illustrative), Efua concentrating.', narration: 'Measured, working-it-out pace. Slow on the numbers.' },
-      { text: 'On Monday she sold fourteen packs. On Tuesday she sold sixteen. People said the cakes were crunchy, fresh and not too sweet. But on Wednesday, Kwabena pulled her aside near the school gate.', alt: 'Efua sells small packs of groundnut cakes to students at the school gate.', motif: '🏫💰', brief: 'School gate at close of day, Efua with a tray of packs, students queuing, Kwabena watching from the side.', narration: 'Pace picks up for sales, then slows with tension on "pulled her aside".' },
-      { text: '‘You are wasting money,’ said Kwabena. ‘Use cheaper oil, and put fewer groundnuts in each pack. Nobody will notice. And tell people they are fresh today, even if you made them yesterday. You will make twice the profit.’', alt: 'Kwabena speaks quietly to Efua, leaning in, while she looks uncertain.', motif: '🤫😬', brief: 'Kwabena leaning in conspiratorially, Efua’s uncertain expression. Not villainous, just persuasive.', narration: 'Kwabena: smooth, confident, reasonable-sounding.' },
-      { text: 'Efua did the sums again that night. Kwabena was right about one thing: she could make more. But she kept thinking about her customers. They trusted her, and trust, she realised, was worth more than eight cedis a day.', alt: 'Efua sits by lamplight with her exercise book, thinking.', motif: '🕯️🤔', brief: 'Evening room, single lamp, Efua with her book, thoughtful, moon outside the window.', narration: 'Slow, reflective. Let the sums breathe.' },
-      { text: 'The next morning she visited Auntie Dede, who sold vegetables at the market. ‘Customers are like a garden,’ said Auntie Dede. ‘Treat them well and they return all year. Cheat them once and they will remember it forever.’', alt: 'A market trader speaks kindly to Efua among baskets of vegetables.', motif: '🧑‍🌾🛍️', brief: 'Busy market stall, Auntie Dede with baskets, kindly expression, Efua listening.', narration: 'Auntie Dede: warm, firm, experienced.' },
-      { text: 'Efua kept her recipe honest. She even added a few extra groundnuts to every pack and began to write the day each batch was made on a small label. Some days she made less profit. But the line at the school gate grew longer.', alt: 'Efua adds extra groundnuts to a pack and writes the date on a small label.', motif: '🏷️🥜', brief: 'Close-up of Efua’s hands filling a pack and labelling the date, growing queue in the background.', narration: 'Quiet pride. Steady pace.' },
-      { text: 'By the end of the month, Efua was selling twenty-five packs a day. Even Kwabena stood in the queue one afternoon. ‘You were right about one thing,’ he admitted. ‘Honesty is slower, but it lasts longer.’ Efua smiled and handed him his pack.', alt: 'A long line of students at the school gate; Kwabena at the end of the queue and Efua handing him a pack.', motif: '🌟🤝', brief: 'Longer queue at the school gate, Kwabena in the line, Efua smiling and handing him a pack.', narration: 'Satisfied, understated. A smile in the voice on the last line.' },
-    ],
-    activities: [
-      { id: 'efua-c1', type: 'comprehension', afterPage: 2, question: 'How much profit did Efua expect to make each day from twenty packs?', options: ['Eight cedis', 'Twelve cedis', 'Twenty cedis'], correctIndex: 0, explanation: 'She would earn twenty cedis but spend twelve on ingredients, so the profit is eight cedis.' },
-      { id: 'efua-inf', type: 'comprehension', afterPage: 5, question: 'What did Efua mean when she realised that trust was worth more than eight cedis a day?', options: ['Keeping customers’ trust could earn more over time than cheating them once', 'Eight cedis is a very small amount', 'She decided to stop selling'], correctIndex: 0, explanation: 'She understood that customers who trust her will return for longer.' },
-      { id: 'efua-seq', type: 'sequencing', afterPage: 7, prompt: 'Put these events in order.', items: ['Efua works out her costs and profit.', 'Kwabena suggests a shortcut.', 'Auntie Dede gives advice.', 'Efua starts labelling each batch.'] },
-      { id: 'efua-v', type: 'vocabulary', afterPage: 3, word: 'profit', definition: 'The money left over after paying the costs.', distractors: ['The money you borrow', 'The cost of ingredients'] },
-      { id: 'efua-pred', type: 'prediction', afterPage: 4, prompt: 'What do you think Efua will decide? What would you do?' },
-      { id: 'efua-sel', type: 'sel', afterPage: 7, prompt: 'Think of a time you were pressured to take a shortcut. What helped you decide?', feelingOptions: ['Pressured', 'Confident', 'Unsure', 'Proud'] },
-    ],
-    glossary: [
-      { word: 'arithmetic', definition: 'Working with numbers, such as adding and subtracting.', pages: [2] },
-      { word: 'profit', definition: 'The money left over after paying the costs.', pages: [2, 4] },
-      { word: 'ingredients', definition: 'The foods that are mixed together to make a dish.', pages: [2] },
-      { word: 'trust', definition: 'Believing that someone is honest and will treat you fairly.', pages: [5] },
-    ],
-    narrationPlan: { voice: 'Natural, mature storyteller, Ghanaian English. Subtle character differences, no caricature.', pace: 'Medium (about 140 words per minute).', notes: ['Numbers must be spoken clearly and consistently with the text (check twelve, eight, forty, twenty, twenty-five).'] },
+    characters: ['Efua: a girl of thirteen, JHS uniform, practical and thoughtful.', 'Nana Ama: her grandmother, patient and wise.', 'Kwabena: her classmate, confident and always looking for shortcuts.', 'Auntie Dede: a market trader who gives Efua advice.'],
+    pages: EFUA_PAGES,
+    activities: EFUA_ACTIVITIES,
+    glossary: EFUA_GLOSSARY,
+    teacherGuide: EFUA_TEACHER_GUIDE,
+    illustrationPlan: EFUA_ILLUSTRATION_PLAN,
+    narrationPlan: { voice: 'Natural, mature storyteller, Ghanaian English. Subtle character differences, no caricature.', pace: 'Medium (about 140 words per minute).', notes: ['Numbers must be spoken clearly and consistently with the text (check twelve, eight, forty, twenty, twenty-five, eleven, nine, thirteen).', 'Names go through the pronunciation dictionary; all entries are still awaiting native-speaker review.'] },
     music: 'No background music: text-first reading experience for older learners. Optional soft ambience toggle only.',
-    culturalNotes: ['Groundnut cakes (and similar snacks) are a familiar local treat; a reviewer should confirm the recipe description and the realism of prices in cedis for the intended year.'],
-    reviewQuestions: ['Are the prices realistic for the intended region and year? (Amounts are illustrative.)', 'Does the dilemma suit JHS and avoid moralising?'],
+    culturalNotes: ['Groundnut cakes (nkate cake and similar sweets) are a familiar local treat; a reviewer should confirm the recipe description and the realism of prices in cedis for the intended year.', 'The names are Akan day names (Efua, Kwabena, Ama); Dede’s origin must be confirmed.'],
+    reviewQuestions: ['Are the prices realistic for the intended region and year? (Amounts are illustrative.)', 'Does the dilemma suit JHS and avoid moralising?', 'Is the groundnut-cake recipe description (roasted groundnuts and sugar) right for what learners know as groundnut cakes?', 'Is the cost-per-pack arithmetic (65 pesewas, 13 cedis for twenty) consistent everywhere?'],
+  },
+  {
+    key: 'yaa-and-the-blocked-drain', set: 'sample', title: 'Yaa and the Blocked Drain',
+    summary: YAA_DRAIN.summary,
+    classification: base({ classIds: ['primary-4'], ageMin: 9, ageMax: 10, readingLevel: 'developing', difficulty: 3, genres: ['realistic-fiction', 'science', 'educational'], themes: ['community', 'citizenship', 'weather'], objectives: ['environmental-awareness', 'scientific-curiosity', 'problem-solving', 'responsibility'], ghanaianContext: 'central', culturalTags: ['local-names', 'village-life'], estimatedDurationSec: 330 }),
+    palette: ['#e0f2fe', '#2a9d8f'],
+    characters: YAA_DRAIN.characters,
+    pages: YAA_DRAIN.pages,
+    activities: YAA_DRAIN.activities,
+    glossary: YAA_DRAIN.glossary,
+    teacherGuide: YAA_DRAIN.teacherGuide,
+    narrationPlan: { voice: 'Clear, lively storyteller (en-GH or en-GB); a curious, determined girl’s voice for Yaa without imitating a child.', pace: 'Medium (about 120 words per minute).', notes: ['Say forty-two and six clearly.', 'Names go through the pronunciation dictionary (unverified).'] },
+    music: 'Optional gentle rain ambience on the first pages; off by default. Not created.',
+    culturalNotes: YAA_DRAIN.culturalNotes,
+    reviewQuestions: YAA_DRAIN.reviewQuestions,
+  },
+  {
+    key: 'kofi-counts-the-market', set: 'sample', title: 'Kofi Counts the Market',
+    summary: KOFI_MARKET.summary,
+    classification: base({ classIds: ['kg-2'], ageMin: 5, ageMax: 6, readingLevel: 'emergent', difficulty: 1, genres: ['educational', 'family'], themes: ['food', 'family'], objectives: ['counting', 'phonics', 'oral-language', 'vocabulary'], ghanaianContext: 'central', culturalTags: ['market', 'local-names'], estimatedDurationSec: 240 }),
+    palette: ['#fff3c4', '#f4a261'],
+    characters: KOFI_MARKET.characters,
+    pages: KOFI_MARKET.pages,
+    activities: KOFI_MARKET.activities,
+    glossary: KOFI_MARKET.glossary,
+    teacherGuide: KOFI_MARKET.teacherGuide,
+    narrationPlan: { voice: 'Warm, playful storyteller for young children (en-GH or en-GB).', pace: 'Slow (about 90 words per minute); count with a gentle beat.', notes: ['Counting must match the objects on the page exactly.', 'Names go through the pronunciation dictionary (unverified).'] },
+    music: 'Optional light marimba-style counting jingle (original, not created).',
+    culturalNotes: KOFI_MARKET.culturalNotes,
+    reviewQuestions: KOFI_MARKET.reviewQuestions,
   },
 ];
 

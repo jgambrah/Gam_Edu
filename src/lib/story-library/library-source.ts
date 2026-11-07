@@ -10,9 +10,10 @@ import { BrowserAssetCache } from './browser-cache';
 import { MemoryAssetStore, StoryLoader } from './lazy-loader';
 import { PREVIEW_BASE } from './preview-source';
 import type { Classification } from './classification';
+import type { TeacherGuide } from './pilot/teacher-guide';
 
 export interface StoryPreviewInfo {
-  set: 'pilot' | 'extension';
+  set: 'pilot' | 'extension' | 'benchmark' | 'sample';
   palette: [string, string];
   classification: Classification;
   characters: string[];
@@ -22,6 +23,12 @@ export interface StoryPreviewInfo {
   reviewQuestions: string[];
   pages: Array<{ motif: string; brief: string; narration: string }>;
   assetStatus: Record<string, string>;
+  /** Short teacher's guide, when the story has one. */
+  teacherGuide?: TeacherGuide;
+  /** Names in this story that go through the pronunciation dictionary, with their (un)verified status. */
+  pronunciation?: Array<{ written: string; language: string; status: string; guidance: string; reviewerNotes: string[] }>;
+  /** Honest illustration progress: files only count when they exist. */
+  illustration?: { approved: number; candidate: number; placeholder: number; missing: number; total: number };
 }
 
 export interface LibrarySource {

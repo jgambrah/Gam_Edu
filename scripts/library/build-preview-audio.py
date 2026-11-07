@@ -7,7 +7,8 @@ engine reports the exact audio position of every word it speaks, so the word/sen
   pip install espeakng-loader
   python3 scripts/library/build-preview-audio.py  <pilot-pages.json>  <out-dir>
 
-Input JSON: { "story-key": ["page 1 text", "page 2 text", ...], ... }  (written by build-preview.ts)
+Input JSON: { "story-key": [{"display": "text the child reads", "spoken": "text given to the engine"}, ...], ... }  (written by build-preview.ts)
+The spoken text may differ from the display text only by pronunciation respellings: it must have the SAME NUMBER of whitespace tokens, so word marks map one-to-one onto the written words.
 Output: <out-dir>/<sha256-12>.mp3 per page and <out-dir>/timing.json: { key: [ {file, sha256, bytes, durationMs, words:[[s,e],..], sentences:[[s,e],..]} ] }
 """
 import ctypes, hashlib, json, os, re, struct, subprocess, sys, tempfile, wave
@@ -60,10 +61,11 @@ def sentences(text):
     """Same rule as splitSentences() in premium.ts: split after . ! ? followed by whitespace."""
     return [s for s in re.split(r"(?<=[.!?])\s+", text.strip()) if s]
 
-def build_page(text):
-    pcm, evs = synth(text)
+def build_page(display, spoken):
+    pcm, evs = synth(spoken)
     duration_ms = int(len(pcm) * 1000 / rate)
-    toks = tokens_with_spans(text)
+    toks = tokens_with_spans(spoken)
+    assert len(toks) == len(display.split()), "spoken script must keep the token count of the written text"
     # espeak text_position is 1-based, in characters
     starts = [None] * len(toks)
     for pos, ms, ln in evs:
@@ -87,7 +89,7 @@ def build_page(text):
         marks.append([s, e])
     # sentence marks from word marks
     sent_marks, at = [], 0
-    for s in sentences(text):
+    for s in sentences(display):
         n = len(s.split())
         sent_marks.append([marks[at][0], marks[at + n - 1][1]]); at += n
     assert at == len(marks), "sentence/token mismatch"
@@ -99,8 +101,8 @@ def main(src, out):
     result = {}
     for key, texts in pages.items():
         result[key] = []
-        for i, text in enumerate(texts):
-            pcm, dur, marks, sm = build_page(text)
+        for i, page in enumerate(texts):
+            pcm, dur, marks, sm = build_page(page["display"], page["spoken"])
             with tempfile.TemporaryDirectory() as td:
                 wavp = os.path.join(td, "p.wav")
                 with wave.open(wavp, "wb") as w:

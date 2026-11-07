@@ -130,6 +130,8 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
           {entry.hasActivities && <Chip tone="emerald">Activities</Chip>}
           <Chip tone="amber">Placeholder art</Chip>
           {info?.set === 'extension' && <Chip tone="slate">Extra sample</Chip>}
+          {info?.set === 'benchmark' && <Chip tone="slate">Premium benchmark (draft)</Chip>}
+          {info?.set === 'sample' && <Chip tone="slate">Editorial sample</Chip>}
         </div>
         <div className="mt-auto pt-4">
           <button type="button" onClick={onOpen} disabled={busy} aria-label={`Open ${entry.title}`}

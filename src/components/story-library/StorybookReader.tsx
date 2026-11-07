@@ -7,6 +7,7 @@ import { presentationFor } from '@/lib/story-library/classification';
 import { buildFlow, cleanWord, highlightAt, lookupWord, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
 import { loadProgress, saveProgress } from '@/lib/story-library/progress-store';
 import { PlaceholderArt } from './PlaceholderArt';
+import { StoryNotes } from './StoryNotes';
 import { ActivityPlayer, type ActivityResult } from './ActivityPlayer';
 
 const SPEEDS = [0.75, 1, 1.25];
@@ -219,6 +220,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         </p>
         <p className="text-center text-[11px] text-slate-500">Background music: not included in this preview. {m.blurb}</p>
       </footer>
+      <StoryNotes info={info} />
     </div>
   );
 }
