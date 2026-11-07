@@ -76,10 +76,13 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
   mkdirSync(out, { recursive: true });
   const ledger: Ledger = existsSync(ledgerPath) ? JSON.parse(readFileSync(ledgerPath, 'utf8')) : newLedger(ceiling);
   const save = () => writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
-  const manifest: unknown[] = [];
+  const only = arg('only'); // e.g. --only names : run just the jobs whose id contains this text
+  const manifestPath = path.join(out, 'manifest.json');
+  const manifest: any[] = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : [];
   // A failed call returned no asset, so it is recorded as $0 (check Google billing for the true figure) and its id is freed for a retry.
   const failed = (l: Ledger, id: string) => { const e = l.entries.find((x) => x.id === id && x.actualUsd === undefined); if (e) { e.actualUsd = 0; e.id = `${id}#failed-${Date.now()}`; } };
   for (const j of imageJobs) {
+    if (only && !j.id.includes(only)) continue;
     const r = reserve(ledger, j.id, 'image', IMAGE_UPPER_USD, new Date().toISOString()); if (!r.ok) { console.error('STOP:', r.reason); break; } save();
     try {
       const res: any = await ai.models.generateContent({ model: imageModel, contents: j.prompt, config: { responseModalities: ['IMAGE'] } });
@@ -92,18 +95,19 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
     } catch (e) { console.error(j.id, 'failed:', (e as Error).message); failed(ledger, j.id); } save();
   }
   for (const j of ttsJobs) {
+    if (only && !j.id.includes(only)) continue;
     const cost = j.seconds * TTS_UPPER_USD_PER_SECOND;
     const r = reserve(ledger, j.id, 'tts', cost, new Date().toISOString()); if (!r.ok) { console.error('STOP:', r.reason); break; } save();
     try {
       const style = `Narrate warmly in natural Ghanaian English. ${j.hints.join(' ')} Read these names clearly and slowly.`;
-      const res: any = await ai.models.generateContent({ model: ttsModel, contents: `${style}\n\n${j.text}`, config: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: j.voice } } } } });
+      const res: any = await ai.models.generateContent({ model: ttsModel, contents: j.id.endsWith('-names') ? `Say these Ghanaian names aloud, one at a time, with a short pause after each. ${j.hints.join(' ')}\n\n${j.text}` : `${style}\n\n${j.text}`, config: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: j.voice } } } } });
       const d = res.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data; if (!d) throw new Error('no audio returned');
       const pcm = Buffer.from(d, 'base64'); const f = `${j.id}.pcm`; writeFileSync(path.join(out, f), pcm); // raw 24 kHz mono 16-bit; convert with ffmpeg
       settle(ledger, j.id, cost);
       manifest.push({ file: f, status: 'candidate', engine: ttsModel, voice: j.voice, pronunciation: 'UNVERIFIED: awaiting native-speaker review', bytes: pcm.length });
     } catch (e) { console.error(j.id, 'failed:', (e as Error).message); failed(ledger, j.id); } save();
   }
-  writeFileSync(path.join(out, 'manifest.json'), JSON.stringify(manifest, null, 2));
+  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   console.log(`Done. Recorded spend (upper bound) $${spentOrReservedUsd(ledger).toFixed(3)} of $${ceiling}.`);
 })();
 } // end !listMode
