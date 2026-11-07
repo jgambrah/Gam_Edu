@@ -64,7 +64,8 @@ export async function refundSchoolCredits(schoolId: string, amount: number): Pro
 // Clients cannot touch the ledger (firestore.rules: write false; Admin SDK bypasses rules).
 // ---------------------------------------------------------------------------------------------------------
 
-export type LedgerStatus = 'charged' | 'refunded';
+/** charged = money taken, job running or unfinished · completed = job produced a result (final) · refunded = money returned. */
+export type LedgerStatus = 'charged' | 'completed' | 'refunded';
 export type ChargeResult = { success: boolean; error?: string; alreadyCharged?: boolean };
 
 /** Ledger keys become Firestore document ids: keep them short and free of '/'. */
@@ -86,7 +87,8 @@ export async function chargeCreditsOnce(
     return await db.runTransaction(async t => {
       const [school, entry] = await Promise.all([t.get(schoolRef), t.get(entryRef)]);
       if (!school.exists) throw new Error('School not found in the database.');
-      if (entry.exists && (entry.data() as any)?.status === 'charged') return { success: true, alreadyCharged: true };
+      const st = (entry.data() as any)?.status;
+      if (entry.exists && (st === 'charged' || st === 'completed')) return { success: true, alreadyCharged: true };
       if (entry.exists) return { success: false, error: 'This request was already completed and refunded. Start a new one to try again.' };
       const data: any = school.data() || {};
       const current = Number(data.aiCredits ?? data.aiCreditBalance ?? 0);
@@ -103,8 +105,27 @@ export async function chargeCreditsOnce(
   }
 }
 
-/** Refunds a charge made with `chargeCreditsOnce` — at most once, and only if it was charged. Returns whether credits were returned. */
-export async function refundChargeOnce(schoolId: string, key: string): Promise<boolean> {
+/** Marks a charged job as having produced a result. A completed charge is final: the automatic refund paths skip it. */
+export async function markChargeCompleted(schoolId: string, key: string): Promise<void> {
+  if (!schoolId || !ledgerKey([key])) return;
+  try {
+    const db = getAdminDb();
+    const entryRef = db.collection('schools').doc(schoolId).collection('credit_ledger').doc(ledgerKey([key])!);
+    await db.runTransaction(async t => {
+      const entry = await t.get(entryRef);
+      if (entry.exists && (entry.data() as any)?.status === 'charged') t.update(entryRef, { status: 'completed' as LedgerStatus, completedAt: new Date() });
+    });
+  } catch (error: any) {
+    console.error('Marking credit charge completed failed:', error?.message || error); // harmless: the stale-charge sweep re-checks
+  }
+}
+
+/**
+ * Refunds a charge made with `chargeCreditsOnce` — at most once. Returns whether credits were returned.
+ * By default only a still-`charged` entry is refunded (job failed). `includeCompleted` is for a deliberate,
+ * audited manual refund of a result that never reached the user (see docs: lost-result recovery); never use it automatically.
+ */
+export async function refundChargeOnce(schoolId: string, key: string, opts: { includeCompleted?: boolean } = {}): Promise<boolean> {
   if (!schoolId || !ledgerKey([key])) return false;
   try {
     const db = getAdminDb();
@@ -114,7 +135,7 @@ export async function refundChargeOnce(schoolId: string, key: string): Promise<b
       const [school, entry] = await Promise.all([t.get(schoolRef), t.get(entryRef)]);
       if (!school.exists || !entry.exists) return false;
       const e: any = entry.data() || {};
-      if (e.status !== 'charged') return false;
+      if (e.status !== 'charged' && !(opts.includeCompleted && e.status === 'completed')) return false;
       const data: any = school.data() || {};
       const current = Number(data.aiCredits ?? data.aiCreditBalance ?? 0);
       const update: Record<string, number> = { aiCredits: current + Number(e.amount) };
@@ -127,4 +148,21 @@ export async function refundChargeOnce(schoolId: string, key: string): Promise<b
     console.error('Idempotent credit refund failed:', error?.message || error);
     return false;
   }
+}
+
+
+/**
+ * Safety net for crashed jobs: refunds entries still `charged` (never completed) after `olderThanMs`
+ * (e.g. the server died between charging and finishing). Safe to run repeatedly — refunds happen once per entry,
+ * and completed jobs are never touched. Intended for a scheduled server job; nothing calls it yet.
+ */
+export async function refundStaleCharges(schoolId: string, olderThanMs = 15 * 60 * 1000): Promise<number> {
+  if (!schoolId) return 0;
+  const db = getAdminDb();
+  const cutoff = new Date(Date.now() - olderThanMs);
+  const snap = await db.collection('schools').doc(schoolId).collection('credit_ledger')
+    .where('status', '==', 'charged').where('chargedAt', '<', cutoff).get();
+  let refunded = 0;
+  for (const d of snap.docs) if (await refundChargeOnce(schoolId, d.id)) refunded++;
+  return refunded;
 }

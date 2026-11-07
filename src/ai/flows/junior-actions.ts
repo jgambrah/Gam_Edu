@@ -7,7 +7,7 @@ import { z } from 'zod';
 // @ts-ignore
 import wav from 'wav';
 import { checkAndSpendCredits, chargeCreditsIdempotent } from '@/app/actions/credits';
-import { refundChargeOnce } from '@/lib/credits-server';
+import { refundChargeOnce, markChargeCompleted } from '@/lib/credits-server';
 
 // --- STORY GENERATOR ---
 const JuniorStorySchema = z.object({
@@ -53,6 +53,7 @@ export async function generateJuniorStory(input: { topic: string; context?: stri
       throw new Error("AI did not return a valid story object.");
     }
     
+    if (chargeKey) await markChargeCompleted(input.schoolId, chargeKey);
     return { success: true, data: output };
   } catch (error) {
     console.error("Story Generation Error:", error);
@@ -202,6 +203,7 @@ export const generateLessonImageAction = async (input: { prompt: string; schoolI
       });
   
       if (media && media.url) {
+        if (chargeKey) await markChargeCompleted(input.schoolId, chargeKey);
         return { success: true, data: media.url };
       }
       // Charged but no picture came back: give the credits back.
