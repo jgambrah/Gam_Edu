@@ -55,11 +55,11 @@ export type {
 export const EXPECTED_V2_SHARD_COUNT = 8;
 
 export const EXPECTED_V2_COUNTS = {
-  paradoxes: 582,
-  detectiveCases: 573,
-  riddles: 826,
-  debates: 279,
-  total: 2260,
+  paradoxes: 612,
+  detectiveCases: 603,
+  riddles: 869,
+  debates: 293,
+  total: 2377,
 } as const;
 
 export const FORBIDDEN_PUBLIC_CHALLENGE_FIELDS = [
@@ -274,7 +274,7 @@ function failClosedResult(
  * Strictly validates the `think_tank_v2` manifest and all 8 public shards.
  * Fails closed with empty arrays if any shard is missing, malformed, contains
  * duplicate IDs, leaks any private grading field, or does not match the canonical
- * 2,260 challenge distribution (582 Paradoxes, 573 Detective Cases, 826 Riddles, 279 Debates).
+ * 2,377 challenge distribution (612 Paradoxes, 603 Detective Cases, 869 Riddles, 293 Debates).
  */
 export function verifyAndAssemblePublicV2Curriculum(
   manifest: ShardedCurriculumManifest | null | undefined,

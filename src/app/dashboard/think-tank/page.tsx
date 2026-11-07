@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import {
@@ -1682,6 +1682,7 @@ export default function ThinkTankPage() {
   const [lockedBlueprints, setLockedBlueprints] = useState<string[]>([]);
   const [logicPoints, setLogicPoints] = useState(0);
   const [isSyncingCentral, setIsSyncingCentral] = useState(false);
+  const hasAutoSyncedRef = useRef(false);
 
   // Central Repository Fetch (sanitized v2 manifest + 8 public shards; fails closed with no v1 or private fallback)
   const {
@@ -1810,6 +1811,21 @@ export default function ThinkTankPage() {
       setIsSyncingCentral(false);
     }
   };
+
+  // Auto-sync central repository once when an authorized staff member visits and remote v2 shards are out of date
+  useEffect(() => {
+    if (
+      canManage &&
+      !isLoadingCentral &&
+      centralDocs &&
+      !publicCurriculumVerified &&
+      !isSyncingCentral &&
+      !hasAutoSyncedRef.current
+    ) {
+      hasAutoSyncedRef.current = true;
+      handleSyncCentralRepo();
+    }
+  }, [canManage, isLoadingCentral, centralDocs, publicCurriculumVerified, isSyncingCentral]);
 
   // Load progress
   useEffect(() => {
