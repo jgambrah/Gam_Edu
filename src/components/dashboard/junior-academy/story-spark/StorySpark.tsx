@@ -23,6 +23,8 @@ import { normalizeStory } from '@/lib/story-spark/normalize';
 import { buildStoryCoverPath } from '@/lib/story-spark/storage-path';
 
 // --- 5. STORY SPARK ---
+// What one generation really charges: 3 for the story text + 5 for the cover picture (junior-actions.ts).
+const STORY_CREDIT_COST = 3 + 5;
 export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: boolean; activeAgeTier?: string }) {
     const { user } = useUser(); 
     const { role } = useRole();
@@ -178,17 +180,20 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
     };
 
     const handleGenerate = async () => { 
+        // One id per click: the server charges each step once per id, so a double click or replay can't double-charge.
+        const requestId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         setLoading(true); 
         try {
             // Pass the target word count to the AI flow
-            const res = await generateJuniorStory({ topic, context, wordCount: parseInt(targetWordCount), schoolId: ownerSchoolId || '' }); 
+            const res = await generateJuniorStory({ topic, context, wordCount: parseInt(targetWordCount), schoolId: ownerSchoolId || '', requestId }); 
             if (res.success && res.data) {
                 let imageUrl = '';
 
                 try {
                     const imgRes = await generateLessonImageAction({
                         prompt: `A cute 3D Pixar-style digital illustration of a children's storybook scene depicting: ${res.data.title}. Bright colors, soft lighting, friendly characters, highly detailed.`,
-                        schoolId: ownerSchoolId || ''
+                        schoolId: ownerSchoolId || '',
+                        requestId
                     });
                     if (imgRes.success && imgRes.data) {
                         imageUrl = imgRes.data;
@@ -509,7 +514,7 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
                     <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                         <h3 className="text-xl font-black text-purple-855 flex items-center gap-2"><Wand2 /> Story Lab</h3>
                         <span className="bg-purple-100 text-purple-700 text-xs px-3 py-1 rounded-full font-black border border-purple-250/50 flex items-center gap-1.5 shadow-sm">
-                            <Sparkles className="w-3.5 h-3.5 text-purple-500 animate-pulse" /> Costs 10 Credits
+                            <Sparkles className="w-3.5 h-3.5 text-purple-500 animate-pulse" /> Costs {STORY_CREDIT_COST} Credits
                         </span>
                     </div>
                     <div className="space-y-4">

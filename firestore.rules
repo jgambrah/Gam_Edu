@@ -275,6 +275,12 @@ service cloud.firestore {
           'subscription', 'subscriptionStatus', 'subscriptionPlan', 'planExpiresAt', 'billingStatus',
           'paidUntil', 'lastPaymentAmount', 'lastPaymentDate', 'paymentReference'])));
 
+      // Credit ledger: written only by server code (Admin SDK). School admins may read it; nobody writes from a browser.
+      match /credit_ledger/{entryId} {
+        allow read: if isSuperAdmin() || (isSignedIn() && isDirector() && getUserSchoolId() == schoolId);
+        allow write: if false;
+      }
+
       match /assignments/{assignmentId} {
         allow read, get, list: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);
         allow write, create, update: if isSuperAdmin() || (isSignedIn() && getUserSchoolId() == schoolId);

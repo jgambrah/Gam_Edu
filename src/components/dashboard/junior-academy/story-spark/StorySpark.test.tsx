@@ -347,6 +347,18 @@ describe('Story Spark — saving a generated story with its cover illustration',
     expect(h.toast).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Story Saved!' }));
   });
 
+  it('shows the true price (3 story + 5 picture = 8) and sends ONE request id for both charges', async () => {
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    expect(screen.getByText(/Costs 8 Credits/)).toBeInTheDocument();
+    expect(screen.queryByText(/Costs 10 Credits/)).not.toBeInTheDocument();
+    await generate(user);
+    const a = h.generateJuniorStory.mock.calls[0][0].requestId;
+    const b = h.generateLessonImageAction.mock.calls[0][0].requestId;
+    expect(a).toBeTruthy();
+    expect(a).toBe(b);
+  });
+
   it('refuses to save (no upload, no document) when no school can be resolved', async () => {
     h.juniorSchoolId = null;
     h.currentSchoolId = null;

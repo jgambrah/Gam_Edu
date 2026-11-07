@@ -219,3 +219,20 @@ describe('KNOWN ISSUE S5 — Firestore rules trust token claims over profile doc
     await assertFails(addDoc(collection(db('staleClaimUser'), 'junior_stories'), story({ createdBy: 'staleClaimUser', schoolId: SCHOOL_B })));
   });
 });
+
+describe('schools/{id}/credit_ledger — server-only', () => {
+  const E = `schools/${SCHOOL_A}/credit_ledger/k1`;
+  beforeEach(async () => { await seedDoc(E, { status: 'charged', amount: 5 }); });
+  it('nobody can write from a browser, not even a super admin or director (cannot forge or erase a charge/refund)', async () => {
+    for (const who of ['adminA', 'teacherA', 'pupilA', 'superAdmin', 'anon'] as const) {
+      await assertFails(setDoc(doc(db(who), `schools/${SCHOOL_A}/credit_ledger/new`), { status: 'refunded', amount: 99 }));
+      await assertFails(updateDoc(doc(db(who), E), { status: 'refunded' }));
+      await assertFails(deleteDoc(doc(db(who), E)));
+    }
+  });
+  it('only that school director (or super admin) can read it', async () => {
+    await assertSucceeds(getDoc(doc(db('adminA'), E)));
+    await assertSucceeds(getDoc(doc(db('superAdmin'), E)));
+    for (const who of ['teacherA', 'pupilA', 'parentA', 'adminB', 'anon'] as const) await assertFails(getDoc(doc(db(who), E)));
+  });
+});
