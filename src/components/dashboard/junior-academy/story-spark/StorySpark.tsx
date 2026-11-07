@@ -20,6 +20,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { cn } from '@/lib/utils';
 import { useJuniorSchoolId, juniorStamp, removeJuniorDoc, useSchoolAndMine } from '../junior-shared';
 import { normalizeStory } from '@/lib/story-spark/normalize';
+import { StoryReader } from './StoryReader';
 import { buildStoryCoverPath } from '@/lib/story-spark/storage-path';
 
 // --- 5. STORY SPARK ---
@@ -72,6 +73,7 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
     // Everything below reads the story through this one normalised view, so old `content` stories and
     // `pages` stories (like the built-in toddler story) both open. `story` itself stays the raw stored shape.
     const view = useMemo(() => normalizeStory(story), [story]);
+    const [readerOpen, setReaderOpen] = useState(false);
     // Stories may have any number of questions, or none (then there is simply no quiz — enjoyment-only reading).
     const totalQuestions = view.questions.length;
 
@@ -576,10 +578,20 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
                 </div>
             )}
 
+            <Dialog open={readerOpen} onOpenChange={setReaderOpen}>
+                <DialogContent className="max-w-4xl w-[96vw] max-h-[94vh] overflow-y-auto p-0">
+                    <DialogHeader className="sr-only"><DialogTitle>{view.title}</DialogTitle></DialogHeader>
+                    {readerOpen && <StoryReader story={view} ageTier={activeAgeTier} onClose={() => setReaderOpen(false)} />}
+                </DialogContent>
+            </Dialog>
+
             {story && (
                 <Card className="border-4 border-b-[12px] border-yellow-300 bg-yellow-50 animate-in zoom-in-95 overflow-hidden shadow-2xl rounded-[40px]">
                     <CardHeader className="bg-yellow-300 py-4 flex flex-row justify-between items-center px-8 border-b-2 border-yellow-400/30">
                         <CardTitle className="text-2xl font-black text-yellow-900">{view.emojiIcon} {view.title}</CardTitle>
+                        <Button onClick={() => setReaderOpen(true)} className="bg-indigo-600 hover:bg-indigo-700 font-bold rounded-xl" aria-label="Open the story book">
+                            <BookOpen className="mr-2 h-4 w-4" /> Open story book
+                        </Button>
                         {isAdminOrDirector && (
                             <span className="bg-white/50 px-3 py-1 rounded-full text-xs font-bold text-yellow-800">
                                 {actualWordCount} words

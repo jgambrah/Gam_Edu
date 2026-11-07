@@ -50,6 +50,7 @@ vi.mock('../junior-shared', () => ({
   useSchoolAndMine: () => ({ data: h.savedStories, forceRefetch: h.forceRefetch }),
 }));
 
+vi.mock('./StoryReader', () => ({ StoryReader: ({ story, onClose }: any) => (<div data-testid="reader">READER:{story.title}<button onClick={onClose}>shut</button></div>) }));
 import { StorySpark } from './StorySpark';
 
 // ---- Fixtures ----
@@ -467,5 +468,17 @@ describe('Story Spark — editor controls', () => {
   it('shows the Story Lab to editors', () => {
     render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
     expect(within(screen.getByText('Story Lab').closest('div')!.parentElement!).getByRole('button', { name: 'Create Story' })).toBeInTheDocument();
+  });
+});
+
+describe('Story Spark — opening the story book', () => {
+  it('offers the immersive book for the open story, passes the normalised story and age tier, and closes again', async () => {
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages2-3" />);
+    expect(screen.queryByTestId('reader')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Open the story book' }));
+    expect(screen.getByTestId('reader')).toHaveTextContent('READER:The Happy Little Puppy');
+    await user.click(screen.getByRole('button', { name: 'shut' }));
+    expect(screen.queryByTestId('reader')).not.toBeInTheDocument();
   });
 });
