@@ -286,7 +286,7 @@ Pipeline per story, each stage recorded in `library_seed_jobs/{jobId}/items/{sto
 2. **fingerprint**: canonical JSON + asset hashes give `contentHash`; normalised-text 5-gram MinHash gives `textMinHash`; title slug.
 3. **dedupe**: (a) same `storyKey` and same `contentHash` is skipped (idempotent re-run); (b) same `storyKey`, different hash is a **new version** n+1; (c) different key but same hash, or MinHash similarity at or above 0.85 (LSH, so thousands of stories need no full pairwise scan), is **blocked as a duplicate** pending a publisher decision recorded in the manifest; (d) identical assets are uploaded once.
 4. **upload assets** to `private/{jobId}/` as create-only (`ifGenerationMatch: 0`), so a retried upload can never overwrite or double-write.
-5. **write package + admin doc**: the admin doc is created as `draft` (the rules refuse any later state on create) and moved to `review` once validation, duplicate checks and licence checks pass. `createdBy` is the seeding publisher's identity. Firestore writes are chunked (at most 500 per batch, ramped via BulkWriter).
+5. **write package + admin doc**: the admin doc is created as `draft` and **stays `draft`**. The seeder never moves a story to `review`, `approved` or `published` (Stage 2 decision: seed into draft only); a human moves it to `review` after looking at it. `createdBy` is the seeder identity (`seeder-bot`), which no client can impersonate (the rules require `createdBy == request.auth.uid`). Each story is committed in one transaction that also does the duplicate check and updates the duplicate index, so a crash or a concurrent runner cannot leave a half-seeded story or accept the same duplicate twice.
 6. **human approval gate (enforced by the rules, not just by convention).** The seeder can never approve or publish. A *different* central publisher reviews the story (text, each image against its text, narration, licences) and moves it `review -> approved`, recording `approvedBy`. The rules refuse approval by the author, and refuse any jump from `draft` to `approved` or `published`. Approved and published content is frozen: a correction is a new version through `review` again.
 7. **publish** is a separate command, runnable only for `approved` stories: copies private objects to `published/` content-addressed paths, writes `story_catalogue/{id}` (the rules refuse it unless the admin copy is `approved` or `published`), updates the catalogue bundle, then bumps `library_meta/current.catalogueVersion` **last** (so clients never see a catalogue entry whose package is missing).
 
@@ -424,4 +424,15 @@ Each stage is its own commit set on `story-spark-2.0-central-library`, with a CI
 5. **Workflow detail:** `draft <-> review`; `review -> approved` by a different publisher recording `approvedBy`; `approved -> published | review`; `published -> archived`; `archived -> review`. Approved and published admin documents are frozen except for the status trail.
 6. **Cost model** moved to `src/lib/story-library/cost-model.ts` (run `node --experimental-strip-types src/lib/story-library/cost-model.ts`; add `--first-pass` for the original assumptions). The estimate for the implemented design is revised from about $153 to about $116 per month at target; see the report for how much to trust it.
 7. **Pricing correction:** Firestore stored data is more plausibly about $0.15/GiB-month than $0.075 (unit unverified; no effect on totals).
+
+---
+
+## Stage 2 status (emulator-only bulk seeding, cost and performance)
+
+Implemented on `story-spark-2.0-central-library`; see `docs/STORY-LIBRARY-STAGE-2-REPORT.md` for evidence.
+
+- `src/lib/story-library/seeder/`: resumable, idempotent, duplicate-aware, draft-only seeder (MinHash + LSH near-duplicate detection, exact-duplicate hash, content-addressed create-only media staging, per-story claims with leases, atomic per-story commit, versioning, rollback). Emulator-only guard; refuses the production project, real credentials, and non-synthetic stories. No paid AI generation, no production connection.
+- Rules tightened (repo only, not deployed): seed job/item/index records are server-written; `pending_versions` are publisher-readable.
+- `catalogue-client.ts` and `session-simulation.ts`: paginated catalogue with version-keyed cache and delta refresh; shared-device vs personal-device session simulation.
+- Proposals awaiting decision: `STORY-LIBRARY-ACCESS-CONTROL-PROPOSAL.md`, `STORY-LIBRARY-EMERGENCY-RECOVERY.md`, `STORY-LIBRARY-PILOT-MEASUREMENT.md`.
 
