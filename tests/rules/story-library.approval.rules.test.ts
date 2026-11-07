@@ -92,6 +92,8 @@ describe('F1 fixed: one person cannot both submit and approve', () => {
 
   it('a human-created story: creator, then submitter, cannot approve; an independent publisher can', async () => {
     await assertSucceeds(setDoc(ref('pubA', 'story_h1'), { storyKey: 'k', title: 'T', status: 'draft', createdBy: 'pubA', lastEditedBy: 'pubA', updatedAt: serverTimestamp() }));
+    await serverPatch('story_h1', { contentHash: 'h1' }); // the import/edit service sets the hash; clients cannot
+    await seedReady('story_h1');
     await assertSucceeds(submit('pubA', 'story_h1'));
     await assertFails(approve('pubA', 'story_h1'));
     await assertSucceeds(approve('pubB', 'story_h1'));
