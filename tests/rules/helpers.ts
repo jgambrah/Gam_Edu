@@ -92,5 +92,6 @@ export async function seedProfiles(env: RulesTestEnvironment, extraDocs: Record<
 export function as(env: RulesTestEnvironment, who: ActorName) {
   if (who === 'anon') return env.unauthenticatedContext();
   const a = cast[who] as Actor;
-  return env.authenticatedContext(a.uid, a.claims ?? {});
+  // Real Firebase sign-in tokens always carry an email; firestore.rules' isSuperAdmin() reads token.email unguarded.
+  return env.authenticatedContext(a.uid, { email: `${a.uid}@test.example`, ...(a.claims ?? {}) });
 }

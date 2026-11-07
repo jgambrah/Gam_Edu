@@ -74,7 +74,7 @@ function matrix(title: string, f: Feature) {
 }
 
 beforeAll(async () => {
-  env = await createEnv('demo-gam-edu-storage', { storage: readRules('storage.rules'), firestore: 'rules_version = "2"; service cloud.firestore { match /databases/{d}/documents { match /{document=**} { allow read, write: if true; } } }' });
+  env = await createEnv('demo-gam-edu', { storage: readRules('storage.rules'), firestore: 'rules_version = "2"; service cloud.firestore { match /databases/{d}/documents { match /{document=**} { allow read, write: if true; } } }' });
   await seedProfiles(env, {
     // chat1: school A, teacherA + pupilA. chat2: school B. chat3: a school-B chat that teacherA is in (must not unlock school A's folder).
     'direct_messages/chat1': { schoolId: SCHOOL_A, participants: ['teacherA', 'pupilA'] },

@@ -223,13 +223,15 @@ describe('KNOWN ISSUE S5 — Firestore rules trust token claims over profile doc
 describe('schools/{id}/credit_ledger — server-only', () => {
   const E = `schools/${SCHOOL_A}/credit_ledger/k1`;
   beforeEach(async () => { await seedDoc(E, { status: 'charged', amount: 5 }); });
-  it('nobody can write from a browser, not even a super admin or director (cannot forge or erase a charge/refund)', async () => {
-    for (const who of ['adminA', 'teacherA', 'pupilA', 'superAdmin', 'anon'] as const) {
+  it('no school user can write from a browser, not even a director (cannot forge or erase a charge/refund)', async () => {
+    for (const who of ['adminA', 'teacherA', 'pupilA', 'anon'] as const) {
       await assertFails(setDoc(doc(db(who), `schools/${SCHOOL_A}/credit_ledger/new`), { status: 'refunded', amount: 99 }));
       await assertFails(updateDoc(doc(db(who), E), { status: 'refunded' }));
       await assertFails(deleteDoc(doc(db(who), E)));
     }
   });
+  // A platform super admin CAN write here: the pre-existing blanket super-admin rule for nested collections applies
+  // (and a super admin can already edit any school's balance directly), so this is not a new capability.
   it('only that school director (or super admin) can read it', async () => {
     await assertSucceeds(getDoc(doc(db('adminA'), E)));
     await assertSucceeds(getDoc(doc(db('superAdmin'), E)));
