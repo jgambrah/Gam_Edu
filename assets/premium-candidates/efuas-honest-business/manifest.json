@@ -1,0 +1,90 @@
+[
+  {
+    "file": "ref-efua-1.png",
+    "status": "candidate",
+    "promptHash": "c35d2fbbd47fafde",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "30ae5f5d66e99c34d1db8be52998d7d4d0e542536baa4971419c3aed8ffba009",
+    "bytes": 400463
+  },
+  {
+    "file": "ref-efua-2.png",
+    "status": "candidate",
+    "promptHash": "c35d2fbbd47fafde",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "c149619e36f3d55fa9cdcb417212806ff76195058ec3f7d7be3edfec59b9a52c",
+    "bytes": 427685
+  },
+  {
+    "file": "ref-nana-ama-1.png",
+    "status": "candidate",
+    "promptHash": "660dbc24025ab587",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "dd6261a8536ea3412128c28dbc3c12ea5ade18d5f102c7ff9d60bd94cf30aa49",
+    "bytes": 462913
+  },
+  {
+    "file": "ref-nana-ama-2.png",
+    "status": "candidate",
+    "promptHash": "660dbc24025ab587",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "34e99dae6b81f64adad68cc2706befa90aad3149d9790bc30216c4c5cdb63e82",
+    "bytes": 583426
+  },
+  {
+    "file": "page1-1.png",
+    "status": "candidate",
+    "promptHash": "05453be8b379b71f",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "46da2c33f48c13208535512480f514c7314ac3a2d9af0050395251d194c170c7",
+    "bytes": 753507
+  },
+  {
+    "file": "page1-2.png",
+    "status": "candidate",
+    "promptHash": "05453be8b379b71f",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "8428f59f9a781903f7a3c4c7bb5ebd93828f6e499c5eb2a1cba9963974c1cf8f",
+    "bytes": 779671
+  },
+  {
+    "file": "page1-3.png",
+    "status": "candidate",
+    "promptHash": "05453be8b379b71f",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "bac2d62ee3500913cfea64f3fa696c792ccdc184a2b58c5efc5837b0e868d40b",
+    "bytes": 693383
+  },
+  {
+    "file": "tts-Kore-page1.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1150080
+  },
+  {
+    "file": "tts-Kore-names.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 840960
+  },
+  {
+    "file": "tts-Puck-page1.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Puck",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1002240
+  },
+  {
+    "file": "tts-Puck-names.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Puck",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1376640
+  }
+]

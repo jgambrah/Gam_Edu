@@ -1,0 +1,89 @@
+{
+  "ceilingUsd": 10,
+  "entries": [
+    {
+      "id": "ref-efua-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:20.938Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "ref-efua-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:32.800Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "ref-nana-ama-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:49.821Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "ref-nana-ama-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:59.064Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:58:07.575Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:58:16.890Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-3",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:58:25.705Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "tts-Kore-page1",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T20:58:36.663Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-names",
+      "what": "tts",
+      "reservedUsd": 0.033,
+      "at": "2026-11-07T20:58:47.916Z",
+      "actualUsd": 0.033
+    },
+    {
+      "id": "tts-Puck-page1",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T20:58:59.392Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Puck-names#failed-1794085156923",
+      "what": "tts",
+      "reservedUsd": 0.033,
+      "at": "2026-11-07T20:59:08.029Z",
+      "actualUsd": 0
+    },
+    {
+      "id": "tts-Puck-names",
+      "what": "tts",
+      "reservedUsd": 0.033,
+      "at": "2026-11-07T21:21:54.286Z",
+      "actualUsd": 0.033
+    }
+  ]
+}
