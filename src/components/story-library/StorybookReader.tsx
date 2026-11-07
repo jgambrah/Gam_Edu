@@ -169,7 +169,10 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
       {page && (
         <div className={`grid gap-4 ${presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
           <div className={presentation.layout === 'text-first' ? 'order-2 md:order-2' : ''}>
-            <PlaceholderArt motif={art?.motif ?? '📖'} palette={[c0, c1]} alt={page.alt ?? 'Illustration'} brief={art?.brief} compact={presentation.layout === 'text-first'} />
+            {art?.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={art.image.src} alt={art.image.alt} data-testid="page-image" className="w-full rounded-3xl shadow-lg ring-1 ring-slate-200" />
+            ) : <PlaceholderArt motif={art?.motif ?? '📖'} palette={[c0, c1]} alt={page.alt ?? 'Illustration'} brief={art?.brief} compact={presentation.layout === 'text-first'} />}
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
             <p className="text-lg leading-[1.9] text-slate-900" style={{ fontSize, fontFamily: 'Andika, Nunito, system-ui, sans-serif' }} data-testid="page-text">

@@ -9,7 +9,7 @@
  */
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { PILOT_STORIES } from '../../src/lib/story-library/pilot/pilot-stories';
@@ -38,6 +38,23 @@ mkdirSync(path.join(out, 'audio'), { recursive: true });
 mkdirSync(path.join(out, 'packages'), { recursive: true });
 for (const f of readdirSync(path.join(tmp, 'audio')).filter((f) => f.endsWith('.mp3'))) copyFileSync(path.join(tmp, 'audio', f), path.join(out, 'audio', f));
 
+// 1b) REAL candidate assets for Efua page 1 (generated once, stored; students never trigger Gemini). Voice: Kore. Not approved.
+const CAND = path.join(root, 'assets/premium-candidates/efuas-honest-business');
+const realFiles = { audio: path.join(CAND, 'tts-Kore-page1.mp3'), image: path.join(CAND, 'page1-1.webp') };
+const haveReal = existsSync(realFiles.audio) && existsSync(realFiles.image);
+mkdirSync(path.join(out, 'images'), { recursive: true });
+let realImageBytes = 0, realImageSha = '';
+let realAudio: { hash: string; file: string; bytes: number; durationMs: number } | undefined; let realImageSrc: string | undefined;
+if (haveReal) {
+  const ab = readFileSync(realFiles.audio); const ib = readFileSync(realFiles.image);
+  const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', realFiles.audio]).toString().trim());
+  realImageBytes = ib.length; realImageSha = sha(ib);
+  const aName = `kore-${sha(ab).slice(0, 12)}.mp3`, iName = `efua-p1-${sha(ib).slice(0, 12)}.webp`;
+  copyFileSync(realFiles.audio, path.join(out, 'audio', aName)); copyFileSync(realFiles.image, path.join(out, 'images', iName));
+  realAudio = { hash: `sha256:${sha(ab)}`, file: aName, bytes: ab.length, durationMs: Math.round(dur * 1000) };
+  realImageSrc = `${PREVIEW_BASE}/images/${iName}`;
+}
+
 // 2) packages, catalogue entries and preview side-car
 const dictIndex = indexDictionary(GHANAIAN_PRONUNCIATIONS);
 const pronunciationFor = (texts: string[]) => {
@@ -58,6 +75,11 @@ PILOT_STORIES.forEach((s, idx) => {
     language: s.classification.language, narrationLocale: s.classification.narrationLocale,
     pages: s.pages.map((p, i) => {
       const a = t[i];
+      if (s.key === 'efuas-honest-business' && i === 0 && realAudio) {
+        // Real clip: no word marks exist for it, so the reader plays it WITHOUT highlighting rather than faking timing.
+        assets[realAudio.hash] = { path: `${PREVIEW_BASE}/audio/${realAudio.file}`, bytes: realAudio.bytes, type: 'audio/mpeg' };
+        return { n: 1, text: p.text, sentences: splitSentences(p.text), alt: p.alt, audio: { hash: realAudio.hash, durationMs: realAudio.durationMs } };
+      }
       const hash = `sha256:${a.sha256}`;
       assets[hash] = { path: `${PREVIEW_BASE}/audio/${a.file}`, bytes: a.bytes, type: 'audio/mpeg' };
       const sentences = splitSentences(p.text);
@@ -70,6 +92,7 @@ PILOT_STORIES.forEach((s, idx) => {
   };
   // Safety net: every page must truly qualify for word-level highlighting, or the build fails.
   for (const p of pkgBase.pages) {
+    if (!p.audio?.timing) continue; // real clip without marks: reader shows no highlighting
     const h = effectiveHighlight({ text: p.text, sentences: p.sentences, audio: p.audio });
     if (h.level !== 'word') throw new Error(`${s.key} page ${p.n}: timing not usable: ${h.reason}`);
   }
@@ -92,15 +115,16 @@ PILOT_STORIES.forEach((s, idx) => {
   previewInfo[s.key] = {
     set: s.set, palette: s.palette, classification: s.classification, characters: s.characters, narrationPlan: s.narrationPlan, music: s.music,
     culturalNotes: s.culturalNotes, reviewQuestions: s.reviewQuestions,
-    pages: s.pages.map((p) => ({ motif: p.motif, brief: p.brief, narration: p.narration })),
+    pages: s.pages.map((p, i) => ({ motif: p.motif, brief: p.brief, narration: p.narration, ...(s.key === 'efuas-honest-business' && i === 0 && realImageSrc ? { image: { src: realImageSrc, alt: p.alt } } : {}) })),
+    realAssets: s.key === 'efuas-honest-business' && haveReal ? { narrationPages: [1], imagePages: [1], voice: 'Kore' } : undefined,
     teacherGuide: s.teacherGuide,
     pronunciation: pronunciationFor(s.pages.map((p) => p.text)),
-    illustration: s.illustrationPlan ? illustrationStatus(s.illustrationPlan, s.illustrationPlan.shots.map((x) => ({ page: x.page, status: 'placeholder' as const }))) : undefined,
+    illustration: s.illustrationPlan ? illustrationStatus(s.illustrationPlan, s.illustrationPlan.shots.map((x) => ({ page: x.page, status: (s.key === 'efuas-honest-business' && haveReal && x.page === 1 ? 'candidate' : 'placeholder') as 'candidate' | 'placeholder', ...(s.key === 'efuas-honest-business' && haveReal && x.page === 1 ? { file: { path: 'page1-1.webp', widthPx: 960, heightPx: 717, bytes: realImageBytes, sha256: realImageSha } } : {}) }))) : undefined,
     assetStatus: {
       text: s.set === 'benchmark' ? 'revised draft (premium benchmark), awaiting editorial, cultural and financial-literacy review' : 'original-draft-unreviewed',
-      illustrations: s.illustrationPlan ? 'placeholder art only; briefs, character sheets and a shot list exist; NO image has been generated or approved' : 'placeholder',
-      narration: 'placeholder-tts (espeak-ng, robotic); not production narration',
-      pronunciation: 'dictionary candidates applied to the placeholder voice; NONE verified by a native speaker',
+      illustrations: s.key === 'efuas-honest-business' && haveReal ? 'page 1: one generated candidate image (not approved); pages 2-12: placeholder art' : s.illustrationPlan ? 'placeholder art only; briefs, character sheets and a shot list exist; NO image has been generated or approved' : 'placeholder',
+      narration: s.key === 'efuas-honest-business' && haveReal ? 'page 1: natural voice (Kore), candidate, no word highlighting; pages 2-12: placeholder voice' : 'placeholder-tts (espeak-ng, robotic); not production narration',
+      pronunciation: 'dictionary candidates; NONE verified by a native speaker (an informal owner listening check is not a verification)',
       timing: 'engine word marks, not human verified',
       activities: 'draft-unreviewed', music: 'none', licences: 'not-applicable-to-placeholders',
     },

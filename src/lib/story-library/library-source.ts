@@ -21,7 +21,9 @@ export interface StoryPreviewInfo {
   music: string;
   culturalNotes: string[];
   reviewQuestions: string[];
-  pages: Array<{ motif: string; brief: string; narration: string }>;
+  pages: Array<{ motif: string; brief: string; narration: string; /** A real generated illustration (candidate), when one exists for this page. */ image?: { src: string; alt: string } }>;
+  /** Pages that use real generated assets instead of placeholders. Pronunciation stays unverified. */
+  realAssets?: { narrationPages: number[]; imagePages: number[]; voice: string };
   assetStatus: Record<string, string>;
   /** Short teacher's guide, when the story has one. */
   teacherGuide?: TeacherGuide;
@@ -57,7 +59,7 @@ export async function createPreviewSource(base = PREVIEW_BASE, fetchFn: typeof f
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });
   return {
     kind: 'preview',
-    notice: 'PREVIEW: sample stories for testing. Illustrations are placeholders and the voice is a free robotic placeholder. This is not published content.',
+    notice: 'PREVIEW: sample stories for testing. Most illustrations are placeholders and most voices are a free robotic placeholder; page 1 of Efua’s Honest Business is a natural-voice and artwork sample. This is not published content.',
     catalogue, loader, assets,
     counters: () => ({ catalogue: { ...backend.counters } }),
     info: (k) => infoData[k],

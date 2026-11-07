@@ -21,7 +21,7 @@ describe('LibraryDashboard (real preview data)', () => {
     render(<LibraryDashboard createSource={make} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(8));
     expect(screen.getAllByText(/not published content/i).length).toBeGreaterThan(0);
-    for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('Placeholder art')).toBeTruthy();
+    for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText(/Placeholder art|Art sample \(page 1\)/)).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
