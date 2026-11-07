@@ -1,5 +1,5 @@
 {
-  "ceilingUsd": 10,
+  "ceilingUsd": 2,
   "entries": [
     {
       "id": "ref-efua-1",
@@ -30,21 +30,21 @@
       "actualUsd": 0.12
     },
     {
-      "id": "page1-1",
+      "id": "page1-1#superseded-1794088230022",
       "what": "image",
       "reservedUsd": 0.12,
       "at": "2026-11-07T20:58:07.575Z",
       "actualUsd": 0.12
     },
     {
-      "id": "page1-2",
+      "id": "page1-2#superseded-1794088240576",
       "what": "image",
       "reservedUsd": 0.12,
       "at": "2026-11-07T20:58:16.890Z",
       "actualUsd": 0.12
     },
     {
-      "id": "page1-3",
+      "id": "page1-3#superseded-1794088251078",
       "what": "image",
       "reservedUsd": 0.12,
       "at": "2026-11-07T20:58:25.705Z",
@@ -84,6 +84,27 @@
       "reservedUsd": 0.033,
       "at": "2026-11-07T21:21:54.286Z",
       "actualUsd": 0.033
+    },
+    {
+      "id": "page1-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T21:50:30.022Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T21:50:40.576Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-3",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T21:50:51.078Z",
+      "actualUsd": 0.12
     }
   ]
 }

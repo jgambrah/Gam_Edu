@@ -34,26 +34,26 @@
   {
     "file": "page1-1.png",
     "status": "candidate",
-    "promptHash": "05453be8b379b71f",
+    "promptHash": "3b1852e6f800b763",
     "model": "gemini-3.1-flash-image",
-    "sha256": "46da2c33f48c13208535512480f514c7314ac3a2d9af0050395251d194c170c7",
-    "bytes": 753507
+    "sha256": "571741307a2a3034c032c89f0fc558d79b21afae68be31746bdaceb5ba852dc1",
+    "bytes": 813486
   },
   {
     "file": "page1-2.png",
     "status": "candidate",
-    "promptHash": "05453be8b379b71f",
+    "promptHash": "3b1852e6f800b763",
     "model": "gemini-3.1-flash-image",
-    "sha256": "8428f59f9a781903f7a3c4c7bb5ebd93828f6e499c5eb2a1cba9963974c1cf8f",
-    "bytes": 779671
+    "sha256": "2381c6b135dc1e30398dab128e1ac8d2e64663fd97907a9d600a1046daf93282",
+    "bytes": 832213
   },
   {
     "file": "page1-3.png",
     "status": "candidate",
-    "promptHash": "05453be8b379b71f",
+    "promptHash": "3b1852e6f800b763",
     "model": "gemini-3.1-flash-image",
-    "sha256": "bac2d62ee3500913cfea64f3fa696c792ccdc184a2b58c5efc5837b0e868d40b",
-    "bytes": 693383
+    "sha256": "ea78b4be87ac39c8db8154a872cee34b2cdb1c122ad23a0a61f3c40e66d27a4f",
+    "bytes": 766976
   },
   {
     "file": "tts-Kore-page1.pcm",
