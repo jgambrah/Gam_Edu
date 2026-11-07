@@ -372,6 +372,7 @@ export const CATALOGUE_QUERY_SHAPES: readonly QueryShape[] = [
   { id: 'by-class-level', description: 'A class at a reading level', equals: ['readingLevel'], arrayContains: 'classIds' },
   { id: 'by-class-language', description: 'A class in a language', equals: ['language'], arrayContains: 'classIds' },
   { id: 'by-class-ghana', description: 'A class, Ghanaian-context stories', equals: ['ghanaianContext'], arrayContains: 'classIds' },
+  { id: 'by-genre', description: 'A genre', equals: [], arrayContains: 'genres' },
   { id: 'by-genre-level', description: 'A genre at a reading level', equals: ['readingLevel'], arrayContains: 'genres' },
   { id: 'by-objective', description: 'An educational objective', equals: [], arrayContains: 'objectives' },
   { id: 'by-theme', description: 'A theme', equals: [], arrayContains: 'themes' },
@@ -405,7 +406,7 @@ export function matchShape(f: CatalogueFilter): QueryShape | null {
   const keys = Object.keys(f).filter((k) => (f as Record<string, unknown>)[k] !== undefined).sort().join(',');
   const map: Record<string, string> = {
     '': 'all', classId: 'by-class', 'classId,readingLevel': 'by-class-level', 'classId,language': 'by-class-language',
-    'classId,ghanaianContext': 'by-class-ghana', 'genre,readingLevel': 'by-genre-level', objective: 'by-objective', theme: 'by-theme', readingLevel: 'by-level',
+    'classId,ghanaianContext': 'by-class-ghana', genre: 'by-genre', 'genre,readingLevel': 'by-genre-level', objective: 'by-objective', theme: 'by-theme', readingLevel: 'by-level',
   };
   const id = map[keys];
   return id ? CATALOGUE_QUERY_SHAPES.find((q) => q.id === id) ?? null : null;
