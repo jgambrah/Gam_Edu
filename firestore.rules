@@ -1357,15 +1357,30 @@ service cloud.firestore {
     // Items with no schoolId are older shared items; new items record schoolId + createdBy.
     // Activity content stays readable by any signed-in user (the page lists it unfiltered and shows only
     // shared + own-school items); changing or deleting it is limited to its creator or the same school.
+    //
+    // Cross-school hardening (Story Spark 2.0, phase 2):
+    //  * NEW content must carry the writer's own school. Only a platform super admin may create a no-school
+    //    ("shared with every school") item; before, any teacher/admin — and, for stories and science facts, ANY
+    //    signed-in user — could publish one to every school.
+    //  * schoolId can never be changed by anyone but a super admin (a teacher could "publish" an item to every
+    //    school by blanking it, or move it to another school).
+    //  * A school administrator can no longer edit or delete shared (no-school) items; only a super admin can.
+    //    Existing no-school items stay readable, and their creator can still maintain them.
     function juniorCanCreate() {
       return (isTeacher() || isAdmin()) &&
-        (isSuperAdmin() || request.resource.data.get('schoolId', null) == null || request.resource.data.get('schoolId', null) == getUserSchoolId());
+        (isSuperAdmin() || (getUserSchoolId() != '' && request.resource.data.get('schoolId', null) == getUserSchoolId()));
     }
     function juniorCanChange() {
-      return isSuperAdmin() ||
-        (isSignedIn() && resource.data.get('createdBy', '') == request.auth.uid) ||
-        ((isTeacher() || isAdmin()) && getUserSchoolId() != '' && resource.data.get('schoolId', '') == getUserSchoolId()) ||
-        (isAdmin() && resource.data.get('schoolId', null) == null);
+      return isSuperAdmin() || (
+        (request.resource == null || request.resource.data.get('schoolId', null) == resource.data.get('schoolId', null)) && (
+          (isSignedIn() && resource.data.get('createdBy', '') == request.auth.uid) ||
+          ((isTeacher() || isAdmin()) && getUserSchoolId() != '' && resource.data.get('schoolId', '') == getUserSchoolId())
+        )
+      );
+    }
+    // Create rule shared by the user-generated collections (stories, science facts): a teacher/admin writing their own school's item.
+    function juniorCanCreateOwn() {
+      return juniorCanCreate() && request.resource.data.get('createdBy', '') == request.auth.uid;
     }
     function juniorReadable() {
       return isSignedIn() && (resource == null || resource.data.get('schoolId', null) == null || resource.data.get('createdBy', '') == request.auth.uid
@@ -1392,15 +1407,13 @@ service cloud.firestore {
 
     match /junior_stories/{storyId} {
       allow read: if juniorReadable();
-      allow create: if isSignedIn() && request.resource.data.get('createdBy', '') == request.auth.uid
-        && (request.resource.data.get('schoolId', null) == null || request.resource.data.get('schoolId', null) == getUserSchoolId() || isSuperAdmin());
+      allow create: if juniorCanCreateOwn();
       allow update, delete: if juniorCanChange();
     }
 
     match /junior_science/{factId} {
       allow read: if juniorReadable();
-      allow create: if isSignedIn() && request.resource.data.get('createdBy', '') == request.auth.uid
-        && (request.resource.data.get('schoolId', null) == null || request.resource.data.get('schoolId', null) == getUserSchoolId() || isSuperAdmin());
+      allow create: if juniorCanCreateOwn();
       allow update, delete: if juniorCanChange();
     }
 
