@@ -2104,17 +2104,29 @@ service cloud.firestore {
       ];
     }
 
+    // The central story library is the one exception to the super admin's blanket WRITE access below: its schema checks,
+    // four-eyes approval and never-delete rules must bind everyone (super admins are still publishers and may still read).
+    // Rules are OR-ed, so without this exclusion this generic rule would silently override every library restriction.
+    function isCentralLibraryCollection(collectionId) {
+      return collectionId in ['library_meta', 'story_catalogue', 'story_library_admin', 'library_seed_jobs'];
+    }
+
     match /{collectionId}/{documentId} {
       allow read: if isSuperAdmin()
         && !isProtectedThinkTankCollection(collectionId)
         && !(collectionId == 'global_curriculum' && isLegacyThinkTankDocument(documentId));
       allow write: if isSuperAdmin()
-        && !isProtectedThinkTankCollection(collectionId);
+        && !isProtectedThinkTankCollection(collectionId)
+        && !isCentralLibraryCollection(collectionId);
 
       match /{subcollection}/{subDocId}/{rest=**} {
-        allow read, write: if isSuperAdmin()
+        allow read: if isSuperAdmin()
           && !isProtectedThinkTankCollection(collectionId)
           && !(collectionId == 'global_curriculum' && isLegacyThinkTankDocument(documentId));
+        allow write: if isSuperAdmin()
+          && !isProtectedThinkTankCollection(collectionId)
+          && !(collectionId == 'global_curriculum' && isLegacyThinkTankDocument(documentId))
+          && !isCentralLibraryCollection(collectionId);
       }
     }
 

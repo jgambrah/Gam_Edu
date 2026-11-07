@@ -198,7 +198,7 @@ service firebase.storage {
     }
     match /story_library/private/{allPaths=**} {
       allow read: if isStoryPublisher();
-      allow create: if isStoryPublisher() && libraryAsset();
+      allow create: if isStoryPublisher() && resource == null && libraryAsset(); // never an overwrite
       allow update: if false;
       allow delete: if isStoryPublisher();
     }

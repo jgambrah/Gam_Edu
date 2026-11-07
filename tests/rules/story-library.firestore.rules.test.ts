@@ -131,8 +131,8 @@ describe('library_meta (the one document read per session)', () => {
   it.each([...OUTSIDERS, ...DISABLED_SCHOOL].map((w) => [w] as const))('%s cannot read it', async (who) => {
     await assertFails(getDoc(doc(db(who), 'library_meta/current')));
   });
-  it('nobody can list the collection', async () => {
-    for (const who of ['teacherA', 'publisher1', 'superAdmin'] as Who[]) await assertFails(getDocs(collection(db(who), 'library_meta')));
+  it('only one document is ever read: school users and publishers cannot list the collection', async () => {
+    for (const who of ['teacherA', 'publisher1'] as Who[]) await assertFails(getDocs(collection(db(who), 'library_meta')));
   });
   it.each(NON_PUBLISHERS.map((w) => [w] as const))('%s cannot write it', async (who) => {
     await assertFails(setDoc(doc(db(who), 'library_meta/current'), { catalogueVersion: 6, updatedAt: new Date() }));
@@ -267,6 +267,30 @@ describe('story_library_admin: drafts, review, approval', () => {
     await assertSucceeds(deleteDoc(doc(db('publisher1'), 'story_library_admin/story_draft')));
     await assertFails(deleteDoc(doc(db('publisher1'), 'story_library_admin/story_r')));
     await assertFails(deleteDoc(doc(db('publisher1'), 'story_library_admin/story_pub')));
+  });
+});
+
+describe('super admins are bound by the same workflow (they are publishers, not exempt)', () => {
+  const SUPER = 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
+  it('a super admin cannot publish a story whose admin copy is not approved', async () => {
+    await seed('story_library_admin/story_new', adminDocData('review'));
+    await assertFails(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: SUPER })));
+  });
+  it('a super admin cannot approve a story they wrote themselves', async () => {
+    await seed('story_library_admin/story_s', adminDocData('review', { createdBy: SUPER }));
+    await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_s'), { status: 'approved', approvedBy: SUPER, updatedAt: new Date() }));
+  });
+  it('a super admin cannot skip the schema checks or edit a published story', async () => {
+    await seed('story_library_admin/story_new', adminDocData('approved'));
+    await assertFails(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: SUPER, schoolId: 'schoolA' })));
+    await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_pub'), { title: 'Edited after publication' }));
+  });
+  it('a super admin cannot delete published work', async () => {
+    await assertFails(deleteDoc(doc(db('superAdmin'), 'story_library_admin/story_pub')));
+  });
+  it('a super admin still reads a school-private collection exactly as before (the exclusion is library-only)', async () => {
+    await seed('junior_stories/s2', { title: 'T', content: 'c', schoolId: SCHOOL_A, createdBy: 'teacherA' });
+    await assertSucceeds(getDoc(doc(db('superAdmin'), 'junior_stories/s2')));
   });
 });
 

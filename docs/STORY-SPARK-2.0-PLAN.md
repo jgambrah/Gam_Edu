@@ -144,7 +144,7 @@ Branch: `story-spark-2.0-central-library` (phase-2-security + reader slice; inde
 
 ## 3.1 What the numbers say (read this first)
 
-Reproduce with `node --experimental-strip-types scripts/cost-model/story-library-cost.ts` (pure arithmetic, no network).
+Reproduce with `node --experimental-strip-types src/lib/story-library/cost-model.ts` (pure arithmetic, no network).
 
 1. **Media bandwidth, not Firestore reads, is the recurring cost.** At 100,000 learners with a 60% device-cache hit, Option B costs about $144/month, of which about $137 is Storage (almost all egress) and about $7 is Firestore. Cutting Firestore reads to zero would barely change the bill.
 2. **The device cache hit rate is the biggest lever.** Same scale, Option B: $281/month at a 20% hit rate, $144 at 60%, $59 at 85%. The IndexedDB cache is a cost feature, not a nicety.
@@ -162,7 +162,7 @@ Reproduce with `node --experimental-strip-types scripts/cost-model/story-library
 |---|---|---|
 | Firestore reads / writes / deletes | $0.03 / $0.09 / $0.01 per 100k | [Firestore pricing](https://cloud.google.com/firestore/pricing) |
 | Firestore free quota | 50k reads, 20k writes, 20k deletes per day; 1 GiB stored; one free database per project | same |
-| Firestore stored data | $0.000205479/GiB/day (about $0.075/GiB-month, my derivation) | same |
+| Firestore stored data | $0.000205479 per GiB; the unit is not stated in the text I could read. **Corrected in Stage 1:** I first converted it as a daily rate (about $0.075/GiB-month), which was wrong. Read as per GiB-hour, as Cloud Storage's page lists its rates, it is about $0.15/GiB-month. Unverified; no effect on any total because the catalogue is a few MB inside the free 1 GiB | same |
 | Firestore egress | 10 GiB/month free, then $0.12/GiB (worldwide row, 10 GiB to 1 TiB) | same |
 | Firestore billing detail | Minimum one read per query; skipped docs via offset are billed; requests succeed even when a budget is exceeded | same |
 | Cloud Storage Standard | us-central1 $0.02/GiB-month; multi-region $0.026 | [Cloud Storage pricing](https://cloud.google.com/storage/pricing) |
@@ -286,8 +286,9 @@ Pipeline per story, each stage recorded in `library_seed_jobs/{jobId}/items/{sto
 2. **fingerprint**: canonical JSON + asset hashes give `contentHash`; normalised-text 5-gram MinHash gives `textMinHash`; title slug.
 3. **dedupe**: (a) same `storyKey` and same `contentHash` is skipped (idempotent re-run); (b) same `storyKey`, different hash is a **new version** n+1; (c) different key but same hash, or MinHash similarity at or above 0.85 (LSH, so thousands of stories need no full pairwise scan), is **blocked as a duplicate** pending a publisher decision recorded in the manifest; (d) identical assets are uploaded once.
 4. **upload assets** to `private/{jobId}/` as create-only (`ifGenerationMatch: 0`), so a retried upload can never overwrite or double-write.
-5. **write package + admin doc** (status `review`). Firestore writes are chunked (at most 500 per batch, ramped via BulkWriter).
-6. **publish** is a separate command: copies private objects to `published/` content-addressed paths, writes `story_catalogue/{id}`, updates the catalogue bundle, then bumps `library_meta/current.catalogueVersion` **last** (so clients never see a catalogue entry whose package is missing).
+5. **write package + admin doc**: the admin doc is created as `draft` (the rules refuse any later state on create) and moved to `review` once validation, duplicate checks and licence checks pass. `createdBy` is the seeding publisher's identity. Firestore writes are chunked (at most 500 per batch, ramped via BulkWriter).
+6. **human approval gate (enforced by the rules, not just by convention).** The seeder can never approve or publish. A *different* central publisher reviews the story (text, each image against its text, narration, licences) and moves it `review -> approved`, recording `approvedBy`. The rules refuse approval by the author, and refuse any jump from `draft` to `approved` or `published`. Approved and published content is frozen: a correction is a new version through `review` again.
+7. **publish** is a separate command, runnable only for `approved` stories: copies private objects to `published/` content-addressed paths, writes `story_catalogue/{id}` (the rules refuse it unless the admin copy is `approved` or `published`), updates the catalogue bundle, then bumps `library_meta/current.catalogueVersion` **last** (so clients never see a catalogue entry whose package is missing).
 
 `jobId` is derived from the manifest hash, so re-running the same input resumes the same job: `done` items are skipped, `failed` items retry with an attempt cap. Every stage is safe to repeat. **Rollback of a bad publish** = flip `packageVersion` back and bump the catalogue version; old versions are never deleted until a retention sweep that you approve.
 
