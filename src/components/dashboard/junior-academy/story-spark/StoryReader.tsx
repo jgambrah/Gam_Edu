@@ -205,7 +205,7 @@ export function StoryReader({ story, ageTier, onFinish, onClose }: { story: Norm
       </div>
 
       <div className="rounded-3xl bg-white border-2 border-amber-200 p-5 md:p-8 shadow-inner min-h-[8rem]">
-        <p data-testid="page-text" className="font-extrabold text-slate-900 tracking-wide leading-[1.9]" style={{ fontSize: `${(cfg.largeText ? 1.75 : 1.35) * scale}rem` }}>
+        <p data-testid="page-text" className="font-extrabold text-slate-900 text-left leading-[1.9]" style={{ fontSize: `${(cfg.largeText ? 1.75 : 1.35) * scale}rem` }}>
           {words.map((w, i) => {
             const active = cfg.highlight && i === activeWord;
             return (
@@ -213,7 +213,7 @@ export function StoryReader({ story, ageTier, onFinish, onClose }: { story: Norm
               <Fragment key={`${pageIndex}-${i}`}>
                 <span data-word={i} data-active={active ? 'true' : undefined}
                   onClick={() => tapWord(w.text, i)}
-                  className={cn('inline-block px-1 rounded-lg', cfg.tapWords && 'cursor-pointer hover:bg-yellow-100', motion,
+                  className={cn('inline-block px-0.5 rounded-lg', cfg.tapWords && 'cursor-pointer hover:bg-yellow-100', motion,
                     active ? cn('bg-yellow-300 text-yellow-950 ring-2 ring-yellow-500', !reducedMotion && 'scale-110') : '')}>
                   {w.text}
                 </span>{' '}
