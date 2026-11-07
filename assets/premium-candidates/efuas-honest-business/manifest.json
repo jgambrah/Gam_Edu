@@ -86,5 +86,93 @@
     "voice": "Puck",
     "pronunciation": "UNVERIFIED: awaiting native-speaker review",
     "bytes": 1376640
+  },
+  {
+    "file": "tts-Kore-page2.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1169280
+  },
+  {
+    "file": "tts-Kore-page3.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1173120
+  },
+  {
+    "file": "tts-Kore-page4.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1040640
+  },
+  {
+    "file": "tts-Kore-page5.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 844800
+  },
+  {
+    "file": "tts-Kore-page6.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 885120
+  },
+  {
+    "file": "tts-Kore-page7.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1989120
+  },
+  {
+    "file": "tts-Kore-page8.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1104000
+  },
+  {
+    "file": "tts-Kore-page9.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1171200
+  },
+  {
+    "file": "tts-Kore-page10.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 958080
+  },
+  {
+    "file": "tts-Kore-page11.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1138560
+  },
+  {
+    "file": "tts-Kore-page12.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1307520
   }
 ]

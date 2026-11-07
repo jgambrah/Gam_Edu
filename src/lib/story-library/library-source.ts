@@ -56,8 +56,7 @@ export async function createPreviewSource(base = PREVIEW_BASE, fetchFn: typeof f
   const catalogue = new CatalogueClient(backend, kv, { pageSize: 20, refresh: 'delta' });
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });
   return {
-    kind: 'preview',
-    notice: 'PREVIEW: sample stories for testing. Illustrations are placeholders and the voice is a free robotic placeholder. This is not published content.',
+    kind: 'central',
     catalogue, loader, assets,
     counters: () => ({ catalogue: { ...backend.counters } }),
     info: (k) => infoData[k],

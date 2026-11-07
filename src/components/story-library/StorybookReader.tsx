@@ -26,6 +26,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [results, setResults] = useState<ActivityResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [efuaVoice, setEfuaVoice] = useState<'Kore' | 'Puck' | 'espeak'>('Kore');
+  const isEfua = pkg.storyId === 'efuas-honest-business';
   const audioRef = useRef<HTMLAudioElement>(null);
   const raf = useRef<number>(0);
   const hlRef = useRef<HighlightState>(NO_HIGHLIGHT);
@@ -59,7 +61,13 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     (async () => {
       try {
         await source.loader.showPage(pkg, current!.kind === 'page' ? current.index : 0, mode); // this page + look-ahead; cached after first load
-        const url = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
+        let url: string | undefined;
+        if (isEfua && efuaVoice !== 'espeak') {
+          const candidateUrl = `/story-spark-preview/candidates/efuas-honest-business/tts-${efuaVoice}-page${page.n}.mp3`;
+          const head = await fetch(candidateUrl, { method: 'HEAD' }).catch(() => null);
+          if (head && head.ok) url = candidateUrl;
+        }
+        if (!url) url = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
         if (cancelled) return;
         el.src = url; el.playbackRate = speed; el.load();
         if (m.autoplay) { try { await el.play(); } catch { if (!cancelled) setNeedsTap(true); } }
@@ -67,7 +75,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, mode, pkg]);
+  }, [step, mode, pkg, isEfua, efuaVoice]);
 
   useEffect(() => { if (audioRef.current) audioRef.current.playbackRate = speed; }, [speed]);
 
@@ -75,11 +83,13 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const tick = useCallback(() => {
     const el = audioRef.current;
     if (el && page) {
-      const next = highlightAt(page, el.currentTime * 1000, hlRef.current);
+      const dur = el.duration && Number.isFinite(el.duration) && el.duration > 0 ? el.duration * 1000 : (page.audio?.durationMs ?? 1);
+      const scale = isEfua && efuaVoice !== 'espeak' && page.audio?.durationMs ? page.audio.durationMs / dur : 1;
+      const next = highlightAt(page, el.currentTime * 1000 * scale, hlRef.current);
       if (next.word !== hlRef.current.word || next.sentence !== hlRef.current.sentence || next.level !== hlRef.current.level) { hlRef.current = next; setHl(next); }
     }
     raf.current = requestAnimationFrame(tick);
-  }, [page]);
+  }, [page, isEfua, efuaVoice]);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
   const onPlay = () => { setPlaying(true); setNeedsTap(false); cancelAnimationFrame(raf.current); raf.current = requestAnimationFrame(tick); };
@@ -130,7 +140,6 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         <h2 className="mt-2 text-3xl font-extrabold text-slate-900">The End</h2>
         <p className="mt-2 text-lg text-slate-700">{pkg.title}</p>
         {results.length > 0 && <p className="mt-4 text-lg text-slate-700">You tried <strong>{sc.answered}</strong> activities{sc.scored > 0 && <>, and got <strong>{sc.correct}</strong> of <strong>{sc.scored}</strong> right</>}.</p>}
-        <p className="mt-2 text-sm text-slate-500">Preview note: results stay on this screen and are not saved or sent anywhere.</p>
         <div className="mt-6 flex justify-center gap-3">
           <button className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300" onClick={() => { setFinished(false); setStep(0); setResults([]); }}>Read again</button>
           <button className="rounded-full border-2 border-slate-300 px-6 py-3 font-bold text-slate-800 hover:bg-slate-50" onClick={onClose}>Back to library</button>
@@ -160,7 +169,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         )}
       </header>
 
-      <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">{source.notice}</p>
+      {source.notice && <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">{source.notice}</p>}
 
       {current?.kind === 'activity' && (
         <ActivityPlayer key={current.activity.id} activity={current.activity} onDone={(r) => { setResults((x) => [...x.filter((y) => y.id !== r.id), r]); go(1); }} />
@@ -169,9 +178,35 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
       {page && (
         <div className={`grid gap-4 ${presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
           <div className={presentation.layout === 'text-first' ? 'order-2 md:order-2' : ''}>
-            <PlaceholderArt motif={art?.motif ?? '📖'} palette={[c0, c1]} alt={page.alt ?? 'Illustration'} brief={art?.brief} compact={presentation.layout === 'text-first'} />
+            <PlaceholderArt
+              motif={art?.motif ?? '📖'}
+              palette={[c0, c1]}
+              alt={page.alt ?? 'Illustration'}
+              brief={art?.brief}
+              compact={presentation.layout === 'text-first'}
+              imageSrc={isEfua ? '/story-spark-preview/candidates/efuas-honest-business/page1-1.webp' : undefined}
+            />
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
+            {isEfua && (
+              <div className="mb-3 flex flex-wrap items-center gap-1.5 rounded-2xl bg-indigo-50 px-3 py-2 text-xs ring-1 ring-indigo-200">
+                <span className="font-bold text-indigo-900">Narrator Voice:</span>
+                {([
+                  { id: 'Kore', label: 'Ghanaian Storyteller (Kore)' },
+                  { id: 'Puck', label: 'Warm Storyteller (Puck)' },
+                  { id: 'espeak', label: 'Standard Reader' },
+                ] as const).map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => setEfuaVoice(v.id)}
+                    className={`rounded-full px-3 py-1 font-bold ${efuaVoice === v.id ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-900 hover:bg-indigo-100'}`}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <p className="text-lg leading-[1.9] text-slate-900" style={{ fontSize, fontFamily: 'Andika, Nunito, system-ui, sans-serif' }} data-testid="page-text">
               {words!.tokens.map((t, i) => {
                 const active = hl.level === 'word' ? hl.word === i : hl.level === 'sentence' ? words!.sentenceOfToken[i] === hl.sentence : false;
@@ -218,7 +253,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
           {page ? `Page ${pageNo} of ${pkg.pages.length}. ${syncDescription(page, mode)}` : 'Activity time'}
           {audioError && <span className="ml-1 font-semibold text-red-700"> {audioError}</span>}
         </p>
-        <p className="text-center text-[11px] text-slate-500">Background music: not included in this preview. {m.blurb}</p>
+        <p className="text-center text-[11px] text-slate-500">{m.blurb}</p>
       </footer>
       <StoryNotes info={info} />
     </div>
