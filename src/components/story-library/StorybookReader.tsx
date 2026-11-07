@@ -26,7 +26,6 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [results, setResults] = useState<ActivityResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
-  const [efuaVoice, setEfuaVoice] = useState<'Kore' | 'Puck' | 'espeak'>('Kore');
   const isEfua = pkg.storyId === 'efuas-honest-business';
   const audioRef = useRef<HTMLAudioElement>(null);
   const raf = useRef<number>(0);
@@ -62,10 +61,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
       try {
         await source.loader.showPage(pkg, current!.kind === 'page' ? current.index : 0, mode); // this page + look-ahead; cached after first load
         let url: string | undefined;
-        if (isEfua && efuaVoice !== 'espeak') {
-          const candidateUrl = `/story-spark-preview/candidates/efuas-honest-business/tts-${efuaVoice}-page${page.n}.mp3`;
-          const head = await fetch(candidateUrl, { method: 'HEAD' }).catch(() => null);
-          if (head && head.ok) url = candidateUrl;
+        if (isEfua) {
+          url = `/story-spark-preview/candidates/efuas-honest-business/tts-Kore-page${page.n}.mp3`;
         }
         if (!url) url = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
         if (cancelled) return;
@@ -75,7 +72,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, mode, pkg, isEfua, efuaVoice]);
+  }, [step, mode, pkg, isEfua]);
 
   useEffect(() => { if (audioRef.current) audioRef.current.playbackRate = speed; }, [speed]);
 
@@ -84,12 +81,12 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     const el = audioRef.current;
     if (el && page) {
       const dur = el.duration && Number.isFinite(el.duration) && el.duration > 0 ? el.duration * 1000 : (page.audio?.durationMs ?? 1);
-      const scale = isEfua && efuaVoice !== 'espeak' && page.audio?.durationMs ? page.audio.durationMs / dur : 1;
+      const scale = isEfua && page.audio?.durationMs ? page.audio.durationMs / dur : 1;
       const next = highlightAt(page, el.currentTime * 1000 * scale, hlRef.current);
       if (next.word !== hlRef.current.word || next.sentence !== hlRef.current.sentence || next.level !== hlRef.current.level) { hlRef.current = next; setHl(next); }
     }
     raf.current = requestAnimationFrame(tick);
-  }, [page, isEfua, efuaVoice]);
+  }, [page, isEfua]);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
   const onPlay = () => { setPlaying(true); setNeedsTap(false); cancelAnimationFrame(raf.current); raf.current = requestAnimationFrame(tick); };
@@ -184,29 +181,10 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
               compact={presentation.layout === 'text-first'}
-              imageSrc={isEfua ? '/story-spark-preview/candidates/efuas-honest-business/page1-1.webp' : undefined}
+              imageSrc={isEfua ? `/story-spark-preview/candidates/efuas-honest-business/page${page.n}-1.webp` : undefined}
             />
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
-            {isEfua && (
-              <div className="mb-3 flex flex-wrap items-center gap-1.5 rounded-2xl bg-indigo-50 px-3 py-2 text-xs ring-1 ring-indigo-200">
-                <span className="font-bold text-indigo-900">Narrator Voice:</span>
-                {([
-                  { id: 'Kore', label: 'Ghanaian Storyteller (Kore)' },
-                  { id: 'Puck', label: 'Warm Storyteller (Puck)' },
-                  { id: 'espeak', label: 'Standard Reader' },
-                ] as const).map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    onClick={() => setEfuaVoice(v.id)}
-                    className={`rounded-full px-3 py-1 font-bold ${efuaVoice === v.id ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-900 hover:bg-indigo-100'}`}
-                  >
-                    {v.label}
-                  </button>
-                ))}
-              </div>
-            )}
             <p className="text-lg leading-[1.9] text-slate-900" style={{ fontSize, fontFamily: 'Andika, Nunito, system-ui, sans-serif' }} data-testid="page-text">
               {words!.tokens.map((t, i) => {
                 const active = hl.level === 'word' ? hl.word === i : hl.level === 'sentence' ? words!.sentenceOfToken[i] === hl.sentence : false;
