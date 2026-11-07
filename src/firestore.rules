@@ -738,7 +738,9 @@ service cloud.firestore {
 
     // Queued parent alerts (e.g. absence notices): written by teachers taking the register, for their own school.
     match /notification_queue/{queueId} {
-      allow read, get, list: if isSuperAdmin() || (schoolStaffRole() && resource.data.get('schoolId', '') == getUserSchoolId());
+      // `get` of an entry that doesn't exist yet is allowed for school staff: the register screen checks "already alerted?" before its first write.
+      allow get: if isSuperAdmin() || (schoolStaffRole() && (resource == null || resource.data.get('schoolId', '') == getUserSchoolId()));
+      allow list: if isSuperAdmin() || (schoolStaffRole() && resource.data.get('schoolId', '') == getUserSchoolId());
       allow create: if isSuperAdmin() || (schoolStaffRole() && createdInMySchool());
       allow update: if isSuperAdmin() || (schoolStaffRole() && docInMySchool());
       allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
