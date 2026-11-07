@@ -3,6 +3,7 @@
  * They mirror the Firestore rules' field checks, so a story that passes here will not be refused by the rules for shape.
  * No I/O, no Firebase, no clock.
  */
+import { validAlt, validateActivities, validateGlossary, validateMusic } from './premium';
 import {
   CATALOGUE_ALLOWED_KEYS, CATALOGUE_REQUIRED_KEYS, CATALOGUE_STATUSES, MAX_CATALOGUE_ENTRY_BYTES,
   MAX_PAGES_PER_STORY, PACKAGE_ALLOWED_KEYS, PAGE_ALLOWED_KEYS, PUBLISHED_PREFIX, ADMIN_TRANSITIONS,
@@ -81,10 +82,20 @@ export function validateStoryPackage(p: unknown): Problem[] {
     if (pg.n !== i + 1) bad(`${at}.n`, `must be ${i + 1}`);
     if (!(typeof pg.text === 'string' && pg.text.trim().length > 0)) bad(`${at}.text`, 'required');
     if (pg.image !== undefined && !(typeof pg.image === 'string' && pg.image in assets)) bad(`${at}.image`, 'not listed in assets');
+    if (pg.alt !== undefined && !validAlt(pg.alt)) bad(`${at}.alt`, '5-200 characters, no links');
+    if (pg.sentences !== undefined && !(Array.isArray(pg.sentences) && pg.sentences.every((x) => typeof x === 'string' && x.trim()))) bad(`${at}.sentences`, 'list of non-empty strings');
     if (isObj(pg.audio)) {
       if (!(typeof pg.audio.hash === 'string' && pg.audio.hash in assets)) bad(`${at}.audio.hash`, 'not listed in assets');
+      if (!(Number.isFinite(pg.audio.durationMs) && (pg.audio.durationMs as number) > 0)) bad(`${at}.audio.durationMs`, 'positive number');
+      for (const k of Object.keys(pg.audio)) if (!['hash', 'durationMs', 'timing'].includes(k)) bad(`${at}.audio.${k}`, 'field not allowed');
+      // Timing is optional here; if present it must be structurally readable. Whether it is good ENOUGH is a readiness question.
+      if (pg.audio.timing !== undefined && !isObj(pg.audio.timing)) bad(`${at}.audio.timing`, 'must be an object');
     } else if (pg.audio !== undefined) bad(`${at}.audio`, 'must be an object');
   });
+  const pageTexts = (p.pages as Array<{ text: string }>).map((x) => x.text ?? '');
+  if (p.activities !== undefined) for (const i of validateActivities(p.activities, p.pages.length)) bad(i.path, i.message);
+  if (p.glossary !== undefined) for (const i of validateGlossary(p.glossary, pageTexts)) bad(i.path, i.message);
+  if (p.music !== undefined) for (const i of validateMusic(p.music, assets)) bad(i.path, i.message);
   for (const [hash, a] of Object.entries(assets)) {
     if (!HASH_RE.test(hash)) bad(`assets.${hash}`, 'key must be sha256:<64 hex>');
     if (!isObj(a) || typeof a.path !== 'string' || !a.path.startsWith(`${PUBLISHED_PREFIX}assets/`)) bad(`assets.${hash}.path`, 'must be under story_library/published/assets/');

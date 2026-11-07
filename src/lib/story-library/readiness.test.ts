@@ -1,0 +1,148 @@
+import { describe, expect, it } from 'vitest';
+import { evaluateReadiness, passingReviews, type HumanReview } from './readiness';
+import { prepare } from './seeder/seeder';
+import { makeStory, syntheticClassification, SYNTHETIC_LICENCE } from './seeder/synthetic';
+import type { StoryInput } from './seeder/types';
+import type { Activity, TimingTrack } from './premium';
+import { tokenize, splitSentences } from './premium';
+import { coverageHash } from './aspects';
+
+const LIC = { source: 'test-studio', licenseId: 'CC-BY-4.0' };
+const bytes = (n: number, seed: number) => Uint8Array.from({ length: n }, (_, i) => (i * 31 + seed) & 255);
+
+function wordTrack(text: string, durationMs: number, over: Partial<TimingTrack> = {}): TimingTrack {
+  const sents = splitSentences(text); const words = tokenize(text);
+  const per = Math.floor((durationMs - 100) / words.length);
+  const wm = words.map((_, i) => [i * per + 10, (i + 1) * per] as [number, number]);
+  let at = 0;
+  const sm = sents.map((s) => { const n = tokenize(s).length; const m: [number, number] = [wm[at][0], wm[at + n - 1][1]]; at += n; return m; });
+  return { granularity: 'word', method: 'forced-alignment', verified: true, sentences: sm, words: wm, ...over };
+}
+
+function premiumStory(over: Partial<StoryInput> = {}): StoryInput {
+  const base = makeStory(3, { pages: 4, sentencesPerPage: 2 });
+  const classification = { ...syntheticClassification(3), objectives: ['vocabulary', 'reading-comprehension'], readingLevel: 'emergent', narrationLocale: 'en-GH', estimatedDurationSec: 60 } as any;
+  const pages = base.pages.map((p, i) => {
+    const durationMs = 15000;
+    return { ...p, text: p.text, alt: `Picture for page ${i + 1}`, image: { ...p.image, licence: LIC }, sentences: splitSentences(p.text),
+      audio: { ...p.audio!, durationMs, licence: LIC }, timing: wordTrack(p.text, durationMs) };
+  });
+  const w = tokenize(pages[0].text)[1].toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+  const activities: Activity[] = [
+    { id: 'c1', type: 'comprehension', question: 'What happened first?', options: ['one', 'two'], correctIndex: 0 },
+    { id: 'c2', type: 'comprehension', question: 'Who was in it?', options: ['a', 'b', 'c'], correctIndex: 1 },
+    { id: 'v1', type: 'vocabulary', word: w, definition: 'a word in the story', distractors: ['nothing'] },
+  ];
+  const glossary = [1, 2, 3].map((k) => ({ word: tokenize(pages[0].text)[k].toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''), definition: 'a word in the story', pages: [1] }));
+  return { ...base, classification, narrationLocale: 'en-GH', pages, activities, glossary, ...over } as StoryInput;
+}
+
+function evalStory(s: StoryInput, reviews?: (a: any) => HumanReview[], extra: any = {}) {
+  const p = prepare(s);
+  expect(p.problems).toEqual([]);
+  const { pkg } = p.buildPackage(1);
+  return { p, pkg, run: (r?: HumanReview[]) => evaluateReadiness({ contentHash: p.contentHash, classification: s.classification, aspects: p.aspects, assetLicences: p.assetLicences as any, licence: SYNTHETIC_LICENCE, pkg, reviews: r ?? (reviews ? reviews(p.aspects) : passingReviews(p.aspects)), ...extra }) };
+}
+const codes = (r: ReturnType<typeof evaluateReadiness>) => r.blockers.map((b) => b.code);
+
+describe('readiness: the complete premium story', () => {
+  it('is premium-ready only with everything present, verified and reviewed', () => {
+    const r = evalStory(premiumStory()).run();
+    expect(codes(r)).toEqual([]);
+    expect(r.premiumReady).toBe(true);
+    expect(r.step).toBe('premium-ready');
+    expect(r.facts.wordLevelSync).toBe(true);
+    expect(r.pagesNeedingWork).toEqual([]);
+  });
+  it('without reviews it is complete but not premium-ready (readiness != approval)', () => {
+    const r = evalStory(premiumStory()).run([]);
+    expect(r.premiumReady).toBe(false);
+    expect(r.step).toBe('interactive');
+    expect(codes(r).every((c) => c === 'review-missing')).toBe(true);
+  });
+});
+
+describe('readiness: each missing mandatory element blocks premium', () => {
+  it('missing illustration/alt text', () => {
+    const s = premiumStory(); (s.pages[1] as any).alt = undefined;
+    const r = evalStory(s).run();
+    expect(codes(r)).toContain('missing-alt-text'); expect(r.premiumReady).toBe(false); expect(r.pagesNeedingWork).toEqual([2]);
+  });
+  it('missing narration names the page', () => {
+    const s = premiumStory(); delete (s.pages[2] as any).audio; delete (s.pages[2] as any).timing;
+    const r = evalStory(s).run();
+    expect(codes(r)).toContain('missing-narration'); expect(r.pagesNeedingWork).toEqual([3]); expect(r.steps.narrated).toBe(false);
+  });
+  it('estimated or unverified timing never satisfies premium', () => {
+    const s = premiumStory();
+    (s.pages[0] as any).timing = wordTrack(s.pages[0].text, 15000, { verified: false });
+    (s.pages[1] as any).timing = { granularity: 'sentence', method: 'estimated', verified: true, sentences: splitSentences(s.pages[1].text).map((_, i) => [i * 7000, i * 7000 + 6000]) };
+    const r = evalStory(s).run();
+    expect(r.blockers.filter((b) => b.code === 'timing-unverified' || b.code === 'timing-unusable').map((b) => b.page).sort()).toEqual([1, 2]);
+    expect(r.premiumReady).toBe(false);
+  });
+  it('bad word timing falls back to verified sentence timing with a warning, never claiming word sync', () => {
+    const s = premiumStory();
+    const t = wordTrack(s.pages[0].text, 15000); t.words = t.words!.slice(1);
+    (s.pages[0] as any).timing = t;
+    const r = evalStory(s).run();
+    expect(r.facts.wordLevelSync).toBe(false);
+    expect(r.warnings.map((w) => w.code)).toContain('word-timing-rejected');
+  });
+  it('no activities, too few types, no comprehension, objective without practice', () => {
+    expect(codes(evalStory(premiumStory({ activities: [] })).run())).toEqual(expect.arrayContaining(['too-few-activities', 'no-comprehension']));
+    const s = premiumStory({ classification: { ...premiumStory().classification!, objectives: ['phonics'] } as any });
+    expect(codes(evalStory(s).run())).toContain('objective-without-practice');
+  });
+  it('glossary required at reading levels that need it', () => {
+    const c = { ...premiumStory().classification!, readingLevel: 'early' } as any;
+    expect(codes(evalStory(premiumStory({ glossary: [], classification: c })).run())).toContain('glossary-too-small');
+    expect(codes(evalStory(premiumStory({ glossary: [] })).run())).not.toContain('glossary-too-small'); // emergent readers: not mandatory
+  });
+  it('missing licence records block (story, asset, music)', () => {
+    const s = premiumStory(); (s.pages[0].image as any).licence = undefined;
+    expect(codes(evalStory(s).run())).toContain('asset-without-licence');
+    const e = evalStory(premiumStory());
+    const r = evaluateReadiness({ contentHash: e.p.contentHash, classification: premiumStory().classification, aspects: e.p.aspects, assetLicences: e.p.assetLicences as any, licence: {}, pkg: e.pkg, reviews: passingReviews(e.p.aspects) });
+    expect(codes(r)).toContain('no-story-licence');
+  });
+  it('expired licences block', () => {
+    const s = premiumStory(); (s.pages[0].image as any).licence = { ...LIC, expiresAt: '2000-01-01T00:00:00.000Z' };
+    expect(codes(evalStory(s).run())).toContain('asset-licence-expired');
+  });
+  it('a missing asset file in storage blocks', () => {
+    const r = evalStory(premiumStory(), undefined, { assetExists: () => false }).run();
+    expect(codes(r)).toContain('asset-missing');
+  });
+  it('unclassified and personal data in text block', () => {
+    expect(codes(evalStory(premiumStory({ classification: undefined })).run())).toContain('unclassified');
+    const s = premiumStory(); s.pages[0] = { ...s.pages[0], text: s.pages[0].text + ' Call 0244123456 or mail a@b.com.' };
+    expect(codes(evalStory(s).run())).toContain('personal-data');
+  });
+  it('content hash mismatch blocks', () => {
+    const e = evalStory(premiumStory());
+    const r = evaluateReadiness({ contentHash: 'sha256:' + '0'.repeat(64), classification: premiumStory().classification, aspects: e.p.aspects, assetLicences: e.p.assetLicences as any, licence: SYNTHETIC_LICENCE, pkg: e.pkg, reviews: passingReviews(e.p.aspects) });
+    expect(codes(r)).toContain('content-mismatch');
+  });
+});
+
+describe('readiness: human reviews are bound to what they covered', () => {
+  it('a failed review blocks; the latest review wins', () => {
+    const e = evalStory(premiumStory());
+    const reviews = passingReviews(e.p.aspects).map((r) => (r.type === 'cultural' ? { ...r, outcome: 'needs-work' as const } : r));
+    expect(codes(e.run(reviews))).toEqual(['review-failed']);
+    const fixed = [...reviews, { ...reviews[0], type: 'cultural' as const, outcome: 'pass' as const, coverage: coverageHash('cultural', e.p.aspects), at: 5 }];
+    expect(e.run(fixed).premiumReady).toBe(true);
+  });
+  it('changing one page invalidates only the reviews covering what changed', () => {
+    const before = evalStory(premiumStory());
+    const reviews = passingReviews(before.p.aspects);
+    const s = premiumStory(); (s.pages[1] as any).alt = 'A different picture description';
+    const after = evalStory(s);
+    const r = after.run(reviews);
+    const stale = Object.entries(r.reviews).filter(([, v]) => v === 'stale').map(([k]) => k);
+    expect(stale.length).toBeGreaterThan(0);
+    expect(stale.length).toBeLessThan(7);
+    expect(r.premiumReady).toBe(false);
+  });
+});

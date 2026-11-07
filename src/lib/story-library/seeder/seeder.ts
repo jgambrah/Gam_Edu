@@ -17,6 +17,7 @@ import { canonicalJson, sha256Hex, sha256Tag } from './hash';
 import { assetPathFor, STORY_ID_RE, validateStoryPackage, type Problem } from '../validate';
 import { MAX_PAGES_PER_STORY, type StoryPackage } from '../types';
 import { errorsOf, validateClassification } from '../classification';
+import { aspectHashes, type AspectHashes } from '../aspects';
 
 // ------------------------------------------------------------------------------------------------ preparation (pure)
 
@@ -30,6 +31,10 @@ export interface Prepared {
   assets: Array<{ hash: string; ext: string; bytes: Uint8Array; contentType: string; stagingPath: string }>;
   /** Package without `version` (added at commit time, once the version is known). */
   buildPackage(version: number): { pkg: StoryPackage; json: string; sha: string; stagingPath: string };
+  /** Licence record per asset hash (publisher-only; never in the package). */
+  assetLicences: Record<string, unknown>;
+  /** Hashes of each reviewable aspect (text, images, audio, timing, activities, licence). */
+  aspects: AspectHashes;
   problems: Problem[];
 }
 
@@ -49,10 +54,12 @@ export function prepare(story: StoryInput): Prepared {
   const assets: Prepared['assets'] = [];
   const assetMap: StoryPackage['assets'] = {};
   const seen = new Set<string>();
-  const addAsset = (a: { bytes: Uint8Array; ext: string }, where: string) => {
+  const assetLicences: Record<string, unknown> = {};
+  const addAsset = (a: { bytes: Uint8Array; ext: string; licence?: unknown }, where: string) => {
     if (!a?.bytes?.length) { bad(where, 'empty media file'); return ''; }
     if (!MIME[a.ext]) { bad(where, `unsupported type ${a.ext}`); return ''; }
     const hash = sha256Tag(a.bytes);
+    if (a.licence !== undefined) assetLicences[hash] = a.licence;
     const path = assetPathFor(hash, a.ext as 'webp');
     if (!path) { bad(where, 'bad hash'); return ''; }
     if (!seen.has(hash)) {
@@ -67,18 +74,28 @@ export function prepare(story: StoryInput): Prepared {
     if (!p.text || !p.text.trim()) bad(`pages[${i}].text`, 'required');
     const image = addAsset(p.image, `pages[${i}].image`);
     const audio = p.audio ? addAsset(p.audio, `pages[${i}].audio`) : '';
-    return { n: i + 1, text: p.text, ...(image ? { image } : {}), ...(audio ? { audio: { hash: audio, durationMs: p.audio?.durationMs ?? 20000 } } : {}) };
+    return {
+      n: i + 1, text: p.text, ...(p.sentences ? { sentences: p.sentences } : {}), ...(image ? { image } : {}), ...(p.alt ? { alt: p.alt } : {}),
+      ...(audio ? { audio: { hash: audio, durationMs: p.audio?.durationMs ?? 20000, ...(p.timing ? { timing: p.timing } : {}) } } : {}),
+    };
   });
+  const musicHash = story.music ? addAsset(story.music.asset, 'music.asset') : '';
+  const music = story.music && musicHash
+    ? { hash: musicHash, title: story.music.title, licenceId: story.music.licenceId, defaultVolume: story.music.defaultVolume, duckTo: story.music.duckTo } : undefined;
+  const extras = {
+    ...(story.language ? { language: story.language } : {}), ...(story.narrationLocale ? { narrationLocale: story.narrationLocale } : {}),
+    ...(story.activities ? { activities: story.activities } : {}), ...(story.glossary ? { glossary: story.glossary } : {}), ...(music ? { music } : {}),
+  };
 
   const meta = { language: story.language ?? null, categories: story.categories ?? [], objectives: story.objectives ?? [], access: story.access ?? 'open', classification: story.classification ?? null };
-  const content = { title: story.title, ageTiers: story.ageTiers, pages, assets: assetMap, meta };
+  const content = { title: story.title, ageTiers: story.ageTiers, pages, assets: assetMap, extras, meta, assetLicences };
   const contentHash = sha256Tag(canonicalJson(content));
   const fpText = `${story.title}\n${(story.pages ?? []).map((p) => p.text).join('\n')}`;
   const textHash = sha256Hex(fpText.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim());
   const sig = signatureOf(fpText);
 
   const buildPackage = (version: number) => {
-    const pkg: StoryPackage = { schemaVersion: 1, storyId, version, contentHash, title: story.title, ageTiers: story.ageTiers, pages, assets: assetMap };
+    const pkg: StoryPackage = { schemaVersion: 1, storyId, version, contentHash, title: story.title, ageTiers: story.ageTiers, ...extras, pages, assets: assetMap };
     const json = canonicalJson(pkg);
     const sha = sha256Hex(json);
     return { pkg, json, sha, stagingPath: `${PRIVATE_PACKAGE_PREFIX}${storyId}/v${version}/${sha.slice(0, 16)}.json` };
@@ -87,7 +104,8 @@ export function prepare(story: StoryInput): Prepared {
     const { pkg } = buildPackage(1);
     for (const p of validateStoryPackage(pkg)) problems.push(p);
   }
-  return { storyId, contentHash, textHash, sig, assets, buildPackage, problems };
+  const aspects = aspectHashes(buildPackage(1).pkg, assetLicences);
+  return { storyId, contentHash, textHash, sig, assets, buildPackage, assetLicences, aspects, problems };
 }
 
 // -------------------------------------------------------------------------------------------------------- options
@@ -267,7 +285,7 @@ async function stage(b: SeedBackend, path: string, bytes: Uint8Array, contentTyp
   if (r === 'exists_different') throw new Error(`staged object ${path} exists with different content`);
 }
 
-const SNAPSHOT_KEYS = ['version', 'contentHash', 'classification', 'title', 'packagePath', 'packageHash', 'packageBytes', 'pageCount', 'assetCount', 'ageTiers',
+const SNAPSHOT_KEYS = ['version', 'contentHash', 'classification', 'assetLicences', 'aspects', 'title', 'packagePath', 'packageHash', 'packageBytes', 'pageCount', 'assetCount', 'ageTiers',
   'language', 'categories', 'objectives', 'access', 'licence', 'fingerprints', 'lastJobId', 'duplicateOverride'];
 const pick = (d: Doc, keys: string[]) => Object.fromEntries(keys.filter((k) => d[k] !== undefined).map((k) => [k, d[k]]));
 
@@ -344,7 +362,7 @@ async function commit(
       title: story.title, packagePath: pkg.stagingPath, packageHash: `sha256:${pkg.sha}`, packageBytes: pkg.json.length,
       pageCount: story.pages.length, assetCount: prep.assets.length, ageTiers: story.ageTiers, language: story.language ?? null,
       categories: story.categories ?? [], objectives: story.objectives ?? [], access: story.access ?? 'open', licence: story.licence,
-      classification: story.classification ?? null,
+      classification: story.classification ?? null, assetLicences: prep.assetLicences, aspects: prep.aspects,
       fingerprints: { textHash: prep.textHash, titleSlug: titleSlug(story.title), sig: prep.sig },
       lastJobId: jobId, ...(override ? { duplicateOverride: override } : {}),
     };

@@ -1,4 +1,5 @@
 import type { Classification } from '../classification';
+import type { Activity, GlossaryEntry, TimingTrack } from '../premium';
 /**
  * Story seeder: types and the storage layout it writes. Stage 2: EMULATOR / SYNTHETIC ONLY, DRAFT ONLY.
  *
@@ -22,7 +23,7 @@ export const ALLOWED_OBJECT_PREFIXES = [PRIVATE_ASSET_PREFIX, PRIVATE_PACKAGE_PR
 
 export type Doc = Record<string, any>;
 
-export interface AssetInput { bytes: Uint8Array; ext: 'webp' | 'png' | 'opus' | 'ogg'; durationMs?: number }
+export interface AssetInput { bytes: Uint8Array; ext: 'webp' | 'png' | 'opus' | 'ogg'; durationMs?: number; /** Where this file came from and under what licence (required for premium; reviewed by a person). */ licence?: LicenceInput }
 
 export interface LicenceInput { source: string; licenseId: string; territory?: string; expiresAt?: string }
 
@@ -42,7 +43,12 @@ export interface StoryInput {
   access?: 'open' | 'licensed';
   /** Educational classification (Stage 3B). Optional for plain imports; required before a story can be treated as classified. */
   classification?: Classification;
-  pages: Array<{ text: string; image: AssetInput; audio?: AssetInput }>;
+  /** Narration locale (from the language's registry), when narration exists. */
+  narrationLocale?: string;
+  pages: Array<{ text: string; image: AssetInput; audio?: AssetInput; alt?: string; sentences?: string[]; timing?: TimingTrack }>;
+  activities?: Activity[];
+  glossary?: GlossaryEntry[];
+  music?: { asset: AssetInput; title: string; licenceId: string; defaultVolume: number; duckTo: number };
   licence: LicenceInput;
   /** A person's recorded decision to allow a flagged near-duplicate. Must name the story it matched. */
   duplicateDecision?: DuplicateDecision;

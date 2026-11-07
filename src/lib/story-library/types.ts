@@ -75,7 +75,8 @@ export const CATALOGUE_REQUIRED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
   'contentHash', 'publishedBy',
 ];
 
-export interface AudioRef { hash: string; durationMs: number; sentenceTimings?: number[] }
+export type { AudioRef, TimingTrack, Activity, GlossaryEntry, MusicRef } from './premium';
+import type { AudioRef, Activity, GlossaryEntry, MusicRef } from './premium';
 
 export interface PackagePage {
   n: number;
@@ -83,6 +84,8 @@ export interface PackagePage {
   sentences?: string[];
   /** Content hash of the illustration; resolved through `assets`. Fetched lazily. */
   image?: string;
+  /** Alt text for the illustration (accessibility; required for premium stories). */
+  alt?: string;
   /** Narration, fetched lazily and only in the modes that use it. */
   audio?: AudioRef;
 }
@@ -97,16 +100,21 @@ export interface StoryPackage {
   contentHash: string;
   title: string;
   ageTiers: string[];
+  language?: string;
+  narrationLocale?: string;
   pages: PackagePage[];
-  activities?: Array<Record<string, unknown>>;
+  activities?: Activity[];
+  glossary?: GlossaryEntry[];
+  music?: MusicRef;
   assets: Record<string, AssetInfo>;
 }
 
 /** Allow-list: a package may contain ONLY these keys, so personal or school data cannot slip into public-safe content. */
 export const PACKAGE_ALLOWED_KEYS = [
-  'schemaVersion', 'storyId', 'version', 'contentHash', 'title', 'ageTiers', 'pages', 'activities', 'assets',
+  'schemaVersion', 'storyId', 'version', 'contentHash', 'title', 'ageTiers', 'language', 'narrationLocale', 'pages', 'activities',
+  'glossary', 'music', 'assets',
 ] as const;
-export const PAGE_ALLOWED_KEYS = ['n', 'text', 'sentences', 'image', 'audio'] as const;
+export const PAGE_ALLOWED_KEYS = ['n', 'text', 'sentences', 'image', 'alt', 'audio'] as const;
 
 export const PUBLISHED_PREFIX = 'story_library/published/';
 export const PRIVATE_PREFIX = 'story_library/private/';
