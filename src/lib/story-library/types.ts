@@ -62,12 +62,23 @@ export interface CatalogueEntry {
   sortKey?: number;
   attribution?: string;
   publishedBy: string;
+  // ---- Classification facets (flat, so each filter is one indexed query; see classification.ts toCatalogueFacets)
+  classIds?: string[];
+  classMin?: number;
+  classMax?: number;
+  ageMin?: number;
+  ageMax?: number;
+  readingLevel?: string;
+  difficulty?: number;
+  genres?: string[];
+  ghanaianContext?: string;
 }
 
 export const CATALOGUE_ALLOWED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
   'storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers', 'level', 'categories',
   'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'hasNarration', 'hasActivities', 'packagePath',
   'packageHash', 'packageBytes', 'contentHash', 'publishedAt', 'updatedAt', 'sortKey', 'attribution', 'publishedBy',
+  'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'ghanaianContext',
 ];
 
 export const CATALOGUE_REQUIRED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [

@@ -17,7 +17,7 @@ Tests: `classification.test.ts` (39). Indexes (repo config, **not deployed**): `
 |---|---|---|
 | `schemaVersion` | `1` | |
 | `language` | `en` now; `ak`, `fat`, `ee`, `gaa`, `dag` reserved | reserved languages are **rejected** until a registry update marks them `supported` |
-| `classIds[]` | `nursery-1`, `nursery-2`, `kg-1`, `kg-2`, `primary-1`, `primary-2`, `primary-3` | 1–12; registry has an `order` so later primary classes append |
+| `classIds[]` | `nursery-1`, `nursery-2`, `kg-1`, `kg-2`, `primary-1` … `primary-6`, `jhs-1`, `jhs-2`, `jhs-3` | 1–16; registry has an `order` so later classes append |
 | `ageMin`, `ageMax` | integers 2–12 | recommended ages; independent of classes (a story can serve several age groups) |
 | `readingLevel` | `pre-reader`, `emergent`, `early`, `developing`, `fluent` | one primary level |
 | `difficulty` | 1–5 | concept and vocabulary load, separate from reading level |
@@ -76,3 +76,8 @@ Combinations outside this list (for example genre **and** class) are not offered
 * Whether `Nursery 1/2` map to Ghana's current "Crèche/Nursery" naming in all schools (ids are neutral; labels can change).
 * The `typicalAge` hints in the class registry are approximate planning aids used for warnings only; confirm against GES/NaCCA documents.
 * The thesaurus of themes/genres should be reviewed by teachers before real import; it is an easy append/rename.
+
+
+## Extension to JHS 3 (Stage 3, preview work)
+
+Classes now run Nursery 1 to JHS 3 (13 classes). A sixth reading level `proficient` was added, plus older-learner genres (realistic fiction, biography, science fiction, informational, drama, poetry), themes (identity, leadership, technology, careers, peer pressure, citizenship, health, money) and objectives (inference, critical thinking, summarising, author's purpose, figurative language, citizenship, money skills). `presentationFor(classIds)` derives how the reader presents a story from the OLDEST class it suits: early years (large text, listen default, playful controls), lower primary (follow default), upper primary and JHS (read-yourself default, compact controls, text-first layout, mature tone). Typical ages remain planning aids, not official statements.

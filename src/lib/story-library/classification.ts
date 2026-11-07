@@ -18,7 +18,7 @@ export interface SchoolClass {
   label: string;
   /** Position in the school ladder; used for ranges and ordering. Append higher numbers for later classes. */
   order: number;
-  stage: 'nursery' | 'kindergarten' | 'primary';
+  stage: 'nursery' | 'kindergarten' | 'primary' | 'jhs';
   /**
    * APPROXIMATE typical age range, used only to raise consistency WARNINGS against a story's recommended ages.
    * It is a planning aid, not an official statement: confirm against GES/NaCCA documents before relying on it.
@@ -34,6 +34,12 @@ export const CLASS_REGISTRY: readonly SchoolClass[] = [
   { id: 'primary-1', label: 'Primary 1', order: 5, stage: 'primary', typicalAge: [6, 7] },
   { id: 'primary-2', label: 'Primary 2', order: 6, stage: 'primary', typicalAge: [7, 8] },
   { id: 'primary-3', label: 'Primary 3', order: 7, stage: 'primary', typicalAge: [8, 9] },
+  { id: 'primary-4', label: 'Primary 4', order: 8, stage: 'primary', typicalAge: [9, 10] },
+  { id: 'primary-5', label: 'Primary 5', order: 9, stage: 'primary', typicalAge: [10, 11] },
+  { id: 'primary-6', label: 'Primary 6', order: 10, stage: 'primary', typicalAge: [11, 12] },
+  { id: 'jhs-1', label: 'JHS 1', order: 11, stage: 'jhs', typicalAge: [12, 13] },
+  { id: 'jhs-2', label: 'JHS 2', order: 12, stage: 'jhs', typicalAge: [13, 14] },
+  { id: 'jhs-3', label: 'JHS 3', order: 13, stage: 'jhs', typicalAge: [14, 15] },
 ];
 
 // ---------------------------------------------------------------------------------------------------- reading levels
@@ -45,6 +51,7 @@ export const READING_LEVELS: readonly ReadingLevel[] = [
   { id: 'early', label: 'Early reader', order: 3, description: 'Decodes simple sentences with support.' },
   { id: 'developing', label: 'Developing reader', order: 4, description: 'Reads short passages with growing fluency.' },
   { id: 'fluent', label: 'Fluent reader', order: 5, description: 'Reads independently with expression.' },
+  { id: 'proficient', label: 'Proficient reader', order: 6, description: 'Reads varied, longer texts; infers, compares and evaluates.' },
 ];
 
 // ----------------------------------------------------------------------------------------------------- genres & themes
@@ -58,6 +65,9 @@ export const GENRES: readonly Term[] = terms([
   ['moral', 'Moral story'], ['educational', 'Educational story'], ['historical', 'Historical story'], ['humour', 'Humour'],
   ['family', 'Family story'], ['friendship', 'Friendship story'], ['school-life', 'School-life story'], ['mystery', 'Mystery'],
   ['rhyme', 'Rhyme and poetry'],
+  // Older learners (upper primary and JHS)
+  ['realistic-fiction', 'Realistic fiction'], ['biography', 'Biography and real lives'], ['science-fiction', 'Science fiction'],
+  ['informational', 'Informational text'], ['drama', 'Drama and plays'], ['poetry', 'Poetry'],
 ]);
 
 export const THEMES: readonly Term[] = terms([
@@ -65,6 +75,9 @@ export const THEMES: readonly Term[] = terms([
   ['weather', 'Weather and seasons'], ['night-sky', 'Night sky'], ['helping-others', 'Helping others'], ['lost-and-found', 'Lost and found'],
   ['food', 'Food'], ['community', 'Community'], ['fear-and-courage', 'Fear and courage'], ['new-beginnings', 'New beginnings'],
   ['animals-and-habitats', 'Animals and habitats'], ['festivals', 'Festivals and celebrations'],
+  ['identity', 'Identity and growing up'], ['leadership', 'Leadership'], ['technology', 'Technology and invention'],
+  ['careers', 'Work and careers'], ['peer-pressure', 'Peer pressure and choices'], ['citizenship', 'Citizenship and community'],
+  ['health-and-wellbeing', 'Health and wellbeing'], ['money-and-enterprise', 'Money and enterprise'],
 ]);
 
 // ------------------------------------------------------------------------------------------------ educational objectives
@@ -91,6 +104,14 @@ export const OBJECTIVES: readonly Objective[] = [
   { id: 'environmental-awareness', label: 'Environmental awareness', domain: 'environment-science' },
   { id: 'scientific-curiosity', label: 'Scientific curiosity', domain: 'environment-science' },
   { id: 'cultural-heritage', label: 'Cultural heritage', domain: 'culture' },
+  // Older learners
+  { id: 'inference', label: 'Inference and reading between the lines', domain: 'literacy' },
+  { id: 'critical-thinking', label: 'Critical thinking', domain: 'numeracy-reasoning' },
+  { id: 'summarising', label: 'Summarising', domain: 'literacy' },
+  { id: 'author-purpose', label: "Author's purpose and viewpoint", domain: 'literacy' },
+  { id: 'figurative-language', label: 'Figurative language', domain: 'literacy' },
+  { id: 'citizenship', label: 'Citizenship', domain: 'values' },
+  { id: 'financial-literacy', label: 'Money and enterprise skills', domain: 'numeracy-reasoning' },
 ];
 
 // ------------------------------------------------------------------------------------------------------------ languages
@@ -192,7 +213,7 @@ export const DEFAULT_REGISTRIES: Registries = {
   classes: CLASS_REGISTRY, levels: READING_LEVELS, genres: GENRES, themes: THEMES, objectives: OBJECTIVES, languages: LANGUAGES, culturalTags: CULTURAL_TAGS,
 };
 
-export const LIMITS = { maxClasses: 12, maxGenres: 5, maxThemes: 5, maxObjectives: 8, maxCurriculum: 6, minAge: 2, maxAge: 12, maxDurationSec: 3600 } as const;
+export const LIMITS = { maxClasses: 16, maxGenres: 5, maxThemes: 5, maxObjectives: 8, maxCurriculum: 6, minAge: 2, maxAge: 16, maxDurationSec: 3600 } as const;
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const dupes = (a: unknown[]) => a.length !== new Set(a).size;
@@ -284,6 +305,10 @@ export function validateClassification(c: unknown, registries: Registries = DEFA
   if (lvl && lvl.order >= 4 && classIds.length) {
     const lowest = Math.min(...classIds.map((id) => registries.classes.find((x) => x.id === id)?.order ?? 99));
     if (lowest <= 2) warn('readingLevel', `${lvl.label} text for nursery classes is unusual`);
+  }
+  if (lvl && lvl.order <= 2 && classIds.length) {
+    const highest = Math.max(...classIds.map((id) => registries.classes.find((x) => x.id === id)?.order ?? 0));
+    if (highest >= 8) warn('readingLevel', `${lvl.label} text for ${registries.classes.find((x) => x.order === highest)?.label ?? 'older classes'} is unusual`);
   }
   if (lvl?.order === 1 && Number.isInteger(c.difficulty) && (c.difficulty as number) >= 4) warn('difficulty', 'a pre-reader story rated difficulty 4-5 is unusual');
   return out;
@@ -384,4 +409,39 @@ export function matchShape(f: CatalogueFilter): QueryShape | null {
   };
   const id = map[keys];
   return id ? CATALOGUE_QUERY_SHAPES.find((q) => q.id === id) ?? null : null;
+}
+
+
+// ------------------------------------------------------------------------------------------- age-appropriate presentation
+
+/**
+ * How the reader presents a story, derived from the OLDEST class the story suits. Older learners must not get a
+ * "baby" experience: smaller, denser text, no cartoon framing, reflective activities and a read-it-yourself default.
+ * These are product defaults the reader applies; a teacher or learner can still change the reading mode.
+ */
+export interface Presentation {
+  id: 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
+  label: string;
+  /** Multiplier on the base reading size. */
+  textScale: number;
+  defaultMode: 'listen' | 'follow' | 'solo';
+  /** Large, playful controls and big tap targets (early years) versus compact, calmer controls (JHS). */
+  controls: 'playful' | 'standard' | 'compact';
+  /** Words shown per screen is controlled by the story's pages; this is guidance for authors and the layout. */
+  layout: 'picture-first' | 'balanced' | 'text-first';
+  tone: string;
+}
+export const PRESENTATIONS: Record<Presentation['id'], Presentation> = {
+  'early-years': { id: 'early-years', label: 'Early years', textScale: 1.5, defaultMode: 'listen', controls: 'playful', layout: 'picture-first', tone: 'Warm, playful, lots of pictures and sound' },
+  'lower-primary': { id: 'lower-primary', label: 'Lower primary', textScale: 1.25, defaultMode: 'follow', controls: 'playful', layout: 'balanced', tone: 'Encouraging, with word help while learning to read' },
+  'upper-primary': { id: 'upper-primary', label: 'Upper primary', textScale: 1.1, defaultMode: 'solo', controls: 'standard', layout: 'balanced', tone: 'Confident, curious, story-driven' },
+  jhs: { id: 'jhs', label: 'Junior high', textScale: 1, defaultMode: 'solo', controls: 'compact', layout: 'text-first', tone: 'Mature and respectful; reflective and discussion-ready' },
+};
+
+export function presentationFor(classIds: string[], registries: Registries = DEFAULT_REGISTRIES): Presentation {
+  const top = classIds.map((id) => registries.classes.find((k) => k.id === id)).filter((k): k is SchoolClass => !!k).sort((a, b) => b.order - a.order)[0];
+  if (!top) return PRESENTATIONS['lower-primary'];
+  if (top.stage === 'jhs') return PRESENTATIONS.jhs;
+  if (top.stage === 'nursery' || top.stage === 'kindergarten') return PRESENTATIONS['early-years'];
+  return top.order <= 7 ? PRESENTATIONS['lower-primary'] : PRESENTATIONS['upper-primary'];
 }

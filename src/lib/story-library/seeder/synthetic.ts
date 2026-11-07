@@ -73,7 +73,7 @@ export function syntheticClassification(index: number): Classification {
   const classIds = index % 3 === 0 && next.order === cls.order + 1 ? [cls.id, next.id] : [cls.id];
   const ageMin = cls.typicalAge[0];
   const ageMax = classIds.length === 2 ? next.typicalAge[1] : cls.typicalAge[1];
-  const level = READING_LEVELS[Math.min(READING_LEVELS.length - 1, Math.max(0, Math.floor((cls.order - 1) * 5 / CLASS_REGISTRY.length)))];
+  const level = READING_LEVELS[Math.min(READING_LEVELS.length - 1, Math.max(0, Math.floor((cls.order - 1) * READING_LEVELS.length / CLASS_REGISTRY.length)))];
   return {
     schemaVersion: CLASSIFICATION_VERSION, language: 'en', classIds, ageMin, ageMax, readingLevel: level.id, difficulty: Math.min(5, 1 + (index % 4)),
     genres: [GENRES[index % GENRES.length].id], themes: [THEMES[index % THEMES.length].id],

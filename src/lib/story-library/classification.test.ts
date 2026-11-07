@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   CATALOGUE_QUERY_SHAPES, CLASS_REGISTRY, CLASSIFICATION_VERSION, DEFAULT_REGISTRIES, GENRES, LANGUAGES, OBJECTIVES, READING_LEVELS,
-  ageTiersFor, catalogueIndexes, errorsOf, matchShape, toCatalogueFacets, validateClassification, type Classification,
+  ageTiersFor, catalogueIndexes, presentationFor, errorsOf, matchShape, toCatalogueFacets, validateClassification, type Classification,
 } from './classification';
 
 const good = (over: Record<string, unknown> = {}): Classification => ({
@@ -16,8 +16,8 @@ const paths = (c: unknown) => errs(c).map((i) => i.path);
 
 describe('vocabulary', () => {
   it('has exactly the classes, reading levels and core genres/objectives the product owner listed', () => {
-    expect(CLASS_REGISTRY.map((c) => c.label)).toEqual(['Nursery 1', 'Nursery 2', 'KG 1', 'KG 2', 'Primary 1', 'Primary 2', 'Primary 3']);
-    expect(READING_LEVELS.map((l) => l.label)).toEqual(['Pre-reader', 'Emergent reader', 'Early reader', 'Developing reader', 'Fluent reader']);
+    expect(CLASS_REGISTRY.map((c) => c.label)).toEqual(['Nursery 1', 'Nursery 2', 'KG 1', 'KG 2', 'Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'JHS 1', 'JHS 2', 'JHS 3']);
+    expect(READING_LEVELS.map((l) => l.label)).toEqual(['Pre-reader', 'Emergent reader', 'Early reader', 'Developing reader', 'Fluent reader', 'Proficient reader']);
     for (const g of ['folktale', 'animal', 'adventure', 'bedtime', 'fantasy', 'science', 'nature', 'cultural', 'moral', 'educational', 'historical', 'humour'])
       expect(GENRES.map((x) => x.id)).toContain(g);
     for (const o of ['phonics', 'letter-recognition', 'vocabulary', 'reading-comprehension', 'sequencing', 'prediction', 'counting', 'reasoning', 'problem-solving',
@@ -84,12 +84,33 @@ describe('validateClassification', () => {
     });
   });
 
-  describe('classes are extensible', () => {
-    it('adding Primary 4 to the registry needs no other change', () => {
-      expect(paths(good({ classIds: ['primary-4'], ageMin: 9, ageMax: 10 }))).toContain('classIds');
-      const reg = { ...DEFAULT_REGISTRIES, classes: [...CLASS_REGISTRY, { id: 'primary-4', label: 'Primary 4', order: 8, stage: 'primary' as const, typicalAge: [9, 10] as [number, number] }] };
-      expect(errorsOf(validateClassification(good({ classIds: ['primary-4'], ageMin: 9, ageMax: 10 }), reg))).toEqual([]);
-      expect(toCatalogueFacets(good({ classIds: ['primary-3', 'primary-4'] }), reg).classMax).toBe(8);
+  describe('classes are extensible and cover Nursery to JHS 3', () => {
+    it('accepts upper primary and JHS classes with their ages', () => {
+      expect(errs(good({ classIds: ['primary-4'], ageMin: 9, ageMax: 10, readingLevel: 'fluent' }))).toEqual([]);
+      expect(errs(good({ classIds: ['jhs-1', 'jhs-2', 'jhs-3'], ageMin: 12, ageMax: 15, readingLevel: 'proficient', genres: ['biography'], themes: ['identity'], objectives: ['inference', 'critical-thinking'], ghanaianContext: 'none', culturalTags: [], narrationLocale: undefined }))).toEqual([]);
+      expect(toCatalogueFacets(good({ classIds: ['primary-6', 'jhs-1'], ageMin: 11, ageMax: 13 })).classMax).toBe(11);
+    });
+    it('warns when ages and class disagree for older classes, and for early-reader text at JHS', () => {
+      const w = (c: unknown) => validateClassification(c).filter((i) => i.severity === 'warning').map((i) => i.path);
+      expect(w(good({ classIds: ['jhs-3'], ageMin: 6, ageMax: 8 }))).toContain('classIds');
+      expect(w(good({ classIds: ['jhs-1'], ageMin: 12, ageMax: 13, readingLevel: 'emergent' }))).toContain('readingLevel');
+    });
+    it('a further class is still just an append to the registry', () => {
+      const reg = { ...DEFAULT_REGISTRIES, classes: [...CLASS_REGISTRY, { id: 'shs-1', label: 'SHS 1', order: 14, stage: 'jhs' as const, typicalAge: [15, 16] as [number, number] }] };
+      expect(errorsOf(validateClassification(good({ classIds: ['shs-1'], ageMin: 15, ageMax: 16, readingLevel: 'proficient' }), reg))).toEqual([]);
+    });
+  });
+
+  describe('age-appropriate presentation', () => {
+    it('is derived from the oldest class and gets more mature with age', () => {
+      expect(presentationFor(['nursery-1', 'kg-1']).id).toBe('early-years');
+      expect(presentationFor(['kg-2', 'primary-1']).id).toBe('lower-primary');
+      expect(presentationFor(['primary-3', 'primary-4']).id).toBe('upper-primary');
+      expect(presentationFor(['primary-6', 'jhs-1']).id).toBe('jhs');
+      expect(presentationFor(['jhs-2']).defaultMode).toBe('solo');
+      expect(presentationFor(['nursery-2']).defaultMode).toBe('listen');
+      expect(presentationFor(['jhs-1']).textScale).toBeLessThan(presentationFor(['kg-1']).textScale);
+      expect(presentationFor(['nope']).id).toBe('lower-primary');
     });
   });
 

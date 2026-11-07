@@ -11,10 +11,41 @@
  * Opening a story costs no Firestore read at all: the package and media come from Storage.
  */
 import { MAX_CATALOGUE_PAGE_SIZE, type CatalogueEntry } from './types';
+import type { CatalogueFilter } from './classification';
+
+/**
+ * A browsing filter is a string key so cached pages can be stored per filter. 'all' = none; a bare value such as
+ * '5-6' is the legacy age-tier filter; 'f:classId=kg-1&readingLevel=emergent' is a classification filter (one indexed
+ * query shape, see classification.ts matchShape).
+ */
+export function filterKey(f: CatalogueFilter & { ageTier?: string }): string {
+  const parts = (Object.keys(f) as Array<keyof typeof f>).filter((k) => f[k] !== undefined && f[k] !== '').sort().map((k) => `${k}=${f[k]}`);
+  if (!parts.length) return 'all';
+  if (parts.length === 1 && parts[0].startsWith('ageTier=')) return parts[0].slice(8);
+  return `f:${parts.join('&')}`;
+}
+export function parseFilterKey(key: string): CatalogueFilter & { ageTier?: string } {
+  if (key === 'all') return {};
+  if (!key.startsWith('f:')) return { ageTier: key };
+  return Object.fromEntries(key.slice(2).split('&').map((kv) => { const i = kv.indexOf('='); return [kv.slice(0, i), kv.slice(i + 1)]; }));
+}
+/** Does an entry belong in the filtered list? Mirrors what the server-side query selects. */
+export function matchesFilter(e: CatalogueEntry, key: string): boolean {
+  const f = parseFilterKey(key);
+  if (f.ageTier && !e.ageTiers.includes(f.ageTier)) return false;
+  if (f.classId && !(e.classIds ?? []).includes(f.classId)) return false;
+  if (f.readingLevel && e.readingLevel !== f.readingLevel) return false;
+  if (f.language && e.language !== f.language) return false;
+  if (f.ghanaianContext && e.ghanaianContext !== f.ghanaianContext) return false;
+  if (f.genre && !(e.genres ?? []).includes(f.genre)) return false;
+  if (f.objective && !(e.objectives ?? []).includes(f.objective)) return false;
+  if (f.theme && !(e.themes ?? []).includes(f.theme)) return false;
+  return true;
+}
 
 export interface CatalogueBackend {
   getMeta(): Promise<{ catalogueVersion: number }>;
-  listPage(o: { limit: number; startAfter?: string; ageTier?: string }): Promise<CatalogueEntry[]>;
+  listPage(o: { limit: number; startAfter?: string; ageTier?: string; filter?: CatalogueFilter }): Promise<CatalogueEntry[]>;
   listChangedSince(o: { since: number; limit: number; startAfter?: string }): Promise<CatalogueEntry[]>;
 }
 
@@ -81,7 +112,7 @@ export class CatalogueClient {
       let tailGrew = false; // a new entry sorts after everything cached
       const byId = new Map(changed.map((e) => [e.storyKey, e]));
       for (const e of changed) {
-        const inFilter = f === 'all' || e.ageTiers.includes(f);
+        const inFilter = f === 'all' || matchesFilter(e, f);
         const had = cachedIds.has(e.storyKey);
         const leaves = e.status !== 'published' || !inFilter;
         if (had && !leaves) continue; // replaced below
@@ -113,7 +144,8 @@ export class CatalogueClient {
       if (hit) { if (i === index) return hit.entries; continue; }
       const prev = i > 0 ? this.kv.get<CachedPage>(this.pk(filter, i - 1)) : undefined;
       if (i > 0 && prev?.exhausted) return [];
-      const entries = await this.backend.listPage({ limit: this.opts.pageSize, startAfter: prev?.lastId, ageTier: filter === 'all' ? undefined : filter });
+      const pf = parseFilterKey(filter);
+      const entries = await this.backend.listPage({ limit: this.opts.pageSize, startAfter: prev?.lastId, ...(pf.ageTier ? { ageTier: pf.ageTier } : {}), ...(Object.keys(pf).some((k) => k !== 'ageTier') ? { filter: pf } : {}) });
       const page: CachedPage = { entries, lastId: entries.length ? entries[entries.length - 1].storyKey : prev?.lastId, exhausted: entries.length < this.opts.pageSize };
       this.kv.set(key, page);
       if (i === index) return entries;
@@ -168,9 +200,9 @@ export class SimulatedCatalogue implements CatalogueBackend {
   private bill(n: number) { this.counters.reads += Math.max(1, n); this.counters.queries++; this.counters.rulesReads += this.rulesReadsPerRequest; }
   private cap(limit: number) { if (limit > MAX_CATALOGUE_PAGE_SIZE) throw new Error('rules refuse list limits above 50'); }
   async getMeta() { this.bill(1); return { catalogueVersion: this.catalogueVersion }; }
-  async listPage(o: { limit: number; startAfter?: string; ageTier?: string }) {
+  async listPage(o: { limit: number; startAfter?: string; ageTier?: string; filter?: CatalogueFilter }) {
     this.cap(o.limit);
-    const rows = this.entries.filter((e) => e.status === 'published' && (!o.ageTier || e.ageTiers.includes(o.ageTier)) && (!o.startAfter || e.storyKey > o.startAfter)).slice(0, o.limit);
+    const rows = this.entries.filter((e) => e.status === 'published' && matchesFilter(e, filterKey({ ...(o.filter ?? {}), ...(o.ageTier ? { ageTier: o.ageTier } : {}) })) && (!o.startAfter || e.storyKey > o.startAfter)).slice(0, o.limit);
     this.bill(rows.length);
     return structuredClone(rows);
   }
