@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,13 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
     const juniorSchoolId = useJuniorSchoolId();
     const { toast } = useToast();
     const { schoolId } = useCurrentSchool();
+    // ONE school id for everything this component does: where the cover is stored, which school the story
+    // document belongs to, and which school's credits are charged. (Before, these three could disagree.)
+    const ownerSchoolId = juniorSchoolId || schoolId || null;
+    // A saved story whose cover picture could not be stored yet. The picture is kept here so it can be
+    // uploaded again later WITHOUT regenerating the story or spending credits.
+    const [pendingCover, setPendingCover] = useState<{ docId: string; dataUrl: string; title: string } | null>(null);
+    const [retryingCover, setRetryingCover] = useState(false);
     
     const TODDLER_STORY = useMemo(() => ({
       title: "The Happy Little Puppy 🐶",
@@ -174,14 +181,14 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
         setLoading(true); 
         try {
             // Pass the target word count to the AI flow
-            const res = await generateJuniorStory({ topic, context, wordCount: parseInt(targetWordCount), schoolId: schoolId || '' }); 
+            const res = await generateJuniorStory({ topic, context, wordCount: parseInt(targetWordCount), schoolId: ownerSchoolId || '' }); 
             if (res.success && res.data) {
                 let imageUrl = '';
 
                 try {
                     const imgRes = await generateLessonImageAction({
                         prompt: `A cute 3D Pixar-style digital illustration of a children's storybook scene depicting: ${res.data.title}. Bright colors, soft lighting, friendly characters, highly detailed.`,
-                        schoolId: schoolId || ''
+                        schoolId: ownerSchoolId || ''
                     });
                     if (imgRes.success && imgRes.data) {
                         imageUrl = imgRes.data;
@@ -234,43 +241,50 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
         return val;
     };
 
+    /** Uploads a base64 cover under the owning school's folder; returns the download URL or null. */
+    const uploadCover = async (dataUrl: string): Promise<string | null> => {
+        const coverPath = user ? buildStoryCoverPath(ownerSchoolId, user.uid) : null;
+        if (!coverPath) return null;
+        try {
+            const { getStorage, ref: storageRef, uploadString, getDownloadURL } = await import('firebase/storage');
+            const snapshot = await uploadString(storageRef(getStorage(), coverPath), dataUrl, 'data_url');
+            return await getDownloadURL(snapshot.ref);
+        } catch (storageErr) {
+            console.error("Firebase Storage upload failed:", storageErr);
+            return null;
+        }
+    };
+
     const handleSave = async () => { 
         if (!user || !story || !firestore) return; 
-        
-        let cleanStory = sanitizeForFirestore(story);
+        if (!ownerSchoolId) {
+            toast({
+                title: "Can't save yet",
+                description: "We couldn't work out which school this story belongs to. Please reload the page or contact your administrator.",
+                variant: "destructive",
+            });
+            return;
+        }
 
-        // If the cover image is a base64 string, upload it to Firebase Storage first to avoid Firestore 1MB limit crash.
-        // The path must sit under schools/{schoolId}/ — storage.rules denies every other folder, which is why
-        // covers used to vanish when saving. If the picture can't be stored we still save the story, but we say so.
+        let cleanStory = sanitizeForFirestore(story);
+        let pendingDataUrl: string | null = null;
+
+        // A base64 cover must not go into Firestore (1MB limit); upload it to Storage first.
         if (cleanStory.imageUrl && cleanStory.imageUrl.startsWith('data:')) {
-            const coverPath = buildStoryCoverPath(juniorSchoolId || schoolId, user.uid);
-            let stored = false;
-            if (coverPath) {
-                try {
-                    toast({ title: "Saving Story...", description: "Uploading cover illustration..." });
-                    const { getStorage, ref: storageRef, uploadString, getDownloadURL } = await import('firebase/storage');
-                    const snapshot = await uploadString(storageRef(getStorage(), coverPath), cleanStory.imageUrl, 'data_url');
-                    cleanStory.imageUrl = await getDownloadURL(snapshot.ref);
-                    stored = true;
-                } catch (storageErr) {
-                    console.error("Firebase Storage upload failed:", storageErr);
-                }
-            }
-            if (!stored) {
-                // Clear the base64 data so the Firestore document can't exceed its size limit.
+            toast({ title: "Saving Story...", description: "Uploading cover illustration..." });
+            const url = await uploadCover(cleanStory.imageUrl);
+            if (url) {
+                cleanStory.imageUrl = url;
+            } else {
+                pendingDataUrl = cleanStory.imageUrl;
                 cleanStory.imageUrl = '';
-                toast({
-                    title: "Saved without the picture",
-                    description: "The story will be saved, but its cover illustration could not be stored. You can generate the story again to get a new picture.",
-                    variant: "destructive",
-                });
             }
         }
         
         try {
-            await addDoc(collection(firestore, 'junior_stories'), { 
+            const ref = await addDoc(collection(firestore, 'junior_stories'), { 
                 ...cleanStory, 
-                ...juniorStamp(juniorSchoolId),
+                ...juniorStamp(ownerSchoolId),
                 topic, 
                 wordCount: view.fullText.split(/\s+/).filter(Boolean).length || 0,
                 createdAt: serverTimestamp(), 
@@ -278,7 +292,17 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
             }); 
             setStory(null); 
             forceRefetch(); 
-            toast({ title: "Story Saved!", description: "Saved successfully to your library." }); 
+            if (pendingDataUrl) {
+                setPendingCover({ docId: ref.id, dataUrl: pendingDataUrl, title: cleanStory.title || 'Your story' });
+                toast({
+                    title: "Story saved — picture missing",
+                    description: "The story is in your library, but its cover picture was not stored. Use “Retry picture upload” — no credits are spent.",
+                    variant: "destructive",
+                });
+            } else {
+                setPendingCover(null);
+                toast({ title: "Story Saved!", description: "Saved successfully to your library, with its picture." }); 
+            }
         } catch (dbErr: any) {
             console.error("Firestore save failed:", dbErr);
             toast({ 
@@ -286,6 +310,31 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
                 description: dbErr.message || "Failed to save story to library.",
                 variant: "destructive"
             });
+        }
+    };
+
+    /** Re-tries only the picture upload for an already-saved story. Never calls an AI flow, so no credits. */
+    const handleRetryCover = async () => {
+        if (!pendingCover || !firestore) return;
+        setRetryingCover(true);
+        try {
+            const url = await uploadCover(pendingCover.dataUrl);
+            if (!url) {
+                toast({ title: "Picture still not saved", description: "Please check your connection and try again. Your story is safe.", variant: "destructive" });
+                return;
+            }
+            try {
+                await updateDoc(doc(firestore, 'junior_stories', pendingCover.docId), { imageUrl: url });
+            } catch (dbErr: any) {
+                console.error("Cover link update failed:", dbErr);
+                toast({ title: "Picture uploaded but not linked", description: dbErr.message || "Please try again.", variant: "destructive" });
+                return;
+            }
+            setPendingCover(null);
+            forceRefetch();
+            toast({ title: "Picture added!", description: "The story now has its cover illustration." });
+        } finally {
+            setRetryingCover(false);
         }
     };
 
@@ -413,7 +462,7 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
             setExplorerLoading(true);
             
             try {
-                const detailRes = await generateWordDetails({ word: cleanWord, schoolId: schoolId || '' });
+                const detailRes = await generateWordDetails({ word: cleanWord, schoolId: ownerSchoolId || '' });
                 if (detailRes.success && detailRes.data) {
                     setExploredWord(detailRes.data);
                 } else {
@@ -507,6 +556,18 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
                             </Button>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {pendingCover && (
+                <div role="alert" data-testid="cover-pending" className="rounded-2xl border-2 border-amber-400 bg-amber-50 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                    <p className="flex-1 text-sm font-semibold text-amber-900">
+                        “{pendingCover.title}” was saved, but its cover picture was not. Your story is safe in the library.
+                    </p>
+                    <Button onClick={handleRetryCover} disabled={retryingCover} className="bg-amber-500 hover:bg-amber-600 font-bold">
+                        {retryingCover ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null} Retry picture upload
+                    </Button>
+                    <Button variant="ghost" onClick={() => setPendingCover(null)}>Dismiss</Button>
                 </div>
             )}
 

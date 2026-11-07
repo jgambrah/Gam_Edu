@@ -9,6 +9,7 @@ const h = vi.hoisted(() => ({
   currentSchoolId: 'school1' as string | null,
   toast: vi.fn(),
   addDoc: vi.fn(),
+  updateDoc: vi.fn(),
   uploadString: vi.fn(),
   getDownloadURL: vi.fn(),
   generateJuniorStory: vi.fn(),
@@ -24,6 +25,8 @@ vi.mock('@/context/role-context', () => ({ useRole: () => ({ role: 'Teacher' }) 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(() => ({})),
   addDoc: (...a: any[]) => h.addDoc(...a),
+  updateDoc: (...a: any[]) => h.updateDoc(...a),
+  doc: (_db: any, ...p: string[]) => ({ path: p.join('/') }),
   serverTimestamp: () => 'SERVER_TS',
 }));
 vi.mock('firebase/storage', () => ({
@@ -104,6 +107,7 @@ beforeEach(() => {
   h.juniorSchoolId = 'school1';
   h.currentSchoolId = 'school1';
   h.addDoc.mockResolvedValue({ id: 'new' });
+  h.updateDoc.mockResolvedValue(undefined);
   h.uploadString.mockImplementation(async (r: any) => ({ ref: r }));
   h.getDownloadURL.mockResolvedValue('https://storage.example/cover.png?token=abc');
   vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
@@ -338,10 +342,12 @@ describe('Story Spark — saving a generated story with its cover illustration',
 
     await waitFor(() => expect(h.addDoc).toHaveBeenCalledTimes(1));
     expect(h.addDoc.mock.calls[0][1].imageUrl).toBe('');
-    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Saved without the picture', variant: 'destructive' }));
+    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Story saved — picture missing', variant: 'destructive' }));
+    expect(screen.getByTestId('cover-pending')).toBeInTheDocument();
+    expect(h.toast).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Story Saved!' }));
   });
 
-  it('does not attempt an upload when there is no school to file the picture under', async () => {
+  it('refuses to save (no upload, no document) when no school can be resolved', async () => {
     h.juniorSchoolId = null;
     h.currentSchoolId = null;
     const user = userEvent.setup();
@@ -349,10 +355,74 @@ describe('Story Spark — saving a generated story with its cover illustration',
     await generate(user);
     await user.click(screen.getByRole('button', { name: /Save to Library/ }));
 
-    await waitFor(() => expect(h.addDoc).toHaveBeenCalledTimes(1));
+    expect(h.addDoc).not.toHaveBeenCalled();
     expect(h.uploadString).not.toHaveBeenCalled();
-    expect(h.addDoc.mock.calls[0][1].imageUrl).toBe('');
-    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Saved without the picture' }));
+    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: "Can't save yet", variant: 'destructive' }));
+  });
+
+  it('uses ONE school for the cover path, the document and the credit charges, even when the two hooks disagree', async () => {
+    h.juniorSchoolId = null;       // page context has nothing…
+    h.currentSchoolId = 'schoolX'; // …but this component resolved a school
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await generate(user);
+    await user.click(screen.getByRole('button', { name: /Save to Library/ }));
+    await waitFor(() => expect(h.addDoc).toHaveBeenCalledTimes(1));
+
+    expect(h.uploadString.mock.calls[0][0].fullPath).toMatch(/^schools\/schoolX\//);
+    expect(h.addDoc.mock.calls[0][1].schoolId).toBe('schoolX');
+    expect(h.generateJuniorStory.mock.calls[0][0].schoolId).toBe('schoolX');
+    expect(h.generateLessonImageAction.mock.calls[0][0].schoolId).toBe('schoolX');
+  });
+
+  it('prefers the page school when both exist, for all three uses', async () => {
+    h.juniorSchoolId = 'schoolP';
+    h.currentSchoolId = 'schoolQ';
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await generate(user);
+    await user.click(screen.getByRole('button', { name: /Save to Library/ }));
+    await waitFor(() => expect(h.addDoc).toHaveBeenCalledTimes(1));
+    expect(h.uploadString.mock.calls[0][0].fullPath).toMatch(/^schools\/schoolP\//);
+    expect(h.addDoc.mock.calls[0][1].schoolId).toBe('schoolP');
+    expect(h.generateJuniorStory.mock.calls[0][0].schoolId).toBe('schoolP');
+  });
+
+  it('retries only the picture after a failed upload: no new story, no AI calls (no credits), document gets the URL', async () => {
+    h.uploadString.mockRejectedValueOnce(new Error('offline'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await generate(user);
+    await user.click(screen.getByRole('button', { name: /Save to Library/ }));
+    await waitFor(() => expect(screen.getByTestId('cover-pending')).toBeInTheDocument());
+
+    const storiesGenerated = h.generateJuniorStory.mock.calls.length;
+    const imagesGenerated = h.generateLessonImageAction.mock.calls.length;
+    await user.click(screen.getByRole('button', { name: /Retry picture upload/ }));
+
+    await waitFor(() => expect(h.updateDoc).toHaveBeenCalledTimes(1));
+    expect(h.updateDoc.mock.calls[0][0]).toEqual({ path: 'junior_stories/new' });
+    expect(h.updateDoc.mock.calls[0][1]).toEqual({ imageUrl: 'https://storage.example/cover.png?token=abc' });
+    expect(h.addDoc).toHaveBeenCalledTimes(1);
+    expect(h.generateJuniorStory.mock.calls.length).toBe(storiesGenerated);
+    expect(h.generateLessonImageAction.mock.calls.length).toBe(imagesGenerated);
+    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Picture added!' }));
+    expect(screen.queryByTestId('cover-pending')).not.toBeInTheDocument();
+  });
+
+  it('keeps the retry offer when the retry also fails', async () => {
+    h.uploadString.mockRejectedValue(new Error('offline'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await generate(user);
+    await user.click(screen.getByRole('button', { name: /Save to Library/ }));
+    await waitFor(() => expect(screen.getByTestId('cover-pending')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: /Retry picture upload/ }));
+    await waitFor(() => expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Picture still not saved' })));
+    expect(h.updateDoc).not.toHaveBeenCalled();
+    expect(screen.getByTestId('cover-pending')).toBeInTheDocument();
   });
 
   it('keeps a generated story without a cover picture saveable (no upload, no warning)', async () => {
@@ -370,7 +440,8 @@ describe('Story Spark — saving a generated story with its cover illustration',
 
     await waitFor(() => expect(h.addDoc).toHaveBeenCalledTimes(1));
     expect(h.uploadString).not.toHaveBeenCalled();
-    expect(h.toast).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Saved without the picture' }));
+    expect(h.toast).not.toHaveBeenCalledWith(expect.objectContaining({ title: 'Story saved — picture missing' }));
+    expect(screen.queryByTestId('cover-pending')).not.toBeInTheDocument();
   });
 });
 
