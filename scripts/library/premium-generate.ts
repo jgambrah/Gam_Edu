@@ -51,13 +51,15 @@ const worst = imageJobs.length * IMAGE_UPPER_USD + ttsJobs.reduce((n, j) => n + 
 
 console.log(`Plan: ${imageJobs.length} images (worst case $${(imageJobs.length * IMAGE_UPPER_USD).toFixed(2)}), ${ttsJobs.length} TTS clips (worst case $${ttsJobs.reduce((n, j) => n + j.seconds * TTS_UPPER_USD_PER_SECOND, 0).toFixed(3)}). Total worst case $${worst.toFixed(2)} against a $${ceiling} ceiling.`);
 if (worst > ceiling) { console.error('Refusing: worst-case estimate exceeds the ceiling.'); process.exit(2); }
-if (process.argv.includes('--list-models')) {
+const listMode = process.argv.includes('--list-models');
+if (listMode) {
   // Free call: lists the models this key can use, so you can copy the exact image and TTS model ids. Spends nothing.
   if (!process.env.GEMINI_API_KEY) { console.error('GEMINI_API_KEY is not set.'); process.exit(3); }
   fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY } })
     .then((r) => r.json()).then((j: any) => (j.models ?? []).filter((m: any) => /image|tts|imagen/i.test(m.name)).forEach((m: any) => console.log(m.name.replace('models/', ''), '-', m.displayName)))
     .catch((e) => { console.error('could not list models:', e.message); process.exit(5); });
-} else
+}
+if (!listMode) { // list mode must not fall through to the generation checks while its fetch is still pending
 if (!approve) { console.log('Dry run only. Nothing was called or written. Re-run with --approve-spend (and GEMINI_API_KEY) to generate.'); process.exit(0); }
 if (!process.env.GEMINI_API_KEY) { console.error('GEMINI_API_KEY is not set: cannot make paid calls.'); process.exit(3); }
 if (!imageModel) { console.error('--image-model is required (verify the current model id on Google’s pricing page first).'); process.exit(4); }
@@ -96,3 +98,4 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
   writeFileSync(path.join(out, 'manifest.json'), JSON.stringify(manifest, null, 2));
   console.log(`Done. Recorded spend (upper bound) $${spentOrReservedUsd(ledger).toFixed(3)} of $${ceiling}.`);
 })();
+} // end !listMode
