@@ -410,8 +410,8 @@ export async function rollbackJob(b: SeedBackend, jobId: string): Promise<Rollba
       const keys = bandKeys(sig);
       if (data.outcome === 'created') {
         const buckets = await loadBuckets(tx, keys);
+        const t = await tx.get(textIndexPath(admin.fingerprints?.textHash)); // all reads before any write
         indexRemove(buckets, id, sig); flushBuckets(tx, buckets);
-        const t = await tx.get(textIndexPath(admin.fingerprints?.textHash));
         if (t?.storyKey === id) tx.delete(textIndexPath(admin.fingerprints.textHash));
         tx.delete(adminPath(id));
         mark('rolled_back');

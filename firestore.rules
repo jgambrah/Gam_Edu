@@ -120,12 +120,22 @@ service cloud.firestore {
         );
       // Only an unpublished draft can be deleted; anything that has been approved or published is kept.
       allow delete: if isStoryPublisher() && resource.data.status == 'draft';
+
+      // New versions of a story that is already past draft are staged here by the server-side seeder. Publishers can
+      // read them; promoting one is a deliberate server-side step, so no client writes.
+      match /pending_versions/{version} {
+        allow read: if isStoryPublisher();
+        allow write: if false;
+      }
     }
 
     // Resumable seeding state (Stage 2).
+    // Seeding bookkeeping (job records, per-story items, the duplicate index) is written ONLY by the server-side seeder
+    // (Admin SDK, which bypasses rules). Publishers may read job and item records; no client may write them.
     match /library_seed_jobs/{jobId} {
-      allow read, write: if isStoryPublisher();
-      match /items/{item} { allow read, write: if isStoryPublisher(); }
+      allow read: if isStoryPublisher();
+      allow write: if false;
+      match /items/{item} { allow read: if isStoryPublisher(); allow write: if false; }
     }
 
     // Audit logs for system actions

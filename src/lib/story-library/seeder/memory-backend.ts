@@ -41,7 +41,8 @@ export class MemoryBackend implements SeedBackend {
       const tx: Tx = {
         get: async (path) => {
           await this.tick();
-          if (buffer.has(path)) { const b = buffer.get(path); return b ? structuredClone(b) : undefined; }
+          // Firestore transactions refuse reads after writes; enforce it here so the unit tests prove the seeder complies.
+          if (buffer.size > 0) throw new Error('Firestore transactions require all reads before any write');
           this.stats.docReads++;
           const d = this.docs.get(path);
           seen.set(path, d?.ver ?? 0);

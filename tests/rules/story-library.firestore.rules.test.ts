@@ -295,13 +295,30 @@ describe('super admins are bound by the same workflow (they are publishers, not 
 });
 
 describe('library_seed_jobs', () => {
-  it('publishers read and write; everyone else is refused', async () => {
-    await assertSucceeds(setDoc(doc(db('publisher1'), 'library_seed_jobs/job1'), { state: 'running' }));
-    await assertSucceeds(setDoc(doc(db('publisher1'), 'library_seed_jobs/job1/items/key-1'), { state: 'done' }));
+  it('publishers can READ job records; nobody can write them from a client; everyone else cannot read', async () => {
+    await seed('library_seed_jobs/job1', { state: 'running' });
+    await seed('library_seed_jobs/job1/items/key-1', { state: 'done' });
+    for (const who of PUBLISHERS) {
+      await assertSucceeds(getDoc(doc(db(who), 'library_seed_jobs/job1')));
+      await assertSucceeds(getDoc(doc(db(who), 'library_seed_jobs/job1/items/key-1')));
+      await assertFails(setDoc(doc(db(who), 'library_seed_jobs/job2'), { state: 'x' }));
+      await assertFails(setDoc(doc(db(who), 'library_seed_jobs/job1/items/key-1'), { state: 'forged' }));
+      await assertFails(deleteDoc(doc(db(who), 'library_seed_jobs/job1')));
+    }
     for (const who of NON_PUBLISHERS) {
       await verdict(false)(getDoc(doc(db(who), 'library_seed_jobs/job1')));
       await verdict(false)(setDoc(doc(db(who), 'library_seed_jobs/job2'), { state: 'x' }));
     }
+  });
+
+  it('pending versions staged by the seeder: publishers read, nobody writes from a client, others cannot read', async () => {
+    await seed('story_library_admin/story_pub/pending_versions/2', { status: 'draft', storyKey: 'key' });
+    for (const who of PUBLISHERS) {
+      await assertSucceeds(getDoc(doc(db(who), 'story_library_admin/story_pub/pending_versions/2')));
+      await assertFails(setDoc(doc(db(who), 'story_library_admin/story_pub/pending_versions/3'), { status: 'draft' }));
+      await assertFails(setDoc(doc(db(who), 'story_library_admin/story_pub/pending_versions/2'), { status: 'approved' }));
+    }
+    for (const who of NON_PUBLISHERS) await verdict(false)(getDoc(doc(db(who), 'story_library_admin/story_pub/pending_versions/2')));
   });
 });
 
