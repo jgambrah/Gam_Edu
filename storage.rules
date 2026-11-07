@@ -1,16 +1,214 @@
 rules_version = '2';
+
+// =====================================================================================================
+// GAM EDU — Cloud Storage rules (school-scoped, least privilege)
+//
+// WHY THIS CHANGED
+//   The old rule `match /schools/{schoolId}/{allPaths=**} { allow read, write: if request.auth != null; }`
+//   let ANY signed-in user read, overwrite or delete ANY school's files by changing the school id in a path.
+//   Every path below now requires verified membership of THAT school, and the role the path needs.
+//
+// HOW MEMBERSHIP IS DECIDED
+//   From Firestore, not from token claims: users/{uid}.schoolId (written by create-user for every account the
+//   app creates) or staff/{uid}.schoolId. Nothing in this repo ever sets a `schoolId` custom claim, and a stale
+//   claim would wrongly grant access to a school the person has left, so claims are deliberately NOT trusted.
+//   Platform super admins are recognised exactly as in firestore.rules.
+//
+// LIMITS TO KNOW (https://firebase.blog/posts/2022/09/announcing-cross-service-security-rules)
+//   * A rule may read at most TWO distinct Firestore documents. Repeated reads of one document are cached.
+//     Every rule below touches at most users/{uid} + staff/{uid} (or one direct_messages doc), so it fits.
+//   * Each rule evaluation that reads Firestore is billed as a Firestore read, even when it is denied.
+//   * The first publish needs a one-time permission grant for the Storage service account (CLI/console prompt).
+//
+// WHAT RULES CANNOT PROTECT
+//   Files already shared as download URLs (`...?alt=media&token=...`, as stored on student, website and
+//   attendance records) are readable by anyone holding the URL, whatever these rules say. Tightening these
+//   rules does not break those links, and it also cannot revoke them.
+//
+// Anything not matched below is denied.
+// =====================================================================================================
 service firebase.storage {
   match /b/{bucket}/o {
-    // School-specific assets like logos and student photos
-    match /schools/{schoolId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null; 
+
+    // ------------------------------------------------------------------ identity helpers
+    function signedIn() { return request.auth != null; }
+
+    // Mirrors isSuperAdmin() in firestore.rules.
+    function isSuperAdmin() {
+      return signedIn() && (
+        ('role' in request.auth.token && request.auth.token.role == 'super_admin') ||
+        request.auth.uid == "L4oE5XWweKRYrhtIXn6hB8IDHBC2" ||
+        request.auth.uid == "gZxe3nMbGcQhNgEzkwEZwDBnkFR2" ||
+        request.auth.uid == "7GVi5qCxC4YDnjKkjVwSjAYtQz73" ||
+        ('email' in request.auth.token && request.auth.token.email in ["jamesgambrah@gmail.com", "atampokaadongo@gmail.com"])
+      );
     }
-    
-    // Digital signatures - only the owner can upload/delete
+
+    // ------------------------------------------------------------------ school membership (Firestore-backed)
+    function inUsersDoc(schoolId) {
+      return firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('schoolId', '') == schoolId;
+    }
+    function inStaffDoc(schoolId) {
+      return firestore.exists(/databases/(default)/documents/staff/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/staff/$(request.auth.uid)).data.get('schoolId', '') == schoolId;
+    }
+    function inStudentsDoc(schoolId) {
+      return firestore.exists(/databases/(default)/documents/students/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/students/$(request.auth.uid)).data.get('schoolId', '') == schoolId;
+    }
+    // Staff-side membership (users + staff documents).
+    function memberOf(schoolId) {
+      return signedIn() && schoolId != '' && (isSuperAdmin() || inUsersDoc(schoolId) || inStaffDoc(schoolId));
+    }
+    // Pupil-side membership (users + students documents). Only used where a pupil acts on their own folder.
+    function pupilOf(schoolId) {
+      return signedIn() && schoolId != '' && (inUsersDoc(schoolId) || inStudentsDoc(schoolId));
+    }
+
+    // ------------------------------------------------------------------ role helpers (staff doc first, as in firestore.rules)
+    function roleName() {
+      return firestore.exists(/databases/(default)/documents/staff/$(request.auth.uid))
+        ? firestore.get(/databases/(default)/documents/staff/$(request.auth.uid)).data.get('role', '')
+        : (firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
+            ? firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('role', '')
+            : '');
+    }
+    // Same list as isAdmin() in firestore.rules.
+    function isAdminRole() {
+      return roleName() in ['Director', 'Administrator', 'Admin', 'administrator', 'director', 'admin', 'Principal',
+                            'Headmaster', 'Headmistress', 'Head Teacher', 'Registrar', 'Admissions', 'Owner'];
+    }
+    function isPupilOrParentRole() {
+      return roleName() in ['Student', 'student', 'Parent', 'parent'];
+    }
+    // Administrator of THAT school (or a platform super admin).
+    function isSchoolAdmin(schoolId) {
+      return isSuperAdmin() || (memberOf(schoolId) && isAdminRole());
+    }
+    // Any member of THAT school who is neither a pupil nor a parent and has a recorded role.
+    function isSchoolStaff(schoolId) {
+      return isSuperAdmin() || (memberOf(schoolId) && roleName() != '' && !isPupilOrParentRole());
+    }
+
+    // ------------------------------------------------------------------ content checks
+    function sizeOk() { return request.resource.size < 100 * 1024 * 1024; }          // 100 MB ceiling
+    function isImage() { return request.resource.contentType.matches('image/.*'); }
+
+    // =================================================================== schools/{schoolId}/…
+
+    // School logo. Image only. Admin writes (school-profile page).
+    match /schools/{schoolId}/assets/{allPaths=**} {
+      allow read: if memberOf(schoolId);
+      allow create, update: if isSchoolAdmin(schoolId) && isImage() && sizeOk();
+      allow delete: if isSchoolAdmin(schoolId);
+    }
+
+    // Public-website media. Image only. Admin writes (website-builder page).
+    match /schools/{schoolId}/website/{allPaths=**} {
+      allow read: if memberOf(schoolId);
+      allow create, update: if isSchoolAdmin(schoolId) && isImage() && sizeOk();
+      allow delete: if isSchoolAdmin(schoolId);
+    }
+
+    // Pupil profile photo (students-v3, id-cards). Staff write; staff and the pupil themself read.
+    match /schools/{schoolId}/students/{studentId}/profile_pic {
+      allow read: if isSchoolStaff(schoolId) || (request.auth.uid == studentId && pupilOf(schoolId));
+      allow create, update: if isSchoolStaff(schoolId) && isImage() && sizeOk();
+      allow delete: if isSchoolStaff(schoolId);
+    }
+
+    // Pupil journey / timeline attachments (StudentJourneyTimeline). Staff only.
+    match /schools/{schoolId}/students/{studentId}/timeline/{allPaths=**} {
+      allow read: if isSchoolStaff(schoolId);
+      allow create, update: if isSchoolStaff(schoolId) && sizeOk();
+      allow delete: if isSchoolStaff(schoolId);
+    }
+
+    // Learning materials. Staff upload; members of the school read.
+    match /schools/{schoolId}/learning_materials/{allPaths=**} {
+      allow read: if memberOf(schoolId);
+      allow create, update: if isSchoolStaff(schoolId) && sizeOk();
+      allow delete: if isSchoolStaff(schoolId);
+    }
+
+    // Assignment submissions. A pupil writes and reads ONLY their own folder; the school's staff read all of it.
+    match /schools/{schoolId}/submissions/{assignmentId}/{ownerUid}/{allPaths=**} {
+      allow read: if (request.auth.uid == ownerUid && pupilOf(schoolId)) || isSchoolStaff(schoolId);
+      allow create, update: if request.auth.uid == ownerUid && pupilOf(schoolId) && sizeOk();
+      allow delete: if (request.auth.uid == ownerUid && pupilOf(schoolId)) || isSchoolStaff(schoolId);
+    }
+
+    // Chat attachments and voice notes. Only participants of that chat, and the chat must belong to that school
+    // (mirrors the direct_messages rule in firestore.rules). Reads ONE Firestore document.
+    match /schools/{schoolId}/chats/{chatId}/{allPaths=**} {
+      allow read: if signedIn() &&
+        firestore.exists(/databases/(default)/documents/direct_messages/$(chatId)) &&
+        firestore.get(/databases/(default)/documents/direct_messages/$(chatId)).data.get('schoolId', '') == schoolId &&
+        request.auth.uid in firestore.get(/databases/(default)/documents/direct_messages/$(chatId)).data.get('participants', []);
+      allow create, update: if signedIn() && sizeOk() &&
+        firestore.exists(/databases/(default)/documents/direct_messages/$(chatId)) &&
+        firestore.get(/databases/(default)/documents/direct_messages/$(chatId)).data.get('schoolId', '') == schoolId &&
+        request.auth.uid in firestore.get(/databases/(default)/documents/direct_messages/$(chatId)).data.get('participants', []);
+      allow delete: if false;
+    }
+
+    // Staff clock-in selfies. Written only by the server (Admin SDK, which bypasses these rules).
+    // Clients: the school's administrators, and the member of staff themself, may read.
+    match /schools/{schoolId}/staff_attendance/{staffUid}/{allPaths=**} {
+      allow read: if isSchoolAdmin(schoolId) || (request.auth.uid == staffUid && memberOf(schoolId));
+      allow write: if false;
+    }
+
+    // Story Spark cover illustrations. Staff write; members of the school read. Image only.
+    match /schools/{schoolId}/junior_stories/{allPaths=**} {
+      allow read: if memberOf(schoolId);
+      allow create, update: if isSchoolStaff(schoolId) && isImage() && sizeOk();
+      allow delete: if isSchoolStaff(schoolId);
+    }
+
+    // =================================================================== story_library/…  (central story library)
+    // docs/STORY-SPARK-2.0-PLAN.md, Part 3.
+    //   published/  immutable, content-addressed packages and media. Read: central publishers, and any signed-in member of a
+    //               school (found in users/{uid} or, for older accounts, staff/{uid}). Never writable from a client: the
+    //               server (Admin SDK, which bypasses rules) promotes approved files here. At most TWO Firestore lookups.
+    //               Each lookup is billed as a Firestore read (about 1.5 per file; see the cost model).
+    //               LIMIT: this layer does not check a school's `storyLibraryEnabled` flag (a third lookup is not allowed);
+    //               per-school eligibility is enforced in firestore.rules, the only way to discover a file's content hash.
+    //               Never store download-token URLs for these files: tokens bypass rules.
+    //   private/    staging for drafts. Publishers only. Create-only (no overwrite), so every staged object is immutable.
+    function isStoryPublisher() {
+      return isSuperAdmin() || (signedIn() && 'story_publisher' in request.auth.token && request.auth.token.story_publisher == true);
+    }
+    function inAnySchool() {
+      return signedIn() && (
+        (firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+          firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('schoolId', '') != '') ||
+        (firestore.exists(/databases/(default)/documents/staff/$(request.auth.uid)) &&
+          firestore.get(/databases/(default)/documents/staff/$(request.auth.uid)).data.get('schoolId', '') != ''));
+    }
+    function libraryAsset() {
+      return request.resource.size <= 4 * 1024 * 1024 &&
+        request.resource.contentType in ['image/webp', 'image/png', 'image/jpeg', 'audio/ogg', 'audio/opus', 'audio/webm',
+                                         'audio/mpeg', 'audio/mp4', 'application/json'];
+    }
+    match /story_library/published/{allPaths=**} {
+      allow read: if isStoryPublisher() || inAnySchool();
+      allow write: if false;
+    }
+    match /story_library/private/{allPaths=**} {
+      allow read: if isStoryPublisher();
+      allow create: if isStoryPublisher() && resource == null && libraryAsset(); // never an overwrite
+      allow update: if false;
+      allow delete: if isStoryPublisher();
+    }
+
+    // =================================================================== signatures/{schoolId}/{userId}/…
+    // Only the owner writes their own signature, and only into a school they belong to.
     match /signatures/{schoolId}/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow read: if memberOf(schoolId);
+      allow create, update: if request.auth.uid == userId && memberOf(schoolId) && isImage() && sizeOk();
+      allow delete: if request.auth.uid == userId && memberOf(schoolId);
     }
   }
 }

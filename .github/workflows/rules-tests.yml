@@ -1,0 +1,39 @@
+name: Security rules tests
+
+# Runs the Firebase Storage + Firestore rules tests against the local emulators, plus the unit tests.
+# No secrets are used and nothing is deployed: it talks only to emulators with a "demo-" project id.
+on:
+  push:
+    # No path filter on push: a filter hid ledger/unit-test changes from CI. The suite takes ~3 minutes.
+    branches: ['story-spark-**']
+  pull_request:
+    paths:
+      - 'storage.rules'
+      - 'firestore.rules'
+      - 'tests/rules/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - run: npm ci --no-audit --no-fund
+      - name: Unit and component tests
+        run: npm test
+      - name: Security rules tests (Firebase emulators)
+        run: npm run test:rules
+      - name: The two firestore.rules copies must be identical
+        run: diff -q firestore.rules src/firestore.rules

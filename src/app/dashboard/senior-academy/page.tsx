@@ -26,6 +26,7 @@ import { ExamDisclaimerTooltip, PlatformExamFooterNotice } from '@/components/ex
 import { getTopicQuestionSets, getQuestionSetById, invalidateCurriculumCache } from '@/lib/services/curriculumService';
 import { isValidCurriculumLevelId, SAMPLE_GLOBAL_QUESTION_SETS } from '@/lib/global-curriculum-service';
 import { TopicalLabRunner } from '@/components/curriculum/TopicalLabRunner';
+import { LibraryDashboard } from '@/components/story-library/LibraryDashboard';
 import { getSubjectTopicsManifest, getTopicalLabDoc, invalidateTopicalLabCache, DEFAULT_JHS_ENGLISH_MANIFEST } from '@/lib/services/topicalLabService';
 import { TopicalLabDocument } from '@/lib/topical-lab-types';
 import { GlobalCurriculumLevelId, CurriculumQuestionSet } from '@/lib/global-curriculum-types';
@@ -6250,7 +6251,12 @@ function EnglishMastery({
                 </div>
             ) : (
                 /* FULL-WIDTH CURRICULUM MODULES */
-                <div className="space-y-4">
+                <div className="space-y-6">
+                    {/* STORY SPARK INTERACTIVE CENTRAL LIBRARY (0 FIRESTORE READS) */}
+                    <div className="rounded-3xl bg-slate-50 p-4 sm:p-6 shadow-xl border border-slate-200">
+                        <LibraryDashboard />
+                    </div>
+
                     {/* FULL-WIDTH SECTION HEADER */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80">
                         <div className="space-y-0.5">

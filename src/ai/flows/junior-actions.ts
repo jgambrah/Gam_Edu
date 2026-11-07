@@ -6,7 +6,8 @@ import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 // @ts-ignore
 import wav from 'wav';
-import { checkAndSpendCredits } from '@/app/actions/credits';
+import { checkAndSpendCredits, chargeCreditsIdempotent } from '@/app/actions/credits';
+import { refundChargeOnce, markChargeCompleted } from '@/lib/credits-server';
 
 // --- STORY GENERATOR ---
 const JuniorStorySchema = z.object({
@@ -19,10 +20,12 @@ const JuniorStorySchema = z.object({
   })).length(3).describe("Exactly three simple questions to check understanding.")
 });
 
-export async function generateJuniorStory(input: { topic: string; context?: string; wordCount?: number; schoolId: string; }) {
+export async function generateJuniorStory(input: { topic: string; context?: string; wordCount?: number; schoolId: string; requestId?: string; }) {
   await requireSignedInAction();
+  let chargeKey: string | undefined;
   try {
-    const creditResult = await checkAndSpendCredits(input.schoolId, 3);
+    const creditResult = await chargeCreditsIdempotent(input.schoolId, 3, input.requestId, 'story');
+    chargeKey = creditResult.alreadyCharged ? undefined : creditResult.key; // a replayed request is not ours to refund
     if (!creditResult.success) {
       return { success: false, error: creditResult.error || "Insufficient AI credits to generate a story." };
     }
@@ -50,9 +53,11 @@ export async function generateJuniorStory(input: { topic: string; context?: stri
       throw new Error("AI did not return a valid story object.");
     }
     
+    if (chargeKey) await markChargeCompleted(input.schoolId, chargeKey);
     return { success: true, data: output };
   } catch (error) {
     console.error("Story Generation Error:", error);
+    if (chargeKey) await refundChargeOnce(input.schoolId, chargeKey); // charged but no story: give the credits back
     return { success: false, error: "The story robot is sleeping." };
   }
 }
@@ -183,10 +188,12 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 
 
 // --- IMAGE GENERATION ACTION ---
-export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
+export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; requestId?: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
   await requireSignedInAction();
+    let chargeKey: string | undefined;
     try {
-      const creditResult = await checkAndSpendCredits(input.schoolId, 5);
+      const creditResult = await chargeCreditsIdempotent(input.schoolId, 5, input.requestId, 'cover');
+      chargeKey = creditResult.alreadyCharged ? undefined : creditResult.key;
       if (!creditResult.success) {
         return { success: false, error: creditResult.error || "Insufficient AI credits." };
       }
@@ -196,11 +203,15 @@ export const generateLessonImageAction = async (input: { prompt: string; schoolI
       });
   
       if (media && media.url) {
+        if (chargeKey) await markChargeCompleted(input.schoolId, chargeKey);
         return { success: true, data: media.url };
       }
+      // Charged but no picture came back: give the credits back.
+      if (chargeKey) await refundChargeOnce(input.schoolId, chargeKey);
       return { success: true, data: null };
     } catch (error) {
       console.error("Image generation error:", error);
+      if (chargeKey) await refundChargeOnce(input.schoolId, chargeKey);
       return { success: false, error: "Image generation failed." };
     }
 };

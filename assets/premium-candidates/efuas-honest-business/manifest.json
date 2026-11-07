@@ -1,0 +1,178 @@
+[
+  {
+    "file": "ref-efua-1.png",
+    "status": "candidate",
+    "promptHash": "c35d2fbbd47fafde",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "30ae5f5d66e99c34d1db8be52998d7d4d0e542536baa4971419c3aed8ffba009",
+    "bytes": 400463
+  },
+  {
+    "file": "ref-efua-2.png",
+    "status": "candidate",
+    "promptHash": "c35d2fbbd47fafde",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "c149619e36f3d55fa9cdcb417212806ff76195058ec3f7d7be3edfec59b9a52c",
+    "bytes": 427685
+  },
+  {
+    "file": "ref-nana-ama-1.png",
+    "status": "candidate",
+    "promptHash": "660dbc24025ab587",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "dd6261a8536ea3412128c28dbc3c12ea5ade18d5f102c7ff9d60bd94cf30aa49",
+    "bytes": 462913
+  },
+  {
+    "file": "ref-nana-ama-2.png",
+    "status": "candidate",
+    "promptHash": "660dbc24025ab587",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "34e99dae6b81f64adad68cc2706befa90aad3149d9790bc30216c4c5cdb63e82",
+    "bytes": 583426
+  },
+  {
+    "file": "page1-1.png",
+    "status": "candidate",
+    "promptHash": "3b1852e6f800b763",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "571741307a2a3034c032c89f0fc558d79b21afae68be31746bdaceb5ba852dc1",
+    "bytes": 813486
+  },
+  {
+    "file": "page1-2.png",
+    "status": "candidate",
+    "promptHash": "3b1852e6f800b763",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "2381c6b135dc1e30398dab128e1ac8d2e64663fd97907a9d600a1046daf93282",
+    "bytes": 832213
+  },
+  {
+    "file": "page1-3.png",
+    "status": "candidate",
+    "promptHash": "3b1852e6f800b763",
+    "model": "gemini-3.1-flash-image",
+    "sha256": "ea78b4be87ac39c8db8154a872cee34b2cdb1c122ad23a0a61f3c40e66d27a4f",
+    "bytes": 766976
+  },
+  {
+    "file": "tts-Kore-page1.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1150080
+  },
+  {
+    "file": "tts-Kore-names.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 840960
+  },
+  {
+    "file": "tts-Puck-page1.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Puck",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1002240
+  },
+  {
+    "file": "tts-Puck-names.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Puck",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1376640
+  },
+  {
+    "file": "tts-Kore-page2.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1169280
+  },
+  {
+    "file": "tts-Kore-page3.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1173120
+  },
+  {
+    "file": "tts-Kore-page4.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1040640
+  },
+  {
+    "file": "tts-Kore-page5.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 844800
+  },
+  {
+    "file": "tts-Kore-page6.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 885120
+  },
+  {
+    "file": "tts-Kore-page7.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1989120
+  },
+  {
+    "file": "tts-Kore-page8.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1104000
+  },
+  {
+    "file": "tts-Kore-page9.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1171200
+  },
+  {
+    "file": "tts-Kore-page10.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 958080
+  },
+  {
+    "file": "tts-Kore-page11.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1138560
+  },
+  {
+    "file": "tts-Kore-page12.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1307520
+  }
+]

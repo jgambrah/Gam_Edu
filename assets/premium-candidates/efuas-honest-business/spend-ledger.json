@@ -1,0 +1,187 @@
+{
+  "ceilingUsd": 2,
+  "entries": [
+    {
+      "id": "ref-efua-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:20.938Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "ref-efua-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:32.800Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "ref-nana-ama-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:49.821Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "ref-nana-ama-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:57:59.064Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-1#superseded-1794088230022",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:58:07.575Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-2#superseded-1794088240576",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:58:16.890Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-3#superseded-1794088251078",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T20:58:25.705Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "tts-Kore-page1",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T20:58:36.663Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-names",
+      "what": "tts",
+      "reservedUsd": 0.033,
+      "at": "2026-11-07T20:58:47.916Z",
+      "actualUsd": 0.033
+    },
+    {
+      "id": "tts-Puck-page1",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T20:58:59.392Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Puck-names#failed-1794085156923",
+      "what": "tts",
+      "reservedUsd": 0.033,
+      "at": "2026-11-07T20:59:08.029Z",
+      "actualUsd": 0
+    },
+    {
+      "id": "tts-Puck-names",
+      "what": "tts",
+      "reservedUsd": 0.033,
+      "at": "2026-11-07T21:21:54.286Z",
+      "actualUsd": 0.033
+    },
+    {
+      "id": "page1-1",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T21:50:30.022Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-2",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T21:50:40.576Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "page1-3",
+      "what": "image",
+      "reservedUsd": 0.12,
+      "at": "2026-11-07T21:50:51.078Z",
+      "actualUsd": 0.12
+    },
+    {
+      "id": "tts-Kore-page2",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:29:42.250Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page3",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:29:54.027Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page4",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:30:04.337Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page5",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:30:14.371Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page6",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:30:23.362Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page7",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:30:31.881Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page8",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:30:47.202Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page9",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:30:57.480Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page10",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:31:06.968Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page11",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:31:16.407Z",
+      "actualUsd": 0.03
+    },
+    {
+      "id": "tts-Kore-page12",
+      "what": "tts",
+      "reservedUsd": 0.03,
+      "at": "2026-11-07T22:31:26.414Z",
+      "actualUsd": 0.03
+    }
+  ]
+}
