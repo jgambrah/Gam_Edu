@@ -23,7 +23,7 @@ import { packagePathFor } from '../../src/lib/story-library/validate';
 const PROJECT = 'demo-gam-edu-seeder';
 let env: RulesTestEnvironment;
 let seeded: EmulatorBackend;
-const corpus = generateCorpus({ count: 100, seed: 21 });
+const corpus = generateCorpus({ count: 1000, seed: 21 }); // ~1,000 synthetic stories, as approved
 let jobId = '';
 
 const pub = (uid: string) => env.authenticatedContext(uid, { email: `${uid}@test.example`, story_publisher: true }).firestore();
@@ -45,7 +45,7 @@ beforeAll(async () => {
   // eslint-disable-next-line no-console
   console.log(`[emulator seeding] ${corpus.stories.length} stories via Admin SDK + Firestore emulator in ${Date.now() - t0} ms; outcomes=${JSON.stringify(s.outcomes)}; completed=${s.completed}`);
   expect(s.completed).toBe(true);
-}, 120_000);
+}, 600_000);
 
 afterAll(async () => { await seeded?.close(); await env?.cleanup(); });
 
@@ -161,6 +161,7 @@ describe('client rules over seeded drafts', () => {
 describe('rollback on the real emulator never destroys human work', () => {
   it('removes untouched drafts, keeps stories a person moved on', async () => {
     const before = await adminCount(seeded);
+    const t0 = Date.now();
     const r = await rollbackJob(seeded.backend, jobId);
     // distinct[4] (published), [5] (approved), [6] (approved, edited) were moved on by people and must survive.
     expect(r.keptHumanModified).toBe(3);
@@ -171,7 +172,9 @@ describe('rollback on the real emulator never destroys human work', () => {
     // the duplicate index no longer holds entries for removed stories
     const idx = await seeded.db.collection('library_seed_jobs/_index/text').get();
     expect(idx.size).toBe(3);
-  });
+    // eslint-disable-next-line no-console
+    console.log(`[emulator rollback] ${r.rolledBack} drafts rolled back in ${Date.now() - t0} ms; ${r.keptHumanModified} kept`);
+  }, 600_000);
 });
 
 describe('crash and resume on real Firestore transactions', () => {
