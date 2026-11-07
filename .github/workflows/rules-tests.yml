@@ -5,7 +5,7 @@ name: Security rules tests
 on:
   push:
     # No path filter on push: a filter hid ledger/unit-test changes from CI. The suite takes ~3 minutes.
-    branches: ['story-spark-**']
+    branches: ['story-spark-**', 'security-hardening-**']
   pull_request:
     paths:
       - 'storage.rules'

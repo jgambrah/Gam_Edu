@@ -25,8 +25,11 @@ service cloud.firestore {
 
     // Audit logs for system actions
     match /auditLogs/{logId} {
-      allow read, get, list: if isSignedIn();
-      allow create: if isSignedIn();
+      // Staff of the same school read their school's log (teachers filter to their own entries). Pupils/parents never.
+      allow read, get, list: if isSuperAdmin() || (isStaff() && resource.data.get('schoolId', '') == getUserSchoolId());
+      // An entry belongs to the writer's own school and can't be attributed to someone else.
+      allow create: if isSuperAdmin() || ((isStaff() || isAdmin()) && createdInMySchool()
+        && request.resource.data.get('userId', null) in [null, request.auth.uid]);
       // The audit trail is permanent: no one in a school can edit or erase it (before, administrators could).
       allow update, delete: if isSuperAdmin();
     }
@@ -145,6 +148,15 @@ service cloud.firestore {
     // For deletes (there is no new version of the document to look at).
     function existingDocInMySchool() {
       return isSuperAdmin() || resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId();
+    }
+    // Hardening helpers (Oct/Nov 2026). "Mine" always means the school in the caller's profile.
+    function createdInMySchool() {
+      return isSuperAdmin() || (getUserSchoolId() != '' && request.resource.data.get('schoolId', '') == getUserSchoolId());
+    }
+    function schoolStaffRole() { return isTeacher() || isAdmin(); }
+    // Only these fields may change (e.g. a like or a comment counter), and never the school.
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
     function docInMySchool() {
       return isSuperAdmin() || (resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId()
@@ -590,11 +602,17 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Student-number and receipt-number sequences, one document per school: `students_{schoolId}`, `receipts_{schoolId}`.
+    // Staff may use only their OWN school's counters, a new counter must start at 1, and numbers only ever go up
+    // (winding a counter back would re-issue old receipt numbers; creating someone else's would reset it).
+    function ownCounter(counterId) {
+      return getUserSchoolId() != '' && counterId in ['students_' + getUserSchoolId(), 'receipts_' + getUserSchoolId()];
+    }
     match /counters/{counterId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      // Receipt / student numbers only ever go up (winding a counter back would re-issue old receipt numbers).
-      allow update: if isSignedIn() && request.resource.data.get('currentId', 0) > resource.data.get('currentId', 0);
+      allow read: if isSuperAdmin() || (isStaff() && ownCounter(counterId));
+      allow create: if isSuperAdmin() || (isStaff() && ownCounter(counterId) && request.resource.data.get('currentId', 0) == 1);
+      allow update: if isSuperAdmin() || (isStaff() && ownCounter(counterId)
+        && request.resource.data.get('currentId', 0) > resource.data.get('currentId', 0));
       allow delete: if isSuperAdmin();
     }
 
@@ -718,15 +736,17 @@ service cloud.firestore {
       }
     }
 
+    // Queued parent alerts (e.g. absence notices): written by teachers taking the register, for their own school.
     match /notification_queue/{queueId} {
-      allow read, get, list: if isSignedIn();
-      allow write, create, update: if isSignedIn();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow read, get, list: if isSuperAdmin() || (schoolStaffRole() && resource.data.get('schoolId', '') == getUserSchoolId());
+      allow create: if isSuperAdmin() || (schoolStaffRole() && createdInMySchool());
+      allow update: if isSuperAdmin() || (schoolStaffRole() && docInMySchool());
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
 
+      // Nothing writes below a queue entry; staff of the owning school may read, and no one writes.
       match /{document=**} {
-        allow read, get, list: if isSignedIn();
-        allow write, create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow read, get, list: if isSuperAdmin();
+        allow write: if false;
       }
     }
 
@@ -769,17 +789,20 @@ service cloud.firestore {
       // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
       allow get: if isSignedIn() && (resource == null || isSuperAdmin() || inMySchool());
       allow list: if isSuperAdmin() || inMySchool();
-      allow create, update: if isSignedIn();
+      // Only teachers/admins create or edit assignments, and only for their own school (the school can't be changed).
+      allow create: if isSuperAdmin() || (schoolStaffRole() && createdInMySchool());
+      allow update: if isSuperAdmin() || (schoolStaffRole() && docInMySchool());
       allow delete: if isSignedIn() && (
         isSuperAdmin() ||
-        isAdmin() ||
+        (isAdmin() && existingDocInMySchool()) ||
         resource.data.teacherId == request.auth.uid
       );
 
+      // Legacy sub-collection (the app stores submissions in the top-level `submissions` collection below).
       match /submissions/{submissionId} {
         allow read, get, list: if parentDocInMySchool(/databases/$(database)/documents/assignments/$(assignmentId));
-        allow create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow create, update: if schoolStaffRole() && parentDocInMySchool(/databases/$(database)/documents/assignments/$(assignmentId));
+        allow delete: if isSuperAdmin() || (isAdmin() && parentDocInMySchool(/databases/$(database)/documents/assignments/$(assignmentId)));
       }
     }
 
@@ -788,7 +811,7 @@ service cloud.firestore {
       allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
       allow list: if schoolRecordReadable();
       // A pupil submits their own work (staff may submit for them).
-      allow create: if isSignedIn() && (request.resource.data.get('studentId', '') == request.auth.uid || isTeacher() || isAdmin());
+      allow create: if isSignedIn() && createdInMySchool() && (request.resource.data.get('studentId', '') == request.auth.uid || isTeacher() || isAdmin());
       // Only staff grade. A pupil may replace their own UNGRADED submission but can never set a grade,
       // feedback or "Graded" status (before, any signed-in user could edit any submission, grade included).
       allow update: if isSignedIn() && ((
@@ -797,8 +820,8 @@ service cloud.firestore {
           request.resource.data.get('studentId', '') == request.auth.uid &&
           !request.resource.data.diff(resource.data).affectedKeys().hasAny(['grade', 'teacherFeedback', 'gradedAt', 'assignmentId', 'schoolId']) &&
           request.resource.data.get('status', '') in ['Submitted', 'Late']
-        ) || isTeacher() || isAdmin());
-      allow delete: if isSuperAdmin() || isAdmin();
+        ) || (schoolStaffRole() && docInMySchool()));
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
     }
 
     // Answer keys (moved out of quizzes by the quizAnswerVault function): teachers/admins of the school only.
@@ -816,10 +839,11 @@ service cloud.firestore {
         isAdmin() ||
         resource.data.teacherId == request.auth.uid
       );
+      // Legacy sub-collection: attempts are graded and saved by the server in `quizAttempts` (below).
       match /attempts/{attemptId} {
         allow read, get, list: if parentDocInMySchool(/databases/$(database)/documents/quizzes/$(quizId));
-        allow create, update: if isSignedIn();
-        allow delete: if isSuperAdmin() || isAdmin();
+        allow create, update: if schoolStaffRole() && parentDocInMySchool(/databases/$(database)/documents/quizzes/$(quizId));
+        allow delete: if isSuperAdmin() || (isAdmin() && parentDocInMySchool(/databases/$(database)/documents/quizzes/$(quizId)));
       }
     }
 
@@ -828,8 +852,9 @@ service cloud.firestore {
       allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
       allow list: if schoolRecordReadable();
       // Students' attempts are graded and saved by the server (submitQuizAttemptAction).
-      allow create, update: if isTeacher() || isAdmin();
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow create: if isSuperAdmin() || (schoolStaffRole() && createdInMySchool());
+      allow update: if isSuperAdmin() || (schoolStaffRole() && docInMySchool());
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
     }
 
     match /assessments/{assessmentId} {
@@ -1141,9 +1166,12 @@ service cloud.firestore {
       allow write: if isFinanceStaff();
     }
 
+    // Point-of-sale records: money plus pupil purchases. Finance staff of the same school only
+    // (before: any signed-in user of any school could read every sale).
     match /pos_transactions/{transactionId} {
-      allow read, create, list: if isSignedIn();
-      allow update: if isFinanceStaff();
+      allow get, list: if isSuperAdmin() || (isFinanceStaff() && resource.data.get('schoolId', '') == getUserSchoolId());
+      allow create: if isSuperAdmin() || (isFinanceStaff() && createdInMySchool());
+      allow update: if isSuperAdmin() || (isFinanceStaff() && docInMySchool());
     }
 
     match /school_shop_items/{itemId} {
@@ -1311,15 +1339,25 @@ service cloud.firestore {
       allow delete: if isSuperAdmin() || isAdmin();
     }
 
+    // Class stories (teacher posts with pupil photos). Same school only. This block replaces TWO blocks for the same
+    // path — rules for one path are OR-ed, and the second, looser block let any signed-in user edit or delete any story.
     match /class_stories/{storyId} {
-      allow read, list, get: if isSignedIn();
-      allow create, update, delete: if isSuperAdmin() || isAdmin() || isTeacher();
-      allow update: if isSignedIn();
-      
+      allow read, list, get: if isSuperAdmin() || (isSignedIn() && resource.data.get('schoolId', '') == getUserSchoolId());
+      allow create: if isSuperAdmin() || (schoolStaffRole() && createdInMySchool());
+      // Teachers/admins edit their school's stories; any member of the school may change only likes / the comment counter.
+      allow update: if isSuperAdmin()
+        || (schoolStaffRole() && docInMySchool())
+        || (isSignedIn() && resource.data.get('schoolId', '') == getUserSchoolId() && onlyChanges(['likes', 'commentsCount']));
+      allow delete: if isSuperAdmin() || (schoolStaffRole() && existingDocInMySchool());
+
       match /comments/{commentId} {
-        allow read, list, get: if isSignedIn();
-        allow create: if isSignedIn();
-        allow update, delete: if isSuperAdmin() || isAdmin() || isTeacher() || resource.data.authorId == request.auth.uid;
+        function storyInMySchool() {
+          return get(/databases/$(database)/documents/class_stories/$(storyId)).data.get('schoolId', '') == getUserSchoolId();
+        }
+        allow read, list, get: if isSuperAdmin() || (isSignedIn() && storyInMySchool());
+        allow create: if isSuperAdmin() || (isSignedIn() && storyInMySchool() && request.resource.data.get('authorId', '') == request.auth.uid);
+        allow update, delete: if isSuperAdmin() || (isSignedIn() && storyInMySchool()
+          && (schoolStaffRole() || resource.data.get('authorId', '') == request.auth.uid));
       }
     }
 
@@ -1794,8 +1832,11 @@ service cloud.firestore {
 
     match /direct_messages/{chatId} {
       allow read, update: if isSignedIn() && request.auth.uid in resource.data.participants;
-      allow list: if isSignedIn();
-      allow create: if isSignedIn();
+      // A person lists only chats they are in (queries use array-contains), and creates only chats they are in.
+      allow list: if isSignedIn() && request.auth.uid in resource.data.participants;
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participants
+        && request.resource.data.participants.size() <= 200
+        && (isSuperAdmin() || request.resource.data.get('schoolId', '') == getUserSchoolId());
       match /messages/{messageId} {
         allow read, write: if isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/direct_messages/$(chatId)).data.participants;
       }
@@ -1939,16 +1980,7 @@ service cloud.firestore {
     // =========================================================
     // 8.11. CLASS STORIES SECURITY
     // =========================================================
-    match /class_stories/{storyId} {
-      allow read, list, get: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update, delete: if isSignedIn();
-
-      match /comments/{commentId} {
-        allow read, list, get: if isSignedIn();
-        allow create, update, delete: if isSignedIn();
-      }
-    }
+    // (the duplicate, looser class_stories block that used to be here was removed — see the block above)
 
     // =========================================================
     // 8.12. STUDENT TIMELINE & PUBLIC PORTFOLIO SECURITY
