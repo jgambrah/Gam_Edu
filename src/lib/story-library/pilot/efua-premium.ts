@@ -156,10 +156,10 @@ const efua: CharacterSheet = {
 };
 const nana: CharacterSheet = {
   id: 'nana-ama', name: 'Nana Ama', role: 'Efua’s grandmother and recipe keeper', age: 'about seventy', build: 'compact, strong forearms, gentle posture',
-  face: 'warm lined face, kind eyes, quick smile', hair: 'short grey hair mostly covered by a soft head-wrap', skin: 'medium-deep brown, weathered by the kitchen’s warmth',
+  face: 'warm lined face, kind eyes, quick smile', hair: 'short grey hair mostly covered by a navy-and-gold kente-patterned headwrap', skin: 'medium-deep brown, weathered by the kitchen’s warmth',
   clothing: 'a printed cotton wrapper and blouse in indigo and gold, with a plain apron', signatureProps: ['a long wooden spoon', 'small round spectacles on a cord'],
   personality: 'patient, teasing, wise', expressionRange: ['smiling', 'teasing', 'encouraging', 'proud'],
-  consistencyAnchors: ['indigo-and-gold printed wrapper', 'grey hair under a head-wrap', 'wooden spoon', 'spectacles on a cord'],
+  consistencyAnchors: ['indigo-and-gold printed wrapper', 'a navy-and-gold kente-patterned headwrap', 'wooden spoon', 'spectacles on a cord'],
   doNot: ['frail or helpless depiction', 'ceremonial or costume-like styling'],
 };
 const kwabena: CharacterSheet = {

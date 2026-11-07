@@ -69,6 +69,8 @@ describe('Efua illustration plan', () => {
     expect(a).toContain('two hair puffs'); expect(a).toContain('close-cropped hair');
     expect(a).toMatch(/Avoid:.*emoji/);
     expect(a).toContain('No text, letters, watermarks or logos');
+    expect(a).toContain('No text, no letters, no numbers, no colour swatches, no hex codes, no borders or blank bands. Full-bleed scene filling the whole frame.');
+    expect(assemblePrompt(EFUA_ILLUSTRATION_PLAN, EFUA_ILLUSTRATION_PLAN.shots[1])).toContain('a navy-and-gold kente-patterned headwrap');
     expect(a).not.toMatch(/UNDEFINED/);
     expect(promptHash(assemblePrompt(EFUA_ILLUSTRATION_PLAN, EFUA_ILLUSTRATION_PLAN.shots[6]))).not.toBe(promptHash(a));
   });

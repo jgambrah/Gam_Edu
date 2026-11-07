@@ -116,7 +116,7 @@ export function assemblePrompt(plan: IllustrationPlan, shot: Shot): string {
     `Palette: ${st.palette.map((p) => `${p.name} ${p.hex}`).join(', ')}.`,
     `Include: ${st.mustHave.join('; ')}.`,
     `Avoid: ${[...st.mustAvoid, ...plan.characters.filter((c) => shot.characters.some((s) => s.id === c.id)).flatMap((c) => c.doNot)].join('; ')}.`,
-    `Aspect ratio ${st.aspect}. No text, letters, watermarks or logos inside the image.`,
+    `Aspect ratio ${st.aspect}. No text, letters, watermarks or logos inside the image. No text, no letters, no numbers, no colour swatches, no hex codes, no borders or blank bands. Full-bleed scene filling the whole frame.`,
   ];
   return lines.filter(Boolean).join('\n');
 }

@@ -43,10 +43,12 @@ const VOICES = ['Kore', 'Puck'];
 
 const efua = PILOT_STORIES.find((s) => s.key === 'efuas-honest-business')!;
 const plan = EFUA_ILLUSTRATION_PLAN;
+const NO_TEXT_OR_SWATCHES = 'No text, no letters, no numbers, no colour swatches, no hex codes, no borders or blank bands. Full-bleed scene filling the whole frame.';
+const withCleanFrame = (p: string) => (p.includes(NO_TEXT_OR_SWATCHES) ? p : `${p}\n${NO_TEXT_OR_SWATCHES}`);
 const refShot = (id: string) => ({ ...plan.shots[1], page: -1, characters: [{ id, expression: 'neutral, friendly', pose: 'standing, full body, front three-quarter view, neutral background' }], action: `Character reference sheet for ${id}: full body, plain warm background.`, mustShow: ['full body', 'face clearly visible'] });
 const imageJobs = [
-  ...['efua', 'nana-ama'].flatMap((id) => [1, 2].map((n) => ({ id: `ref-${id}-${n}`, prompt: assemblePrompt(plan, refShot(id)) }))),
-  ...[1, 2, 3].map((n) => ({ id: `page1-${n}`, prompt: assemblePrompt(plan, plan.shots[1]) })),
+  ...['efua', 'nana-ama'].flatMap((id) => [1, 2].map((n) => ({ id: `ref-${id}-${n}`, prompt: withCleanFrame(assemblePrompt(plan, refShot(id))) }))),
+  ...[1, 2, 3].map((n) => ({ id: `page1-${n}`, prompt: withCleanFrame(assemblePrompt(plan, plan.shots[1])) })),
 ];
 const page1 = efua.pages[0].text;
 const ttsJobs = VOICES.flatMap((v) => [
@@ -75,14 +77,18 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
   const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
   mkdirSync(out, { recursive: true });
   const ledger: Ledger = existsSync(ledgerPath) ? JSON.parse(readFileSync(ledgerPath, 'utf8')) : newLedger(ceiling);
+  if (arg('ceiling')) ledger.ceilingUsd = ceiling;
   const save = () => writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
   const only = arg('only'); // e.g. --only names : run just the jobs whose id contains this text
   const manifestPath = path.join(out, 'manifest.json');
   const manifest: any[] = existsSync(manifestPath) ? JSON.parse(readFileSync(manifestPath, 'utf8')) : [];
   // A failed call returned no asset, so it is recorded as $0 (check Google billing for the true figure) and its id is freed for a retry.
   const failed = (l: Ledger, id: string) => { const e = l.entries.find((x) => x.id === id && x.actualUsd === undefined); if (e) { e.actualUsd = 0; e.id = `${id}#failed-${Date.now()}`; } };
+  const supersede = (l: Ledger, id: string) => { const e = l.entries.find((x) => x.id === id); if (e) e.id = `${id}#superseded-${Date.now()}`; };
+  const upsertManifest = (entry: any) => { const idx = manifest.findIndex((m) => m.file === entry.file); if (idx >= 0) manifest[idx] = entry; else manifest.push(entry); };
   for (const j of imageJobs) {
     if (only && !j.id.includes(only)) continue;
+    supersede(ledger, j.id);
     const r = reserve(ledger, j.id, 'image', IMAGE_UPPER_USD, new Date().toISOString()); if (!r.ok) { console.error('STOP:', r.reason); break; } save();
     try {
       const res: any = await ai.models.generateContent({ model: imageModel, contents: j.prompt, config: { responseModalities: ['IMAGE'] } });
@@ -91,11 +97,13 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
       const buf = Buffer.from(part.inlineData.data, 'base64'); const f = `${j.id}.png`;
       writeFileSync(path.join(out, f), buf);
       settle(ledger, j.id, IMAGE_UPPER_USD); // exact usage is not read here; the upper bound is kept as the recorded cost
-      manifest.push({ file: f, status: 'candidate', promptHash: promptHash(j.prompt), model: imageModel, sha256: createHash('sha256').update(buf).digest('hex'), bytes: buf.length });
+      console.log(j.id, 'generated:', { requestedModel: imageModel, modelVersion: res.modelVersion, usageMetadata: res.usageMetadata });
+      upsertManifest({ file: f, status: 'candidate', promptHash: promptHash(j.prompt), model: imageModel, sha256: createHash('sha256').update(buf).digest('hex'), bytes: buf.length });
     } catch (e) { console.error(j.id, 'failed:', (e as Error).message); failed(ledger, j.id); } save();
   }
   for (const j of ttsJobs) {
     if (only && !j.id.includes(only)) continue;
+    if (ledger.entries.some((e) => e.id === j.id && e.actualUsd !== undefined)) continue;
     const cost = j.seconds * TTS_UPPER_USD_PER_SECOND;
     const r = reserve(ledger, j.id, 'tts', cost, new Date().toISOString()); if (!r.ok) { console.error('STOP:', r.reason); break; } save();
     try {
