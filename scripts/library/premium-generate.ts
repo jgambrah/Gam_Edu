@@ -22,6 +22,12 @@ import { buildSpokenScript } from '../../src/lib/story-library/pronunciation/app
 import { newLedger, reserve, settle, spentOrReservedUsd, type Ledger } from '../../src/lib/story-library/spend-ledger';
 import { PILOT_STORIES } from '../../src/lib/story-library/pilot/pilot-stories';
 
+// Convenience for running on your own computer: if GEMINI_API_KEY is not already set, read ONLY that variable from the
+// git-ignored .env.local in the project folder. The key is never printed, logged or written anywhere by this script.
+if (!process.env.GEMINI_API_KEY && existsSync(path.resolve(__dirname, '../../.env.local'))) {
+  const m = /^\s*GEMINI_API_KEY\s*=\s*["']?([^"'\r\n]+?)["']?\s*$/m.exec(readFileSync(path.resolve(__dirname, '../../.env.local'), 'utf8'));
+  if (m) process.env.GEMINI_API_KEY = m[1];
+}
 const arg = (n: string) => { const i = process.argv.indexOf(`--${n}`); return i > 0 ? process.argv[i + 1] : undefined; };
 const approve = process.argv.includes('--approve-spend');
 const ceiling = Number(arg('ceiling') ?? 10);
@@ -71,6 +77,8 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
   const ledger: Ledger = existsSync(ledgerPath) ? JSON.parse(readFileSync(ledgerPath, 'utf8')) : newLedger(ceiling);
   const save = () => writeFileSync(ledgerPath, JSON.stringify(ledger, null, 2));
   const manifest: unknown[] = [];
+  // A failed call returned no asset, so it is recorded as $0 (check Google billing for the true figure) and its id is freed for a retry.
+  const failed = (l: Ledger, id: string) => { const e = l.entries.find((x) => x.id === id && x.actualUsd === undefined); if (e) { e.actualUsd = 0; e.id = `${id}#failed-${Date.now()}`; } };
   for (const j of imageJobs) {
     const r = reserve(ledger, j.id, 'image', IMAGE_UPPER_USD, new Date().toISOString()); if (!r.ok) { console.error('STOP:', r.reason); break; } save();
     try {
@@ -81,7 +89,7 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
       writeFileSync(path.join(out, f), buf);
       settle(ledger, j.id, IMAGE_UPPER_USD); // exact usage is not read here; the upper bound is kept as the recorded cost
       manifest.push({ file: f, status: 'candidate', promptHash: promptHash(j.prompt), model: imageModel, sha256: createHash('sha256').update(buf).digest('hex'), bytes: buf.length });
-    } catch (e) { console.error(j.id, 'failed:', (e as Error).message); } save();
+    } catch (e) { console.error(j.id, 'failed:', (e as Error).message); failed(ledger, j.id); } save();
   }
   for (const j of ttsJobs) {
     const cost = j.seconds * TTS_UPPER_USD_PER_SECOND;
@@ -93,7 +101,7 @@ if (!imageModel) { console.error('--image-model is required (verify the current 
       const pcm = Buffer.from(d, 'base64'); const f = `${j.id}.pcm`; writeFileSync(path.join(out, f), pcm); // raw 24 kHz mono 16-bit; convert with ffmpeg
       settle(ledger, j.id, cost);
       manifest.push({ file: f, status: 'candidate', engine: ttsModel, voice: j.voice, pronunciation: 'UNVERIFIED: awaiting native-speaker review', bytes: pcm.length });
-    } catch (e) { console.error(j.id, 'failed:', (e as Error).message); } save();
+    } catch (e) { console.error(j.id, 'failed:', (e as Error).message); failed(ledger, j.id); } save();
   }
   writeFileSync(path.join(out, 'manifest.json'), JSON.stringify(manifest, null, 2));
   console.log(`Done. Recorded spend (upper bound) $${spentOrReservedUsd(ledger).toFixed(3)} of $${ceiling}.`);
