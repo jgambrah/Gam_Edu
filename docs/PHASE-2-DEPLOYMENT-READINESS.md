@@ -9,7 +9,7 @@ Branch `story-spark-2.0-phase-2-security` (includes `fixed-version` up to c1df18
 | #2 | 4f1966c | 68 pass | **186 failed**, 624 passed | ❌ |
 | #3 | 8504091 | 68 pass | 1 failed, 809 passed | ❌ |
 | #4 | f4ec4d8 | 68 pass | **810 passed, 1 skipped, 0 failed** | ✅ |
-Latest run on the final commit is recorded at the bottom of this file once complete.
+| #6 | 8ffb737 (final) | 77 pass | **810 passed, 1 skipped, 0 failed** | ✅ |
 
 Why runs 1-3 failed (all test-harness problems; **the rules files were not changed to make tests pass**):
 1. Test tokens had no `email`; `firestore.rules`' `isSuperAdmin()` reads `token.email` unguarded and errored for everyone else. (Real email logins carry an email. Latent fragility noted in the auth proposal.)
