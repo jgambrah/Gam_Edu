@@ -1,8 +1,9 @@
 /**
  * Story Library cost model (design stage). Pure arithmetic: no network, no Firebase, no credentials.
  *
- *   node --experimental-strip-types scripts/cost-model/story-library-cost.ts          # markdown tables
- *   node --experimental-strip-types scripts/cost-model/story-library-cost.ts --json   # machine-readable
+ *   node --experimental-strip-types src/lib/story-library/cost-model.ts          # markdown tables
+ *   node --experimental-strip-types src/lib/story-library/cost-model.ts --json   # machine-readable
+ * Unit tests: src/lib/story-library/cost-model.test.ts (pricing snapshot, linearity, ordering, tier maths).
  *
  * EVERY number in PRICING was read from the official page named in `source` on 2026-11-07.
  * Every number in ASSUMPTIONS is an assumption, not a measurement: replace with pilot data.
@@ -17,7 +18,10 @@ export const PRICING = {
     writePer100k: 0.09,
     freeReadsPerDay: 50_000, // one free database per project
     freeWritesPerDay: 20_000,
-    storedGiBMonth: 0.000205479 * 365 / 12, // page lists a daily rate; monthly is DERIVED, not stated
+    // The page lists $0.000205479 per GiB with no unit in the extracted text. Cloud Storage's page lists hourly rates, so
+    // this is read as per GiB-HOUR: x 730 = about $0.15 per GiB-month. UNVERIFIED unit; does not affect any total because
+    // the catalogue (a few MB) sits inside the free 1 GiB.
+    storedGiBMonth: 0.000205479 * 730,
     egressPerGiB: 0.12, // worldwide internet, 10 GiB/month free (page lists same tiers as GCS)
     egressFreeGiB: 10,
   },
@@ -67,6 +71,13 @@ export interface Assumptions {
   studentsPerTeacherView: number;
   storiesInLibrary: number;
   versionsKept: number;
+  /** Fraction of a full package's bytes / files an uncached open actually downloads (lazy loading). 1 = eager. */
+  lazyBytesFactor: number;
+  lazyFilesFactor: number;
+  /** Firestore reads billed to rules lookups per library request (profile docs + school doc). ASSUMPTION. */
+  rulesReadsPerLibraryRequest: number;
+  /** Firestore reads billed to rules lookups per Storage file read (B-lookup only; rule allows at most 2). ASSUMPTION. */
+  rulesReadsPerStorageFile: number;
 }
 
 export const BASE: Assumptions = {
@@ -88,12 +99,32 @@ export const BASE: Assumptions = {
   studentsPerTeacherView: 30,
   storiesInLibrary: 2_000,
   versionsKept: 3,
+  lazyBytesFactor: 1, // BASE = the eager, no-rules-lookup assumptions of the first design pass
+  lazyFilesFactor: 1,
+  rulesReadsPerLibraryRequest: 0,
+  rulesReadsPerStorageFile: 1.5,
+};
+
+/**
+ * MEASURED with the real StoryLoader on a synthetic 10-page story (src/lib/story-library/lazy-measurement.ts,
+ * guarded by lazy-measurement.test.ts). The reading-behaviour mix behind it is an assumption: 70% finish, 30% stop at
+ * page 3; 50% listen, 30% follow, 20% solo (no narration). Re-measure with pilot data.
+ */
+export const MEASURED_LAZY = { bytesFactor: 0.734, filesFactor: 0.753 };
+
+/** Stage 1 estimate: lazy loading measured, plus the Firestore reads that the implemented rules lookups cause. */
+export const REVISED: Assumptions = {
+  ...BASE,
+  lazyBytesFactor: MEASURED_LAZY.bytesFactor,
+  lazyFilesFactor: MEASURED_LAZY.filesFactor,
+  rulesReadsPerLibraryRequest: 3, // staff/users doc (up to 2) + school-eligibility doc (1)
+  rulesReadsPerStorageFile: 1.5, // users doc, or staff doc for older accounts (rule allows 2 lookups at most)
 };
 
 const GiB = 1024 ** 3;
 const MB = 1e6;
 
-function firestoreOps(reads: number, writes: number, egressGiB: number) {
+export function firestoreOps(reads: number, writes: number, egressGiB: number) {
   const f = PRICING.firestore;
   const paidReads = Math.max(0, reads - f.freeReadsPerDay * 30);
   const paidWrites = Math.max(0, writes - f.freeWritesPerDay * 30);
@@ -101,14 +132,14 @@ function firestoreOps(reads: number, writes: number, egressGiB: number) {
   return (paidReads / 1e5) * f.readPer100k + (paidWrites / 1e5) * f.writePer100k + egress;
 }
 
-function gcsEgress(gib: number) {
+export function gcsEgress(gib: number) {
   const g = PRICING.gcs;
   const t1 = Math.min(gib, 10 * 1024);
   const t2 = Math.max(0, gib - 10 * 1024);
   return t1 * g.egressTier1PerGiB + t2 * g.egressTier2PerGiB;
 }
 
-function cdnEgress(gib: number) {
+export function cdnEgress(gib: number) {
   const c = PRICING.cloudCdn;
   const t1 = Math.min(gib, 10 * 1024);
   const t2 = Math.max(0, gib - 10 * 1024);
@@ -153,17 +184,17 @@ export function model(key: OptionKey, a: Assumptions): Result {
 
   if (key === 'A') {
     const browseDocs = sessions * a.cataloguePagesPerSession * a.cataloguePageSize;
-    reads += browseDocs + misses; // browsing reads full docs; opening an un-cached story reads 1 doc
+    reads += browseDocs + misses + sessions * a.cataloguePagesPerSession * a.rulesReadsPerLibraryRequest; // full docs; 1 doc per un-cached open
     fsEgressGiB = (browseDocs * a.fullStoryDocBytes + misses * a.fullStoryDocBytes) / GiB;
-    gets = misses * (a.filesPerPackage - 1); // media only; text came with the doc
-    mediaGiB = (misses * a.packageMB * MB * 0.95) / GiB; // text is ~5% of the package
+    gets = misses * (a.filesPerPackage - 1) * a.lazyFilesFactor; // media only; text came with the doc
+    mediaGiB = (misses * a.packageMB * MB * 0.95 * a.lazyBytesFactor) / GiB; // text is ~5% of the package
   } else {
-    reads += sessions * 1; // versioned pointer doc, once per session
+    reads += sessions * (1 + a.rulesReadsPerLibraryRequest); // versioned pointer doc, once per session (+ rules lookups)
     // catalogue bundle fetched from Storage only when the version changes (counted as GETs, not reads)
     const publishesPerMonth = 8;
-    gets = misses * a.filesPerPackage + a.learners * publishesPerMonth * 0.5;
-    mediaGiB = (misses * a.packageMB * MB) / GiB;
-    if (key === 'B-lookup') reads += misses * a.filesPerPackage * 1.5; // 1-2 rules reads per file
+    gets = misses * a.filesPerPackage * a.lazyFilesFactor + a.learners * publishesPerMonth * 0.5;
+    mediaGiB = (misses * a.packageMB * MB * a.lazyBytesFactor) / GiB;
+    if (key === 'B-lookup') reads += misses * a.filesPerPackage * a.lazyFilesFactor * a.rulesReadsPerStorageFile;
   }
 
   let firestoreUsd = firestoreOps(reads, writes, fsEgressGiB);
@@ -217,16 +248,17 @@ const usd = (n: number) => '$' + (n < 10 ? n.toFixed(2) : n.toFixed(0));
 
 function main() {
   const asJson = process.argv.includes('--json');
-  const out: Record<string, unknown> = { pricing: PRICING, base: BASE };
+  const A0 = process.argv.includes('--first-pass') ? BASE : REVISED;
+  const out: Record<string, unknown> = { pricing: PRICING, assumptions: A0, measuredLazy: MEASURED_LAZY };
   const lines: string[] = [];
   const keys: OptionKey[] = ['A', 'B', 'B-lookup', 'C'];
 
-  lines.push('### Scale (typical cache: 60% device hit)\n');
+  lines.push(`### Scale (typical cache: 60% device hit; ${process.argv.includes('--first-pass') ? 'first-pass assumptions' : 'Stage 1 revised assumptions'})\n`);
   lines.push('| Scale | Option | Firestore reads/mo | Firestore writes/mo | Storage GETs/mo | Media GiB/mo | Firestore $ | Storage $ | CDN $ | Total $/mo | $/learner/mo |');
   lines.push('|---|---|---|---|---|---|---|---|---|---|---|');
   const scale: unknown[] = [];
   for (const s of SCALE_POINTS) for (const k of keys) {
-    const r = model(k, { ...BASE, learners: s.learners, schools: s.schools });
+    const r = model(k, { ...A0, learners: s.learners, schools: s.schools });
     scale.push({ scale: s.name, ...r });
     lines.push(`| ${s.name} | ${k} | ${fmt(r.firestoreReads)} | ${fmt(r.firestoreWrites)} | ${fmt(r.storageGets)} | ${r.mediaGiB.toFixed(0)} | ${usd(r.firestoreUsd)} | ${usd(r.storageUsd)} | ${usd(r.cdnUsd)} | **${usd(r.totalUsd)}** | ${(r.perLearnerUsd).toFixed(4)} |`);
   }
@@ -237,18 +269,18 @@ function main() {
   lines.push('|---|---|---|---|');
   const cache: unknown[] = [];
   for (const c of CACHE_SCENARIOS) for (const k of keys) {
-    const r = model(k, { ...BASE, deviceCacheHit: c.hit });
+    const r = model(k, { ...A0, deviceCacheHit: c.hit });
     cache.push({ scenario: c.name, ...r });
     lines.push(`| ${c.name} | ${k} | ${r.mediaGiB.toFixed(0)} | ${usd(r.totalUsd)} |`);
   }
   out.cache = cache;
 
-  const p = progressWrites(BASE);
+  const p = progressWrites(A0);
   out.progress = p;
   lines.push('\n### Progress writes at target scale\n');
   lines.push(`Per-page-turn writes: ${fmt(p.naiveWrites)}/mo = ${usd(p.naiveUsd)}; batched checkpoints: ${fmt(p.batchedWrites)}/mo = ${usd(p.batchedUsd)}.`);
 
-  const hosting = (model('B', BASE).mediaGiB * 1.0737) * PRICING.hosting.transferPerGB; // GiB->GB approx
+  const hosting = (model('B', A0).mediaGiB * 1.0737) * PRICING.hosting.transferPerGB; // GiB->GB approx
   out.hostingAsCdn = hosting;
   lines.push(`\nFor reference, serving the same target-scale media via Firebase Hosting would be about ${usd(hosting)}/mo (transfer only, hits and misses both counted): not cheaper than Storage egress.`);
 
@@ -256,4 +288,4 @@ function main() {
   else console.log(lines.join('\n'));
 }
 
-if (process.argv[1] && process.argv[1].endsWith('story-library-cost.ts')) main();
+if (process.argv[1] && process.argv[1].endsWith('cost-model.ts')) main();

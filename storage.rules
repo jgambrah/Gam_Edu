@@ -167,6 +167,42 @@ service firebase.storage {
       allow delete: if isSchoolStaff(schoolId);
     }
 
+    // =================================================================== story_library/…  (central story library)
+    // docs/STORY-SPARK-2.0-PLAN.md, Part 3.
+    //   published/  immutable, content-addressed packages and media. Read: central publishers, and any signed-in member of a
+    //               school (found in users/{uid} or, for older accounts, staff/{uid}). Never writable from a client: the
+    //               server (Admin SDK, which bypasses rules) promotes approved files here. At most TWO Firestore lookups.
+    //               Each lookup is billed as a Firestore read (about 1.5 per file; see the cost model).
+    //               LIMIT: this layer does not check a school's `storyLibraryEnabled` flag (a third lookup is not allowed);
+    //               per-school eligibility is enforced in firestore.rules, the only way to discover a file's content hash.
+    //               Never store download-token URLs for these files: tokens bypass rules.
+    //   private/    staging for drafts. Publishers only. Create-only (no overwrite), so every staged object is immutable.
+    function isStoryPublisher() {
+      return isSuperAdmin() || (signedIn() && 'story_publisher' in request.auth.token && request.auth.token.story_publisher == true);
+    }
+    function inAnySchool() {
+      return signedIn() && (
+        (firestore.exists(/databases/(default)/documents/users/$(request.auth.uid)) &&
+          firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.get('schoolId', '') != '') ||
+        (firestore.exists(/databases/(default)/documents/staff/$(request.auth.uid)) &&
+          firestore.get(/databases/(default)/documents/staff/$(request.auth.uid)).data.get('schoolId', '') != ''));
+    }
+    function libraryAsset() {
+      return request.resource.size <= 4 * 1024 * 1024 &&
+        request.resource.contentType in ['image/webp', 'image/png', 'image/jpeg', 'audio/ogg', 'audio/opus', 'audio/webm',
+                                         'audio/mpeg', 'audio/mp4', 'application/json'];
+    }
+    match /story_library/published/{allPaths=**} {
+      allow read: if isStoryPublisher() || inAnySchool();
+      allow write: if false;
+    }
+    match /story_library/private/{allPaths=**} {
+      allow read: if isStoryPublisher();
+      allow create: if isStoryPublisher() && libraryAsset();
+      allow update: if false;
+      allow delete: if isStoryPublisher();
+    }
+
     // =================================================================== signatures/{schoolId}/{userId}/…
     // Only the owner writes their own signature, and only into a school they belong to.
     match /signatures/{schoolId}/{userId}/{allPaths=**} {

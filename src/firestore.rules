@@ -23,6 +23,111 @@ service cloud.firestore {
     // 1. HELPER FUNCTIONS
     // =========================================================
 
+    // =====================================================================================================
+    // CENTRAL STORY LIBRARY (docs/STORY-SPARK-2.0-PLAN.md, Part 3). Separate from `junior_stories` (school-created
+    // stories), whose rules are untouched.
+    //
+    //   * Only central publishers write. A publisher is a platform super admin or holds the server-set custom claim
+    //     `story_publisher: true`. Nothing in a school (teacher, director, parent, pupil) can write here.
+    //   * Schools read ONLY published catalogue entries. Drafts live in story_library_admin (publishers only) and never
+    //     appear in the catalogue; archived entries are hidden from schools.
+    //   * "Eligible school" = the caller belongs to a school whose document does not set storyLibraryEnabled: false.
+    //     (School membership uses getUserSchoolId(), so S5 token-claim precedence applies; the content is non-confidential.)
+    //   * Catalogue lists must carry a limit (<= 50) and a status == 'published' filter, so no client can pull the whole library.
+    //   * Approval needs a different person from the author (four-eyes).
+    //   * Rule lookups are billed as Firestore reads, once per request (not per document returned).
+    // =====================================================================================================
+    function isStoryPublisher() {
+      return isSuperAdmin() || (isSignedIn() && request.auth.token != null && 'story_publisher' in request.auth.token &&
+        request.auth.token.story_publisher == true);
+    }
+    function libraryEligibleSchool(schoolId) {
+      return schoolId != '' && (!exists(/databases/$(database)/documents/schools/$(schoolId)) ||
+        get(/databases/$(database)/documents/schools/$(schoolId)).data.get('storyLibraryEnabled', true) != false);
+    }
+    function libraryReader() {
+      return isStoryPublisher() || (isSignedIn() && libraryEligibleSchool(getUserSchoolId()));
+    }
+    function adminDoc(storyId) { return get(/databases/$(database)/documents/story_library_admin/$(storyId)).data; }
+
+    function validCatalogueEntry(storyId) {
+      let d = request.resource.data;
+      return d.keys().hasAll(['storyKey', 'version', 'packageVersion', 'status', 'title', 'ageTiers', 'pageCount',
+                              'packagePath', 'packageHash', 'contentHash', 'publishedBy'])
+        && d.keys().hasOnly(['storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers',
+                             'level', 'categories', 'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'hasNarration',
+                             'hasActivities', 'packagePath', 'packageHash', 'packageBytes', 'contentHash', 'publishedAt',
+                             'updatedAt', 'sortKey', 'attribution', 'publishedBy'])
+        && storyId.matches('^[A-Za-z0-9_-]{3,64}$')
+        && d.status in ['published', 'archived']
+        && d.title is string && d.title.size() >= 1 && d.title.size() <= 120
+        && d.ageTiers is list && d.ageTiers.size() >= 1 && d.ageTiers.size() <= 6
+        && d.pageCount is int && d.pageCount >= 1 && d.pageCount <= 40
+        && d.version is int && d.version >= 1
+        && d.packageVersion is int && d.packageVersion >= 1
+        && d.get('categories', []).size() <= 20 && d.get('themes', []).size() <= 20 && d.get('objectives', []).size() <= 20
+        && d.packagePath.matches('^story_library/published/packages/' + storyId + '/v[0-9]+/package[.]json$')
+        && d.publishedBy == request.auth.uid;
+    }
+
+    // One document every client reads per session: the catalogue version pointer and kill-switch flags.
+    match /library_meta/{docId} {
+      allow get: if libraryReader();
+      allow list: if false;
+      allow create: if isStoryPublisher()
+        && request.resource.data.keys().hasOnly(['catalogueVersion', 'updatedAt', 'minClientVersion', 'bundles', 'tombstones', 'controls'])
+        && request.resource.data.catalogueVersion is int && request.resource.data.catalogueVersion >= 1
+        && request.resource.data.get('tombstones', []).size() <= 500;
+      allow update: if isStoryPublisher()
+        && request.resource.data.keys().hasOnly(['catalogueVersion', 'updatedAt', 'minClientVersion', 'bundles', 'tombstones', 'controls'])
+        && request.resource.data.catalogueVersion is int && request.resource.data.catalogueVersion > resource.data.catalogueVersion
+        && request.resource.data.get('tombstones', []).size() <= 500;
+      allow delete: if false;
+    }
+
+    // Compact published metadata. Never deleted: a withdrawn story becomes `archived` (a tombstone clients can purge on).
+    match /story_catalogue/{storyId} {
+      allow get: if isStoryPublisher() || (libraryReader() && resource.data.status == 'published');
+      allow list: if isStoryPublisher() || (libraryReader() && request.query.limit <= 50 && resource.data.status == 'published');
+      allow create: if isStoryPublisher() && validCatalogueEntry(storyId) && request.resource.data.status == 'published'
+        && adminDoc(storyId).status in ['approved', 'published'];
+      allow update: if isStoryPublisher() && validCatalogueEntry(storyId)
+        && (request.resource.data.status == 'archived' || adminDoc(storyId).status in ['approved', 'published'])
+        && request.resource.data.packageVersion >= resource.data.packageVersion;
+      allow delete: if false;
+    }
+
+    // Workflow, licensing and review notes: publishers only, in both directions.
+    match /story_library_admin/{storyId} {
+      allow read: if isStoryPublisher();
+      allow create: if isStoryPublisher() && storyId.matches('^[A-Za-z0-9_-]{3,64}$')
+        && request.resource.data.keys().hasAll(['storyKey', 'title', 'status', 'createdBy', 'updatedAt'])
+        && request.resource.data.status in ['draft', 'review']
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isStoryPublisher()
+        && request.resource.data.createdBy == resource.data.createdBy
+        && (
+          // Draft and review copies are freely editable, and may move draft <-> review.
+          (resource.data.status in ['draft', 'review'] && request.resource.data.status in ['draft', 'review']) ||
+          // Approval: a different publisher from the author, recorded on the document.
+          (resource.data.status == 'review' && request.resource.data.status == 'approved'
+            && request.auth.uid != resource.data.createdBy && request.resource.data.get('approvedBy', '') == request.auth.uid) ||
+          // Publishing, archiving and re-opening change only the status trail, never the content fields.
+          (((resource.data.status == 'approved' && request.resource.data.status in ['published', 'review']) ||
+            (resource.data.status == 'published' && request.resource.data.status == 'archived') ||
+            (resource.data.status == 'archived' && request.resource.data.status == 'review'))
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt', 'publishedBy', 'archivedBy']))
+        );
+      // Only an unpublished draft can be deleted; anything that has been approved or published is kept.
+      allow delete: if isStoryPublisher() && resource.data.status == 'draft';
+    }
+
+    // Resumable seeding state (Stage 2).
+    match /library_seed_jobs/{jobId} {
+      allow read, write: if isStoryPublisher();
+      match /items/{item} { allow read, write: if isStoryPublisher(); }
+    }
+
     // Audit logs for system actions
     match /auditLogs/{logId} {
       allow read, get, list: if isSignedIn();
