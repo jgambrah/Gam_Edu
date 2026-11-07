@@ -73,15 +73,21 @@ function matrix(title: string, f: Feature) {
   });
 }
 
-beforeAll(async () => {
-  env = await createEnv('demo-gam-edu', { storage: readRules('storage.rules'), firestore: 'rules_version = "2"; service cloud.firestore { match /databases/{d}/documents { match /{document=**} { allow read, write: if true; } } }' });
+const ALLOW_ALL_FIRESTORE = 'rules_version = "2"; service cloud.firestore { match /databases/{d}/documents { match /{document=**} { allow read, write: if true; } } }';
+/**
+ * (Re)loads storage.rules and the profile documents. NOTE: the Storage emulator holds ONE rule set for the whole
+ * emulator (not one per project), so any test that loads other rules (the "legacy" block) must call this again afterwards.
+ */
+async function loadNewRules() {
+  env = await createEnv('demo-gam-edu', { storage: readRules('storage.rules'), firestore: ALLOW_ALL_FIRESTORE });
   await seedProfiles(env, {
     // chat1: school A, teacherA + pupilA. chat2: school B. chat3: a school-B chat that teacherA is in (must not unlock school A's folder).
     'direct_messages/chat1': { schoolId: SCHOOL_A, participants: ['teacherA', 'pupilA'] },
     'direct_messages/chat2': { schoolId: SCHOOL_B, participants: ['teacherB'] },
     'direct_messages/chat3': { schoolId: SCHOOL_B, participants: ['teacherA'] },
   });
-});
+}
+beforeAll(loadNewRules);
 afterAll(async () => { await env?.cleanup(); });
 
 describe('Storage rules — membership is decided from Firestore, per school', () => {
@@ -292,6 +298,7 @@ describe('Before/after: the legacy rule really was open (documents the vulnerabi
   });
 
   it('NEW rules deny the same three attacks', async () => {
+    await loadNewRules(); // the legacy rules above replaced the emulator's rule set
     await seed(P.logo(SCHOOL_A));
     await assertFails(read('teacherB', P.logo(SCHOOL_A)));
     await assertFails(put('teacherB', P.logo(SCHOOL_A)));
