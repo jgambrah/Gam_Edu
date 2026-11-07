@@ -1,6 +1,6 @@
 import type { ThinkTankParadoxEvaluation } from './think-tank-evaluator';
 
-export const THINK_TANK_DATA_VERSION = '20.0.0';
+export const THINK_TANK_DATA_VERSION = '26.0.0';
 
 export type ThinkTankTargetGroup =
   | 'Novice (Basic 1-3)'
@@ -5637,6 +5637,1221 @@ export const THINK_TANK_PARADOXES: ThinkTankParadoxItem[] = [
     "question": "Look at the first digits of market prices, river lengths and town populations. Surprisingly, about 30% begin with 1 and fewer than 5% begin with 9. If digits were random, each would be 11%. Why?",
     "answer": "Many real-world numbers grow by multiplication, so they spend more time in ranges starting with 1; this pattern is Benford's law.",
     "explanation": "For a number to climb from 1 to 2 it must double, but from 9 to 10 it grows only 11%. So numbers sit longer with a leading 1.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Esi fills a cup right to the top with water. She gently drops in a few small pebbles and water spills out, even though she added no water. How can that happen?",
+    "answer": "The pebbles take up room in the cup and push some of the water out.",
+    "explanation": "Two things cannot be in the same place at the same time. When the pebbles sink in, the water they push aside has to go somewhere, so it spills over.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Mama pours juice from one jug into a tall thin glass for Kofi and a short wide glass for Ama, using exactly the same amount each time. Kofi shouts, 'Mine has more!' Who is right?",
+    "answer": "Neither is right, because both glasses hold the same amount of juice.",
+    "explanation": "The tall glass looks fuller because our eyes notice height more than width. The amount of juice only depends on how much was poured.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "After running, Kojo's body feels hot and wet with sweat. A few minutes later in the breeze, he feels cooler. Sweat came from his warm body, so how does it cool him down?",
+    "answer": "When sweat dries into the air it takes heat away from his skin.",
+    "explanation": "Water that turns into vapour needs heat, and it takes that heat from your skin. That is why a breeze on wet skin makes you feel cool.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "There are 3 mangoes on a plate. Esi takes 2 of them. How many mangoes does Esi have?",
+    "answer": "Esi has 2 mangoes, the ones she took.",
+    "explanation": "Many people say 1 because they think about what is left on the plate. The question asks how many Esi has, not how many are left.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Stars are shining in the sky all the time, even at noon. So why can we not see them during the day?",
+    "answer": "The bright light of the sun fills the sky and hides the faint light of the stars.",
+    "explanation": "Air spreads sunlight all across the daytime sky, making it very bright. Star light is too faint to be seen against that bright background.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1106",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Yaw rubs a balloon on his hair and holds it against the wall. It sticks without any glue or tape. How?",
+    "answer": "Rubbing gives the balloon an electric charge that pulls it toward the wall.",
+    "explanation": "Rubbing moves tiny electric charges onto the balloon. A charged balloon is pulled toward uncharged things like a wall, so it clings for a while.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1107",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Lateral Logic",
+    "question": "A basket holds 6 eggs. Six pupils each take one egg, yet one egg is still in the basket. How is that possible?",
+    "answer": "The sixth pupil took the basket with the last egg still inside it.",
+    "explanation": "The puzzle says each pupil took an egg, but the last pupil took the egg together with the basket. Careful listening solves many puzzles.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1108",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Number Sense",
+    "question": "Mama cuts a long strip of kente cloth into 4 pieces. How many cuts does she make?",
+    "answer": "She makes 3 cuts.",
+    "explanation": "You start with 1 whole strip and every cut adds exactly one more piece. To get 4 pieces you need 3 cuts, not 4.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1109",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "Maame says, 'My brother has no brothers.' Could she be telling the truth?",
+    "answer": "Yes, if Maame's brother has only sisters, such as Maame herself.",
+    "explanation": "Maame is a girl, so she is her brother's sister and not his brother. If there are no other boys in the family, he has no brothers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1110",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Lateral Logic",
+    "question": "Kwesi falls off a very tall ladder, yet he is not hurt even a little. How is that possible?",
+    "answer": "He fell off the bottom step of the ladder.",
+    "explanation": "The puzzle only says the ladder is tall, not that he fell from the top. A fall from the lowest step is too small to cause any harm.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A small gear with 10 teeth meshes with a big gear with 30 teeth. When the big gear turns round once, how many times does the small gear turn?",
+    "answer": "The small gear turns 3 times.",
+    "explanation": "As the big gear turns once, 30 teeth pass the meeting point, and the small gear has only 10 teeth, so it must turn 3 times. Small gears spin faster but with less turning force.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "Accra and Lagos are only a short flight apart, yet when it is 12:00 noon in Accra it is already 1:00 p.m. in Lagos. Why do such close cities have different clock times?",
+    "answer": "Countries choose their own time zones, and Nigeria keeps its clocks one hour ahead of Ghana.",
+    "explanation": "Ghana uses Greenwich Mean Time all year, while Nigeria uses UTC+1. Time zones follow national decisions as well as the position of the sun.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Auntie sprinkles dry salt on slices of garden egg, and soon little drops of water appear on the slices. Salt is dry, so how does it make the slices wet?",
+    "answer": "The salt pulls water out of the garden egg cells.",
+    "explanation": "Water moves through cell walls toward the place where there is more salt. This movement is called osmosis.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "The Sun is about 400 times wider than the Moon, yet during a total solar eclipse the Moon can hide the whole Sun. How can a much smaller object cover a much bigger one?",
+    "answer": "The Sun is also about 400 times farther away, so the Sun and Moon look almost the same size in the sky.",
+    "explanation": "How big something looks depends on its size and its distance. A small object that is close can cover a huge object that is far away.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Kofi blows across the top of an empty bottle and hears a note. He then adds water and blows again. Is the new note higher or lower?",
+    "answer": "The new note is higher.",
+    "explanation": "More water leaves a shorter column of air above it. A shorter air column vibrates faster, and faster vibrations make a higher pitch.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1106",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Ama pushes a classroom door with the same strength each time. Why does it open easily when she pushes near the handle, but hardly moves when she pushes near the hinges?",
+    "answer": "A push far from the hinges has a bigger turning effect than the same push close to the hinges.",
+    "explanation": "The turning effect of a force equals the force multiplied by its distance from the pivot. This is why door handles are placed far from the hinges.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1107",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A trader gives 10% off a GH₵200 radio, then gives another 10% off the new price. Is this the same as a single 20% discount?",
+    "answer": "No, the final price is GH₵162, which is only 19% off.",
+    "explanation": "The first 10% takes off GH₵20, leaving GH₵180. The second 10% is taken from GH₵180, which is GH₵18, not GH₵20.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1108",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "In a cold room, a metal spoon feels much colder than a wooden spoon, even though both spoons are at the same temperature. Why?",
+    "answer": "Metal carries heat away from your hand much faster than wood does.",
+    "explanation": "Your hand feels cold when heat leaves it quickly. Metal is a good conductor, so it pulls heat from your skin faster than wood.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1110",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Classic Paradox",
+    "question": "Ten farmers share one grassy field. Each farmer adds one extra cow to get more milk. After some months the grass is gone and every cow is thin. Each farmer made a sensible choice, so why did everyone lose?",
+    "answer": "Each farmer gained from the extra cow, but together the cows ate too much grass and ruined the shared field.",
+    "explanation": "This is called the tragedy of the commons. When people share a resource, what is best for one person can be harmful to all of them, so shared things need agreed rules.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1101",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A shop shows a crossed-out price of GH₵500 next to a new price of GH₵300 on a jacket whose real worth is only GH₵200. Many buyers feel they are getting a bargain. Why does this trick work?",
+    "answer": "The high crossed-out price acts as an anchor, so GH₵300 seems cheap by comparison.",
+    "explanation": "This is anchoring bias: the first number we see shapes how we judge later numbers. Checking an item's real value or comparing shops protects you from it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1102",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A rare disease affects 1 in 1,000 people. A test catches 99% of sick people but also wrongly flags 1% of healthy people. Yaa tests positive. Is she 99% likely to be sick?",
+    "answer": "No, she is only about 9% likely to be sick.",
+    "explanation": "Among 100,000 people, 100 are sick and 99 of them test positive. Of the 99,900 healthy people, 999 also test positive, so only 99 out of 1,098 positives are truly sick.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1103",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "A board has 7 lamps, all switched off. In each move you must flip exactly 2 lamps (on becomes off, off becomes on). Can you ever get all 7 lamps lit?",
+    "answer": "No, it is impossible.",
+    "explanation": "Each move changes the number of lit lamps by +2, 0 or −2, so the count stays even forever. Seven is odd, so it can never be reached.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1104",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "On a lake island every villager either always tells the truth or always lies. Kwasi says, 'Ama is a liar.' Ama says, 'Kwasi and I both tell the truth.' Who tells the truth?",
+    "answer": "Kwasi tells the truth and Ama lies.",
+    "explanation": "If Ama told the truth, then Kwasi would be truthful too, but Kwasi says Ama is a liar, which is a contradiction. So Ama lies, and that makes Kwasi's statement true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1105",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A teacher scolds the pupils who scored lowest on a test, and on the next test they improve. She praises the top scorers, and on the next test they do worse. She concludes that scolding works and praise harms. What is wrong with her reasoning?",
+    "answer": "Extreme scores tend to move back toward the average by chance, so scolding and praise did not cause the changes.",
+    "explanation": "This is regression to the mean. Very low scores are partly bad luck and very high scores partly good luck, so the next scores usually move closer to the middle.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1106",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A district judges its schools only by their exam pass rate. Some schools then stop entering weaker pupils for the exam, and the pass rate soars while real learning does not improve. Why did a good measure fail?",
+    "answer": "When a measure becomes the target, people chase the number instead of the real goal.",
+    "explanation": "This is Goodhart's law. A pass rate is useful for checking learning, but once rewards depend on it, it can be gamed and stops showing the truth.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1107",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "In a class of 40 pupils, 25 play football, 20 play oware and 5 play neither. But 25 + 20 = 45, which is more than 40. How many pupils play both games?",
+    "answer": "10 pupils play both games.",
+    "explanation": "Since 5 pupils play neither, 35 pupils play at least one game. Adding 25 and 20 counts the 'both' pupils twice, so 45 − 35 = 10 play both.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1108",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "Three friends rank three games. Kofi: A, then B, then C. Ama: B, then C, then A. Yaw: C, then A, then B. They vote on pairs by majority. Which game is the group's overall favourite?",
+    "answer": "There is none, because the votes go in a circle: A beats B, B beats C, and C beats A.",
+    "explanation": "Each pair is decided 2 to 1, yet the results form a loop, so the group has no clear first choice. This is the Condorcet paradox, and it shows that fair-looking majority voting can fail to give a winner.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1109",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "An official notices 5 illnesses in houses near a new phone mast. She draws a circle around exactly those houses on a map and says the mast must be the cause. What is wrong with this method?",
+    "answer": "She drew the circle after seeing where the cases were, so the cluster may be chance.",
+    "explanation": "This is the Texas sharpshooter fallacy: painting the target after the shots. A fair test chooses the area and the question first, then checks if illness is really higher than normal.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1110",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "Die A has faces 2, 2, 4, 4, 9, 9. Die B has 1, 1, 6, 6, 8, 8. Die C has 3, 3, 5, 5, 7, 7. Ama picks a die, then Kofi picks any other. Is there a best die?",
+    "answer": "No, A usually beats B, B usually beats C, and C usually beats A, each with probability 5/9.",
+    "explanation": "This is a set of non-transitive dice, so 'beats' is not like 'is bigger than' and can run in a circle. Whoever picks second can always choose a die that wins more often.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1201",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Ama puts a straight spoon into a glass of water. Through the side of the glass, the spoon looks bent. Did the water really bend the spoon?",
+    "answer": "No, the spoon is still straight. Light bends as it travels from the water into the air, so the spoon only looks bent.",
+    "explanation": "Light changes direction when it moves between water and air. Our eyes trust the light and show us a bent picture of a straight spoon.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1202",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "A bird sits on a high-voltage wire and is not shocked, yet a person who touches the same wire could be badly hurt. Why is the bird safe?",
+    "answer": "Both of the bird's feet touch the same wire, so the electricity has no path through the bird.",
+    "explanation": "Electricity flows when it has a path to the ground or to another wire. A bird touching only one wire does not give it a path, but a person touching the ground does.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1203",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "A tiny seed grows into a huge tree. A tree weighs far more than the seed, so where does all the extra stuff come from?",
+    "answer": "Most of it comes from the air and water that the plant takes in.",
+    "explanation": "Leaves take in a gas from the air called carbon dioxide, and roots take in water. The plant uses sunlight to turn them into wood, leaves and fruit.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1204",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "In a storm, lightning and thunder happen at the same moment. So why do we see the flash first and hear the boom later?",
+    "answer": "Light travels much faster than sound, so the flash reaches our eyes before the boom reaches our ears.",
+    "explanation": "Light is almost instant, but sound takes about 3 seconds to travel one kilometre. The farther away the storm, the longer the gap between flash and boom.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1205",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "Which weighs more: 1 kilogram of dry cocoa beans or 1 kilogram of dry cocoa husks?",
+    "answer": "They weigh exactly the same, because each one is 1 kilogram.",
+    "explanation": "The husks take up more space and look heavier, but weight is about how much there is, not how much room it takes. One kilogram is always one kilogram.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1206",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Yaw spins round and round, then stops. The whole room seems to keep spinning, but the room never moved. Why does it feel that way?",
+    "answer": "The liquid inside his ears keeps moving for a short time after he stops, which tricks his brain into feeling spin.",
+    "explanation": "Tiny tubes of liquid inside our ears help us feel balance. When the liquid is still moving, our brain thinks we are still turning.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1207",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Mama stirs sugar into cold water and into warm water. Which one makes the sugar disappear faster, and why?",
+    "answer": "The warm water dissolves sugar faster, because its tiny particles move around more quickly.",
+    "explanation": "Heat makes water particles move faster, so they pull the sugar apart sooner. The sugar does not vanish, it spreads out invisibly in the water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1208",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "At noon your shadow is short, but in the evening it is very long. You did not grow, so why does your shadow stretch?",
+    "answer": "In the evening the sun is low in the sky, so it throws your shadow out long.",
+    "explanation": "The lower the sun, the longer a shadow becomes. At noon the sun is high above you, so your shadow is short and close.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1209",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "A farmer has 9 goats. All but 4 of them run away. How many goats does the farmer have left?",
+    "answer": "The farmer has 4 goats left.",
+    "explanation": "'All but 4' means every goat except 4 ran away, so 4 stayed. Many people subtract and say 5, but the words tell us the number that stayed.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1210",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Lateral Logic",
+    "question": "How can you throw a ball as hard as you can and have it come back to you, with no string, no wall and no helper?",
+    "answer": "Throw it straight up into the air and it will fall back down to you.",
+    "explanation": "Gravity pulls everything back toward the ground. A ball thrown straight up slows down, stops and comes back.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1201",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A light child can balance a heavy adult on a seesaw. How is that possible, when the adult is much heavier?",
+    "answer": "The light child sits much farther from the middle (the pivot) than the adult does.",
+    "explanation": "The turning effect of a weight equals the weight multiplied by its distance from the pivot. A small weight far away can balance a big weight close in.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1202",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "The town of Tema in Ghana lies almost exactly on the 0° line of longitude that passes through London. So why is the clock time in Tema sometimes different from London's?",
+    "answer": "London moves its clocks one hour forward in summer, while Ghana keeps the same time all year.",
+    "explanation": "Ghana uses Greenwich Mean Time all year. London uses British Summer Time from spring to autumn, so the clocks match only in winter.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1203",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A metal lid is stuck tightly on a glass jar. Auntie holds the lid under hot running water and it loosens easily. Both the lid and jar got hot, so why does it loosen?",
+    "answer": "The metal lid expands more than the glass jar, so it becomes slightly looser.",
+    "explanation": "Most materials expand when heated, but metals expand more than glass. The lid grows a little bigger than the jar mouth and comes loose.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1204",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A steel paper clip is much denser than water, yet if you place it very gently on the water surface it floats. How?",
+    "answer": "The surface of water acts like a thin stretchy skin because of surface tension, and it holds the light clip up.",
+    "explanation": "Water molecules pull on each other and form a tight film at the top. A small, light object laid carefully on it can rest on that film.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1205",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "A mirror seems to swap your left and right hand, but it does not swap your head and feet. Why not?",
+    "answer": "A mirror really reverses front and back, not left and right.",
+    "explanation": "Your right hand is still on the same side in the mirror. What changes is that the picture faces you, so we imagine turning around and think left and right swapped.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1206",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A trader buys a goat for GH₵100 and sells it for GH₵120. Then he buys it back for GH₵130 and sells it again for GH₵140. What is his total profit?",
+    "answer": "His total profit is GH₵30.",
+    "explanation": "He spent GH₵100 + GH₵130 = GH₵230 and received GH₵120 + GH₵140 = GH₵260. The difference is GH₵30.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1207",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "A farmer thinks that more fertiliser always means a better crop, so he pours double the amount on his maize. The plants turn yellow and die. How can too much of a good thing hurt?",
+    "answer": "Too much fertiliser makes the soil water very salty, and the strong solution pulls water out of the roots.",
+    "explanation": "Water moves toward the stronger solution by osmosis. When soil is too salty, roots lose water instead of taking it in.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1208",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "In the hot sun, water in an unglazed clay pot stays cooler than water in a plastic bucket. The pot has tiny holes, so why does leaking make the water cooler?",
+    "answer": "A little water seeps out and evaporates from the pot's surface, and evaporation takes heat away from the pot.",
+    "explanation": "When water turns to vapour it needs heat, and it takes that heat from its surroundings. This cools the pot and the water inside.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1209",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "You can hear a friend talking from around the corner of a building, but you cannot see them. Light and sound are both waves, so why does only sound get around the corner?",
+    "answer": "Sound waves are very long and spread around corners, but light waves are tiny and travel almost straight.",
+    "explanation": "Waves bend around edges more when their wavelength is large. Sound waves are metres long, while light waves are millions of times shorter.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1210",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "One third plus one third plus one third makes 1 whole. But as decimals, 0.333 + 0.333 + 0.333 = 0.999. Which one is right?",
+    "answer": "One whole is right, because 0.333 is only a rounded copy of one third.",
+    "explanation": "One third as a decimal goes on forever as 0.3333..., so 0.333 is slightly too small. Add the full, endless decimals and you get exactly 1.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1201",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "Most people have fewer friends than their own friends have, on average. How can this be true for almost everybody?",
+    "answer": "Very sociable people appear on many friend lists, so when you pick a random friend you are more likely to land on a popular person.",
+    "explanation": "This is the friendship paradox. Popular people are counted once for every friend they have, which lifts the average number of friends your friends have.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1202",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "Trotros on a route leave the station at random, on average every 10 minutes. If you arrive at a random time, is your average wait exactly 5 minutes?",
+    "answer": "No, your average wait is more than 5 minutes.",
+    "explanation": "This is the waiting-time paradox. A random arrival is more likely to fall inside one of the long gaps than inside a short gap, so you usually wait longer than half the average gap.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1203",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "In the Ghana 5/90 lottery, Kojo says the pick 1, 2, 3, 4, 5 will never win because it looks too neat. Is it less likely than 7, 23, 41, 58, 86?",
+    "answer": "No, every set of five numbers is exactly equally likely.",
+    "explanation": "The draw has no memory or taste for patterns. Neat-looking sets feel unlikely only because there are few of them, but each individual set has the same chance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1204",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "At a gathering of 25 people, each person claims to have shaken hands with exactly 3 other people. Can all 25 claims be true?",
+    "answer": "No, it is impossible.",
+    "explanation": "Each handshake involves two people, so the total of all handshake counts must be even. But 25 × 3 = 75 is odd, so the claims cannot all be true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1205",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A teacher says, 'You will have a surprise test one day next week, Monday to Friday.' Pupils reason that it cannot be Friday, then not Thursday, and so on, so no surprise test is possible. On Wednesday a test comes, and it is a surprise. What went wrong with their reasoning?",
+    "answer": "Their backward reasoning assumed they could be sure the announcement was true, but that assumption cancels the surprise itself.",
+    "explanation": "This is the surprise exam paradox. If the pupils truly rule out every day, they have no reason to expect any day, so a test on any day will be a surprise.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1207",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A DNA test on a crime scene matches a suspect, and the match would happen by chance for only 1 in 1,000,000 people. A prosecutor says there is only a 1 in 1,000,000 chance the suspect is innocent. In a city of 5,000,000 people, what is wrong with this claim?",
+    "answer": "About 5 innocent people in the city would also match, so a match alone makes the suspect guilty with chance of only about 1 in 6.",
+    "explanation": "This is the prosecutor's fallacy. The chance that an innocent person matches is not the same as the chance a matching person is innocent, so other evidence is needed.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1208",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "Every perfect square (1, 4, 9, 16, ...) is also a whole number, but most whole numbers are not squares. Does that mean there are fewer perfect squares than whole numbers?",
+    "answer": "No, in the infinite case both sets are the same size, because each whole number n can be paired with the square n².",
+    "explanation": "This is Galileo's paradox. In infinite sets, a part can be matched one-to-one with the whole, so our everyday idea of 'fewer' does not work the same way.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1209",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A pile of 10,000 gari grains is clearly a heap. Taking away one grain still leaves a heap. Repeat this again and again, and each step looks fine, yet you end with 1 grain that is called a heap. What went wrong?",
+    "answer": "The word 'heap' is vague and has no sharp cut-off, so repeating a tiny step slowly stretches it to nonsense.",
+    "explanation": "This is the sorites paradox. Many everyday words have blurry edges, and logic that treats them as sharp can lead to false conclusions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1210",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "Ten bidders each estimate the value of a cocoa farm with random errors, some too high and some too low. The highest bidder wins. On average, does the winner make a good profit?",
+    "answer": "No, the winner tends to overpay.",
+    "explanation": "This is the winner's curse. The person who wins is usually the one who overestimated the value the most, so winning is a sign of paying too much.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Kofi leaves an ice block in an empty dry cup on a hot afternoon. Soon, drops of water appear on the outside of the cup, even though the cup has no holes. Where did the outside water come from?",
+    "answer": "The water came from invisible water vapour in the warm air around the cup.",
+    "explanation": "Air always holds a little invisible water gas. When that warm air touches the cold outside of the cup, it cools down and turns into tiny drops of liquid water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "A small iron nail sinks straight to the bottom of a bucket of water, yet a huge ship made of heavy steel floats on the sea. Why does the giant ship float while the tiny nail sinks?",
+    "answer": "The ship is hollow and filled with air, so it pushes aside enough water to hold its weight up.",
+    "explanation": "Whether something floats depends on how much water it pushes out of the way compared to its weight. The hollow shape of the ship makes it lighter overall than the water it pushes aside.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "At night, as Akua walks along the street, the Moon seems to follow her everywhere she goes, while the houses and trees stay behind. Why does the Moon seem to walk with her?",
+    "answer": "The Moon is so far away that the angle you see it from barely changes when you walk.",
+    "explanation": "Nearby things like trees pass behind you quickly because your view of them changes fast. The Moon is hundreds of thousands of kilometres away, so it stays in the same spot in your view.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "On a cool morning, a metal gate and a wooden door have been sitting in the same compound all night and are at the exact same temperature. Why does the metal gate feel much colder when you touch it?",
+    "answer": "Metal pulls heat away from your warm hand much faster than wood does.",
+    "explanation": "Your skin does not really measure temperature; it feels how fast heat leaves your hand. Because metal is a good conductor of heat, it steals your hand's warmth quickly and feels cold.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "A hole in the ground is 2 metres wide, 2 metres long, and 2 metres deep. How much soil is inside the hole?",
+    "answer": "There is no soil inside the hole at all, because it is a hole.",
+    "explanation": "People often start multiplying the numbers, but a hole is an empty space where the soil has already been dug out.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1306",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "You blow on hot tea to cool it down, but on a chilly harmattan morning you blow into your hands to warm them up. How can the same breath do both?",
+    "answer": "You blow fast with pursed lips to cool tea, and breathe out slowly with a wide mouth to warm your hands.",
+    "explanation": "Blowing through a small gap makes the air spread out and mix with cool room air, which cools the tea. Breathing out with an open mouth sends warm air straight from inside your body onto your hands.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1307",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Mama boils water for banku over a bright fire. Once the water is bubbling hard, she turns the fire up even higher to make the water hotter. Does the boiling water get any hotter?",
+    "answer": "No, the liquid water stays at the same boiling temperature; it just turns into steam faster.",
+    "explanation": "Once water reaches its boiling point (100°C at sea level), all the extra heat goes into turning the water into steam rather than raising the temperature of the water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1308",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "An unpeeled orange floats in a bowl of water, but when you peel off its skin, the lighter orange sinks to the bottom. How can making it lighter make it sink?",
+    "answer": "The orange peel is full of tiny air pockets that work like a life jacket.",
+    "explanation": "Even though removing the peel makes the orange weigh less, it also removes the spongy air pockets that kept it less dense than the water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1310",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Lateral Logic",
+    "question": "Two mothers and two daughters go to a chop bar and order three plates of jollof rice. Every person eats her own full plate without sharing. How is this possible?",
+    "answer": "There are only three people: a grandmother, her daughter, and her granddaughter.",
+    "explanation": "The woman in the middle is both a daughter (to the grandmother) and a mother (to the granddaughter), so three people make two mothers and two daughters.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Kwame drops a heavy mango and a small pebble from the same balcony at the exact same moment. The mango is ten times heavier, so why do they hit the ground at almost the same time?",
+    "answer": "Gravity speeds up all falling objects at the same rate, no matter their weight.",
+    "explanation": "Although gravity pulls harder on the heavier mango, the heavier mango also has more mass and is harder to speed up. These two effects balance out completely.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "A glass of water is filled to the very brim with a big ice cube floating in it, poking above the rim. When the ice cube melts completely, why doesn't the water overflow?",
+    "answer": "Ice takes up slightly more space than liquid water, and as it melts it shrinks to fit the exact space it was pushing aside.",
+    "explanation": "A floating ice cube displaces an amount of water equal to its own weight. When it turns into water of that exact same weight, it fills only the underwater space it was already taking up.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "When you ride a bicycle very slowly it is hard to keep from falling sideways, yet when you pedal faster the bicycle stays upright easily. Why does moving forward stop you from falling sideways?",
+    "answer": "The spinning wheels and forward motion help steer the front wheel back under you whenever you start to tilt.",
+    "explanation": "Moving forward lets tiny steering turns bring the wheels right back underneath your centre of gravity, and the spinning wheels also resist tilting like a spinning top.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A closed kitchen feels too warm, so a boy opens the refrigerator door wide and leaves it open to cool the whole room. After an hour, the kitchen is actually slightly warmer. Why?",
+    "answer": "The fridge motor on the back gives off more heat into the room than the cold inside takes away.",
+    "explanation": "A refrigerator does not destroy heat; it pumps heat from inside the box out through coils on the back, plus the electric motor makes extra heat of its own.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1305",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "Polar bears have hair that is not actually white, and their skin underneath is black. Yet when we look at them, their fur looks snow-white. How?",
+    "answer": "Each hair is a clear, hollow tube that scatters sunlight in all directions, making it look white.",
+    "explanation": "Just like clear ice or glass looks white when crushed into tiny pieces, transparent hairs bounce every colour of light back to our eyes at once, which we see as white.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1306",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A pineapple seller increases the price of a GH₵100 crate of pineapples by 10%. The next week, she reduces the new price by 10%. Is the crate back to GH₵100?",
+    "answer": "No, the price is now GH₵99.",
+    "explanation": "Adding 10% of GH₵100 gives GH₵110. Taking 10% off the bigger number GH₵110 removes GH₵11, leaving GH₵99.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1307",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "Plants make food from sunlight during the day, yet like animals, plants also breathe in oxygen and release carbon dioxide all day and all night. Why don't plants use up all the oxygen in the air?",
+    "answer": "In daylight, plants produce far more oxygen during photosynthesis than they use up in respiration.",
+    "explanation": "Plants carry out respiration 24 hours a day just like we do, but while the sun shines their leaves make much more oxygen than the plant needs for itself.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1308",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A pressure cooker has a tight lid that traps steam inside. Why does trapping the steam cook tough beans in half the time of an open pot?",
+    "answer": "Higher pressure inside the pot forces water to boil at a higher temperature than 100°C, and hotter water cooks food faster.",
+    "explanation": "In an open pot, water cannot get hotter than 100°C. Under high pressure, water stays liquid up to about 120°C, and that extra heat cooks the beans quickly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1309",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "You blow air hard across the top of a hanging strip of paper, expecting it to be pushed down. Instead, the strip of paper rises up toward the stream of air. Why?",
+    "answer": "Fast-moving air above the paper has lower pressure than the still air underneath, so the air below pushes the paper up.",
+    "explanation": "According to Bernoulli's principle, when air speeds up its sideways pressure drops. The higher pressure of the calm air under the paper lifts it into the fast stream.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1301",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "How many pupils do you need in a classroom before there is a better than 50% chance that at least two of them share the same birthday (day and month)?",
+    "answer": "Only 23 pupils are needed, even though there are 365 days in a year.",
+    "explanation": "This is the birthday paradox. We are not matching one specific birthday, but checking every possible pair of pupils. With 23 pupils there are 253 different pairs, giving a 50.7% chance of a match.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1303",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "Hospital A and Hospital B compete in two towns. In the rural clinic and in the city hospital considered separately, Medicine X has a higher recovery rate than Medicine Y. Yet when the totals from both places are combined, Medicine Y looks better overall. How can that happen?",
+    "answer": "Medicine X was given mostly to the seriously ill patients in the city hospital, which dragged down its combined total.",
+    "explanation": "This is Simpson's paradox. When groups of very different difficulty or size are merged together, a hidden factor (how sick the patients already were) can reverse the trend seen in each individual group.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1306",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A stack of 100 sacks of fresh cassava weighs 100 kg, and testing shows the cassava is 99% water by weight. After drying in the sun, the cassava is now 98% water. What does the stack weigh now?",
+    "answer": "It weighs 50 kg, not 99 kg.",
+    "explanation": "This is the potato paradox. The dry solid part never changes: at the start it is 1% of 100 kg, which is 1 kg. After drying, that same 1 kg of solid makes up 2% of the total weight, and 1 kg is 2% of 50 kg.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1308",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "To walk 10 metres to a classroom door, you must first walk halfway (5 m), then half of what remains (2.5 m), then half again (1.25 m), passing through infinitely many half-steps. How can you cross an infinite number of steps in a few seconds?",
+    "answer": "Both the distances and the times taken for each step shrink so fast that an infinite number of them add up to a finite total.",
+    "explanation": "This is Zeno's dichotomy paradox. In mathematics, an infinite series like 1/2 + 1/4 + 1/8 + 1/16 + ... converges to exactly 1 whole.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1309",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A steel band is wrapped tightly around the Earth's equator (about 40,000 km long). If you cut the band, splice in just 1 extra metre of steel, and raise the band evenly all the way around, could a mouse crawl under it?",
+    "answer": "Yes, the gap all around the Earth would be about 16 centimetres high—big enough for a mouse or even a cat.",
+    "explanation": "This is the string-girdling-Earth paradox. Because circumference C = 2πr, adding length ΔC increases the radius by ΔC / (2π), which is 1 m / 6.28 ≈ 16 cm, completely independent of how huge the sphere is.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1401",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "A dry spoon placed in a bowl of warm porridge soon becomes warm too. Did the spoon make its own heat?",
+    "answer": "No. Heat moved from the warmer porridge into the cooler spoon.",
+    "explanation": "Heat transfers from a warmer object to a cooler one through contact; this is conduction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1402",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "Ama has three red beads and two blue beads in a bag. Without looking, how many beads must she take to be certain she has at least one red bead?",
+    "answer": "Three beads.",
+    "explanation": "In the worst case, her first two beads are blue; the third must be red.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1403",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "After a heavy rain, a shallow puddle disappears by afternoon although nobody sweeps it away. Where did the water go?",
+    "answer": "Most of it evaporated into the air as water vapour.",
+    "explanation": "Sunlight and moving air help liquid water change into invisible water vapour.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1404",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Lateral Logic",
+    "question": "Three sisters share two oranges equally without cutting either orange. How can each sister receive the same amount?",
+    "answer": "They can squeeze the two oranges and divide the juice equally.",
+    "explanation": "The oranges do not need to be cut into pieces; their juice can be shared in three equal portions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1405",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Two identical bottles are filled with the same amount of water. One is placed in direct sunlight and the other in shade. Why does the sunny bottle usually become warmer?",
+    "answer": "It absorbs more energy from sunlight.",
+    "explanation": "Sunlight transfers energy to the bottle and water; the shaded bottle receives less direct solar radiation.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1406",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A market seller offers three notebooks for GH₵24 or five identical notebooks for GH₵35. Which deal has the lower price per notebook?",
+    "answer": "Five for GH₵35, at GH₵7 each.",
+    "explanation": "Three for GH₵24 costs GH₵8 each, while five for GH₵35 costs GH₵7 each.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1408",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "All members of the school chess club play chess. Kojo plays chess. Must Kojo belong to the school chess club?",
+    "answer": "No. Playing chess does not prove club membership.",
+    "explanation": "The statement gives a condition for members, not a rule that everyone who plays chess is a member.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1409",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A screening test is 90% accurate at detecting a rare condition affecting 1 in 100 people, and it incorrectly flags 10% of healthy people. If someone tests positive, is there a 90% chance they have the condition?",
+    "answer": "No. Under those assumptions the chance is about 8.3%.",
+    "explanation": "Out of 1,000 people, about 10 have the condition and 9 test positive; about 990 do not and 99 falsely test positive. Only 9 of 108 positive results are true positives.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1410",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "A runner completes one lap of a 400-metre circular track and finishes at the starting line. How can the runner travel 400 metres but have zero displacement?",
+    "answer": "Distance counts the path travelled, while displacement is the change from starting to ending position.",
+    "explanation": "The runner travelled 400 metres but ended at the same location, so the displacement vector is zero.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1502",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Ama rubs her cold hands together quickly and they become warm. Nobody lit a fire, so where does the heat come from?",
+    "answer": "The rubbing turns movement into heat.",
+    "explanation": "When two things rub, a force called friction slows the movement down. The lost movement changes into heat, so your hands feel warm.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1503",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Number Sense",
+    "question": "A snail climbs a wall that is 3 metres tall. Each day it climbs 2 metres, and each night it slides back 1 metre. On which day does it reach the top?",
+    "answer": "On day 2.",
+    "explanation": "After day 1 and night 1 the snail is at 1 metre. On day 2 it climbs 2 more metres to reach 3 metres, and it is at the top before it can slide back.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1505",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "On a cool harmattan morning, Yaw sees a white mist coming out of his mouth when he breathes. He did not eat anything cold, so what is the mist?",
+    "answer": "It is tiny drops of water from his warm breath that turn from invisible vapour into a cloud as they meet the cool air.",
+    "explanation": "Your breath has water vapour in it. When the vapour meets cold air it cools and forms tiny drops you can see.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1506",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Kwesi kicks a ball across a grassy field. Nobody catches it, yet it slows down and stops. What stopped it?",
+    "answer": "Friction from the grass and the air slowed it until it stopped.",
+    "explanation": "Moving things keep moving unless a force slows them. The rough grass rubbing against the ball and the air pushing against it are those forces.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1507",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Esi can see her face clearly in a calm pond but not in a pond that Yaw is splashing in. It is the same water, so why does the picture disappear?",
+    "answer": "Splashing makes ripples that send light in many directions, so the picture of her face is broken up.",
+    "explanation": "Smooth water bounces light back in an orderly way, like a mirror. Rough water bounces it everywhere, so no clear picture forms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1508",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "A kite is heavier than the air around it, yet it flies high in the sky. What keeps it up?",
+    "answer": "The wind pushes against the kite and lifts it up.",
+    "explanation": "Moving air hits the tilted kite and pushes it upward. The string holds the kite so the wind cannot blow it away.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1509",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "Five birds are sitting on a branch. A boy throws a stone and hits one bird. How many birds are still on the branch?",
+    "answer": "None, because the other birds fly away.",
+    "explanation": "Most people subtract and say 4, but real birds are frightened by the noise. Thinking about what really happens can beat doing the sum.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1510",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "A dog has very few sweat glands, yet it stays cool by hanging out its tongue and panting on a hot day. How does that help?",
+    "answer": "Water on the tongue and in the mouth dries into the air and takes heat away.",
+    "explanation": "When water dries into vapour it takes heat from the place it leaves. Panting makes this happen faster and cools the dog.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1501",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "Three cats catch three rats in three minutes. How many cats are needed to catch 100 rats in 100 minutes?",
+    "answer": "Only 3 cats.",
+    "explanation": "Each cat catches 1 rat in 3 minutes. In 100 minutes each cat catches about 33 rats, so 3 cats catch about 100.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1502",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Kojo pushes a sharp nail and a blunt nail into wood with exactly the same push. Why does the sharp nail go in far more easily?",
+    "answer": "The same force is squeezed onto a much smaller point, so the pressure is much bigger.",
+    "explanation": "Pressure equals force divided by area. A small area gives a big pressure, which is why knives and needles are sharp.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1504",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Probability Logic",
+    "question": "Ama tosses two fair coins. Someone says there are 3 results (two heads, one of each, two tails), so two heads has a chance of 1 in 3. Is that right?",
+    "answer": "No, the chance of two heads is 1 in 4.",
+    "explanation": "The four equally likely results are HH, HT, TH and TT. 'One of each' is two of those results, so it is twice as likely as two heads.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1505",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "The Moon passes between the Earth and the Sun every month at new moon. So why is there not a solar eclipse every month?",
+    "answer": "The Moon's path is tilted by about 5° from the Earth's path, so the Moon usually passes above or below the Sun's line.",
+    "explanation": "The three bodies line up exactly only on a few occasions each year. Most months the Moon's shadow misses the Earth.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1506",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "After Yaw pumps up his bicycle tyre, the bottom of the pump becomes warm. Nobody heated it, so why does it warm up?",
+    "answer": "Squeezing the air into a smaller space heats it.",
+    "explanation": "When air is compressed, its particles are pushed closer and move faster, and faster particles mean more heat. The pump barrel warms from that hot air.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1508",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A trader saves 1 pesewa on day 1 and doubles the amount saved each day. By day 30, will he have more than GH₵5 million?",
+    "answer": "Yes, on day 30 he saves about GH₵5.37 million that day.",
+    "explanation": "On day 30 the amount is 2²⁹ pesewas, which is 536,870,912 pesewas. Repeated doubling grows very quickly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1509",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "A guitar string is plucked. Kofi presses it against the neck so only half of it can shake, and the note jumps higher. The string did not change. Why is the note higher?",
+    "answer": "A shorter string vibrates faster, and faster vibrations make a higher note.",
+    "explanation": "Pitch depends on how many vibrations happen each second. Halving the length of a string doubles its vibration rate, which raises the note by an octave.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1510",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "The Moon looks huge when it rises near the horizon and small when it is high in the sky. A photograph of both shows the same size. Did the Moon really change size?",
+    "answer": "No, it is an illusion created by our brain.",
+    "explanation": "Near the horizon, the Moon sits next to trees and buildings that our brain uses for comparison, and it seems bigger. High in an empty sky there is nothing to compare it with.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1501",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A bag holds three cards: one is red on both sides, one is blue on both sides, and one is red on one side and blue on the other. Kojo draws a card without looking and sees a red face. What is the chance that the other side is also red?",
+    "answer": "The chance is 2/3, not 1/2.",
+    "explanation": "There are three red faces, and two of them belong to the all-red card. So two out of three red faces you could be looking at have red on the back.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1504",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Observation",
+    "question": "In the 1500s, the crew of a ship sailed westward all the way round the world. When they returned they found that their careful diary was one day behind the calendar at home. They made no mistakes in counting, so what happened?",
+    "answer": "By sailing west with the Sun they saw one fewer sunrise than people who stayed at home, so their count of days was one less.",
+    "explanation": "Travelling around the Earth once against its spin means the Sun rises one fewer time for the traveller. This is why we have the International Date Line to keep calendars in step.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1506",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "A drawer in a dark room holds many red, blue and white socks mixed together. How many socks must you pull out to be completely sure that two of them match?",
+    "answer": "Four socks.",
+    "explanation": "With three colours, three socks could all be different. The fourth must repeat a colour, by the pigeonhole principle.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1507",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A lottery ticket costs GH₵2. There is a 1 in 1,000,000 chance to win GH₵1,000,000. Many people say the prize is so big that it is worth playing. On average, how much does a player gain or lose per ticket?",
+    "answer": "On average a player loses GH₵1 per ticket.",
+    "explanation": "The expected winnings are 1/1,000,000 × GH₵1,000,000 = GH₵1, but the ticket costs GH₵2. A big prize can hide a small chance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1508",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A vaccination campaign works so well that a dangerous disease almost disappears. Soon many people say, 'This disease is harmless, so we do not need the vaccine.' Why is this reasoning dangerous?",
+    "answer": "The disease looks harmless only because the vaccine is working, and stopping it would let the disease return.",
+    "explanation": "This is called the prevention paradox. When prevention succeeds, the harm it prevents becomes invisible, so people may stop supporting it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1509",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "Most liquids become densest just before they freeze, but water is different. In a cold-climate lake, why does ice form on top and leave liquid water below where fish survive?",
+    "answer": "Water is densest at about 4°C, so colder water floats to the top and freezes there, leaving warmer water below.",
+    "explanation": "Below 4°C water expands as it cools, and ice is less dense than liquid water. The floating ice layer also insulates the water underneath.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1602",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Dry sand will not stand up to make a castle, and very watery sand will not either. Yet damp sand stands tall. Why?",
+    "answer": "A little water makes the grains stick together, but too much water lets them slide apart.",
+    "explanation": "Thin films of water pull the sand grains together like weak glue. Too much water fills all the gaps and the grains float away from each other.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1603",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "A top lying on its side falls over at once. But when you spin it fast, it stands up on its tip. Why does spinning keep it up?",
+    "answer": "A fast-spinning top resists being tipped over, so it stays upright until it slows down.",
+    "explanation": "Spinning things try to keep pointing the same way. As the top slows, the spin gets weaker and it starts to wobble and fall.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1604",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "Ama shakes a bottle of fizzy orange drink and then opens it. Foam shoots out everywhere. She added nothing, so where does the foam come from?",
+    "answer": "The gas hidden in the drink escapes as bubbles when shaking and opening let it out.",
+    "explanation": "Gas is squeezed into the drink and held in by the closed cap. Shaking makes lots of bubbles, and opening the bottle lets them rush out.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1605",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Wordplay Logic",
+    "question": "A red house is made of red bricks. A blue house is made of blue bricks. What is a greenhouse made of?",
+    "answer": "Glass.",
+    "explanation": "A greenhouse is a special building for growing plants, and it is made of glass. The colour words trick you into guessing green bricks.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1606",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Number Sense",
+    "question": "A fence is 10 metres long. There is a post every 2 metres, including one at each end. How many posts are there?",
+    "answer": "6 posts.",
+    "explanation": "The posts stand at 0, 2, 4, 6, 8 and 10 metres. There are 5 gaps, and there is always one more post than there are gaps.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1607",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Lateral Logic",
+    "question": "Kwame says he stayed awake for 8 days in a row without sleeping in the daytime, and he was not tired at all. How is that possible?",
+    "answer": "He slept at night and stayed awake only during the days.",
+    "explanation": "The puzzle says he did not sleep during the days, not that he never slept at night. Listening to every word carefully solves many puzzles.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1608",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Observation",
+    "question": "A glass of sea water from the beach looks clear like tap water. But the sea itself looks blue. Why?",
+    "answer": "A huge deep amount of water soaks up red light and sends blue light back to our eyes.",
+    "explanation": "Water absorbs red light better than blue light. In a small glass very little light is absorbed, so the water looks clear.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1609",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Math & Physics",
+    "question": "Esi drops a rubber ball. It bounces up, but a little lower each time, until it stops. Where does the bounce go?",
+    "answer": "Each bounce turns a little of the ball's energy into sound and heat.",
+    "explanation": "The ball and the ground squash and warm up a tiny bit, and we hear a thud. That energy cannot make the ball jump again.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-nov-1610",
+    "targetGroup": "Novice (Basic 1-3)",
+    "difficulty": "Starter Logic",
+    "question": "Ama is 5th from the front of a line and also 5th from the back. How many children are in the line?",
+    "answer": "9 children.",
+    "explanation": "There are 4 children in front of her and 4 behind her, plus Ama herself. So 4 + 1 + 4 = 9.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1602",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "It is very hard to carry 50 kg of sand in your arms, but easy to push the same sand in a wheelbarrow. You still move the same sand, so why is it easier?",
+    "answer": "The wheelbarrow works as a lever, and the wheel carries most of the weight.",
+    "explanation": "The wheel is the pivot, and your hands are far away from it. A small force far from the pivot can balance a heavy load close to the pivot.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1603",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Water is much heavier than air, yet sound travels about four times faster in water than in air. Why does a heavier material carry sound faster?",
+    "answer": "Water is much harder to squeeze than air, so it passes the push along faster.",
+    "explanation": "Sound is a push passed from particle to particle. Stiff materials spring back quickly, and that more than makes up for their extra weight.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1604",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Math & Physics",
+    "question": "Kojo heats water in a paper cup over a flame, and the paper does not burn. Paper catches fire easily, so why not here?",
+    "answer": "The water soaks up the heat and keeps the paper below the temperature where it catches fire.",
+    "explanation": "Boiling water stays at about 100°C, and paper needs a much higher temperature to burn. The water keeps carrying the heat away.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1605",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "On a cloudy day we cannot see the sun, yet a solar panel still makes some electricity. How?",
+    "answer": "Clouds let some sunlight through, and scattered light still reaches the panel.",
+    "explanation": "Clouds thin the sunlight but do not block all of it. Panels give less power on cloudy days, but not zero.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1606",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Deductive Logic",
+    "question": "Ama picks seven odd numbers and tries to make them add up to exactly 20. Can she do it?",
+    "answer": "No, it is impossible.",
+    "explanation": "Two odd numbers add to an even number, so six odd numbers add to an even number. A seventh odd number makes the total odd, and 20 is even.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1608",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Observation",
+    "question": "Mount Afadjato is a little closer to the sun than Accra, yet it is cooler. How can being closer to the sun mean being cooler?",
+    "answer": "The sun is so far away that a few hundred metres makes no difference, and the thinner air higher up holds less heat.",
+    "explanation": "The warm ground heats the air near it. Higher up the air is thinner and loses heat easily, so it is cooler.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1609",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Probability Logic",
+    "question": "A bag holds 3 red beads and 1 blue bead. Ama takes out two beads without looking. Is she more likely to get two reds, or one red and the blue?",
+    "answer": "Both are equally likely, with 3 chances out of 6 each.",
+    "explanation": "There are 6 possible pairs. Three pairs are both red, and three pairs include the blue bead.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-app-1610",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "difficulty": "Number Sense",
+    "question": "A 500 g tin of milk costs GH₵10 and a 1 kg tin costs GH₵18. A pupil says the big tin costs more, so it is the worse deal. Is she right?",
+    "answer": "No, the big tin is cheaper for the same amount of milk.",
+    "explanation": "The small tin costs GH₵2.00 per 100 g and the big tin costs GH₵1.80 per 100 g. Comparing the price per unit shows the real saving.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1601",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Classic Paradox",
+    "question": "A government urges every household to save more money. If everyone spends less, shops earn less, workers lose income and fewer people can save. Can everyone saving more make a country's total savings fall?",
+    "answer": "Yes, it can.",
+    "explanation": "This is the paradox of thrift. What is wise for one household can shrink everyone's income if all households do it at once.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1602",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Number Sense",
+    "question": "Class A has 10 pupils with an average mark of 60. Class B has 40 pupils with an average mark of 80. Is the average mark of both classes together 70?",
+    "answer": "No, it is 76.",
+    "explanation": "The total marks are 10 × 60 + 40 × 80 = 3,800 for 50 pupils, and 3,800 ÷ 50 = 76. The bigger class counts for more, so you cannot simply average two averages.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1603",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Probability Logic",
+    "question": "A disease affects 1 in 1,000 people. A lazy test simply says 'healthy' for everybody. How accurate is this test, and is it useful?",
+    "answer": "It is 99.9% accurate but completely useless, because it never finds a sick person.",
+    "explanation": "This is the accuracy paradox. When a condition is rare, high overall accuracy can hide total failure at the job that matters.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1604",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Deductive Logic",
+    "question": "A river town has four districts joined by 7 bridges. Three districts each have 3 bridges and one district has 5 bridges. Can a walker cross every bridge exactly once in one trip?",
+    "answer": "No, it is impossible.",
+    "explanation": "Euler showed that such a walk needs at most two districts with an odd number of bridges. Here all four districts have an odd number.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1607",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "The angles of a flat triangle add up to 180°. On a globe, a traveller starts at the North Pole, walks down a meridian to the equator, turns and walks a quarter of the way round the equator, then walks back up to the North Pole. Each corner is a right angle. What do the three angles add up to?",
+    "answer": "270°.",
+    "explanation": "Triangles drawn on a curved surface do not follow the flat-paper rule of 180°. This is why flat-map geometry fails for long sea and air journeys.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-paradox-sch-1609",
+    "targetGroup": "Scholar (JHS)",
+    "difficulty": "Math & Physics",
+    "question": "A horse pulls a cart, and by Newton's third law the cart pulls back on the horse with an equal and opposite force. If the two forces cancel, how can the horse and cart ever move forward?",
+    "answer": "The two forces act on different objects, and the ground also pushes the horse forward.",
+    "explanation": "Forces only cancel when they act on the same object. The horse pushes backward on the ground, the ground pushes the horse forward, and that push is bigger than the cart's pull back.",
     "isCentral": true
   }
 ];
@@ -15288,6 +16503,2390 @@ export const THINK_TANK_DETECTIVE_CASES: ThinkTankDetectiveCaseItem[] = [
     ],
     "correctAnswer": "Sunk cost fallacy",
     "explanation": "Money already spent cannot be recovered, so it should not decide future choices. The manager should compare future costs and benefits only.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils on a school trip to Lake Volta are chatting about what they saw.",
+    "question": "Which sentence is a FACT and not an opinion?",
+    "options": [
+      "Boat rides on the lake are boring.",
+      "Everyone should visit the lake every year.",
+      "Lake Volta is a large lake in Ghana.",
+      "Lake Volta is the prettiest lake in the world."
+    ],
+    "correctAnswer": "Lake Volta is a large lake in Ghana.",
+    "explanation": "A fact can be checked and proved, and you can find Lake Volta on a map of Ghana. The other sentences are feelings or wishes that people may disagree about.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "Corn is scattered beside the chicken coop. Next to it are three-toed prints with tiny pointed claws, and a few brown feathers.",
+    "question": "Who most likely ate the corn?",
+    "options": [
+      "A cat",
+      "A cow",
+      "A goat",
+      "A hen"
+    ],
+    "correctAnswer": "A hen",
+    "explanation": "Three-toed prints and feathers are clues that a bird was there. Goats and cows leave hoof marks, and cats leave round paw prints.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "On Monday it was sunny and windy, and Sika's washing dried in two hours. On Tuesday it was cloudy and the air was still, and her washing was still wet in the evening.",
+    "question": "What is the best CAUSE of the difference?",
+    "options": [
+      "Sun and wind help water dry from clothes",
+      "The washing line was too short",
+      "The clothes were tired on Tuesday",
+      "Tuesday has more water than Monday"
+    ],
+    "correctAnswer": "Sun and wind help water dry from clothes",
+    "explanation": "Heat from the sun and moving air help water turn into vapour and leave the cloth. On Tuesday there was no sun or wind to do that.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Maame says, 'I bought hot bread from the bakery at 7:00 a.m.' The bakery sign says it opens at 8:00 a.m. every day.",
+    "question": "What is wrong with Maame's story?",
+    "options": [
+      "Maame cannot buy bread",
+      "The bakery was not open yet at 7:00 a.m.",
+      "7:00 a.m. is too late for bread",
+      "Bread is never hot"
+    ],
+    "correctAnswer": "The bakery was not open yet at 7:00 a.m.",
+    "explanation": "You cannot buy bread from a shop before it opens. So either the time or the story is wrong.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Kojo says he watched the football match all afternoon on Saturday. His match ticket is stamped 'Sunday'.",
+    "question": "Which clue makes Kojo's story doubtful?",
+    "options": [
+      "He has a ticket",
+      "He likes football",
+      "The match was in the afternoon",
+      "His ticket is for Sunday, not Saturday"
+    ],
+    "correctAnswer": "His ticket is for Sunday, not Saturday",
+    "explanation": "A Sunday ticket cannot let him into a Saturday match. His story does not match the proof he shows.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1106",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils talk about kente cloth after a visit to a weaving village.",
+    "question": "Which sentence is an OPINION?",
+    "options": [
+      "Kente cloth is made of coloured threads.",
+      "Kente cloth is woven on a loom.",
+      "Kente cloth is the most beautiful cloth in the world.",
+      "Kente cloth comes from Ghana."
+    ],
+    "correctAnswer": "Kente cloth is the most beautiful cloth in the world.",
+    "explanation": "'Most beautiful' depends on what a person likes, so it cannot be proved. The other sentences can be checked by looking at real kente.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1107",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "White powder is on Kwesi's black shoes and in his pocket. The classroom chalk box is empty, and the blackboard has fresh writing on it.",
+    "question": "Where did the white powder most likely come from?",
+    "options": [
+      "Cocoa powder",
+      "Chalk dust",
+      "Salt from the sea",
+      "Wood ash from the kitchen"
+    ],
+    "correctAnswer": "Chalk dust",
+    "explanation": "The empty chalk box and the fresh writing on the board point to chalk. The other powders have no link to the clues at the scene.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1108",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Two bean plants were planted on the same day. The one on the sunny windowsill is short and green. The one kept in a dark cupboard is tall, thin and pale.",
+    "question": "What caused the cupboard plant to look pale and thin?",
+    "options": [
+      "It did not get enough light",
+      "It was too happy",
+      "It got too much singing",
+      "It was watered with milk"
+    ],
+    "correctAnswer": "It did not get enough light",
+    "explanation": "Plants need light to make green colour and to grow strong. In the dark, a plant stretches thin and pale as it searches for light.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1109",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Yaa says, 'I planted a cassava stick on Monday and harvested big cassava roots on Tuesday.'",
+    "question": "What is wrong with Yaa's timeline?",
+    "options": [
+      "Cassava is harvested before it is planted",
+      "Monday comes after Tuesday",
+      "Cassava takes many months to grow big roots",
+      "Cassava roots are always small"
+    ],
+    "correctAnswer": "Cassava takes many months to grow big roots",
+    "explanation": "Plants need a long time to grow, and cassava often needs many months. One day is far too short for big roots.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1110",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Kwabena says he saw the thief's face very clearly at midnight. That night was cloudy with no moon, and there were no lights on the street.",
+    "question": "Why should we doubt that Kwabena saw the face clearly?",
+    "options": [
+      "Midnight is a happy time",
+      "Kwabena has two eyes",
+      "Thieves wear shoes",
+      "It was too dark to see a face clearly"
+    ],
+    "correctAnswer": "It was too dark to see a face clearly",
+    "explanation": "We need light to see details. With no moon and no street lights, he could not clearly see a face.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A tailor in Kumasi asks the first 5 customers who enter her shop what length of dress they like. Four say 'long'. She announces, 'All women in Kumasi want long dresses.'",
+    "question": "What is the main problem with her claim?",
+    "options": [
+      "Customers always lie",
+      "Five of her own customers cannot speak for all women in Kumasi",
+      "She should have asked men instead",
+      "Dresses cannot be long"
+    ],
+    "correctAnswer": "Five of her own customers cannot speak for all women in Kumasi",
+    "explanation": "The group is tiny and comes only from her shop, so it may not match everyone. A fair claim needs a large, mixed sample from the whole city.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A school canteen survey asks: 'Don't you agree that our delicious jollof is the best food at school?'",
+    "question": "What is wrong with this survey question?",
+    "options": [
+      "It is a leading question that pushes people to say yes",
+      "It is too short",
+      "It asks about food",
+      "It mentions jollof"
+    ],
+    "correctAnswer": "It is a leading question that pushes people to say yes",
+    "explanation": "Words like 'delicious' and 'don't you agree' push people toward one answer. A fair question would be neutral, such as 'Which food do you like best?'",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A report says that the bigger a market fire is, the more firefighters are at the scene, and the more damage is done. A pupil says, 'Firefighters cause damage!'",
+    "question": "What is the best explanation for the pattern?",
+    "options": [
+      "Firefighters wear heavy boots that break things",
+      "Firefighters start the fires",
+      "Damage calls the firefighters before the fire",
+      "Bigger fires cause both more firefighters and more damage"
+    ],
+    "correctAnswer": "Bigger fires cause both more firefighters and more damage",
+    "explanation": "Two things that rise together are not always cause and effect. A third factor, the size of the fire, explains both.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A WhatsApp photo shows a giant fish with the caption 'Caught yesterday in Lake Bosomtwe!' A friend finds the same photo in an old news story from another country.",
+    "question": "What is the best way to check the photo's claim?",
+    "options": [
+      "Check whether the fish looks big",
+      "Share it quickly to see who replies",
+      "Do a reverse image search to see where the photo first appeared",
+      "Count how many people shared it"
+    ],
+    "correctAnswer": "Do a reverse image search to see where the photo first appeared",
+    "explanation": "A reverse image search can show if a photo is older or from another place. How many people share a picture does not make it true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A shop owner says a thief broke in through the window from outside. The police find most of the broken glass lying on the ground outside the shop.",
+    "question": "What do the glass pieces suggest?",
+    "options": [
+      "The window was probably broken from inside, so the story is doubtful",
+      "The window was broken from outside, so the story is true",
+      "The glass was never broken",
+      "The glass fell upward"
+    ],
+    "correctAnswer": "The window was probably broken from inside, so the story is doubtful",
+    "explanation": "Glass usually flies away in the direction of the force. Glass mostly outside means the force came from inside, which does not match the owner's story.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1106",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "Kwame says, 'I boarded the 5:30 p.m. trotro in Kasoa and reached home at 5:00 p.m.'",
+    "question": "What is wrong with Kwame's story?",
+    "options": [
+      "Trotros never leave at 5:30 p.m.",
+      "He claims to have arrived before he left",
+      "Kasoa has no homes",
+      "5:00 p.m. is a bad time"
+    ],
+    "correctAnswer": "He claims to have arrived before he left",
+    "explanation": "Reaching home at 5:00 p.m. comes before a 5:30 p.m. departure. The times cannot both be true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1107",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A clinic advert says '8 out of 10 patients got better.' The small print shows the 10 patients counted were only those who returned for a check-up, and patients who never returned were left out.",
+    "question": "Why is the claim unreliable?",
+    "options": [
+      "Clinics cannot treat people",
+      "Patients should never return",
+      "It leaves out patients who may not have got better",
+      "Eight out of ten is too small a number"
+    ],
+    "correctAnswer": "It leaves out patients who may not have got better",
+    "explanation": "Patients who did not recover may have stopped coming, so they were never counted. Leaving out part of the data makes the result look better than it is.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1108",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "Hard green plantains turn ripe in two days when Auntie puts them in a closed paper bag with a ripe banana. Plantains left alone take a week.",
+    "question": "What is the best explanation?",
+    "options": [
+      "Plantain ripens faster when it hears people talking",
+      "The bag keeps the sunlight out and cools the fruit",
+      "The paper bag adds sugar to the plantain",
+      "Ripe fruit gives off a gas that speeds up ripening"
+    ],
+    "correctAnswer": "Ripe fruit gives off a gas that speeds up ripening",
+    "explanation": "Ripe fruit releases a gas called ethylene, and a closed bag keeps it close to the plantains. The other ideas have no link to how ripening works.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1109",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A witness says he stood 3 km from a fireworks display and heard the bang 10 seconds BEFORE he saw the flash of light.",
+    "question": "Why is his story doubtful?",
+    "options": [
+      "Three kilometres is too short a distance",
+      "Light travels much faster than sound, so he would see the flash first",
+      "Sound is faster than light",
+      "Fireworks have no sound"
+    ],
+    "correctAnswer": "Light travels much faster than sound, so he would see the flash first",
+    "explanation": "Light reaches us almost instantly, while sound takes about 3 seconds to cover each kilometre. So he would see the flash first and hear the bang later.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1110",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A newspaper article calls a new road 'perfect' and 'the best ever built'. At the bottom it says the writer is paid by the company that built the road.",
+    "question": "Why should readers be careful with this article?",
+    "options": [
+      "The writer is paid by the company, so the praise may be biased",
+      "Newspapers never tell the truth",
+      "The article is too long",
+      "Roads cannot be perfect"
+    ],
+    "correctAnswer": "The writer is paid by the company, so the praise may be biased",
+    "explanation": "A writer who earns money from the company may praise its work too much. Independent reports and road inspections give a fairer picture.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1101",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A clear cleaning liquid found at a scene turns universal indicator paper deep purple.",
+    "question": "What kind of liquid is it most likely to be?",
+    "options": [
+      "A strong acid",
+      "A neutral salt solution",
+      "Pure water",
+      "A strong alkali (base)"
+    ],
+    "correctAnswer": "A strong alkali (base)",
+    "explanation": "Deep purple on universal indicator shows a very high pH, about 12 to 14, which means a strong alkali. Acids turn it red, and neutral liquids turn it green.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1102",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "Ink from a forged note is separated by paper chromatography into two dyes, blue and yellow. The suspect's pen separates into blue and yellow too, while the bank's genuine pen gives only blue.",
+    "question": "What does the chromatography result show?",
+    "options": [
+      "Chromatography cannot compare inks",
+      "The forged note was written with the bank's pen",
+      "The forged note was probably written with the suspect's pen",
+      "Both pens contain only blue dye"
+    ],
+    "correctAnswer": "The forged note was probably written with the suspect's pen",
+    "explanation": "Chromatography separates an ink into its dyes, which works like a fingerprint for the ink. The forged note matches the suspect's two-dye pattern, not the one-dye pen.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1103",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A drink sample from a suspect's cup is heated with Benedict's solution, and the blue liquid turns to a brick-red precipitate.",
+    "question": "What does this test show is present in the drink?",
+    "options": [
+      "A reducing sugar such as glucose",
+      "Protein",
+      "Pure fat",
+      "Starch"
+    ],
+    "correctAnswer": "A reducing sugar such as glucose",
+    "explanation": "Benedict's solution changes from blue to brick-red when heated with reducing sugars. Starch needs iodine, and protein needs a different test.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1104",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A councillor proposes quieter night markets after 10:00 p.m. His opponent shouts, 'He wants to shut down all our markets and starve our families!'",
+    "question": "Which fallacy is the opponent using?",
+    "options": [
+      "Bandwagon",
+      "Straw man: attacking a made-up, exaggerated version of the idea",
+      "Ad populum",
+      "Circular reasoning"
+    ],
+    "correctAnswer": "Straw man: attacking a made-up, exaggerated version of the idea",
+    "explanation": "The councillor only asked for quieter markets at night, but the opponent attacks a much more extreme idea. Good debate answers the real proposal.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1105",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A seller says, 'Everyone in our town drinks this herbal syrup, so it must cure malaria.'",
+    "question": "What is the flaw in the seller's argument?",
+    "options": [
+      "Red herring",
+      "Ad hominem",
+      "False cause",
+      "Bandwagon: popularity is not proof that something works"
+    ],
+    "correctAnswer": "Bandwagon: popularity is not proof that something works",
+    "explanation": "Many people can believe something that is wrong. A cure must be shown to work by careful medical testing.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1106",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "After meeting two rude taxi drivers in Takoradi, Kojo says, 'All drivers in Takoradi are rude.'",
+    "question": "Which fallacy is Kojo committing?",
+    "options": [
+      "False dilemma",
+      "Appeal to tradition",
+      "Hasty generalisation",
+      "Straw man"
+    ],
+    "correctAnswer": "Hasty generalisation",
+    "explanation": "Two drivers are far too few to speak for a whole city. A fair conclusion needs a large and varied sample.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1107",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A headteacher says, 'If we let pupils use phones for one hour a week, soon they will stop reading books and the whole school will fail.'",
+    "question": "Which fallacy is this?",
+    "options": [
+      "Ad hominem",
+      "Slippery slope",
+      "Appeal to authority",
+      "Equivocation"
+    ],
+    "correctAnswer": "Slippery slope",
+    "explanation": "The headteacher claims one small step will inevitably lead to a disaster without showing evidence for each step. A slippery slope needs proof that the chain really happens.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1108",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A factory boasts, 'Our workers earn an average of GH₵4,000 a month!' In fact 9 workers earn GH₵1,000 each and the owner earns GH₵31,000.",
+    "question": "What makes the claim misleading?",
+    "options": [
+      "One very high salary pulls the average up, so most workers earn far less",
+      "Averages cannot be used for money",
+      "The factory has too many workers",
+      "GH₵4,000 is a small number"
+    ],
+    "correctAnswer": "One very high salary pulls the average up, so most workers earn far less",
+    "explanation": "The mean is (9 × 1,000 + 31,000) ÷ 10 = 4,000, yet the typical (median) worker earns only GH₵1,000. Extreme values can make a mean misleading.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1109",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A survey of a primary school finds that pupils with bigger shoe sizes get higher reading scores. A blogger says, 'Buy bigger shoes to raise reading scores!'",
+    "question": "What is the most likely hidden factor?",
+    "options": [
+      "Shoe shops teach reading",
+      "Shoes contain reading chemicals",
+      "Age: older pupils have bigger feet and have also had more time to learn to read",
+      "Reading makes feet grow"
+    ],
+    "correctAnswer": "Age: older pupils have bigger feet and have also had more time to learn to read",
+    "explanation": "Age drives both foot size and reading skill, so the two rise together without one causing the other. Comparing pupils of the same age would remove the confusion.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1110",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A screenshot claims 'Ghana to change time zone next week!' It shows no date and no writer, and the website address reads 'ghananews-offcial.co'.",
+    "question": "Which clue is the strongest sign that the story may be fake?",
+    "options": [
+      "The headline has an exclamation mark",
+      "It mentions Ghana",
+      "It talks about next week",
+      "The website address is a misspelled look-alike with no date or writer"
+    ],
+    "correctAnswer": "The website address is a misspelled look-alike with no date or writer",
+    "explanation": "Fake sites often copy real names with small spelling changes and hide dates and authors. Always check the official source before believing or sharing.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1201",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils visit a cocoa farm and share what they learned.",
+    "question": "Which sentence is a FACT and not an opinion?",
+    "options": [
+      "Everyone must drink cocoa every day.",
+      "Cocoa beans grow inside pods on cocoa trees.",
+      "Cocoa tastes better than every other sweet.",
+      "Cocoa trees are boring to look at."
+    ],
+    "correctAnswer": "Cocoa beans grow inside pods on cocoa trees.",
+    "explanation": "A fact can be checked by looking at a real cocoa tree. The other sentences are about taste and feelings, so people can disagree.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1202",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A ripe pawpaw has been pecked open. It has small beak marks and a few feathers lie on the ground beside it.",
+    "question": "Who most likely ate the pawpaw?",
+    "options": [
+      "A snail",
+      "A cow",
+      "A fish",
+      "A bird"
+    ],
+    "correctAnswer": "A bird",
+    "explanation": "Beak marks and feathers are signs of a bird. A cow would eat the whole fruit and leave other marks, and a fish lives in water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1203",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "In the harmattan season many pupils in Kofi's class sneeze and cough. The air is full of fine dust.",
+    "question": "What is the most likely cause of the sneezing?",
+    "options": [
+      "Dust in the dry air",
+      "Wearing a hat",
+      "Playing football",
+      "Too much singing"
+    ],
+    "correctAnswer": "Dust in the dry air",
+    "explanation": "Dust tickles the nose and throat and makes people sneeze. The other things have no link to the clue about dusty air.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1204",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Ato says, 'I read my book under the electric light at 8:00 p.m.' But the power was off in his street from 6:00 p.m. to 10:00 p.m., and he has no battery light.",
+    "question": "What is wrong with Ato's story?",
+    "options": [
+      "8:00 p.m. is too early",
+      "Ato cannot read",
+      "There was no electric light at 8:00 p.m.",
+      "Books cannot be read at night"
+    ],
+    "correctAnswer": "There was no electric light at 8:00 p.m.",
+    "explanation": "The power was off from 6:00 to 10:00, so there was no electric light at 8:00. His story does not match the facts.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1205",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Esi says she walked in the heavy rain all morning. When she arrives, her hair and dress are completely dry.",
+    "question": "Which clue makes Esi's story doubtful?",
+    "options": [
+      "She arrived in the afternoon",
+      "Her hair and dress are dry",
+      "She likes the rain",
+      "She walked"
+    ],
+    "correctAnswer": "Her hair and dress are dry",
+    "explanation": "Someone who walked in heavy rain would be wet. Dry clothes suggest she stayed indoors.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1206",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "The class talks about football after a school match.",
+    "question": "Which sentence is an OPINION?",
+    "options": [
+      "Football is the most exciting sport in the world.",
+      "A football match has two teams.",
+      "A football is round.",
+      "Goalkeepers may use their hands inside their box."
+    ],
+    "correctAnswer": "Football is the most exciting sport in the world.",
+    "explanation": "'Most exciting' depends on what a person likes, so it cannot be proved. The other sentences can be checked.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1207",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "Biscuit crumbs are on the kitchen floor. A thin line of tiny black insects carries crumbs toward a crack in the wall.",
+    "question": "Who is taking the crumbs?",
+    "options": [
+      "Goats",
+      "Elephants",
+      "Birds",
+      "Ants"
+    ],
+    "correctAnswer": "Ants",
+    "explanation": "A line of tiny insects carrying crumbs to a hole is a sign of ants. Elephants and goats are too big, and birds do not walk in lines.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1208",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Maame left bread in a damp bag for three days. Now the bread has fuzzy green spots on it.",
+    "question": "What most likely caused the green spots?",
+    "options": [
+      "Someone painted it",
+      "The bag was too small",
+      "Mould grew in the damp bag",
+      "The bread was too happy"
+    ],
+    "correctAnswer": "Mould grew in the damp bag",
+    "explanation": "Mould grows on food that stays damp for days. Dry storage helps keep bread fresh.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1209",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Kojo says, 'My birthday party was on 31st June, and I wore my red shirt.'",
+    "question": "What is wrong with Kojo's story?",
+    "options": [
+      "June has only 30 days",
+      "Birthdays are only in July",
+      "Red shirts are not allowed",
+      "Parties are only on Mondays"
+    ],
+    "correctAnswer": "June has only 30 days",
+    "explanation": "There is no 31st of June, so the date cannot be right. Either the day or the month is wrong.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1210",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Abena says she phoned her mother from the school office at 2:00 p.m. The office phone has been broken since morning and nobody can use it.",
+    "question": "Why is Abena's alibi doubtful?",
+    "options": [
+      "The office has a door",
+      "The office phone was broken",
+      "She likes calling her mother",
+      "2:00 p.m. is lunch time"
+    ],
+    "correctAnswer": "The office phone was broken",
+    "explanation": "A broken phone cannot be used for a call. So her story does not fit what we know.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1201",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A radio presenter asks listeners to text in a vote: 'Do you like our station?' Ninety percent of the texts say yes, so he announces, '90% of Ghana loves our station!'",
+    "question": "What is the main problem with his claim?",
+    "options": [
+      "90% is too high to be real",
+      "Radio stations are not popular",
+      "Only fans who chose to text were counted, so the sample is not fair",
+      "Texting costs money"
+    ],
+    "correctAnswer": "Only fans who chose to text were counted, so the sample is not fair",
+    "explanation": "People who dislike the station are unlikely to text, so the result is biased. A fair survey picks a random, mixed group.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1202",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "An advert says, 'Our biscuits are tested and loved by experts!' It does not name the experts, the test or who did it.",
+    "question": "What is the best response to this advert?",
+    "options": [
+      "Ignore all adverts forever",
+      "Believe it because it says 'experts'",
+      "Buy ten packets at once",
+      "Ask who the experts are and what the test showed"
+    ],
+    "correctAnswer": "Ask who the experts are and what the test showed",
+    "explanation": "Claims without names or evidence are weak. Checking the source helps us tell proof from selling talk.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1203",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A report finds that towns with more hospitals have more deaths. A pupil says, 'Hospitals cause deaths!'",
+    "question": "What is the best explanation for the pattern?",
+    "options": [
+      "Deaths build hospitals",
+      "Large towns have more people and more very sick patients, and they have more hospitals",
+      "Doctors hide the numbers",
+      "Hospitals make people ill on purpose"
+    ],
+    "correctAnswer": "Large towns have more people and more very sick patients, and they have more hospitals",
+    "explanation": "Bigger populations lead to both more hospitals and more deaths. Two things that rise together do not always cause each other.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1204",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A post says: 'A miracle leaf cures ALL diseases in one day! Doctors hate it! No tests needed. Buy now from this link!'",
+    "question": "Which clue best shows the post is probably fake or a scam?",
+    "options": [
+      "It promises to cure everything with no evidence and pushes you to buy",
+      "It has a link",
+      "It talks about a leaf",
+      "It uses the word 'doctors'"
+    ],
+    "correctAnswer": "It promises to cure everything with no evidence and pushes you to buy",
+    "explanation": "No single leaf cures all diseases, and real medicines are tested. Pressure to buy quickly is a sign of a scam.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1205",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "Footprints leading away from a farm store are unusually deep, but the steps are short and close together.",
+    "question": "What do the footprints most likely suggest?",
+    "options": [
+      "The person was floating",
+      "The person was skipping",
+      "The person was running fast",
+      "The person was carrying a heavy load"
+    ],
+    "correctAnswer": "The person was carrying a heavy load",
+    "explanation": "A heavy load presses the feet deeper into the ground and makes steps shorter. Running makes long strides.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1206",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "Kofi says, 'I watched a bright red sunset at 8:00 p.m. in Accra.' In Accra the sun sets at about 6:15 p.m. all year.",
+    "question": "What is wrong with Kofi's story?",
+    "options": [
+      "Sunsets are never red",
+      "8:00 p.m. is morning",
+      "The sunset in Accra happens about two hours earlier",
+      "The sun sets in the east"
+    ],
+    "correctAnswer": "The sunset in Accra happens about two hours earlier",
+    "explanation": "Near the equator the sunset time hardly changes through the year, at about 6:15 p.m. By 8:00 p.m. it is already dark.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1207",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "Water in Ama's clay pot stays cool all afternoon, but water in her plastic bucket becomes warm. Both stand in the shade.",
+    "question": "What is the best explanation?",
+    "options": [
+      "Water seeps through the clay and evaporates, which cools the pot",
+      "Clay is a colour that makes water cold",
+      "Plastic buckets are heavier",
+      "The pot talks to the water"
+    ],
+    "correctAnswer": "Water seeps through the clay and evaporates, which cools the pot",
+    "explanation": "Evaporation takes heat away from the clay and the water inside. Plastic does not let water through, so there is no such cooling.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1208",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Misleading Statistics",
+    "scenario": "Team A says, 'We scored the most goals this season!' with 60 goals in 30 matches. Team B scored 50 goals in only 20 matches.",
+    "question": "Why is it unfair to compare only the totals?",
+    "options": [
+      "Goals cannot be counted",
+      "Team A played more matches, so goals per match is a fairer measure",
+      "Team B cheated",
+      "60 is smaller than 50"
+    ],
+    "correctAnswer": "Team A played more matches, so goals per match is a fairer measure",
+    "explanation": "Team A averaged 2 goals per match, but Team B averaged 2.5. Comparing totals hides that Team B scored more often.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1209",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A man says he walked from Kasoa to Winneba, about 40 km, in just one hour on foot.",
+    "question": "Why is his story doubtful?",
+    "options": [
+      "Kasoa is too small",
+      "Walking is not allowed",
+      "Winneba has no road",
+      "A person walks about 5 km in an hour, not 40 km"
+    ],
+    "correctAnswer": "A person walks about 5 km in an hour, not 40 km",
+    "explanation": "A normal walking speed is around 5 km each hour, so 40 km would take about 8 hours. His claim cannot be true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1210",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A farmer says his new maize seed doubled his harvest. He only shows photos of his single best plot and does not mention the other plots that grew poorly.",
+    "question": "What is the main problem with his evidence?",
+    "options": [
+      "He picked only the best result and hid the rest",
+      "His farm is too big",
+      "Maize cannot be photographed",
+      "He used photos"
+    ],
+    "correctAnswer": "He picked only the best result and hid the rest",
+    "explanation": "This is called cherry-picking, where only helpful evidence is shown. A fair test uses all plots and compares them with the old seed.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1201",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A green powder from a workshop is held in a Bunsen flame and the flame turns bright blue-green.",
+    "question": "Which metal ion is most likely present?",
+    "options": [
+      "Potassium",
+      "Copper",
+      "Calcium",
+      "Sodium"
+    ],
+    "correctAnswer": "Copper",
+    "explanation": "Copper compounds give a blue-green flame in a flame test. Sodium gives yellow, potassium gives lilac and calcium gives brick red.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1202",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A detective adds a few drops of dilute copper sulfate solution and sodium hydroxide to a food sample, and the mixture turns purple.",
+    "question": "What does this biuret test show?",
+    "options": [
+      "Fat is present",
+      "Starch is present",
+      "Protein is present",
+      "Reducing sugar is present"
+    ],
+    "correctAnswer": "Protein is present",
+    "explanation": "The biuret test turns purple when protein is present. Starch needs iodine and reducing sugar needs Benedict's solution.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1203",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A metal reacts with acid in a test tube and releases a colourless gas. A lit splint held at the mouth gives a squeaky pop.",
+    "question": "Which gas was released?",
+    "options": [
+      "Oxygen",
+      "Carbon dioxide",
+      "Chlorine",
+      "Hydrogen"
+    ],
+    "correctAnswer": "Hydrogen",
+    "explanation": "A squeaky pop with a lit splint is the test for hydrogen. Oxygen relights a glowing splint, and carbon dioxide turns limewater milky.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1204",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A famous footballer says on TV, 'This herbal tea cured my illness, so it will cure cancer for everyone.'",
+    "question": "Which fallacy is being used?",
+    "options": [
+      "Appeal to false authority",
+      "False dilemma",
+      "Straw man",
+      "Slippery slope"
+    ],
+    "correctAnswer": "Appeal to false authority",
+    "explanation": "Being good at football does not make someone an expert in medicine. Health claims need evidence from proper medical tests.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1205",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A speaker says, 'Our chief is the best leader because there is no better leader than him.'",
+    "question": "Which fallacy is this?",
+    "options": [
+      "Ad hominem",
+      "Circular reasoning",
+      "Bandwagon",
+      "Hasty generalisation"
+    ],
+    "correctAnswer": "Circular reasoning",
+    "explanation": "The conclusion 'he is the best' is simply repeated as the reason. A real argument gives evidence such as results or actions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1206",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A farmer says, 'We have always planted our yams this way for a hundred years, so it must be the best method.'",
+    "question": "Which fallacy is this?",
+    "options": [
+      "Post hoc",
+      "Red herring",
+      "Appeal to tradition",
+      "Straw man"
+    ],
+    "correctAnswer": "Appeal to tradition",
+    "explanation": "Something being old does not prove it is best. Better methods should be judged by results, not by age.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1207",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A parent asks a headteacher why school fees went up. The headteacher replies, 'Look how beautiful our new football field is!'",
+    "question": "Which fallacy is the headteacher using?",
+    "options": [
+      "Red herring (changing the subject)",
+      "False dilemma",
+      "Ad hominem",
+      "Circular reasoning"
+    ],
+    "correctAnswer": "Red herring (changing the subject)",
+    "explanation": "The reply does not answer the question about fees. A red herring pulls attention away to an unrelated topic.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1208",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "An advert says a new medicine 'cuts your risk of a disease by 50%'. In reality the risk falls from 2 in 10,000 people to 1 in 10,000 people.",
+    "question": "Why can the advert mislead people?",
+    "options": [
+      "Risk cannot be measured",
+      "The medicine makes the risk bigger",
+      "50% is always false",
+      "A big-sounding relative drop hides that the actual risk changed by only 1 in 10,000"
+    ],
+    "correctAnswer": "A big-sounding relative drop hides that the actual risk changed by only 1 in 10,000",
+    "explanation": "The relative change is 50%, but the absolute change is just 0.01 percentage points. Always ask for both numbers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1209",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "Data show that areas with more police officers have more crime. A blogger says, 'Police officers cause crime.'",
+    "question": "What is the most likely explanation?",
+    "options": [
+      "Police stations attract rain",
+      "Police officers commit all crimes",
+      "Reverse causation: places with more crime get more police",
+      "Crime makes police officers disappear"
+    ],
+    "correctAnswer": "Reverse causation: places with more crime get more police",
+    "explanation": "Cause and effect may run the other way round. High crime can lead authorities to send more police to that area.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1210",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A viral photo of a 'rescue at sea' shows a rescuer with six fingers on one hand, and the writing on the boat is jumbled nonsense letters.",
+    "question": "What do these clues most strongly suggest?",
+    "options": [
+      "The rescue was in a different country",
+      "The image may be AI-generated or edited",
+      "The photographer used a good camera",
+      "The photo is perfectly real"
+    ],
+    "correctAnswer": "The image may be AI-generated or edited",
+    "explanation": "Extra fingers and garbled text are common errors in AI-made images. Before sharing, check the source and look for the same photo from trusted news outlets.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "The class visits a poultry farm and talks about chickens.",
+    "question": "Which sentence is a FACT and not an opinion?",
+    "options": [
+      "Every family should keep five chickens.",
+      "Chickens are the funniest birds on earth.",
+      "Boiled eggs taste much nicer than fried eggs.",
+      "Hens lay eggs that have hard shells."
+    ],
+    "correctAnswer": "Hens lay eggs that have hard shells.",
+    "explanation": "You can check and see that hen eggs have hard shells. The other sentences are about feelings, taste, or what people think others should do.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "In the morning, the mud near the garden tap has wet webbed footprints, and someone heard 'quack, quack' near the fence.",
+    "question": "Which animal most likely walked by the tap?",
+    "options": [
+      "A cat",
+      "A duck",
+      "A goat",
+      "A monkey"
+    ],
+    "correctAnswer": "A duck",
+    "explanation": "Ducks have webbed feet for swimming and make a quacking sound. Cats, goats, and monkeys do not have webbed feet or quack.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Yaw left his bar of chocolate on a sunny windowsill at noon. When he came back an hour later, the chocolate was soft and runny.",
+    "question": "What caused the chocolate to become runny?",
+    "explanation": "Heat from the hot sunlight melted the chocolate. The other choices cannot melt chocolate.",
+    "options": [
+      "Someone sang to it",
+      "The wrapper was blue",
+      "Heat from the bright sun melted it",
+      "The wind blew on it"
+    ],
+    "correctAnswer": "Heat from the bright sun melted it",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Afua says, 'Yesterday at 12:00 noon, I looked up at the dark night sky and counted twenty bright stars.'",
+    "question": "What is wrong with Afua's story?",
+    "options": [
+      "At 12:00 noon it is daytime, so the sky is bright and you cannot count night stars",
+      "Stars only come out on Sundays",
+      "There are only ten stars in the sky",
+      "Nobody can count to twenty"
+    ],
+    "correctAnswer": "At 12:00 noon it is daytime, so the sky is bright and you cannot count night stars",
+    "explanation": "Noon is the middle of the day when the sun is shining brightly, not dark night time.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Kwaku says he did not eat the powdered sugar doughnut on the table. However, there is white sugar powder all around his mouth and on his fingers.",
+    "question": "Which clue makes Kwaku's story doubtful?",
+    "options": [
+      "He is wearing a blue shirt",
+      "The table is made of wood",
+      "He likes drinking water",
+      "The white sugar powder on his mouth and fingers"
+    ],
+    "correctAnswer": "The white sugar powder on his mouth and fingers",
+    "explanation": "Having powdered sugar on his mouth and fingers is a strong clue that he touched and ate the doughnut.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1306",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils are talking about the rainy season in June.",
+    "question": "Which sentence is an OPINION?",
+    "options": [
+      "Plants need water to grow.",
+      "Umbrellas help keep rain off our heads.",
+      "Rainy days are the best days for sleeping.",
+      "Rain falls from clouds in the sky."
+    ],
+    "correctAnswer": "Rainy days are the best days for sleeping.",
+    "explanation": "Whether rainy days are the 'best' for sleeping is a personal feeling. The other three sentences are facts that can be proved.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1307",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "A cup of milk was knocked over on the table. Beside the spill are four small paw prints made of spilled milk, and a ball of yarn is unrolled on the floor.",
+    "question": "Who most likely knocked over the cup?",
+    "options": [
+      "A goldfish",
+      "A cat",
+      "A tortoise",
+      "A parrot"
+    ],
+    "correctAnswer": "A cat",
+    "explanation": "Cats walk on tables with four paws, love milk, and play with yarn. A goldfish lives in water and a parrot has two bird feet.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1308",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Mensah planted two bean seeds in pots. He watered Pot A every two days, and never watered Pot B at all. After two weeks, the plant in Pot B dried up and died.",
+    "question": "Why did the plant in Pot B die?",
+    "options": [
+      "It had no water to help it grow",
+      "The pot was round",
+      "Bean seeds do not like pots",
+      "Mensah looked at it too much"
+    ],
+    "correctAnswer": "It had no water to help it grow",
+    "explanation": "All plants need water to stay alive and grow. Without water, the seedling dried up.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1309",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Bono says, 'I ate my breakfast at 7:00 a.m. this morning, and two hours earlier, at 9:00 a.m., I brushed my teeth.'",
+    "question": "What is wrong with Bono's timeline?",
+    "options": [
+      "Breakfast is eaten at midnight",
+      "7:00 a.m. is in the evening",
+      "People do not brush their teeth in the morning",
+      "Two hours earlier than 7:00 a.m. is 5:00 a.m., not 9:00 a.m."
+    ],
+    "correctAnswer": "Two hours earlier than 7:00 a.m. is 5:00 a.m., not 9:00 a.m.",
+    "explanation": "9:00 a.m. comes two hours after 7:00 a.m., not before it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1310",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Adwoa says she stayed inside her bedroom reading all afternoon and never stepped into the muddy backyard. Yet the soles of her sandals are covered in fresh, wet red mud.",
+    "question": "Why is Adwoa's story doubtful?",
+    "options": [
+      "Red mud is very pretty",
+      "Her sandals have fresh, wet mud from outside on them",
+      "Bedrooms do not have books",
+      "Sandals are only worn at night"
+    ],
+    "correctAnswer": "Her sandals have fresh, wet mud from outside on them",
+    "explanation": "If she had stayed inside her clean bedroom all afternoon, her sandals would not have fresh wet mud on the bottom.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "Tetteh asks three of his best friends beside the football pitch, 'What is your favourite subject?' All three say Physical Education (P.E.), so Tetteh writes in the school newsletter: '100% of pupils in our school prefer P.E. to all other subjects!'",
+    "question": "What is the main flaw in Tetteh's survey?",
+    "options": [
+      "100% is not a real number",
+      "Pupils are not allowed to like P.E.",
+      "Three friends by the football pitch is far too small and biased a sample to represent the whole school",
+      "Newsletters cannot print percentages"
+    ],
+    "correctAnswer": "Three friends by the football pitch is far too small and biased a sample to represent the whole school",
+    "explanation": "A tiny group of three friends who are already playing football does not represent hundreds of pupils with different interests across the school.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A company that sells sugary soft drinks pays for a study and announces, 'Drinking three bottles of soda a day is better for energy than drinking water!' Independent doctors were not allowed to check the data.",
+    "question": "Why should you be careful about trusting this study?",
+    "options": [
+      "The company has a conflict of interest because it makes money selling the drinks",
+      "Soft drinks do not come in bottles",
+      "Water has no energy at all",
+      "Studies are never written down"
+    ],
+    "correctAnswer": "The company has a conflict of interest because it makes money selling the drinks",
+    "explanation": "When the seller pays for the test and hides the data, the result may be biased to boost sales rather than tell the truth.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A study across primary schools shows that pupils with bigger shoe sizes score higher on a general arithmetic test than pupils with smaller shoe sizes. A pupil concludes, 'Big feet make you smarter at maths!'",
+    "question": "What is the real reason for this pattern?",
+    "options": [
+      "Maths books are kept inside large shoes",
+      "Tall pupils never study",
+      "Tight shoes squeeze the brain",
+      "Older pupils have bigger feet AND have learned more maths in higher classes"
+    ],
+    "correctAnswer": "Older pupils have bigger feet AND have learned more maths in higher classes",
+    "explanation": "Age is the hidden factor (confounding variable): as children grow older, both their shoe size and their maths knowledge increase together.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A WhatsApp message with five exclamation marks says: 'URGENT!! Forward this message to 20 people in 5 minutes or your phone battery will explode tonight!! Confirmed by the head of the internet!'",
+    "question": "Which clues show that this message is a hoax?",
+    "options": [
+      "Phone batteries never need charging",
+      "There is no 'head of the internet', messages cannot make batteries explode, and it uses fear to make you forward it",
+      "WhatsApp cannot send messages at night",
+      "Twenty people is an even number"
+    ],
+    "correctAnswer": "There is no 'head of the internet', messages cannot make batteries explode, and it uses fear to make you forward it",
+    "explanation": "Chain messages often invent fake authorities and scary threats to trick people into sharing them without thinking.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1306",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "Sika claims she took a photo of her shadow at 9:00 a.m. in Tamale while facing directly north, and in the photo her shadow falls straight to her right (east).",
+    "question": "Why does the shadow show her time is wrong?",
+    "options": [
+      "Shadows only appear at noon",
+      "There are no shadows in Tamale",
+      "At 9:00 a.m. the sun is in the east, so a shadow must fall to the west (her left), not to the east",
+      "The sun rises in the west"
+    ],
+    "correctAnswer": "At 9:00 a.m. the sun is in the east, so a shadow must fall to the west (her left), not to the east",
+    "explanation": "Shadows always point away from the sun. In the morning the sun is in the east, casting shadows toward the west; shadows point east in the afternoon.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1307",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "Two identical wet shirts are hung outside to dry. Shirt A is spread out wide on the line in a breeze, while Shirt B is folded into a tight bundle on a table in the shade. Shirt A dries in an hour, while Shirt B is still wet.",
+    "question": "Why did Shirt A dry so much faster?",
+    "options": [
+      "Clotheslines are magical",
+      "Folding a shirt adds extra water to it",
+      "Breezes only blow on unfolded clothes",
+      "Spreading it out in the breeze gave a larger surface area and moving air for faster evaporation"
+    ],
+    "correctAnswer": "Spreading it out in the breeze gave a larger surface area and moving air for faster evaporation",
+    "explanation": "Evaporation speeds up when water has a larger surface area exposed to air and when wind carries the moist air away.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1308",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Misleading Statistics",
+    "scenario": "Shop A advertises, 'Massive Sale: GH₵10 off!' on a bicycle that costs GH₵1,000. Shop B advertises, '10% off!' on the exact same GH₵1,000 bicycle. Kofi goes to Shop A because both signs have the number 10.",
+    "question": "Why did Kofi make a poor choice?",
+    "options": [
+      "10% of GH₵1,000 is GH₵100 off at Shop B, which is ten times bigger than the GH₵10 discount at Shop A",
+      "Bicycles cannot be discounted",
+      "GH₵10 is more than GH₵100",
+      "Percentages always mean zero"
+    ],
+    "correctAnswer": "10% of GH₵1,000 is GH₵100 off at Shop B, which is ten times bigger than the GH₵10 discount at Shop A",
+    "explanation": "Confusing a flat cedi amount (GH₵10) with a percentage (10%) can cost you money. 10% of GH₵1,000 saves GH₵100.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1309",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A suspect claims he pulled a hot metal baking tray straight out of a 200°C oven with his bare hands one minute ago, yet his palms have no blisters, redness, or burn marks at all.",
+    "question": "Why do detectives doubt his claim?",
+    "options": [
+      "Ovens are actually cold inside",
+      "Bare skin touching metal at 200°C would immediately cause painful burns",
+      "Metal cannot get hot",
+      "Hands are made of stone"
+    ],
+    "correctAnswer": "Bare skin touching metal at 200°C would immediately cause painful burns",
+    "explanation": "Metal conducts heat very rapidly into skin. Touching a 200°C metal tray without oven gloves or a cloth would burn his hands straight away.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1310",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A school club asks pupils a survey question written like this: 'Don't you agree that wise, hardworking pupils should support our wonderful club, while only lazy pupils disagree?'",
+    "question": "What is wrong with the way this question is written?",
+    "options": [
+      "Clubs are not allowed to ask questions",
+      "It is too short",
+      "It is a loaded question that shames people into saying yes",
+      "Pupils cannot read questions"
+    ],
+    "correctAnswer": "It is a loaded question that shames people into saying yes",
+    "explanation": "A fair survey question is neutral. Using flattering words for one side and insults for the other pressures people and ruins the survey.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1302",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "An unknown colourless gas from a chemical reaction is bubbled through clear limewater (calcium hydroxide solution). Within seconds, the limewater turns milky and cloudy.",
+    "question": "Which gas is being bubbled through the limewater?",
+    "options": [
+      "Oxygen",
+      "Hydrogen",
+      "Nitrogen",
+      "Carbon dioxide"
+    ],
+    "correctAnswer": "Carbon dioxide",
+    "explanation": "Carbon dioxide reacts with calcium hydroxide in limewater to form insoluble white calcium carbonate precipitate, turning it milky.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1303",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A glowing wooden splint (with no flame, just a red-hot ember) is lowered into a test tube of colourless gas. The splint bursts back into a bright flame.",
+    "question": "Which gas is inside the test tube?",
+    "options": [
+      "Helium",
+      "Oxygen",
+      "Carbon dioxide",
+      "Hydrogen"
+    ],
+    "correctAnswer": "Oxygen",
+    "explanation": "Relighting a glowing splint is the standard laboratory test for oxygen gas, which supports combustion.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1304",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "During a school debate, Ama argues that the library needs more science books. Her opponent replies, 'We shouldn't listen to Ama because her handwriting is messy and she lost her pen yesterday!'",
+    "question": "Which logical fallacy did her opponent commit?",
+    "options": [
+      "Ad hominem (attacking the person instead of the argument)",
+      "Straw man",
+      "False dilemma",
+      "Circular reasoning"
+    ],
+    "correctAnswer": "Ad hominem (attacking the person instead of the argument)",
+    "explanation": "An ad hominem attack criticises the speaker's personal traits rather than addressing the reasons for or against her point about library books.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1305",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "Baffour says, 'We should have ten minutes less homework on Fridays.' His opponent replies, 'Baffour wants to abolish all study and close down the school so nobody ever learns to read!'",
+    "question": "Which logical fallacy is the opponent using?",
+    "options": [
+      "Bandwagon",
+      "Appeal to authority",
+      "Straw man (exaggerating or distorting someone's view to make it easy to attack)",
+      "Post hoc"
+    ],
+    "correctAnswer": "Straw man (exaggerating or distorting someone's view to make it easy to attack)",
+    "explanation": "A straw man replaces a reasonable proposal (slightly less Friday homework) with an extreme caricature (ending all schooling) that nobody actually suggested.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1306",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A team captain says, 'Either you buy our expensive new boots today, or you want our school team to lose every match this year!'",
+    "question": "Which fallacy is the captain committing?",
+    "options": [
+      "Circular reasoning",
+      "Red herring",
+      "Appeal to tradition",
+      "False dilemma (presenting only two extreme choices when other options exist)"
+    ],
+    "correctAnswer": "False dilemma (presenting only two extreme choices when other options exist)",
+    "explanation": "A false dilemma pretends there are only two options, ignoring that a team can play well and want to win using their current boots.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1307",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "Kuku wore his yellow socks for the first time on Tuesday, and later that afternoon it rained heavily. He says, 'My yellow socks cause rain whenever I wear them!'",
+    "question": "Which fallacy is Kuku making?",
+    "options": [
+      "Straw man",
+      "Post hoc (assuming that because Event B followed Event A, Event A caused Event B)",
+      "Appeal to ignorance",
+      "Ad hominem"
+    ],
+    "correctAnswer": "Post hoc (assuming that because Event B followed Event A, Event A caused Event B)",
+    "explanation": "The post hoc fallacy mistakes sequence in time for cause and effect. Wearing yellow socks had no physical influence on the weather.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1309",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "Beach records show that on days when ice cream sales are high, the number of people getting sunburn at the beach is also high. A newspaper headline jokes, 'Eating ice cream causes sunburn!'",
+    "question": "What is the real explanation for the link between ice cream and sunburn?",
+    "options": [
+      "Beach shops only open at night",
+      "Ice cream melts on the skin and burns it",
+      "A third factor—hot, sunny weather—causes more people both to buy ice cream and to get sunburned",
+      "Sunburn makes people allergic to shade"
+    ],
+    "correctAnswer": "A third factor—hot, sunny weather—causes more people both to buy ice cream and to get sunburned",
+    "explanation": "Hot sunny days independently drive up ice cream sales and outdoor sun exposure. Two correlated effects often share a common cause.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1310",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A blog post shows a line graph of exam failures and screams, 'CATASTROPHIC COLLAPSE!' When you look closely at the vertical axis, it does not start at 0%; it starts at 14.1% and ends at 14.4%, making a tiny 0.2% change look like a giant cliff.",
+    "question": "Which trick is the blog using to mislead readers?",
+    "options": [
+      "A truncated y-axis that exaggerates a tiny change into a dramatic visual jump",
+      "Using a line graph instead of a pie chart",
+      "Writing numbers in percentages",
+      "Measuring exam results every year"
+    ],
+    "correctAnswer": "A truncated y-axis that exaggerates a tiny change into a dramatic visual jump",
+    "explanation": "Zooming in on a tiny slice of the vertical axis without starting at zero is a common graphing trick used to make minor fluctuations look huge.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1401",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "Someone walked across the classroom after painting a bench. A trail of blue paint spots leads from the bench to a desk.",
+    "question": "Which clue best helps find where the painter went?",
+    "options": [
+      "The colour of the classroom roof",
+      "The day of the week",
+      "The number of windows",
+      "The trail of blue paint spots"
+    ],
+    "correctAnswer": "The trail of blue paint spots",
+    "explanation": "The spots connect the painted bench to the desk and provide a trace to follow.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1402",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Two identical seedlings are kept in the same sunny place. One receives water each morning and the other receives none for a week.",
+    "question": "Which difference best explains why one seedling wilts?",
+    "options": [
+      "The amount of water given",
+      "The shape of the school gate",
+      "The colour of their pots",
+      "The pupils names"
+    ],
+    "correctAnswer": "The amount of water given",
+    "explanation": "Water is necessary for plant survival; it is the key condition changed in this comparison.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1403",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Abena says she left home at 8:00 a.m. and arrived at school 20 minutes earlier, at 8:20 a.m.",
+    "question": "Which part of her account is inconsistent?",
+    "options": [
+      "Twenty minutes is one hour",
+      "8:00 a.m. comes after noon",
+      "8:20 a.m. is 20 minutes later, not earlier",
+      "Schools never open in the morning"
+    ],
+    "correctAnswer": "8:20 a.m. is 20 minutes later, not earlier",
+    "explanation": "Adding 20 minutes to 8:00 a.m. gives 8:20 a.m.; subtracting gives 7:40 a.m.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1404",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Evidence Evaluation",
+    "scenario": "A pupil says every mango on a tree is ripe because one mango picked from its lowest branch was sweet.",
+    "question": "What is the best next step?",
+    "options": [
+      "Ignore the tree forever",
+      "Check a wider sample of mangoes from different branches",
+      "Count the leaves instead",
+      "Declare all mangoes ripe immediately"
+    ],
+    "correctAnswer": "Check a wider sample of mangoes from different branches",
+    "explanation": "One mango is insufficient evidence for a claim about every fruit on the tree.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1405",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A school notices that pupils carrying umbrellas often arrive wearing wet shoes. A poster claims umbrellas make shoes wet.",
+    "question": "What is the likely hidden cause?",
+    "options": [
+      "Umbrellas contain water in their handles",
+      "Wet shoes produce rain",
+      "Umbrellas change shoe colour",
+      "Rain causes both umbrella use and wet shoes"
+    ],
+    "correctAnswer": "Rain causes both umbrella use and wet shoes",
+    "explanation": "Rain explains both observations without umbrellas causing the wet shoes.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1406",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Source Verification",
+    "scenario": "A social-media post claims a local bridge is closed tomorrow but provides no date, official notice, or source.",
+    "question": "What is the most reliable response?",
+    "options": [
+      "Check a dated announcement from the responsible road authority",
+      "Delete all road maps",
+      "Forward the post immediately",
+      "Assume every post is true"
+    ],
+    "correctAnswer": "Check a dated announcement from the responsible road authority",
+    "explanation": "An official, current source can verify a practical claim before people act on it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1407",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Experimental Design",
+    "scenario": "Two groups test whether music improves concentration. Group A studies with music in a quiet library; Group B studies without music beside a noisy football pitch.",
+    "question": "Why is this experiment unfair?",
+    "options": [
+      "The groups use different letters",
+      "Study environment and music both change, so their effects cannot be separated",
+      "Music is never used for studying",
+      "Libraries have books"
+    ],
+    "correctAnswer": "Study environment and music both change, so their effects cannot be separated",
+    "explanation": "A fair test changes the variable of interest while holding other relevant conditions constant.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1408",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A speaker says, “This policy must be correct because everyone in our class agrees with it.”",
+    "question": "Which reasoning error is most evident?",
+    "options": [
+      "Ad hominem",
+      "False cause",
+      "Straw man",
+      "Appeal to popularity"
+    ],
+    "correctAnswer": "Appeal to popularity",
+    "explanation": "A belief being popular does not by itself prove that it is true or justified.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1409",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A tutoring centre advertises that scores rose from 40 to 60 marks and describes this as a 50% increase.",
+    "question": "Which statement evaluates the claim correctly?",
+    "options": [
+      "No percentage can be calculated",
+      "It is only a 20% increase",
+      "It is a 20-mark increase and a 50% increase relative to the original 40",
+      "It is a 60% decrease"
+    ],
+    "correctAnswer": "It is a 20-mark increase and a 50% increase relative to the original 40",
+    "explanation": "The absolute change is 20 marks; 20 divided by the original 40 is 0.5, or 50%.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1410",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Deductive Logic",
+    "scenario": "Three boxes are labelled A, B, and C. Exactly one contains a key. A sign says “The key is not in A.” Another says “The key is in B.” Both signs are true.",
+    "question": "Where is the key?",
+    "options": [
+      "Box B",
+      "Box A",
+      "Box C",
+      "It cannot be determined"
+    ],
+    "correctAnswer": "Box B",
+    "explanation": "The second true sign identifies B directly, and the first is consistent with it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1501",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils are talking about trotros after a journey to the market.",
+    "question": "Which sentence is a FACT and not an opinion?",
+    "options": [
+      "A trotro has wheels.",
+      "A trotro is the best way to travel.",
+      "Every trotro is too noisy.",
+      "Trotro seats are too hard for everyone."
+    ],
+    "correctAnswer": "A trotro has wheels.",
+    "explanation": "A fact can be checked by looking at a real trotro. The other sentences are about what people like or feel.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1502",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "On the sandy beach there are sideways tracks, a row of small round holes and a few tiny claw marks near the water.",
+    "question": "Which animal most likely made these marks?",
+    "options": [
+      "A horse",
+      "A crab",
+      "A rabbit",
+      "A snake"
+    ],
+    "correctAnswer": "A crab",
+    "explanation": "Crabs walk sideways, dig little holes in sand and leave small claw marks. A snake leaves a long wavy line and a horse leaves hoof prints.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1503",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Kojo's bicycle tyre was full of air in the morning. In the afternoon it is flat, and a sharp nail is sticking out of it.",
+    "question": "What most likely caused the flat tyre?",
+    "options": [
+      "The nail made a hole and the air escaped",
+      "The tyre was tired",
+      "The sun was too happy",
+      "The bicycle was too clean"
+    ],
+    "correctAnswer": "The nail made a hole and the air escaped",
+    "explanation": "A nail in a tyre makes a hole, and air leaks out through it. The other answers have no link to the clue.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1504",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Ama says, 'I saw a beautiful rainbow in the sky at midnight.'",
+    "question": "What is wrong with Ama's story?",
+    "options": [
+      "A rainbow needs sunlight, so it cannot appear at midnight",
+      "Rainbows are never beautiful",
+      "Rainbows only appear indoors",
+      "Midnight is in the morning"
+    ],
+    "correctAnswer": "A rainbow needs sunlight, so it cannot appear at midnight",
+    "explanation": "A rainbow forms when sunlight shines through raindrops. At midnight there is no sunlight.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1505",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Yaw says he played football on the school field all morning. It rained heavily and the field is very muddy, but Yaw's boots and socks are clean and dry.",
+    "question": "Which clue makes Yaw's story doubtful?",
+    "options": [
+      "It rained in the morning",
+      "He likes football",
+      "His boots and socks are clean and dry",
+      "The field is big"
+    ],
+    "correctAnswer": "His boots and socks are clean and dry",
+    "explanation": "Anyone playing on a muddy field would have muddy boots. Clean, dry boots suggest he was not on the field.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1506",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils are talking about tomatoes at the market.",
+    "question": "Which sentence is a FACT and not an opinion?",
+    "options": [
+      "Tomato stew is too tasty.",
+      "Ripe tomatoes are usually red.",
+      "Everybody should eat tomatoes every day.",
+      "Tomatoes are the nicest food."
+    ],
+    "correctAnswer": "Ripe tomatoes are usually red.",
+    "explanation": "You can look at ripe tomatoes and see their colour, so this can be checked. The other sentences are feelings or wishes.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1507",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "The fish on the kitchen table is gone. There are wet round paw prints, a few fish bones and a trail of whiskers hairs near the window.",
+    "question": "Who most likely took the fish?",
+    "options": [
+      "A goat",
+      "A snail",
+      "A hen",
+      "A cat"
+    ],
+    "correctAnswer": "A cat",
+    "explanation": "Round paw prints and whisker hairs point to a cat, and cats love fish. A goat leaves hoof marks and a hen leaves three-toed prints.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1508",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Auntie left a bowl of salt open on the table in the rainy season. After two days it is damp and has turned into hard lumps.",
+    "question": "What most likely caused the lumps?",
+    "options": [
+      "Someone sang near the bowl",
+      "The salt got older",
+      "Damp air got into the salt",
+      "The bowl was too small"
+    ],
+    "correctAnswer": "Damp air got into the salt",
+    "explanation": "Salt takes in moisture from humid air, which makes it stick together. A covered container keeps it dry.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1509",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Kofi says, 'I finished my homework on Friday and I started it on Saturday.'",
+    "question": "What is wrong with Kofi's story?",
+    "options": [
+      "Saturday is before Friday",
+      "Homework is not allowed",
+      "He cannot finish a task before he starts it",
+      "Friday has no school"
+    ],
+    "correctAnswer": "He cannot finish a task before he starts it",
+    "explanation": "Friday comes before Saturday, so he would have finished before he began. The story cannot be true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1510",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Alibi Verification",
+    "scenario": "Esi says she cooked rice on the stove all afternoon. The stove is cold, the pot is clean and empty, and there is no smell of food.",
+    "question": "Which clue makes Esi's story doubtful?",
+    "options": [
+      "The stove is cold and the pot is clean and empty",
+      "Afternoon is a good time to cook",
+      "She likes rice",
+      "The kitchen has a door"
+    ],
+    "correctAnswer": "The stove is cold and the pot is clean and empty",
+    "explanation": "A person who cooked all afternoon would leave a warm stove and a used pot. These clues do not match her story.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1501",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A teacher tests one pupil from Class 5A and one from Class 5B. The pupil from 5A scores 90 and the one from 5B scores 60. The teacher says, 'Class 5A is better at maths.'",
+    "question": "What is the main problem with the teacher's claim?",
+    "options": [
+      "Class 5B is bigger",
+      "Maths cannot be tested",
+      "Scores of 90 are impossible",
+      "One pupil from each class is too small a sample to judge a whole class"
+    ],
+    "correctAnswer": "One pupil from each class is too small a sample to judge a whole class",
+    "explanation": "One pupil may be unusually strong or weak. Judging a class needs the scores of many pupils.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1504",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A message says, 'Free 50 GB data for all! Click this link now: network-gift.xyz' and asks you to enter your phone number and PIN.",
+    "question": "Which clue best shows this message is a scam?",
+    "options": [
+      "It has a link",
+      "It uses an exclamation mark",
+      "It mentions data",
+      "It uses an unofficial web address and asks for your PIN"
+    ],
+    "correctAnswer": "It uses an unofficial web address and asks for your PIN",
+    "explanation": "Real companies do not ask for your secret PIN through odd links. A strange web address and a request for secrets are warning signs.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1505",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Forensic Observation",
+    "scenario": "A thumb print on a broken jar shows a spiral pattern. Kofi's thumb print, taken at the police station, matches it in every tiny ridge and line.",
+    "question": "What does the match most strongly suggest?",
+    "options": [
+      "Kofi is the only person who ever visited",
+      "Kofi broke the jar on purpose",
+      "Everybody has this same print",
+      "Kofi's thumb touched the jar"
+    ],
+    "correctAnswer": "Kofi's thumb touched the jar",
+    "explanation": "Fingerprints are unique to each person, so a match shows he touched it. It does not by itself prove he broke it or when he touched it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1506",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "A fish seller says, 'I bought fresh fish at 6:00 a.m. from the landing beach.' The fishing boats at that beach only return at about 10:00 a.m.",
+    "question": "What is the problem with her story?",
+    "options": [
+      "10:00 a.m. comes before 6:00 a.m.",
+      "The boats had not returned yet at 6:00 a.m., so there was no fresh catch",
+      "Landing beaches have no fish",
+      "Fish cannot be bought"
+    ],
+    "correctAnswer": "The boats had not returned yet at 6:00 a.m., so there was no fresh catch",
+    "explanation": "The fresh catch arrives with the boats at about 10:00 a.m. Buying fresh fish at 6:00 a.m. from that beach does not fit.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1507",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "A solar lantern was left inside a dark cupboard all day. In the evening it does not light up, but an identical lantern left on the sunny windowsill glows brightly.",
+    "question": "What is the most likely cause?",
+    "options": [
+      "The windowsill lantern was heavier",
+      "The lantern was too clean",
+      "The cupboard was too big",
+      "The cupboard lantern's solar panel got no sunlight to charge"
+    ],
+    "correctAnswer": "The cupboard lantern's solar panel got no sunlight to charge",
+    "explanation": "A solar lantern stores energy from sunlight during the day. In a dark cupboard it could not charge.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1508",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A school says, 'Our exam pass rate rose from 50% to 100%!' Last year 40 pupils sat the exam, but this year only 2 strong pupils were allowed to sit it.",
+    "question": "Why is the claim misleading?",
+    "options": [
+      "The number of pupils changed so much that the rates cannot fairly be compared",
+      "100% is not a number",
+      "Exams cannot be passed",
+      "Two is bigger than forty"
+    ],
+    "correctAnswer": "The number of pupils changed so much that the rates cannot fairly be compared",
+    "explanation": "A rate based on 2 selected pupils says little about the school. Always check how many people were counted and how they were chosen.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1509",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A driver says he drove from Kumasi to Accra, about 250 km, in exactly 1 hour. The speed limit on the road is 100 km/h.",
+    "question": "Why is his story doubtful?",
+    "options": [
+      "Driving takes no time",
+      "He would have needed an average speed of 250 km/h, far above the limit",
+      "Accra has no road",
+      "Kumasi is too small"
+    ],
+    "correctAnswer": "He would have needed an average speed of 250 km/h, far above the limit",
+    "explanation": "Distance divided by time gives 250 km/h, which is far too fast for any road trip. At 100 km/h the trip would take about 2.5 hours.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1510",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A news headline reads: 'Terrible new road wastes billions and ruins our lovely town!' The article gives no figures and no names of experts.",
+    "question": "What is the best clue that the article may be biased?",
+    "options": [
+      "It mentions a road",
+      "It uses a headline",
+      "It is about a town",
+      "It uses emotional words like 'terrible' and 'ruins' without evidence"
+    ],
+    "correctAnswer": "It uses emotional words like 'terrible' and 'ruins' without evidence",
+    "explanation": "Loaded words try to make you feel something instead of showing facts. A fair report gives numbers and sources.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1501",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "Gas leaking from a broken container smells sharp and turns damp red litmus paper blue.",
+    "question": "Which gas is most likely leaking?",
+    "options": [
+      "Chlorine",
+      "Ammonia",
+      "Hydrogen chloride",
+      "Carbon dioxide"
+    ],
+    "correctAnswer": "Ammonia",
+    "explanation": "Ammonia is an alkaline gas, so it turns damp red litmus blue. Hydrogen chloride is acidic and turns blue litmus red, and chlorine bleaches litmus.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1502",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A dark stain on a cloth fizzes with bubbles when a few drops of hydrogen peroxide are added.",
+    "question": "What does the fizzing suggest?",
+    "options": [
+      "Plain table salt is present",
+      "Rust is present",
+      "Living tissue containing the enzyme catalase, such as blood, is present",
+      "Sugar syrup is present"
+    ],
+    "correctAnswer": "Living tissue containing the enzyme catalase, such as blood, is present",
+    "explanation": "Catalase breaks down hydrogen peroxide into water and oxygen gas, which makes bubbles. Salt, sugar and rust do not do this.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1503",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "A seller offers a shiny yellow bar of 'pure gold' with a mass of 193 g. The bar is dropped into a measuring cylinder and displaces 22 cm³ of water. Pure gold has a density of about 19.3 g/cm³.",
+    "question": "What does the test show?",
+    "options": [
+      "The bar is not pure gold, because its density is about 8.8 g/cm³",
+      "The bar is pure gold",
+      "The test cannot measure density",
+      "The bar is lighter than water"
+    ],
+    "correctAnswer": "The bar is not pure gold, because its density is about 8.8 g/cm³",
+    "explanation": "Density equals mass divided by volume, and 193 ÷ 22 ≈ 8.8 g/cm³. Pure gold would displace only about 10 cm³ of water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1504",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "An insurance salesman says, 'If you do not buy this policy today, it means you do not love your family.'",
+    "question": "Which fallacy is the salesman using?",
+    "options": [
+      "Straw man",
+      "Appeal to emotion",
+      "Circular reasoning",
+      "Hasty generalisation"
+    ],
+    "correctAnswer": "Appeal to emotion",
+    "explanation": "He tries to make you feel guilty instead of giving reasons about price and benefits. A good decision should rest on facts.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1505",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A pupil tells her classmate, 'You say we should save water, but you washed your car yesterday, so your advice is worthless.'",
+    "question": "Which fallacy is this?",
+    "options": [
+      "Bandwagon",
+      "Tu quoque (you do it too)",
+      "False dilemma",
+      "Slippery slope"
+    ],
+    "correctAnswer": "Tu quoque (you do it too)",
+    "explanation": "Whether the speaker follows the advice does not change whether the advice is correct. The argument about saving water should be judged on its own.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1506",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A fan says, 'No true supporter of our team would ever criticise the coach.' When shown a lifelong supporter who does, he replies, 'Then he is not a true supporter.'",
+    "question": "Which fallacy is the fan using?",
+    "options": [
+      "Ad hominem",
+      "Post hoc",
+      "No true Scotsman (changing the definition to protect a claim)",
+      "Red herring"
+    ],
+    "correctAnswer": "No true Scotsman (changing the definition to protect a claim)",
+    "explanation": "The fan keeps changing what counts as a 'true' supporter so his claim can never be wrong. A claim that cannot be tested this way is empty.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1507",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A speaker says, 'Nobody has ever proved that ghosts do not exist, so ghosts must exist.'",
+    "question": "Which fallacy is this?",
+    "options": [
+      "Appeal to ignorance",
+      "Slippery slope",
+      "Equivocation",
+      "Ad hominem"
+    ],
+    "correctAnswer": "Appeal to ignorance",
+    "explanation": "Lack of proof against a claim does not make it true. The person making a claim must give evidence for it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1508",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A magazine lists five famous billionaires who dropped out of school and says, 'Dropping out of school leads to great success.'",
+    "question": "What is wrong with this reasoning?",
+    "options": [
+      "Schools are never useful",
+      "Magazines never list names",
+      "Billionaires cannot be counted",
+      "Survivorship bias: it ignores the many dropouts who did not become successful"
+    ],
+    "correctAnswer": "Survivorship bias: it ignores the many dropouts who did not become successful",
+    "explanation": "We only hear about the few who succeeded, not the many who did not. Looking at everyone who dropped out would give a very different picture.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1509",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A study finds that pupils who eat breakfast before school score higher on tests. A headline says, 'Breakfast alone raises your marks!'",
+    "question": "What is the best criticism of the headline?",
+    "options": [
+      "Only pupils who skip breakfast take tests",
+      "Breakfast has no effect on anything",
+      "Other factors, such as family income or sleep, may affect both breakfast and marks",
+      "Tests cannot be scored"
+    ],
+    "correctAnswer": "Other factors, such as family income or sleep, may affect both breakfast and marks",
+    "explanation": "Hidden factors may lie behind both breakfast habits and test scores. A fair test would control for them or compare similar pupils.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1510",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "An article says, 'Government to ban sunlight in all cities from Monday.' At the top of the website in small letters it says, 'All stories on this site are satire and not real.'",
+    "question": "What is the best conclusion?",
+    "options": [
+      "The government really banned sunlight",
+      "The article is a news report",
+      "The article is satire written for humour and is not real news",
+      "The website is a government site"
+    ],
+    "correctAnswer": "The article is satire written for humour and is not real news",
+    "explanation": "Satire sites write made-up stories to be funny, and many state this in small print. Always check the 'About' section before sharing a surprising story.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1602",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "Half-eaten ripe mangoes lie under a tree each morning. The fruit has small teeth marks, and at dusk leathery wings were heard flapping in the branches.",
+    "question": "Who most likely ate the mangoes?",
+    "options": [
+      "Cows",
+      "Fish",
+      "Snails",
+      "Fruit bats"
+    ],
+    "correctAnswer": "Fruit bats",
+    "explanation": "Fruit bats feed on ripe fruit at night and leave half-eaten pieces behind. Cows, fish and snails do not fly in the branches.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1603",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Cause & Effect",
+    "scenario": "Yaw's torch will not light. The batteries are inside, but one of them has been put in the wrong way round.",
+    "question": "What is the most likely cause of the dark torch?",
+    "options": [
+      "The room is too bright",
+      "The battery is the wrong way round, so electricity cannot flow",
+      "The torch is too clean",
+      "The torch is too happy"
+    ],
+    "correctAnswer": "The battery is the wrong way round, so electricity cannot flow",
+    "explanation": "Batteries must face the right way for electricity to flow round the circuit. A wrongly placed battery breaks the flow and the bulb stays off.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1604",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Today is Wednesday. Ama says, 'Yesterday was Friday and we played football.'",
+    "question": "What is wrong with Ama's story?",
+    "options": [
+      "If today is Wednesday, yesterday was Tuesday",
+      "Wednesday is not a day",
+      "Football is not played on Friday",
+      "Friday comes after Saturday"
+    ],
+    "correctAnswer": "If today is Wednesday, yesterday was Tuesday",
+    "explanation": "The day before Wednesday is Tuesday. So Ama's 'yesterday was Friday' cannot be true.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1606",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fact vs. Opinion",
+    "scenario": "Pupils talk about waakye at lunch time.",
+    "question": "Which sentence is an OPINION?",
+    "options": [
+      "Waakye is sold at many roadside stalls.",
+      "Waakye can be wrapped in leaves.",
+      "Waakye is the yummiest food in Ghana.",
+      "Waakye is cooked with rice and beans."
+    ],
+    "correctAnswer": "Waakye is the yummiest food in Ghana.",
+    "explanation": "'Yummiest' depends on what a person likes, so it cannot be proved. The other sentences can be checked by looking at real waakye.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1607",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Clue Observation",
+    "scenario": "The coal pot in the yard is still warm. Its ashes are grey, and there is a smell of fried fish in the air.",
+    "question": "What do these clues tell us?",
+    "options": [
+      "It snowed in the yard",
+      "Someone cooked here a short time ago",
+      "Nobody has been here today",
+      "The coal pot is broken"
+    ],
+    "correctAnswer": "Someone cooked here a short time ago",
+    "explanation": "A warm coal pot and a cooking smell show that cooking happened recently. A coal pot that nobody used would be cold.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1609",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Timeline Check",
+    "scenario": "Ama puts a cake in the oven at 4:00 p.m. At 4:05 p.m. she takes it out and says it is fully baked and golden. A cake like this usually needs about 40 minutes.",
+    "question": "What is wrong with Ama's story?",
+    "options": [
+      "Ovens bake backwards",
+      "Cakes are never golden",
+      "Five minutes is far too short to bake a whole cake",
+      "Ama cannot tell the time"
+    ],
+    "correctAnswer": "Five minutes is far too short to bake a whole cake",
+    "explanation": "A cake needs about 40 minutes to cook through. After only 5 minutes it would still be raw.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-nov-1610",
+    "targetGroup": "Novice (Basic 1-3)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A message says, 'The Moon will fall on Ghana tomorrow! Tell everyone!' It has no writer's name and comes from no news company.",
+    "question": "What is the best thing to do with this message?",
+    "options": [
+      "Do not share it, because it has no trusted source and the claim is impossible",
+      "Believe it because it says tomorrow",
+      "Share it with all your friends",
+      "Hide in the kitchen"
+    ],
+    "correctAnswer": "Do not share it, because it has no trusted source and the claim is impossible",
+    "explanation": "Real news comes from trusted sources with a name. A message with no source and a scary, impossible claim is probably fake.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1601",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Sample Size Trap",
+    "scenario": "A trotro mate asks 4 passengers which music they like best. Three say highlife. He announces, 'Highlife is the favourite music of all of Ghana!'",
+    "question": "What is wrong with his claim?",
+    "options": [
+      "He should have asked only drivers",
+      "Passengers cannot talk",
+      "Four passengers on one bus are too few to speak for all of Ghana",
+      "Highlife is not music"
+    ],
+    "correctAnswer": "Four passengers on one bus are too few to speak for all of Ghana",
+    "explanation": "Four people from one bus are a tiny and similar group. A claim about the whole country needs a large and varied sample.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1602",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Bias Hunter",
+    "scenario": "A hair-cream advert shows two photos. The 'Before' photo is dim and the girl is frowning. The 'After' photo is bright and she is smiling.",
+    "question": "Why is this comparison unfair?",
+    "options": [
+      "Hair cream is expensive",
+      "The light and mood are different, so the photos do not prove the cream worked",
+      "The photos are too small",
+      "Adverts are not allowed to use photos"
+    ],
+    "correctAnswer": "The light and mood are different, so the photos do not prove the cream worked",
+    "explanation": "A fair test changes only one thing. Different lighting and expressions can make hair look better without any cream at all.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1603",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "A school finds that pupils with longer arms have neater handwriting. A blogger says, 'Stretch your arms to write neatly!'",
+    "question": "What is the best explanation for the pattern?",
+    "options": [
+      "Arms and handwriting are magic",
+      "Older pupils have longer arms and have also had more years of writing practice",
+      "Long arms hold pens better",
+      "Neat handwriting makes arms grow"
+    ],
+    "correctAnswer": "Older pupils have longer arms and have also had more years of writing practice",
+    "explanation": "Age is a hidden factor that affects both arm length and handwriting. Two things that go together do not always cause each other.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1604",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A post shows a flooded street with the caption 'Accra floods yesterday!' A pupil notices that all the shop signs are in a foreign script that is not used in Ghana.",
+    "question": "What does this clue suggest?",
+    "options": [
+      "The photo is a painting",
+      "The photo may come from another country",
+      "The photo is definitely from Accra",
+      "The flood was bigger than it looks"
+    ],
+    "correctAnswer": "The photo may come from another country",
+    "explanation": "Signs in a script not used in Ghana point to a place outside Ghana. Checking details in a photo helps expose wrong captions.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1606",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Timeline Check",
+    "scenario": "A poster dated 1950 shows the words 'Republic of Ghana' and 'President Kwame Nkrumah'.",
+    "question": "Why is the date on the poster doubtful?",
+    "options": [
+      "Ghana became independent only in 1957 and a republic in 1960",
+      "Posters never have dates",
+      "Ghana does not exist",
+      "Nkrumah was never a president"
+    ],
+    "correctAnswer": "Ghana became independent only in 1957 and a republic in 1960",
+    "explanation": "In 1950 the country was still the Gold Coast under British rule. A poster naming the Republic of Ghana must have been made later.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1607",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Cause & Effect",
+    "scenario": "Fishermen at a lake switch to very fine nets that catch even the smallest fish. After two years their catches become much smaller.",
+    "question": "What is the most likely cause?",
+    "options": [
+      "Fish forgot how to swim",
+      "The boats became too clean",
+      "Catching baby fish before they could grow left too few fish to breed",
+      "The lake got hotter"
+    ],
+    "correctAnswer": "Catching baby fish before they could grow left too few fish to breed",
+    "explanation": "Young fish that are caught never grow up and lay eggs. Over time the fish population falls and catches shrink.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1608",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A shop says, 'Our profits rose by 200% this month!' Last month the profit was GH₵10 and this month it is GH₵30.",
+    "question": "Why can this claim be misleading?",
+    "options": [
+      "200% is impossible",
+      "GH₵30 is less than GH₵10",
+      "Shops cannot make a profit",
+      "The starting amount was tiny, so the big percentage means only GH₵20 more"
+    ],
+    "correctAnswer": "The starting amount was tiny, so the big percentage means only GH₵20 more",
+    "explanation": "A large percentage on a very small starting amount can sound impressive but mean little. Always check the real numbers behind a percentage.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-app-1609",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "caseType": "Alibi Verification",
+    "scenario": "A witness's photo is said to show a street scene in Accra at 12:00 noon. In the photo, the people's shadows stretch very long across the ground.",
+    "question": "Why is the claimed time doubtful?",
+    "options": [
+      "Photos cannot show shadows",
+      "Shadows are long at noon everywhere",
+      "People have no shadows",
+      "Near the equator at noon the sun is high, so shadows are very short"
+    ],
+    "correctAnswer": "Near the equator at noon the sun is high, so shadows are very short",
+    "explanation": "Accra is close to the equator, so the noon sun is almost overhead and shadows are short. Long shadows suggest early morning or late afternoon.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1601",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Chemistry",
+    "scenario": "Two cleaners mix a toilet cleaner containing hydrochloric acid with bleach in a closed bathroom. They start coughing and notice a greenish-yellow gas.",
+    "question": "Which toxic gas was most likely released?",
+    "options": [
+      "Chlorine",
+      "Nitrogen",
+      "Hydrogen",
+      "Oxygen"
+    ],
+    "correctAnswer": "Chlorine",
+    "explanation": "Acid mixed with bleach releases chlorine, a greenish-yellow poisonous gas. This is why cleaning products must never be mixed.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1603",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Forensic Observation",
+    "scenario": "A mother with blood group O has a baby with blood group O. A man with blood group AB claims to be the father.",
+    "question": "What does genetics tell us?",
+    "options": [
+      "Blood groups are never inherited",
+      "The mother's group alone decides",
+      "A man with group AB cannot be the father of a group O child",
+      "He must be the father"
+    ],
+    "correctAnswer": "A man with group AB cannot be the father of a group O child",
+    "explanation": "A person with group AB always passes on either A or B, never O. A group O child needs an O allele from each parent.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1604",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "An argument says: 'A feather is light. Whatever is light cannot be dark. So a feather cannot be dark.'",
+    "question": "Which fallacy is this?",
+    "options": [
+      "Ad hominem",
+      "Slippery slope",
+      "Bandwagon",
+      "Equivocation: the word 'light' changes meaning"
+    ],
+    "correctAnswer": "Equivocation: the word 'light' changes meaning",
+    "explanation": "In the first sentence 'light' means not heavy, and in the second it means not dark. Using one word with two meanings makes the argument fail.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1605",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A mechanic says, 'If a trotro runs out of fuel, it stops. This trotro has stopped, so it must have run out of fuel.'",
+    "question": "What is the flaw in this reasoning?",
+    "options": [
+      "Affirming the consequent: other problems can also stop a trotro",
+      "Straw man",
+      "Appeal to tradition",
+      "Circular reasoning"
+    ],
+    "correctAnswer": "Affirming the consequent: other problems can also stop a trotro",
+    "explanation": "'If A then B' does not mean 'if B then A'. A trotro could stop because of a flat tyre, a broken engine or an accident.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1606",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Logical Fallacy",
+    "scenario": "A herbal seller says, 'My remedy is 100% natural, so it must be completely safe.'",
+    "question": "Which fallacy is the seller using?",
+    "options": [
+      "Red herring",
+      "False dilemma",
+      "Ad hominem",
+      "Appeal to nature: natural things, such as some plants, can be poisonous"
+    ],
+    "correctAnswer": "Appeal to nature: natural things, such as some plants, can be poisonous",
+    "explanation": "Being natural does not make something safe or effective, because many natural substances are harmful. Safety must be shown by careful testing.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1607",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "A news site says, 'Rainfall dropped by 30% this month, proving the climate has broken!' The site's own long-term records show that monthly rainfall often swings 30% up or down.",
+    "question": "Why is the claim misleading?",
+    "options": [
+      "30% is a very small number",
+      "One month is a short window, and normal variation can explain the drop",
+      "Climates never change",
+      "Rainfall cannot be measured"
+    ],
+    "correctAnswer": "One month is a short window, and normal variation can explain the drop",
+    "explanation": "Weather changes a lot from month to month. Claims about climate need many years of data, not a single month.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1608",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Correlation vs. Causation",
+    "scenario": "People who take vitamins every day are healthier on average. An advert says, 'Vitamins make you healthy!'",
+    "question": "What alternative explanation should be checked?",
+    "options": [
+      "Vitamins cause money",
+      "Vitamins are poison",
+      "Healthier, wealthier people may be more likely to buy vitamins, so health may lead to vitamin use",
+      "Health does not exist"
+    ],
+    "correctAnswer": "Healthier, wealthier people may be more likely to buy vitamins, so health may lead to vitamin use",
+    "explanation": "People who look after themselves in many ways may also take vitamins. A fair test would compare similar people with and without vitamins.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1609",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Fake News Spotter",
+    "scenario": "A meme shows a photo of Dr. Kwame Nkrumah with the quote, 'Don't forget to like, share and follow me on WhatsApp for more wisdom!'",
+    "question": "What is the strongest sign that the quote is fake?",
+    "options": [
+      "It is on a meme",
+      "It has a photo",
+      "It uses an exclamation mark",
+      "It mentions WhatsApp, which did not exist in his lifetime"
+    ],
+    "correctAnswer": "It mentions WhatsApp, which did not exist in his lifetime",
+    "explanation": "Nkrumah died in 1972, long before WhatsApp existed. A quote that mentions something from after the speaker's life is an anachronism and likely invented.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-case-sch-1610",
+    "targetGroup": "Scholar (JHS)",
+    "caseType": "Misleading Statistics",
+    "scenario": "An online poll posted only on a website says, '95% of Ghanaians use the internet every day.'",
+    "question": "Why is the claim unreliable?",
+    "options": [
+      "Only people who already use the internet could answer, so the sample is biased",
+      "95% is too big to count",
+      "Polls are always accurate",
+      "Websites cannot hold polls"
+    ],
+    "correctAnswer": "Only people who already use the internet could answer, so the sample is biased",
+    "explanation": "People without internet could never see or answer the poll. A fair survey must reach a mixed group from across the country.",
     "isCentral": true
   }
 ];
@@ -30185,6 +33784,3139 @@ export const THINK_TANK_RIDDLES: ThinkTankRiddleItem[] = [
     ],
     "explanation": "The ancient Ghana Empire flourished in the area of present-day Mauritania and Mali, and modern Ghana took its name to honour that heritage.",
     "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I show you your face but I never say a word. I copy your smile, yet I am cold and flat. What am I?",
+    "hint1": "You look at me when you comb your hair.",
+    "hint2": "I am made of shiny glass.",
+    "answer": "A mirror",
+    "acceptedKeywords": [
+      "mirror",
+      "a mirror",
+      "looking glass"
+    ],
+    "explanation": "A mirror bounces light back so you can see your own face.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I have an eye but I cannot see. A tailor uses me with thread. What am I?",
+    "hint1": "I am thin, small and pointed.",
+    "hint2": "You push thread through my eye.",
+    "answer": "A needle",
+    "acceptedKeywords": [
+      "needle",
+      "a needle",
+      "sewing needle"
+    ],
+    "explanation": "A needle has a tiny hole called an eye that the thread passes through.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I make mistakes disappear, but every time I help, I get a little smaller. What am I?",
+    "hint1": "You find me in your pencil case.",
+    "hint2": "I rub out pencil marks.",
+    "answer": "An eraser",
+    "acceptedKeywords": [
+      "eraser",
+      "rubber",
+      "an eraser"
+    ],
+    "explanation": "An eraser wears away a little each time it rubs out pencil marks.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "We are two kitchen partners. One is a big bowl and the other is a long stick. Together we turn boiled cassava and plantain into fufu. Who are we?",
+    "hint1": "One of us is hit down again and again.",
+    "hint2": "One of us is called a pestle.",
+    "answer": "A mortar and pestle",
+    "acceptedKeywords": [
+      "mortar and pestle",
+      "mortar",
+      "pestle"
+    ],
+    "explanation": "The pestle pounds food inside the mortar to make fufu smooth and sticky.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1106",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I change my shape through the month, and I glow at night, but I have no light of my own. What am I?",
+    "hint1": "I travel around the Earth.",
+    "hint2": "I borrow my light from the sun.",
+    "answer": "The moon",
+    "acceptedKeywords": [
+      "moon",
+      "the moon",
+      "the moon at night"
+    ],
+    "explanation": "The moon only reflects sunlight, and its shape seems to change as it moves around the Earth.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1107",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I live in water, I have no legs, and I breathe with gills. What am I?",
+    "hint1": "I swim with fins.",
+    "hint2": "My body is covered in scales.",
+    "answer": "A fish",
+    "acceptedKeywords": [
+      "fish",
+      "a fish",
+      "fishes"
+    ],
+    "explanation": "Fish live in water and use gills to take oxygen from it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1108",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I buzz from flower to flower and I make sweet honey. If you trouble me, I may sting. What am I?",
+    "hint1": "I have wings and stripes.",
+    "hint2": "I live in a hive.",
+    "answer": "A bee",
+    "acceptedKeywords": [
+      "bee",
+      "a bee",
+      "honey bee"
+    ],
+    "explanation": "Bees collect nectar from flowers and turn it into honey in their hive.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1109",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I have three straight sides and three corners. A slice of pizza is shaped like me. What shape am I?",
+    "hint1": "Count my sides: 1, 2, 3.",
+    "hint2": "My name starts with 'tri'.",
+    "answer": "A triangle",
+    "acceptedKeywords": [
+      "triangle",
+      "a triangle",
+      "tri angle"
+    ],
+    "explanation": "A triangle is a shape with three sides and three corners.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1110",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I have no corners and no straight sides. A wheel and a coin are shaped like me. What shape am I?",
+    "hint1": "I am perfectly round.",
+    "hint2": "You can draw me with a compass.",
+    "answer": "A circle",
+    "acceptedKeywords": [
+      "circle",
+      "a circle",
+      "round"
+    ],
+    "explanation": "A circle is a round shape with no corners and no straight sides.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1111",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am woven in colourful strips by Asante and Ewe weavers. Kings, queens and brides wear me on special days. What am I?",
+    "hint1": "I am a famous cloth from Ghana.",
+    "hint2": "I am woven on a narrow loom.",
+    "answer": "Kente",
+    "acceptedKeywords": [
+      "kente",
+      "kente cloth",
+      "a kente cloth"
+    ],
+    "explanation": "Kente is a handwoven cloth from Ghana, and its colours and patterns carry special meanings.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1112",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a five-pointed shape in the middle of Ghana's flag. I am black, and I stand for African freedom. What am I?",
+    "hint1": "I sit on the gold stripe.",
+    "hint2": "A famous football team is named after me.",
+    "answer": "The black star",
+    "acceptedKeywords": [
+      "black star",
+      "the black star",
+      "black star of africa"
+    ],
+    "explanation": "The black star on Ghana's flag is a symbol of African freedom and unity.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1113",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "The more of me you take, the more of me you leave behind. What am I?",
+    "hint1": "You make me when you walk on sand.",
+    "hint2": "I am the marks your feet leave.",
+    "answer": "Footsteps",
+    "acceptedKeywords": [
+      "footsteps",
+      "footprints",
+      "steps"
+    ],
+    "explanation": "Each step you take leaves another footprint behind you.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1114",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I get shorter the more I am used, and I help you write and draw. What am I?",
+    "hint1": "I am found in a school bag.",
+    "hint2": "You must sharpen me.",
+    "answer": "A pencil",
+    "acceptedKeywords": [
+      "pencil",
+      "a pencil",
+      "lead pencil"
+    ],
+    "explanation": "A pencil wears down as it writes, and sharpening makes it shorter still.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1115",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I have four legs but I cannot walk, and I have a back but no spine. You sit on me in class. What am I?",
+    "hint1": "You find me in every classroom.",
+    "hint2": "I have a seat and a back.",
+    "answer": "A chair",
+    "acceptedKeywords": [
+      "chair",
+      "a chair",
+      "stool"
+    ],
+    "explanation": "A chair has legs and a back, but it cannot walk or move by itself.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the push of air or water on a surface. The deeper you dive in a lake, the more of me you feel on your ears. What am I?",
+    "hint1": "Divers and balloons both feel me.",
+    "hint2": "You can measure me in pascals.",
+    "answer": "Pressure",
+    "acceptedKeywords": [
+      "pressure",
+      "water pressure",
+      "air pressure"
+    ],
+    "explanation": "Pressure is force pressing on an area, and it grows with depth in water.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I can pull iron nails to me without touching them. I have a north pole and a south pole. What am I?",
+    "hint1": "I stick on a fridge door.",
+    "hint2": "My opposite poles attract each other.",
+    "answer": "A magnet",
+    "acceptedKeywords": [
+      "magnet",
+      "a magnet",
+      "bar magnet"
+    ],
+    "explanation": "A magnet attracts iron and has two poles, north and south.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a grooved wheel. A rope runs over me, and I help people lift a bucket from a deep well. What am I?",
+    "hint1": "I am a simple machine.",
+    "hint2": "A flagpole has me at the top.",
+    "answer": "A pulley",
+    "acceptedKeywords": [
+      "pulley",
+      "a pulley",
+      "pulley wheel"
+    ],
+    "explanation": "A pulley changes the direction of a pull and makes lifting easier.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1104",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the smallest number that both 4 and 6 divide into exactly. What number am I?",
+    "hint1": "Count in fours: 4, 8, ...",
+    "hint2": "Count in sixes: 6, ... and see where the lists meet.",
+    "answer": "Twelve",
+    "acceptedKeywords": [
+      "12",
+      "twelve",
+      "number 12"
+    ],
+    "explanation": "The multiples of 4 are 4, 8, 12 and of 6 are 6, 12, so 12 is the first they share.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "All three of my sides are equal and each of my angles is 60°. What am I?",
+    "hint1": "I am a triangle.",
+    "hint2": "My name begins with 'equi'.",
+    "answer": "An equilateral triangle",
+    "acceptedKeywords": [
+      "equilateral",
+      "equilateral triangle",
+      "an equilateral triangle"
+    ],
+    "explanation": "An equilateral triangle has three equal sides and three equal angles of 60°.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1106",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am an Adinkra symbol whose name means 'except God'. I stand for the greatness and power of God. What am I?",
+    "hint1": "My name is in the Akan language.",
+    "hint2": "My name begins with 'Gye'.",
+    "answer": "Gye Nyame",
+    "acceptedKeywords": [
+      "gye nyame",
+      "gyenyame",
+      "gye nyame symbol"
+    ],
+    "explanation": "Gye Nyame is a popular Adinkra symbol that shows the supremacy of God.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1107",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am a round lake in the Ashanti Region, filled in a huge crater. Fishermen paddle on me on wooden planks. What am I?",
+    "hint1": "My name begins with 'Bosom'.",
+    "hint2": "The Asante believe my waters are sacred.",
+    "answer": "Lake Bosomtwe",
+    "acceptedKeywords": [
+      "lake bosomtwe",
+      "bosomtwe",
+      "lake bosumtwi"
+    ],
+    "explanation": "Lake Bosomtwe is Ghana's only natural lake of its kind and is sacred to the Asante people.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1108",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I have a head and a tail but no body. People flip me to decide who goes first. What am I?",
+    "hint1": "You can keep me in your pocket.",
+    "hint2": "I am used to buy things.",
+    "answer": "A coin",
+    "acceptedKeywords": [
+      "coin",
+      "a coin",
+      "cedi coin"
+    ],
+    "explanation": "A coin has a 'heads' side and a 'tails' side, and it is flipped to choose between two options.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1109",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "The more of me there is, the less you can see. What am I?",
+    "hint1": "I come when the sun goes down.",
+    "hint2": "A torch chases me away.",
+    "answer": "Darkness",
+    "acceptedKeywords": [
+      "darkness",
+      "dark",
+      "the dark"
+    ],
+    "explanation": "The more darkness there is, the less light there is to see by.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1110",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "Plants take me in through their leaves to make food, and you breathe me out. My formula is CO₂. What am I?",
+    "hint1": "I am a gas.",
+    "hint2": "I have one carbon and two oxygen atoms.",
+    "answer": "Carbon dioxide",
+    "acceptedKeywords": [
+      "carbon dioxide",
+      "co2",
+      "co₂"
+    ],
+    "explanation": "Plants use carbon dioxide, water and sunlight to make food in photosynthesis.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1111",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I hold you up and protect your heart and brain. An adult has about 206 of my parts. What am I?",
+    "hint1": "I am hidden under your skin.",
+    "hint2": "I am made of bones.",
+    "answer": "The skeleton",
+    "acceptedKeywords": [
+      "skeleton",
+      "the skeleton",
+      "bones"
+    ],
+    "explanation": "The skeleton is the frame of bones that supports the body and protects organs.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1112",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "I am lighter than a feather, yet even the strongest person cannot hold me for more than a few minutes. What am I?",
+    "hint1": "You do me all day without thinking.",
+    "hint2": "You hold me in your lungs.",
+    "answer": "Breath",
+    "acceptedKeywords": [
+      "breath",
+      "your breath",
+      "breathing"
+    ],
+    "explanation": "Breath weighs almost nothing, but nobody can hold it for long.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1113",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "I have branches but no leaves, and I keep money safe but have no pockets. What am I?",
+    "hint1": "You can have an account with me.",
+    "hint2": "I am a place with a vault.",
+    "answer": "A bank",
+    "acceptedKeywords": [
+      "bank",
+      "a bank",
+      "the bank"
+    ],
+    "explanation": "A bank has many branches, which are its offices, and it keeps money safe.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1114",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "How many months of the year have at least 28 days?",
+    "hint1": "Do not think only about February.",
+    "hint2": "Every month has 28 or more days.",
+    "answer": "All twelve",
+    "acceptedKeywords": [
+      "all",
+      "12",
+      "twelve",
+      "all twelve",
+      "all of them"
+    ],
+    "explanation": "February has 28 days and every other month has more, so all 12 months have at least 28.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1115",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a colourful bridge in the sky after rain when the sun is shining. I have red on the outside and violet on the inside. What am I?",
+    "hint1": "I have seven colours.",
+    "hint2": "Sunlight is split by raindrops to make me.",
+    "answer": "A rainbow",
+    "acceptedKeywords": [
+      "rainbow",
+      "a rainbow",
+      "rain bow"
+    ],
+    "explanation": "Raindrops split sunlight into its colours, which makes a rainbow.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1101",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the smallest particle of an element that still has its properties. I have a nucleus in my middle and electrons around it. What am I?",
+    "hint1": "Everything around you is made of me.",
+    "hint2": "I contain protons, neutrons and electrons.",
+    "answer": "An atom",
+    "acceptedKeywords": [
+      "atom",
+      "an atom",
+      "atoms"
+    ],
+    "explanation": "An atom is the basic building block of an element, with a nucleus and electrons.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1103",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the thick layer of hot rock that lies between Earth's crust and its core. What am I?",
+    "hint1": "I am the biggest layer of the Earth.",
+    "hint2": "My name sounds like a covering worn on the shoulders.",
+    "answer": "The mantle",
+    "acceptedKeywords": [
+      "mantle",
+      "the mantle",
+      "earth's mantle"
+    ],
+    "explanation": "The mantle is Earth's thick middle layer, between the crust and the core.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1104",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the only metal that is liquid at room temperature. Thermometers once used me, and my symbol is Hg. What am I?",
+    "hint1": "I am silver-coloured and shiny.",
+    "hint2": "I share my name with a planet.",
+    "answer": "Mercury",
+    "acceptedKeywords": [
+      "mercury",
+      "hg",
+      "quicksilver"
+    ],
+    "explanation": "Mercury is a metal that stays liquid at normal room temperature.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1105",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the longest straight line you can draw across a circle, and I pass through its centre. What am I?",
+    "hint1": "I am twice the radius.",
+    "hint2": "My name begins with 'dia'.",
+    "answer": "The diameter",
+    "acceptedKeywords": [
+      "diameter",
+      "the diameter",
+      "circle diameter"
+    ],
+    "explanation": "The diameter passes through the centre and is twice as long as the radius.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1106",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the first counting number, but I am neither prime nor composite. What am I?",
+    "hint1": "I am the smallest positive whole number.",
+    "hint2": "Multiply any number by me and it stays the same.",
+    "answer": "One",
+    "acceptedKeywords": [
+      "1",
+      "one",
+      "number 1"
+    ],
+    "explanation": "The number 1 has only one factor, so it is neither prime nor composite.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1107",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "Divide any circle's circumference by its diameter and you always get me. I start with 3.14 and never end. What am I?",
+    "hint1": "I am a Greek letter.",
+    "hint2": "My name sounds like a dessert you eat.",
+    "answer": "Pi",
+    "acceptedKeywords": [
+      "pi",
+      "π",
+      "3.14"
+    ],
+    "explanation": "Pi is the ratio of a circle's circumference to its diameter, about 3.14159.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1108",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "In 1324 I travelled to Mecca with so much gold that I changed prices in Cairo. I was the emperor of Mali. Who am I?",
+    "hint1": "My name starts with 'Mansa'.",
+    "hint2": "I was known as one of the richest rulers in history.",
+    "answer": "Mansa Musa",
+    "acceptedKeywords": [
+      "mansa musa",
+      "musa",
+      "mansa musa of mali"
+    ],
+    "explanation": "Mansa Musa ruled the Mali Empire, and his pilgrimage showed the wealth of West Africa.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1109",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was the Queen Mother of Ejisu. In 1900 I led the Asante to defend the Golden Stool against the British. Who am I?",
+    "hint1": "The conflict is called the War of the Golden Stool.",
+    "hint2": "My name starts with 'Yaa'.",
+    "answer": "Yaa Asantewaa",
+    "acceptedKeywords": [
+      "yaa asantewaa",
+      "yaa asantewa",
+      "asantewaa"
+    ],
+    "explanation": "Yaa Asantewaa is remembered for her courage in leading the Asante resistance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1110",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am an Adinkra symbol of two ram's horns. I teach that a strong person should also be humble. What am I?",
+    "hint1": "I am drawn as curved horns.",
+    "hint2": "My name begins with 'Dwen'.",
+    "answer": "Dwennimmen",
+    "acceptedKeywords": [
+      "dwennimmen",
+      "dwennimmen symbol",
+      "ram's horns"
+    ],
+    "explanation": "Dwennimmen shows that true strength goes together with humility.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1111",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I weigh about 1.4 kg and sit inside your skull. The more you use me, the sharper I become. What am I?",
+    "hint1": "I control your thoughts.",
+    "hint2": "I am the centre of your nervous system.",
+    "answer": "The brain",
+    "acceptedKeywords": [
+      "brain",
+      "the brain",
+      "mind"
+    ],
+    "explanation": "The brain grows stronger and builds new connections when you learn and think.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1112",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "I mean to pay attention with your ears. If you rearrange my letters, I become the opposite of noisy. What word am I?",
+    "hint1": "I have six letters.",
+    "hint2": "Rearranged, I become 'silent'.",
+    "answer": "Listen",
+    "acceptedKeywords": [
+      "listen",
+      "silent",
+      "listen silent"
+    ],
+    "explanation": "The letters of 'listen' can be rearranged to spell 'silent', which is called an anagram.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1113",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the unit of force. A force of 1 kg accelerating at 1 m/s² needs one of me. I am named after a scientist who studied gravity. What am I?",
+    "hint1": "My symbol is a capital N.",
+    "hint2": "I am named after Sir Isaac.",
+    "answer": "Newton",
+    "acceptedKeywords": [
+      "newton",
+      "newtons",
+      "the newton"
+    ],
+    "explanation": "The newton is the SI unit of force, named after Sir Isaac Newton.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1114",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the splitting of a heavy atom into smaller parts, and I release huge amounts of energy in nuclear power plants. What am I?",
+    "hint1": "I am the opposite of fusion.",
+    "hint2": "Uranium atoms are split in me.",
+    "answer": "Nuclear fission",
+    "acceptedKeywords": [
+      "fission",
+      "nuclear fission",
+      "atom splitting"
+    ],
+    "explanation": "In fission, a heavy nucleus splits and releases energy used to make electricity.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1115",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the next number in this pattern: 1, 1, 2, 3, 5, 8, 13, ... What number am I?",
+    "hint1": "Each number is the sum of the two before it.",
+    "hint2": "Add 8 and 13.",
+    "answer": "21",
+    "acceptedKeywords": [
+      "21",
+      "twenty-one",
+      "twenty one"
+    ],
+    "explanation": "This is the Fibonacci sequence, and 8 + 13 = 21.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1201",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I ring but I am not a phone. The teacher shakes me to tell you break time has come. What am I?",
+    "hint1": "I hang at school and make a loud sound.",
+    "hint2": "I am made of metal and I go ding-dong.",
+    "answer": "A bell",
+    "acceptedKeywords": [
+      "bell",
+      "a bell",
+      "school bell"
+    ],
+    "explanation": "A school bell rings to tell pupils when lessons start and end.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1202",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I have a bowl and a handle, but I never grow flowers. You put me in your mouth to eat soup. What am I?",
+    "hint1": "You find me in the kitchen.",
+    "hint2": "I sit next to the fork and knife.",
+    "answer": "A spoon",
+    "acceptedKeywords": [
+      "spoon",
+      "a spoon",
+      "soup spoon"
+    ],
+    "explanation": "A spoon has a small bowl shape that holds food and a handle that you hold.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1203",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I grow under the ground in a shell. People roast or boil me and eat me as a snack, or grind me into butter. What am I?",
+    "hint1": "Ghanaians call me nkatie.",
+    "hint2": "I am also called a peanut.",
+    "answer": "A groundnut",
+    "acceptedKeywords": [
+      "groundnut",
+      "peanut",
+      "groundnuts",
+      "peanuts"
+    ],
+    "explanation": "Groundnuts grow underground in shells and are eaten as a snack or made into soup and paste.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1204",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I carry my home on my back and move very slowly. I leave a shiny trail behind me. What am I?",
+    "hint1": "I come out after the rain.",
+    "hint2": "I have a spiral shell and two feelers.",
+    "answer": "A snail",
+    "acceptedKeywords": [
+      "snail",
+      "a snail",
+      "giant snail"
+    ],
+    "explanation": "A snail carries its shell on its back and leaves a slimy trail as it slides along.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1205",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am tiny with six legs. I march in a line and carry crumbs to my home underground. What am I?",
+    "hint1": "Many of us live together in a colony.",
+    "hint2": "I love sugar.",
+    "answer": "An ant",
+    "acceptedKeywords": [
+      "ant",
+      "an ant",
+      "ants"
+    ],
+    "explanation": "Ants live in colonies and work together, carrying food back to their nest.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1207",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I have four equal sides and four square corners. A window or a floor tile can be shaped like me. What shape am I?",
+    "hint1": "I have four sides.",
+    "hint2": "All my sides are the same length.",
+    "answer": "A square",
+    "acceptedKeywords": [
+      "square",
+      "a square",
+      "square shape"
+    ],
+    "explanation": "A square has four equal sides and four right-angled corners.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1208",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a game played with seeds on a wooden board with two rows of pits. People across Ghana play me and call it 'oware'. What am I?",
+    "hint1": "Players move seeds from pit to pit.",
+    "hint2": "My board has twelve little holes.",
+    "answer": "Oware",
+    "acceptedKeywords": [
+      "oware",
+      "owari",
+      "wari",
+      "mancala"
+    ],
+    "explanation": "Oware is a traditional strategy game played with seeds, found across West Africa.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1209",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am a Twi word you hear at the door when a guest comes. I mean 'welcome'. What am I?",
+    "hint1": "People say me with a smile.",
+    "hint2": "I begin with 'Akwa'.",
+    "answer": "Akwaaba",
+    "acceptedKeywords": [
+      "akwaaba",
+      "akwaaba welcome",
+      "welcome"
+    ],
+    "explanation": "Akwaaba is a friendly Twi greeting that means welcome.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1210",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I am always in front of you, but you can never see me. What am I?",
+    "hint1": "I have not happened yet.",
+    "hint2": "Tomorrow belongs to me.",
+    "answer": "The future",
+    "acceptedKeywords": [
+      "future",
+      "the future",
+      "tomorrow"
+    ],
+    "explanation": "The future is always ahead of you, but it cannot be seen because it has not happened yet.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1211",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I have four legs and a flat top, but I do not walk. You eat your food on me. What am I?",
+    "hint1": "I stand in the dining room.",
+    "hint2": "You put your plate on me.",
+    "answer": "A table",
+    "acceptedKeywords": [
+      "table",
+      "a table",
+      "dining table"
+    ],
+    "explanation": "A table has four legs and a flat top for putting things on.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1212",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "You can catch me but you can never throw me. When you have me, you may sneeze. What am I?",
+    "hint1": "I make your nose runny.",
+    "hint2": "You catch me when the weather turns chilly.",
+    "answer": "A cold",
+    "acceptedKeywords": [
+      "cold",
+      "a cold",
+      "the cold"
+    ],
+    "explanation": "People 'catch' a cold when they become sick, but you cannot throw it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1213",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I have a thumb and four fingers, but I am not alive. You wear me to keep your hand warm. What am I?",
+    "hint1": "You wear me on a cold day.",
+    "hint2": "I come in a pair.",
+    "answer": "A glove",
+    "acceptedKeywords": [
+      "glove",
+      "a glove",
+      "gloves"
+    ],
+    "explanation": "A glove has a place for the thumb and each finger, and keeps hands warm.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1214",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I eat grass and give you milk. I say 'moo' on the farm. What am I?",
+    "hint1": "I have four legs and a tail.",
+    "hint2": "I sometimes wear a bell around my neck.",
+    "answer": "A cow",
+    "acceptedKeywords": [
+      "cow",
+      "a cow",
+      "cattle"
+    ],
+    "explanation": "A cow eats grass and gives milk that people drink.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1215",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am the number that comes right after 99. What number am I?",
+    "hint1": "I have three digits.",
+    "hint2": "I am ten tens.",
+    "answer": "One hundred",
+    "acceptedKeywords": [
+      "100",
+      "one hundred",
+      "hundred"
+    ],
+    "explanation": "After 99 comes 100, which is ten groups of ten.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1201",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a blanket of gases around the Earth. I give you air to breathe and protect you from space. What am I?",
+    "hint1": "Clouds and wind are found in me.",
+    "hint2": "My name begins with 'atmo'.",
+    "answer": "The atmosphere",
+    "acceptedKeywords": [
+      "atmosphere",
+      "the atmosphere",
+      "earth's atmosphere"
+    ],
+    "explanation": "The atmosphere is the layer of gases around Earth that supports life.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1202",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I beat day and night, never stopping to rest. I pump blood around your body. What am I?",
+    "hint1": "Put your hand on your chest and feel me.",
+    "hint2": "I am a muscle shaped like a fist.",
+    "answer": "The heart",
+    "acceptedKeywords": [
+      "heart",
+      "the heart",
+      "human heart"
+    ],
+    "explanation": "The heart is a muscle that pumps blood through the body.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1203",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "We are two bag-like organs in your chest. We fill with air when you breathe in. What are we?",
+    "hint1": "You have two of us.",
+    "hint2": "We take oxygen into your blood.",
+    "answer": "The lungs",
+    "acceptedKeywords": [
+      "lungs",
+      "the lungs",
+      "lung"
+    ],
+    "explanation": "The lungs take in oxygen from the air and release carbon dioxide.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1204",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a planet famous for my bright rings made of ice and rock. What am I?",
+    "hint1": "I am the sixth planet from the Sun.",
+    "hint2": "My name starts with S.",
+    "answer": "Saturn",
+    "acceptedKeywords": [
+      "saturn",
+      "planet saturn",
+      "the planet saturn"
+    ],
+    "explanation": "Saturn is the ringed planet and the sixth planet from the Sun.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1205",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the name for numbers like 121, 454 and 808, which read the same forwards and backwards. What am I?",
+    "hint1": "The word 'level' and 'madam' are my word cousins.",
+    "hint2": "My name begins with 'palin'.",
+    "answer": "A palindrome",
+    "acceptedKeywords": [
+      "palindrome",
+      "a palindrome",
+      "palindromic number"
+    ],
+    "explanation": "A palindrome reads the same from left to right and from right to left.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1206",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am the answer when you multiply 7 by 8. What number am I?",
+    "hint1": "I am bigger than 50.",
+    "hint2": "I am one less than 57.",
+    "answer": "Fifty-six",
+    "acceptedKeywords": [
+      "56",
+      "fifty-six",
+      "fifty six"
+    ],
+    "explanation": "7 × 8 = 56.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1207",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the total distance around the edge of a shape. If you walk around a school football field, you measure me. What am I?",
+    "hint1": "I am not the area inside.",
+    "hint2": "For a rectangle I am 2 × (length + width).",
+    "answer": "Perimeter",
+    "acceptedKeywords": [
+      "perimeter",
+      "the perimeter",
+      "distance around"
+    ],
+    "explanation": "The perimeter is the distance around the outside of a shape.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1208",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I was Ghana's first president and I led the country to independence in 1957. Who am I?",
+    "hint1": "I raised the black star of Africa.",
+    "hint2": "My first name is Kwame.",
+    "answer": "Kwame Nkrumah",
+    "acceptedKeywords": [
+      "kwame nkrumah",
+      "nkrumah",
+      "dr kwame nkrumah"
+    ],
+    "explanation": "Kwame Nkrumah led the Gold Coast to independence and became the first president of Ghana.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1209",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am called the chief of all Adinkra symbols. I am drawn as circles inside a circle and I stand for greatness and leadership. What am I?",
+    "hint1": "My name starts with 'Adinkra'.",
+    "hint2": "I end with 'hene', which means chief.",
+    "answer": "Adinkrahene",
+    "acceptedKeywords": [
+      "adinkrahene",
+      "adinkra hene",
+      "chief of adinkra"
+    ],
+    "explanation": "Adinkrahene is considered the chief of the Adinkra symbols and stands for greatness and charisma.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1210",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am a yearly festival of the Ga people of Accra. My name means 'hooting at hunger'. What am I?",
+    "hint1": "I remember a time when hunger ended.",
+    "hint2": "My name starts with 'Homo'.",
+    "answer": "Homowo",
+    "acceptedKeywords": [
+      "homowo",
+      "homowo festival",
+      "ga homowo"
+    ],
+    "explanation": "Homowo is the Ga festival that celebrates the end of famine and a good harvest.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1211",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a high walkway of ropes and bridges above the trees in a rainforest in Ghana's Central Region. Visitors walk on me to see the canopy. What am I?",
+    "hint1": "I am found in a national park near Cape Coast.",
+    "hint2": "My park's name begins with 'Kakum'.",
+    "answer": "Kakum canopy walkway",
+    "acceptedKeywords": [
+      "kakum",
+      "canopy walkway",
+      "kakum canopy walkway",
+      "kakum national park"
+    ],
+    "explanation": "The Kakum canopy walkway is a series of rope bridges high in the forest of Kakum National Park.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1212",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I can be cracked, made, told and played. What am I?",
+    "hint1": "Comedians love me.",
+    "hint2": "I make people laugh.",
+    "answer": "A joke",
+    "acceptedKeywords": [
+      "joke",
+      "a joke",
+      "jokes"
+    ],
+    "explanation": "You can crack a joke, make a joke, tell a joke and play a joke.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1213",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I have a ring but no finger. You pick me up and talk into me. What am I?",
+    "hint1": "I can be fixed to a wall or carried in a pocket.",
+    "hint2": "You answer me when I ring.",
+    "answer": "A telephone",
+    "acceptedKeywords": [
+      "telephone",
+      "phone",
+      "a phone",
+      "mobile phone"
+    ],
+    "explanation": "A phone makes a ringing sound, but it has no finger to wear a ring.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1214",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "I am a word that is spelled wrong in every dictionary. What word am I?",
+    "hint1": "Read my question again carefully.",
+    "hint2": "The answer is hidden in the question.",
+    "answer": "Wrong",
+    "acceptedKeywords": [
+      "wrong",
+      "the word wrong",
+      "w r o n g"
+    ],
+    "explanation": "The word 'wrong' is always spelled 'wrong', so it is 'spelled wrong' in a playful sense.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1215",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I start with T, end with T, and have T inside me. You pour tea from me. What am I?",
+    "hint1": "I am found in the kitchen.",
+    "hint2": "I have a spout and a lid.",
+    "answer": "A teapot",
+    "acceptedKeywords": [
+      "teapot",
+      "a teapot",
+      "tea pot"
+    ],
+    "explanation": "'Teapot' starts with T, ends with T and has tea inside.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1201",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a long molecule shaped like a twisted ladder inside every cell. I carry the instructions for building a living thing. What am I?",
+    "hint1": "My name has three letters.",
+    "hint2": "I am shaped like a double helix.",
+    "answer": "DNA",
+    "acceptedKeywords": [
+      "dna",
+      "deoxyribonucleic acid",
+      "genetic code"
+    ],
+    "explanation": "DNA stores the genetic information that tells cells how to grow and work.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1202",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the 'powerhouse of the cell'. I release energy from food using oxygen. What am I?",
+    "hint1": "I am found inside animal and plant cells.",
+    "hint2": "My name begins with 'mito'.",
+    "answer": "Mitochondria",
+    "acceptedKeywords": [
+      "mitochondria",
+      "mitochondrion",
+      "the mitochondria"
+    ],
+    "explanation": "Mitochondria release energy from glucose during respiration.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1203",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am a protein that speeds up chemical reactions in living things without being used up. Saliva contains one of me that breaks down starch. What am I?",
+    "hint1": "My name often ends in '-ase'.",
+    "hint2": "Amylase is one of my kinds.",
+    "answer": "An enzyme",
+    "acceptedKeywords": [
+      "enzyme",
+      "an enzyme",
+      "enzymes"
+    ],
+    "explanation": "Enzymes are biological catalysts that speed up reactions such as digestion.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1204",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the bending of light as it passes from air into water. I make a straw look broken in a glass. What am I?",
+    "hint1": "My name begins with 'refr'.",
+    "hint2": "A lens uses me to focus light.",
+    "answer": "Refraction",
+    "acceptedKeywords": [
+      "refraction",
+      "light refraction",
+      "refract"
+    ],
+    "explanation": "Light changes speed and direction when it moves between different materials, which is called refraction.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1205",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the rate at which velocity changes. A car speeding up from rest has me. What am I?",
+    "hint1": "My unit is m/s².",
+    "hint2": "Gravity gives me the value 9.8 m/s² near Earth.",
+    "answer": "Acceleration",
+    "acceptedKeywords": [
+      "acceleration",
+      "accelerating",
+      "accelerate"
+    ],
+    "explanation": "Acceleration is how quickly velocity changes with time.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1206",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the force that opposes motion when two surfaces rub together. I heat your hands when you rub them. What am I?",
+    "hint1": "I make a sliding box slow down.",
+    "hint2": "Brakes use me to stop a car.",
+    "answer": "Friction",
+    "acceptedKeywords": [
+      "friction",
+      "frictional force",
+      "rubbing force"
+    ],
+    "explanation": "Friction acts between touching surfaces and slows moving objects.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1207",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "Arrange numbers from smallest to largest and I am the one in the middle. What am I?",
+    "hint1": "I am a kind of average.",
+    "hint2": "I am not the mean or the mode.",
+    "answer": "The median",
+    "acceptedKeywords": [
+      "median",
+      "the median",
+      "middle value"
+    ],
+    "explanation": "The median is the middle value of an ordered data set.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1209",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the point (0, 0) where the x-axis and the y-axis cross on a graph. What am I?",
+    "hint1": "Both coordinates are zero.",
+    "hint2": "My name begins with 'ori'.",
+    "answer": "The origin",
+    "acceptedKeywords": [
+      "origin",
+      "the origin",
+      "point 0,0"
+    ],
+    "explanation": "The origin is the point where the two axes meet, with coordinates (0, 0).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1210",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a statement that is false no matter what, like 'It is raining and it is not raining at the same time'. What am I called in logic?",
+    "hint1": "I clash with myself.",
+    "hint2": "My name begins with 'contra'.",
+    "answer": "A contradiction",
+    "acceptedKeywords": [
+      "contradiction",
+      "a contradiction",
+      "logical contradiction"
+    ],
+    "explanation": "A contradiction cannot be true in any situation because it claims two opposite things at once.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1211",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was born in Kumasi in 1938 and became the seventh Secretary-General of the United Nations. I won the Nobel Peace Prize in 2001. Who am I?",
+    "hint1": "My first name is Kofi.",
+    "hint2": "My surname is Annan.",
+    "answer": "Kofi Annan",
+    "acceptedKeywords": [
+      "kofi annan",
+      "annan",
+      "kofi atta annan"
+    ],
+    "explanation": "Kofi Annan, from Ghana, led the United Nations from 1997 to 2006 and shared the 2001 Nobel Peace Prize.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1212",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am the big river in Ghana that was dammed at Akosombo to make the world's largest man-made lake by surface area. What am I?",
+    "hint1": "The lake is named after me.",
+    "hint2": "My name begins with V.",
+    "answer": "The Volta River",
+    "acceptedKeywords": [
+      "volta",
+      "volta river",
+      "the volta river"
+    ],
+    "explanation": "The Volta River was dammed at Akosombo, forming Lake Volta.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1213",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am an ancient West African city in Mali. Scholars gathered at my Sankore mosque and university, and my libraries held thousands of manuscripts. What am I?",
+    "hint1": "I sit near the Niger River on the edge of the Sahara.",
+    "hint2": "My name begins with 'Tim'.",
+    "answer": "Timbuktu",
+    "acceptedKeywords": [
+      "timbuktu",
+      "tombouctou",
+      "timbuktu mali"
+    ],
+    "explanation": "Timbuktu was a centre of learning and trade in medieval West Africa.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1215",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I am a word that begins with a silent K. You can tie me in a rope or a shoelace. What word am I?",
+    "hint1": "Scouts learn many kinds of me.",
+    "hint2": "My word rhymes with 'not'.",
+    "answer": "Knot",
+    "acceptedKeywords": [
+      "knot",
+      "a knot",
+      "knots"
+    ],
+    "explanation": "The K in 'knot' is silent, and a knot ties rope or string together.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I am long and thin with a dark core inside wood. I leave marks on paper so you can write, and my rubber friend can rub my marks away. What am I?",
+    "hint1": "You keep me in your school bag and sharpen me when I get blunt.",
+    "hint2": "I write with graphite, not ink.",
+    "answer": "A pencil",
+    "acceptedKeywords": [
+      "pencil",
+      "a pencil",
+      "lead pencil"
+    ],
+    "explanation": "A pencil has a graphite core encased in wood that makes marks you can erase.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I have no legs, but I sweep across the floor all day to gather dust and rubbish in the compound. In Ghana, I am often made from palm fronds tied together. What am I?",
+    "hint1": "You hold me in your hand to clean the yard.",
+    "hint2": "In Twi, people call me 'praye'.",
+    "answer": "A broom",
+    "acceptedKeywords": [
+      "broom",
+      "a broom",
+      "sweeping broom",
+      "praye"
+    ],
+    "explanation": "A traditional broom made from oil-palm ribs is used to sweep homes and compounds clean.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I look like a big yellow banana. You can fry me into kelewele, roast me by the roadside, or boil me for ampesi. What am I?",
+    "hint1": "I grow in bunches on tall green plants.",
+    "hint2": "When I am green and unripe, people pound me with cassava to make fufu.",
+    "answer": "Plantain",
+    "acceptedKeywords": [
+      "plantain",
+      "a plantain",
+      "plantains",
+      "borode"
+    ],
+    "explanation": "Plantain is a staple fruit in Ghana used to make fufu, ampesi, fried red-red, and spicy kelewele.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a small lizard that climbs walls and trees around your house. The males among us have bright orange heads and do push-ups in the sun. What am I?",
+    "hint1": "You see me nodding my head up and down on compound walls.",
+    "hint2": "I eat insects like ants and mosquitoes.",
+    "answer": "A lizard",
+    "acceptedKeywords": [
+      "lizard",
+      "a lizard",
+      "agama lizard",
+      "agama"
+    ],
+    "explanation": "The rainbow agama lizard is famous across West Africa for its orange head and bobbing push-up movements.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I start my life as a hungry caterpillar eating green leaves. Later, I unfold bright, colourful wings and fly from flower to flower. What am I?",
+    "hint1": "I spin a chrysalis before I get my wings.",
+    "hint2": "I love sipping sweet nectar from flowers.",
+    "answer": "A butterfly",
+    "acceptedKeywords": [
+      "butterfly",
+      "a butterfly",
+      "butterflies"
+    ],
+    "explanation": "A caterpillar goes through metamorphosis to turn into a winged butterfly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1308",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a famous royal cloth woven in narrow strips of bright silk and cotton by skilled weavers in towns like Bonwire. Kings and queens wear me on grand occasions. What am I?",
+    "hint1": "Every pattern in my cloth has a special name and meaning.",
+    "hint2": "My name starts with K.",
+    "answer": "Kente",
+    "acceptedKeywords": [
+      "kente",
+      "kente cloth",
+      "ashanti kente"
+    ],
+    "explanation": "Kente is a traditional hand-woven Ghanaian cloth celebrated around the world for its vibrant patterns.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1309",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "I am a round clay bowl with rough ridges carved inside. In the kitchen, you use a wooden tapoli to grind tomatoes, pepper, and onions in me. What am I?",
+    "hint1": "Every Ghanaian kitchen has me for making fresh pepper sauce.",
+    "hint2": "In Twi, I am called 'asanka'.",
+    "answer": "An earthenware bowl (Asanka)",
+    "acceptedKeywords": [
+      "asanka",
+      "earthenware bowl",
+      "grinding bowl",
+      "apotoyewa"
+    ],
+    "explanation": "The asanka is a ridged clay grinding and serving bowl used across Ghana.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1312",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I go up into the sky as soon as the rain starts coming down. I spread out wide above your head to keep you dry. What am I?",
+    "hint1": "You hold my handle while walking in a storm.",
+    "hint2": "You fold me up when the rain stops.",
+    "answer": "An umbrella",
+    "acceptedKeywords": [
+      "umbrella",
+      "an umbrella",
+      "rain umbrella"
+    ],
+    "explanation": "People push an umbrella up overhead whenever rain begins to fall down.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1314",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I have feathers and two wings, and I wake the whole compound at dawn with my loud 'cock-a-doodle-doo'. What am I?",
+    "hint1": "I have a red comb on top of my head.",
+    "hint2": "I am a male chicken.",
+    "answer": "A rooster (cock)",
+    "acceptedKeywords": [
+      "rooster",
+      "cock",
+      "cockerel",
+      "a rooster",
+      "a cock"
+    ],
+    "explanation": "A rooster crows early in the morning as daylight begins.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1315",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "Add me to any number and that number stays exactly the same. Multiply any number by me and the answer becomes me. What number am I?",
+    "hint1": "I look like a round egg or an empty circle.",
+    "hint2": "I come right before 1.",
+    "answer": "Zero",
+    "acceptedKeywords": [
+      "0",
+      "zero",
+      "nothing",
+      "nought"
+    ],
+    "explanation": "Adding 0 changes nothing, while multiplying any number by 0 gives 0.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am a strong framework of 206 bones inside a grown person. I hold your body upright and protect soft organs like your brain and heart. What am I?",
+    "hint1": "Without me, you would be as floppy as a jellyfish.",
+    "hint2": "My skull is at the top and my ribs are in the middle.",
+    "answer": "The skeleton",
+    "acceptedKeywords": [
+      "skeleton",
+      "the skeleton",
+      "human skeleton",
+      "skeletal system"
+    ],
+    "explanation": "The human skeleton supports the body, allows movement with muscles, and protects vital organs.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "We are two bean-shaped organs near your lower back. We filter waste and extra water from your blood to make urine. What are we?",
+    "hint1": "Kidney beans are named after our shape.",
+    "hint2": "Drinking clean water helps keep us healthy.",
+    "answer": "The kidneys",
+    "acceptedKeywords": [
+      "kidneys",
+      "the kidneys",
+      "kidney"
+    ],
+    "explanation": "The two kidneys filter blood continuously to remove urea and balance water in the body.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the fourth planet from the Sun, covered in rusty iron dust that makes me glow reddish in the night sky. What planet am I?",
+    "hint1": "Scientists have sent robotic rovers to drive across my surface.",
+    "hint2": "I am called the Red Planet.",
+    "answer": "Mars",
+    "acceptedKeywords": [
+      "mars",
+      "planet mars",
+      "the red planet"
+    ],
+    "explanation": "Mars looks red because iron oxide (rust) covers much of its rocky surface.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1306",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am a square number between 60 and 70. Multiply 8 by 8 and you find me, or count all the small squares on a chessboard. What number am I?",
+    "hint1": "I am an even number ending in 4.",
+    "hint2": "8 × 8 equals me.",
+    "answer": "Sixty-four",
+    "acceptedKeywords": [
+      "64",
+      "sixty-four",
+      "sixty four"
+    ],
+    "explanation": "8 multiplied by 8 is 64, which is also the number of squares on an 8-by-8 checkerboard.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1307",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the total amount of flat surface inside the boundary of a 2D shape, measured in square units like cm² or m². What am I?",
+    "hint1": "For a rectangle, you find me by multiplying length by width.",
+    "hint2": "I am the space inside, not the perimeter around the edge.",
+    "answer": "Area",
+    "acceptedKeywords": [
+      "area",
+      "the area",
+      "surface area"
+    ],
+    "explanation": "Area measures how many unit squares fit inside a flat shape.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1309",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am a famous Adinkra symbol showing a bird twisting its neck backward to take an egg from its back. My name means 'go back and fetch it', teaching us to learn from the past. What am I?",
+    "hint1": "You see me carved on stools, staffs, and walls across Ghana.",
+    "hint2": "My name begins with 'San'.",
+    "answer": "Sankofa",
+    "acceptedKeywords": [
+      "sankofa",
+      "se wo were fi na wosankofa a yenkyi"
+    ],
+    "explanation": "Sankofa teaches that it is never wrong to go back and retrieve valuable knowledge from the past to build the future.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1310",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am the grand yearly festival of the chiefs and people of Winneba (Simpa), famous for a competition between two Asafo companies to catch a live bushbuck (deer) with bare hands. What festival am I?",
+    "hint1": "I am also widely known as the Deer Hunt Festival.",
+    "hint2": "My traditional name begins with 'Abo'.",
+    "answer": "Aboakyer",
+    "acceptedKeywords": [
+      "aboakyer",
+      "aboakyer festival",
+      "deer hunt festival",
+      "winneba festival"
+    ],
+    "explanation": "The Aboakyer festival of the Effutu people in Winneba features the historic race between Tuafo and Dentsifo Asafo companies.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1311",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am Ghana's oldest and largest wildlife national park, located in the Savannah Region. Visitors come to see my elephants, antelopes, and the historic Larabanga mosque nearby. What park am I?",
+    "hint1": "I am in northern Ghana near Damongo.",
+    "hint2": "My name has four letters and starts with M.",
+    "answer": "Mole National Park",
+    "acceptedKeywords": [
+      "mole",
+      "mole national park",
+      "mole park"
+    ],
+    "explanation": "Mole National Park is home to hundreds of African elephants, kob antelopes, baboons, and bird species.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1315",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I have dozens of keys in a neat row, yet I cannot unlock a single door. Instead, when you press my keys, I fill the room with music. What am I?",
+    "hint1": "My keys are black and white.",
+    "hint2": "You play me at church or in music class.",
+    "answer": "A piano (or keyboard)",
+    "acceptedKeywords": [
+      "piano",
+      "a piano",
+      "keyboard",
+      "musical keyboard",
+      "organ"
+    ],
+    "explanation": "A piano or musical keyboard has black and white keys that play notes rather than opening locks.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1301",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am an organelle found in plant cells, but never in animal cells. I contain green chlorophyll and trap sunlight to make glucose. What am I?",
+    "hint1": "I give green leaves their colour.",
+    "hint2": "My name begins with 'chloro'.",
+    "answer": "Chloroplast",
+    "acceptedKeywords": [
+      "chloroplast",
+      "chloroplasts",
+      "a chloroplast"
+    ],
+    "explanation": "Chloroplasts are the sites of photosynthesis inside green plant cells.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1303",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am a scale running from 0 to 14 that measures how acidic or alkaline an aqueous solution is. Pure water sits right in my middle at 7. What scale am I?",
+    "hint1": "Lemon juice scores below 7 on me, while soap scores above 7.",
+    "hint2": "My name has two letters: a lowercase p and a capital H.",
+    "answer": "The pH scale",
+    "acceptedKeywords": [
+      "ph",
+      "ph scale",
+      "the ph scale"
+    ],
+    "explanation": "The pH scale measures hydrogen ion concentration; values below 7 are acidic, 7 is neutral, and above 7 are alkaline (basic).",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1304",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the property of matter that makes an object resist any change in its state of rest or uniform motion. Because of me, passengers lurch forward when a trotro brakes suddenly. What am I?",
+    "hint1": "Newton's First Law of Motion is often named after me.",
+    "hint2": "The more mass an object has, the more of me it has.",
+    "answer": "Inertia",
+    "acceptedKeywords": [
+      "inertia",
+      "law of inertia"
+    ],
+    "explanation": "Inertia is the tendency of an object to keep resting or keep moving in a straight line unless acted on by an unbalanced force.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1305",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a measure of how tightly packed the mass of a substance is inside a given volume. You calculate me by dividing mass by volume (m/V). What am I?",
+    "hint1": "My standard unit is kg/m³ or g/cm³.",
+    "hint2": "Objects with less of me than water will float.",
+    "answer": "Density",
+    "acceptedKeywords": [
+      "density",
+      "mass density"
+    ],
+    "explanation": "Density equals mass divided by volume and determines whether a substance floats or sinks in a fluid.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1306",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "In an electrical circuit, I am the opposition to the flow of electric current, measured in ohms (Ω). By Ohm's Law, I equal voltage divided by current (V/I). What am I?",
+    "hint1": "Thin, long wires have more of me than thick, short wires.",
+    "hint2": "My name begins with 'resist'.",
+    "answer": "Electrical resistance",
+    "acceptedKeywords": [
+      "resistance",
+      "electrical resistance",
+      "resistor"
+    ],
+    "explanation": "Resistance opposes current flow in a conductor and is measured in ohms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1308",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a famous sequence of numbers: 1, 1, 2, 3, 5, 8, 13, 21... where each new number is found by adding the two numbers right before it. What sequence am I?",
+    "hint1": "My pattern often appears in sunflower spirals and pinecones.",
+    "hint2": "I am named after an Italian mathematician whose nickname starts with 'Fibo'.",
+    "answer": "The Fibonacci sequence",
+    "acceptedKeywords": [
+      "fibonacci",
+      "fibonacci sequence",
+      "fibonacci numbers"
+    ],
+    "explanation": "In the Fibonacci sequence, each term after the first two is the sum of the two preceding terms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1310",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "In a set of data, I am the value that appears most frequently. Unlike the mean and median, a data set can sometimes have two of me (bimodal). What average am I?",
+    "hint1": "Think of the first two letters of my name as matching 'MOst'.",
+    "hint2": "In the list 2, 4, 4, 4, 7, 9, I am 4.",
+    "answer": "The mode",
+    "acceptedKeywords": [
+      "mode",
+      "the mode",
+      "modal value"
+    ],
+    "explanation": "The mode is the most frequently occurring value in a data distribution.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1311",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was the great scholar, educator, and co-founder of Achimota School who famously said, 'If you educate a man, you simply educate an individual, but if you educate a woman, you educate a whole nation.' Who am I?",
+    "hint1": "I was born in Anomabo in 1875, and my portrait appears on the GH₵5 banknote.",
+    "hint2": "My middle name is Emman Kwegyir.",
+    "answer": "Dr. James Emman Kwegyir Aggrey",
+    "acceptedKeywords": [
+      "kwegyir aggrey",
+      "dr aggrey",
+      "james aggrey",
+      "aggrey",
+      "aggrey of africa"
+    ],
+    "explanation": "Dr. J. E. Kwegyir Aggrey was a pioneering Ghanaian intellectual and educator whose piano-key symbol of harmony sits on Achimota's crest.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1312",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a circular bowl-shaped lake in the Ashanti Region with no rivers flowing into or out of me. Scientists found that I was formed over a million years ago when a giant meteorite from space struck the Earth. What lake am I?",
+    "hint1": "I am sacred to the Ashanti people and surrounded by lush hills.",
+    "hint2": "My name begins with 'Bosom'.",
+    "answer": "Lake Bosomtwe",
+    "acceptedKeywords": [
+      "bosomtwe",
+      "lake bosomtwe",
+      "bosomtwi"
+    ],
+    "explanation": "Lake Bosomtwe is Ghana's only natural crater lake, formed by an ancient meteorite impact southeast of Kumasi.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1313",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am a historical stone fortress built by the Portuguese in 1482 on the coast of Ghana. I am the oldest European building in sub-Saharan Africa and a UNESCO World Heritage Site. What castle am I?",
+    "hint1": "I was originally called Castelo de São Jorge da Mina.",
+    "hint2": "I stand in a coastal fishing town just west of Cape Coast.",
+    "answer": "Elmina Castle",
+    "acceptedKeywords": [
+      "elmina castle",
+      "elmina",
+      "st george's castle",
+      "castelo de sao jorge da mina"
+    ],
+    "explanation": "Elmina Castle was erected in 1482 first for gold trade and later became a major hub of the transatlantic slave trade.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1315",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I am an eleven-letter English word that starts with 'U' and ends with 'D'. Only a very clever detective notices that I both begin and end with the letters 'UND'. What word am I?",
+    "hint1": "Trains called subways and plant roots are found in me.",
+    "hint2": "I mean 'beneath the surface of the earth'.",
+    "answer": "Underground",
+    "acceptedKeywords": [
+      "underground",
+      "the word underground"
+    ],
+    "explanation": "The word 'UNDeRgroUND' starts with UND and ends with UND.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1401",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I have pages and a cover. You open me to read stories, but I cannot speak. What am I?",
+    "hint1": "You can borrow me from a library.",
+    "hint2": "My pages contain printed words.",
+    "answer": "A book",
+    "acceptedKeywords": [
+      "book",
+      "a book",
+      "story book"
+    ],
+    "explanation": "A book holds written or printed information on pages.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1402",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I fall from clouds and help crops grow. You may carry an umbrella when I arrive. What am I?",
+    "hint1": "I make the ground wet.",
+    "hint2": "I am liquid water falling from the sky.",
+    "answer": "Rain",
+    "acceptedKeywords": [
+      "rain",
+      "rainfall"
+    ],
+    "explanation": "Rain is liquid precipitation falling from clouds.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1404",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the force that pulls dropped objects toward Earth and keeps the Moon in orbit. What am I?",
+    "hint1": "I act even when nothing touches the object.",
+    "hint2": "My name begins with the letter G.",
+    "answer": "Gravity",
+    "acceptedKeywords": [
+      "gravity",
+      "gravitational force"
+    ],
+    "explanation": "Gravity is the attraction between objects with mass.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1405",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am the colourful woven cloth associated with Ghanaian ceremonies, often made in narrow patterned strips. What am I?",
+    "hint1": "Weavers use a loom to make me.",
+    "hint2": "My patterns can carry names and meanings.",
+    "answer": "Kente",
+    "acceptedKeywords": [
+      "kente",
+      "kente cloth"
+    ],
+    "explanation": "Kente is a patterned woven textile with cultural significance in Ghana.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1406",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the distance all the way around a rectangle. Add the lengths of its four sides to find me. What am I?",
+    "hint1": "I describe the boundary, not the space inside.",
+    "hint2": "For a rectangle, I equal twice the sum of length and width.",
+    "answer": "Perimeter",
+    "acceptedKeywords": [
+      "perimeter",
+      "the perimeter"
+    ],
+    "explanation": "Perimeter is the total length of a closed shape’s boundary.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1408",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am a number that cannot be written exactly as a ratio of two integers. My decimal expansion never ends or repeats. What type of number am I?",
+    "hint1": "The square root of 2 is an example.",
+    "hint2": "My opposite category is rational.",
+    "answer": "An irrational number",
+    "acceptedKeywords": [
+      "irrational number",
+      "irrational",
+      "an irrational number"
+    ],
+    "explanation": "Irrational numbers cannot be expressed as a ratio of integers and have nonterminating, nonrepeating decimals.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1502",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I have teeth but I never eat. I close your bag with a zzzip. What am I?",
+    "hint1": "I am found on bags, trousers and jackets.",
+    "hint2": "My teeth lock together when I am pulled.",
+    "answer": "A zip",
+    "acceptedKeywords": [
+      "zip",
+      "zipper",
+      "a zip"
+    ],
+    "explanation": "A zip has small teeth that lock together to close bags and clothes.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1503",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Easy",
+    "question": "I let the light into your room but keep the rain out. You can see through me, and I am made of glass. What am I?",
+    "hint1": "I am in the wall of your house.",
+    "hint2": "You can open me to let in fresh air.",
+    "answer": "A window",
+    "acceptedKeywords": [
+      "window",
+      "a window",
+      "windows"
+    ],
+    "explanation": "A window is made of glass in a wall to let in light and keep out rain.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1505",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am big and round with a green skin, and inside I am red, juicy and full of black seeds. I am great on a hot day. What am I?",
+    "hint1": "People eat me in slices.",
+    "hint2": "My name has the word 'water' in it.",
+    "answer": "A watermelon",
+    "acceptedKeywords": [
+      "watermelon",
+      "a watermelon",
+      "water melon"
+    ],
+    "explanation": "A watermelon is a large juicy fruit with green skin and red flesh.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1506",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am the tallest animal in the world. I have a very long neck and I eat leaves from tall trees. What am I?",
+    "hint1": "I have brown spots on my skin.",
+    "hint2": "My name starts with 'gi'.",
+    "answer": "A giraffe",
+    "acceptedKeywords": [
+      "giraffe",
+      "a giraffe",
+      "giraffes"
+    ],
+    "explanation": "A giraffe has the longest neck of any animal and reaches leaves high in the trees.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1507",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am an odd number. I come after 4 and before 6. What number am I?",
+    "hint1": "Count on one hand from 1.",
+    "hint2": "I am the number of fingers on one hand.",
+    "answer": "Five",
+    "acceptedKeywords": [
+      "5",
+      "five",
+      "number 5"
+    ],
+    "explanation": "Five is odd, and it comes right after 4 and right before 6.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1508",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I have four straight sides and four corners. Two of my sides are long and two are short. What shape am I?",
+    "hint1": "A door is shaped like me.",
+    "hint2": "I look like a stretched square.",
+    "answer": "A rectangle",
+    "acceptedKeywords": [
+      "rectangle",
+      "a rectangle",
+      "rectangular"
+    ],
+    "explanation": "A rectangle has four corners with two long sides and two short sides.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1509",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "In the Akan naming tradition, I am the day name given to a boy who is born on a Friday. What name am I?",
+    "hint1": "My name starts with K.",
+    "hint2": "A famous United Nations Secretary-General had my name as his first name.",
+    "answer": "Kofi",
+    "acceptedKeywords": [
+      "kofi",
+      "kofi friday",
+      "koffi"
+    ],
+    "explanation": "Akan boys born on Friday are named Kofi, and girls are named Afua or Efua.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1510",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "In the Akan naming tradition, I am the day name given to a girl who is born on a Monday. What name am I?",
+    "hint1": "My name starts with A.",
+    "hint2": "My boy partner is called Kwadwo.",
+    "answer": "Adwoa",
+    "acceptedKeywords": [
+      "adwoa",
+      "adjoa",
+      "adwoa monday"
+    ],
+    "explanation": "Akan girls born on Monday are named Adwoa, and boys are named Kwadwo.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1511",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am a string of tiny colourful glass beads that Krobo people make and wear as necklaces and waist beads. What am I?",
+    "hint1": "I am worn on festival days.",
+    "hint2": "I am made in Ghana's Eastern Region, near Odumase and Somanya.",
+    "answer": "Krobo beads",
+    "acceptedKeywords": [
+      "krobo beads",
+      "beads",
+      "bead",
+      "glass beads"
+    ],
+    "explanation": "Krobo beads are made by melting and shaping powdered glass, and they are worn for beauty and tradition.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1514",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I am black and white and read all over. You can buy me every morning. What am I?",
+    "hint1": "I am made of paper.",
+    "hint2": "I have news, pictures and sports pages.",
+    "answer": "A newspaper",
+    "acceptedKeywords": [
+      "newspaper",
+      "a newspaper",
+      "newspapers",
+      "paper"
+    ],
+    "explanation": "A newspaper is printed in black and white, and it is read by people everywhere.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1503",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the male part of a flower. I have a thin stalk topped with a little sac that makes yellow powder called pollen. What am I?",
+    "hint1": "I stand around the middle of a flower.",
+    "hint2": "My name begins with 'sta'.",
+    "answer": "The stamen",
+    "acceptedKeywords": [
+      "stamen",
+      "the stamen",
+      "anther"
+    ],
+    "explanation": "The stamen is the male part of a flower, and it produces pollen.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1504",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I make my own food from sunlight, water and air. Every food chain begins with me. What am I?",
+    "hint1": "Grass and mango trees are examples of me.",
+    "hint2": "I am a green plant, and animals eat me.",
+    "answer": "A producer",
+    "acceptedKeywords": [
+      "producer",
+      "a producer",
+      "plant",
+      "green plant"
+    ],
+    "explanation": "Producers, such as green plants, make their own food by photosynthesis and form the first link of a food chain.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1505",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a flat slope. Workers use me to roll a heavy barrel up onto the back of a truck with less effort. What simple machine am I?",
+    "hint1": "I am not a wheel or a lever.",
+    "hint2": "My name sounds like a tilted plane.",
+    "answer": "An inclined plane",
+    "acceptedKeywords": [
+      "inclined plane",
+      "ramp",
+      "slope",
+      "an inclined plane"
+    ],
+    "explanation": "An inclined plane lets you raise a heavy load using a smaller force over a longer distance.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1506",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am a fraction that is the same as 0.5. If you cut a cake into two equal parts, you get me. What am I?",
+    "hint1": "I am written as 1 over 2.",
+    "hint2": "I am the same as 50 percent.",
+    "answer": "One half",
+    "acceptedKeywords": [
+      "half",
+      "one half",
+      "1/2",
+      "a half"
+    ],
+    "explanation": "One half is 1/2, which equals 0.5 or 50%.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1508",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the answer when you find 25% of 80. What number am I?",
+    "hint1": "25% means one quarter.",
+    "hint2": "Divide 80 by 4.",
+    "answer": "Twenty",
+    "acceptedKeywords": [
+      "20",
+      "twenty",
+      "number 20"
+    ],
+    "explanation": "25% is one quarter, and 80 ÷ 4 = 20.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1509",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the number of minutes in two and a half hours. What number am I?",
+    "hint1": "One hour has 60 minutes.",
+    "hint2": "Two hours is 120 minutes, then add half an hour.",
+    "answer": "150",
+    "acceptedKeywords": [
+      "150",
+      "one hundred and fifty",
+      "one hundred fifty"
+    ],
+    "explanation": "Two hours is 120 minutes and half an hour is 30 minutes, so 120 + 30 = 150.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1510",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am the capital city of the Ashanti Region and I am known as the Garden City. The Asantehene lives in me. What am I?",
+    "hint1": "I am Ghana's second-largest city.",
+    "hint2": "My name begins with 'Kum'.",
+    "answer": "Kumasi",
+    "acceptedKeywords": [
+      "kumasi",
+      "kumase",
+      "city of kumasi"
+    ],
+    "explanation": "Kumasi is the capital of the Ashanti Region and the seat of the Asante kingdom.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1511",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am an Adinkra symbol of a fern. I stand for endurance and resourcefulness because a fern can grow in hard places. What am I?",
+    "hint1": "My name is a short word of three letters.",
+    "hint2": "My name begins with 'A' and ends with 'a'.",
+    "answer": "Aya",
+    "acceptedKeywords": [
+      "aya",
+      "aya symbol",
+      "adinkra aya"
+    ],
+    "explanation": "Aya is the Adinkra symbol of the fern and represents endurance and resourcefulness.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1515",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I am always coming but I never arrive. What am I?",
+    "hint1": "I follow today.",
+    "hint2": "My name begins with 'tomor'.",
+    "answer": "Tomorrow",
+    "acceptedKeywords": [
+      "tomorrow",
+      "tomorrows",
+      "the next day"
+    ],
+    "explanation": "Tomorrow is always one day ahead, and when it arrives it becomes today.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1502",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the lowest layer of the Earth's atmosphere. Clouds, rain and most weather happen in me. What am I?",
+    "hint1": "Aeroplanes fly just above me.",
+    "hint2": "My name begins with 'tropo'.",
+    "answer": "The troposphere",
+    "acceptedKeywords": [
+      "troposphere",
+      "the troposphere",
+      "lower atmosphere"
+    ],
+    "explanation": "The troposphere is the layer closest to the ground, where weather takes place.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1503",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a kind of rock that forms when hot molten rock called magma cools and hardens. Granite and basalt are my examples. What am I?",
+    "hint1": "My name comes from a Latin word for fire.",
+    "hint2": "My name begins with 'ign'.",
+    "answer": "Igneous rock",
+    "acceptedKeywords": [
+      "igneous",
+      "igneous rock",
+      "igneous rocks"
+    ],
+    "explanation": "Igneous rocks form from cooled magma or lava.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1504",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the red protein inside red blood cells. I carry oxygen from your lungs to the rest of your body. What am I?",
+    "hint1": "I contain iron.",
+    "hint2": "My name begins with 'haemo' or 'hemo'.",
+    "answer": "Haemoglobin",
+    "acceptedKeywords": [
+      "haemoglobin",
+      "hemoglobin",
+      "haemoglobin protein"
+    ],
+    "explanation": "Haemoglobin binds to oxygen in the lungs and releases it around the body.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1505",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the process in which one cell divides to make two identical cells. Your body uses me to grow and repair wounds. What am I?",
+    "hint1": "I keep the same number of chromosomes.",
+    "hint2": "My name begins with 'mito'.",
+    "answer": "Mitosis",
+    "acceptedKeywords": [
+      "mitosis",
+      "cell division",
+      "mitotic division"
+    ],
+    "explanation": "Mitosis makes two daughter cells that are genetically identical to the parent cell.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1508",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am the positive number that gives 144 when multiplied by itself. What number am I?",
+    "hint1": "I am bigger than 10 but smaller than 15.",
+    "hint2": "12 × 12 is how I am found.",
+    "answer": "Twelve",
+    "acceptedKeywords": [
+      "12",
+      "twelve",
+      "number 12"
+    ],
+    "explanation": "12 × 12 = 144, so the square root of 144 is 12.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1509",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am the next prime number after 23. What number am I?",
+    "hint1": "24, 25, 26, 27 and 28 are not prime.",
+    "hint2": "I am one more than 28.",
+    "answer": "Twenty-nine",
+    "acceptedKeywords": [
+      "29",
+      "twenty-nine",
+      "twenty nine"
+    ],
+    "explanation": "The numbers 24 to 28 each have more than two factors, while 29 has only 1 and 29.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1512",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was the biggest empire in West African history, ruled from Gao by Askia Mohammed. I followed the Mali Empire. What empire am I?",
+    "hint1": "Timbuktu was one of my cities.",
+    "hint2": "My name begins with 'Song'.",
+    "answer": "The Songhai Empire",
+    "acceptedKeywords": [
+      "songhai",
+      "songhai empire",
+      "the songhai empire",
+      "songhay"
+    ],
+    "explanation": "The Songhai Empire controlled trade and learning in West Africa in the 1400s and 1500s.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1513",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am the longest river in Africa. I flow north through Egypt and end in the Mediterranean Sea. What am I?",
+    "hint1": "Ancient Egyptian farms depended on my floods.",
+    "hint2": "My name has four letters and begins with N.",
+    "answer": "The Nile",
+    "acceptedKeywords": [
+      "nile",
+      "the nile",
+      "river nile"
+    ],
+    "explanation": "The Nile is the longest river in Africa, and Egyptian civilisation grew along it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1515",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "I am an English word with no a, e, i, o or u in me. I mean a regular pattern of beats in music. What word am I?",
+    "hint1": "I have six letters.",
+    "hint2": "I use the letter y in place of a vowel.",
+    "answer": "Rhythm",
+    "acceptedKeywords": [
+      "rhythm",
+      "rhythms",
+      "a rhythm"
+    ],
+    "explanation": "Rhythm has no a, e, i, o or u, and it uses y as its vowel sound.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1601",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I wear a cap but I have no head. I pop up after the rain on damp ground. What am I?",
+    "hint1": "I grow in wet places or on old wood.",
+    "hint2": "I am not a green plant. I am a fungus.",
+    "answer": "A mushroom",
+    "acceptedKeywords": [
+      "mushroom",
+      "mushrooms",
+      "a mushroom"
+    ],
+    "explanation": "A mushroom has a cap on top of a stem and grows in damp places. Some wild mushrooms are poisonous, so only eat ones that an adult knows are safe.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1602",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Lateral Thinking",
+    "difficulty": "Easy",
+    "question": "I have a tail but I am not an animal. A child holds my string and I dance high in the wind. What am I?",
+    "hint1": "Children fly me on windy days.",
+    "hint2": "I am made of paper or plastic stretched on sticks.",
+    "answer": "A kite",
+    "acceptedKeywords": [
+      "kite",
+      "a kite",
+      "kites"
+    ],
+    "explanation": "A kite has a tail to keep it steady and a string for the child to hold while the wind lifts it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1603",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Easy",
+    "question": "I am orange and crunchy and I grow under the soil. Rabbits love to nibble me. What am I?",
+    "hint1": "I am a vegetable.",
+    "hint2": "Eating me is said to be good for your eyes.",
+    "answer": "A carrot",
+    "acceptedKeywords": [
+      "carrot",
+      "a carrot",
+      "carrots"
+    ],
+    "explanation": "A carrot is an orange root vegetable that grows underground.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1606",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am the number of days in a weekend. What number am I?",
+    "hint1": "Saturday is one of me.",
+    "hint2": "Sunday is the other one.",
+    "answer": "Two",
+    "acceptedKeywords": [
+      "2",
+      "two",
+      "number 2"
+    ],
+    "explanation": "A weekend has two days, Saturday and Sunday.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1607",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am the answer when you add 5 + 5 + 5. What number am I?",
+    "hint1": "Count in fives: 5, 10, ...",
+    "hint2": "I am three times five.",
+    "answer": "Fifteen",
+    "acceptedKeywords": [
+      "15",
+      "fifteen",
+      "number 15"
+    ],
+    "explanation": "Adding three fives gives 15, and 3 × 5 = 15.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1609",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am the biggest, busiest market in Accra, where traders sell cloth, food and many other things. My name starts with Mak. What am I?",
+    "hint1": "I am in the middle of Accra.",
+    "hint2": "My name sounds like 'Ma-ko-la'.",
+    "answer": "Makola Market",
+    "acceptedKeywords": [
+      "makola",
+      "makola market",
+      "the makola market"
+    ],
+    "explanation": "Makola is the famous central market of Accra, full of traders and shoppers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1610",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "African Wisdom",
+    "difficulty": "Easy",
+    "question": "In the Akan day names, I am the name of a boy born on a Saturday. Ghana's first president had me as his first name. What name am I?",
+    "hint1": "My name begins with K.",
+    "hint2": "I am followed by the surname Nkrumah.",
+    "answer": "Kwame",
+    "acceptedKeywords": [
+      "kwame",
+      "kwame saturday",
+      "kwami"
+    ],
+    "explanation": "Akan boys born on Saturday are called Kwame, and girls are called Ama.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1613",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "What letter of the alphabet is a big body of salty water?",
+    "hint1": "Say the letter out loud.",
+    "hint2": "It sounds like the ocean's cousin, the sea.",
+    "answer": "The letter C",
+    "acceptedKeywords": [
+      "c",
+      "letter c",
+      "the letter c",
+      "sea"
+    ],
+    "explanation": "The letter C sounds exactly like the word 'sea'.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-nov-1615",
+    "targetGroup": "Novice (Basic 1-3)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a star but I do not shine in the sky. I live in the sea and I have five arms. What am I?",
+    "hint1": "I crawl slowly on the sea floor.",
+    "hint2": "My name has the word 'star' and the word 'fish'.",
+    "answer": "A starfish",
+    "acceptedKeywords": [
+      "starfish",
+      "a starfish",
+      "sea star"
+    ],
+    "explanation": "A starfish is a sea animal with a star-shaped body and usually five arms.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1601",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the small black hole in the middle of your eye. I get tiny in bright light and big in the dark. What am I?",
+    "hint1": "I let light into your eye.",
+    "hint2": "I am surrounded by the coloured part called the iris.",
+    "answer": "The pupil",
+    "acceptedKeywords": [
+      "pupil",
+      "the pupil",
+      "eye pupil"
+    ],
+    "explanation": "The pupil changes size to control how much light enters the eye.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1603",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the kind of energy stored in food, firewood and batteries until I am released. What am I?",
+    "hint1": "Burning wood releases me as heat and light.",
+    "hint2": "My name comes from the word 'chemicals'.",
+    "answer": "Chemical energy",
+    "acceptedKeywords": [
+      "chemical energy",
+      "chemical",
+      "chemical potential energy"
+    ],
+    "explanation": "Chemical energy is stored in substances and released during chemical changes such as burning and digestion.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1604",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the word for a material like clear glass that lets all the light pass through so you can see clearly. What word am I?",
+    "hint1": "I am the opposite of opaque.",
+    "hint2": "A clean window is made of me.",
+    "answer": "Transparent",
+    "acceptedKeywords": [
+      "transparent",
+      "transparency",
+      "see-through"
+    ],
+    "explanation": "Transparent materials let light pass straight through, so you can see through them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1606",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Easy",
+    "question": "I am the angle you see at the corner of a book or a door frame. I measure exactly 90 degrees. What angle am I?",
+    "hint1": "A square has four of me.",
+    "hint2": "I am a quarter of a full turn.",
+    "answer": "A right angle",
+    "acceptedKeywords": [
+      "right angle",
+      "a right angle",
+      "90 degrees"
+    ],
+    "explanation": "A right angle measures 90 degrees and looks like the corner of a square.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1607",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am a round solid shape with no flat faces and no edges. A football is shaped like me. What am I?",
+    "hint1": "I am a 3D shape.",
+    "hint2": "Every point on my surface is the same distance from my centre.",
+    "answer": "A sphere",
+    "acceptedKeywords": [
+      "sphere",
+      "a sphere",
+      "spherical"
+    ],
+    "explanation": "A sphere is a perfectly round solid with no edges or corners.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1608",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "I am an Akan word for the cowrie shell, which people once used as money. Today I am the name of Ghana's currency. What am I?",
+    "hint1": "My symbol is ₵.",
+    "hint2": "One hundred pesewas make one of me.",
+    "answer": "The cedi",
+    "acceptedKeywords": [
+      "cedi",
+      "the cedi",
+      "ghana cedi"
+    ],
+    "explanation": "The cedi is named after the cowrie shell, which was used as money long ago.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1609",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am said to be the highest waterfall in West Africa. I am in the Volta Region near Hohoe, and visitors hike through a forest to see me. What am I?",
+    "hint1": "My name has only three letters.",
+    "hint2": "I am close to Mount Afadjato.",
+    "answer": "Wli Waterfalls",
+    "acceptedKeywords": [
+      "wli",
+      "wli waterfalls",
+      "wli falls"
+    ],
+    "explanation": "The Wli Waterfalls in the Volta Region are famous for their height and the forest walk to reach them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1611",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am the yearly festival of the Anlo-Ewe people. I remember their escape from the cruel King Agorkorli of Notsie. What am I?",
+    "hint1": "I am celebrated at Anloga in the Volta Region.",
+    "hint2": "My name begins with 'Hog'.",
+    "answer": "Hogbetsotso",
+    "acceptedKeywords": [
+      "hogbetsotso",
+      "hogbetsotso festival",
+      "hogbe tsotso"
+    ],
+    "explanation": "Hogbetsotso is celebrated by the Anlo-Ewe to remember their journey from Notsie to their present home.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1612",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Hard",
+    "question": "What has a bottom at the top?",
+    "hint1": "Think about your body.",
+    "hint2": "You walk on me.",
+    "answer": "Your legs",
+    "acceptedKeywords": [
+      "legs",
+      "your legs",
+      "leg"
+    ],
+    "explanation": "The bottom of your legs is your feet, but the top of your legs is your bottom, a playful use of the word.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1613",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "I have thirteen hearts but no other organs. What am I?",
+    "hint1": "I am used in games.",
+    "hint2": "I have 52 pieces in all.",
+    "answer": "A deck of cards",
+    "acceptedKeywords": [
+      "deck of cards",
+      "cards",
+      "playing cards",
+      "a deck of cards"
+    ],
+    "explanation": "A deck of playing cards has thirteen cards in the suit of hearts.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-app-1615",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "category": "Word Riddle",
+    "difficulty": "Hard",
+    "question": "I am a word with a whole mile between my first and last letters. What word am I?",
+    "hint1": "Look carefully inside me.",
+    "hint2": "Remove my first and last letters and see what is left.",
+    "answer": "Smiles",
+    "acceptedKeywords": [
+      "smiles",
+      "smile",
+      "s-mile-s"
+    ],
+    "explanation": "The word 'smiles' has the word 'mile' between its first letter S and last letter S.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1601",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am a lens that bulges outward in the middle. Held in sunlight, I focus the rays into a bright point that can burn paper. What am I?",
+    "hint1": "A magnifying glass is made of me.",
+    "hint2": "I am thicker in the middle than at the edges.",
+    "answer": "A convex lens",
+    "acceptedKeywords": [
+      "convex lens",
+      "convex",
+      "a convex lens"
+    ],
+    "explanation": "A convex lens bends light rays together to a focus, which can make a very hot bright spot.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1602",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "A bean seed soaks up water, swells, and a tiny root pushes out. What do we call this first stage of a plant's growth?",
+    "hint1": "It needs water, warmth and air.",
+    "hint2": "My name begins with 'germ'.",
+    "answer": "Germination",
+    "acceptedKeywords": [
+      "germination",
+      "germinate",
+      "germinating"
+    ],
+    "explanation": "Germination is when a seed starts to grow into a new plant.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1603",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Medium",
+    "question": "I am the control centre of a cell, and I hold the DNA. What am I?",
+    "hint1": "I am found near the middle of an animal cell.",
+    "hint2": "My name sounds like the word 'nuclear'.",
+    "answer": "The nucleus",
+    "acceptedKeywords": [
+      "nucleus",
+      "the nucleus",
+      "cell nucleus"
+    ],
+    "explanation": "The nucleus contains the cell's DNA and controls its activities.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1604",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Science & Nature",
+    "difficulty": "Hard",
+    "question": "I am the SI unit of power. A bulb rated at 60 of me uses 60 joules of energy every second. What am I?",
+    "hint1": "My symbol is W.",
+    "hint2": "I am named after James, who improved the steam engine.",
+    "answer": "The watt",
+    "acceptedKeywords": [
+      "watt",
+      "watts",
+      "the watt"
+    ],
+    "explanation": "One watt equals one joule per second, and the unit is named after James Watt.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1605",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am the next number in this pattern: 2, 6, 12, 20, 30, ... What number am I?",
+    "hint1": "Look at the gaps: 4, 6, 8, 10.",
+    "hint2": "The next gap is 12.",
+    "answer": "Forty-two",
+    "acceptedKeywords": [
+      "42",
+      "forty-two",
+      "forty two"
+    ],
+    "explanation": "The gaps grow by 2 each time, so 30 + 12 = 42.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1606",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Hard",
+    "question": "I am the smallest number that 1, 2, 3, 4, 5 and 6 all divide into exactly. What number am I?",
+    "hint1": "I must be a multiple of 4, 5 and 3.",
+    "hint2": "I am the number of minutes in an hour.",
+    "answer": "Sixty",
+    "acceptedKeywords": [
+      "60",
+      "sixty",
+      "number 60"
+    ],
+    "explanation": "The lowest common multiple of 1 to 6 is 60.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1607",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am a four-sided shape with exactly one pair of parallel sides. What shape am I?",
+    "hint1": "I am a quadrilateral.",
+    "hint2": "My name starts with 'trap'.",
+    "answer": "A trapezium",
+    "acceptedKeywords": [
+      "trapezium",
+      "trapezoid",
+      "a trapezium"
+    ],
+    "explanation": "A trapezium has just one pair of parallel sides, which is called a trapezoid in the United States.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1608",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Math & Logic",
+    "difficulty": "Medium",
+    "question": "I am an angle bigger than 90° but smaller than 180°. What kind of angle am I?",
+    "hint1": "I am not sharp like an acute angle.",
+    "hint2": "My name begins with 'ob'.",
+    "answer": "An obtuse angle",
+    "acceptedKeywords": [
+      "obtuse",
+      "obtuse angle",
+      "an obtuse angle"
+    ],
+    "explanation": "An obtuse angle measures between 90° and 180°.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1609",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was a Gold Coast lawyer and politician. I suggested that our country should be named Ghana after the ancient empire. Who am I?",
+    "hint1": "I was one of the 'Big Six'.",
+    "hint2": "My surname begins with 'Dan'.",
+    "answer": "J. B. Danquah",
+    "acceptedKeywords": [
+      "danquah",
+      "j b danquah",
+      "joseph boakye danquah"
+    ],
+    "explanation": "Dr J. B. Danquah proposed the name Ghana for the new nation at independence.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1610",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Medium",
+    "question": "On what full date did the Gold Coast become the independent nation of Ghana?",
+    "hint1": "It was in the third month of the year.",
+    "hint2": "The year was 1957.",
+    "answer": "6 March 1957",
+    "acceptedKeywords": [
+      "6 march 1957",
+      "6th march 1957",
+      "march 6 1957",
+      "6 march"
+    ],
+    "explanation": "Ghana became independent from British rule on 6 March 1957.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1611",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I was the capital of the Gold Coast colony until 1877, when Accra took my place. A famous castle stands on my coast. What city am I?",
+    "hint1": "I am in the Central Region.",
+    "hint2": "Kakum National Park is close to me.",
+    "answer": "Cape Coast",
+    "acceptedKeywords": [
+      "cape coast",
+      "capecoast",
+      "cape coast city"
+    ],
+    "explanation": "Cape Coast was the colonial capital until the British moved it to Accra in 1877.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1612",
+    "targetGroup": "Scholar (JHS)",
+    "category": "African Wisdom",
+    "difficulty": "Hard",
+    "question": "I am the founder of the Mali Empire. I won the Battle of Kirina in about 1235, and griots tell my story in an epic. Who am I?",
+    "hint1": "People call me the Lion King of Mali.",
+    "hint2": "My name begins with 'Sun'.",
+    "answer": "Sundiata Keita",
+    "acceptedKeywords": [
+      "sundiata keita",
+      "sundiata",
+      "sunjata"
+    ],
+    "explanation": "Sundiata Keita united the Mandinka people and founded the Mali Empire.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1614",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Lateral Thinking",
+    "difficulty": "Medium",
+    "question": "What has four wheels and flies?",
+    "hint1": "Think about the other meaning of 'flies'.",
+    "hint2": "I collect waste from the street.",
+    "answer": "A rubbish truck",
+    "acceptedKeywords": [
+      "rubbish truck",
+      "garbage truck",
+      "refuse truck",
+      "garbage lorry"
+    ],
+    "explanation": "A rubbish truck has four wheels and attracts flies, the insects.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-riddle-sch-1615",
+    "targetGroup": "Scholar (JHS)",
+    "category": "Word Riddle",
+    "difficulty": "Medium",
+    "question": "I am a five-letter word that reads the same forwards and backwards. I am a system that uses radio waves to find aeroplanes and ships. What am I?",
+    "hint1": "I am a palindrome.",
+    "hint2": "My name begins and ends with R.",
+    "answer": "Radar",
+    "acceptedKeywords": [
+      "radar",
+      "a radar",
+      "radar system"
+    ],
+    "explanation": "Radar sends out radio waves and detects the echoes to find distant objects, and its name is a palindrome.",
+    "isCentral": true
   }
 ];
 
@@ -32238,6 +38970,482 @@ export const THINK_TANK_DEBATES: ThinkTankDebateItem[] = [
     "targetGroup": "Scholar (JHS)",
     "topic": "Ghana should ban the export of raw cocoa beans and process all cocoa at home.",
     "context": "Supporters argue that local processing creates jobs and earns far more money than selling raw beans. Opponents contend that Ghana lacks enough factories and power, and a ban could hurt farmers who depend on export buyers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1101",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Break time at school should be longer than 30 minutes.",
+    "context": "Supporters argue that children need time to play, rest and make friends. Opponents say a longer break leaves less time for lessons.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1102",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should clean their own classrooms instead of paid cleaners doing it.",
+    "context": "Supporters argue that cleaning teaches children to be responsible and to respect shared places. Opponents say pupils should spend their time learning, and cleaners know how to do it properly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1103",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every child should learn to swim at school.",
+    "context": "Supporters argue that swimming keeps children safe near rivers, lagoons and the sea. Opponents say schools may not have pools and swimming lessons can be expensive.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1104",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Children should be allowed to choose their own bedtime on weekends.",
+    "context": "Supporters argue that choosing helps children learn to make decisions. Opponents say children who sleep late may feel tired and cranky.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1105",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should eat only fruit as a snack at school.",
+    "context": "Supporters argue that fruit is healthy, gives vitamins and keeps teeth strong. Opponents say some children prefer other snacks, and fruit can be costly when it is out of season.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1101",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Solar panels should be installed on the roof of every school.",
+    "context": "Supporters argue that solar power gives light and fans even when the grid fails, and it saves money in the long run. Opponents say panels are expensive to buy and repair, and thieves may steal them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1102",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Trotro rides should be free for school children in uniform.",
+    "context": "Supporters argue that free rides help poor families send children to school safely. Opponents say drivers and owners would lose income, and someone else would have to pay.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1103",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Primary schools should teach every pupil how to cook and sew.",
+    "context": "Supporters argue that these skills help people look after themselves and may lead to jobs later. Opponents say school time is already full, and pupils must focus on reading, maths and science.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1105",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Fishing on Lake Volta should be stopped for one month every year so that fish can breed.",
+    "context": "Supporters argue that a break lets fish lay eggs so there are more fish in the future. Opponents say fishing families would lose income during the month.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1101",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should require all new buildings to collect and store rainwater.",
+    "context": "Supporters argue that harvesting rain reduces flooding, saves water and helps during dry spells. Opponents contend that tanks add to building costs and poor families may struggle to afford and maintain them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1102",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Small-scale gold mining near rivers should be banned until all mined land is restored.",
+    "context": "Supporters argue that mining pollutes drinking water, kills fish and ruins farmland. Opponents contend that many families depend on mining for income, and a total ban could push people into illegal and hidden mining.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1103",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should set a minimum age of 16 for social media accounts.",
+    "context": "Supporters argue that younger teenagers are more open to bullying, scams and harmful content. Opponents contend that age limits are hard to enforce, and social media also helps young people learn and connect.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1104",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Final national exams like the BECE should be replaced by continuous assessment in class.",
+    "context": "Supporters argue that continuous assessment is less stressful and shows what pupils do over time. Opponents contend that school marking may not be fair or equal across the country, and national exams give a common standard.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1105",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should invest more in solar mini-grids for rural villages than in extending the national grid.",
+    "context": "Supporters argue that mini-grids bring power faster and at lower cost to far-away villages. Opponents contend that mini-grids can be weak for big machines, and a strong national grid helps industry and growth everywhere.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1201",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every school day should start with ten minutes of quiet reading.",
+    "context": "Supporters argue that quiet reading helps children enjoy books and become better readers. Opponents say ten minutes might be better used for play or for other lessons.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1202",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should bring their own water bottles to school instead of buying sachet water.",
+    "context": "Supporters argue that bottles save money and cut down plastic rubbish. Opponents say bottles can be lost or get dirty, and some children may forget to bring them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1203",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Children should walk to school instead of being driven when it is safe.",
+    "context": "Supporters argue that walking keeps children fit and saves fuel. Opponents say some schools are too far, and busy roads can be dangerous.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1204",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Schools should have a class pet like a rabbit or a fish.",
+    "context": "Supporters argue that caring for a pet teaches kindness and responsibility. Opponents say pets need daily care, and some children may be afraid of animals or allergic to them.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1205",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should share their toys and games with others at break time.",
+    "context": "Supporters argue that sharing helps everyone join in and makes friendships stronger. Opponents say children should be able to keep their own special things safe.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1202",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Every pupil should take part in at least one sport.",
+    "context": "Supporters argue that sport keeps the body healthy and teaches teamwork. Opponents say some pupils prefer art or music, and forcing sport may not be fair.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1203",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Class prefects should be chosen by pupils' votes rather than picked by teachers.",
+    "context": "Supporters argue that voting teaches fairness and gives pupils a voice. Opponents say popular pupils may win even if they are not responsible, and teachers know who is dependable.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1204",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Schools should hold a day each term when pupils visit a local farm or factory.",
+    "context": "Supporters argue that real visits make lessons exciting and show how things are made. Opponents say trips cost money, take time from lessons and can be unsafe without enough adults.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1205",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Cinemas and shops should be closed on market days so that more people can trade at the market.",
+    "context": "Supporters argue that this would bring more customers to traders who depend on market days. Opponents say shops and cinemas also give people jobs and customers should be free to choose.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1201",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should scrap the tax on mobile money transfers.",
+    "context": "Supporters argue that the tax hits poor people who send small amounts and slows the move to digital payments. Opponents contend that the tax raises money for public services, and mobile money companies earn large profits that can bear it.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1202",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should allow genetically modified crops to be grown on farms.",
+    "context": "Supporters argue that GM crops can resist pests and drought and raise yields for farmers. Opponents contend that long-term effects are not fully known, seeds can be costly and farmers may become dependent on a few companies.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1203",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "National Service should remain compulsory for all university graduates in Ghana.",
+    "context": "Supporters argue that it gives graduates work experience and brings skilled people to areas that need them. Opponents contend that many placements have no real work or training, and some graduates would rather start their own businesses.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1204",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Facial recognition cameras should be installed in busy public places in Ghanaian cities to fight crime.",
+    "context": "Supporters argue that cameras help catch criminals quickly and discourage theft. Opponents contend that they threaten privacy, may make mistakes and could be misused to watch ordinary people.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1205",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Secondary and JHS classes should start later in the morning so that teenagers can sleep more.",
+    "context": "Supporters argue that teenagers need more sleep, and later starts can improve attention and health. Opponents contend that later starts clash with transport, family work and hot afternoon weather, and may shorten after-school activities.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1301",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every primary class should grow a small school garden of vegetables like tomatoes and kontomire.",
+    "context": "Supporters argue that gardening teaches children where food comes from and gives fresh vegetables for the school kitchen. Opponents say tending a garden takes time away from reading and maths, and crops may dry up during holidays.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1302",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Primary school pupils should not be given any homework on weekends.",
+    "context": "Supporters argue that weekends should be for family time, house chores, church or mosque, and rest. Opponents say a little weekend practice helps children remember what they learned during the week.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1303",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "School canteens should sell only fruits like mangoes, oranges, and bananas instead of sweets and biscuits.",
+    "context": "Supporters argue that fruits keep children strong and protect their teeth from decay. Opponents say children enjoy an occasional sweet treat and parents should help them choose balanced snacks.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1304",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be allowed to wear their own home clothes to school every Friday.",
+    "context": "Supporters argue that wearing home clothes on Fridays is fun and lets uniforms be washed early for Monday. Opponents say uniforms make every child look equal so nobody feels left out because of clothes.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1305",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every pupil should take turns sweeping and tidying the classroom each day.",
+    "context": "Supporters argue that cleaning together teaches pride in the school and keeps the room neat. Opponents say young children may raise dust that makes others cough, and hired cleaners can do a safer job.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1301",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Every Ghanaian pupil should learn both their local Ghanaian language and French in primary school.",
+    "context": "Supporters argue that local languages preserve our culture while French helps us communicate with all our neighbouring countries—Côte d'Ivoire, Burkina Faso, and Togo. Opponents say learning too many languages at once can overload pupils and take time from core science and maths.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1302",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Single-use plastic bags and polythene wrappers should be banned across all markets in Ghana.",
+    "context": "Supporters argue that plastic bags choke gutters, cause flooding, and pollute farms and beaches for decades. Opponents say traders and shoppers rely on cheap plastic bags every day, and paper or cloth bags cost more money.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1303",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Computer coding and robotics should be a compulsory subject from Basic 4 onwards.",
+    "context": "Supporters argue that coding builds problem-solving skills and prepares children for modern jobs in technology. Opponents say many schools still lack reliable electricity and computers, so basic literacy and numeracy should come first.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1304",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Boarding school is better for upper primary and JHS pupils than attending as a day student.",
+    "context": "Supporters argue that boarding school teaches independence, discipline, and gives fixed evening prep hours with friends. Opponents say children at that age still need daily guidance, emotional warmth, and home-cooked meals from their parents.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1305",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "All schools should replace end-of-term written exams with practical projects and continuous classwork.",
+    "context": "Supporters argue that projects test real understanding and teamwork without the fear of a single exam day. Opponents say written exams are a fair, standard way to check what each pupil knows on their own without outside help.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1301",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should ban all small-scale mining near forest reserves and river bodies permanently.",
+    "context": "Supporters argue that illegal and poorly regulated mining (galamsey) poisons rivers with mercury, destroys cocoa land, and raises the cost of treating drinking water. Opponents contend that a total ban takes away livelihoods in mining towns, and strictly monitored community mining could protect nature while keeping jobs.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1304",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghanaian universities and senior high schools should reserve higher quotas for Science, Technology, Engineering, and Mathematics (STEM) than for Humanities.",
+    "context": "Supporters argue that engineers, doctors, and software builders are urgently needed to industrialise the country and solve technical problems. Opponents contend that a thriving nation equally needs historians, lawyers, writers, economists, and ethical leaders from the humanities.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1401",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every classroom should have a weekly storytelling day.",
+    "context": "Supporters say storytelling improves speaking, listening and imagination. Opponents say the timetable is already crowded and reading practice may be more useful.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1402",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should help choose one game for physical education each week.",
+    "context": "Supporters say choice makes exercise enjoyable and inclusive. Opponents say teachers need to select activities that develop a balanced range of skills.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1405",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Local markets should provide more clearly labelled waste-sorting bins.",
+    "context": "Supporters say sorting waste supports recycling and cleaner drains. Opponents say bins require funding, regular collection and public education to work.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1406",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Schools should allow pupils to propose community-service projects each term.",
+    "context": "Supporters say projects build responsibility and problem-solving skills. Opponents say compulsory activities may burden pupils with family responsibilities.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1407",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghanaian schools should teach how to verify AI-generated information as a compulsory digital-literacy skill.",
+    "context": "Supporters argue that checking sources reduces misinformation and builds critical thinking. Opponents argue that schools with limited devices and internet access may struggle to teach the topic fairly.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1408",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Public transport planning should prioritise reliable buses over expanding private-car parking in city centres.",
+    "context": "Supporters say efficient buses can reduce congestion and improve access. Opponents say businesses and people with limited mobility may still need convenient vehicle access.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1409",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Schools should report learning progress using portfolios alongside examination scores.",
+    "context": "Supporters say portfolios show improvement, creativity and sustained effort. Opponents say scoring portfolios consistently can be difficult and time-consuming.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1410",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Communities should prioritise restoring urban trees even when this reduces space for roadside parking.",
+    "context": "Supporters say trees provide shade, improve comfort and support biodiversity. Opponents say reduced parking may inconvenience traders, residents and delivery vehicles.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1502",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be allowed to eat their lunch outside under the trees.",
+    "context": "Supporters argue that fresh air and shade make lunch time fun and healthy. Opponents say food could attract ants and flies, and the ground might be dirty or too hot.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1503",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Children should help with house chores before they are allowed to play.",
+    "context": "Supporters argue that chores teach children to be responsible and help the family. Opponents say children need time to play, and too many chores can make them tired.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1504",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Schools should teach drumming and dancing as a regular lesson.",
+    "context": "Supporters argue that drumming and dancing keep our culture alive and help children stay fit and happy. Opponents say schools need time for reading and maths, and not every child enjoys music.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1502",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Each class should repair its own broken desks and chairs as a school project.",
+    "context": "Supporters argue that repairing teaches useful skills and teamwork, and it saves the school money. Opponents say tools can be dangerous for children and repairs should be done by trained workers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1503",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Every Ghanaian child should learn at least two local languages at school.",
+    "context": "Supporters argue that learning more languages helps people understand each other and keeps our heritage alive. Opponents say schools already have crowded timetables, and there are many languages to choose from.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1504",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Loud drumming at festivals should be allowed late into the night.",
+    "context": "Supporters argue that drumming is an important tradition and festivals only come once a year. Opponents say loud noise at night disturbs sleep, babies and sick people, and children need rest before school.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1505",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Children under twelve should be allowed to play video games for no more than one hour each day.",
+    "context": "Supporters argue that limits protect eyesight, sleep and homework time. Opponents say parents, not rules, should decide, and some games can teach thinking and teamwork.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1502",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should ban the import of used cars older than ten years.",
+    "context": "Supporters argue that older cars pollute the air more, break down often and cause accidents. Opponents contend that many families can only afford used cars, and a ban could raise transport costs and hurt car dealers.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1504",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Chiefs and queen mothers should not belong to any political party.",
+    "context": "Supporters argue that traditional leaders unite all people and should stay neutral so everyone trusts them. Opponents contend that chiefs are also citizens with the right to join a party, and many are educated and experienced leaders.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1505",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "The school feeding programme should buy its food only from local farmers.",
+    "context": "Supporters argue that local buying supports farmers, keeps money in communities and gives children fresh food. Opponents contend that local farmers may not supply enough, on time or at a steady price, and strict rules could raise costs or leave some schools without meals.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1602",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every pupil should get a turn to lead the morning assembly.",
+    "context": "Supporters argue that leading builds confidence and gives everyone a chance to shine. Opponents say shy children may feel scared, and assembly could take too much time.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1603",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Children should learn to ride a bicycle at school.",
+    "context": "Supporters argue that cycling is fun, keeps children fit and is a cheap way to travel. Opponents say bicycles cost money and roads can be unsafe for young riders.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1604",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Every school should have a quiet room for pupils who feel sad or angry.",
+    "context": "Supporters argue that a quiet place helps children calm down and feel better. Opponents say schools may not have spare rooms, and pupils might miss lessons.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-nov-1605",
+    "targetGroup": "Novice (Basic 1-3)",
+    "topic": "Pupils should be allowed to sit wherever they like in class.",
+    "context": "Supporters argue that sitting with friends makes children happier and ready to help each other. Opponents say friends may chat too much, and teachers may need to place pupils carefully.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1601",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Public libraries should be open on Sundays.",
+    "context": "Supporters argue that families are free on Sundays and can read and learn together. Opponents say library workers also need a day of rest, and opening costs more money.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1602",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Drivers who use phones while driving should lose their licence for one month.",
+    "context": "Supporters argue that phone use causes crashes, and a strong penalty will make drivers careful. Opponents say the punishment is too harsh for some, and it is hard for police to catch every driver.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-app-1603",
+    "targetGroup": "Apprentice (Basic 4-6)",
+    "topic": "Villages should stop cutting trees for charcoal and use gas stoves instead.",
+    "context": "Supporters argue that this protects forests, clean air and animals. Opponents say gas is costly for poor families, and many people earn their living by making charcoal.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1601",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should place a tax on sugary drinks.",
+    "context": "Supporters argue that a tax can cut sugar use, reduce diabetes and raise money for health care. Opponents contend that the tax hits poor shoppers, may hurt local drink makers and may not change what people buy.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1602",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Every JHS pupil should learn a practical trade, such as sewing, welding or farming, alongside academic subjects.",
+    "context": "Supporters argue that practical skills help young people find work or start businesses. Opponents contend that workshops and tools are costly, and trade lessons may take time away from core subjects.",
+    "isCentral": true
+  },
+  {
+    "id": "tt-debate-sch-1604",
+    "targetGroup": "Scholar (JHS)",
+    "topic": "Ghana should use drones to deliver medicines and blood to remote clinics.",
+    "context": "Supporters argue that drones are fast and can save lives where roads are poor or flooded. Opponents contend that drones are costly to run and limited by weather, and the money could be spent on roads and health workers.",
     "isCentral": true
   }
 ];
