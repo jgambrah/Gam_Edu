@@ -11,7 +11,8 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { assertSucceeds, assertFails, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, getDocs, setDoc, updateDoc, collection, query, where, limit } from 'firebase/firestore';
+import { doc, getDoc, getDocs, setDoc, updateDoc, collection, query, where, limit, serverTimestamp } from 'firebase/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 import { as, createEnv, readRules, seedProfiles } from './helpers';
 import { createEmulatorBackend, type EmulatorBackend } from '../../src/lib/story-library/seeder/firestore-backend';
 import { runSeed, rollbackJob } from '../../src/lib/story-library/seeder/seeder';
@@ -117,44 +118,54 @@ describe('client rules over seeded drafts', () => {
     }));
   });
 
+  const T = () => serverTimestamp();
+  const submitAs = (db: ReturnType<typeof pub>, uid: string, id: string) =>
+    updateDoc(doc(db, `story_library_admin/${id}`), { status: 'review', lastEditedBy: uid, submittedBy: uid, submittedAt: T(), updatedAt: T() });
+  const approveAs = (db: ReturnType<typeof pub>, uid: string, id: string) =>
+    updateDoc(doc(db, `story_library_admin/${id}`), { status: 'approved', approvedBy: uid, approvedAt: T(), updatedAt: T() });
+
   it('the seeder identity can never approve its own story, even with a publisher token', async () => {
     const id = corpus.distinct[3];
     const botDb = pub(SEEDER_UID);
-    await assertSucceeds(updateDoc(doc(botDb, `story_library_admin/${id}`), { status: 'review', updatedAt: new Date() }));
-    await assertFails(updateDoc(doc(botDb, `story_library_admin/${id}`), { status: 'approved', approvedBy: SEEDER_UID, updatedAt: new Date() }));
-    await seeded.db.doc(`story_library_admin/${id}`).update({ status: 'draft' });
+    await assertSucceeds(submitAs(botDb, SEEDER_UID, id));
+    await assertFails(approveAs(botDb, SEEDER_UID, id));
+    await seeded.db.doc(`story_library_admin/${id}`).set({ status: 'draft', lastEditedBy: SEEDER_UID }, { merge: true });
+    await seeded.db.doc(`story_library_admin/${id}`).update({ submittedBy: FieldValue.delete(), submittedAt: FieldValue.delete() });
   });
 
-  it('full path: draft → review → approved by a DIFFERENT publisher → published → visible to schools', async () => {
+  it('full path: draft → review → approved by an INDEPENDENT publisher → published → visible to schools', async () => {
     const id = corpus.distinct[4];
     const d = (await seeded.db.doc(`story_library_admin/${id}`).get()).data()!;
     const p1 = pub('publisher1'), p2 = pub('publisher2');
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'review', updatedAt: new Date() }));
-    await assertFails(updateDoc(doc(p2, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher1', updatedAt: new Date() })); // cannot name someone else
-    await assertSucceeds(updateDoc(doc(p2, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher2', updatedAt: new Date() }));
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'published', publishedBy: 'publisher1', updatedAt: new Date() }));
+    await assertSucceeds(submitAs(p1, 'publisher1', id));
+    await assertFails(approveAs(p1, 'publisher1', id));                       // the submitter cannot approve
+    await assertFails(updateDoc(doc(p2, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher1', approvedAt: T(), updatedAt: T() })); // cannot name someone else
+    await assertSucceeds(approveAs(p2, 'publisher2', id));
+    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'published', publishedBy: 'publisher1', publishedAt: T(), updatedAt: T() }));
     await assertSucceeds(setDoc(doc(p1, `story_catalogue/${id}`), catalogueEntryFor(id, d)));
     await assertSucceeds(getDoc(doc(as(env, 'teacherA').firestore(), `story_catalogue/${id}`)));
   });
 
-  // ---- pinned security findings (documented in the Stage 2 report) ----
-  it('FINDING F1 (pinned): one human publisher can submit a seeded draft for review AND approve it', async () => {
+  // ---- security findings F1 and F2 (Stage 3: FIXED; these tests now prove the fix on machine-seeded stories) ----
+  it('F1 FIXED: one human cannot submit a seeded draft AND approve it', async () => {
     const id = corpus.distinct[5];
     const p1 = pub('publisher1');
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'review', updatedAt: new Date() }));
-    // Allowed today: the rule compares the approver with the AUTHOR (seeder-bot) only.
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher1', updatedAt: new Date() }));
+    await assertSucceeds(submitAs(p1, 'publisher1', id));
+    await assertFails(approveAs(p1, 'publisher1', id));
   });
 
-  it('FINDING F2 (pinned): a publisher can edit a seeded story in review and a second publisher approves without seeing who edited', async () => {
+  it('F2 FIXED: whoever edits a seeded story in review cannot approve it, and approval cannot carry an edit', async () => {
     const id = corpus.distinct[6];
-    const p1 = pub('publisher1'), p2 = pub('publisher2');
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'review', updatedAt: new Date() }));
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { title: 'Edited in review', updatedAt: new Date() }));
-    await assertSucceeds(updateDoc(doc(p2, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher2', updatedAt: new Date() }));
-    // The approved document has no record of who edited it, because the rules do not require `updatedBy`.
+    const p1 = pub('publisher1'), p2 = pub('publisher2'), p3 = pub('publisher3');
+    await assertSucceeds(submitAs(p1, 'publisher1', id));
+    await assertSucceeds(updateDoc(doc(p2, `story_library_admin/${id}`), { title: 'Edited in review', lastEditedBy: 'publisher2', updatedAt: T() }));
+    await assertFails(approveAs(p2, 'publisher2', id));                       // last editor
+    await assertFails(updateDoc(doc(p3, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher3', approvedAt: T(), updatedAt: T(), title: 'Sneaky' }));
+    await assertSucceeds(approveAs(p3, 'publisher3', id));
     const after = (await seeded.db.doc(`story_library_admin/${id}`).get()).data()!;
-    expect(after.updatedBy).toBeUndefined();
+    expect(after.lastEditedBy).toBe('publisher2');                            // the edit is on the record
+    expect(after.submittedBy).toBe('publisher1');
+    expect(after.approvedBy).toBe('publisher3');
   });
 });
 
@@ -163,7 +174,7 @@ describe('rollback on the real emulator never destroys human work', () => {
     const before = await adminCount(seeded);
     const t0 = Date.now();
     const r = await rollbackJob(seeded.backend, jobId);
-    // distinct[4] (published), [5] (approved), [6] (approved, edited) were moved on by people and must survive.
+    // distinct[4] (published), [5] (in review), [6] (approved, edited in review) were moved on by people and must survive.
     expect(r.keptHumanModified).toBe(3);
     expect(r.rolledBack).toBe(before - 3);
     const left = await seeded.db.collection('story_library_admin').get();

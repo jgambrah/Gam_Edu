@@ -99,24 +99,61 @@ service cloud.firestore {
 
     // Workflow, licensing and review notes: publishers only, in both directions.
     match /story_library_admin/{storyId} {
+      // ---- independent-approval workflow (Stage 3) ----
+      // Trail fields: createdBy, lastEditedBy (every human write), submittedBy/submittedAt (whoever moves it into review),
+      // approvedBy/approvedAt, publishedBy/publishedAt, archivedBy/archivedAt. All actor fields must equal the signed-in uid
+      // and all timestamps must equal the server time (request.time), so none can be forged or back-dated.
+      function newData() { return request.resource.data; }
+      function oldData() { return resource.data; }
+      function stamped(field) { return newData().get(field, null) == request.time; }
+      function noApproval() { return newData().get('approvedBy', '') == '' && newData().get('approvedAt', null) == null; }
+      function lastEditor() { return oldData().get('lastEditedBy', oldData().createdBy); }
+      function onlyKeys(keys) { return newData().diff(oldData()).affectedKeys().hasOnly(keys); }
+
       allow read: if isStoryPublisher();
       allow create: if isStoryPublisher() && storyId.matches('^[A-Za-z0-9_-]{3,64}$')
-        && request.resource.data.keys().hasAll(['storyKey', 'title', 'status', 'createdBy', 'updatedAt'])
-        && request.resource.data.status in ['draft', 'review']
-        && request.resource.data.createdBy == request.auth.uid;
+        && newData().keys().hasAll(['storyKey', 'title', 'status', 'createdBy', 'lastEditedBy', 'updatedAt'])
+        && newData().status == 'draft'
+        && newData().createdBy == request.auth.uid
+        && newData().lastEditedBy == request.auth.uid
+        && stamped('updatedAt')
+        && noApproval() && newData().get('submittedBy', '') == '';
       allow update: if isStoryPublisher()
-        && request.resource.data.createdBy == resource.data.createdBy
+        && newData().createdBy == oldData().createdBy
         && (
-          // Draft and review copies are freely editable, and may move draft <-> review.
-          (resource.data.status in ['draft', 'review'] && request.resource.data.status in ['draft', 'review']) ||
-          // Approval: a different publisher from the author, recorded on the document.
-          (resource.data.status == 'review' && request.resource.data.status == 'approved'
-            && request.auth.uid != resource.data.createdBy && request.resource.data.get('approvedBy', '') == request.auth.uid) ||
-          // Publishing, archiving and re-opening change only the status trail, never the content fields.
-          (((resource.data.status == 'approved' && request.resource.data.status in ['published', 'review']) ||
-            (resource.data.status == 'published' && request.resource.data.status == 'archived') ||
-            (resource.data.status == 'archived' && request.resource.data.status == 'review'))
-            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updatedAt', 'publishedBy', 'archivedBy']))
+          // 1. Edit, submit for review, or withdraw to draft. Whoever writes becomes the last editor. Moving into review
+          //    records the submitter. Approval fields cannot exist on a draft or a story in review.
+          (oldData().status in ['draft', 'review'] && newData().status in ['draft', 'review']
+            && newData().lastEditedBy == request.auth.uid && stamped('updatedAt') && noApproval()
+            && (newData().status == 'draft'
+                ? newData().get('submittedBy', '') == ''
+                : (oldData().status == 'review'
+                    ? newData().get('submittedBy', '') == oldData().get('submittedBy', '')
+                    : (newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt'))))) ||
+          // 2. Approval. The approver must differ from the creator, the last editor AND whoever submitted this version;
+          //    and the write may change NOTHING but the approval trail (no edit-and-approve in one step).
+          (oldData().status == 'review' && newData().status == 'approved'
+            && oldData().get('submittedBy', '') != ''
+            && request.auth.uid != oldData().createdBy
+            && request.auth.uid != lastEditor()
+            && request.auth.uid != oldData().get('submittedBy', '')
+            && newData().approvedBy == request.auth.uid && stamped('approvedAt') && stamped('updatedAt')
+            && onlyKeys(['status', 'approvedBy', 'approvedAt', 'updatedAt'])) ||
+          // 3. Publishing changes only the status trail; approved content is frozen.
+          (oldData().status == 'approved' && newData().status == 'published'
+            && newData().get('publishedBy', '') == request.auth.uid && stamped('publishedAt') && stamped('updatedAt')
+            && onlyKeys(['status', 'updatedAt', 'publishedBy', 'publishedAt'])) ||
+          // 4. Re-opening (approved or archived -> review) INVALIDATES the approval: it must be cleared, the re-opener
+          //    becomes last editor and submitter of the new version, and nothing else changes. A fresh independent
+          //    review (and approver) is then required.
+          (oldData().status in ['approved', 'archived'] && newData().status == 'review' && noApproval()
+            && newData().lastEditedBy == request.auth.uid
+            && newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt') && stamped('updatedAt')
+            && onlyKeys(['status', 'approvedBy', 'approvedAt', 'submittedBy', 'submittedAt', 'lastEditedBy', 'updatedAt'])) ||
+          // 5. Archiving (withdrawal) changes only the status trail.
+          (oldData().status == 'published' && newData().status == 'archived'
+            && newData().get('archivedBy', '') == request.auth.uid && stamped('archivedAt') && stamped('updatedAt')
+            && onlyKeys(['status', 'updatedAt', 'archivedBy', 'archivedAt']))
         );
       // Only an unpublished draft can be deleted; anything that has been approved or published is kept.
       allow delete: if isStoryPublisher() && resource.data.status == 'draft';

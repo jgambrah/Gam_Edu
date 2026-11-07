@@ -295,6 +295,33 @@ describe('versions', () => {
   });
 });
 
+describe('human edits are never overwritten', () => {
+  const v1 = makeStory(1, { seed: 15 });
+  const v2: StoryInput = { ...v1, pages: v1.pages.map((p, i) => (i === 0 ? { ...p, text: p.text + ' A newly added closing line for the first page appears right here today.' } : p)) };
+
+  it('a draft a person has edited is not updated in place: the new version is staged beside it', async () => {
+    const b = new MemoryBackend({ yieldToLoop: false });
+    await runSeed(b, [v1], opts());
+    const live = admin(b, v1.storyKey)!;
+    expect(live.lastEditedBy).toBe(SEEDER_UID);
+    b.docs.set(`${ADMIN_COLLECTION}/${v1.storyKey}`, { data: { ...live, title: 'Fixed by an editor', lastEditedBy: 'editor-1' }, ver: 9 });
+    const s = await runSeed(b, [v2], opts());
+    expect(s.outcomes.pending_version).toBe(1);
+    expect(admin(b, v1.storyKey)!.title).toBe('Fixed by an editor');
+    expect(admin(b, v1.storyKey)!.version).toBe(1);
+  });
+
+  it('rollback keeps a draft whose last editor is a person, even though the seeder created it', async () => {
+    const b = new MemoryBackend({ yieldToLoop: false });
+    const j = await runSeed(b, [v1], opts());
+    const live = admin(b, v1.storyKey)!;
+    b.docs.set(`${ADMIN_COLLECTION}/${v1.storyKey}`, { data: { ...live, title: 'Fixed by an editor', lastEditedBy: 'editor-1' }, ver: 9 });
+    const r = await rollbackJob(b, j.jobId);
+    expect(r.keptHumanModified).toBe(1);
+    expect(admin(b, v1.storyKey)!.title).toBe('Fixed by an editor');
+  });
+});
+
 describe('approval enforcement', () => {
   it('the seeder module exposes no publish or approve capability', async () => {
     const mod = await import('./seeder');

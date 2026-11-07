@@ -10,7 +10,7 @@
  */
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import { assertSucceeds, assertFails, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where, limit, addDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, query, where, limit, addDoc, serverTimestamp, deleteField } from 'firebase/firestore';
 import { as, createEnv, readRules, seedProfiles, SCHOOL_A, SCHOOL_B, cast, type ActorName } from './helpers';
 import { packagePathFor, validateCatalogueEntry } from '../../src/lib/story-library/validate';
 
@@ -34,7 +34,14 @@ const entry = (id: string, over: Record<string, unknown> = {}) => ({
   pageCount: 10, packagePath: packagePathFor(id, 1), packageHash: H('a'), contentHash: H('b'), publishedBy: 'publisher1', ...over,
 });
 const adminDocData = (status: string, over: Record<string, unknown> = {}) => ({
-  storyKey: 'key', title: 'The Brave Little Kite', status, createdBy: 'publisher1', updatedAt: new Date(), ...over,
+  storyKey: 'key', title: 'The Brave Little Kite', status, createdBy: 'publisher1', lastEditedBy: 'publisher1', updatedAt: new Date(),
+  ...(status !== 'draft' ? { submittedBy: 'publisher1', submittedAt: new Date() } : {}),
+  ...(['approved', 'published', 'archived'].includes(status) ? { approvedBy: 'publisher2', approvedAt: new Date() } : {}),
+  ...over,
+});
+/** A draft as a signed-in human would create it (server timestamps; actor fields equal the uid). */
+const newDraft = (uid: string, over: Record<string, unknown> = {}) => ({
+  storyKey: 'key', title: 'The Brave Little Kite', status: 'draft', createdBy: uid, lastEditedBy: uid, updatedAt: serverTimestamp(), ...over,
 });
 const seed = (path: string, data: Record<string, unknown>) =>
   env.withSecurityRulesDisabled(async (c) => { await setDoc(doc(c.firestore(), path), data); });
@@ -219,17 +226,32 @@ describe('story_library_admin: drafts, review, approval', () => {
     await assertSucceeds(getDoc(doc(db(who), 'story_library_admin/story_draft')));
   });
   it('a publisher can create a draft as themselves, but not as someone else, and not in a later state', async () => {
-    await assertSucceeds(setDoc(doc(db('publisher2'), 'story_library_admin/story_x'), adminDocData('draft', { createdBy: 'publisher2' })));
-    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_y'), adminDocData('draft', { createdBy: 'publisher1' })));
-    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_z'), adminDocData('approved', { createdBy: 'publisher2' })));
-    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_w'), adminDocData('published', { createdBy: 'publisher2' })));
+    await assertSucceeds(setDoc(doc(db('publisher2'), 'story_library_admin/story_x'), newDraft('publisher2')));
+    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_y'), newDraft('publisher2', { createdBy: 'publisher1' })));
+    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_y2'), newDraft('publisher2', { lastEditedBy: 'publisher1' })));
+    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_z'), newDraft('publisher2', { status: 'approved' })));
+    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_w'), newDraft('publisher2', { status: 'published' })));
+    await assertFails(setDoc(doc(db('publisher2'), 'story_library_admin/story_r2'), newDraft('publisher2', { status: 'review', submittedBy: 'publisher2' })));
   });
 
-  const setStatus = (who: Who, id: string, status: string, extra: Record<string, unknown> = {}) =>
-    updateDoc(doc(db(who), `story_library_admin/${id}`), { status, updatedAt: new Date(), ...extra });
+  const uidOf = (who: Who) => (who === 'superAdmin' ? 'L4oE5XWweKRYrhtIXn6hB8IDHBC2' : who);
+  /** A status change as the app would write it, with the trail fields the rules require for that transition. */
+  const setStatus = (who: Who, id: string, status: string, extra: Record<string, unknown> = {}) => {
+    const uid = uidOf(who);
+    const trail: Record<string, unknown> =
+      status === 'review' ? { lastEditedBy: uid, submittedBy: uid, submittedAt: serverTimestamp(), approvedBy: deleteField(), approvedAt: deleteField() }
+      : status === 'draft' ? { lastEditedBy: uid, submittedBy: deleteField(), submittedAt: deleteField() }
+      : status === 'approved' ? { approvedAt: serverTimestamp() }
+      : status === 'published' ? { publishedAt: serverTimestamp() }
+      : status === 'archived' ? { archivedAt: serverTimestamp() }
+      : {};
+    return updateDoc(doc(db(who), `story_library_admin/${id}`), { status, updatedAt: serverTimestamp(), ...trail, ...extra });
+  };
+  const edit = (who: Who, id: string, fields: Record<string, unknown>) =>
+    updateDoc(doc(db(who), `story_library_admin/${id}`), { lastEditedBy: uidOf(who), updatedAt: serverTimestamp(), ...fields });
 
   it('draft <-> review is allowed and the content can be edited while in draft or review', async () => {
-    await assertSucceeds(updateDoc(doc(db('publisher1'), 'story_library_admin/story_draft'), { title: 'A better title' }));
+    await assertSucceeds(edit('publisher1', 'story_draft', { title: 'A better title' }));
     await assertSucceeds(setStatus('publisher1', 'story_draft', 'review'));
     await assertSucceeds(setStatus('publisher1', 'story_draft', 'draft'));
   });
@@ -277,8 +299,8 @@ describe('super admins are bound by the same workflow (they are publishers, not 
     await assertFails(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: SUPER })));
   });
   it('a super admin cannot approve a story they wrote themselves', async () => {
-    await seed('story_library_admin/story_s', adminDocData('review', { createdBy: SUPER }));
-    await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_s'), { status: 'approved', approvedBy: SUPER, updatedAt: new Date() }));
+    await seed('story_library_admin/story_s', adminDocData('review', { createdBy: SUPER, lastEditedBy: SUPER, submittedBy: 'publisher1' }));
+    await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_s'), { status: 'approved', approvedBy: SUPER, approvedAt: serverTimestamp(), updatedAt: serverTimestamp() }));
   });
   it('a super admin cannot skip the schema checks or edit a published story', async () => {
     await seed('story_library_admin/story_new', adminDocData('approved'));

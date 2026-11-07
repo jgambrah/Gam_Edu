@@ -314,7 +314,7 @@ async function commit(
 
     // ---- duplicate check (race-safe: index docs are read in this transaction, so a concurrent writer forces a retry)
     const newBandKeys = bandKeys(prep.sig);
-    const oldSig: number[] | undefined = admin?.status === 'draft' ? admin.fingerprints?.sig : undefined;
+    const oldSig: number[] | undefined = admin?.status === 'draft' && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID ? admin.fingerprints?.sig : undefined;
     const oldBandKeys = oldSig ? bandKeys(oldSig) : [];
     const buckets = await loadBuckets(tx, [...new Set([...newBandKeys, ...oldBandKeys])]);
     const textDoc = await tx.get(textIndexPath(prep.textHash));
@@ -347,12 +347,14 @@ async function commit(
     };
 
     if (!admin) {
-      tx.set(adminPath(id), { storyKey: id, status: 'draft', createdBy: SEEDER_UID, seededBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, revisions: [], ...fields });
+      tx.set(adminPath(id), { storyKey: id, status: 'draft', createdBy: SEEDER_UID, lastEditedBy: SEEDER_UID, seededBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, revisions: [], ...fields });
       indexAdd(buckets, id, prep.sig); flushBuckets(tx, buckets); tx.set(textIndexPath(prep.textHash), { storyKey: id, at: now });
       return done('created', { version });
     }
 
-    if (admin.status === 'draft') {
+    // A draft is updated in place ONLY while no person has touched it (the seeder is still its last editor). Once a person
+    // has edited it, a re-seed is staged beside it like any later state, so human work is never overwritten.
+    if (admin.status === 'draft' && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID) {
       // In-place update of a draft: keep the previous revision so it can be rolled back.
       const revisions = [...(admin.revisions ?? []), pick(admin, SNAPSHOT_KEYS)].slice(-20);
       if (oldSig) indexRemove(buckets, id, oldSig);
@@ -360,13 +362,13 @@ async function commit(
       const oldText = admin.fingerprints?.textHash;
       if (oldText && oldText !== prep.textHash) tx.delete(textIndexPath(oldText));
       tx.set(textIndexPath(prep.textHash), { storyKey: id, at: now });
-      tx.set(adminPath(id), { ...admin, ...fields, status: 'draft', updatedAt: now, revisions });
+      tx.set(adminPath(id), { ...admin, ...fields, status: 'draft', lastEditedBy: SEEDER_UID, updatedAt: now, revisions });
       return done('updated_draft', { version });
     }
 
     // The story is past draft (review, approved, published or archived): never touch the live copy. Stage the new
     // version beside it as a draft; a person decides what happens next.
-    tx.set(`${adminPath(id)}/pending_versions/${version}`, { storyKey: id, status: 'draft', createdBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, basedOnVersion: admin.version, ...fields });
+    tx.set(`${adminPath(id)}/pending_versions/${version}`, { storyKey: id, status: 'draft', createdBy: SEEDER_UID, lastEditedBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, basedOnVersion: admin.version, ...fields });
     tx.set(adminPath(id), { ...admin, latestSeededVersion: version, latestSeededContentHash: prep.contentHash });
     return done('pending_version', { version });
   });
@@ -403,7 +405,7 @@ export async function rollbackJob(b: SeedBackend, jobId: string): Promise<Rollba
       }
 
       if (!admin) { mark('rolled_back'); return 'gone' as const; }
-      const untouched = admin.status === 'draft' && admin.lastJobId === jobId && admin.version === data.version && admin.createdBy === SEEDER_UID;
+      const untouched = admin.status === 'draft' && admin.lastJobId === jobId && admin.version === data.version && admin.createdBy === SEEDER_UID && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID;
       if (!untouched) { mark('rollback_skipped', 'document changed by a person or a later job'); return 'kept' as const; }
 
       const sig: number[] = admin.fingerprints?.sig ?? [];
@@ -426,7 +428,7 @@ export async function rollbackJob(b: SeedBackend, jobId: string): Promise<Rollba
       indexRemove(buckets, id, sig); indexAdd(buckets, id, prevSig); flushBuckets(tx, buckets);
       if (admin.fingerprints?.textHash) tx.delete(textIndexPath(admin.fingerprints.textHash));
       if (prev.fingerprints?.textHash) tx.set(textIndexPath(prev.fingerprints.textHash), { storyKey: id, at: b.now() });
-      tx.set(adminPath(id), { ...admin, ...prev, status: 'draft', revisions, latestSeededContentHash: prev.contentHash, latestSeededVersion: admin.latestSeededVersion, updatedAt: b.now() });
+      tx.set(adminPath(id), { ...admin, ...prev, status: 'draft', lastEditedBy: SEEDER_UID, revisions, latestSeededContentHash: prev.contentHash, latestSeededVersion: admin.latestSeededVersion, updatedAt: b.now() });
       mark('rolled_back');
       return 'done' as const;
     });
