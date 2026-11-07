@@ -360,7 +360,7 @@ export function ParadoxCard({
                 </div>
             )}
 
-            {isLocked && !isBlueprintRevealed && !isStaff && (
+            {isLocked && !isBlueprintRevealed && (
               <Button
                 type="button"
                 variant="outline"

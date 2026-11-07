@@ -3,7 +3,10 @@
 import type { Firestore } from 'firebase-admin/firestore';
 import { getAdminDb } from '@/lib/firebaseAdmin';
 import { getSessionUser, type SessionUser } from '@/lib/session-guard';
-import { resolveThinkTankStudent } from '@/lib/resolve-think-tank-student';
+import {
+  resolveThinkTankStudentOrStaff,
+  resolveStaffFallbackSchoolId,
+} from '@/lib/resolve-think-tank-student';
 import {
   calculateParadoxXp,
   PARADOX_MAX_XP,
@@ -151,7 +154,16 @@ async function getVerifiedStudentSchoolId(
     throw new Error('Student school mismatch with session claims.');
   }
 
-  const resolved = studentSchoolId || userProfileSchoolId || claimSchoolId;
+  const staffFallbackSchoolId =
+    !studentSchoolId && !userProfileSchoolId && !claimSchoolId
+      ? await resolveStaffFallbackSchoolId(db, user)
+      : '';
+
+  const resolved =
+    studentSchoolId ||
+    userProfileSchoolId ||
+    claimSchoolId ||
+    staffFallbackSchoolId;
   if (!resolved) {
     throw new Error('Could not verify student school membership.');
   }
@@ -239,9 +251,9 @@ export async function submitThinkTankParadoxAction(
     // Must be derived from verified server-side school membership, not client input.
     const verifiedSchoolId = await getVerifiedStudentSchoolId(db, user);
 
-    const studentRef = await resolveThinkTankStudent(
+    const { studentRef, isStaff } = await resolveThinkTankStudentOrStaff(
       db,
-      user.uid,
+      user,
       verifiedSchoolId
     );
 
@@ -268,20 +280,21 @@ export async function submitThinkTankParadoxAction(
     const result = await db.runTransaction(async (tx) => {
       // All reads occur before writes.
       const progressSnap = await tx.get(progressRef);
-      const studentSnap = await tx.get(studentRef);
+      const studentSnap = studentRef ? await tx.get(studentRef) : null;
 
-      if (!studentSnap.exists) {
+      if (!isStaff && (!studentSnap || !studentSnap.exists)) {
         throw new Error('Student record unavailable.');
       }
 
       const progress = (progressSnap.data() ?? {}) as Record<string, any>;
-      const student = (studentSnap.data() ?? {}) as Record<string, any>;
+      const student = (studentSnap?.data() ?? {}) as Record<string, any>;
 
-      // Revalidate identity, school, and active status within transaction.
+      // Revalidate identity, school, and active status within transaction for students.
       if (
-        student.schoolId !== verifiedSchoolId ||
-        (student.uid && student.uid !== user.uid) ||
-        !isStudentRecordActive(student)
+        !isStaff &&
+        (student.schoolId !== verifiedSchoolId ||
+          (student.uid && student.uid !== user.uid) ||
+          !isStudentRecordActive(student))
       ) {
         throw new Error('Student identity mismatch.');
       }
@@ -358,11 +371,13 @@ export async function submitThinkTankParadoxAction(
           { merge: true }
         );
 
-        tx.update(studentRef, {
-          totalPoints: nextTotalPoints,
-          xpEarnedDay: today,
-          xpEarnedToday: xp.newDailyEarned,
-        });
+        if (studentRef) {
+          tx.update(studentRef, {
+            totalPoints: nextTotalPoints,
+            xpEarnedDay: today,
+            xpEarnedToday: xp.newDailyEarned,
+          });
+        }
       }
 
       const targetXpForGrade =
@@ -464,9 +479,9 @@ export async function lockThinkTankBlueprintAction(
 
     const verifiedSchoolId = await getVerifiedStudentSchoolId(db, user);
 
-    const studentRef = await resolveThinkTankStudent(
+    const { studentRef, isStaff } = await resolveThinkTankStudentOrStaff(
       db,
-      user.uid,
+      user,
       verifiedSchoolId
     );
 
@@ -486,20 +501,21 @@ export async function lockThinkTankBlueprintAction(
 
     return await db.runTransaction(async (tx) => {
       // All reads before writes.
-      const studentSnap = await tx.get(studentRef);
+      const studentSnap = studentRef ? await tx.get(studentRef) : null;
       const progressSnap = await tx.get(progressRef);
 
-      if (!studentSnap.exists) {
+      if (!isStaff && (!studentSnap || !studentSnap.exists)) {
         throw new Error('Student record unavailable.');
       }
 
-      const student = (studentSnap.data() ?? {}) as Record<string, any>;
+      const student = (studentSnap?.data() ?? {}) as Record<string, any>;
 
-      // Check schoolId, uid, isActive, status, and enrollmentStatus independently.
+      // Check schoolId, uid, isActive, status, and enrollmentStatus independently for students.
       if (
-        student.schoolId !== verifiedSchoolId ||
-        (student.uid && student.uid !== user.uid) ||
-        !isStudentRecordActive(student)
+        !isStaff &&
+        (student.schoolId !== verifiedSchoolId ||
+          (student.uid && student.uid !== user.uid) ||
+          !isStudentRecordActive(student))
       ) {
         throw new Error('Student not eligible.');
       }

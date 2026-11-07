@@ -111,21 +111,44 @@ export async function getTrustedParadox(
     privateRef.get(),
   ]);
 
-  if (!publicSnap.exists || !privateSnap.exists) {
+  if (!publicSnap.exists) {
     return null;
   }
 
   const publicData = publicSnap.data() as Record<string, any> | undefined;
-  const privateData = privateSnap.data() as Record<string, any> | undefined;
+  let privateData = privateSnap.exists
+    ? (privateSnap.data() as Record<string, any> | undefined)
+    : undefined;
 
-  if (!publicData || !privateData) {
+  if (!publicData || publicData.schoolId !== verifiedSchoolId) {
     return null;
   }
 
+  // Legacy school paradox fallback: if private doc was not yet migrated,
+  // read answer/explanation from the verified school's public doc and backfill private doc.
   if (
-    publicData.schoolId !== verifiedSchoolId ||
-    privateData.schoolId !== verifiedSchoolId
+    !privateData &&
+    typeof publicData.answer === 'string' &&
+    publicData.answer.trim() &&
+    typeof publicData.explanation === 'string' &&
+    publicData.explanation.trim()
   ) {
+    privateData = {
+      id: cleanId,
+      schoolId: verifiedSchoolId,
+      answer: publicData.answer.trim(),
+      explanation: publicData.explanation.trim(),
+      ...(publicData.evaluation ? { evaluation: publicData.evaluation } : {}),
+      schemaVersion: 2,
+    };
+    try {
+      await privateRef.set(privateData, { merge: true });
+    } catch {
+      // Non-fatal in read-only or mock test environments
+    }
+  }
+
+  if (!privateData || privateData.schoolId !== verifiedSchoolId) {
     return null;
   }
 
@@ -206,22 +229,43 @@ export async function getTrustedDetectiveCase(
     privateRef.get(),
   ]);
 
-  // Fail closed if either public or private document is missing
-  if (!publicSnap.exists || !privateSnap.exists) {
+  if (!publicSnap.exists) {
     return null;
   }
 
   const publicData = publicSnap.data() as Record<string, any> | undefined;
-  const privateData = privateSnap.data() as Record<string, any> | undefined;
+  let privateData = privateSnap.exists
+    ? (privateSnap.data() as Record<string, any> | undefined)
+    : undefined;
 
-  if (!publicData || !privateData) {
+  if (!publicData || publicData.schoolId !== verifiedSchoolId) {
     return null;
   }
 
+  // Legacy school detective case fallback: if private doc was not yet migrated,
+  // read correctAnswer/explanation from the verified school's public doc and backfill private doc.
   if (
-    publicData.schoolId !== verifiedSchoolId ||
-    privateData.schoolId !== verifiedSchoolId
+    !privateData &&
+    typeof publicData.correctAnswer === 'string' &&
+    publicData.correctAnswer.trim() &&
+    typeof publicData.explanation === 'string' &&
+    publicData.explanation.trim()
   ) {
+    privateData = {
+      id: cleanId,
+      schoolId: verifiedSchoolId,
+      correctAnswer: publicData.correctAnswer.trim(),
+      explanation: publicData.explanation.trim(),
+      schemaVersion: 2,
+    };
+    try {
+      await privateRef.set(privateData, { merge: true });
+    } catch {
+      // Non-fatal in read-only or mock test environments
+    }
+  }
+
+  if (!privateData || privateData.schoolId !== verifiedSchoolId) {
     return null;
   }
 
@@ -318,21 +362,44 @@ export async function getTrustedRiddle(
     privateRef.get(),
   ]);
 
-  if (!publicSnap.exists || !privateSnap.exists) {
+  if (!publicSnap.exists) {
     return null;
   }
 
   const publicData = publicSnap.data() as Record<string, any> | undefined;
-  const privateData = privateSnap.data() as Record<string, any> | undefined;
+  let privateData = privateSnap.exists
+    ? (privateSnap.data() as Record<string, any> | undefined)
+    : undefined;
 
-  if (!publicData || !privateData) {
+  if (!publicData || publicData.schoolId !== verifiedSchoolId) {
     return null;
   }
 
+  // Legacy school paradox fallback: if private doc was not yet migrated,
+  // read answer/explanation from the verified school's public doc and backfill private doc.
   if (
-    publicData.schoolId !== verifiedSchoolId ||
-    privateData.schoolId !== verifiedSchoolId
+    !privateData &&
+    typeof publicData.answer === 'string' &&
+    publicData.answer.trim() &&
+    typeof publicData.explanation === 'string' &&
+    publicData.explanation.trim()
   ) {
+    privateData = {
+      id: cleanId,
+      schoolId: verifiedSchoolId,
+      answer: publicData.answer.trim(),
+      explanation: publicData.explanation.trim(),
+      ...(publicData.evaluation ? { evaluation: publicData.evaluation } : {}),
+      schemaVersion: 2,
+    };
+    try {
+      await privateRef.set(privateData, { merge: true });
+    } catch {
+      // Non-fatal in read-only or mock test environments
+    }
+  }
+
+  if (!privateData || privateData.schoolId !== verifiedSchoolId) {
     return null;
   }
 

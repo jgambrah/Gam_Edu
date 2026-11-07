@@ -3,7 +3,10 @@
 import type { Firestore } from 'firebase-admin/firestore';
 import { getAdminDb } from '@/lib/firebaseAdmin';
 import { getSessionUser, type SessionUser } from '@/lib/session-guard';
-import { resolveThinkTankStudent } from '@/lib/resolve-think-tank-student';
+import {
+  resolveThinkTankStudentOrStaff,
+  resolveStaffFallbackSchoolId,
+} from '@/lib/resolve-think-tank-student';
 import { MAX_SELF_XP_PER_DAY } from '@/lib/think-tank-xp';
 import { getTrustedDetectiveCase } from '@/lib/think-tank-server-curriculum';
 
@@ -118,7 +121,16 @@ async function getVerifiedStudentSchoolId(
     throw new Error('Student school mismatch with session claims.');
   }
 
-  const resolved = studentSchoolId || userProfileSchoolId || claimSchoolId;
+  const staffFallbackSchoolId =
+    !studentSchoolId && !userProfileSchoolId && !claimSchoolId
+      ? await resolveStaffFallbackSchoolId(db, user)
+      : '';
+
+  const resolved =
+    studentSchoolId ||
+    userProfileSchoolId ||
+    claimSchoolId ||
+    staffFallbackSchoolId;
   if (!resolved) {
     throw new Error('Could not verify student school membership.');
   }
@@ -208,11 +220,11 @@ export async function submitThinkTankDetectiveAction(
   try {
     const db = deps?.db ?? getAdminDb();
 
-    // 1 & 2. Resolve authoritative student document and verified schoolId
+    // 1 & 2. Resolve authoritative student document (or verified staff member) and verified schoolId
     const verifiedSchoolId = await getVerifiedStudentSchoolId(db, user);
-    const studentRef = await resolveThinkTankStudent(
+    const { studentRef, isStaff } = await resolveThinkTankStudentOrStaff(
       db,
-      user.uid,
+      user,
       verifiedSchoolId
     );
 
@@ -242,22 +254,21 @@ export async function submitThinkTankDetectiveAction(
 
     // 6 & 7. Persist completion and XP atomically using an Admin SDK transaction
     const txOutcome = await db.runTransaction(async (tx) => {
-      const [progressSnap, studentSnap] = await Promise.all([
-        tx.get(progressRef),
-        tx.get(studentRef),
-      ]);
+      const progressSnap = await tx.get(progressRef);
+      const studentSnap = studentRef ? await tx.get(studentRef) : null;
 
-      if (!studentSnap.exists) {
+      if (!isStaff && (!studentSnap || !studentSnap.exists)) {
         throw new Error('Student record unavailable.');
       }
 
       const progress = (progressSnap.data() ?? {}) as Record<string, any>;
-      const student = (studentSnap.data() ?? {}) as Record<string, any>;
+      const student = (studentSnap?.data() ?? {}) as Record<string, any>;
 
       if (
-        student.schoolId !== verifiedSchoolId ||
-        (student.uid && student.uid !== user.uid) ||
-        !isStudentRecordActive(student)
+        !isStaff &&
+        (student.schoolId !== verifiedSchoolId ||
+          (student.uid && student.uid !== user.uid) ||
+          !isStudentRecordActive(student))
       ) {
         throw new Error('Student identity mismatch.');
       }
@@ -324,7 +335,7 @@ export async function submitThinkTankDetectiveAction(
           { merge: true }
         );
 
-        if (awardedXp > 0) {
+        if (awardedXp > 0 && studentRef) {
           tx.update(studentRef, {
             totalPoints: nextTotalPoints,
             xpEarnedDay: today,

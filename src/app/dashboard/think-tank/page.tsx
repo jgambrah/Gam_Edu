@@ -733,7 +733,7 @@ function DailyParadoxTab({
     conclusion: string,
     theory: string
   ) => {
-    if (!user || canManage || !schoolId) {
+    if (!user || !schoolId) {
       throw new Error('Submission not permitted.');
     }
 
@@ -759,7 +759,7 @@ function DailyParadoxTab({
   const handleParadoxBlueprint = async (
     paradoxId: string
   ) => {
-    if (!user || canManage || !schoolId) {
+    if (!user || !schoolId) {
       throw new Error('Blueprint access not permitted.');
     }
 
