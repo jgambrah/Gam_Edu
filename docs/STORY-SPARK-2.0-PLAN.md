@@ -105,3 +105,34 @@ No destructive migration. Old docs are read through `normalizeStory()` forever; 
 7. **Offline, analytics, parent view, recommendations (rule-based)**.
 
 Not inspected yet (will be before the phase that needs it): class/student assignment models and parent-child links (Phase 4/7), and the Dashboard tab in Nursery Bloom.
+
+---
+# Phase 2 results (security → reliability)
+
+Branch: `story-spark-2.0-phase-2-security` (nothing merged to `fixed-version`, nothing deployed, no production data touched).
+
+## New findings
+- **S5** — `firestore.rules` trusts `schoolId`/`role` *token claims* before profile documents (Storage rules do not). Nothing in the repo sets those claims today; a stale or hand-set claim would override a person's real school. Pinned by characterization tests; **not changed — needs your decision**.
+- **S6** — ~26 Firestore write rules are `isSignedIn()`-only (heuristic count; e.g. class_stories, forum, notifications, counters, leaveRequests, assignments/submissions). Out of Phase 2 scope; listed for a later hardening pass.
+- Token download URLs bypass rules entirely; tightening Storage does not revoke URLs already issued.
+
+## Changed
+1. `storage.rules` — school-scoped, role-based, default-deny (was: any signed-in user, any school's folder).
+2. `firestore.rules` (+`src/firestore.rules`) — Junior content: no "shared with every school" writes by non-super-admins; school can't be changed after creation; credit ledger server-only.
+3. Story Spark: one resolved `ownerSchoolId` for cover path, document stamp and credit charge; refuses to save with no school; partial-save banner + credit-free "Retry picture upload".
+4. Credits: idempotent ledger (`schools/{id}/credit_ledger/{key}`), one charge per request id, refund-once on AI failure, no client-callable refund, replayed key can't generate for free; label corrected to 8 credits (3 + 5).
+5. Tests: 57→68 unit/component tests; emulator suites for Storage and Firestore rules; CI workflow.
+6. Docs/scripts: `docs/TYPESCRIPT-DEBT.md`, `scripts/audit-school-membership.ts` (read-only).
+
+## Not done / honest limits
+- **Emulator rules tests have not been executed by me** (emulator download blocked in my sandbox; I can't see GitHub Actions results). Treat the rules as *unverified until the CI run is green*.
+- Only the story + cover steps use the ledger; the other ~20 `checkAndSpendCredits` callers are unchanged (they still work).
+- Existing schools' stories remain readable as before; 245 TS errors unchanged.
+
+## Breaking-change risks when rules are deployed
+- Accounts with no `users/{uid}`/`staff/{uid}`/… `schoolId` lose Storage access → run the audit script first.
+- Any feature writing to a Storage path not in the new rules is denied (unknown paths denied by design).
+- Super-admin-only editing of legacy "no school" Junior items.
+
+## Rollback
+Re-deploy the previous `storage.rules`/`firestore.rules` from git (`git show fixed-version:storage.rules`); rules deploy is instant and data is untouched. Ledger documents are additive and harmless if code is reverted.
