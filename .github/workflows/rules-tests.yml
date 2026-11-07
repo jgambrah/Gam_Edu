@@ -4,16 +4,8 @@ name: Security rules tests
 # No secrets are used and nothing is deployed: it talks only to emulators with a "demo-" project id.
 on:
   push:
-    paths:
-      - 'storage.rules'
-      - 'firestore.rules'
-      - 'src/firestore.rules'
-      - 'tests/rules/**'
-      - 'firebase.emulators.json'
-      - 'vitest*.ts'
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/rules-tests.yml'
+    # No path filter on push: a filter hid ledger/unit-test changes from CI. The suite takes ~3 minutes.
+    branches: ['story-spark-**']
   pull_request:
     paths:
       - 'storage.rules'
