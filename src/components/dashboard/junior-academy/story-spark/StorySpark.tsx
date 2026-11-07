@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, addDoc, updateDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, getDocs, query, where, doc, serverTimestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +39,10 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
     // uploaded again later WITHOUT regenerating the story or spending credits.
     const [pendingCover, setPendingCover] = useState<{ docId: string; dataUrl: string; title: string } | null>(null);
     const [retryingCover, setRetryingCover] = useState(false);
+    // Server-kept copies of stories this teacher generated (and paid for) but has not saved — recoverable after a
+    // closed tab, dropped connection or failed save. `activeDraftId` is the draft behind the story on screen.
+    const [drafts, setDrafts] = useState<{ id: string; story: any; coverPath: string | null; createdAt?: any }[]>([]);
+    const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
     
     const TODDLER_STORY = useMemo(() => ({
       title: "The Happy Little Puppy 🐶",
@@ -179,6 +183,42 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
         setQuizFinished(false);
     };
 
+    const loadDrafts = async () => {
+        if (!firestore || !user || !ownerSchoolId || !canEdit) return;
+        try {
+            const snap = await getDocs(query(collection(firestore, 'schools', ownerSchoolId, 'junior_story_drafts'), where('uid', '==', user.uid)));
+            const items = snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }));
+            items.sort((a: any, b: any) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+            setDrafts(items);
+        } catch (err) {
+            console.error('Could not load unsaved stories:', err); // recovery is a bonus; never block the page
+        }
+    };
+    useEffect(() => { loadDrafts(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [user?.uid, ownerSchoolId, canEdit]);
+
+    const removeDraft = async (id: string) => {
+        if (!firestore || !ownerSchoolId) return;
+        try { await deleteDoc(doc(firestore, 'schools', ownerSchoolId, 'junior_story_drafts', id)); } catch (err) { console.error('Could not remove draft:', err); }
+        setDrafts(prev => prev.filter(d => d.id !== id));
+    };
+
+    const handleOpenDraft = async (d: { id: string; story: any; coverPath: string | null }) => {
+        let imageUrl = '';
+        if (d.coverPath) {
+            try {
+                const { getStorage, ref: storageRef, getDownloadURL } = await import('firebase/storage');
+                imageUrl = await getDownloadURL(storageRef(getStorage(), d.coverPath));
+            } catch (err) {
+                console.error('Could not load the draft picture:', err); // the story is still recoverable without it
+            }
+        }
+        setStory({ ...d.story, imageUrl });
+        setActiveDraftId(d.id);
+        setCurrentPageIndex(0);
+        resetQuiz();
+        toast({ title: 'Story recovered', description: imageUrl ? 'Your unsaved story and its picture are back.' : 'Your unsaved story is back (its picture could not be loaded).' });
+    };
+
     const handleGenerate = async () => { 
         // One id per click: the server charges each step once per id, so a double click or replay can't double-charge.
         const requestId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -203,6 +243,7 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
                 }
 
                 setStory({ ...res.data, imageUrl });
+                setActiveDraftId(user ? `${user.uid}_${requestId}` : null);
                 setCurrentPageIndex(0);
                 resetQuiz();
                 toast({ title: "Story Created!", description: "Your custom illustrated storybook is ready! 📖" });
@@ -297,6 +338,7 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
             }); 
             setStory(null); 
             forceRefetch(); 
+            if (activeDraftId) { await removeDraft(activeDraftId); setActiveDraftId(null); } // saved for real: the safety copy is no longer needed
             if (pendingDataUrl) {
                 setPendingCover({ docId: ref.id, dataUrl: pendingDataUrl, title: cleanStory.title || 'Your story' });
                 toast({
@@ -562,6 +604,24 @@ export function StorySpark({ canEdit, activeAgeTier = 'ages2-3' }: { canEdit: bo
                         </div>
                     </div>
                 </div>
+            )}
+
+            {!story && drafts.length > 0 && (
+                <Card data-testid="draft-recovery" className="border-2 border-amber-300 bg-amber-50 rounded-3xl">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-lg font-black text-amber-900">Unsaved stories you created</CardTitle>
+                        <p className="text-sm text-amber-800">These were paid for but never saved to your library. Open one to keep it — no credits are used.</p>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        {drafts.map(d => (
+                            <div key={d.id} className="flex items-center gap-2 bg-white rounded-2xl p-3 border border-amber-200">
+                                <span className="flex-1 font-bold truncate">{d.story?.emojiIcon || '📖'} {d.story?.title || 'Untitled story'}</span>
+                                <Button size="sm" onClick={() => handleOpenDraft(d)} className="bg-amber-500 hover:bg-amber-600 font-bold">Open</Button>
+                                <Button size="sm" variant="ghost" aria-label={`Discard ${d.story?.title || 'story'}`} onClick={() => removeDraft(d.id)}><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
             )}
 
             {pendingCover && (

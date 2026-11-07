@@ -8,7 +8,7 @@
  */
 import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
 import { assertSucceeds, assertFails, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 import { as, createEnv, readRules, seedProfiles, SCHOOL_A, SCHOOL_B, type ActorName } from './helpers';
 
 let env: RulesTestEnvironment;
@@ -236,5 +236,27 @@ describe('schools/{id}/credit_ledger — server-only', () => {
     await assertSucceeds(getDoc(doc(db('adminA'), E)));
     await assertSucceeds(getDoc(doc(db('superAdmin'), E)));
     for (const who of ['teacherA', 'pupilA', 'parentA', 'adminB', 'anon'] as const) await assertFails(getDoc(doc(db(who), E)));
+  });
+});
+
+describe('schools/{id}/junior_story_drafts — a teacher’s own recoverable stories', () => {
+  const D = `schools/${SCHOOL_A}/junior_story_drafts/teacherA_r1`;
+  beforeEach(async () => { await seedDoc(D, { uid: 'teacherA', schoolId: SCHOOL_A, story: { title: 'Lost' }, status: 'unsaved' }); });
+
+  it('the owner reads, lists (own drafts only) and deletes their draft', async () => {
+    await assertSucceeds(getDoc(doc(db('teacherA'), D)));
+    await assertSucceeds(getDocs(query(collection(db('teacherA'), `schools/${SCHOOL_A}/junior_story_drafts`), where('uid', '==', 'teacherA'))));
+    await assertSucceeds(deleteDoc(doc(db('teacherA'), D)));
+  });
+  it('colleagues, pupils, parents, other schools and visitors cannot read, list or delete it', async () => {
+    for (const who of ['teacherA2', 'adminA', 'pupilA', 'parentA', 'teacherB', 'anon'] as const) {
+      await assertFails(getDoc(doc(db(who), D)));
+      await assertFails(deleteDoc(doc(db(who), D)));
+    }
+    await assertFails(getDocs(collection(db('teacherA2'), `schools/${SCHOOL_A}/junior_story_drafts`)));
+  });
+  it('nobody writes drafts from a browser (server code only): no create, no edit', async () => {
+    await assertFails(setDoc(doc(db('teacherA'), `schools/${SCHOOL_A}/junior_story_drafts/new`), { uid: 'teacherA', story: {} }));
+    await assertFails(updateDoc(doc(db('teacherA'), D), { story: { title: 'rewritten' } }));
   });
 });

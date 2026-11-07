@@ -10,6 +10,8 @@ const h = vi.hoisted(() => ({
   toast: vi.fn(),
   addDoc: vi.fn(),
   updateDoc: vi.fn(),
+  deleteDoc: vi.fn(),
+  getDocs: vi.fn(),
   uploadString: vi.fn(),
   getDownloadURL: vi.fn(),
   generateJuniorStory: vi.fn(),
@@ -26,6 +28,10 @@ vi.mock('firebase/firestore', () => ({
   collection: vi.fn(() => ({})),
   addDoc: (...a: any[]) => h.addDoc(...a),
   updateDoc: (...a: any[]) => h.updateDoc(...a),
+  deleteDoc: (...a: any[]) => h.deleteDoc(...a),
+  getDocs: (...a: any[]) => h.getDocs(...a),
+  query: (...a: any[]) => ({ q: a }),
+  where: (...a: any[]) => ({ w: a }),
   doc: (_db: any, ...p: string[]) => ({ path: p.join('/') }),
   serverTimestamp: () => 'SERVER_TS',
 }));
@@ -108,6 +114,8 @@ beforeEach(() => {
   h.currentSchoolId = 'school1';
   h.addDoc.mockResolvedValue({ id: 'new' });
   h.updateDoc.mockResolvedValue(undefined);
+  h.deleteDoc.mockResolvedValue(undefined);
+  h.getDocs.mockResolvedValue({ docs: [] });
   h.uploadString.mockImplementation(async (r: any) => ({ ref: r }));
   h.getDownloadURL.mockResolvedValue('https://storage.example/cover.png?token=abc');
   vi.stubGlobal('SpeechSynthesisUtterance', FakeUtterance);
@@ -467,5 +475,81 @@ describe('Story Spark — editor controls', () => {
   it('shows the Story Lab to editors', () => {
     render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
     expect(within(screen.getByText('Story Lab').closest('div')!.parentElement!).getByRole('button', { name: 'Create Story' })).toBeInTheDocument();
+  });
+});
+
+describe('Story Spark — recovering paid-for stories after an interruption', () => {
+  const draft = (over: Record<string, any> = {}) => ({
+    id: 'u1_r9', data: () => ({ uid: 'u1', story: { title: 'Lost Tale', emojiIcon: '🦉', content: 'An owl hooted.', questions: [{ question: 'Who hooted?', answer: 'owl' }] }, coverPath: 'schools/school1/junior_stories/drafts/u1_r9_cover.png', createdAt: { seconds: 5 }, ...over }),
+  });
+
+  it('shows nothing when there are no unsaved stories', async () => {
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await waitFor(() => expect(h.getDocs).toHaveBeenCalled());
+    expect(screen.queryByTestId('draft-recovery')).not.toBeInTheDocument();
+  });
+
+  it('lists only the teacher’s own drafts for their school (query is scoped by uid) and reopens one with its picture, free', async () => {
+    h.getDocs.mockResolvedValue({ docs: [draft()] });
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await waitFor(() => expect(screen.getByTestId('draft-recovery')).toBeInTheDocument());
+    expect(screen.getByText(/Lost Tale/)).toBeInTheDocument();
+    expect(JSON.stringify(h.getDocs.mock.calls[0][0])).toContain('"uid"');
+
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(screen.getByText('Save to Library')).toBeInTheDocument());
+    expect(screen.getAllByText(/Lost Tale/).length).toBeGreaterThan(0);
+    expect(h.generateJuniorStory).not.toHaveBeenCalled();
+    expect(h.generateLessonImageAction).not.toHaveBeenCalled();
+    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Story recovered' }));
+  });
+
+  it('a recovered story still opens if its picture cannot be loaded', async () => {
+    h.getDocs.mockResolvedValue({ docs: [draft()] });
+    h.getDownloadURL.mockRejectedValue(new Error('gone'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await waitFor(() => expect(screen.getByTestId('draft-recovery')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    await waitFor(() => expect(screen.getByText('Save to Library')).toBeInTheDocument());
+    expect(h.toast).toHaveBeenCalledWith(expect.objectContaining({ title: 'Story recovered', description: expect.stringContaining('picture could not be loaded') }));
+  });
+
+  it('saving a recovered story removes its draft; the saved story keeps the recovered picture URL', async () => {
+    h.getDocs.mockResolvedValue({ docs: [draft()] });
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await waitFor(() => expect(screen.getByTestId('draft-recovery')).toBeInTheDocument());
+    await user.click(screen.getByRole('button', { name: 'Open' }));
+    await user.click(await screen.findByRole('button', { name: /Save to Library/ }));
+    await waitFor(() => expect(h.addDoc).toHaveBeenCalledTimes(1));
+    expect(h.addDoc.mock.calls[0][1].imageUrl).toBe('https://storage.example/cover.png?token=abc'); // https URL: no re-upload
+    expect(h.uploadString).not.toHaveBeenCalled();
+    await waitFor(() => expect(h.deleteDoc).toHaveBeenCalledTimes(1));
+    expect(h.deleteDoc.mock.calls[0][0]).toEqual({ path: 'schools/school1/junior_story_drafts/u1_r9' });
+  });
+
+  it('discarding a draft deletes only that draft', async () => {
+    h.getDocs.mockResolvedValue({ docs: [draft()] });
+    const user = userEvent.setup();
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await user.click(await screen.findByRole('button', { name: /Discard Lost Tale/ }));
+    await waitFor(() => expect(h.deleteDoc).toHaveBeenCalledTimes(1));
+    expect(screen.queryByTestId('draft-recovery')).not.toBeInTheDocument();
+  });
+
+  it('a failure loading drafts never breaks the page', async () => {
+    h.getDocs.mockRejectedValue(new Error('denied'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(<StorySpark canEdit={true} activeAgeTier="ages3-4" />);
+    await waitFor(() => expect(h.getDocs).toHaveBeenCalled());
+    expect(screen.getByRole('button', { name: 'Create Story' })).toBeInTheDocument();
+  });
+
+  it('read-only viewers never query drafts', async () => {
+    render(<StorySpark canEdit={false} activeAgeTier="ages3-4" />);
+    expect(h.getDocs).not.toHaveBeenCalled();
   });
 });
