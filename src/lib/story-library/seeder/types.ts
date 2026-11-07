@@ -1,3 +1,4 @@
+import type { Classification } from '../classification';
 /**
  * Story seeder: types and the storage layout it writes. Stage 2: EMULATOR / SYNTHETIC ONLY, DRAFT ONLY.
  *
@@ -39,6 +40,8 @@ export interface StoryInput {
   objectives?: string[];
   /** 'open' = free educational content; 'licensed' = restricted school-licensed content (see the access-control proposal). */
   access?: 'open' | 'licensed';
+  /** Educational classification (Stage 3B). Optional for plain imports; required before a story can be treated as classified. */
+  classification?: Classification;
   pages: Array<{ text: string; image: AssetInput; audio?: AssetInput }>;
   licence: LicenceInput;
   /** A person's recorded decision to allow a flagged near-duplicate. Must name the story it matched. */

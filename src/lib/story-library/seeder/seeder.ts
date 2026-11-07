@@ -16,6 +16,7 @@ import { NEAR_DUPLICATE_THRESHOLD, bandKeys, estimateJaccard, signatureOf, title
 import { canonicalJson, sha256Hex, sha256Tag } from './hash';
 import { assetPathFor, STORY_ID_RE, validateStoryPackage, type Problem } from '../validate';
 import { MAX_PAGES_PER_STORY, type StoryPackage } from '../types';
+import { errorsOf, validateClassification } from '../classification';
 
 // ------------------------------------------------------------------------------------------------ preparation (pure)
 
@@ -43,6 +44,7 @@ export function prepare(story: StoryInput): Prepared {
   if (!Array.isArray(story.pages) || story.pages.length < 1 || story.pages.length > MAX_PAGES_PER_STORY) bad('pages', `1-${MAX_PAGES_PER_STORY} pages`);
   if (story.access && !['open', 'licensed'].includes(story.access)) bad('access', 'open or licensed');
   for (const k of ['categories', 'objectives'] as const) if ((story[k]?.length ?? 0) > 20) bad(k, 'at most 20 entries');
+  if (story.classification !== undefined) for (const i of errorsOf(validateClassification(story.classification))) bad(`classification.${i.path}`.replace(/\.$/, ''), i.message);
 
   const assets: Prepared['assets'] = [];
   const assetMap: StoryPackage['assets'] = {};
@@ -68,7 +70,7 @@ export function prepare(story: StoryInput): Prepared {
     return { n: i + 1, text: p.text, ...(image ? { image } : {}), ...(audio ? { audio: { hash: audio, durationMs: p.audio?.durationMs ?? 20000 } } : {}) };
   });
 
-  const meta = { language: story.language ?? null, categories: story.categories ?? [], objectives: story.objectives ?? [], access: story.access ?? 'open' };
+  const meta = { language: story.language ?? null, categories: story.categories ?? [], objectives: story.objectives ?? [], access: story.access ?? 'open', classification: story.classification ?? null };
   const content = { title: story.title, ageTiers: story.ageTiers, pages, assets: assetMap, meta };
   const contentHash = sha256Tag(canonicalJson(content));
   const fpText = `${story.title}\n${(story.pages ?? []).map((p) => p.text).join('\n')}`;
@@ -265,7 +267,7 @@ async function stage(b: SeedBackend, path: string, bytes: Uint8Array, contentTyp
   if (r === 'exists_different') throw new Error(`staged object ${path} exists with different content`);
 }
 
-const SNAPSHOT_KEYS = ['version', 'contentHash', 'title', 'packagePath', 'packageHash', 'packageBytes', 'pageCount', 'assetCount', 'ageTiers',
+const SNAPSHOT_KEYS = ['version', 'contentHash', 'classification', 'title', 'packagePath', 'packageHash', 'packageBytes', 'pageCount', 'assetCount', 'ageTiers',
   'language', 'categories', 'objectives', 'access', 'licence', 'fingerprints', 'lastJobId', 'duplicateOverride'];
 const pick = (d: Doc, keys: string[]) => Object.fromEntries(keys.filter((k) => d[k] !== undefined).map((k) => [k, d[k]]));
 
@@ -342,6 +344,7 @@ async function commit(
       title: story.title, packagePath: pkg.stagingPath, packageHash: `sha256:${pkg.sha}`, packageBytes: pkg.json.length,
       pageCount: story.pages.length, assetCount: prep.assets.length, ageTiers: story.ageTiers, language: story.language ?? null,
       categories: story.categories ?? [], objectives: story.objectives ?? [], access: story.access ?? 'open', licence: story.licence,
+      classification: story.classification ?? null,
       fingerprints: { textHash: prep.textHash, titleSlug: titleSlug(story.title), sig: prep.sig },
       lastJobId: jobId, ...(override ? { duplicateOverride: override } : {}),
     };

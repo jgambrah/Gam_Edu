@@ -322,6 +322,28 @@ describe('human edits are never overwritten', () => {
   });
 });
 
+describe('classification on seeded drafts', () => {
+  it('a valid classification is stored on the draft; an invalid one is rejected before anything is written', async () => {
+    const b = new MemoryBackend({ yieldToLoop: false });
+    const ok = makeStory(1, { seed: 16 });
+    const bad = { ...makeStory(2, { seed: 16 }), classification: { ...makeStory(2, { seed: 16 }).classification!, classIds: ['primary-9'] } } as StoryInput;
+    const s = await runSeed(b, [ok, bad], opts());
+    expect(s.outcomes.created).toBe(1);
+    expect(s.outcomes.invalid).toBe(1);
+    expect(admin(b, ok.storyKey)!.classification.classIds.length).toBeGreaterThan(0);
+    expect(admin(b, bad.storyKey)).toBeUndefined();
+  });
+  it('re-classifying a draft updates it in place with a revision', async () => {
+    const b = new MemoryBackend({ yieldToLoop: false });
+    const s1 = makeStory(1, { seed: 17 });
+    await runSeed(b, [s1], opts());
+    const re = { ...s1, classification: { ...s1.classification!, difficulty: s1.classification!.difficulty === 5 ? 4 : 5 } };
+    const r = await runSeed(b, [re], opts());
+    expect(r.outcomes.updated_draft).toBe(1);
+    expect(admin(b, s1.storyKey)!.revisions).toHaveLength(1);
+  });
+});
+
 describe('approval enforcement', () => {
   it('the seeder module exposes no publish or approve capability', async () => {
     const mod = await import('./seeder');

@@ -4,6 +4,7 @@
  * on purpose so detection can be measured against known ground truth.
  */
 import type { StoryInput } from './types';
+import { CLASSIFICATION_VERSION, CLASS_REGISTRY, GENRES, OBJECTIVES, READING_LEVELS, THEMES, type Classification } from '../classification';
 
 /** mulberry32 */
 export function rng(seed: number) {
@@ -65,6 +66,22 @@ export interface Corpus {
 
 const keyOf = (i: number) => `syn-${String(i).padStart(5, '0')}`;
 
+/** A valid classification derived deterministically from the story index (ages follow the class's typical ages). */
+export function syntheticClassification(index: number): Classification {
+  const cls = CLASS_REGISTRY[index % CLASS_REGISTRY.length];
+  const next = CLASS_REGISTRY[(index + 1) % CLASS_REGISTRY.length];
+  const classIds = index % 3 === 0 && next.order === cls.order + 1 ? [cls.id, next.id] : [cls.id];
+  const ageMin = cls.typicalAge[0];
+  const ageMax = classIds.length === 2 ? next.typicalAge[1] : cls.typicalAge[1];
+  const level = READING_LEVELS[Math.min(READING_LEVELS.length - 1, Math.max(0, Math.floor((cls.order - 1) * 5 / CLASS_REGISTRY.length)))];
+  return {
+    schemaVersion: CLASSIFICATION_VERSION, language: 'en', classIds, ageMin, ageMax, readingLevel: level.id, difficulty: Math.min(5, 1 + (index % 4)),
+    genres: [GENRES[index % GENRES.length].id], themes: [THEMES[index % THEMES.length].id],
+    objectives: [OBJECTIVES[index % OBJECTIVES.length].id, OBJECTIVES[(index + 3) % OBJECTIVES.length].id],
+    ghanaianContext: index % 2 === 0 ? 'incidental' : 'none', estimatedDurationSec: 120 + (index % 10) * 20,
+  };
+}
+
 export function makeStory(index: number, o: Pick<CorpusOptions, 'seed' | 'pages' | 'sentencesPerPage' | 'imageBytes' | 'audioBytes'> = {}): StoryInput {
   const r = rng((o.seed ?? 1) * 1_000_003 + index * 7919);
   const pages = o.pages ?? 10;
@@ -80,6 +97,7 @@ export function makeStory(index: number, o: Pick<CorpusOptions, 'seed' | 'pages'
     categories: [CATEGORIES[index % CATEGORIES.length]],
     objectives: [`objective-${index % 9}`],
     access: index % 5 === 0 ? 'licensed' : 'open',
+    classification: syntheticClassification(index),
     licence: SYNTHETIC_LICENCE,
     pages: Array.from({ length: pages }, (_, p) => ({
       text: Array.from({ length: sp }, () => sentence(r)).join(' '),
