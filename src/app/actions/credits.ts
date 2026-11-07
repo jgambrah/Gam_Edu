@@ -41,7 +41,7 @@ export async function checkAndSpendCredits(schoolId: string, cost: number): Prom
  */
 export async function chargeCreditsIdempotent(
   schoolId: string, cost: number, requestId: string | undefined, step: string,
-): Promise<{ success: boolean; error?: string; key?: string; alreadyCharged?: boolean }> {
+): Promise<{ success: boolean; error?: string; key?: string; uid?: string; alreadyCharged?: boolean }> {
   if (!requestId) return { ...(await checkAndSpendCredits(schoolId, cost)), key: undefined };
   const amount = Number(cost);
   if (!schoolId) return { success: false, error: 'School ID is required.' };
@@ -60,5 +60,5 @@ export async function chargeCreditsIdempotent(
   // A key that was already charged must not run the AI job a second time for free (that would let a replayed
   // request mint unlimited generations). The caller reports it and the user starts a fresh request.
   if (res.alreadyCharged) return { success: false, alreadyCharged: true, error: 'This request was already processed. Please start it again.' };
-  return { ...res, key };
+  return { ...res, key, uid };
 }

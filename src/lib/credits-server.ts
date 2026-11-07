@@ -125,7 +125,10 @@ export async function markChargeCompleted(schoolId: string, key: string): Promis
  * By default only a still-`charged` entry is refunded (job failed). `includeCompleted` is for a deliberate,
  * audited manual refund of a result that never reached the user (see docs: lost-result recovery); never use it automatically.
  */
-export async function refundChargeOnce(schoolId: string, key: string, opts: { includeCompleted?: boolean } = {}): Promise<boolean> {
+export async function refundChargeOnce(
+  schoolId: string, key: string,
+  opts: { includeCompleted?: boolean; reason?: 'job_failed' | 'stale_sweep' | 'manual'; by?: string } = {},
+): Promise<boolean> {
   if (!schoolId || !ledgerKey([key])) return false;
   try {
     const db = getAdminDb();
@@ -141,7 +144,7 @@ export async function refundChargeOnce(schoolId: string, key: string, opts: { in
       const update: Record<string, number> = { aiCredits: current + Number(e.amount) };
       if (data.aiCreditBalance !== undefined) update.aiCreditBalance = current + Number(e.amount);
       t.update(schoolRef, update);
-      t.update(entryRef, { status: 'refunded' as LedgerStatus, refundedAt: new Date() });
+      t.update(entryRef, { status: 'refunded' as LedgerStatus, refundedAt: new Date(), refundReason: opts.reason ?? 'job_failed', refundedBy: opts.by ?? 'system' });
       return true;
     });
   } catch (error: any) {
@@ -163,6 +166,36 @@ export async function refundStaleCharges(schoolId: string, olderThanMs = 15 * 60
   const snap = await db.collection('schools').doc(schoolId).collection('credit_ledger')
     .where('status', '==', 'charged').where('chargedAt', '<', cutoff).get();
   let refunded = 0;
-  for (const d of snap.docs) if (await refundChargeOnce(schoolId, d.id)) refunded++;
+  for (const d of snap.docs) if (await refundChargeOnce(schoolId, d.id, { reason: 'stale_sweep', by: 'stale-sweep' })) refunded++;
   return refunded;
+}
+
+
+export type SweepResult = { scanned: number; refunded: number; credits: number; dryRun: boolean; bySchool: Record<string, number> };
+
+/**
+ * Cross-school stale-charge sweep, for a scheduled server job (nothing schedules it yet).
+ *  • dryRun (the default) only counts what WOULD be refunded.
+ *  • Each refund is the same idempotent, once-only transaction as above and records why/by whom in the ledger entry.
+ *  • `limit` bounds one run; run again to continue. Needs a collection-group index (firestore.indexes.json).
+ * Returns aggregate numbers only.
+ */
+export async function sweepStaleCharges(opts: { olderThanMs?: number; limit?: number; dryRun?: boolean } = {}): Promise<SweepResult> {
+  const dryRun = opts.dryRun !== false;
+  const olderThanMs = Math.max(opts.olderThanMs ?? 15 * 60 * 1000, 5 * 60 * 1000); // never sweep jobs that may still be running
+  const limit = Math.min(Math.max(opts.limit ?? 200, 1), 500);
+  const db = getAdminDb();
+  const snap = await db.collectionGroup('credit_ledger')
+    .where('status', '==', 'charged').where('chargedAt', '<', new Date(Date.now() - olderThanMs)).limit(limit).get();
+  const out: SweepResult = { scanned: snap.docs.length, refunded: 0, credits: 0, dryRun, bySchool: {} };
+  for (const d of snap.docs) {
+    const schoolId = d.ref.parent.parent?.id;
+    if (!schoolId) continue;
+    const amount = Number((d.data() as any).amount) || 0;
+    if (dryRun) { out.bySchool[schoolId] = (out.bySchool[schoolId] ?? 0) + 1; continue; }
+    if (await refundChargeOnce(schoolId, d.id, { reason: 'stale_sweep', by: 'stale-sweep' })) {
+      out.refunded++; out.credits += amount; out.bySchool[schoolId] = (out.bySchool[schoolId] ?? 0) + 1;
+    }
+  }
+  return out;
 }

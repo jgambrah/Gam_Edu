@@ -14,6 +14,12 @@ vi.mock('@/lib/firebaseAdmin', () => {
   });
   return {
     getAdminDb: () => ({
+      collectionGroup: (c: string) => ({ where: (f1: string, _o1: string, v1: any) => ({ where: (f2: string, _o2: string, v2: any) => ({ limit: (n: number) => ({ get: async () => ({
+        docs: [...store.docs.entries()].filter(([k, d]) => /\/credit_ledger\//.test(k) && d[f1] === v1 && d[f2] < v2).slice(0, n).map(([k, d]) => {
+          const parts = k.split('/'); // schools/{id}/credit_ledger/{key}
+          return { id: parts[3], data: () => d, ref: { parent: { parent: { id: parts[1] } } } };
+        }),
+      }) }) }) }) }),
       collection: (c: string) => ({ doc: (id: string) => ref(`${c}/${id}`) }),
       runTransaction: async (fn: any) => {
         const writes: Array<() => void> = [];
@@ -30,7 +36,7 @@ vi.mock('@/lib/firebaseAdmin', () => {
   };
 });
 
-import { chargeCreditsOnce, refundChargeOnce, markChargeCompleted, refundStaleCharges, ledgerKey } from './credits-server';
+import { chargeCreditsOnce, refundChargeOnce, markChargeCompleted, refundStaleCharges, sweepStaleCharges, ledgerKey } from './credits-server';
 
 const bal = () => store.docs.get('schools/s1').aiCredits;
 beforeEach(() => { store.docs.clear(); store.docs.set('schools/s1', { aiCredits: 20 }); });
@@ -133,5 +139,50 @@ describe('interrupted and lost-result cases', () => {
     expect(bal()).toBe(15);
     expect(await refundStaleCharges('s1')).toBe(0);
     expect(bal()).toBe(15);
+  });
+});
+
+describe('sweepStaleCharges (cross-school, scheduled-job safe)', () => {
+  const old = () => new Date(Date.now() - 60 * 60 * 1000);
+  const setup = async () => {
+    store.docs.set('schools/s2', { aiCredits: 50 });
+    await chargeCreditsOnce('s1', 5, 'crashed1'); await chargeCreditsOnce('s2', 7, 'crashed2');
+    await chargeCreditsOnce('s1', 3, 'done'); await markChargeCompleted('s1', 'done');
+    await chargeCreditsOnce('s1', 2, 'recent');
+    for (const k of ['schools/s1/credit_ledger/crashed1', 'schools/s2/credit_ledger/crashed2', 'schools/s1/credit_ledger/done']) store.docs.get(k).chargedAt = old();
+  };
+
+  it('is a DRY RUN by default: counts, changes nothing', async () => {
+    await setup();
+    const r = await sweepStaleCharges();
+    expect(r).toMatchObject({ dryRun: true, scanned: 2, refunded: 0, credits: 0 });
+    expect(r.bySchool).toEqual({ s1: 1, s2: 1 });
+    expect(store.docs.get('schools/s1').aiCredits).toBe(20 - 5 - 3 - 2);
+    expect(store.docs.get('schools/s1/credit_ledger/crashed1').status).toBe('charged');
+  });
+  it('apply: refunds only unfinished, old charges, across schools, recording why and by whom', async () => {
+    await setup();
+    const r = await sweepStaleCharges({ dryRun: false });
+    expect(r).toMatchObject({ dryRun: false, refunded: 2, credits: 12 });
+    expect(store.docs.get('schools/s1').aiCredits).toBe(20 - 5 - 3 - 2 + 5);
+    expect(store.docs.get('schools/s2').aiCredits).toBe(50);
+    expect(store.docs.get('schools/s1/credit_ledger/crashed1')).toMatchObject({ status: 'refunded', refundReason: 'stale_sweep', refundedBy: 'stale-sweep' });
+    expect(store.docs.get('schools/s1/credit_ledger/done').status).toBe('completed');
+    expect(store.docs.get('schools/s1/credit_ledger/recent').status).toBe('charged');
+  });
+  it('is idempotent: running it again refunds nothing more', async () => {
+    await setup();
+    await sweepStaleCharges({ dryRun: false });
+    const again = await sweepStaleCharges({ dryRun: false });
+    expect(again).toMatchObject({ scanned: 0, refunded: 0, credits: 0 });
+    expect(store.docs.get('schools/s1').aiCredits).toBe(20 - 5 - 3 - 2 + 5);
+  });
+  it('never sweeps jobs younger than 5 minutes even if asked to', async () => {
+    await chargeCreditsOnce('s1', 5, 'fresh');
+    store.docs.get('schools/s1/credit_ledger/fresh').chargedAt = new Date(Date.now() - 6 * 60 * 1000);
+    expect((await sweepStaleCharges({ olderThanMs: 1, dryRun: false })).refunded).toBe(1);
+    await chargeCreditsOnce('s1', 5, 'fresher');
+    store.docs.get('schools/s1/credit_ledger/fresher').chargedAt = new Date(Date.now() - 2 * 60 * 1000);
+    expect((await sweepStaleCharges({ olderThanMs: 1, dryRun: false })).refunded).toBe(0);
   });
 });

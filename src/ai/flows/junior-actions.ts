@@ -8,6 +8,7 @@ import { z } from 'zod';
 import wav from 'wav';
 import { checkAndSpendCredits, chargeCreditsIdempotent } from '@/app/actions/credits';
 import { refundChargeOnce, markChargeCompleted } from '@/lib/credits-server';
+import { saveStoryDraft, attachDraftCover } from '@/lib/story-drafts-server';
 
 // --- STORY GENERATOR ---
 const JuniorStorySchema = z.object({
@@ -23,9 +24,11 @@ const JuniorStorySchema = z.object({
 export async function generateJuniorStory(input: { topic: string; context?: string; wordCount?: number; schoolId: string; requestId?: string; }) {
   await requireSignedInAction();
   let chargeKey: string | undefined;
+  let chargeUid: string | undefined;
   try {
     const creditResult = await chargeCreditsIdempotent(input.schoolId, 3, input.requestId, 'story');
     chargeKey = creditResult.alreadyCharged ? undefined : creditResult.key; // a replayed request is not ours to refund
+    chargeUid = creditResult.uid;
     if (!creditResult.success) {
       return { success: false, error: creditResult.error || "Insufficient AI credits to generate a story." };
     }
@@ -54,6 +57,8 @@ export async function generateJuniorStory(input: { topic: string; context?: stri
     }
     
     if (chargeKey) await markChargeCompleted(input.schoolId, chargeKey);
+    // Safety copy of what was paid for: survives a closed tab or failed save. Never blocks the response.
+    if (chargeUid && input.requestId) await saveStoryDraft({ schoolId: input.schoolId, uid: chargeUid, requestId: input.requestId, story: output });
     return { success: true, data: output };
   } catch (error) {
     console.error("Story Generation Error:", error);
@@ -191,9 +196,11 @@ export async function generateTTSAction(input: z.infer<typeof TTSInputSchema>) {
 export const generateLessonImageAction = async (input: { prompt: string; schoolId: string; requestId?: string; }): Promise<{ success: boolean; data?: string | null, error?: string }> => {
   await requireSignedInAction();
     let chargeKey: string | undefined;
+    let chargeUid: string | undefined;
     try {
       const creditResult = await chargeCreditsIdempotent(input.schoolId, 5, input.requestId, 'cover');
       chargeKey = creditResult.alreadyCharged ? undefined : creditResult.key;
+      chargeUid = creditResult.uid;
       if (!creditResult.success) {
         return { success: false, error: creditResult.error || "Insufficient AI credits." };
       }
@@ -204,6 +211,7 @@ export const generateLessonImageAction = async (input: { prompt: string; schoolI
   
       if (media && media.url) {
         if (chargeKey) await markChargeCompleted(input.schoolId, chargeKey);
+        if (chargeUid && input.requestId) await attachDraftCover({ schoolId: input.schoolId, uid: chargeUid, requestId: input.requestId, dataUrl: media.url });
         return { success: true, data: media.url };
       }
       // Charged but no picture came back: give the credits back.

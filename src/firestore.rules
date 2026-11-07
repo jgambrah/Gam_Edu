@@ -275,6 +275,14 @@ service cloud.firestore {
           'subscription', 'subscriptionStatus', 'subscriptionPlan', 'planExpiresAt', 'billingStatus',
           'paidUntil', 'lastPaymentAmount', 'lastPaymentDate', 'paymentReference'])));
 
+      // Paid-for story drafts (server safety copy). The teacher who generated a draft can list/read/delete THEIR OWN;
+      // nobody writes from a browser (server code only). Lets a teacher recover a story after a closed tab or failed save.
+      match /junior_story_drafts/{draftId} {
+        allow read: if isSignedIn() && resource.data.get('uid', '') == request.auth.uid && getUserSchoolId() == schoolId;
+        allow delete: if isSignedIn() && resource.data.get('uid', '') == request.auth.uid && getUserSchoolId() == schoolId;
+        allow create, update: if false;
+      }
+
       // Credit ledger: written only by server code (Admin SDK). School admins may read it; nobody writes from a browser.
       match /credit_ledger/{entryId} {
         allow read: if isSuperAdmin() || (isSignedIn() && isDirector() && getUserSchoolId() == schoolId);
