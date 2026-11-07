@@ -20,15 +20,28 @@ const asTransient = (e: unknown): never => {
 
 export interface ObjectStore {
   putIfAbsent(path: string, bytes: Uint8Array, contentType: string, sha256: string): Promise<PutResult>;
+  get(path: string): Promise<Uint8Array | undefined>;
+  has(path: string): Promise<boolean>;
+  /** Create-only server-side copy. */
+  copyIfAbsent(from: string, to: string, contentType: string): Promise<PutResult>;
 }
 
 /** Objects kept in memory (default for Firestore-only emulator runs). */
 export class MemoryObjectStore implements ObjectStore {
-  objects = new Map<string, { size: number; sha: string }>();
+  objects = new Map<string, { size: number; sha: string; bytes: Uint8Array }>();
   async putIfAbsent(path: string, bytes: Uint8Array, _ct: string, sha: string): Promise<PutResult> {
     const e = this.objects.get(path);
     if (e) return e.sha === sha ? 'exists_same' : 'exists_different';
-    this.objects.set(path, { size: bytes.length, sha });
+    this.objects.set(path, { size: bytes.length, sha, bytes: Uint8Array.from(bytes) });
+    return 'created';
+  }
+  async get(path: string) { const o = this.objects.get(path); return o ? Uint8Array.from(o.bytes) : undefined; }
+  async has(path: string) { return this.objects.has(path); }
+  async copyIfAbsent(from: string, to: string): Promise<PutResult> {
+    const src = this.objects.get(from); if (!src) throw new Error(`copy source missing: ${from}`);
+    const e = this.objects.get(to);
+    if (e) return e.sha === src.sha ? 'exists_same' : 'exists_different';
+    this.objects.set(to, { ...src, bytes: Uint8Array.from(src.bytes) });
     return 'created';
   }
 }
@@ -58,6 +71,31 @@ export class StorageEmulatorObjectStore implements ObjectStore {
       return meta.metadata?.sha256 === sha ? 'exists_same' : 'exists_different';
     }
   }
+  async get(path: string) {
+    const f = this.bucket.file(path);
+    const [ok] = await f.exists();
+    if (!ok) return undefined;
+    const [buf] = await f.download();
+    return new Uint8Array(buf);
+  }
+  async has(path: string) { const [ok] = await this.bucket.file(path).exists(); return ok; }
+  async copyIfAbsent(from: string, to: string, contentType: string): Promise<PutResult> {
+    const src = this.bucket.file(from);
+    const [srcOk] = await src.exists();
+    if (!srcOk) throw new Error(`copy source missing: ${from}`);
+    const [srcMeta] = await src.getMetadata();
+    const sha = srcMeta.metadata?.sha256 as string | undefined;
+    const dst = this.bucket.file(to);
+    const [dstOk] = await dst.exists();
+    if (dstOk) { const [m] = await dst.getMetadata(); return m.metadata?.sha256 === sha ? 'exists_same' : 'exists_different'; }
+    try {
+      await src.copy(dst, { preconditionOpts: { ifGenerationMatch: 0 }, contentType, metadata: { metadata: { sha256: sha } } } as never);
+      return 'created';
+    } catch (e) {
+      if ((e as { code?: number }).code !== 412) throw e;
+      const [m] = await dst.getMetadata(); return m.metadata?.sha256 === sha ? 'exists_same' : 'exists_different';
+    }
+  }
 }
 
 export class FirestoreBackend implements SeedBackend {
@@ -66,6 +104,9 @@ export class FirestoreBackend implements SeedBackend {
   putObjectIfAbsent(path: string, bytes: Uint8Array, contentType: string, sha256: string) {
     return this.objects.putIfAbsent(path, bytes, contentType, sha256);
   }
+  getObject(path: string) { return this.objects.get(path); }
+  hasObject(path: string) { return this.objects.has(path); }
+  copyObjectIfAbsent(from: string, to: string, contentType: string) { return this.objects.copyIfAbsent(from, to, contentType); }
   transact<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
     return this.db.runTransaction(async (t) => {
       const tx: Tx = {

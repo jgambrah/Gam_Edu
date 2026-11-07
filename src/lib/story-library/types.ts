@@ -30,7 +30,7 @@ export const ADMIN_TRANSITIONS: Record<AdminStatus, AdminStatus[]> = {
 
 export const MAX_CATALOGUE_PAGE_SIZE = 50;
 export const MAX_PAGES_PER_STORY = 40;
-export const MAX_CATALOGUE_ENTRY_BYTES = 2_048;
+export const MAX_CATALOGUE_ENTRY_BYTES = 3_072;
 
 export interface CoverRef { hash: string; w: number; h: number; alt: string }
 
@@ -72,13 +72,15 @@ export interface CatalogueEntry {
   difficulty?: number;
   genres?: string[];
   ghanaianContext?: string;
+  /** catalogueVersion at which this entry last changed. Delta refresh asks for entries with changedInVersion > the cached version. */
+  changedInVersion?: number;
 }
 
 export const CATALOGUE_ALLOWED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
   'storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers', 'level', 'categories',
   'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'hasNarration', 'hasActivities', 'packagePath',
   'packageHash', 'packageBytes', 'contentHash', 'publishedAt', 'updatedAt', 'sortKey', 'attribution', 'publishedBy',
-  'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'ghanaianContext',
+  'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'ghanaianContext', 'changedInVersion',
 ];
 
 export const CATALOGUE_REQUIRED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [

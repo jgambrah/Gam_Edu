@@ -1,41 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { evaluateReadiness, passingReviews, type HumanReview } from './readiness';
 import { prepare } from './seeder/seeder';
-import { makeStory, syntheticClassification, SYNTHETIC_LICENCE } from './seeder/synthetic';
+import { SYNTHETIC_LICENCE } from './seeder/synthetic';
+import { LIC, premiumStory, wordTrack } from './test-fixtures';
 import type { StoryInput } from './seeder/types';
-import type { Activity, TimingTrack } from './premium';
 import { tokenize, splitSentences } from './premium';
 import { coverageHash } from './aspects';
-
-const LIC = { source: 'test-studio', licenseId: 'CC-BY-4.0' };
-const bytes = (n: number, seed: number) => Uint8Array.from({ length: n }, (_, i) => (i * 31 + seed) & 255);
-
-function wordTrack(text: string, durationMs: number, over: Partial<TimingTrack> = {}): TimingTrack {
-  const sents = splitSentences(text); const words = tokenize(text);
-  const per = Math.floor((durationMs - 100) / words.length);
-  const wm = words.map((_, i) => [i * per + 10, (i + 1) * per] as [number, number]);
-  let at = 0;
-  const sm = sents.map((s) => { const n = tokenize(s).length; const m: [number, number] = [wm[at][0], wm[at + n - 1][1]]; at += n; return m; });
-  return { granularity: 'word', method: 'forced-alignment', verified: true, sentences: sm, words: wm, ...over };
-}
-
-function premiumStory(over: Partial<StoryInput> = {}): StoryInput {
-  const base = makeStory(3, { pages: 4, sentencesPerPage: 2 });
-  const classification = { ...syntheticClassification(3), objectives: ['vocabulary', 'reading-comprehension'], readingLevel: 'emergent', narrationLocale: 'en-GH', estimatedDurationSec: 60 } as any;
-  const pages = base.pages.map((p, i) => {
-    const durationMs = 15000;
-    return { ...p, text: p.text, alt: `Picture for page ${i + 1}`, image: { ...p.image, licence: LIC }, sentences: splitSentences(p.text),
-      audio: { ...p.audio!, durationMs, licence: LIC }, timing: wordTrack(p.text, durationMs) };
-  });
-  const w = tokenize(pages[0].text)[1].toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
-  const activities: Activity[] = [
-    { id: 'c1', type: 'comprehension', question: 'What happened first?', options: ['one', 'two'], correctIndex: 0 },
-    { id: 'c2', type: 'comprehension', question: 'Who was in it?', options: ['a', 'b', 'c'], correctIndex: 1 },
-    { id: 'v1', type: 'vocabulary', word: w, definition: 'a word in the story', distractors: ['nothing'] },
-  ];
-  const glossary = [1, 2, 3].map((k) => ({ word: tokenize(pages[0].text)[k].toLowerCase().replace(/[^\p{L}\p{N}]/gu, ''), definition: 'a word in the story', pages: [1] }));
-  return { ...base, classification, narrationLocale: 'en-GH', pages, activities, glossary, ...over } as StoryInput;
-}
 
 function evalStory(s: StoryInput, reviews?: (a: any) => HumanReview[], extra: any = {}) {
   const p = prepare(s);

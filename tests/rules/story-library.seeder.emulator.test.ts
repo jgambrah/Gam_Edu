@@ -103,14 +103,19 @@ describe('client rules over seeded drafts', () => {
     const entry = catalogueEntryFor(id, d);
     await assertFails(setDoc(doc(pub('publisher1'), `story_catalogue/${id}`), entry));
     await assertFails(setDoc(doc(as(env, 'superAdmin').firestore(), `story_catalogue/${id}`), entry));
-    // control: the same entry is accepted once the admin copy is genuinely published (so the denial above is about status)
+    // the catalogue is server-only: even a genuinely published admin copy gives a client no write path
     const other = corpus.distinct[2];
     const od = (await seeded.db.doc(`story_library_admin/${other}`).get()).data()!;
     await seeded.db.doc(`story_library_admin/${other}`).update({ status: 'published' });
-    await assertSucceeds(setDoc(doc(pub('publisher1'), `story_catalogue/${other}`), catalogueEntryFor(other, od)));
+    await assertFails(setDoc(doc(pub('publisher1'), `story_catalogue/${other}`), catalogueEntryFor(other, od)));
+    await assertFails(setDoc(doc(as(env, 'superAdmin').firestore(), `story_catalogue/${other}`), catalogueEntryFor(other, od)));
     await seeded.db.doc(`story_library_admin/${other}`).update({ status: 'draft' }); // restore for later tests
-    await seeded.db.doc(`story_catalogue/${other}`).delete();
   });
+  /** The server-written readiness record for a seeded story's current content (what the publication service computes). */
+  const markReady = async (id: string, reviewerIds: string[] = []) => {
+    const d = (await seeded.db.doc(`story_library_admin/${id}`).get()).data()!;
+    await seeded.db.doc(`story_library_admin/${id}/readiness/current`).set({ premiumReady: true, contentHash: d.contentHash, reviewerIds });
+  };
 
   it('a client cannot claim to be the seeder: createdBy must equal the signed-in uid', async () => {
     await assertFails(setDoc(doc(pub('publisher1'), 'story_library_admin/forged-seed'), {
@@ -127,22 +132,28 @@ describe('client rules over seeded drafts', () => {
   it('the seeder identity can never approve its own story, even with a publisher token', async () => {
     const id = corpus.distinct[3];
     const botDb = pub(SEEDER_UID);
+    await markReady(id);
     await assertSucceeds(submitAs(botDb, SEEDER_UID, id));
     await assertFails(approveAs(botDb, SEEDER_UID, id));
     await seeded.db.doc(`story_library_admin/${id}`).set({ status: 'draft', lastEditedBy: SEEDER_UID }, { merge: true });
     await seeded.db.doc(`story_library_admin/${id}`).update({ submittedBy: FieldValue.delete(), submittedAt: FieldValue.delete() });
   });
 
-  it('full path: draft → review → approved by an INDEPENDENT publisher → published → visible to schools', async () => {
+  it('full path: draft → review → approved by an INDEPENDENT publisher (premium-ready) → published by the service → visible to schools', async () => {
     const id = corpus.distinct[4];
     const d = (await seeded.db.doc(`story_library_admin/${id}`).get()).data()!;
     const p1 = pub('publisher1'), p2 = pub('publisher2');
     await assertSucceeds(submitAs(p1, 'publisher1', id));
+    await assertFails(approveAs(p2, 'publisher2', id));                       // not premium-ready yet: no readiness record
+    await markReady(id);
     await assertFails(approveAs(p1, 'publisher1', id));                       // the submitter cannot approve
     await assertFails(updateDoc(doc(p2, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher1', approvedAt: T(), updatedAt: T() })); // cannot name someone else
     await assertSucceeds(approveAs(p2, 'publisher2', id));
-    await assertSucceeds(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'published', publishedBy: 'publisher1', publishedAt: T(), updatedAt: T() }));
-    await assertSucceeds(setDoc(doc(p1, `story_catalogue/${id}`), catalogueEntryFor(id, d)));
+    await assertFails(updateDoc(doc(p1, `story_library_admin/${id}`), { status: 'published', publishedBy: 'publisher1', publishedAt: T(), updatedAt: T() })); // no client publish
+    await assertFails(setDoc(doc(p1, `story_catalogue/${id}`), catalogueEntryFor(id, d)));
+    // the publication service (Admin SDK) publishes: admin copy + catalogue entry
+    await seeded.db.doc(`story_library_admin/${id}`).update({ status: 'published' });
+    await seeded.db.doc(`story_catalogue/${id}`).set(catalogueEntryFor(id, d));
     await assertSucceeds(getDoc(doc(as(env, 'teacherA').firestore(), `story_catalogue/${id}`)));
   });
 
@@ -150,6 +161,7 @@ describe('client rules over seeded drafts', () => {
   it('F1 FIXED: one human cannot submit a seeded draft AND approve it', async () => {
     const id = corpus.distinct[5];
     const p1 = pub('publisher1');
+    await markReady(id);
     await assertSucceeds(submitAs(p1, 'publisher1', id));
     await assertFails(approveAs(p1, 'publisher1', id));
   });
@@ -157,10 +169,12 @@ describe('client rules over seeded drafts', () => {
   it('F2 FIXED: whoever edits a seeded story in review cannot approve it, and approval cannot carry an edit', async () => {
     const id = corpus.distinct[6];
     const p1 = pub('publisher1'), p2 = pub('publisher2'), p3 = pub('publisher3');
+    await markReady(id);
     await assertSucceeds(submitAs(p1, 'publisher1', id));
-    await assertSucceeds(updateDoc(doc(p2, `story_library_admin/${id}`), { title: 'Edited in review', lastEditedBy: 'publisher2', updatedAt: T() }));
+    await assertSucceeds(updateDoc(doc(p2, `story_library_admin/${id}`), { notes: 'Edited in review', lastEditedBy: 'publisher2', updatedAt: T() }));
+    await assertFails(updateDoc(doc(p2, `story_library_admin/${id}`), { title: 'Client title edit', lastEditedBy: 'publisher2', updatedAt: T() })); // content is server-written
     await assertFails(approveAs(p2, 'publisher2', id));                       // last editor
-    await assertFails(updateDoc(doc(p3, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher3', approvedAt: T(), updatedAt: T(), title: 'Sneaky' }));
+    await assertFails(updateDoc(doc(p3, `story_library_admin/${id}`), { status: 'approved', approvedBy: 'publisher3', approvedAt: T(), updatedAt: T(), notes: 'Sneaky' }));
     await assertSucceeds(approveAs(p3, 'publisher3', id));
     const after = (await seeded.db.doc(`story_library_admin/${id}`).get()).data()!;
     expect(after.lastEditedBy).toBe('publisher2');                            // the edit is on the record

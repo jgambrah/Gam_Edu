@@ -104,10 +104,30 @@ export function validateStoryPackage(p: unknown): Problem[] {
   return out;
 }
 
-/** Is a workflow change allowed, and who may make it? Approval must be by someone other than the author. */
-export function canTransition(from: AdminStatus, to: AdminStatus, ctx: { actor: string; createdBy: string }): { ok: boolean; reason?: string } {
+/**
+ * Is a workflow change allowed, and who may make it? (Mirrors the Firestore rules and the publication service, so the
+ * admin UI can explain a refusal before it is attempted. The rules and the service remain the enforcement.)
+ *
+ * Approval needs a person who is NOT the creator, the last editor, the submitter of this version, or a reviewer of it,
+ * and the story must be premium-ready for its current content. Publishing and withdrawing are server-side only.
+ */
+export interface TransitionContext {
+  actor: string; createdBy: string; lastEditedBy?: string; submittedBy?: string; reviewerIds?: string[];
+  /** Server-computed readiness for the current content hash. */
+  premiumReady?: boolean;
+}
+export function canTransition(from: AdminStatus, to: AdminStatus, ctx: TransitionContext): { ok: boolean; reason?: string } {
   if (!ADMIN_TRANSITIONS[from]?.includes(to)) return { ok: false, reason: `${from} -> ${to} is not allowed` };
-  if (to === 'approved' && ctx.actor === ctx.createdBy) return { ok: false, reason: 'the author cannot approve their own story' };
+  if (to === 'published' || (to === 'archived' && from === 'published')) return { ok: false, reason: 'publishing and withdrawing are done by the central publication service, not by a direct edit' };
+  if (to === 'approved') {
+    const a = ctx.actor;
+    if (a === ctx.createdBy) return { ok: false, reason: 'the author cannot approve their own story' };
+    if (a === (ctx.lastEditedBy ?? ctx.createdBy)) return { ok: false, reason: 'the last editor cannot approve' };
+    if (!ctx.submittedBy) return { ok: false, reason: 'the story has not been submitted for review' };
+    if (a === ctx.submittedBy) return { ok: false, reason: 'the person who submitted this version cannot approve it' };
+    if ((ctx.reviewerIds ?? []).includes(a)) return { ok: false, reason: 'a reviewer of this version cannot approve it' };
+    if (ctx.premiumReady !== true) return { ok: false, reason: 'the story is not premium-ready for its current content' };
+  }
   return { ok: true };
 }
 

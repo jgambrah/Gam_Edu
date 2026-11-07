@@ -66,17 +66,30 @@ describe('story package', () => {
 });
 
 describe('workflow transitions', () => {
-  it('only the documented transitions are allowed', () => {
+  const ok = { actor: 'p5', createdBy: 'p1', lastEditedBy: 'p2', submittedBy: 'p3', reviewerIds: ['p4'], premiumReady: true };
+  const serverOnly = (from: string, to: string) => to === 'published' || (from === 'published' && to === 'archived');
+  it('only the documented transitions are allowed, and publishing/withdrawing are server-side only', () => {
     for (const from of ADMIN_STATUSES) for (const to of ADMIN_STATUSES) {
-      const ok = canTransition(from, to, { actor: 'p2', createdBy: 'p1' }).ok;
-      expect(ok).toBe(ADMIN_TRANSITIONS[from].includes(to));
+      const r = canTransition(from, to, ok);
+      expect(r.ok).toBe(ADMIN_TRANSITIONS[from].includes(to) && !serverOnly(from, to));
     }
   });
-  it('the author cannot approve their own story; someone else can', () => {
-    expect(canTransition('review', 'approved', { actor: 'p1', createdBy: 'p1' }).ok).toBe(false);
-    expect(canTransition('review', 'approved', { actor: 'p2', createdBy: 'p1' }).ok).toBe(true);
+  it('approval needs a person independent of creator, last editor, submitter and every reviewer', () => {
+    for (const who of ['p1', 'p2', 'p3', 'p4']) expect(canTransition('review', 'approved', { ...ok, actor: who }).ok).toBe(false);
+    expect(canTransition('review', 'approved', ok).ok).toBe(true);
   });
-  it('a draft cannot be published directly', () => {
-    expect(canTransition('draft', 'published', { actor: 'p2', createdBy: 'p1' }).ok).toBe(false);
+  it('a machine-created draft (creator and last editor are the seeder) still needs an independent approver', () => {
+    const c = { actor: 'seeder-bot', createdBy: 'seeder-bot', lastEditedBy: 'seeder-bot', submittedBy: 'p3', premiumReady: true };
+    expect(canTransition('review', 'approved', c).ok).toBe(false);
+    expect(canTransition('review', 'approved', { ...c, actor: 'p9' }).ok).toBe(true);
+  });
+  it('approval needs a submitted version and premium readiness for the current content', () => {
+    expect(canTransition('review', 'approved', { ...ok, submittedBy: undefined }).reason).toMatch(/not been submitted/);
+    expect(canTransition('review', 'approved', { ...ok, premiumReady: false }).reason).toMatch(/premium-ready/);
+    expect(canTransition('review', 'approved', { ...ok, premiumReady: undefined }).ok).toBe(false);
+  });
+  it('a draft cannot be published directly, and nobody can publish by editing', () => {
+    expect(canTransition('draft', 'published', ok).ok).toBe(false);
+    expect(canTransition('approved', 'published', ok).reason).toMatch(/publication service/);
   });
 });

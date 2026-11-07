@@ -5,7 +5,10 @@
  *  - only central publishers (super admin or the server-set `story_publisher` claim) write;
  *  - eligible schools read PUBLISHED catalogue entries only; drafts and archived entries are hidden from schools;
  *  - lists need `limit <= 50` and a status == 'published' filter;
- *  - approval needs a different person from the author; approved/published content is not editable;
+ *  - the catalogue and library_meta are SERVER-ONLY: no client (publisher or super admin) can write them, so publishing and
+ *    archiving cannot bypass the publication service;
+ *  - approval needs a different person from the creator, last editor and submitter, who is not a reviewer, and a
+ *    server-computed readiness record (premiumReady for the exact content hash); clients cannot change content at all;
  *  - school-created stories (`junior_stories`) are unaffected.
  */
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
@@ -35,7 +38,7 @@ const entry = (id: string, over: Record<string, unknown> = {}) => ({
 });
 const adminDocData = (status: string, over: Record<string, unknown> = {}) => ({
   storyKey: 'key', title: 'The Brave Little Kite', status, createdBy: 'publisher1', lastEditedBy: 'publisher1', updatedAt: new Date(),
-  ...(status !== 'draft' ? { submittedBy: 'publisher1', submittedAt: new Date() } : {}),
+  ...(status !== 'draft' ? { submittedBy: 'publisher1', submittedAt: new Date(), contentHash: H('b') } : {}),
   ...(['approved', 'published', 'archived'].includes(status) ? { approvedBy: 'publisher2', approvedAt: new Date() } : {}),
   ...over,
 });
@@ -45,6 +48,10 @@ const newDraft = (uid: string, over: Record<string, unknown> = {}) => ({
 });
 const seed = (path: string, data: Record<string, unknown>) =>
   env.withSecurityRulesDisabled(async (c) => { await setDoc(doc(c.firestore(), path), data); });
+
+/** The server-written readiness record the approval rule reads. */
+const seedReadiness = (id: string, over: Record<string, unknown> = {}) =>
+  seed(`story_library_admin/${id}/readiness/current`, { premiumReady: true, contentHash: H('b'), reviewerIds: ['reviewerX'], ...over });
 
 const verdict = (ok: boolean) => (ok ? assertSucceeds : assertFails);
 
@@ -144,11 +151,10 @@ describe('library_meta (the one document read per session)', () => {
   it.each(NON_PUBLISHERS.map((w) => [w] as const))('%s cannot write it', async (who) => {
     await assertFails(setDoc(doc(db(who), 'library_meta/current'), { catalogueVersion: 6, updatedAt: new Date() }));
   });
-  it('a publisher can raise the version but never lower or repeat it, and cannot add unknown fields', async () => {
-    await assertSucceeds(updateDoc(doc(db('publisher1'), 'library_meta/current'), { catalogueVersion: 6 }));
-    await assertFails(updateDoc(doc(db('publisher1'), 'library_meta/current'), { catalogueVersion: 6 }));
-    await assertFails(updateDoc(doc(db('publisher1'), 'library_meta/current'), { catalogueVersion: 3 }));
-    await assertFails(updateDoc(doc(db('publisher1'), 'library_meta/current'), { catalogueVersion: 9, schoolId: 'schoolA' }));
+  it.each(PUBLISHERS.map((w) => [w] as const))('%s (publisher / super admin) cannot write it either: the publication service owns the version', async (who) => {
+    await assertFails(updateDoc(doc(db(who), 'library_meta/current'), { catalogueVersion: 6 }));
+    await assertFails(setDoc(doc(db(who), 'library_meta/current'), { catalogueVersion: 6, updatedAt: new Date() }));
+    await assertFails(setDoc(doc(db(who), 'library_meta/other'), { catalogueVersion: 1 }));
   });
   it('it cannot be deleted', async () => {
     await assertFails(deleteDoc(doc(db('publisher1'), 'library_meta/current')));
@@ -156,61 +162,34 @@ describe('library_meta (the one document read per session)', () => {
   });
 });
 
-describe('catalogue: writing', () => {
-  it.each(NON_PUBLISHERS.map((w) => [w] as const))('%s cannot create, change or delete a catalogue entry', async (who) => {
+describe('catalogue: writing is server-only', () => {
+  it.each([...NON_PUBLISHERS, ...PUBLISHERS].map((w) => [w] as const))('%s cannot create, change or delete a catalogue entry', async (who) => {
     await seed('story_library_admin/story_new', adminDocData('approved'));
+    await seedReadiness('story_new');
     await assertFails(setDoc(doc(db(who), 'story_catalogue/story_new'), entry('story_new', { publishedBy: cast[who as keyof typeof cast]?.uid ?? 'x' })));
     await assertFails(updateDoc(doc(db(who), 'story_catalogue/story_pub'), { title: 'Hacked' }));
     await assertFails(deleteDoc(doc(db(who), 'story_catalogue/story_pub')));
   });
-  it('a publisher can publish a story whose admin copy is APPROVED', async () => {
+  it('even a fully approved, premium-ready story cannot be published from a client: there is no client publish path', async () => {
     await seed('story_library_admin/story_new', adminDocData('approved', { approvedBy: 'publisher2' }));
-    await assertSucceeds(setDoc(doc(db('publisher1'), 'story_catalogue/story_new'), entry('story_new')));
-  });
-  it('a super admin counts as a publisher', async () => {
-    await seed('story_library_admin/story_new', adminDocData('approved'));
-    await assertSucceeds(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: 'L4oE5XWweKRYrhtIXn6hB8IDHBC2' })));
-  });
-  it.each([['draft'], ['review']])('a story still in %s cannot be published', async (status) => {
-    await seed('story_library_admin/story_new', adminDocData(status));
+    await seedReadiness('story_new');
     await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_new'), entry('story_new')));
+    await assertFails(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: 'L4oE5XWweKRYrhtIXn6hB8IDHBC2' })));
   });
-  it('a story with no admin copy at all cannot be published', async () => {
-    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_orphan'), entry('story_orphan')));
+  it('a client cannot archive (tombstone) a published entry, so a school keeps seeing it until the service withdraws it', async () => {
+    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_pub'), entry('story_pub', { status: 'archived' })));
+    await assertFails(updateDoc(doc(db('publisher1'), 'story_catalogue/story_pub'), { status: 'archived' }));
+    await assertSucceeds(getDoc(doc(db('teacherA'), 'story_catalogue/story_pub')));
   });
-  it('a draft or archived status cannot be CREATED in the catalogue', async () => {
-    await seed('story_library_admin/story_new', adminDocData('approved'));
-    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_new'), entry('story_new', { status: 'draft' })));
-    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_new'), entry('story_new', { status: 'archived' })));
+  it('a client cannot replace a package version either', async () => {
+    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_pub'), entry('story_pub', { packageVersion: 2, packagePath: packagePathFor('story_pub', 2) })));
   });
-  it.each([
-    ['an extra field (e.g. a school id)', { schoolId: 'schoolA' }],
-    ['page text', { pages: [{ text: 'hi' }] }],
-    ['a package path for another story', { packagePath: packagePathFor('someone_else', 1) }],
-    ['a package path outside the library', { packagePath: 'schools/schoolA/x/package.json' }],
-    ['publishedBy set to another person', { publishedBy: 'publisher2' }],
-    ['zero pages', { pageCount: 0 }],
-    ['41 pages', { pageCount: 41 }],
-    ['no age tier', { ageTiers: [] }],
-    ['seven age tiers', { ageTiers: ['1', '2', '3', '4', '5', '6', '7'] }],
-    ['a 121-character title', { title: 'x'.repeat(121) }],
-    ['21 categories', { categories: Array.from({ length: 21 }, (_, i) => `c${i}`) }],
-    ['version 0', { version: 0 }],
-  ])('a publisher cannot publish an entry with %s', async (_label, over) => {
-    await seed('story_library_admin/story_new', adminDocData('approved'));
-    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_new'), entry('story_new', over as Record<string, unknown>)));
-  });
-  it('a publisher can archive a published entry (the tombstone), but it stays readable only to publishers', async () => {
-    await assertSucceeds(setDoc(doc(db('publisher1'), 'story_catalogue/story_pub'), entry('story_pub', { status: 'archived' })));
-    await assertFails(getDoc(doc(db('teacherA'), 'story_catalogue/story_pub')));
-  });
-  it('a new package version can replace the old one, but a lower package version cannot', async () => {
-    await assertSucceeds(setDoc(doc(db('publisher1'), 'story_catalogue/story_pub'), entry('story_pub', { packageVersion: 2, packagePath: packagePathFor('story_pub', 2) })));
-    await assertFails(setDoc(doc(db('publisher1'), 'story_catalogue/story_pub'), entry('story_pub', { packageVersion: 1 })));
-  });
-  it('nobody, not even a super admin, can delete a catalogue entry (archive instead)', async () => {
-    await assertFails(deleteDoc(doc(db('publisher1'), 'story_catalogue/story_pub')));
-    await assertFails(deleteDoc(doc(db('superAdmin'), 'story_catalogue/story_pub')));
+  it('the server (Admin SDK path, rules bypassed) can still write them, and schools then read the result', async () => {
+    await seed('story_catalogue/story_srv', entry('story_srv'));
+    await seed('library_meta/current', { catalogueVersion: 6, updatedAt: new Date() });
+    await assertSucceeds(getDoc(doc(db('teacherA'), 'story_catalogue/story_srv')));
+    const meta = await assertSucceeds(getDoc(doc(db('teacherA'), 'library_meta/current')));
+    expect(meta.data()?.catalogueVersion).toBe(6);
   });
 });
 
@@ -241,44 +220,121 @@ describe('story_library_admin: drafts, review, approval', () => {
     const trail: Record<string, unknown> =
       status === 'review' ? { lastEditedBy: uid, submittedBy: uid, submittedAt: serverTimestamp(), approvedBy: deleteField(), approvedAt: deleteField() }
       : status === 'draft' ? { lastEditedBy: uid, submittedBy: deleteField(), submittedAt: deleteField() }
-      : status === 'approved' ? { approvedAt: serverTimestamp() }
-      : status === 'published' ? { publishedAt: serverTimestamp() }
-      : status === 'archived' ? { archivedAt: serverTimestamp() }
+      : status === 'approved' ? { approvedBy: uid, approvedAt: serverTimestamp() }
       : {};
     return updateDoc(doc(db(who), `story_library_admin/${id}`), { status, updatedAt: serverTimestamp(), ...trail, ...extra });
   };
+  /** A client edit: only the free-text notes can change. */
   const edit = (who: Who, id: string, fields: Record<string, unknown>) =>
     updateDoc(doc(db(who), `story_library_admin/${id}`), { lastEditedBy: uidOf(who), updatedAt: serverTimestamp(), ...fields });
 
-  it('draft <-> review is allowed and the content can be edited while in draft or review', async () => {
-    await assertSucceeds(edit('publisher1', 'story_draft', { title: 'A better title' }));
+  it('draft <-> review is allowed and notes can be edited while in draft or review', async () => {
+    await assertSucceeds(edit('publisher1', 'story_draft', { notes: 'Check page 3 illustration' }));
     await assertSucceeds(setStatus('publisher1', 'story_draft', 'review'));
     await assertSucceeds(setStatus('publisher1', 'story_draft', 'draft'));
   });
-  it('the AUTHOR cannot approve their own story', async () => {
+  it.each([
+    ['the title', { title: 'A better title' }],
+    ['the content hash', { contentHash: H('c') }],
+    ['the package path', { packagePath: 'story_library/x/v1/package.json' }],
+    ['the licences', { licences: [{ id: 'x' }] }],
+    ['the published trail', { publishedBy: 'publisher1', publishedAt: serverTimestamp() }],
+  ])('a client cannot change %s (content is written by the import/edit service, which recomputes the hash)', async (_l, fields) => {
+    await assertFails(edit('publisher1', 'story_draft', fields as Record<string, unknown>));
     await seed('story_library_admin/story_r', adminDocData('review'));
-    await assertFails(setStatus('publisher1', 'story_r', 'approved', { approvedBy: 'publisher1' }));
+    await assertFails(edit('publisher1', 'story_r', fields as Record<string, unknown>));
   });
-  it('a different publisher can approve, but only by recording themselves as the approver', async () => {
+  it('the AUTHOR cannot approve their own story, even when it is premium-ready', async () => {
     await seed('story_library_admin/story_r', adminDocData('review'));
-    await assertFails(setStatus('publisher2', 'story_r', 'approved'));
+    await seedReadiness('story_r');
+    await assertFails(setStatus('publisher1', 'story_r', 'approved'));
+  });
+  it('a different publisher can approve a premium-ready story, only by recording themselves as the approver', async () => {
+    await seed('story_library_admin/story_r', adminDocData('review'));
+    await seedReadiness('story_r');
     await assertFails(setStatus('publisher2', 'story_r', 'approved', { approvedBy: 'publisher1' }));
-    await assertSucceeds(setStatus('publisher2', 'story_r', 'approved', { approvedBy: 'publisher2' }));
+    await assertFails(setStatus('publisher2', 'story_r', 'approved', { approvedBy: deleteField() }));
+    await assertSucceeds(setStatus('publisher2', 'story_r', 'approved'));
   });
-  it('a draft cannot jump to approved or published', async () => {
-    await assertFails(setStatus('publisher2', 'story_draft', 'approved', { approvedBy: 'publisher2' }));
+  it('approval needs a readiness record: none, not premium-ready, or for a different content hash are all refused', async () => {
+    await seed('story_library_admin/story_none', adminDocData('review'));
+    await assertFails(setStatus('publisher2', 'story_none', 'approved'));
+    await seed('story_library_admin/story_nr', adminDocData('review'));
+    await seedReadiness('story_nr', { premiumReady: false });
+    await assertFails(setStatus('publisher2', 'story_nr', 'approved'));
+    await seed('story_library_admin/story_stale', adminDocData('review'));
+    await seedReadiness('story_stale', { contentHash: H('c') });
+    await assertFails(setStatus('publisher2', 'story_stale', 'approved'));
+    await seed('story_library_admin/story_nohash', adminDocData('review', { contentHash: '' }));
+    await seedReadiness('story_nohash', { contentHash: '' });
+    await assertFails(setStatus('publisher2', 'story_nohash', 'approved'));
+  });
+  it('a person who REVIEWED the content cannot approve it', async () => {
+    await seed('story_library_admin/story_r', adminDocData('review'));
+    await seedReadiness('story_r', { reviewerIds: ['publisher2'] });
+    await assertFails(setStatus('publisher2', 'story_r', 'approved'));
+  });
+  it('the last editor and the submitter cannot approve', async () => {
+    await seed('story_library_admin/story_le', adminDocData('review', { lastEditedBy: 'publisher2' }));
+    await seedReadiness('story_le');
+    await assertFails(setStatus('publisher2', 'story_le', 'approved'));
+    await seed('story_library_admin/story_sub', adminDocData('review', { submittedBy: 'publisher2' }));
+    await seedReadiness('story_sub');
+    await assertFails(setStatus('publisher2', 'story_sub', 'approved'));
+  });
+  it('approval cannot be combined with an edit', async () => {
+    await seed('story_library_admin/story_r', adminDocData('review'));
+    await seedReadiness('story_r');
+    await assertFails(setStatus('publisher2', 'story_r', 'approved', { notes: 'sneaky', contentHash: H('b') }));
+  });
+  it('a client cannot write the readiness or review records, and cannot fake them to unlock approval', async () => {
+    await seed('story_library_admin/story_r', adminDocData('review'));
+    for (const who of PUBLISHERS) {
+      await assertFails(setDoc(doc(db(who), 'story_library_admin/story_r/readiness/current'), { premiumReady: true, contentHash: H('b'), reviewerIds: [] }));
+      await assertFails(setDoc(doc(db(who), 'story_library_admin/story_r/reviews/r1'), { verdict: 'pass' }));
+    }
+    await assertFails(setStatus('publisher2', 'story_r', 'approved'));
+  });
+  it('readiness and reviews are readable by publishers only', async () => {
+    await seed('story_library_admin/story_r', adminDocData('review'));
+    await seedReadiness('story_r');
+    await seed('story_library_admin/story_r/reviews/r1', { verdict: 'pass' });
+    for (const who of PUBLISHERS) {
+      await assertSucceeds(getDoc(doc(db(who), 'story_library_admin/story_r/readiness/current')));
+      await assertSucceeds(getDoc(doc(db(who), 'story_library_admin/story_r/reviews/r1')));
+    }
+    for (const who of NON_PUBLISHERS) {
+      await assertFails(getDoc(doc(db(who), 'story_library_admin/story_r/readiness/current')));
+      await assertFails(getDoc(doc(db(who), 'story_library_admin/story_r/reviews/r1')));
+    }
+  });
+  it('a draft cannot jump to approved, published or archived', async () => {
+    await seedReadiness('story_draft');
+    await assertFails(setStatus('publisher2', 'story_draft', 'approved'));
     await assertFails(setStatus('publisher2', 'story_draft', 'published', { publishedBy: 'publisher2' }));
+    await assertFails(setStatus('publisher2', 'story_draft', 'archived'));
   });
-  it('approved -> published works, and the approved/published content is then frozen', async () => {
+  it('there is no client path to published or archived, from any state', async () => {
     await seed('story_library_admin/story_a', adminDocData('approved', { approvedBy: 'publisher2' }));
-    await assertFails(updateDoc(doc(db('publisher1'), 'story_library_admin/story_a'), { title: 'Edited after approval' }));
-    await assertSucceeds(setStatus('publisher1', 'story_a', 'published', { publishedBy: 'publisher1' }));
-    await assertFails(updateDoc(doc(db('publisher1'), 'story_library_admin/story_a'), { title: 'Edited after publication' }));
-  });
-  it('published -> archived works; archived -> review re-opens it; archived cannot go straight back to published', async () => {
-    await assertSucceeds(setStatus('publisher1', 'story_pub', 'archived', { archivedBy: 'publisher1' }));
+    await assertFails(setStatus('publisher1', 'story_a', 'published', { publishedBy: 'publisher1', publishedAt: serverTimestamp() }));
+    await assertFails(setStatus('publisher1', 'story_pub', 'archived', { archivedBy: 'publisher1', archivedAt: serverTimestamp() }));
     await assertFails(setStatus('publisher1', 'story_pub', 'published', { publishedBy: 'publisher1' }));
-    await assertSucceeds(setStatus('publisher1', 'story_pub', 'review'));
+  });
+  it('approved and published content is frozen: no edit of any field', async () => {
+    await seed('story_library_admin/story_a', adminDocData('approved', { approvedBy: 'publisher2' }));
+    await assertFails(edit('publisher1', 'story_a', { notes: 'edited after approval' }));
+    await assertFails(edit('publisher1', 'story_pub', { notes: 'edited after publication' }));
+    await assertFails(updateDoc(doc(db('publisher1'), 'story_library_admin/story_a'), { title: 'Edited after approval' }));
+  });
+  it('re-opening an approved or archived story clears the approval and makes the re-opener the submitter', async () => {
+    await seed('story_library_admin/story_a', adminDocData('approved', { approvedBy: 'publisher2' }));
+    await assertFails(updateDoc(doc(db('publisher1'), 'story_library_admin/story_a'), { status: 'review', updatedAt: serverTimestamp() })); // approval left in place
+    await assertSucceeds(setStatus('publisher1', 'story_a', 'review'));
+    await assertFails(setStatus('publisher1', 'story_pub', 'review')); // a published story must be withdrawn by the service first
+  });
+  it('a published story is withdrawn by the service first (archived), then it can be re-opened by a publisher', async () => {
+    await seed('story_library_admin/story_arch2', adminDocData('archived'));
+    await assertSucceeds(setStatus('publisher1', 'story_arch2', 'review'));
   });
   it('the author field cannot be changed to dodge four-eyes approval', async () => {
     await seed('story_library_admin/story_r', adminDocData('review'));
@@ -294,18 +350,24 @@ describe('story_library_admin: drafts, review, approval', () => {
 
 describe('super admins are bound by the same workflow (they are publishers, not exempt)', () => {
   const SUPER = 'L4oE5XWweKRYrhtIXn6hB8IDHBC2';
-  it('a super admin cannot publish a story whose admin copy is not approved', async () => {
-    await seed('story_library_admin/story_new', adminDocData('review'));
+  it('a super admin cannot write the catalogue or library_meta at all', async () => {
     await assertFails(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: SUPER })));
+    await assertFails(updateDoc(doc(db('superAdmin'), 'library_meta/current'), { catalogueVersion: 99 }));
   });
-  it('a super admin cannot approve a story they wrote themselves', async () => {
+  it('a super admin cannot approve a story they wrote themselves, even when premium-ready', async () => {
     await seed('story_library_admin/story_s', adminDocData('review', { createdBy: SUPER, lastEditedBy: SUPER, submittedBy: 'publisher1' }));
+    await seedReadiness('story_s');
     await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_s'), { status: 'approved', approvedBy: SUPER, approvedAt: serverTimestamp(), updatedAt: serverTimestamp() }));
   });
-  it('a super admin cannot skip the schema checks or edit a published story', async () => {
-    await seed('story_library_admin/story_new', adminDocData('approved'));
-    await assertFails(setDoc(doc(db('superAdmin'), 'story_catalogue/story_new'), entry('story_new', { publishedBy: SUPER, schoolId: 'schoolA' })));
+  it('a super admin cannot approve a story that is not premium-ready, or edit a published story', async () => {
+    await seed('story_library_admin/story_s2', adminDocData('review'));
+    await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_s2'), { status: 'approved', approvedBy: SUPER, approvedAt: serverTimestamp(), updatedAt: serverTimestamp() }));
     await assertFails(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_pub'), { title: 'Edited after publication' }));
+  });
+  it('a super admin can approve an independent, premium-ready story', async () => {
+    await seed('story_library_admin/story_s3', adminDocData('review'));
+    await seedReadiness('story_s3');
+    await assertSucceeds(updateDoc(doc(db('superAdmin'), 'story_library_admin/story_s3'), { status: 'approved', approvedBy: SUPER, approvedAt: serverTimestamp(), updatedAt: serverTimestamp() }));
   });
   it('a super admin cannot delete published work', async () => {
     await assertFails(deleteDoc(doc(db('superAdmin'), 'story_library_admin/story_pub')));

@@ -48,71 +48,57 @@ service cloud.firestore {
     function libraryReader() {
       return isStoryPublisher() || (isSignedIn() && libraryEligibleSchool(getUserSchoolId()));
     }
-    function adminDoc(storyId) { return get(/databases/$(database)/documents/story_library_admin/$(storyId)).data; }
-
-    function validCatalogueEntry(storyId) {
-      let d = request.resource.data;
-      return d.keys().hasAll(['storyKey', 'version', 'packageVersion', 'status', 'title', 'ageTiers', 'pageCount',
-                              'packagePath', 'packageHash', 'contentHash', 'publishedBy'])
-        && d.keys().hasOnly(['storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers',
-                             'level', 'categories', 'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'hasNarration',
-                             'hasActivities', 'packagePath', 'packageHash', 'packageBytes', 'contentHash', 'publishedAt',
-                             'updatedAt', 'sortKey', 'attribution', 'publishedBy'])
-        && storyId.matches('^[A-Za-z0-9_-]{3,64}$')
-        && d.status in ['published', 'archived']
-        && d.title is string && d.title.size() >= 1 && d.title.size() <= 120
-        && d.ageTiers is list && d.ageTiers.size() >= 1 && d.ageTiers.size() <= 6
-        && d.pageCount is int && d.pageCount >= 1 && d.pageCount <= 40
-        && d.version is int && d.version >= 1
-        && d.packageVersion is int && d.packageVersion >= 1
-        && d.get('categories', []).size() <= 20 && d.get('themes', []).size() <= 20 && d.get('objectives', []).size() <= 20
-        && d.packagePath.matches('^story_library/published/packages/' + storyId + '/v[0-9]+/package[.]json$')
-        && d.publishedBy == request.auth.uid;
-    }
+    // The catalogue entry is validated and written by the central publication service (src/lib/story-library/publication.ts,
+    // Admin SDK). No client, publisher or super admin writes `story_catalogue` or `library_meta` directly, because the
+    // service must verify independence and readiness, copy files, and move the catalogue version in one atomic step.
 
     // One document every client reads per session: the catalogue version pointer and kill-switch flags.
     match /library_meta/{docId} {
       allow get: if libraryReader();
       allow list: if false;
-      allow create: if isStoryPublisher()
-        && request.resource.data.keys().hasOnly(['catalogueVersion', 'updatedAt', 'minClientVersion', 'bundles', 'tombstones', 'controls'])
-        && request.resource.data.catalogueVersion is int && request.resource.data.catalogueVersion >= 1
-        && request.resource.data.get('tombstones', []).size() <= 500;
-      allow update: if isStoryPublisher()
-        && request.resource.data.keys().hasOnly(['catalogueVersion', 'updatedAt', 'minClientVersion', 'bundles', 'tombstones', 'controls'])
-        && request.resource.data.catalogueVersion is int && request.resource.data.catalogueVersion > resource.data.catalogueVersion
-        && request.resource.data.get('tombstones', []).size() <= 500;
-      allow delete: if false;
+      allow write: if false; // server-only (publication service)
     }
 
     // Compact published metadata. Never deleted: a withdrawn story becomes `archived` (a tombstone clients can purge on).
     match /story_catalogue/{storyId} {
       allow get: if isStoryPublisher() || (libraryReader() && resource.data.status == 'published');
       allow list: if isStoryPublisher() || (libraryReader() && request.query.limit <= 50 && resource.data.status == 'published');
-      allow create: if isStoryPublisher() && validCatalogueEntry(storyId) && request.resource.data.status == 'published'
-        && adminDoc(storyId).status in ['approved', 'published'];
-      allow update: if isStoryPublisher() && validCatalogueEntry(storyId)
-        && (request.resource.data.status == 'archived' || adminDoc(storyId).status in ['approved', 'published'])
-        && request.resource.data.packageVersion >= resource.data.packageVersion;
-      allow delete: if false;
+      allow write: if false; // server-only (publication service); withdrawn stories become `archived` tombstones, never deleted
     }
 
     // Workflow, licensing and review notes: publishers only, in both directions.
     match /story_library_admin/{storyId} {
       // ---- independent-approval workflow (Stage 3) ----
       // Trail fields: createdBy, lastEditedBy (every human write), submittedBy/submittedAt (whoever moves it into review),
-      // approvedBy/approvedAt, publishedBy/publishedAt, archivedBy/archivedAt. All actor fields must equal the signed-in uid
-      // and all timestamps must equal the server time (request.time), so none can be forged or back-dated.
+      // approvedBy/approvedAt. All actor fields must equal the signed-in uid and all timestamps must equal the server time
+      // (request.time), so none can be forged or back-dated.
+      //
+      // What a CLIENT may change is only the workflow trail and a free-text `notes` field. Content, hashes, staged package
+      // paths, classification, licences, aspect hashes, and the published/archived trail are SERVER-MANAGED: they are written
+      // by the import/edit services and the publication service (Admin SDK), which recompute the content hash. Because a
+      // client cannot alter content or its hash, readiness (computed server-side for that exact hash) cannot be gamed, and a
+      // material edit always goes through a service that clears the approval.
       function newData() { return request.resource.data; }
       function oldData() { return resource.data; }
       function stamped(field) { return newData().get(field, null) == request.time; }
       function noApproval() { return newData().get('approvedBy', '') == '' && newData().get('approvedAt', null) == null; }
       function lastEditor() { return oldData().get('lastEditedBy', oldData().createdBy); }
       function onlyKeys(keys) { return newData().diff(oldData()).affectedKeys().hasOnly(keys); }
+      function readinessPath() { return /databases/$(database)/documents/story_library_admin/$(storyId)/readiness/current; }
+      // The server-computed readiness record must say premiumReady for EXACTLY this content hash, and the approver must not
+      // be one of the people who reviewed this version.
+      function readinessOk() {
+        return oldData().get('contentHash', '') != ''
+          && exists(readinessPath())
+          && get(readinessPath()).data.premiumReady == true
+          && get(readinessPath()).data.contentHash == oldData().get('contentHash', '')
+          && !(request.auth.uid in get(readinessPath()).data.get('reviewerIds', []));
+      }
 
       allow read: if isStoryPublisher();
       allow create: if isStoryPublisher() && storyId.matches('^[A-Za-z0-9_-]{3,64}$')
         && newData().keys().hasAll(['storyKey', 'title', 'status', 'createdBy', 'lastEditedBy', 'updatedAt'])
+        && newData().keys().hasOnly(['storyKey', 'title', 'status', 'createdBy', 'lastEditedBy', 'updatedAt', 'createdAt', 'notes'])
         && newData().status == 'draft'
         && newData().createdBy == request.auth.uid
         && newData().lastEditedBy == request.auth.uid
@@ -121,39 +107,36 @@ service cloud.firestore {
       allow update: if isStoryPublisher()
         && newData().createdBy == oldData().createdBy
         && (
-          // 1. Edit, submit for review, or withdraw to draft. Whoever writes becomes the last editor. Moving into review
+          // 1. Edit notes, submit for review, or withdraw to draft. Whoever writes becomes the last editor. Moving into review
           //    records the submitter. Approval fields cannot exist on a draft or a story in review.
           (oldData().status in ['draft', 'review'] && newData().status in ['draft', 'review']
+            && onlyKeys(['status', 'lastEditedBy', 'updatedAt', 'submittedBy', 'submittedAt', 'approvedBy', 'approvedAt', 'notes'])
             && newData().lastEditedBy == request.auth.uid && stamped('updatedAt') && noApproval()
             && (newData().status == 'draft'
                 ? newData().get('submittedBy', '') == ''
                 : (oldData().status == 'review'
                     ? newData().get('submittedBy', '') == oldData().get('submittedBy', '')
                     : (newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt'))))) ||
-          // 2. Approval. The approver must differ from the creator, the last editor AND whoever submitted this version;
-          //    and the write may change NOTHING but the approval trail (no edit-and-approve in one step).
+          // 2. Approval. The approver must differ from the creator, the last editor AND whoever submitted this version, must
+          //    not be a reviewer of it, and the story must be premium-ready for its current content (server-computed). The
+          //    write may change NOTHING but the approval trail (no edit-and-approve in one step).
           (oldData().status == 'review' && newData().status == 'approved'
             && oldData().get('submittedBy', '') != ''
             && request.auth.uid != oldData().createdBy
             && request.auth.uid != lastEditor()
             && request.auth.uid != oldData().get('submittedBy', '')
+            && readinessOk()
             && newData().approvedBy == request.auth.uid && stamped('approvedAt') && stamped('updatedAt')
             && onlyKeys(['status', 'approvedBy', 'approvedAt', 'updatedAt'])) ||
-          // 3. Publishing changes only the status trail; approved content is frozen.
-          (oldData().status == 'approved' && newData().status == 'published'
-            && newData().get('publishedBy', '') == request.auth.uid && stamped('publishedAt') && stamped('updatedAt')
-            && onlyKeys(['status', 'updatedAt', 'publishedBy', 'publishedAt'])) ||
-          // 4. Re-opening (approved or archived -> review) INVALIDATES the approval: it must be cleared, the re-opener
+          // 3. Re-opening (approved or archived -> review) INVALIDATES the approval: it must be cleared, the re-opener
           //    becomes last editor and submitter of the new version, and nothing else changes. A fresh independent
           //    review (and approver) is then required.
           (oldData().status in ['approved', 'archived'] && newData().status == 'review' && noApproval()
             && newData().lastEditedBy == request.auth.uid
             && newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt') && stamped('updatedAt')
-            && onlyKeys(['status', 'approvedBy', 'approvedAt', 'submittedBy', 'submittedAt', 'lastEditedBy', 'updatedAt'])) ||
-          // 5. Archiving (withdrawal) changes only the status trail.
-          (oldData().status == 'published' && newData().status == 'archived'
-            && newData().get('archivedBy', '') == request.auth.uid && stamped('archivedAt') && stamped('updatedAt')
-            && onlyKeys(['status', 'updatedAt', 'archivedBy', 'archivedAt']))
+            && onlyKeys(['status', 'approvedBy', 'approvedAt', 'submittedBy', 'submittedAt', 'lastEditedBy', 'updatedAt']))
+          // There is deliberately NO client path to `published` or `archived`: publishing and withdrawal are done only by the
+          // central publication service, which updates the catalogue and the catalogue version in the same transaction.
         );
       // Only an unpublished draft can be deleted; anything that has been approved or published is kept.
       allow delete: if isStoryPublisher() && resource.data.status == 'draft';
@@ -164,6 +147,10 @@ service cloud.firestore {
         allow read: if isStoryPublisher();
         allow write: if false;
       }
+      // Server-computed readiness for the current content (read by the approval rule above), and human review records
+      // (written by the server so each is bound to the content the reviewer was shown).
+      match /readiness/{docId} { allow read: if isStoryPublisher(); allow write: if false; }
+      match /reviews/{reviewId} { allow read: if isStoryPublisher(); allow write: if false; }
     }
 
     // Resumable seeding state (Stage 2).

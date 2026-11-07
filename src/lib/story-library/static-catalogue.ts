@@ -23,7 +23,7 @@ export class StaticCatalogueBackend implements CatalogueBackend {
   }
   async listChangedSince(o: { since: number; limit: number; startAfter?: string }) {
     if (o.limit > MAX_CATALOGUE_PAGE_SIZE) throw new Error(`limit must be <= ${MAX_CATALOGUE_PAGE_SIZE}`);
-    const rows = this.sorted().filter((e) => Number(e.updatedAt) > o.since && (!o.startAfter || e.storyKey > o.startAfter)).slice(0, o.limit);
+    const rows = this.sorted().filter((e) => Number(e.changedInVersion ?? e.updatedAt) > o.since && (!o.startAfter || e.storyKey > o.startAfter)).slice(0, o.limit);
     this.counters.queries++; this.counters.entriesRead += rows.length;
     return structuredClone(rows);
   }

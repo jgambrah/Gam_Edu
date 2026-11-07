@@ -12,7 +12,7 @@ export interface MemoryStats {
 
 export class MemoryBackend implements SeedBackend {
   docs = new Map<string, { data: Doc; ver: number }>();
-  objects = new Map<string, { size: number; sha: string; contentType: string }>();
+  objects = new Map<string, { size: number; sha: string; contentType: string; bytes: Uint8Array }>();
   stats: MemoryStats = { docReads: 0, docWrites: 0, docDeletes: 0, txCommits: 0, txConflicts: 0, objectPuts: 0, objectClashes: 0, listCalls: 0 };
   /** Every committed write, in order, so tests can prove what was (not) touched. */
   writeLog: Array<{ kind: 'doc' | 'delete' | 'object'; path: string }> = [];
@@ -28,9 +28,28 @@ export class MemoryBackend implements SeedBackend {
     await this.tick();
     const existing = this.objects.get(path);
     if (existing) { this.stats.objectClashes++; return existing.sha === sha256 ? 'exists_same' : 'exists_different'; }
-    this.objects.set(path, { size: bytes.length, sha: sha256, contentType });
+    this.objects.set(path, { size: bytes.length, sha: sha256, contentType, bytes: Uint8Array.from(bytes) });
     this.stats.objectPuts++;
     this.writeLog.push({ kind: 'object', path });
+    return 'created';
+  }
+
+  async getObject(path: string): Promise<Uint8Array | undefined> {
+    await this.tick();
+    const o = this.objects.get(path);
+    return o ? Uint8Array.from(o.bytes) : undefined;
+  }
+  async hasObject(path: string): Promise<boolean> { await this.tick(); return this.objects.has(path); }
+  /** Create-only server-side copy (never overwrites). */
+  async copyObjectIfAbsent(from: string, to: string, contentType: string): Promise<PutResult> {
+    await this.tick();
+    const src = this.objects.get(from);
+    if (!src) throw new Error(`copy source missing: ${from}`);
+    const existing = this.objects.get(to);
+    if (existing) { this.stats.objectClashes++; return existing.sha === src.sha ? 'exists_same' : 'exists_different'; }
+    this.objects.set(to, { ...src, contentType, bytes: Uint8Array.from(src.bytes) });
+    this.stats.objectPuts++;
+    this.writeLog.push({ kind: 'object', path: to });
     return 'created';
   }
 

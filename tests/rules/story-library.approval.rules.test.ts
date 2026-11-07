@@ -6,7 +6,10 @@
  *    server-stamped timestamps; actor fields must equal the signed-in uid, timestamps must be server time;
  *  - the approver must differ from the creator, the last editor AND the submitter;
  *  - approval changes nothing but the approval trail (no edit-and-approve);
- *  - approved/published content is frozen; re-opening clears the approval, so a material edit needs a fresh review;
+ *  - approval also needs a server-computed readiness record (premiumReady for the exact content hash) and an approver who is
+ *    not a reviewer of it; clients can change nothing but the workflow trail and `notes` (content is server-written);
+ *  - approved content is frozen; there is NO client path to published/archived (the publication service does that);
+ *    re-opening clears the approval, so a material edit needs a fresh review;
  *  - the same rules bind central publishers and super admins; machine-seeded drafts are covered.
  */
 import { describe, it, beforeAll, afterAll, beforeEach } from 'vitest';
@@ -28,25 +31,37 @@ const db = (w: Who) => {
 const ref = (w: Who, id: string) => doc(db(w), `story_library_admin/${id}`);
 const seed = (id: string, data: Record<string, unknown>) =>
   env.withSecurityRulesDisabled(async (c) => { await setDoc(doc(c.firestore(), `story_library_admin/${id}`), data); });
+/** The server-written readiness record the approval rule reads (premium-ready for content hash `h1`, reviewed by someone else). */
+const seedReady = (id: string, over: Record<string, unknown> = {}) =>
+  env.withSecurityRulesDisabled(async (c) => {
+    await setDoc(doc(c.firestore(), `story_library_admin/${id}/readiness/current`), { premiumReady: true, contentHash: 'h1', reviewerIds: ['reviewerX'], ...over });
+  });
+/** What the publication service does (Admin SDK): moves a story to published/archived. Clients cannot. */
+const serverPatch = (id: string, patch: Record<string, unknown>) =>
+  env.withSecurityRulesDisabled(async (c) => { await updateDoc(doc(c.firestore(), `story_library_admin/${id}`), patch); });
 
 const base = (over: Record<string, unknown> = {}) => ({
   storyKey: 'key', title: 'Original title', createdBy: 'pubA', lastEditedBy: 'pubA', createdAt: new Date(), updatedAt: new Date(), ...over,
 });
 /** A story as it sits in a given state, for seeding the emulator directly. */
-const seedState = (id: string, status: string, over: Record<string, unknown> = {}) =>
-  seed(id, base({
+const seedState = async (id: string, status: string, over: Record<string, unknown> = {}) => {
+  await seed(id, base({
     status,
-    ...(status !== 'draft' ? { submittedBy: 'pubA', submittedAt: new Date() } : {}),
+    ...(status !== 'draft' ? { submittedBy: 'pubA', submittedAt: new Date(), contentHash: 'h1' } : {}),
     ...(['approved', 'published', 'archived'].includes(status) ? { approvedBy: 'pubB', approvedAt: new Date() } : {}),
     ...over,
   }));
+  if (status !== 'draft') await seedReady(id);
+};
 /** A machine-seeded draft exactly as the seeder writes it. */
-const seedMachineDraft = (id: string, over: Record<string, unknown> = {}) =>
-  seed(id, base({ status: 'draft', createdBy: 'seeder-bot', lastEditedBy: 'seeder-bot', seededBy: 'seeder-bot', synthetic: true, ...over }));
+const seedMachineDraft = async (id: string, over: Record<string, unknown> = {}) => {
+  await seed(id, base({ status: 'draft', createdBy: 'seeder-bot', lastEditedBy: 'seeder-bot', seededBy: 'seeder-bot', synthetic: true, contentHash: 'h1', ...over }));
+  await seedReady(id);
+};
 
 // ---- what the app writes ----
 const submit = (w: Who, id: string) => updateDoc(ref(w, id), { status: 'review', lastEditedBy: uidOf(w), submittedBy: uidOf(w), submittedAt: serverTimestamp(), updatedAt: serverTimestamp() });
-const editContent = (w: Who, id: string, fields: Record<string, unknown> = { title: 'Edited title' }) => updateDoc(ref(w, id), { lastEditedBy: uidOf(w), updatedAt: serverTimestamp(), ...fields });
+const editContent = (w: Who, id: string, fields: Record<string, unknown> = { notes: 'Edited note' }) => updateDoc(ref(w, id), { lastEditedBy: uidOf(w), updatedAt: serverTimestamp(), ...fields });
 const approve = (w: Who, id: string, extra: Record<string, unknown> = {}) =>
   updateDoc(ref(w, id), { status: 'approved', approvedBy: uidOf(w), approvedAt: serverTimestamp(), updatedAt: serverTimestamp(), ...extra });
 const publish = (w: Who, id: string) => updateDoc(ref(w, id), { status: 'published', publishedBy: uidOf(w), publishedAt: serverTimestamp(), updatedAt: serverTimestamp() });
@@ -102,7 +117,7 @@ describe('F2 fixed: editing in review changes who may approve, and approval cann
   it('someone who edits a story in review cannot then approve it', async () => {
     await seedMachineDraft('story_e1');
     await assertSucceeds(submit('pubA', 'story_e1'));
-    await assertSucceeds(editContent('pubB', 'story_e1', { title: 'Edited in review' }));
+    await assertSucceeds(editContent('pubB', 'story_e1', { notes: 'Edited in review' }));
     await assertFails(approve('pubB', 'story_e1')); // last editor
     await assertFails(approve('pubA', 'story_e1')); // submitter
     await assertSucceeds(approve('pubC', 'story_e1'));
@@ -118,8 +133,8 @@ describe('F2 fixed: editing in review changes who may approve, and approval cann
 
   it('the editor field must be honest: cannot write someone else as last editor, or skip it', async () => {
     await seedState('story_e3', 'review');
-    await assertFails(updateDoc(ref('pubB', 'story_e3'), { title: 'x', lastEditedBy: 'pubA', updatedAt: serverTimestamp() }));
-    await assertFails(updateDoc(ref('pubB', 'story_e3'), { title: 'x', updatedAt: serverTimestamp() })); // lastEditedBy still pubA from before
+    await assertFails(updateDoc(ref('pubB', 'story_e3'), { notes: 'x', lastEditedBy: 'pubA', updatedAt: serverTimestamp() }));
+    await assertFails(updateDoc(ref('pubB', 'story_e3'), { notes: 'x', updatedAt: serverTimestamp() })); // lastEditedBy still pubA from before
     await assertSucceeds(editContent('pubB', 'story_e3'));
   });
 
@@ -165,7 +180,7 @@ describe('a material edit after approval invalidates the approval', () => {
   it('approved content is frozen: no edit, no publish-with-edit, no re-open that keeps the approval or changes content', async () => {
     await seedState('story_a1', 'approved');
     await assertFails(editContent('pubC', 'story_a1'));
-    await assertFails(updateDoc(ref('pubC', 'story_a1'), { status: 'published', publishedBy: 'pubC', publishedAt: serverTimestamp(), updatedAt: serverTimestamp(), title: 'Changed' }));
+    await assertFails(publish('pubC', 'story_a1')); // no client publish, ever
     // re-open that leaves the old approval in place
     await assertFails(updateDoc(ref('pubC', 'story_a1'), { status: 'review', lastEditedBy: 'pubC', submittedBy: 'pubC', submittedAt: serverTimestamp(), updatedAt: serverTimestamp() }));
     // re-open that also edits content
@@ -176,17 +191,18 @@ describe('a material edit after approval invalidates the approval', () => {
   it('after re-opening, the old approval is gone and the re-opener cannot re-approve; an independent publisher must', async () => {
     await seedState('story_a2', 'approved');
     await assertSucceeds(reopen('pubC', 'story_a2'));
-    await assertSucceeds(editContent('pubC', 'story_a2', { title: 'Corrected title' }));
+    await assertSucceeds(editContent('pubC', 'story_a2', { notes: 'Corrected note' }));
     await assertFails(approve('pubC', 'story_a2'));
     await assertFails(approve('pubA', 'story_a2')); // creator
     await assertSucceeds(approve('pubD', 'story_a2'));
   });
 
-  it('published and archived content is frozen too; archive then re-open clears approval', async () => {
+  it('published and archived content is frozen too; a client cannot archive, and a withdrawn story re-opens only with approval cleared', async () => {
     await seedState('story_a3', 'published');
     await assertFails(editContent('pubC', 'story_a3'));
-    await assertFails(updateDoc(ref('pubC', 'story_a3'), { status: 'archived', archivedBy: 'pubC', archivedAt: serverTimestamp(), updatedAt: serverTimestamp(), title: 'x' }));
-    await assertSucceeds(archive('pubC', 'story_a3'));
+    await assertFails(archive('pubC', 'story_a3')); // withdrawal is the publication service's job
+    await assertFails(reopen('pubC', 'story_a3')); // a published story must be withdrawn first
+    await serverPatch('story_a3', { status: 'archived' });
     await assertFails(publish('pubC', 'story_a3')); // archived cannot jump back to published
     await assertFails(updateDoc(ref('pubC', 'story_a3'), { status: 'review', lastEditedBy: 'pubC', submittedBy: 'pubC', submittedAt: serverTimestamp(), updatedAt: serverTimestamp() })); // approval retained
     await assertSucceeds(reopen('pubC', 'story_a3'));
@@ -200,16 +216,55 @@ describe('a material edit after approval invalidates the approval', () => {
     await assertFails(publish('pubB', 'story_a5'));
   });
 
-  it('the full path with machine-seeded content: submit → independent approve → publish → withdraw → re-open → new approval', async () => {
+  it('the full path with machine-seeded content: submit → independent approve → (service) publish → (service) withdraw → re-open → new approval', async () => {
     await seedMachineDraft('story_f1');
     await assertSucceeds(submit('pubA', 'story_f1'));
     await assertSucceeds(approve('pubB', 'story_f1'));
-    await assertSucceeds(publish('pubA', 'story_f1'));
-    await assertSucceeds(archive('pubC', 'story_f1'));
+    await assertFails(publish('pubA', 'story_f1')); // clients cannot publish
+    await serverPatch('story_f1', { status: 'published' });
+    await assertFails(archive('pubC', 'story_f1')); // nor withdraw
+    await serverPatch('story_f1', { status: 'archived' });
     await assertSucceeds(reopen('pubC', 'story_f1'));
-    await assertSucceeds(editContent('pubC', 'story_f1', { title: 'Corrected after withdrawal' }));
+    await assertSucceeds(editContent('pubC', 'story_f1', { notes: 'Corrected after withdrawal' }));
     await assertFails(approve('pubC', 'story_f1'));
     await assertSucceeds(approve('pubB', 'story_f1')); // a previous approver who did not edit this version is independent of it
+  });
+});
+
+describe('approval is gated on server-computed readiness and independent review', () => {
+  it('no readiness record, a not-ready record, or one for another content hash blocks approval', async () => {
+    await seedState('story_g1', 'review');
+    await env.withSecurityRulesDisabled(async (c) => { await deleteDoc(doc(c.firestore(), 'story_library_admin/story_g1/readiness/current')); });
+    await assertFails(approve('pubC', 'story_g1'));
+    await seedReady('story_g1', { premiumReady: false });
+    await assertFails(approve('pubC', 'story_g1'));
+    await seedReady('story_g1', { contentHash: 'older-hash' });
+    await assertFails(approve('pubC', 'story_g1'));
+    await seedReady('story_g1');
+    await assertSucceeds(approve('pubC', 'story_g1'));
+  });
+  it('a story with no content hash cannot be approved at all', async () => {
+    await seedState('story_g2', 'review', { contentHash: '' });
+    await assertFails(approve('pubC', 'story_g2'));
+  });
+  it('a reviewer of the content cannot approve it, even if they never edited or submitted it', async () => {
+    await seedState('story_g3', 'review');
+    await seedReady('story_g3', { reviewerIds: ['pubC'] });
+    await assertFails(approve('pubC', 'story_g3'));
+    await assertSucceeds(approve('pubD', 'story_g3'));
+  });
+  it('content fields (title, hash, package path) cannot be changed by any client, so readiness cannot be gamed', async () => {
+    await seedState('story_g4', 'review');
+    for (const fields of [{ title: 'New' }, { contentHash: 'h2' }, { packagePath: 'story_library/x/v1/package.json' }]) {
+      await assertFails(editContent('pubC', 'story_g4', fields));
+    }
+    await seedMachineDraft('story_g5');
+    await assertFails(editContent('pubA', 'story_g5', { title: 'New' }));
+  });
+  it('readiness and review records are server-only', async () => {
+    await seedState('story_g6', 'review');
+    await assertFails(setDoc(doc(db('pubC'), 'story_library_admin/story_g6/readiness/current'), { premiumReady: true, contentHash: 'h1', reviewerIds: [] }));
+    await assertFails(setDoc(doc(db('superAdmin'), 'story_library_admin/story_g6/reviews/r1'), { verdict: 'pass' }));
   });
 });
 
@@ -226,6 +281,7 @@ describe('nobody outside the workflow can touch stories', () => {
     await assertFails(editContent('superAdmin', 'story_x2'));
     await seedState('story_x3', 'review', { createdBy: 'pubA', lastEditedBy: 'pubA', submittedBy: 'pubA' });
     await assertFails(publish('superAdmin', 'story_x3'));
+    await assertFails(archive('superAdmin', 'story_x3'));
   });
 
   it('only a draft can be deleted', async () => {
