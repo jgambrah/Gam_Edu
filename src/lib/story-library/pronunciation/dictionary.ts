@@ -128,5 +128,9 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: roughly "mahn-HYEE-ah". The "nhy" consonant cluster has no exact English equivalent.', respell: 'mahn-hyee-ah', hint: 'Manhyia is the royal palace in Kumasi; say roughly "mahn-HYEE-ah".', reviewerNotes: ['HIGH RISK: "nhy" cluster needs native-speaker demonstration.'] }),
     entry({ id: 'ofori', written: 'Ofori', kind: 'personal-name', language: AKAN, meaning: 'Akan personal and family name',
       guidance: 'Candidate: "oh-FOH-ree".', respell: 'oh-foh-ree', hint: 'Ofori is a Ghanaian (Akan) name; say "oh-FOH-ree".', reviewerNotes: ['Confirm stress.'] }),
+    entry({ id: 'serwaa', written: 'Serwaa', kind: 'personal-name', language: AKAN, meaning: 'Akan female personal name often associated with royalty or nobility',
+      guidance: 'Candidate: "sehr-WAAH" with a long final vowel.', respell: 'sehr-waah', hint: 'Serwaa is a Ghanaian (Akan) female name; say "sehr-WAAH".', reviewerNotes: ['Confirm vowel length and tone.'] }),
+    entry({ id: 'mansa', written: 'Mansa', kind: 'personal-name', language: AKAN, meaning: 'Akan name traditionally given to a third consecutive daughter',
+      guidance: 'Candidate: "MAHN-sah".', respell: 'mahn-sah', hint: 'Mansa is a Ghanaian (Akan) female name; say "MAHN-sah".', reviewerNotes: ['Confirm stress.'] }),
   ],
 };

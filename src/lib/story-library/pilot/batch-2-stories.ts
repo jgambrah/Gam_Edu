@@ -52,7 +52,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
       'Kwabena: an eleven-year-old Ghanaian boy in Primary 6, wearing a bright mustard-yellow polo shirt, khaki shorts and sandals, carrying a small magnifying glass and green field notebook.',
       'Afia: his ten-year-old cousin in Primary 5, wearing a coral-pink patterned top and denim skirt, braided hair with white beads, observant and curious.',
       'Nana Osei: Afia’s grandfather in Abono village, a respected elder wearing a blue-and-brown traditional cloth over his shoulder.',
-      'Dr Boateng: a Ghanaian geologist from Kwame Nkrumah University of Science and Technology (KNUST), wearing a light khaki field vest, glasses and sun hat.',
+      'Dr Boateng: a male Ghanaian geologist from Kwame Nkrumah University of Science and Technology (KNUST), wearing a light khaki field vest, glasses and sun hat.',
     ],
     pages: [
       {
@@ -77,17 +77,17 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Unhurried and warm, honouring the oral tradition.',
       },
       {
-        text: 'Near the shoreline stood Dr Boateng, a geologist from Kumasi, examining rocks with a hand lens. Nana Osei greeted her warmly. ‘Tradition tells us how our people met and cared for the lake,’ Nana Osei told the children, ‘and Dr Boateng studies the rocks to learn how the Earth itself shaped this deep bowl long before people lived here.’',
+        text: 'Near the shoreline stood Dr Boateng, a geologist from Kumasi, examining rocks with a hand lens. Nana Osei greeted him warmly. ‘Tradition tells us how our people met and cared for the lake,’ Nana Osei told the children, ‘and Dr Boateng studies the rocks to learn how the Earth itself shaped this deep bowl long before people lived here.’',
         alt: 'Nana Osei introduces Kwabena and Afia to Dr Boateng, a geologist holding a rock sample and hand lens by the shore.',
         motif: '🪨🔍',
         brief: 'Nana Osei introducing Kwabena and Afia to Dr Boateng (khaki field vest, glasses, sun hat) who holds a rock sample and magnifying lens near the rocky lakeshore.',
         narration: 'Warm bridge between cultural respect and scientific inquiry.',
       },
       {
-        text: '‘Wait,’ said Afia, looking around the steep rim of hills. ‘Some people say Lake Bosomtwe is an old volcano. Is that true?’ Dr Boateng shook her head. ‘Scientists tested that idea carefully, Afia. A volcano leaves behind volcanic lava rocks and an opening underneath. Here, there is no volcanic lava at all.’',
-        alt: 'Afia points toward the ring of hills while Dr Boateng shakes her head and holds up a non-volcanic rock sample.',
+        text: '‘Wait,’ said Afia, looking around the steep rim of hills. ‘Some people say Lake Bosomtwe is an old volcano. Is that true?’ Dr Boateng shook his head. ‘Scientists tested that idea carefully, Afia. A volcano leaves behind volcanic lava rocks and an opening underneath. Here, there is no volcanic lava at all.’',
+        alt: 'Afia points toward the ring of hills while Dr Boateng shakes his head and holds up a non-volcanic rock sample.',
         motif: '⛰️❓',
-        brief: 'Afia pointing up at the circular crater rim while Dr Boateng shows Kwabena and Afia the angular rock fragments in her hand.',
+        brief: 'Afia pointing up at the circular crater rim while Dr Boateng shows Kwabena and Afia the angular rock fragments in his hand.',
         narration: 'Curious voice for Afia, then clear and reassuring for Dr Boateng.',
       },
       {
