@@ -59,7 +59,7 @@ export async function createPreviewSource(base = PREVIEW_BASE, fetchFn: typeof f
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });
   return {
     kind: 'preview',
-    notice: 'PREVIEW: sample stories for testing. Most illustrations are placeholders and most voices are a free robotic placeholder; page 1 of Efua’s Honest Business is a natural-voice and artwork sample. This is not published content.',
+    notice: 'PREVIEW: sample stories for testing. Most illustrations are placeholders and most voices are a free robotic placeholder; page 1 of Efua’s Honest Business is a voice and artwork sample, and pages 1–2 of Kofi Counts the Market have artwork samples. This is not published content.',
     catalogue, loader, assets,
     counters: () => ({ catalogue: { ...backend.counters } }),
     info: (k) => infoData[k],

@@ -55,6 +55,17 @@ if (haveReal) {
   realImageSrc = `${PREVIEW_BASE}/images/${iName}`;
 }
 
+// 1c) Kofi Counts the Market: two reviewed candidate pictures (page 1 = p1-c, page 2 = p2-b). Candidates only, not approved.
+const KOFI_DIR = path.join(root, 'assets/premium-candidates/kofi-counts-the-market');
+const kofiPick: Record<number, string> = { 1: 'kofi-p1-c.webp', 2: 'kofi-p2-b.webp' };
+const kofiImages: Record<number, string> = {};
+for (const [pg, f] of Object.entries(kofiPick)) {
+  const fp = path.join(KOFI_DIR, f);
+  if (!existsSync(fp)) continue;
+  const b = readFileSync(fp); const n = `kofi-p${pg}-${sha(b).slice(0, 12)}.webp`;
+  copyFileSync(fp, path.join(out, 'images', n)); kofiImages[Number(pg)] = `${PREVIEW_BASE}/images/${n}`;
+}
+
 // 2) packages, catalogue entries and preview side-car
 const dictIndex = indexDictionary(GHANAIAN_PRONUNCIATIONS);
 const pronunciationFor = (texts: string[]) => {
@@ -115,8 +126,8 @@ PILOT_STORIES.forEach((s, idx) => {
   previewInfo[s.key] = {
     set: s.set, palette: s.palette, classification: s.classification, characters: s.characters, narrationPlan: s.narrationPlan, music: s.music,
     culturalNotes: s.culturalNotes, reviewQuestions: s.reviewQuestions,
-    pages: s.pages.map((p, i) => ({ motif: p.motif, brief: p.brief, narration: p.narration, ...(s.key === 'efuas-honest-business' && i === 0 && realImageSrc ? { image: { src: realImageSrc, alt: p.alt } } : {}) })),
-    realAssets: s.key === 'efuas-honest-business' && haveReal ? { narrationPages: [1], imagePages: [1], voice: 'Kore' } : undefined,
+    pages: s.pages.map((p, i) => ({ motif: p.motif, brief: p.brief, narration: p.narration, ...(s.key === 'kofi-counts-the-market' && kofiImages[i + 1] ? { image: { src: kofiImages[i + 1], alt: p.alt } } : {}), ...(s.key === 'efuas-honest-business' && i === 0 && realImageSrc ? { image: { src: realImageSrc, alt: p.alt } } : {}) })),
+    realAssets: s.key === 'efuas-honest-business' && haveReal ? { narrationPages: [1], imagePages: [1], voice: 'Kore' } : s.key === 'kofi-counts-the-market' && Object.keys(kofiImages).length ? { narrationPages: [], imagePages: Object.keys(kofiImages).map(Number), voice: '' } : undefined,
     teacherGuide: s.teacherGuide,
     pronunciation: pronunciationFor(s.pages.map((p) => p.text)),
     illustration: s.illustrationPlan ? illustrationStatus(s.illustrationPlan, s.illustrationPlan.shots.map((x) => ({ page: x.page, status: (s.key === 'efuas-honest-business' && haveReal && x.page === 1 ? 'candidate' : 'placeholder') as 'candidate' | 'placeholder', ...(s.key === 'efuas-honest-business' && haveReal && x.page === 1 ? { file: { path: 'page1-1.webp', widthPx: 960, heightPx: 717, bytes: realImageBytes, sha256: realImageSha } } : {}) }))) : undefined,

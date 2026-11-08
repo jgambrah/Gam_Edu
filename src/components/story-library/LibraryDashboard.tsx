@@ -128,7 +128,7 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
         <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold">
           {entry.hasNarration && <Chip tone="amber">{info?.realAssets?.narrationPages.length ? '🔊 Voice sample (page 1)' : '🔊 Placeholder voice'}</Chip>}
           {entry.hasActivities && <Chip tone="emerald">Activities</Chip>}
-          <Chip tone="amber">{info?.realAssets?.imagePages.length ? 'Art sample (page 1)' : 'Placeholder art'}</Chip>
+          <Chip tone="amber">{info?.realAssets?.imagePages.length ? `Art sample (${info.realAssets.imagePages.length > 1 ? 'pages ' + info.realAssets.imagePages.join(', ') : 'page ' + info.realAssets.imagePages[0]})` : 'Placeholder art'}</Chip>
           {info?.set === 'extension' && <Chip tone="slate">Extra sample</Chip>}
           {info?.set === 'benchmark' && <Chip tone="slate">Premium benchmark (draft)</Chip>}
           {info?.set === 'sample' && <Chip tone="slate">Editorial sample</Chip>}
