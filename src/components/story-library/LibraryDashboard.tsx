@@ -110,14 +110,14 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
   const presentation = presentationFor(entry.classIds ?? []);
   const classes = (entry.classIds ?? []);
   const classText = classes.length > 2 ? `${label(CLASS_REGISTRY, classes[0])} to ${label(CLASS_REGISTRY, classes[classes.length - 1])}` : classes.map((c) => label(CLASS_REGISTRY, c)).join(', ');
-  const isEfua = entry.storyKey === 'efuas-honest-business';
+  const has3DCover = entry.storyKey === 'efuas-honest-business' || entry.storyKey === 'kofi-counts-the-market';
   return (
     <li className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition hover:shadow-xl motion-reduce:transition-none" data-testid="story-card" data-story={entry.storyKey}>
       <PlaceholderArt
         motif={info?.pages[0]?.motif ?? '📖'}
         palette={info?.palette ?? ['#e2e8f0', '#94a3b8']}
         alt={`Cover for ${entry.title}`}
-        imageSrc={isEfua ? '/story-spark-preview/candidates/efuas-honest-business/page1-1.webp' : undefined}
+        imageSrc={has3DCover ? `/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp` : undefined}
         compact
       />
       <div className="flex flex-1 flex-col p-4">

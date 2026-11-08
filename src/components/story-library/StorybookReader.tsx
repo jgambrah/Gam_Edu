@@ -26,7 +26,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [results, setResults] = useState<ActivityResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
-  const isEfua = pkg.storyId === 'efuas-honest-business';
+  const isPremiumStory = pkg.storyId === 'efuas-honest-business' || pkg.storyId === 'kofi-counts-the-market';
   const audioRef = useRef<HTMLAudioElement>(null);
   const raf = useRef<number>(0);
   const hlRef = useRef<HighlightState>(NO_HIGHLIGHT);
@@ -61,8 +61,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
       try {
         await source.loader.showPage(pkg, current!.kind === 'page' ? current.index : 0, mode); // this page + look-ahead; cached after first load
         let url: string | undefined;
-        if (isEfua) {
-          url = `/story-spark-preview/candidates/efuas-honest-business/tts-Kore-page${page.n}.mp3`;
+        if (isPremiumStory) {
+          url = `/story-spark-preview/candidates/${pkg.storyId}/tts-Kore-page${page.n}.mp3`;
         }
         if (!url) url = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
         if (cancelled) return;
@@ -72,7 +72,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step, mode, pkg, isEfua]);
+  }, [step, mode, pkg, isPremiumStory]);
 
   useEffect(() => { if (audioRef.current) audioRef.current.playbackRate = speed; }, [speed]);
 
@@ -81,12 +81,12 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     const el = audioRef.current;
     if (el && page) {
       const dur = el.duration && Number.isFinite(el.duration) && el.duration > 0 ? el.duration * 1000 : (page.audio?.durationMs ?? 1);
-      const scale = isEfua && page.audio?.durationMs ? page.audio.durationMs / dur : 1;
+      const scale = isPremiumStory && page.audio?.durationMs ? page.audio.durationMs / dur : 1;
       const next = highlightAt(page, el.currentTime * 1000 * scale, hlRef.current);
       if (next.word !== hlRef.current.word || next.sentence !== hlRef.current.sentence || next.level !== hlRef.current.level) { hlRef.current = next; setHl(next); }
     }
     raf.current = requestAnimationFrame(tick);
-  }, [page, isEfua]);
+  }, [page, isPremiumStory]);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
   const onPlay = () => { setPlaying(true); setNeedsTap(false); cancelAnimationFrame(raf.current); raf.current = requestAnimationFrame(tick); };
@@ -181,7 +181,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
               compact={presentation.layout === 'text-first'}
-              imageSrc={isEfua ? `/story-spark-preview/candidates/efuas-honest-business/page${page.n}-1.webp` : undefined}
+              imageSrc={isPremiumStory ? `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp` : undefined}
             />
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
