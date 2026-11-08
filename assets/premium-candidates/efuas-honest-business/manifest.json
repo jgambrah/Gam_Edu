@@ -86,5 +86,181 @@
     "voice": "Puck",
     "pronunciation": "UNVERIFIED: awaiting native-speaker review",
     "bytes": 1376640
+  },
+  {
+    "file": "tts-Kore-page2.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1169280
+  },
+  {
+    "file": "tts-Kore-page3.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1173120
+  },
+  {
+    "file": "tts-Kore-page4.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1040640
+  },
+  {
+    "file": "tts-Kore-page5.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 844800
+  },
+  {
+    "file": "tts-Kore-page6.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 885120
+  },
+  {
+    "file": "tts-Kore-page7.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1989120
+  },
+  {
+    "file": "tts-Kore-page8.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1104000
+  },
+  {
+    "file": "tts-Kore-page9.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1171200
+  },
+  {
+    "file": "tts-Kore-page10.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 958080
+  },
+  {
+    "file": "tts-Kore-page11.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1138560
+  },
+  {
+    "file": "tts-Kore-page12.pcm",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-tts-preview",
+    "voice": "Kore",
+    "pronunciation": "UNVERIFIED: awaiting native-speaker review",
+    "bytes": 1307520
+  },
+  {
+    "file": "page2-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "183d6b0d70f0f7c8",
+    "bytes": 66398,
+    "sha256": "f2dd2f8439fe700bc86cbac7f5fcf35e62efb66ba80f4970bd6a42d05bbe5861"
+  },
+  {
+    "file": "page3-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "0b7221dbc627aeee",
+    "bytes": 31332,
+    "sha256": "1e04fe6c88325cd9a2721c5e4a233c4f75ea7db5ca79075281075eda31dba920"
+  },
+  {
+    "file": "page4-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "5891d061fbabf6da",
+    "bytes": 49164,
+    "sha256": "8ec9891bd775de7abf72723f0fe7975377be66e6c4b03e90bdc136c73c5f532c"
+  },
+  {
+    "file": "page5-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "2259ee6face49af6",
+    "bytes": 47046,
+    "sha256": "8261d110b221a832464f44f87b10b9b11e1ccdfbd23e57bf87132410f15b29cd"
+  },
+  {
+    "file": "page6-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "bc85a162baa0da6f",
+    "bytes": 50656,
+    "sha256": "00353a15d52c0c29ec3d61cbfcb3b38b14f6beaaa4784c3896702474cf671aca"
+  },
+  {
+    "file": "page7-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "cd6f5940d63bd113",
+    "bytes": 44140,
+    "sha256": "29037d03c95e4d36b0abb4eda838944684f06703967174a4701246fb57187070"
+  },
+  {
+    "file": "page8-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "bb73bd0913b934f6",
+    "bytes": 86592,
+    "sha256": "b4d652ca83d4c73e914e209fe75328eeaf9e154097d8b478997c753b18c4c99e"
+  },
+  {
+    "file": "page9-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "fa904c980136e4a3",
+    "bytes": 50838,
+    "sha256": "e9335ff88d828e3ab86256b6eeb9cb04cb65d2f092f2e5d7d4294038eabe9d68"
+  },
+  {
+    "file": "page10-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "e9f7172c619ae1d5",
+    "bytes": 86910,
+    "sha256": "02b50f0bb7c2bf38b7f182e8565a07efcce11fb1c9e572d281eb83ab33c45c81"
+  },
+  {
+    "file": "page11-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "cfb03e508595e6d1",
+    "bytes": 57354,
+    "sha256": "ef9ff04185a5a714de219907516f367367fc0bf6b148b4b0150c1e4af3a99b30"
+  },
+  {
+    "file": "page12-1.webp",
+    "status": "candidate",
+    "engine": "gemini-3.1-flash-image-preview",
+    "promptHash": "81a978f9348d0764",
+    "bytes": 28306,
+    "sha256": "4467d75a254979e527df28c5d0a7497d5699822f9fdd0e6ba406646ffa1a40c9"
   }
 ]

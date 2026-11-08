@@ -6,6 +6,7 @@ import type { ReadMode } from '@/lib/story-library/lazy-loader';
 import { presentationFor } from '@/lib/story-library/classification';
 import { buildFlow, cleanWord, highlightAt, lookupWord, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
 import { loadProgress, saveProgress } from '@/lib/story-library/progress-store';
+import { Piano } from '@/lib/story-spark/piano';
 import { PlaceholderArt } from './PlaceholderArt';
 import { StoryNotes } from './StoryNotes';
 import { ActivityPlayer, type ActivityResult } from './ActivityPlayer';
@@ -26,9 +27,34 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [results, setResults] = useState<ActivityResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [autoRoll, setAutoRoll] = useState<boolean>(true);
+  const [pianoOn, setPianoOn] = useState<boolean>(false);
+  const [customDurationScale, setCustomDurationScale] = useState<boolean>(true);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const pianoRef = useRef<Piano | null>(null);
   const raf = useRef<number>(0);
   const hlRef = useRef<HighlightState>(NO_HIGHLIGHT);
+
+  useEffect(() => {
+    const p = new Piano();
+    pianoRef.current = p;
+    return () => { p.dispose(); pianoRef.current = null; };
+  }, []);
+
+  const togglePiano = () => {
+    const p = pianoRef.current;
+    if (!p) return;
+    if (pianoOn) {
+      p.stop();
+      setPianoOn(false);
+    } else {
+      const started = p.start();
+      if (started) {
+        p.duck(playing);
+        setPianoOn(true);
+      }
+    }
+  };
 
   const current = flow[step];
   const page = current?.kind === 'page' ? pkg.pages[current.index] : undefined;
@@ -59,7 +85,22 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     (async () => {
       try {
         await source.loader.showPage(pkg, current!.kind === 'page' ? current.index : 0, mode); // this page + look-ahead; cached after first load
-        const url = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
+        const koreUrl = `/story-spark-preview/candidates/${pkg.storyId}/tts-Kore-page${page.n}.mp3`;
+        let url: string = koreUrl;
+        try {
+          const fallback = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
+          if (typeof window !== 'undefined' && typeof fetch === 'function') {
+            const check = await fetch(koreUrl).catch(() => null);
+            if (!check || !check.ok) {
+              url = fallback;
+              setCustomDurationScale(false);
+            } else {
+              setCustomDurationScale(true);
+            }
+          }
+        } catch {
+          setCustomDurationScale(true);
+        }
         if (cancelled) return;
         el.src = url; el.playbackRate = speed; el.load();
         if (m.autoplay) { try { await el.play(); } catch { if (!cancelled) setNeedsTap(true); } }
@@ -75,18 +116,32 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const tick = useCallback(() => {
     const el = audioRef.current;
     if (el && page) {
-      const next = highlightAt(page, el.currentTime * 1000, hlRef.current);
+      const dur = el.duration && Number.isFinite(el.duration) && el.duration > 0 ? el.duration * 1000 : (page.audio?.durationMs ?? 1);
+      const scale = customDurationScale && page.audio?.durationMs ? page.audio.durationMs / dur : 1;
+      const next = highlightAt(page, el.currentTime * 1000 * scale, hlRef.current);
       if (next.word !== hlRef.current.word || next.sentence !== hlRef.current.sentence || next.level !== hlRef.current.level) { hlRef.current = next; setHl(next); }
     }
     raf.current = requestAnimationFrame(tick);
-  }, [page]);
+  }, [page, customDurationScale]);
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
-  const onPlay = () => { setPlaying(true); setNeedsTap(false); cancelAnimationFrame(raf.current); raf.current = requestAnimationFrame(tick); };
-  const onPause = () => { setPlaying(false); cancelAnimationFrame(raf.current); };
+  const onPlay = () => {
+    setPlaying(true);
+    setNeedsTap(false);
+    pianoRef.current?.duck(true);
+    cancelAnimationFrame(raf.current);
+    raf.current = requestAnimationFrame(tick);
+  };
+  const onPause = () => {
+    setPlaying(false);
+    pianoRef.current?.duck(false);
+    cancelAnimationFrame(raf.current);
+  };
   const onEnded = () => {
-    setPlaying(false); cancelAnimationFrame(raf.current);
-    if (m.autoAdvance) setTimeout(() => go(1), 900);
+    setPlaying(false);
+    pianoRef.current?.duck(false);
+    cancelAnimationFrame(raf.current);
+    if (m.autoAdvance || autoRoll) setTimeout(() => go(1), 950);
   };
   const toggle = async () => {
     const el = audioRef.current; if (!el || !el.src) return;
@@ -130,7 +185,6 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         <h2 className="mt-2 text-3xl font-extrabold text-slate-900">The End</h2>
         <p className="mt-2 text-lg text-slate-700">{pkg.title}</p>
         {results.length > 0 && <p className="mt-4 text-lg text-slate-700">You tried <strong>{sc.answered}</strong> activities{sc.scored > 0 && <>, and got <strong>{sc.correct}</strong> of <strong>{sc.scored}</strong> right</>}.</p>}
-        <p className="mt-2 text-sm text-slate-500">Preview note: results stay on this screen and are not saved or sent anywhere.</p>
         <div className="mt-6 flex justify-center gap-3">
           <button className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300" onClick={() => { setFinished(false); setStep(0); setResults([]); }}>Read again</button>
           <button className="rounded-full border-2 border-slate-300 px-6 py-3 font-bold text-slate-800 hover:bg-slate-50" onClick={onClose}>Back to library</button>
@@ -152,27 +206,53 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
           ))}
         </div>
         {m.narration && (
-          <label className="flex items-center gap-1 text-sm font-semibold text-slate-700">Speed
-            <select aria-label="Narration speed" value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="rounded-lg border border-slate-300 bg-white px-2 py-1">
-              {SPEEDS.map((s) => <option key={s} value={s}>{s}×</option>)}
-            </select>
-          </label>
+          <>
+            <label className="flex items-center gap-1 text-sm font-semibold text-slate-700">Speed
+              <select aria-label="Narration speed" value={speed} onChange={(e) => setSpeed(Number(e.target.value))} className="rounded-lg border border-slate-300 bg-white px-2 py-1">
+                {SPEEDS.map((s) => <option key={s} value={s}>{s}×</option>)}
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={() => setAutoRoll((v) => !v)}
+              aria-pressed={autoRoll}
+              className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${autoRoll ? 'bg-emerald-100 text-emerald-900 ring-1 ring-emerald-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+              title="Automatically roll to the next page when the narrator finishes speaking"
+            >
+              {autoRoll ? '🔄 Auto-Roll: On' : '🔄 Auto-Roll: Off'}
+            </button>
+          </>
         )}
+        <button
+          type="button"
+          onClick={togglePiano}
+          aria-pressed={pianoOn}
+          className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${pianoOn ? 'bg-amber-100 text-amber-900 ring-1 ring-amber-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+          title="Play soft background piano music that gently lowers while the narrator reads"
+        >
+          {pianoOn ? '🎹 Soft Piano: On' : '🎹 Soft Piano: Off'}
+        </button>
       </header>
 
-      <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">{source.notice}</p>
+      {source.notice && <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">{source.notice}</p>}
 
       {current?.kind === 'activity' && (
-        <ActivityPlayer key={current.activity.id} activity={current.activity} onDone={(r) => { setResults((x) => [...x.filter((y) => y.id !== r.id), r]); go(1); }} />
+        <div key={`act-${current.activity.id}`} className="animate-in fade-in slide-in-from-right-4 duration-500">
+          <ActivityPlayer activity={current.activity} onDone={(r) => { setResults((x) => [...x.filter((y) => y.id !== r.id), r]); go(1); }} />
+        </div>
       )}
 
       {page && (
-        <div className={`grid gap-4 ${presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
+        <div key={`page-${page.n}`} className={`grid gap-4 animate-in fade-in slide-in-from-right-4 duration-500 ${presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
           <div className={presentation.layout === 'text-first' ? 'order-2 md:order-2' : ''}>
-            {art?.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={art.image.src} alt={art.image.alt} data-testid="page-image" className="w-full rounded-3xl shadow-lg ring-1 ring-slate-200" />
-            ) : <PlaceholderArt motif={art?.motif ?? '📖'} palette={[c0, c1]} alt={page.alt ?? 'Illustration'} brief={art?.brief} compact={presentation.layout === 'text-first'} />}
+            <PlaceholderArt
+              motif={art?.motif ?? '📖'}
+              palette={[c0, c1]}
+              alt={page.alt ?? 'Illustration'}
+              brief={art?.brief}
+              compact={presentation.layout === 'text-first'}
+              imageSrc={`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`}
+            />
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
             <p className="text-lg leading-[1.9] text-slate-900" style={{ fontSize, fontFamily: 'Andika, Nunito, system-ui, sans-serif' }} data-testid="page-text">
@@ -221,7 +301,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
           {page ? `Page ${pageNo} of ${pkg.pages.length}. ${syncDescription(page, mode)}` : 'Activity time'}
           {audioError && <span className="ml-1 font-semibold text-red-700"> {audioError}</span>}
         </p>
-        <p className="text-center text-[11px] text-slate-500">Background music: not included in this preview. {m.blurb}</p>
+        <p className="text-center text-[11px] text-slate-500">{m.blurb}</p>
       </footer>
       <StoryNotes info={info} />
     </div>

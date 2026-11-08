@@ -45,7 +45,7 @@ export const YAA_DRAIN: EditorialSample = {
     { id: 'yaa-v1', type: 'vocabulary', afterPage: 4, word: 'blocked', definition: 'Stopped from moving or passing through.', distractors: ['Very wet', 'Painted brightly'] },
     { id: 'yaa-pred', type: 'prediction', afterPage: 5, prompt: 'What do you think Yaa should do now? Who might help her?' },
     { id: 'yaa-c2', type: 'comprehension', afterPage: 5, question: 'How many bottles and sachets did Yaa count near the drain?', options: ['Forty-two', 'Fourteen', 'Four'], correctIndex: 0, explanation: 'Yaa counted forty-two bottles and sachets in one afternoon.' },
-    { id: 'yaa-seq', type: 'sequencing', afterPage: 8, prompt: 'Put these events in order.', items: ['Yaa notices the flooded lane.', 'Yaa finds the blocked drain.', 'Neighbours clear the drain together.', 'Yaa speaks at school assembly.'] },
+    { id: 'yaa-seq', type: 'sequencing', afterPage: 9, prompt: 'Put these events in order.', items: ['Yaa notices the flooded lane.', 'Yaa finds the blocked drain.', 'Neighbours clear the drain together.', 'Yaa speaks at school assembly.'] },
     { id: 'yaa-c3', type: 'comprehension', afterPage: 10, question: 'The rubbish count went from forty-two to six. How many fewer is that?', options: ['Thirty-six', 'Forty-eight', 'Six'], correctIndex: 0, explanation: '42 − 6 = 36 fewer pieces of rubbish.' },
     { id: 'yaa-think', type: 'prediction', afterPage: 10, prompt: 'Why did counting help Yaa solve the problem? What else could we count to improve our school?' },
     { id: 'yaa-sel', type: 'sel', afterPage: 10, prompt: 'What is one small thing you could do to look after your own street or school?', feelingOptions: ['Proud', 'Hopeful', 'Unsure', 'Ready'] },
@@ -111,7 +111,7 @@ export const KOFI_MARKET: EditorialSample = {
   ],
   activities: [
     { id: 'kofi-c1', type: 'comprehension', afterPage: 4, question: 'How many mangoes did Kofi count?', options: ['Three', 'Two', 'Five'], correctIndex: 0, explanation: 'Kofi counted one, two, three mangoes.' },
-    { id: 'kofi-c2', type: 'comprehension', afterPage: 6, question: 'How many eggs were in the basket?', options: ['Six', 'Four', 'Ten'], correctIndex: 0, explanation: 'They counted one, two, three, four, five, six.' },
+    { id: 'kofi-c2', type: 'comprehension', afterPage: 7, question: 'How many eggs were in the basket?', options: ['Six', 'Four', 'Ten'], correctIndex: 0, explanation: 'They counted one, two, three, four, five, six.' },
     { id: 'kofi-ph', type: 'phonics', afterPage: 4, targetSound: 'm', prompt: 'Which words start with the "m" sound like "mango"?', options: ['mango', 'market', 'tomato', 'banana'], correctIndexes: [0, 1] },
     { id: 'kofi-pred', type: 'prediction', afterPage: 5, prompt: 'What do you think Kofi will count next?' },
     { id: 'kofi-sel', type: 'sel', afterPage: 9, prompt: 'What is the best thing you counted today, and who helped you?', feelingOptions: ['Happy', 'Proud', 'Loved'] },

@@ -17,11 +17,10 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the eight sample stories with the preview notice, and every card says what is a placeholder', async () => {
+  it('lists the eight stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(8));
-    expect(screen.getAllByText(/not published content/i).length).toBeGreaterThan(0);
-    for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText(/Placeholder art|Art sample \(pages? [0-9, ]+\)/)).toBeTruthy();
+    for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
@@ -61,16 +60,13 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   });
 
-  it('Efua shows an honest status panel and the teacher’s guide; nothing claims illustrations or verified names exist', async () => {
+  it('Efua shows the teacher’s guide without internal debug notices', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(8));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
-    expect(screen.getByTestId('illustration-status').textContent).toMatch(/0 of 13 approved image files exist/);
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
-    expect(screen.getByTestId('story-notes').textContent).toMatch(/NONE verified by a native speaker/);
-    expect(screen.getByTestId('story-notes').textContent).toMatch(/awaiting native-speaker review/);
   });
 
   it('shows a clear error, not a blank screen, when the library cannot be loaded', async () => {

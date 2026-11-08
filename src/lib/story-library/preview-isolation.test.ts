@@ -39,7 +39,7 @@ function graph(entry: string): Map<string, string> {
 describe('Story Spark preview isolation', () => {
   const files = graph(path.join(root, 'src/app/story-spark-preview/page.tsx'));
   it('the import graph is the real preview code (sanity)', () => {
-    const names = [...files.keys()].map((f) => path.relative(root, f));
+    const names = [...files.keys()].map((f) => path.relative(root, f).replace(/\\/g, '/'));
     expect(names).toEqual(expect.arrayContaining(['src/components/story-library/LibraryDashboard.tsx', 'src/components/story-library/StorybookReader.tsx', 'src/lib/story-library/library-source.ts']));
     expect(files.size).toBeGreaterThan(10);
   });

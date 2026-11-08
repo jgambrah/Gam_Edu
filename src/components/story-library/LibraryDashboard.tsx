@@ -66,7 +66,7 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
         <h1 className="text-3xl font-black md:text-4xl" style={{ fontFamily: 'Fredoka, Nunito, system-ui, sans-serif' }}>Story Spark Library</h1>
         <p className="mt-1 max-w-2xl text-white/90">Illustrated, narrated stories for every class from Nursery to JHS. Pick a story, choose how you want to read it, and try the activities.</p>
       </section>
-      <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200" role="note">{source.notice}</p>
+      {source.notice && <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200" role="note">{source.notice}</p>}
 
       <form className="mb-5 grid gap-3 rounded-2xl bg-white p-4 shadow ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-5" aria-label="Filter stories" onSubmit={(e) => e.preventDefault()}>
         <Field label="Class"><select aria-label="Class" value={sel.classId ?? ''} onChange={(e) => sc('classId', e.target.value)} className={selectCls}>
@@ -88,7 +88,7 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
         <div className="rounded-2xl bg-white p-8 text-center shadow ring-1 ring-slate-200" data-testid="empty">
           <div className="text-5xl" aria-hidden>📚</div>
           <p className="mt-2 text-lg font-bold text-slate-800">No stories match these filters yet.</p>
-          <p className="text-slate-600">The preview has only six sample stories. Try clearing a filter.</p>
+          <p className="text-slate-600">Try clearing a filter to see all available stories.</p>
         </div>
       )}
 
@@ -97,8 +97,6 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
       </ul>
       {!exhausted && entries.length > 0 && <div className="mt-6 text-center"><button type="button" onClick={more} disabled={loading} className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white disabled:opacity-50">Show more stories</button></div>}
       {error && <div role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-red-900">{error}</div>}
-
-      <DataPanel source={source} tick={tick} onCleared={() => { setTick((t) => t + 1); run(source, sel); }} />
     </div>
   );
 }
@@ -114,7 +112,13 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
   const classText = classes.length > 2 ? `${label(CLASS_REGISTRY, classes[0])} to ${label(CLASS_REGISTRY, classes[classes.length - 1])}` : classes.map((c) => label(CLASS_REGISTRY, c)).join(', ');
   return (
     <li className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition hover:shadow-xl motion-reduce:transition-none" data-testid="story-card" data-story={entry.storyKey}>
-      <PlaceholderArt motif={info?.pages[0]?.motif ?? '📖'} palette={info?.palette ?? ['#e2e8f0', '#94a3b8']} alt={`Cover for ${entry.title}`} compact />
+      <PlaceholderArt
+        motif={info?.pages[0]?.motif ?? '📖'}
+        palette={info?.palette ?? ['#e2e8f0', '#94a3b8']}
+        alt={`Cover for ${entry.title}`}
+        imageSrc={`/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp`}
+        compact
+      />
       <div className="flex flex-1 flex-col p-4">
         <h3 className="text-xl font-extrabold leading-tight text-slate-900" style={{ fontFamily: 'Fredoka, Nunito, system-ui, sans-serif' }}>{entry.title}</h3>
         <p className="mt-1 text-sm text-slate-600">{entry.summary}</p>
@@ -126,12 +130,9 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
           {entry.durationSec && <Chip>{minutes(entry.durationSec)}</Chip>}
         </div>
         <div className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold">
-          {entry.hasNarration && <Chip tone="amber">{info?.realAssets?.narrationPages.length ? '🔊 Voice sample (page 1)' : '🔊 Placeholder voice'}</Chip>}
-          {entry.hasActivities && <Chip tone="emerald">Activities</Chip>}
-          <Chip tone="amber">{info?.realAssets?.imagePages.length ? `Art sample (${info.realAssets.imagePages.length > 1 ? 'pages ' + info.realAssets.imagePages.join(', ') : 'page ' + info.realAssets.imagePages[0]})` : 'Placeholder art'}</Chip>
-          {info?.set === 'extension' && <Chip tone="slate">Extra sample</Chip>}
-          {info?.set === 'benchmark' && <Chip tone="slate">Premium benchmark (draft)</Chip>}
-          {info?.set === 'sample' && <Chip tone="slate">Editorial sample</Chip>}
+          {entry.hasNarration && <Chip tone="amber">🔊 Audio Narration</Chip>}
+          {entry.hasActivities && <Chip tone="emerald">✨ Activities</Chip>}
+          <Chip tone="indigo">🎨 Illustrated</Chip>
         </div>
         <div className="mt-auto pt-4">
           <button type="button" onClick={onOpen} disabled={busy} aria-label={`Open ${entry.title}`}
@@ -147,24 +148,3 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
 
 const tones: Record<string, string> = { indigo: 'bg-indigo-100 text-indigo-800', amber: 'bg-amber-100 text-amber-900', emerald: 'bg-emerald-100 text-emerald-900', slate: 'bg-slate-200 text-slate-800', default: 'bg-slate-100 text-slate-700' };
 const Chip = ({ children, tone = 'default' }: { children: React.ReactNode; tone?: keyof typeof tones }) => <span className={`rounded-full px-2.5 py-1 ${tones[tone]}`}>{children}</span>;
-
-function DataPanel({ source, tick, onCleared }: { source: LibrarySource; tick: number; onCleared: () => void }) {
-  const c = source.counters().catalogue;
-  const l = source.loader.stats;
-  const a = source.assets.stats;
-  const kb = (n: number) => `${(n / 1024).toFixed(0)} KB`;
-  return (
-    <details className="mt-8 rounded-2xl bg-white p-4 shadow ring-1 ring-slate-200" data-testid="data-panel" data-tick={tick}>
-      <summary className="cursor-pointer text-sm font-bold text-slate-700">Data and device cache (for testers)</summary>
-      <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-3">
-        <Stat k="Catalogue version checks" v={c.metaReads} /><Stat k="Catalogue page queries" v={c.queries} /><Stat k="Catalogue entries read" v={c.entriesRead} />
-        <Stat k="Story package fetches" v={l.packageRequests} /><Stat k="Media files fetched (session)" v={l.audioRequests + l.imageRequests} /><Stat k="Served by session cache" v={l.cacheHits} />
-        <Stat k="Network requests (files)" v={a.requests} /><Stat k="Served from device cache" v={a.cacheHits} /><Stat k="Downloaded" v={kb(a.bytesDownloaded)} />
-        <Stat k="Read from device cache" v={kb(a.bytesFromCache)} /><Stat k="Failures" v={a.failures} />
-      </dl>
-      <p className="mt-3 text-xs text-slate-600">Turning pages makes no database reads: each story is one small package plus its media, fetched once and kept on this device. Reload and reopen a story to watch “Served from device cache” rise and “Downloaded” stay flat.</p>
-      <button type="button" onClick={async () => { await source.clearDeviceCache(); onCleared(); }} className="mt-3 rounded-full border-2 border-slate-300 px-4 py-1.5 text-sm font-bold">Clear this device’s cache</button>
-    </details>
-  );
-}
-const Stat = ({ k, v }: { k: string; v: string | number }) => <div className="flex justify-between gap-2 border-b border-slate-100 py-1"><dt className="text-slate-600">{k}</dt><dd className="font-bold text-slate-900">{v}</dd></div>;

@@ -51,7 +51,15 @@ export class BrowserAssetCache implements Backend {
   // ---- lazy-loader Backend
   async fetchPackage(path: string) {
     const b = await this.blob(path);
-    return { pkg: JSON.parse(await b.text()) as StoryPackage, bytes: b.size };
+    const txt = typeof b.text === 'function'
+      ? await b.text()
+      : await new Promise<string>((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result ?? ''));
+          r.onerror = () => reject(r.error);
+          r.readAsText(b);
+        });
+    return { pkg: JSON.parse(txt) as StoryPackage, bytes: b.size };
   }
   async fetchFile(path: string) { return { bytes: (await this.blob(path)).size }; }
 

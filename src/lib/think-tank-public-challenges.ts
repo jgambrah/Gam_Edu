@@ -5,7 +5,7 @@ import type {
   ThinkTankTargetGroup,
 } from '@/lib/think-tank-data';
 
-export const THINK_TANK_PUBLIC_V2_VERSION = '21.0.0';
+export const THINK_TANK_PUBLIC_V2_VERSION = '27.0.0';
 
 export type PublicDetectiveCase = {
   id: string;
