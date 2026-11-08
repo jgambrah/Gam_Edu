@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the fifty-six stories with clean production badges', async () => {
+  it('lists the sixty-two stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(56));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(62));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(56));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(62));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -72,12 +72,16 @@ describe('LibraryDashboard (real preview data)', () => {
     await waitFor(() => expect(titles().sort()).toEqual([
       'Adwoa and the Missing Market Change',
       'Ama’s Journey Above the Rainforest',
+      'Ananse and the Pot of Wisdom',
       'Esi and the Elephant’s Secret Path',
+      'Fiifi Goes Back for His Book',
       'Kojo and the Forest of a Thousand Lives',
       'The Butterfly That Knew the Way',
       'The Clever Tortoise and the Rain',
       'The Queen of the Market',
+      'The Slowest Drummer',
       'The Town Where Everybody Waited',
+      'Two Ways to Say Thank You',
       'Yaa and the Blocked Drain',
     ]));
   });
@@ -85,7 +89,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(56));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(62));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -94,7 +98,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(56));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(62));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -106,7 +110,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('Efua and every Batch 1–8 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(56));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(62));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
