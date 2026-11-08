@@ -53,7 +53,7 @@ export async function createPreviewSource(base = PREVIEW_BASE, fetchFn: typeof f
   ]);
   const backend: CatalogueBackend & { counters: Record<string, number> } = new StaticCatalogueBackend(catalogueData);
   const kv = new PersistentKV('story-spark-preview-catalogue');
-  const catalogue = new CatalogueClient(backend, kv, { pageSize: 20, refresh: 'delta' });
+  const catalogue = new CatalogueClient(backend, kv, { pageSize: 50, refresh: 'delta' });
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });
   return {
     kind: 'central',
