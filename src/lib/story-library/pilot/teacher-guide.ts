@@ -18,4 +18,11 @@ export interface TeacherGuide {
   culturalNotes: string[];
   /** Things the teacher should confirm locally (prices, foods, names). */
   localiseThis: string[];
+  /** For science stories: fact-check sheet listing key claims, reliable references and any analogies that need explanation. */
+  factCheck?: Array<{
+    claim: string;
+    explanation: string;
+    reference: string;
+    analogyNote?: string;
+  }>;
 }
