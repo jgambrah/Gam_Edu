@@ -36,6 +36,36 @@ export function StoryNotes({ info }: { info?: StoryPreviewInfo }) {
           <Block title="Support" items={g.differentiation.support} />
           <Block title="Stretch" items={g.differentiation.stretch} />
           <Block title="Cultural notes" items={g.culturalNotes} />
+          {g.discoveryStatus && (
+            <div data-testid="discovery-status" className="rounded-xl bg-indigo-50/70 p-3 ring-1 ring-indigo-200">
+              <h4 className="font-bold text-indigo-950">What We Know / What We Are Still Discovering</h4>
+              <div className="mt-1 space-y-2">
+                <div>
+                  <strong className="text-indigo-900">What we know (established by evidence):</strong>
+                  <ul className="ml-5 list-disc space-y-1">
+                    {g.discoveryStatus.whatWeKnow.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+                <div>
+                  <strong className="text-indigo-900">What scientists are still discovering:</strong>
+                  <ul className="ml-5 list-disc space-y-1">
+                    {g.discoveryStatus.whatWeAreStillDiscovering.map((x, i) => <li key={i}>{x}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+          {g.investigation && (
+            <div data-testid="classroom-investigation" className="rounded-xl bg-emerald-50/70 p-3 ring-1 ring-emerald-200">
+              <h4 className="font-bold text-emerald-950">Hands-on investigation: {g.investigation.title}</h4>
+              <p className="mt-1"><strong>Materials:</strong> {g.investigation.materials.join(', ')}</p>
+              <ol className="mt-1 ml-5 list-decimal space-y-1">
+                {g.investigation.steps.map((s, i) => <li key={i}>{s}</li>)}
+              </ol>
+              <p className="mt-1"><strong>What to notice:</strong> {g.investigation.whatToNotice}</p>
+              <p className="mt-1 text-xs font-semibold text-emerald-900"><strong>Safety note:</strong> {g.investigation.safetyNote}</p>
+            </div>
+          )}
           {g.factCheck && g.factCheck.length > 0 && (
             <div data-testid="fact-check-sheet" className="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
               <h4 className="font-bold text-slate-900">Science fact-check sheet &amp; references</h4>

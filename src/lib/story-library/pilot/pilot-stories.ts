@@ -17,6 +17,7 @@ import type { IllustrationPlan } from '../illustration/plan';
 import { EFUA_ACTIVITIES, EFUA_GLOSSARY, EFUA_ILLUSTRATION_PLAN, EFUA_PAGES, EFUA_TEACHER_GUIDE } from './efua-premium';
 import { KOFI_MARKET, YAA_DRAIN } from './editorial-samples';
 import { BATCH_1_STORIES } from './batch-1-stories';
+import { BATCH_2_STORIES } from './batch-2-stories';
 import type { TeacherGuide } from './teacher-guide';
 
 export interface PilotPage {
@@ -320,6 +321,7 @@ export const PILOT_STORIES: PilotStory[] = [
     reviewQuestions: KOFI_MARKET.reviewQuestions,
   },
   ...BATCH_1_STORIES,
+  ...BATCH_2_STORIES,
 ];
 
 export const pilotStory = (key: string) => PILOT_STORIES.find((s) => s.key === key);

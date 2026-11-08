@@ -18,6 +18,19 @@ export interface TeacherGuide {
   culturalNotes: string[];
   /** Things the teacher should confirm locally (prices, foods, names). */
   localiseThis: string[];
+  /** For science stories: explicit separation between established scientific knowledge and open research questions. */
+  discoveryStatus?: {
+    whatWeKnow: string[];
+    whatWeAreStillDiscovering: string[];
+  };
+  /** Age-appropriate, safe classroom observation, experiment or investigation. */
+  investigation?: {
+    title: string;
+    materials: string[];
+    steps: string[];
+    safetyNote: string;
+    whatToNotice: string;
+  };
   /** For science stories: fact-check sheet listing key claims, reliable references and any analogies that need explanation. */
   factCheck?: Array<{
     claim: string;
