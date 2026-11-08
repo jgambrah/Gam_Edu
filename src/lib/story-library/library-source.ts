@@ -53,7 +53,12 @@ export async function createPreviewSource(base = PREVIEW_BASE, fetchFn: typeof f
   ]);
   const backend: CatalogueBackend & { counters: Record<string, number> } = new StaticCatalogueBackend(catalogueData);
   const kv = new PersistentKV('story-spark-preview-catalogue');
-  const catalogue = new CatalogueClient(backend, kv, { pageSize: 50, refresh: 'delta' });
+  const sig = `${catalogueData.catalogueVersion}:${catalogueData.entries.length}:${catalogueData.entries.map((e) => e.storyKey).join(',')}`;
+  if (kv.get<string>('meta:sig') !== sig) {
+    kv.clear();
+    kv.set('meta:sig', sig);
+  }
+  const catalogue = new CatalogueClient(backend, kv, { pageSize: 50, refresh: 'refetch' });
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });
   return {
     kind: 'central',
