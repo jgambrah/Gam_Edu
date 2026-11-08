@@ -45,7 +45,7 @@ export const YAA_DRAIN: EditorialSample = {
     { id: 'yaa-v1', type: 'vocabulary', afterPage: 4, word: 'blocked', definition: 'Stopped from moving or passing through.', distractors: ['Very wet', 'Painted brightly'] },
     { id: 'yaa-pred', type: 'prediction', afterPage: 5, prompt: 'What do you think Yaa should do now? Who might help her?' },
     { id: 'yaa-c2', type: 'comprehension', afterPage: 5, question: 'How many bottles and sachets did Yaa count near the drain?', options: ['Forty-two', 'Fourteen', 'Four'], correctIndex: 0, explanation: 'Yaa counted forty-two bottles and sachets in one afternoon.' },
-    { id: 'yaa-seq', type: 'sequencing', afterPage: 8, prompt: 'Put these events in order.', items: ['Yaa notices the flooded lane.', 'Yaa finds the blocked drain.', 'Neighbours clear the drain together.', 'Yaa speaks at school assembly.'] },
+    { id: 'yaa-seq', type: 'sequencing', afterPage: 9, prompt: 'Put these events in order.', items: ['Yaa notices the flooded lane.', 'Yaa finds the blocked drain.', 'Neighbours clear the drain together.', 'Yaa speaks at school assembly.'] },
     { id: 'yaa-c3', type: 'comprehension', afterPage: 10, question: 'The rubbish count went from forty-two to six. How many fewer is that?', options: ['Thirty-six', 'Forty-eight', 'Six'], correctIndex: 0, explanation: '42 − 6 = 36 fewer pieces of rubbish.' },
     { id: 'yaa-think', type: 'prediction', afterPage: 10, prompt: 'Why did counting help Yaa solve the problem? What else could we count to improve our school?' },
     { id: 'yaa-sel', type: 'sel', afterPage: 10, prompt: 'What is one small thing you could do to look after your own street or school?', feelingOptions: ['Proud', 'Hopeful', 'Unsure', 'Ready'] },

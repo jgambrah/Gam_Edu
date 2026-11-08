@@ -1,1 +1,1101 @@
-{"schemaVersion":1,"storyId":"kofi-counts-the-market","version":1,"title":"Kofi Counts the Market","ageTiers":["5-6"],"language":"en","narrationLocale":"en-GH","pages":[{"n":1,"text":"Kofi went to the market with Mama. The market was big and busy and bright. ‘Let us count,’ said Kofi.","sentences":["Kofi went to the market with Mama.","The market was big and busy and bright.","‘Let us count,’ said Kofi."],"alt":"A small boy holds his mother’s hand at the entrance to a colourful market.","audio":{"hash":"sha256:ce351e5b3605b3818742226b1319decd7e30e53696d22ca65641c75d184dae23","durationMs":9050,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,3045],[3045,6653],[6653,9050]],"words":[[0,586],[586,899],[899,1104],[1104,1268],[1268,1840],[1840,2052],[2052,3045],[3045,3242],[3242,3816],[3816,4051],[4051,4584],[4584,4837],[4837,5222],[5222,5459],[5459,6653],[6653,6945],[6945,7169],[7169,7976],[7976,8311],[8311,9050]]}}},{"n":2,"text":"One tomato, round and red. Kofi counted one.","sentences":["One tomato, round and red.","Kofi counted one."],"alt":"One big red tomato sits alone on a cloth.","audio":{"hash":"sha256:3d9df17d58473b4dd3cf251d48749361827392f0545498e0180f226df41b9421","durationMs":3949,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,2092],[2092,3949]],"words":[[0,308],[308,1387],[1387,1829],[1829,2091],[2091,2092],[2092,2905],[2905,3581],[3581,3949]]}}},{"n":3,"text":"Two onions, shiny and purple. Kofi counted one, two.","sentences":["Two onions, shiny and purple.","Kofi counted one, two."],"alt":"Two purple onions side by side on a cloth.","audio":{"hash":"sha256:60dacd8837aaed72d53c9c1e536ee290a281af82ea1422742c262e1164a34b34","durationMs":4688,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,1856],[1856,4688]],"words":[[0,294],[294,1158],[1158,1626],[1626,1855],[1855,1856],[1856,2920],[2920,3596],[3596,4214],[4214,4688]]}}},{"n":4,"text":"Three mangoes, yellow and sweet. Kofi counted one, two, three.","sentences":["Three mangoes, yellow and sweet.","Kofi counted one, two, three."],"alt":"Three yellow mangoes in a row.","audio":{"hash":"sha256:315c14fd10ec18ccd58e65bc7e7d613cb454c5a023dc6bbafd9f8937661a1b8f","durationMs":5481,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,1975],[1975,5481]],"words":[[0,321],[321,1334],[1334,1738],[1738,1974],[1974,1975],[1975,3012],[3012,3678],[3678,4296],[4296,5018],[5018,5481]]}}},{"n":5,"text":"Four bananas, curved and long. Kofi counted one, two, three, four.","sentences":["Four bananas, curved and long.","Kofi counted one, two, three, four."],"alt":"Four bananas lined up on a basket lid.","audio":{"hash":"sha256:d3e585f274a52abc92462f0eaa16357a2089e7bab7261c8d00a9166f01b7126b","durationMs":6329,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,2185],[2185,6329]],"words":[[0,365],[365,1416],[1416,1922],[1922,2184],[2184,2185],[2185,3076],[3076,3741],[3741,4359],[4359,5081],[5081,5788],[5788,6329]]}}},{"n":6,"text":"Five oranges, round and juicy. Kofi counted one, two, three, four, five.","sentences":["Five oranges, round and juicy.","Kofi counted one, two, three, four, five."],"alt":"Five oranges stacked in a small pyramid.","audio":{"hash":"sha256:bc5da0ce787a58382317c9343c3f07c4ff47694d908f723538062e749ea0f4ae","durationMs":7209,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,2055],[2055,7209]],"words":[[0,455],[455,1362],[1362,1803],[1803,2054],[2054,2055],[2055,3096],[3096,3761],[3761,4379],[4379,5101],[5101,5808],[5808,6594],[6594,7209]]}}},{"n":7,"text":"Then Kofi saw a basket of eggs. ‘How many?’ he asked. Mama smiled. ‘Count them with me.’ They counted together: one, two, three, four, five, six.","sentences":["Then Kofi saw a basket of eggs.","‘How many?’ he asked.","Mama smiled.","‘Count them with me.’ They counted together: one, two, three, four, five, six."],"alt":"Kofi and Mama counting six eggs in a basket together.","audio":{"hash":"sha256:b0bc3e8408b5242dc2d061a42ef3a975e371ebe1be3a31afaf009d6c1ef860c9","durationMs":15850,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,3302],[3302,5850],[5850,7642],[7642,15850]],"words":[[0,332],[332,903],[903,1218],[1218,1337],[1337,1967],[1967,2191],[2191,3302],[3302,3604],[3604,4583],[4583,4771],[4771,5850],[5850,6207],[6207,7642],[7642,8204],[8204,8520],[8520,8761],[8761,9580],[9580,9806],[9806,10424],[10424,11524],[11524,12245],[12245,12967],[12967,13675],[13675,14460],[14460,15310],[15310,15850]]}}},{"n":8,"text":"At the end of the market, Kofi saw his friend Ama. She waved with one hand. Then she waved with two. ‘Hello, Kofi!’ she said.","sentences":["At the end of the market, Kofi saw his friend Ama.","She waved with one hand.","Then she waved with two.","‘Hello, Kofi!’ she said."],"alt":"A girl waves with one hand and then two to a smiling boy.","audio":{"hash":"sha256:c39dc13404bb5f30ed9abe824fe411efe5691c19c6df7aeb27f281ec229b0ee9","durationMs":12437,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,4697],[4697,7057],[7057,9567],[9567,12437]],"words":[[0,205],[205,342],[342,645],[645,646],[646,958],[958,1883],[1883,2456],[2456,2784],[2784,3069],[3069,3503],[3503,4697],[4697,4969],[4969,5467],[5467,5708],[5708,6021],[6021,7057],[7057,7389],[7389,7655],[7655,8156],[8156,8401],[8401,9567],[9567,10432],[10432,11737],[11737,12009],[12009,12437]]}}},{"n":9,"text":"Kofi counted all the way to ten. Ten tomatoes. Ten onions. Ten smiles on the way home. ‘I love counting,’ said Kofi. And he counted his very best thing of all: one Mama, one Kofi, and one big hug.","sentences":["Kofi counted all the way to ten.","Ten tomatoes.","Ten onions.","Ten smiles on the way home.","‘I love counting,’ said Kofi.","And he counted his very best thing of all: one Mama, one Kofi, and one big hug."],"alt":"Kofi hugs his mother on the way home from the market, baskets beside them.","audio":{"hash":"sha256:cf06b046b7d6c4be0c7f23b820dead229933865f051553f831c4184213ab2a8f","durationMs":19298,"timing":{"granularity":"word","method":"tts-marks","verified":true,"sentences":[[0,3139],[3139,4915],[4915,6343],[6343,9105],[9105,12165],[12165,19298]],"words":[[0,574],[574,1196],[1196,1496],[1496,1691],[1691,1961],[1961,2162],[2162,3139],[3139,3484],[3484,4915],[4915,5157],[5157,6343],[6343,6688],[6688,7270],[7270,7271],[7271,7574],[7574,7850],[7850,9105],[9105,9292],[9292,9571],[9571,10589],[10589,10923],[10923,12165],[12165,12399],[12399,12580],[12580,13214],[13214,13471],[13471,13834],[13834,14222],[14222,14485],[14485,14790],[14790,15581],[15581,15889],[15889,16622],[16622,16932],[16932,17912],[17912,18185],[18185,18530],[18530,18860],[18860,19298]]}}}],"activities":[{"id":"kofi-c1","type":"comprehension","afterPage":4,"question":"How many mangoes did Kofi count?","options":["Three","Two","Five"],"correctIndex":0,"explanation":"Kofi counted one, two, three mangoes."},{"id":"kofi-c2","type":"comprehension","afterPage":7,"question":"How many eggs were in the basket?","options":["Six","Four","Ten"],"correctIndex":0,"explanation":"They counted one, two, three, four, five, six."},{"id":"kofi-ph","type":"phonics","afterPage":4,"targetSound":"m","prompt":"Which words start with the \"m\" sound like \"mango\"?","options":["mango","market","tomato","banana"],"correctIndexes":[0,1]},{"id":"kofi-pred","type":"prediction","afterPage":5,"prompt":"What do you think Kofi will count next?"},{"id":"kofi-sel","type":"sel","afterPage":9,"prompt":"What is the best thing you counted today, and who helped you?","feelingOptions":["Happy","Proud","Loved"]}],"glossary":[{"word":"market","definition":"A place where people buy and sell food and goods.","pages":[1]},{"word":"count","definition":"To say numbers in order to find out how many.","pages":[1]},{"word":"mangoes","definition":"Sweet yellow fruits that grow on trees.","pages":[4]}],"assets":{"sha256:ce351e5b3605b3818742226b1319decd7e30e53696d22ca65641c75d184dae23":{"path":"/story-spark-preview/audio/ce351e5b3605.mp3","bytes":36694,"type":"audio/mpeg"},"sha256:3d9df17d58473b4dd3cf251d48749361827392f0545498e0180f226df41b9421":{"path":"/story-spark-preview/audio/3d9df17d5847.mp3","bytes":16318,"type":"audio/mpeg"},"sha256:60dacd8837aaed72d53c9c1e536ee290a281af82ea1422742c262e1164a34b34":{"path":"/story-spark-preview/audio/60dacd8837aa.mp3","bytes":19244,"type":"audio/mpeg"},"sha256:315c14fd10ec18ccd58e65bc7e7d613cb454c5a023dc6bbafd9f8937661a1b8f":{"path":"/story-spark-preview/audio/315c14fd10ec.mp3","bytes":22379,"type":"audio/mpeg"},"sha256:d3e585f274a52abc92462f0eaa16357a2089e7bab7261c8d00a9166f01b7126b":{"path":"/story-spark-preview/audio/d3e585f274a5.mp3","bytes":25827,"type":"audio/mpeg"},"sha256:bc5da0ce787a58382317c9343c3f07c4ff47694d908f723538062e749ea0f4ae":{"path":"/story-spark-preview/audio/bc5da0ce787a.mp3","bytes":29380,"type":"audio/mpeg"},"sha256:b0bc3e8408b5242dc2d061a42ef3a975e371ebe1be3a31afaf009d6c1ef860c9":{"path":"/story-spark-preview/audio/b0bc3e8408b5.mp3","bytes":63861,"type":"audio/mpeg"},"sha256:c39dc13404bb5f30ed9abe824fe411efe5691c19c6df7aeb27f281ec229b0ee9":{"path":"/story-spark-preview/audio/c39dc13404bb.mp3","bytes":50278,"type":"audio/mpeg"},"sha256:cf06b046b7d6c4be0c7f23b820dead229933865f051553f831c4184213ab2a8f":{"path":"/story-spark-preview/audio/cf06b046b7d6.mp3","bytes":77654,"type":"audio/mpeg"}},"contentHash":"sha256:1700c5470a71089d02062e475a05b3e2876c151127492686e5bafb66a67e315b"}
+{
+  "schemaVersion": 1,
+  "storyId": "kofi-counts-the-market",
+  "version": 1,
+  "title": "Kofi Counts the Market",
+  "ageTiers": [
+    "5-6"
+  ],
+  "language": "en",
+  "narrationLocale": "en-GH",
+  "pages": [
+    {
+      "n": 1,
+      "text": "Kofi went to the market with Mama. The market was big and busy and bright. ‘Let us count,’ said Kofi.",
+      "sentences": [
+        "Kofi went to the market with Mama.",
+        "The market was big and busy and bright.",
+        "‘Let us count,’ said Kofi."
+      ],
+      "alt": "A small boy holds his mother’s hand at the entrance to a colourful market.",
+      "audio": {
+        "hash": "sha256:ce351e5b3605b3818742226b1319decd7e30e53696d22ca65641c75d184dae23",
+        "durationMs": 9050,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3045
+            ],
+            [
+              3045,
+              6653
+            ],
+            [
+              6653,
+              9050
+            ]
+          ],
+          "words": [
+            [
+              0,
+              586
+            ],
+            [
+              586,
+              899
+            ],
+            [
+              899,
+              1104
+            ],
+            [
+              1104,
+              1268
+            ],
+            [
+              1268,
+              1840
+            ],
+            [
+              1840,
+              2052
+            ],
+            [
+              2052,
+              3045
+            ],
+            [
+              3045,
+              3242
+            ],
+            [
+              3242,
+              3816
+            ],
+            [
+              3816,
+              4051
+            ],
+            [
+              4051,
+              4584
+            ],
+            [
+              4584,
+              4837
+            ],
+            [
+              4837,
+              5222
+            ],
+            [
+              5222,
+              5459
+            ],
+            [
+              5459,
+              6653
+            ],
+            [
+              6653,
+              6945
+            ],
+            [
+              6945,
+              7169
+            ],
+            [
+              7169,
+              7976
+            ],
+            [
+              7976,
+              8311
+            ],
+            [
+              8311,
+              9050
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 2,
+      "text": "One tomato, round and red. Kofi counted one.",
+      "sentences": [
+        "One tomato, round and red.",
+        "Kofi counted one."
+      ],
+      "alt": "One big red tomato sits alone on a cloth.",
+      "audio": {
+        "hash": "sha256:3d9df17d58473b4dd3cf251d48749361827392f0545498e0180f226df41b9421",
+        "durationMs": 3949,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              2092
+            ],
+            [
+              2092,
+              3949
+            ]
+          ],
+          "words": [
+            [
+              0,
+              308
+            ],
+            [
+              308,
+              1387
+            ],
+            [
+              1387,
+              1829
+            ],
+            [
+              1829,
+              2091
+            ],
+            [
+              2091,
+              2092
+            ],
+            [
+              2092,
+              2905
+            ],
+            [
+              2905,
+              3581
+            ],
+            [
+              3581,
+              3949
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "text": "Two onions, shiny and purple. Kofi counted one, two.",
+      "sentences": [
+        "Two onions, shiny and purple.",
+        "Kofi counted one, two."
+      ],
+      "alt": "Two purple onions side by side on a cloth.",
+      "audio": {
+        "hash": "sha256:60dacd8837aaed72d53c9c1e536ee290a281af82ea1422742c262e1164a34b34",
+        "durationMs": 4688,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              1856
+            ],
+            [
+              1856,
+              4688
+            ]
+          ],
+          "words": [
+            [
+              0,
+              294
+            ],
+            [
+              294,
+              1158
+            ],
+            [
+              1158,
+              1626
+            ],
+            [
+              1626,
+              1855
+            ],
+            [
+              1855,
+              1856
+            ],
+            [
+              1856,
+              2920
+            ],
+            [
+              2920,
+              3596
+            ],
+            [
+              3596,
+              4214
+            ],
+            [
+              4214,
+              4688
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "text": "Three mangoes, yellow and sweet. Kofi counted one, two, three.",
+      "sentences": [
+        "Three mangoes, yellow and sweet.",
+        "Kofi counted one, two, three."
+      ],
+      "alt": "Three yellow mangoes in a row.",
+      "audio": {
+        "hash": "sha256:315c14fd10ec18ccd58e65bc7e7d613cb454c5a023dc6bbafd9f8937661a1b8f",
+        "durationMs": 5481,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              1975
+            ],
+            [
+              1975,
+              5481
+            ]
+          ],
+          "words": [
+            [
+              0,
+              321
+            ],
+            [
+              321,
+              1334
+            ],
+            [
+              1334,
+              1738
+            ],
+            [
+              1738,
+              1974
+            ],
+            [
+              1974,
+              1975
+            ],
+            [
+              1975,
+              3012
+            ],
+            [
+              3012,
+              3678
+            ],
+            [
+              3678,
+              4296
+            ],
+            [
+              4296,
+              5018
+            ],
+            [
+              5018,
+              5481
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "text": "Four bananas, curved and long. Kofi counted one, two, three, four.",
+      "sentences": [
+        "Four bananas, curved and long.",
+        "Kofi counted one, two, three, four."
+      ],
+      "alt": "Four bananas lined up on a basket lid.",
+      "audio": {
+        "hash": "sha256:d3e585f274a52abc92462f0eaa16357a2089e7bab7261c8d00a9166f01b7126b",
+        "durationMs": 6329,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              2185
+            ],
+            [
+              2185,
+              6329
+            ]
+          ],
+          "words": [
+            [
+              0,
+              365
+            ],
+            [
+              365,
+              1416
+            ],
+            [
+              1416,
+              1922
+            ],
+            [
+              1922,
+              2184
+            ],
+            [
+              2184,
+              2185
+            ],
+            [
+              2185,
+              3076
+            ],
+            [
+              3076,
+              3741
+            ],
+            [
+              3741,
+              4359
+            ],
+            [
+              4359,
+              5081
+            ],
+            [
+              5081,
+              5788
+            ],
+            [
+              5788,
+              6329
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "text": "Five oranges, round and juicy. Kofi counted one, two, three, four, five.",
+      "sentences": [
+        "Five oranges, round and juicy.",
+        "Kofi counted one, two, three, four, five."
+      ],
+      "alt": "Five oranges stacked in a small pyramid.",
+      "audio": {
+        "hash": "sha256:bc5da0ce787a58382317c9343c3f07c4ff47694d908f723538062e749ea0f4ae",
+        "durationMs": 7209,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              2055
+            ],
+            [
+              2055,
+              7209
+            ]
+          ],
+          "words": [
+            [
+              0,
+              455
+            ],
+            [
+              455,
+              1362
+            ],
+            [
+              1362,
+              1803
+            ],
+            [
+              1803,
+              2054
+            ],
+            [
+              2054,
+              2055
+            ],
+            [
+              2055,
+              3096
+            ],
+            [
+              3096,
+              3761
+            ],
+            [
+              3761,
+              4379
+            ],
+            [
+              4379,
+              5101
+            ],
+            [
+              5101,
+              5808
+            ],
+            [
+              5808,
+              6594
+            ],
+            [
+              6594,
+              7209
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 7,
+      "text": "Then Kofi saw a basket of eggs. ‘How many?’ he asked. Mama smiled. ‘Count them with me.’ They counted together: one, two, three, four, five, six.",
+      "sentences": [
+        "Then Kofi saw a basket of eggs.",
+        "‘How many?’ he asked.",
+        "Mama smiled.",
+        "‘Count them with me.’ They counted together: one, two, three, four, five, six."
+      ],
+      "alt": "Kofi and Mama counting six eggs in a basket together.",
+      "audio": {
+        "hash": "sha256:b0bc3e8408b5242dc2d061a42ef3a975e371ebe1be3a31afaf009d6c1ef860c9",
+        "durationMs": 15850,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3302
+            ],
+            [
+              3302,
+              5850
+            ],
+            [
+              5850,
+              7642
+            ],
+            [
+              7642,
+              15850
+            ]
+          ],
+          "words": [
+            [
+              0,
+              332
+            ],
+            [
+              332,
+              903
+            ],
+            [
+              903,
+              1218
+            ],
+            [
+              1218,
+              1337
+            ],
+            [
+              1337,
+              1967
+            ],
+            [
+              1967,
+              2191
+            ],
+            [
+              2191,
+              3302
+            ],
+            [
+              3302,
+              3604
+            ],
+            [
+              3604,
+              4583
+            ],
+            [
+              4583,
+              4771
+            ],
+            [
+              4771,
+              5850
+            ],
+            [
+              5850,
+              6207
+            ],
+            [
+              6207,
+              7642
+            ],
+            [
+              7642,
+              8204
+            ],
+            [
+              8204,
+              8520
+            ],
+            [
+              8520,
+              8761
+            ],
+            [
+              8761,
+              9580
+            ],
+            [
+              9580,
+              9806
+            ],
+            [
+              9806,
+              10424
+            ],
+            [
+              10424,
+              11524
+            ],
+            [
+              11524,
+              12245
+            ],
+            [
+              12245,
+              12967
+            ],
+            [
+              12967,
+              13675
+            ],
+            [
+              13675,
+              14460
+            ],
+            [
+              14460,
+              15310
+            ],
+            [
+              15310,
+              15850
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 8,
+      "text": "At the end of the market, Kofi saw his friend Ama. She waved with one hand. Then she waved with two. ‘Hello, Kofi!’ she said.",
+      "sentences": [
+        "At the end of the market, Kofi saw his friend Ama.",
+        "She waved with one hand.",
+        "Then she waved with two.",
+        "‘Hello, Kofi!’ she said."
+      ],
+      "alt": "A girl waves with one hand and then two to a smiling boy.",
+      "audio": {
+        "hash": "sha256:c39dc13404bb5f30ed9abe824fe411efe5691c19c6df7aeb27f281ec229b0ee9",
+        "durationMs": 12437,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              4697
+            ],
+            [
+              4697,
+              7057
+            ],
+            [
+              7057,
+              9567
+            ],
+            [
+              9567,
+              12437
+            ]
+          ],
+          "words": [
+            [
+              0,
+              205
+            ],
+            [
+              205,
+              342
+            ],
+            [
+              342,
+              645
+            ],
+            [
+              645,
+              646
+            ],
+            [
+              646,
+              958
+            ],
+            [
+              958,
+              1883
+            ],
+            [
+              1883,
+              2456
+            ],
+            [
+              2456,
+              2784
+            ],
+            [
+              2784,
+              3069
+            ],
+            [
+              3069,
+              3503
+            ],
+            [
+              3503,
+              4697
+            ],
+            [
+              4697,
+              4969
+            ],
+            [
+              4969,
+              5467
+            ],
+            [
+              5467,
+              5708
+            ],
+            [
+              5708,
+              6021
+            ],
+            [
+              6021,
+              7057
+            ],
+            [
+              7057,
+              7389
+            ],
+            [
+              7389,
+              7655
+            ],
+            [
+              7655,
+              8156
+            ],
+            [
+              8156,
+              8401
+            ],
+            [
+              8401,
+              9567
+            ],
+            [
+              9567,
+              10432
+            ],
+            [
+              10432,
+              11737
+            ],
+            [
+              11737,
+              12009
+            ],
+            [
+              12009,
+              12437
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 9,
+      "text": "Kofi counted all the way to ten. Ten tomatoes. Ten onions. Ten smiles on the way home. ‘I love counting,’ said Kofi. And he counted his very best thing of all: one Mama, one Kofi, and one big hug.",
+      "sentences": [
+        "Kofi counted all the way to ten.",
+        "Ten tomatoes.",
+        "Ten onions.",
+        "Ten smiles on the way home.",
+        "‘I love counting,’ said Kofi.",
+        "And he counted his very best thing of all: one Mama, one Kofi, and one big hug."
+      ],
+      "alt": "Kofi hugs his mother on the way home from the market, baskets beside them.",
+      "audio": {
+        "hash": "sha256:cf06b046b7d6c4be0c7f23b820dead229933865f051553f831c4184213ab2a8f",
+        "durationMs": 19298,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3139
+            ],
+            [
+              3139,
+              4915
+            ],
+            [
+              4915,
+              6343
+            ],
+            [
+              6343,
+              9105
+            ],
+            [
+              9105,
+              12165
+            ],
+            [
+              12165,
+              19298
+            ]
+          ],
+          "words": [
+            [
+              0,
+              574
+            ],
+            [
+              574,
+              1196
+            ],
+            [
+              1196,
+              1496
+            ],
+            [
+              1496,
+              1691
+            ],
+            [
+              1691,
+              1961
+            ],
+            [
+              1961,
+              2162
+            ],
+            [
+              2162,
+              3139
+            ],
+            [
+              3139,
+              3484
+            ],
+            [
+              3484,
+              4915
+            ],
+            [
+              4915,
+              5157
+            ],
+            [
+              5157,
+              6343
+            ],
+            [
+              6343,
+              6688
+            ],
+            [
+              6688,
+              7270
+            ],
+            [
+              7270,
+              7271
+            ],
+            [
+              7271,
+              7574
+            ],
+            [
+              7574,
+              7850
+            ],
+            [
+              7850,
+              9105
+            ],
+            [
+              9105,
+              9292
+            ],
+            [
+              9292,
+              9571
+            ],
+            [
+              9571,
+              10589
+            ],
+            [
+              10589,
+              10923
+            ],
+            [
+              10923,
+              12165
+            ],
+            [
+              12165,
+              12399
+            ],
+            [
+              12399,
+              12580
+            ],
+            [
+              12580,
+              13214
+            ],
+            [
+              13214,
+              13471
+            ],
+            [
+              13471,
+              13834
+            ],
+            [
+              13834,
+              14222
+            ],
+            [
+              14222,
+              14485
+            ],
+            [
+              14485,
+              14790
+            ],
+            [
+              14790,
+              15581
+            ],
+            [
+              15581,
+              15889
+            ],
+            [
+              15889,
+              16622
+            ],
+            [
+              16622,
+              16932
+            ],
+            [
+              16932,
+              17912
+            ],
+            [
+              17912,
+              18185
+            ],
+            [
+              18185,
+              18530
+            ],
+            [
+              18530,
+              18860
+            ],
+            [
+              18860,
+              19298
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "activities": [
+    {
+      "id": "kofi-c1",
+      "type": "comprehension",
+      "afterPage": 4,
+      "question": "How many mangoes did Kofi count?",
+      "options": [
+        "Three",
+        "Two",
+        "Five"
+      ],
+      "correctIndex": 0,
+      "explanation": "Kofi counted one, two, three mangoes."
+    },
+    {
+      "id": "kofi-c2",
+      "type": "comprehension",
+      "afterPage": 7,
+      "question": "How many eggs were in the basket?",
+      "options": [
+        "Six",
+        "Four",
+        "Ten"
+      ],
+      "correctIndex": 0,
+      "explanation": "They counted one, two, three, four, five, six."
+    },
+    {
+      "id": "kofi-ph",
+      "type": "phonics",
+      "afterPage": 4,
+      "targetSound": "m",
+      "prompt": "Which words start with the \"m\" sound like \"mango\"?",
+      "options": [
+        "mango",
+        "market",
+        "tomato",
+        "banana"
+      ],
+      "correctIndexes": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "kofi-pred",
+      "type": "prediction",
+      "afterPage": 5,
+      "prompt": "What do you think Kofi will count next?"
+    },
+    {
+      "id": "kofi-sel",
+      "type": "sel",
+      "afterPage": 9,
+      "prompt": "What is the best thing you counted today, and who helped you?",
+      "feelingOptions": [
+        "Happy",
+        "Proud",
+        "Loved"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "word": "market",
+      "definition": "A place where people buy and sell food and goods.",
+      "pages": [
+        1
+      ]
+    },
+    {
+      "word": "count",
+      "definition": "To say numbers in order to find out how many.",
+      "pages": [
+        1
+      ]
+    },
+    {
+      "word": "mangoes",
+      "definition": "Sweet yellow fruits that grow on trees.",
+      "pages": [
+        4
+      ]
+    }
+  ],
+  "assets": {
+    "sha256:ce351e5b3605b3818742226b1319decd7e30e53696d22ca65641c75d184dae23": {
+      "path": "/story-spark-preview/audio/ce351e5b3605.mp3",
+      "bytes": 36694,
+      "type": "audio/mpeg"
+    },
+    "sha256:3d9df17d58473b4dd3cf251d48749361827392f0545498e0180f226df41b9421": {
+      "path": "/story-spark-preview/audio/3d9df17d5847.mp3",
+      "bytes": 16318,
+      "type": "audio/mpeg"
+    },
+    "sha256:60dacd8837aaed72d53c9c1e536ee290a281af82ea1422742c262e1164a34b34": {
+      "path": "/story-spark-preview/audio/60dacd8837aa.mp3",
+      "bytes": 19244,
+      "type": "audio/mpeg"
+    },
+    "sha256:315c14fd10ec18ccd58e65bc7e7d613cb454c5a023dc6bbafd9f8937661a1b8f": {
+      "path": "/story-spark-preview/audio/315c14fd10ec.mp3",
+      "bytes": 22379,
+      "type": "audio/mpeg"
+    },
+    "sha256:d3e585f274a52abc92462f0eaa16357a2089e7bab7261c8d00a9166f01b7126b": {
+      "path": "/story-spark-preview/audio/d3e585f274a5.mp3",
+      "bytes": 25827,
+      "type": "audio/mpeg"
+    },
+    "sha256:bc5da0ce787a58382317c9343c3f07c4ff47694d908f723538062e749ea0f4ae": {
+      "path": "/story-spark-preview/audio/bc5da0ce787a.mp3",
+      "bytes": 29380,
+      "type": "audio/mpeg"
+    },
+    "sha256:b0bc3e8408b5242dc2d061a42ef3a975e371ebe1be3a31afaf009d6c1ef860c9": {
+      "path": "/story-spark-preview/audio/b0bc3e8408b5.mp3",
+      "bytes": 63861,
+      "type": "audio/mpeg"
+    },
+    "sha256:c39dc13404bb5f30ed9abe824fe411efe5691c19c6df7aeb27f281ec229b0ee9": {
+      "path": "/story-spark-preview/audio/c39dc13404bb.mp3",
+      "bytes": 50278,
+      "type": "audio/mpeg"
+    },
+    "sha256:cf06b046b7d6c4be0c7f23b820dead229933865f051553f831c4184213ab2a8f": {
+      "path": "/story-spark-preview/audio/cf06b046b7d6.mp3",
+      "bytes": 77654,
+      "type": "audio/mpeg"
+    }
+  },
+  "contentHash": "sha256:1700c5470a71089d02062e475a05b3e2876c151127492686e5bafb66a67e315b"
+}

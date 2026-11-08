@@ -91,10 +91,10 @@ export const PILOT_STORIES: PilotStory[] = [
     activities: [
       { id: 'ama-c1', type: 'comprehension', afterPage: 3, question: 'Who did Ama lose?', options: ['Her little goat', 'Her hen', 'Her water bucket'], correctIndex: 0, explanation: 'Ama lost her little goat, Pepe.' },
       { id: 'ama-p1', type: 'prediction', afterPage: 3, prompt: 'Where do you think Pepe went? Tell a friend your idea.' },
-      { id: 'ama-ph', type: 'phonics', afterPage: 1, targetSound: 'g', prompt: 'Which words start with the g sound, like goat?', options: ['goat', 'green', 'water', 'mango'], correctIndexes: [0, 1] },
-      { id: 'ama-s1', type: 'sequencing', afterPage: 7, prompt: 'Put the story in order.', items: ['Ama looked by the mango tree.', 'Ama asked Grandpa Yaw at the well.', 'Ama found Pepe by the big rock.'] },
+      { id: 'ama-ph', type: 'phonics', afterPage: 4, targetSound: 'g', prompt: 'Which words start with the g sound, like goat?', options: ['goat', 'green', 'water', 'mango'], correctIndexes: [0, 1] },
+      { id: 'ama-s1', type: 'sequencing', afterPage: 8, prompt: 'Put the story in order.', items: ['Ama looked by the mango tree.', 'Ama asked Grandpa Yaw at the well.', 'Ama found Pepe by the big rock.'] },
       { id: 'ama-c2', type: 'comprehension', afterPage: 6, question: 'Where was Pepe?', options: ['By the big rock', 'In the market', 'Up the mango tree'], correctIndex: 0 },
-      { id: 'ama-sel', type: 'sel', afterPage: 7, prompt: 'How did Ama feel when Pepe was gone? How did she feel when she found him?', feelingOptions: ['Worried', 'Happy', 'Sleepy', 'Relieved'] },
+      { id: 'ama-sel', type: 'sel', afterPage: 8, prompt: 'How did Ama feel when Pepe was gone? How did she feel when she found him?', feelingOptions: ['Worried', 'Happy', 'Sleepy', 'Relieved'] },
     ],
     glossary: [
       { word: 'village', definition: 'A small place in the countryside where families live close together.', pages: [1] },
@@ -130,11 +130,11 @@ export const PILOT_STORIES: PilotStory[] = [
     ],
     activities: [
       { id: 'kofi-c1', type: 'comprehension', afterPage: 4, question: 'What did Kofi do when nothing came up?', options: ['He kept watering', 'He threw the seeds away', 'He went to sleep'], correctIndex: 0, explanation: 'Kofi did not give up. He watered the soil every morning.' },
-      { id: 'kofi-v1', type: 'vocabulary', afterPage: 7, word: 'patience', definition: 'Waiting calmly without giving up.', distractors: ['Running very fast', 'Being very loud'] },
-      { id: 'kofi-seq', type: 'sequencing', afterPage: 7, prompt: 'What happened first, next and last?', items: ['Kofi planted the seeds.', 'A small green sprout came up.', 'Kofi picked a basket of vegetables.'] },
+      { id: 'kofi-v1', type: 'vocabulary', afterPage: 8, word: 'patience', definition: 'Waiting calmly without giving up.', distractors: ['Running very fast', 'Being very loud'] },
+      { id: 'kofi-seq', type: 'sequencing', afterPage: 8, prompt: 'What happened first, next and last?', items: ['Kofi planted the seeds.', 'A small green sprout came up.', 'Kofi picked a basket of vegetables.'] },
       { id: 'kofi-c2', type: 'comprehension', afterPage: 6, question: 'How many carrots were there?', options: ['Three', 'Four', 'Five'], correctIndex: 2 },
-      { id: 'kofi-ph', type: 'phonics', afterPage: 5, targetSound: 'c', prompt: 'Which words start with the c sound?', options: ['corn', 'carrots', 'garden', 'okra'], correctIndexes: [0, 1] },
-      { id: 'kofi-sel', type: 'sel', afterPage: 7, prompt: 'Is there something you waited for that was hard to wait for? How did you feel?', feelingOptions: ['Excited', 'Impatient', 'Proud', 'Calm'] },
+      { id: 'kofi-ph', type: 'phonics', afterPage: 6, targetSound: 'c', prompt: 'Which words start with the c sound?', options: ['corn', 'carrots', 'garden', 'okra'], correctIndexes: [0, 1] },
+      { id: 'kofi-sel', type: 'sel', afterPage: 8, prompt: 'Is there something you waited for that was hard to wait for? How did you feel?', feelingOptions: ['Excited', 'Impatient', 'Proud', 'Calm'] },
     ],
     glossary: [
       { word: 'soil', definition: 'The brown earth where plants grow.', pages: [1, 2] },
@@ -212,7 +212,7 @@ export const PILOT_STORIES: PilotStory[] = [
     ],
     activities: [
       { id: 'amina-c1', type: 'comprehension', afterPage: 3, question: 'How did Amina feel at the school gate?', options: ['Nervous', 'Angry', 'Sleepy'], correctIndex: 0, explanation: 'Her feet did not want to move and she whispered that she did not want to go in.' },
-      { id: 'amina-c2', type: 'comprehension', afterPage: 5, question: 'What helped Amina feel better?', options: ['Drawing and talking with Salifu', 'Going home', 'Hiding under the desk'], correctIndex: 0 },
+      { id: 'amina-c2', type: 'comprehension', afterPage: 6, question: 'What helped Amina feel better?', options: ['Drawing and talking with Salifu', 'Going home', 'Hiding under the desk'], correctIndex: 0 },
       { id: 'amina-seq', type: 'sequencing', afterPage: 8, prompt: 'Put Amina’s day in order.', items: ['Amina put on her uniform.', 'Madam Abena met Amina at the gate.', 'Amina and Salifu drew a picture.', 'Mama met Amina after school.'] },
       { id: 'amina-v', type: 'vocabulary', afterPage: 4, word: 'nervous', definition: 'Feeling a little worried or scared about something new.', distractors: ['Feeling very hungry', 'Feeling very strong'] },
       { id: 'amina-ph', type: 'phonics', afterPage: 5, targetSound: 'cr', prompt: 'Which word starts with cr, like crayon?', options: ['crayon', 'sun', 'tree', 'clapping'], correctIndexes: [0] },
