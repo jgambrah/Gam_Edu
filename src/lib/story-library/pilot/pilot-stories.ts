@@ -20,6 +20,7 @@ import { BATCH_1_STORIES } from './batch-1-stories';
 import { BATCH_2_STORIES } from './batch-2-stories';
 import { BATCH_3_STORIES } from './batch-3-stories';
 import { BATCH_4_STORIES } from './batch-4-stories';
+import { BATCH_5_STORIES } from './batch-5-stories';
 import type { TeacherGuide } from './teacher-guide';
 
 export interface PilotPage {
@@ -326,6 +327,7 @@ export const PILOT_STORIES: PilotStory[] = [
   ...BATCH_2_STORIES,
   ...BATCH_3_STORIES,
   ...BATCH_4_STORIES,
+  ...BATCH_5_STORIES,
 ];
 
 export const pilotStory = (key: string) => PILOT_STORIES.find((s) => s.key === key);
