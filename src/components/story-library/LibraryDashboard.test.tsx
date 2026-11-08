@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { LibraryDashboard } from './LibraryDashboard';
+import { StoryNotes } from './StoryNotes';
 import { createPreviewSource } from '@/lib/story-library/library-source';
 
 // Serve the REAL built preview files from /public through a fetch stub (no network, no Firebase).
@@ -84,13 +85,20 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   });
 
-  it('Efua shows the teacher’s guide without internal debug notices', async () => {
+  it('Efua and every Batch 1–5 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(38));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
+
+    // Verify every single story in preview.json renders StoryNotes cleanly
+    const previewJson = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/preview.json'), 'utf8'));
+    for (const [, info] of Object.entries(previewJson)) {
+      const { unmount } = render(<StoryNotes info={info as any} />);
+      unmount();
+    }
   });
 
   it('shows a clear error, not a blank screen, when the library cannot be loaded', async () => {
