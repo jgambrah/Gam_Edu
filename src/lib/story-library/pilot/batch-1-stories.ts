@@ -125,7 +125,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Gentle awe. Pause after "Every atom of iron in your blood was once forged inside an ancient star."',
       },
       {
-        text: '‘Can our telescopes see the whole universe?’ Kwame asked. ‘Only the observable universe,’ Dr Mensah replied. ‘Because light takes time to travel, we can only see regions whose light has had time to reach Earth since the Big Bang. And as for the very first instant—what sparked the expansion, or what dark matter and dark energy truly are—those remain open questions.’',
+        text: '‘Can our telescopes see the whole universe?’ Kwame asked. ‘Only the observable universe,’ Dr Mensah replied. ‘Because light takes time to travel, we can only see regions whose light has had time to reach Earth since the Big Bang. And as for the very first instant, what sparked the expansion, or what dark matter and dark energy truly are, those remain open questions.’',
         alt: 'Dr Mensah, Abena and Kwame look through a small optical telescope on the terrace under a vast starry sky.',
         motif: '🔭❓',
         brief: 'On the outdoor terrace at night, Abena peers through a small optical telescope while Kwame and Dr Mensah stand beside her under a rich band of Milky Way stars.',
@@ -311,7 +311,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         {
           claim: 'What happened at t = 0 (the Planck epoch) and the exact nature of dark matter and dark energy remain unresolved scientific questions.',
           explanation: 'Current physics requires a unified theory of quantum gravity to describe t = 0, and dark matter/dark energy remain active areas of empirical investigation.',
-          reference: 'National Academy of Sciences — Science, Evolution, and Creationism / Cosmology FAQ.',
+          reference: 'National Academy of Sciences, Science, Evolution, and Creationism / Cosmology FAQ.',
         },
       ],
     },
@@ -429,7 +429,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         text: 'Kojo drew a circle in his green notebook: sunlight to leaves, insects to flowers, bats to seeds, and fungi back to the soil. ‘Nothing in the forest lives alone,’ he said. ‘Protecting the big trees means protecting the smallest midges and mushrooms too.’ Ranger Akosua smiled. ‘Now you think like a ranger.’ The end.',
         alt: 'Kojo shows Ranger Akosua his notebook drawing of the connected forest cycle at the park entrance.',
         motif: '📗🌿',
-        brief: 'At the sunlit forest edge, Kojo proudly holds up his open green notebook showing a simple circle of nature drawings (sun, leaf, flower, mushroom—no text) to a beaming Ranger Akosua.',
+        brief: 'At the sunlit forest edge, Kojo proudly holds up his open green notebook showing a simple circle of nature drawings (sun, leaf, flower, mushroom, no text) to a beaming Ranger Akosua.',
         narration: 'Proud, warm, and satisfying conclusion. Pause before "The end".',
       },
     ],
@@ -538,7 +538,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         'After page 8, ask how fungi and termites act as the forest’s cleaning and recycling team.',
       ],
       afterReading: [
-        'Take a 10-minute walk around the school compound to spot one producer (plant), one pollinator (insect/bird), and one decomposer (ant/millipede/fungus—look, do not touch).',
+        'Take a 10-minute walk around the school compound to spot one producer (plant), one pollinator (insect/bird), and one decomposer (ant/millipede/fungus, look, do not touch).',
       ],
       discussion: [
         'Why did Kojo at first think only the big trees mattered?',
@@ -579,7 +579,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         {
           claim: 'Kakum National Park provides habitat for African forest elephants (Loxodonta cyclotis), Diana monkeys (Cercopithecus diana), yellow-casqued hornbills (Ceratogymna elata), and trees such as odum (Milicia excelsa) and wawa (Triplochiton scleroxylon).',
           explanation: 'All named species are documented native inhabitants of Ghana’s Upper Guinean moist evergreen forest zone at Kakum.',
-          reference: 'Forestry Commission of Ghana (Wildlife Division) — Kakum National Park Biodiversity Records; IUCN Red List.',
+          reference: 'Forestry Commission of Ghana (Wildlife Division) Kakum National Park Biodiversity Records; IUCN Red List.',
         },
         {
           claim: 'Straw-coloured fruit bats (Eidolon helvum) disperse seeds across West African forests and savannahs, and fungi, termites, millipedes and bacteria decompose dead wood into soil nutrients.',
@@ -656,7 +656,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Natural, questioning tone for Kwame.',
       },
       {
-        text: '‘No, Kwame—and that is a crucial point,’ said Madam Abena. ‘An individual organism cannot evolve or change its inherited colour simply because it needs or wishes to. A pale beetle stays pale its whole life. Just as wishing for wings will not make you grow feathers, an animal cannot will its own DNA to change.’',
+        text: '‘No, Kwame, and that is a crucial point,’ said Madam Abena. ‘An individual organism cannot evolve or change its inherited colour simply because it needs or wishes to. A pale beetle stays pale its whole life. Just as wishing for wings will not make you grow feathers, an animal cannot will its own DNA to change.’',
         alt: 'Madam Abena holds up one pale beetle model and shakes her head kindly to explain that an individual beetle cannot change its own shell colour.',
         motif: '🚫✨',
         brief: 'Madam Abena holding a large educational model of a pale tan beetle, explaining warmly to Kwame and Yaa why an individual beetle cannot change its colour by wishing.',
@@ -673,7 +673,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         text: '‘Over many generations,’ Madam Abena continued, ‘most beetles in the population have dark shells. We call a helpful inherited trait like that camouflage an adaptation, and the process that shifts the population over generations is called natural selection.’',
         alt: 'Yaa sketches two generations of beetles in her pad, showing dark-shelled beetles becoming more common over time.',
         motif: '📒📈',
-        brief: 'Close view over Yaa’s shoulder as she sketches two rows of beetles in her sketchpad—mixed beetles at the top and mostly dark brown beetles at the bottom (no text).',
+        brief: 'Close view over Yaa’s shoulder as she sketches two rows of beetles in her sketchpad, mixed beetles at the top and mostly dark brown beetles at the bottom (no text).',
         narration: 'Clear emphasis on "adaptation" and "natural selection".',
       },
       {
@@ -684,7 +684,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Practical and relatable connection to everyday health.',
       },
       {
-        text: 'They walked to a large branching tree diagram showing vertebrates—fish, amphibians, reptiles, birds and mammals. Kwame pointed to the primate branch. ‘Madam Abena, some people say evolution claims humans came from the monkeys we see in trees today. Is that true?’',
+        text: 'They walked to a large branching tree diagram showing vertebrates, fish, amphibians, reptiles, birds and mammals. Kwame pointed to the primate branch. ‘Madam Abena, some people say evolution claims humans came from the monkeys we see in trees today. Is that true?’',
         alt: 'Kwame points to a large illuminated branching tree of life on the museum wall.',
         motif: '🌳🐒',
         brief: 'In front of a large glowing branching tree-of-life mural on the museum wall (purely pictorial animal silhouettes, no text), Kwame points toward the mammal branches.',
@@ -698,7 +698,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Warm, clear analogy. Emphasise "you did not descend from your cousin" and "share distant common ancestors".',
       },
       {
-        text: '‘Why do scientists call it the theory of evolution if there is so much evidence?’ Yaa asked. ‘In everyday speech,’ said Madam Abena, ‘people use the word theory to mean a guess. But in science, a theory is the opposite of a guess. It is a comprehensive, well-tested explanation supported by many independent lines of evidence—from fossils and anatomy to DNA.’',
+        text: '‘Why do scientists call it the theory of evolution if there is so much evidence?’ Yaa asked. ‘In everyday speech,’ said Madam Abena, ‘people use the word theory to mean a guess. But in science, a theory is the opposite of a guess. It is a comprehensive, well-tested explanation supported by many independent lines of evidence, from fossils and anatomy to DNA.’',
         alt: 'A display case shows three matching lines of evidence side by side: a fossil bone, comparative limb bones, and a double-helix DNA model.',
         motif: '🧬🦴',
         brief: 'A bright museum display showing a 3D double-helix DNA model alongside comparative forelimb bones and a fossil cast, with Yaa taking notes.',
@@ -732,7 +732,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         afterPage: 5,
         question: 'Can an individual pale beetle change its shell colour to dark brown just because it needs to hide?',
         options: [
-          'No; individuals do not evolve by wishing—populations shift over generations',
+          'No; individuals do not evolve by wishing, populations shift over generations',
           'Yes; any beetle can change its DNA whenever it feels scared',
           'Yes; all insects change species every dry season',
         ],
@@ -859,18 +859,18 @@ export const BATCH_1_STORIES: PilotStory[] = [
         {
           claim: 'Natural selection acts on heritable variation across generations; individual organisms do not evolve in their own lifetimes out of need or desire.',
           explanation: 'Mutations and genetic recombination occur prior to selection; differential reproductive success changes allele frequencies in a population over generations.',
-          reference: 'UC Museum of Paleontology — Understanding Evolution (evolution.berkeley.edu); National Academy of Sciences (1998), Teaching About Evolution and the Nature of Science.',
+          reference: 'UC Museum of Paleontology, Understanding Evolution (evolution.berkeley.edu); National Academy of Sciences (1998), Teaching About Evolution and the Nature of Science.',
         },
         {
           claim: 'Humans did not evolve from living monkeys or modern apes; humans and modern apes share distant common ancestors.',
           explanation: 'Extant primates occupy contemporary tips of the phylogenetic tree; hominins diverged from the common ancestor shared with Pan (chimpanzees/bonobos) in Africa ~6–8 million years ago.',
           analogyNote: 'The cousin/grandparent analogy accurately illustrates branching descent (cladogenesis) vs linear ladder misconceptions.',
-          reference: 'Smithsonian Institution National Museum of Natural History — What Does It Mean to Be Human? (humanorigins.si.edu).',
+          reference: 'Smithsonian Institution National Museum of Natural History, What Does It Mean to Be Human? (humanorigins.si.edu).',
         },
         {
           claim: 'In science, a theory is a comprehensive, well-substantiated explanation of nature supported by independent lines of evidence, not a mere guess.',
           explanation: 'Scientific theories integrate laws, facts, and tested hypotheses across paleontology, comparative anatomy, biogeography, and molecular genetics.',
-          reference: 'American Association for the Advancement of Science (AAAS) & National Academy of Sciences — Science, Evolution, and Creationism.',
+          reference: 'American Association for the Advancement of Science (AAAS) & National Academy of Sciences, Science, Evolution, and Creationism.',
         },
       ],
     },
@@ -1150,7 +1150,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Encouraging and practical. Emphasise "budget".',
       },
       {
-        text: 'Maame taught Kwaku to ask one question before buying anything: ‘Is this a need or a want?’ She explained, ‘A need is something essential for health, safety or learning—like food, clean water, medicine, or the fifteen-cedi geometry set you will need next term. A want is something fun to have, like a plastic spinning top or fizzy drink, that can wait.’',
+        text: 'Maame taught Kwaku to ask one question before buying anything: ‘Is this a need or a want?’ She explained, ‘A need is something essential for health, safety or learning, like food, clean water, medicine, or the fifteen-cedi geometry set you will need next term. A want is something fun to have, like a plastic spinning top or fizzy drink, that can wait.’',
         alt: 'Kwaku draws two columns in his notebook showing a geometry set on one side and a spinning top on the other.',
         motif: '📐🪀',
         brief: 'Close view of Kwaku’s notebook showing simple drawings (no words): a ruler and protractor geometry set on the left side, and a colourful toy top and soda bottle on the right.',
@@ -1192,7 +1192,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Hopeful and bright as the sun returns and the six weeks are completed.',
       },
       {
-        text: 'With Papa’s help, Kwaku opened the base of his susu box and counted his savings: ‘Three, six, nine, twelve, fifteen, eighteen cedis!’ And in his sharing envelope, he had six cedis from the six weeks—enough to buy sweet roasted plantain and groundnuts for Ama’s birthday.',
+        text: 'With Papa’s help, Kwaku opened the base of his susu box and counted his savings: ‘Three, six, nine, twelve, fifteen, eighteen cedis!’ And in his sharing envelope, he had six cedis from the six weeks, enough to buy sweet roasted plantain and groundnuts for Ama’s birthday.',
         alt: 'Kwaku counts eighteen one-cedi coins on the table while little sister Ama claps happily.',
         motif: '🎉🪙',
         brief: 'Kwaku arranging eighteen coins in six neat stacks of three on the wooden table while six-year-old Ama (yellow hair ribbons) claps with delight.',
@@ -1356,7 +1356,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'Kwame and the Talking Drum',
     summary:
-      'Six-year-old Kwame learns from his grandfather Nana Yaw that before you can play the Akan atumpan talking drums—or any of Ghana’s diverse drums—you must first listen with your ears and your heart.',
+      'Six-year-old Kwame learns from his grandfather Nana Yaw that before you can play the Akan atumpan talking drums, or any of Ghana’s diverse drums, you must first listen with your ears and your heart.',
     classification: base({
       classIds: ['kg-2', 'primary-1'],
       ageMin: 5,
@@ -1427,7 +1427,7 @@ export const BATCH_1_STORIES: PilotStory[] = [
         narration: 'Confident, steady beat matching Nana Yaw’s rhythm.',
       },
       {
-        text: 'Neighbors gathered in the courtyard and smiled as they heard the welcome call. Esi clapped in time with the beat, and Nana Yaw beamed. Kwame had learned the secret of the talking drum: when you listen first, your music speaks to everyone. The end.',
+        text: 'Neighbours gathered in the courtyard and smiled as they heard the welcome call. Esi clapped in time with the beat, and Nana Yaw beamed. Kwame had learned the secret of the talking drum: when you listen first, your music speaks to everyone. The end.',
         alt: 'Neighbours gather smiling in the sunny courtyard as Kwame and Nana Yaw play the welcome rhythm together.',
         motif: '👏🎉',
         brief: 'Joyful courtyard gathering in golden afternoon sunlight: neighbours smiling and clapping as Kwame and Nana Yaw stand together by the atumpan drums.',

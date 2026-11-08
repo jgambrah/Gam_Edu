@@ -33,7 +33,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'From Kumasi to the World: The Girl Who Built a Billion-Dollar Idea',
     summary:
-      'In a fictional journey spanning from a JHS science club in Kumasi to a pan-African engineering enterprise, Serwaa develops a low-cost solar-powered cold-storage system to prevent post-harvest farm losses—discovering how prototypes, setbacks, equity investors and company valuation work in the real world.',
+      'In a fictional journey spanning from a JHS science club in Kumasi to a pan-African engineering enterprise, Serwaa develops a low-cost solar-powered cold-storage system to prevent post-harvest farm losses, discovering how prototypes, setbacks, equity investors and company valuation work in the real world.',
     classification: base({
       classIds: ['jhs-1', 'jhs-2', 'jhs-3'],
       ageMin: 12,
@@ -70,14 +70,14 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Thoughtful and inspiring tone from Mr Ofori.',
       },
       {
-        text: 'With her classmate Kojo, Serwaa built their first prototype — an early working model crafted to test an idea. They lined a wooden crate with local coconut-husk insulation, fitted a small twelve-volt cooling fan powered by a borrowed solar panel, and placed a dish of water and a thermometer inside. Everyone at the school science club clapped, until they checked the crates after forty-eight hours.',
+        text: 'With her classmate Kojo, Serwaa built their first prototype, an early working model crafted to test an idea. They lined a wooden crate with local coconut-husk insulation, fitted a small twelve-volt cooling fan powered by a borrowed solar panel, and placed a dish of water and a thermometer inside. Everyone at the school science club clapped, until they checked the crates after forty-eight hours.',
         alt: 'Serwaa and Kojo assemble a small wooden box lined with coconut fibre and connected to a small solar panel on a school workbench.',
         motif: '🛠️🔋',
         brief: 'School workshop table: Serwaa and Kojo (spectacles, navy polo shirt) fitting brown coconut-husk fibre and a small cooling fan into a wooden crate wired to a small solar panel outside the window, with a thermometer inside.',
         narration: 'Energetic curiosity, building to a suspenseful pause at the end.',
       },
       {
-        text: 'The first prototype failed! Moisture condensed on the inside walls, soaked the coconut fibre, and made the tomatoes mouldy even faster. Kojo wanted to give up, but Serwaa opened her engineering notebook and wrote: Test 1 failed—humidity trapped inside. ‘Failure is not the end of an invention,’ she told Kojo. ‘It is data telling us what to fix next.’',
+        text: 'The first prototype failed! Moisture condensed on the inside walls, soaked the coconut fibre, and made the tomatoes mouldy even faster. Kojo wanted to give up, but Serwaa opened her engineering notebook and wrote: Test 1 failed, humidity trapped inside. ‘Failure is not the end of an invention,’ she told Kojo. ‘It is data telling us what to fix next.’',
         alt: 'Serwaa writes notes in her engineering notebook while inspecting water droplets inside the prototype box as Kojo looks discouraged.',
         motif: '📓💧',
         brief: 'Close view at the workbench: water droplets visible inside the open wooden crate; Kojo looking disappointed with his chin in his hand while Serwaa calmly writes in a notebook (no readable text) and points at the condensation.',
@@ -91,21 +91,21 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Steady, mature progression showing years of disciplined study and engineering.',
       },
       {
-        text: 'Their first real pilot unit stood beside Auntie Afia’s stall and two neighbouring farm cooperatives. Instead of spoiling in two days, tomatoes, garden eggs and green peppers stayed crisp for two full weeks! Farmers Paid a small daily fee of five cedis per crate—far less than the thirty cedis they used to lose when produce rotted. The unit paid for its own maintenance through real value.',
+        text: 'Their first real pilot unit stood beside Auntie Afia’s stall and two neighbouring farm cooperatives. Instead of spoiling in two days, tomatoes, garden eggs and green peppers stayed crisp for two full weeks! Farmers paid a small daily fee of five cedis per crate, far less than the thirty cedis they used to lose when produce rotted. The unit paid for its own maintenance through real value.',
         alt: 'Auntie Afia and local farmers smilingly load crates of crisp tomatoes and green peppers into a walk-in solar cold room.',
         motif: '🥬📈',
         brief: 'Rural farm cooperative yard: Auntie Afia and two smiling Ghanaian farmers loading bright red tomatoes and green peppers into a clean white-and-teal solar-powered walk-in cold room topped with solar panels.',
         narration: 'Warm triumph as the engineering solves the real-world market problem.',
       },
       {
-        text: 'Soon, forty farming communities across Ghana asked for units, but Serwaa and Kojo had a new problem: building forty industrial solar cold rooms cost millions of cedis they did not have. To scale — growing a business so it can serve many more customers — they needed outside capital. They registered their company formally and prepared to meet investors.',
+        text: 'Soon, forty farming communities across Ghana asked for units, but Serwaa and Kojo had a new problem: building forty industrial solar cold rooms cost millions of cedis they did not have. To scale, growing a business so it can serve many more customers, they needed outside capital. They registered their company formally and prepared to meet investors.',
         alt: 'Serwaa and Kojo study a map of Ghana dotted with pins while reviewing blueprints and cost spreadsheets in their small office.',
         motif: '🗺️🏗️',
         brief: 'Modest startup office in Kumasi: Serwaa and Kojo looking at a wall map of Ghana marked with colourful pins and engineering blueprints rolled out on a wooden table.',
         narration: 'Clear transition from engineering a product to scaling a company.',
       },
       {
-        text: 'In Accra, they pitched to a climate-technology investment fund. The investors offered capital in exchange for equity — a share of ownership in the company. Before signing a single page, Serwaa and Kojo worked with a qualified Ghanaian corporate lawyer and an accountant. They made sure the agreement was fair, kept strong founder ownership, and committed every cedi of investment to building factories and farmer hubs.',
+        text: 'In Accra, they pitched to a climate-technology investment fund. The investors offered capital in exchange for equity, a share of ownership in the company. Before signing a single page, Serwaa and Kojo worked with a qualified Ghanaian corporate lawyer and an accountant. They made sure the agreement was fair, kept strong founder ownership, and committed every cedi of investment to building factories and farmer hubs.',
         alt: 'Serwaa and Kojo sit across a conference table with investors and a corporate lawyer, carefully reviewing a contract and financial model.',
         motif: '🤝⚖️',
         brief: 'Modern Accra meeting room: Serwaa and Kojo seated with a female Ghanaian lawyer in a dark suit and two investors, reviewing architectural drawings of a solar cold-storage hub (no text on documents).',
@@ -119,17 +119,17 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Dynamic, resilient tone highlighting local manufacturing and job creation.',
       },
       {
-        text: 'Ten years after that first mouldy crate in JHS, international business news announced that Serwaa and Kojo’s company had reached a valuation of one billion cedis—and was expanding globally. Back at her old school in Kumasi, a JHS student gasped, ‘Sister Serwaa, do you have a billion cedis sitting in your bedroom?’ Serwaa laughed warmly and stepped to the chalkboard to explain the truth.',
+        text: 'Ten years after that first mouldy crate in JHS, international business news announced that Serwaa and Kojo’s company had reached a valuation of one billion cedis, and was expanding globally. Back at her old school in Kumasi, a JHS student gasped, ‘Sister Serwaa, do you have a billion cedis sitting in your bedroom?’ Serwaa laughed warmly and stepped to the chalkboard to explain the truth.',
         alt: 'Serwaa laughs warmly in her old JHS classroom in Kumasi as curious students gather around her beside the chalkboard.',
         motif: '🎓💬',
         brief: 'Back in the Kumasi JHS classroom: adult Serwaa smiling warmly at a group of eager JHS students in uniform, holding a piece of chalk beside the board.',
         narration: 'Playful question from the student, warm and grounded response from Serwaa.',
       },
       {
-        text: '‘No!’ explained Serwaa. ‘A company’s valuation is not cash in a founder’s pocket. Our company is divided into ten million shares, and investors currently value each share at one hundred cedis—making ten million times one hundred equal one billion cedis on paper. Almost all that value lives in our factories, solar hubs, trucks and research labs. Even more importantly, billion-dollar companies are rare exceptions—never a guaranteed reward.’',
+        text: '‘No!’ explained Serwaa. ‘A company’s valuation is not cash in a founder’s pocket. Our company is divided into ten million shares, and investors currently value each share at one hundred cedis, making ten million times one hundred equal one billion cedis on paper. Almost all that value lives in our factories, solar hubs, trucks and research labs. Even more importantly, billion-dollar companies are rare exceptions, never a guaranteed reward.’',
         alt: 'Serwaa points to a visual diagram showing factories, solar cold rooms, delivery vans and workers rather than a pile of cash.',
         motif: '📊🏭',
-        brief: 'Serwaa illustrating on the chalkboard with simple icons (a factory, solar panels, a delivery truck, and smiling workers—no words or numbers) while JHS students nod in understanding.',
+        brief: 'Serwaa illustrating on the chalkboard with simple icons (a factory, solar panels, a delivery truck, and smiling workers, no words or numbers) while JHS students nod in understanding.',
         narration: 'Crucial educational clarity: distinguish paper valuation and productive assets from personal cash, and note that such outcomes are rare.',
       },
       {
@@ -152,7 +152,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
           'Investors immediately bought it for a million cedis',
         ],
         correctIndex: 0,
-        explanation: 'Their first prototype trapped humidity inside, soaking the coconut fibre—teaching them what to improve next.',
+        explanation: 'Their first prototype trapped humidity inside, soaking the coconut fibre, teaching them what to improve next.',
       },
       {
         id: 'kumasi-v1',
@@ -198,12 +198,12 @@ export const BATCH_4_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'prototype', definition: 'an early working model built to test a design concept and learn what needs improvement', pages: [3, 4] },
-      { word: 'insulation', definition: 'material that slows the transfer of heat so a cool space stays cool longer', pages: [3, 5] },
-      { word: 'scale', definition: 'to grow a business system so it can serve many more customers reliably', pages: [7] },
-      { word: 'capital', definition: 'money or financial resources invested to build equipment, factories and operations', pages: [7, 8] },
-      { word: 'equity', definition: 'ownership shares in a company', pages: [8] },
-      { word: 'valuation', definition: 'the estimated total economic worth of a company (total shares multiplied by share price), not cash in a founder’s pocket', pages: [10, 11] },
+      { word: 'prototype', definition: 'An early working model built to test a design concept and learn what needs improvement', pages: [3, 4] },
+      { word: 'insulation', definition: 'Material that slows the transfer of heat so a cool space stays cool longer', pages: [3, 5] },
+      { word: 'scale', definition: 'To grow a business system so it can serve many more customers reliably', pages: [7] },
+      { word: 'capital', definition: 'Money or financial resources invested to build equipment, factories and operations', pages: [7, 8] },
+      { word: 'equity', definition: 'Ownership shares in a company', pages: [8] },
+      { word: 'valuation', definition: 'The estimated total economic worth of a company (total shares multiplied by share price), not cash in a founder’s pocket', pages: [10, 11] },
     ],
     teacherGuide: {
       overview:
@@ -310,7 +310,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Curious observation leading to Ama’s bright idea.',
       },
       {
-        text: 'They checked the cost of supplies at the stationery kiosk. A pack of stiff coloured manila cards and a small tube of paper glue cost five cedis in total—enough to make ten neat bookmarks. Kofi looked at his single coin. ‘You cannot start most businesses with just one cedi alone,’ he realised. ‘One cedi is not enough for the card and glue!’',
+        text: 'They checked the cost of supplies at the stationery kiosk. A pack of stiff coloured manila cards and a small tube of paper glue cost five cedis in total, enough to make ten neat bookmarks. Kofi looked at his single coin. ‘You cannot start most businesses with just one cedi alone,’ he realised. ‘One cedi is not enough for the card and glue!’',
         alt: 'At a small stationery kiosk, Kofi looks at his single coin while Ama and Yaw inspect packs of coloured manila card and glue.',
         motif: '🏪🧮',
         brief: 'Friendly neighbourhood stationery counter: Kofi looking down at one coin in his palm while Ama and cousin Yaw (9, striped orange-and-white t-shirt) look at colourful manila card sheets and a glue bottle on the counter (no text or price tags).',
@@ -327,7 +327,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         text: 'On the veranda table, the three partners set up a tidy production line. Yaw measured and folded the stiff card into neat triangular pockets, Ama trimmed the edges smoothly, and Kofi decorated each bookmark with cheerful geometric patterns and animal faces. By afternoon, ten sturdy bookmarks stood in a bright row.',
         alt: 'Yaw folds card triangles, Ama trims them neatly, and Kofi draws cheerful animal faces to make ten colourful corner bookmarks.',
         motif: '✂️🎨',
-        brief: 'Sunny veranda table: Yaw folding card triangles with a wooden ruler, Ama trimming with safety scissors, and Kofi drawing cute animal faces (a tortoise, a goat, a bird—no letters) on ten bright corner bookmarks.',
+        brief: 'Sunny veranda table: Yaw folding card triangles with a wooden ruler, Ama trimming with safety scissors, and Kofi drawing cute animal faces (a tortoise, a goat, a bird, no letters) on ten bright corner bookmarks.',
         narration: 'Rhythmic, industrious energy as the three children work together.',
       },
       {
@@ -352,7 +352,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Crucial numeracy moment: 10 cedis revenue minus 5 cedis cost equals 5 cedis profit.',
       },
       {
-        text: 'The three partners returned their original five cedis to their capital pouch so they could buy fresh card for next Saturday, and shared the five cedis of profit fairly according to what each partner contributed and worked on. Kofi smiled at his coin. One cedi alone could not buy everything—but with planning, teamwork and honest value, it had sparked a real business!',
+        text: 'The three partners returned their original five cedis to their capital pouch so they could buy fresh card for next Saturday, and shared the five cedis of profit fairly according to what each partner contributed and worked on. Kofi smiled at his coin. One cedi alone could not buy everything, but with planning, teamwork and honest value, it had sparked a real business!',
         alt: 'Kofi, Ama and Yaw smile proudly beside their capital pouch and a fresh stack of coloured card for next week.',
         motif: '🌟🧺',
         brief: 'Warm golden-hour scene on the veranda: Kofi, Ama and Yaw smiling proudly together with their cloth coin pouch and a fresh pack of coloured card, with Maame clapping behind them.',
@@ -417,10 +417,10 @@ export const BATCH_4_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'capital', definition: 'money saved or pooled together to buy the materials needed to start a business', pages: [4, 8, 9] },
-      { word: 'partners', definition: 'people who join their money, skills and work together to run a business and share the results fairly', pages: [4, 5, 9] },
-      { word: 'revenue', definition: 'the total money a business brings in from selling its goods or services before subtracting any costs', pages: [7, 8] },
-      { word: 'profit', definition: 'the money left over after subtracting all business costs from total revenue', pages: [8, 9] },
+      { word: 'capital', definition: 'Money saved or pooled together to buy the materials needed to start a business', pages: [4, 8, 9] },
+      { word: 'partners', definition: 'People who join their money, skills and work together to run a business and share the results fairly', pages: [4, 5, 9] },
+      { word: 'revenue', definition: 'The total money a business brings in from selling its goods or services before subtracting any costs', pages: [7, 8] },
+      { word: 'profit', definition: 'The money left over after subtracting all business costs from total revenue', pages: [8, 9] },
     ],
     teacherGuide: {
       overview:
@@ -463,7 +463,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
           'Separating revenue physically into cost recovery and profit prevents the common mistake of spending working capital as if it were all profit.',
       },
       factCheck:
-        'Explicitly clarifies on page 3 and page 9 that you cannot start most real businesses with literally 1 cedi alone—Kofi’s 1 cedi is pooled with Ama’s 2 cedis and Yaw’s 2 cedis (5 cedis total capital) to make 10 one-cedi bookmarks.',
+        'Explicitly clarifies on page 3 and page 9 that you cannot start most real businesses with literally 1 cedi alone, Kofi’s 1 cedi is pooled with Ama’s 2 cedis and Yaw’s 2 cedis (5 cedis total capital) to make 10 one-cedi bookmarks.',
     },
     narrationPlan: {
       voice: 'Warm, lively Ghanaian storyteller (en-GH); bright and clear on all coin counts.',
@@ -487,7 +487,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'Abena Buys a Piece of a Company',
     summary:
-      'Thirteen-year-old Abena visits her Auntie Esi in Accra and discovers how the Ghana Stock Exchange (GSE), regulated by the Securities and Exchange Commission (SEC Ghana), allows ordinary citizens to buy shares of companies or lend money through bonds—and why diversification, patience and avoiding "get-rich-quick" scams protect long-term wealth.',
+      'Thirteen-year-old Abena visits her Auntie Esi in Accra and discovers how the Ghana Stock Exchange (GSE), regulated by the Securities and Exchange Commission (SEC Ghana), allows ordinary citizens to buy shares of companies or lend money through bonds, and why diversification, patience and avoiding "get-rich-quick" scams protect long-term wealth.',
     classification: base({
       classIds: ['jhs-1', 'jhs-2', 'jhs-3'],
       ageMin: 12,
@@ -509,35 +509,35 @@ export const BATCH_4_STORIES: PilotStory[] = [
     ],
     pages: [
       {
-        text: 'During the school holidays in Accra, thirteen-year-old Abena and her cousin Kwaku walked with Auntie Esi past a busy fruit-processing factory and a major bank on Independence Avenue. ‘Auntie Esi,’ asked Abena, ‘who owns giant companies like these? Does one rich person own the whole building?’ Auntie Esi smiled. ‘Actually, Abena, thousands of ordinary Ghanaians—including teachers, nurses and my own family—own small pieces of public companies!’',
+        text: 'During the school holidays in Accra, thirteen-year-old Abena and her cousin Kwaku walked with Auntie Esi past a busy fruit-processing factory and a major bank on Independence Avenue. ‘Auntie Esi,’ asked Abena, ‘who owns giant companies like these? Does one rich person own the whole building?’ Auntie Esi smiled. ‘Actually, Abena, thousands of ordinary Ghanaians, including teachers, nurses and my own family, own small pieces of public companies!’',
         alt: 'Abena and Kwaku walk with Auntie Esi along a clean Accra avenue past modern commercial buildings.',
         motif: '🏢👩🏾‍💼',
         brief: 'Sunny Accra boulevard with modern glass-and-concrete buildings and tropical trees: Abena (13, cornrows, yellow blouse, denim skirt) and Kwaku (14, green polo shirt) looking up in curiosity as Auntie Esi (royal-blue blazer, glasses) gestures toward a commercial building.',
         narration: 'Curious and engaging opening. Warm, knowledgeable tone from Auntie Esi.',
       },
       {
-        text: 'At her office, Auntie Esi drew a giant circle divided into equal slices like a pie. ‘When a large company needs capital to build new factories or branches, it can list on the Ghana Stock Exchange—the GSE,’ she explained. ‘The company’s ownership is divided into thousands or millions of equal units called shares, or stocks. When you buy a share through a licensed broker, you become a part-owner, or shareholder, of that real business.’',
+        text: 'At her office, Auntie Esi drew a giant circle divided into equal slices like a pie. ‘When a large company needs capital to build new factories or branches, it can list on the Ghana Stock Exchange, the GSE,’ she explained. ‘The company’s ownership is divided into thousands or millions of equal units called shares, or stocks. When you buy a share through a licensed broker, you become a part-owner, or shareholder, of that real business.’',
         alt: 'Auntie Esi draws a pie chart divided into small slices on a whiteboard while Abena and Kwaku watch attentively.',
         motif: '🥧📊',
         brief: 'Bright Accra advisory office: Auntie Esi at a whiteboard showing a colourful circular pie chart with one slice highlighted (no words or letters on the board), while Abena and Kwaku lean forward at the table.',
         narration: 'Clear, vivid analogy of the pie divided into shares.',
       },
       {
-        text: '‘How does a shareholder earn money from a stock?’ asked Kwaku. ‘In two possible ways,’ said Auntie Esi. ‘First, if the company makes a strong profit, its board may share part of that profit with shareholders as a cash payment called a dividend. Second, if the business grows more valuable over time, the price of your share can rise above what you paid—a capital gain. Remember, though: neither dividends nor price increases are guaranteed!’',
+        text: '‘How does a shareholder earn money from a stock?’ asked Kwaku. ‘In two possible ways,’ said Auntie Esi. ‘First, if the company makes a strong profit, its board may share part of that profit with shareholders as a cash payment called a dividend. Second, if the business grows more valuable over time, the price of your share can rise above what you paid, a capital gain. Remember, though: neither dividends nor price increases are guaranteed!’',
         alt: 'Auntie Esi holds up two coloured cards illustrating a dividend coin pouch and a rising share chart alongside a warning sign for risk.',
         motif: '🪙📈',
-        brief: 'Close view at the office desk: Auntie Esi pointing to two visual diagram cards—one showing a factory sharing coins into a hand, the other showing a line chart going both up and down (no text).',
+        brief: 'Close view at the office desk: Auntie Esi pointing to two visual diagram cards, one showing a factory sharing coins into a hand, the other showing a line chart going both up and down (no text).',
         narration: 'Emphasise both ways stocks can earn returns AND the honest warning that neither is guaranteed.',
       },
       {
-        text: '‘Wait—can a share price go down too?’ asked Abena carefully. ‘Yes,’ said Auntie Esi seriously. ‘If a company faces high costs, poor management or tough economic times, its share price can fall below what you paid, causing a capital loss if you sell. That is why investing in stocks carries market risk, and why you should never invest money you will need next week for school fees or food.’',
+        text: '‘Wait, can a share price go down too?’ asked Abena carefully. ‘Yes,’ said Auntie Esi seriously. ‘If a company faces high costs, poor management or tough economic times, its share price can fall below what you paid, causing a capital loss if you sell. That is why investing in stocks carries market risk, and why you should never invest money you will need next week for school fees or food.’',
         alt: 'Abena studies a chart where one company’s line dips downward while Auntie Esi explains market risk.',
         motif: '📉⚠️',
         brief: 'Abena looking thoughtfully at a tablet screen showing a red line dipping downward and a blue line rising steadily (no text), while Auntie Esi speaks seriously beside her.',
         narration: 'Measured, honest tone explaining capital loss and why short-term money must stay safe.',
       },
       {
-        text: '‘Is there another way to invest besides buying shares?’ asked Abena. ‘Yes—bonds!’ said Auntie Esi. ‘When you buy a bond from the government or a company, you are not buying ownership. Instead, you are lending money for a fixed period, and the borrower promises to pay you regular interest and return your original principal at maturity. Bonds are generally steadier than stocks, though they still carry risks such as inflation or borrower difficulties.’',
+        text: '‘Is there another way to invest besides buying shares?’ asked Abena. ‘Yes, bonds!’ said Auntie Esi. ‘When you buy a bond from the government or a company, you are not buying ownership. Instead, you are lending money for a fixed period, and the borrower promises to pay you regular interest and return your original principal at maturity. Bonds are generally steadier than stocks, though they still carry risks such as inflation or borrower difficulties.’',
         alt: 'Auntie Esi contrasts a stock ownership certificate icon with a bond loan-and-interest calendar icon.',
         motif: '📜🗓️',
         brief: 'On the desk, two clear visual props side by side: a miniature factory building model (representing stock ownership) and a golden clock with coins beside a calendar (representing a fixed-term bond loan, no text).',
@@ -547,7 +547,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         text: '‘Why not just leave all our money in a wooden box under the bed for ten years so it never drops?’ asked Kwaku. ‘Because of inflation,’ explained Auntie Esi. ‘Inflation is the general rise in prices over time. If a textbook costs fifty cedis today and inflation makes it cost eighty cedis in a few years, fifty cedis sitting idle in a box loses purchasing power! Thoughtful investing helps savings grow faster than inflation over the long term.’',
         alt: 'Kwaku compares a single basket of goods today with a smaller basket in the future to see how inflation reduces purchasing power.',
         motif: '🧺💸',
-        brief: 'Thought bubble / tabletop visual comparison: Kwaku holding a coin pouch while looking at two market baskets—one full of books and fruit, the other only half full—illustrating how inflation shrinks what idle cash can buy.',
+        brief: 'Thought bubble / tabletop visual comparison: Kwaku holding a coin pouch while looking at two market baskets, one full of books and fruit, the other only half full, illustrating how inflation shrinks what idle cash can buy.',
         narration: 'Clear, relatable explanation of inflation and purchasing power.',
       },
       {
@@ -558,21 +558,21 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Interactive, step-by-step setup of the 1,000-cedi diversified portfolio (400 + 200 + 400).',
       },
       {
-        text: 'They tracked a full year of real-world economic scenarios. Company A, a well-run food processor, grew its share value from four hundred cedis to four hundred and thirty cedis and paid a twenty-cedi dividend—totalling four hundred and fifty cedis! Meanwhile, Company B faced shipping delays, and its shares dropped from two hundred cedis down to one hundred and eighty cedis—a twenty-cedi loss.',
+        text: 'They tracked a full year of real-world economic scenarios. Company A, a well-run food processor, grew its share value from four hundred cedis to four hundred and thirty cedis and paid a twenty-cedi dividend, totalling four hundred and fifty cedis! Meanwhile, Company B faced shipping delays, and its shares dropped from two hundred cedis down to one hundred and eighty cedis, a twenty-cedi loss.',
         alt: 'Abena and Kwaku use a calculator to record Company A growing to 450 cedis while Company B drops to 180 cedis.',
         motif: '🧮📊',
         brief: 'Kwaku pressing keys on a desktop calculator while Abena moves tokens: Basket 1 gains extra gold tokens, while Basket 2 loses a token.',
         narration: 'Realistic simulation showing one stock gaining (+50) and one stock losing (-20).',
       },
       {
-        text: 'Then they checked Basket 3: the four-hundred-cedi bond at fifteen percent interest earned sixty cedis, growing to four hundred and sixty cedis! Kwaku added all three baskets together: four hundred and fifty cedis plus one hundred and eighty cedis plus four hundred and sixty cedis equalled one thousand and ninety cedis—a net gain of ninety cedis, or nine percent! ‘Even though Company B fell,’ Abena beamed, ‘diversification protected our portfolio!’',
+        text: 'Then they checked Basket 3: the four-hundred-cedi bond at fifteen percent interest earned sixty cedis, growing to four hundred and sixty cedis! Kwaku added all three baskets together: four hundred and fifty cedis plus one hundred and eighty cedis plus four hundred and sixty cedis equalled one thousand and ninety cedis, a net gain of ninety cedis, or nine percent! ‘Even though Company B fell,’ Abena beamed, ‘diversification protected our portfolio!’',
         alt: 'Abena and Kwaku high-five as their three diversified baskets total 1,090 cedis on the calculator.',
         motif: '🙌🏾📈',
-        brief: 'Abena and Kwaku high-fiving across the desk as Auntie Esi points to the three baskets—two fuller than before, balancing out the smaller middle basket.',
+        brief: 'Abena and Kwaku high-fiving across the desk as Auntie Esi points to the three baskets, two fuller than before, balancing out the smaller middle basket.',
         narration: 'Walk through the arithmetic clearly: 450 + 180 + 460 = 1,090 cedis (+90 cedis / 9% return).',
       },
       {
-        text: 'Just then, Kwaku showed Auntie Esi a flashy message on a phone promising: ‘Send 200 cedis today and double your money to 400 cedis in 48 hours—guaranteed!’ Auntie Esi’s expression turned firm. ‘Delete that immediately, Kwaku! In Ghana, legitimate investment firms and the Ghana Stock Exchange are regulated by the Securities and Exchange Commission—SEC Ghana. Anyone promising huge, instant, risk-free returns is running a Ponzi scam or fraud!’',
+        text: 'Just then, Kwaku showed Auntie Esi a flashy message on a phone promising: ‘Send 200 cedis today and double your money to 400 cedis in 48 hours, guaranteed!’ Auntie Esi’s expression turned firm. ‘Delete that immediately, Kwaku! In Ghana, legitimate investment firms and the Ghana Stock Exchange are regulated by the Securities and Exchange Commission, SEC Ghana. Anyone promising huge, instant, risk-free returns is running a Ponzi scam or fraud!’',
         alt: 'Auntie Esi warns Kwaku and Abena to reject a suspicious "double your money in 48 hours" phone message.',
         motif: '📱🚫',
         brief: 'Close view: Kwaku holding up a smartphone showing a flashy warning icon (no text) while Auntie Esi raises a firm hand in a "stop" gesture and Abena shakes her head wisely.',
@@ -586,7 +586,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Practical, age-appropriate guidance on emergency funds first and parent/guardian accounts for minors.',
       },
       {
-        text: 'On the bus ride home, Abena looked out at the busy shops, farms and factories of Ghana with brand-new eyes. She did not just see places to buy snacks anymore—she saw enterprises she could study, build, and one day help own through patient, disciplined investing.',
+        text: 'On the bus ride home, Abena looked out at the busy shops, farms and factories of Ghana with brand-new eyes. She did not just see places to buy snacks anymore, she saw enterprises she could study, build, and one day help own through patient, disciplined investing.',
         alt: 'Looking out the bus window at golden hour, Abena smiles at the bustling businesses and factories of Accra.',
         motif: '🚌🌅',
         brief: 'Golden-hour view by a bus window: Abena smiling thoughtfully out at a vibrant Ghanaian cityscape with shops, solar rooftops and busy streets.',
@@ -664,12 +664,12 @@ export const BATCH_4_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'shares', definition: 'equal units of ownership in a company (also called stocks)', pages: [2, 5, 8] },
-      { word: 'dividend', definition: 'a portion of a company’s profit paid out to its shareholders', pages: [3] },
-      { word: 'bond', definition: 'an investment in which you lend money to a government or company for a set period in exchange for interest payments', pages: [5, 7, 9] },
-      { word: 'inflation', definition: 'the general rise in prices over time, which reduces what idle cash can buy', pages: [5, 6] },
-      { word: 'diversification', definition: 'spreading money across different types of investments so one loss does not ruin the whole portfolio', pages: [7, 9] },
-      { word: 'portfolio', definition: 'the combined collection of investments held by a person or institution', pages: [7, 9] },
+      { word: 'shares', definition: 'Equal units of ownership in a company (also called stocks)', pages: [2, 5, 8] },
+      { word: 'dividend', definition: 'A portion of a company’s profit paid out to its shareholders', pages: [3] },
+      { word: 'bond', definition: 'An investment in which you lend money to a government or company for a set period in exchange for interest payments', pages: [5, 7, 9] },
+      { word: 'inflation', definition: 'The general rise in prices over time, which reduces what idle cash can buy', pages: [5, 6] },
+      { word: 'diversification', definition: 'Spreading money across different types of investments so one loss does not ruin the whole portfolio', pages: [7, 9] },
+      { word: 'portfolio', definition: 'The combined collection of investments held by a person or institution', pages: [7, 9] },
     ],
     teacherGuide: {
       overview:
@@ -759,7 +759,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
     ],
     pages: [
       {
-        text: 'Dark storm clouds rolled across the afternoon sky as eleven-year-old Yaw walked to his mother’s tailoring shop carrying a sturdy yellow umbrella. Next door, Uncle Tetteh laughed from behind his provision counter. ‘Yaw, the sun was shining ten minutes ago! Why carry an umbrella before the rain starts?’ Auntie Akosua smiled from her sewing machine. ‘Because once the storm is pouring, Uncle Tetteh, it is too late to go shopping for an umbrella!’',
+        text: 'Dark storm clouds rolled across the afternoon sky as eleven-year-old Yaw walked to his mother’s tailoring shop carrying a sturdy yellow umbrella. Next door, Uncle Tetteh laughed from behind his provision counter. ‘Yaw, the sun was shining ten minutes ago! Why carry an umbrella before the rain starts?’ His mother, Auntie Akosua, smiled from her sewing machine. ‘Because once the storm is pouring, Uncle Tetteh, it is too late to go shopping for an umbrella!’',
         alt: 'Eleven-year-old Yaw carries a bright yellow umbrella outside Auntie Akosua’s tailoring shop while dark rain clouds gather overhead.',
         motif: '☂️🌩️',
         brief: 'Lively Ghanaian neighbourhood street as dark blue storm clouds gather: Yaw (11, sky-blue polo shirt, khaki shorts) holding a closed yellow umbrella outside Auntie Akosua’s tailoring shop while Uncle Tetteh waves cheerfully from the shop next door.',
@@ -773,56 +773,56 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Dramatic storm night followed by sympathetic morning discovery.',
       },
       {
-        text: 'Uncle Tetteh sat on a wooden crate with his head in his hands. ‘Fixing my roof and replacing the damaged goods will cost two thousand cedis,’ he whispered. ‘I only have four hundred cedis in my emergency savings, and I never signed up for shop insurance.’ Beside him, Auntie Akosua was also worried about her damaged roof—but she calmly opened a dry metal tin and took out her shop insurance policy document.',
+        text: 'Uncle Tetteh sat on a wooden crate with his head in his hands. ‘Fixing my roof and replacing the damaged goods will cost two thousand cedis,’ he whispered. ‘I only have four hundred cedis in my emergency savings, and I never signed up for shop insurance.’ Beside him, Auntie Akosua was also worried about her damaged roof, but she calmly opened a dry metal tin and took out her shop insurance policy document.',
         alt: 'Uncle Tetteh looks distressed beside his soaked cartons while Auntie Akosua opens a dry metal folder containing her insurance policy.',
         motif: '📄😟',
         brief: 'Outside the two shops: Uncle Tetteh sitting sadly on a crate beside damp cardboard boxes, while Auntie Akosua holds a clean official document folder from a waterproof tin as Yaw watches closely.',
         narration: 'Contrast Uncle Tetteh’s distress with Auntie Akosua’s calm preparation.',
       },
       {
-        text: '‘Mama, what is insurance, and how can a piece of paper fix a roof?’ asked Yaw. Auntie Akosua drew a big bowl on a piece of card. ‘Insurance works through risk pooling,’ she explained. ‘Imagine one hundred shopkeepers each pay a small regular amount — called a premium — of one hundred cedis a year into one shared protection pool. One hundred times one hundred cedis puts ten thousand cedis into the pool!’',
+        text: '‘Mama, what is insurance, and how can a piece of paper fix a roof?’ asked Yaw. Auntie Akosua drew a big bowl on a piece of card. ‘Insurance works through risk pooling,’ she explained. ‘Imagine one hundred shopkeepers each pay a small regular amount, called a premium, of one hundred cedis a year into one shared protection pool. One hundred times one hundred cedis puts ten thousand cedis into the pool!’',
         alt: 'Auntie Akosua draws a diagram showing 100 shopkeepers each placing 100 cedis into a 10,000-cedi shared protection pool.',
         motif: '🥣🪙',
         brief: 'Auntie Akosua sitting with Yaw and Uncle Tetteh on a dry bench, sketching a visual diagram of many small hands placing coins into a giant central pot under a big yellow umbrella (no text or numbers).',
         narration: 'Clear, step-by-step arithmetic of risk pooling: 100 shopkeepers × 100 cedis = 10,000 cedis in the shared pool.',
       },
       {
-        text: '‘In any single year,’ Auntie Akosua continued, ‘most of those one hundred shopkeepers will not have a tree fall on their roof. Suppose only two shops suffer heavy storm damage costing three thousand cedis each—six thousand cedis in total. Because all one hundred shopkeepers shared the risk in advance, the ten-thousand-cedi pool easily pays to repair both damaged shops, so no single family is ruined!’',
+        text: '‘In any single year,’ Auntie Akosua continued, ‘most of those one hundred shopkeepers will not have a tree fall on their roof. Suppose only two shops suffer heavy storm damage costing three thousand cedis each, six thousand cedis in total. Because all one hundred shopkeepers shared the risk in advance, the ten-thousand-cedi pool easily pays to repair both damaged shops, so no single family is ruined!’',
         alt: 'The diagram shows the shared pool rebuilding two storm-damaged roofs while the other ninety-eight shops stay safe.',
         motif: '🛡️🏪',
         brief: 'Close view of the visual diagram: golden coins flowing from the central umbrella pot to repair two little shop roofs, while rows of other little shops stand safe in the sunshine (no text).',
         narration: 'Make the logic of risk pooling click clearly for upper-primary and JHS listeners.',
       },
       {
-        text: 'That afternoon, Mrs Mensah, a licensed inspector from Auntie Akosua’s insurance company, arrived with her camera and clipboard. Auntie Akosua submitted a formal claim — a request asking the insurer to pay for a covered loss — along with photos of the fallen branch and the carpenter’s repair estimate of two thousand cedis. Mrs Mensah checked the policy rules carefully.',
+        text: 'That afternoon, Mrs Mensah, a licensed inspector from Auntie Akosua’s insurance company, arrived with her camera and clipboard. Auntie Akosua submitted a formal claim, a request asking the insurer to pay for a covered loss, along with photos of the fallen branch and the carpenter’s repair estimate of two thousand cedis. Mrs Mensah checked the policy rules carefully.',
         alt: 'Mrs Mensah inspects the damaged shop roof with a clipboard and camera while Auntie Akosua and Yaw show the carpenter’s estimate.',
         motif: '📋📸',
         brief: 'Outside Auntie Akosua’s shop: Mrs Mensah (navy jacket, clipboard) photographing the broken roof eave while Auntie Akosua and Yaw stand beside a local carpenter holding a wooden measuring rule.',
         narration: 'Professional, reassuring process of filing and verifying an honest claim.',
       },
       {
-        text: '‘Your policy covers sudden storm damage,’ Mrs Mensah explained to Yaw, ‘and it has a two-hundred-cedi deductible — the small first portion of the repair cost that the policyholder pays from their own pocket. Since the carpenter’s repair costs two thousand cedis, you pay your two-hundred-cedi deductible from your emergency savings, and the insurance company pays the remaining one thousand eight hundred cedis!’',
+        text: '‘Your policy covers sudden storm damage,’ Mrs Mensah explained to Yaw, ‘and it has a two-hundred-cedi deductible, the small first portion of the repair cost that the policyholder pays from their own pocket. Since the carpenter’s repair costs two thousand cedis, you pay your two-hundred-cedi deductible from your emergency savings, and the insurance company pays the remaining one thousand eight hundred cedis!’',
         alt: 'Mrs Mensah explains how the 2,000-cedi repair is split between the 200-cedi deductible and the 1,800-cedi insurance payout.',
         motif: '🧮🤝',
         brief: 'At Auntie Akosua’s worktable: Mrs Mensah placing two small coin stacks on one side and eighteen coin stacks on the other side to show how the repair bill is shared (no text).',
         narration: 'Walk clearly through the deductible maths: 2,000 repair minus 200 deductible equals 1,800 payout.',
       },
       {
-        text: '‘Does insurance pay for every single problem?’ asked Yaw. ‘No,’ said Mrs Mensah honestly. ‘Every policy has conditions and exclusions. It covers sudden, unexpected events listed in the contract—like storm or fire damage—not slow everyday wear and tear from rust, and never dishonest or fake claims! Also, in Ghana, always verify that an insurer is licensed by the National Insurance Commission—the NIC—so you know your claims will be honoured fairly.’',
-        alt: 'Mrs Mensah points to the official NIC license seal and explains why honest claims and routine maintenance both matter.',
+        text: '‘Does insurance pay for every single problem?’ asked Yaw. ‘No,’ said Mrs Mensah honestly. ‘Every policy has conditions and exclusions. It covers sudden, unexpected events listed in the contract, like storm or fire damage, not slow everyday wear and tear from rust, and never dishonest or fake claims! Also, in Ghana, always verify that an insurer is licensed by the National Insurance Commission, the NIC, so you know your claims will be honoured fairly.’',
+        alt: 'Mrs Mensah points to the official NIC licence seal and explains why honest claims and routine maintenance both matter.',
         motif: '🏛️✅',
         brief: 'Mrs Mensah holding up an official certificate card with a gold shield emblem (no text) while Yaw and Uncle Tetteh listen attentively.',
         narration: 'Important consumer education: policy conditions, exclusions (wear and tear vs sudden loss), honesty, and NIC Ghana regulation.',
       },
       {
-        text: '‘Wait!’ said Yaw, remembering his family’s clinic cards. ‘Is the National Health Insurance Scheme—NHIS—also risk pooling?’ ‘Exactly!’ smiled Mrs Mensah. ‘Millions of Ghanaians contribute to the NHIS through taxes and membership renewals so that when anyone falls sick with malaria or needs covered hospital care, the shared pool helps pay the medical bills. Insurance works best alongside an emergency savings fund for deductibles and small daily needs.’',
+        text: '‘Wait!’ said Yaw, remembering his family’s clinic cards. ‘Is the National Health Insurance Scheme, NHIS, also risk pooling?’ ‘Exactly!’ smiled Mrs Mensah. ‘Millions of Ghanaians contribute to the NHIS through taxes and membership renewals so that when anyone falls sick with malaria or needs covered hospital care, the shared pool helps pay the medical bills. Insurance works best alongside an emergency savings fund for deductibles and small daily needs.’',
         alt: 'Yaw holds up his family’s health insurance card with understanding as Auntie Akosua and Mrs Mensah smile.',
         motif: '🏥💳',
         brief: 'Inside the tailoring shop, already being repaired by the carpenter in the background: Yaw holding up a blue-and-gold health card (no text) with a bright smile as Auntie Akosua and Mrs Mensah nod.',
         narration: 'Connect property insurance to everyday Ghanaian life through the NHIS and emergency savings.',
       },
       {
-        text: 'By Friday, Auntie Akosua’s roof was gleaming and dry, and her sewing machines were humming again. Together with neighbours, she helped Uncle Tetteh repair his roof—and on Monday morning, Uncle Tetteh walked straight to an NIC-licensed office to register his shop and top up his emergency savings. He grinned at Yaw’s yellow umbrella. ‘From now on, Yaw, I buy my umbrella before the rain!’',
+        text: 'By Friday, Auntie Akosua’s roof was gleaming and dry, and her sewing machines were humming again. Together with neighbours, she helped Uncle Tetteh repair his roof, and on Monday morning, Uncle Tetteh walked straight to an NIC-licensed office to register his shop and top up his emergency savings. He grinned at Yaw’s yellow umbrella. ‘From now on, Yaw, I buy my umbrella before the rain!’',
         alt: 'Under a repaired roof in bright sunshine, Uncle Tetteh and Auntie Akosua wave to Yaw and his yellow umbrella.',
         motif: '☀️☂️',
         brief: 'Sunny neighbourhood street outside both newly repaired shops: Uncle Tetteh holding a new policy folder and smiling warmly at Yaw and Auntie Akosua.',
@@ -900,11 +900,11 @@ export const BATCH_4_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'insurance', definition: 'an arrangement in which many people contribute to a regulated pool that pays for specified sudden losses', pages: [3, 4, 6, 7, 9] },
-      { word: 'premium', definition: 'the regular amount paid by a policyholder to maintain insurance protection', pages: [4] },
-      { word: 'claim', definition: 'a formal request asking an insurance company to pay for a loss covered by the policy', pages: [6] },
-      { word: 'deductible', definition: 'the small initial portion of a covered repair cost that the policyholder pays before the insurer pays the rest', pages: [7] },
-      { word: 'exclusions', definition: 'specific situations or types of wear and tear that an insurance policy does not pay for', pages: [8] },
+      { word: 'insurance', definition: 'An arrangement in which many people contribute to a regulated pool that pays for specified sudden losses', pages: [3, 4, 6, 7, 9] },
+      { word: 'premium', definition: 'The regular amount paid by a policyholder to maintain insurance protection', pages: [4] },
+      { word: 'claim', definition: 'A formal request asking an insurance company to pay for a loss covered by the policy', pages: [6] },
+      { word: 'deductible', definition: 'The small initial portion of a covered repair cost that the policyholder pays before the insurer pays the rest', pages: [7] },
+      { word: 'exclusions', definition: 'Specific situations or types of wear and tear that an insurance policy does not pay for', pages: [8] },
     ],
     teacherGuide: {
       overview:
@@ -939,9 +939,9 @@ export const BATCH_4_STORIES: PilotStory[] = [
         title: 'Risk-Pooling Dice Simulation',
         Materials: 'Six groups of pupils, one 6-sided die, and 60 counters (10 counters per group).',
         steps: [
-          'Round 1 (No Insurance Pool): Each group keeps its 10 counters. Roll the die—whichever group number is rolled suffers a "storm loss" of 12 counters (more than they have!).',
+          'Round 1 (No Insurance Pool): Each group keeps its 10 counters. Roll the die, whichever group number is rolled suffers a "storm loss" of 12 counters (more than they have!).',
           'Round 2 (Risk Pool): Each of the 6 groups contributes 3 counters (premium) into a central Umbrella Pool (6 × 3 = 18 counters in the pool, leaving 7 counters per group).',
-          'Roll the die for the storm loss of 12 counters: the Umbrella Pool pays 11 counters and the affected group pays a 1-counter deductible—every group stays afloat!',
+          'Roll the die for the storm loss of 12 counters: the Umbrella Pool pays 11 counters and the affected group pays a 1-counter deductible, every group stays afloat!',
         ],
         explanation:
           'Pooling small premiums turns a catastrophic 12-counter shock that would bankrupt one group into a manageable shared cost.',
@@ -971,7 +971,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'Grandpa Mensah’s Secret to a Peaceful Retirement',
     summary:
-      'Twelve-year-old Efua and her brother Kojo wonder how retired headmaster Grandpa Mensah and retired market trader Grandma Mansa still receive dependable monthly income without working every day—discovering how pensions, compound growth, inflation protection and Ghana’s Three-Tier Pension System (SSNIT, Tier 2 and Tier 3 under NPRA) turn decades of steady contributions into a peaceful retirement.',
+      'Twelve-year-old Efua and her brother Kojo wonder how retired headmaster Grandpa Mensah and retired market trader Grandma Mansa still receive dependable monthly income without working every day, discovering how pensions, compound growth, inflation protection and Ghana’s Three-Tier Pension System (SSNIT, Tier 2 and Tier 3 under NPRA) turn decades of steady contributions into a peaceful retirement.',
     classification: base({
       classIds: ['primary-6', 'jhs-1', 'jhs-2'],
       ageMin: 11,
@@ -994,7 +994,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
     ],
     pages: [
       {
-        text: 'On the first Tuesday of the month, twelve-year-old Efua and her brother Kojo sat on the veranda helping Grandpa Mensah prune young mango saplings in pots. Grandpa Mensah’s mobile phone chimed softly. He smiled at the screen and said to Grandma Mansa, ‘Our monthly pension has arrived—let us pay the electricity bill and buy Efua and Kojo’s new maths sets.’',
+        text: 'On the first Tuesday of the month, twelve-year-old Efua and her brother Kojo sat on the veranda helping Grandpa Mensah prune young mango saplings in pots. Grandpa Mensah’s mobile phone chimed softly. He smiled at the screen and said to Grandma Mansa, ‘Our monthly pension has arrived, let us pay the electricity bill and buy Efua and Kojo’s new maths sets.’',
         alt: 'On a sunny garden veranda, retired Grandpa Mensah smiles at a notification on his phone while Grandma Mansa, Efua and Kojo tend potted mango saplings.',
         motif: '🌱📱',
         brief: 'Warm Ghanaian courtyard veranda filled with potted mango saplings: Grandpa Mensah (65, silver hair, spectacles, green-and-gold shirt) smiling at his phone while Grandma Mansa (amber wax-print dress) and grandchildren Efua (12, yellow top) and Kojo (13, green shirt) look on.',
@@ -1008,42 +1008,42 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Wise, affectionate proverb-like metaphor linking tree planting to retirement planning.',
       },
       {
-        text: '‘A pension,’ explained Grandpa Mensah, ‘is a long-term retirement fund built during your working years so you have steady income when you are older and can no longer work full-time. Every month when I taught in the classroom, a small fraction of my salary—and a matching contribution from my employer—went straight into my pension fund before I could spend it.’',
+        text: '‘A pension,’ explained Grandpa Mensah, ‘is a long-term retirement fund built during your working years so you have steady income when you are older and can no longer work full-time. Every month when I taught in the classroom, a small fraction of my salary, together with a statutory contribution from my employer, went straight into my pension fund before I could spend it.’',
         alt: 'Grandpa Mensah shows his old teacher’s payslip binder alongside a diagram of monthly contributions flowing into a retirement pot.',
         motif: '📂🪙',
         brief: 'At the veranda table: Grandpa Mensah opening a neat folder of old documents and drawing a simple flow of small monthly coins entering a strong vault icon (no text).',
         narration: 'Clear definition of a pension and automatic monthly payroll contributions.',
       },
       {
-        text: '‘Did your pension money just sit still in a box for thirty-five years?’ asked Efua. ‘Not at all!’ said Grandpa Mensah. ‘The pension fund invested our contributions carefully so they grew through compounding — earning returns not only on our original savings, but also on the previous years’ returns! Let us do a quick calculation in your notebook, Kojo.’',
+        text: '‘Did your pension money just sit still in a box for thirty-five years?’ asked Efua. ‘Not at all!’ said Grandpa Mensah. ‘The pension fund invested our contributions carefully so they grew through compounding, earning returns not only on our original savings, but also on the previous years’ returns! Let us do a quick calculation in your notebook, Kojo.’',
         alt: 'Efua and Kojo open their notebooks as Grandpa Mensah prepares to demonstrate compound growth.',
         motif: '📓📈',
         brief: 'Close view at the veranda table: Efua and Kojo leaning over an open notebook with a pencil as Grandpa Mensah arranges mango seeds into groups to demonstrate compounding (no text).',
         narration: 'Enthusiastic invitation to test the maths of compounding.',
       },
       {
-        text: '‘Suppose you place one thousand cedis into a fund that earns ten percent a year,’ said Grandpa Mensah. ‘In Year 1, ten percent of one thousand cedis is one hundred cedis, so your balance grows to one thousand one hundred cedis. In Year 2, you earn ten percent on the full one thousand one hundred cedis—which is one hundred and ten cedis! One thousand one hundred plus one hundred and ten equals one thousand two hundred and ten cedis.’',
+        text: '‘Suppose you place one thousand cedis into a fund that earns ten percent a year,’ said Grandpa Mensah. ‘In Year 1, ten percent of one thousand cedis is one hundred cedis, so your balance grows to one thousand one hundred cedis. In Year 2, you earn ten percent on the full one thousand one hundred cedis, which is one hundred and ten cedis! One thousand one hundred plus one hundred and ten equals one thousand two hundred and ten cedis.’',
         alt: 'Kojo writes the Year 1 (1,100 cedis) and Year 2 (1,210 cedis) compounding numbers while Grandpa Mensah points to the extra 10 cedis earned on Year 1’s return.',
         motif: '🧮✨',
-        brief: 'Grandpa Mensah pointing to three neat rows of mango seeds on a board: row one has ten seeds, row two adds one seed, and row three adds one seed plus an extra golden seed—while Kojo smiles in understanding.',
+        brief: 'Grandpa Mensah pointing to three neat rows of mango seeds on a board: row one has ten seeds, row two adds one seed, and row three adds one seed plus an extra golden seed, while Kojo smiles in understanding.',
         narration: 'Walk through the exact numbers slowly and clearly: 1,000 → 1,100 in Year 1; 10% of 1,100 = 110 → 1,210 in Year 2.',
       },
       {
         text: '‘That extra ten cedis in Year 2 looks small at first,’ said Efua, ‘but what happens over thirty or forty years of working and adding new contributions every single month?’ ‘It snowballs!’ said Grandpa Mensah. ‘When you start early in your twenties instead of waiting until your fifties, compounding has decades to work for you.’',
         alt: 'A visual chart compares a steep rising curve from starting early at age 22 with a much smaller curve from starting late at age 50.',
         motif: '⏳📊',
-        brief: 'Grandpa Mensah holding up a sketch card showing two staircases of coins—one long green staircase starting early and rising high, and a short yellow staircase starting late (no text).',
+        brief: 'Grandpa Mensah holding up a sketch card showing two staircases of coins, one long green staircase starting early and rising high, and a short yellow staircase starting late (no text).',
         narration: 'Emphasise the power of time and starting early.',
       },
       {
-        text: 'Then Kojo turned to Grandma Mansa. ‘Grandma, Grandpa was a government school headmaster, so his employer sent his contributions automatically. What about you? You worked for yourself in the market!’ Grandma Mansa smiled proudly. ‘That is the beauty of Ghana’s Three-Tier Pension System, regulated by the National Pensions Regulatory Authority—the NPRA!’',
+        text: 'Then Kojo turned to Grandma Mansa. ‘Grandma, Grandpa was a government school headmaster, so his employer sent his contributions automatically. What about you? You worked for yourself in the market!’ Grandma Mansa smiled proudly. ‘That is the beauty of Ghana’s Three-Tier Pension System, regulated by the National Pensions Regulatory Authority, the NPRA!’',
         alt: 'Grandma Mansa holds up three stacked woven baskets representing Ghana’s Three-Tier Pension System.',
         motif: '🧺🏛️',
         brief: 'Grandma Mansa smiling warmly as she places three neatly stacked colourful woven baskets on the veranda table to illustrate the Three-Tier Pension System for Efua and Kojo.',
         narration: 'Warm pride from Grandma Mansa introducing the NPRA and Ghana’s Three-Tier Pension System.',
       },
       {
-        text: 'Grandma Mansa tapped the bottom basket first. ‘Tier 1 is the mandatory basic national social security scheme managed by SSNIT—the Social Security and National Insurance Trust. It pays retired workers like Grandpa a steady monthly pension for life. The middle basket, Tier 2, is a mandatory occupational scheme managed by licensed private trustees that pays a lump sum when you retire.’',
+        text: 'Grandma Mansa tapped the bottom basket first. ‘Tier 1 is the mandatory basic national social security scheme managed by SSNIT, the Social Security and National Insurance Trust. It pays retired workers like Grandpa a steady monthly pension for life. The middle basket, Tier 2, is a mandatory occupational scheme managed by licensed private trustees that pays a lump sum when you retire.’',
         alt: 'Grandma Mansa points to the first two baskets representing Tier 1 (SSNIT monthly pension) and Tier 2 (lump-sum occupational benefit).',
         motif: '1️⃣2️⃣',
         brief: 'Close view of the first two stacked baskets: beside the bottom basket sits a calendar with monthly coins (Tier 1 monthly pension); beside the second basket sits a larger tied cloth pouch (Tier 2 lump sum, no text).',
@@ -1142,11 +1142,11 @@ export const BATCH_4_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'pension', definition: 'a long-term fund built during a person’s working years to provide regular income during retirement', pages: [1, 3, 4, 8, 9, 10, 11] },
-      { word: 'retired', definition: 'having stepped back from full-time employment in older age after years of work', pages: [2, 8] },
-      { word: 'compounding', definition: 'the process by which investment returns themselves earn additional returns over time', pages: [4, 6] },
-      { word: 'mandatory', definition: 'required by law for eligible workers and employers', pages: [8] },
-      { word: 'voluntary', definition: 'chosen freely, such as extra personal pension contributions in Tier 3', pages: [9, 10] },
+      { word: 'pension', definition: 'A long-term fund built during a person’s working years to provide regular income during retirement', pages: [1, 3, 4, 8, 9, 10, 11] },
+      { word: 'retired', definition: 'Having stepped back from full-time employment in older age after years of work', pages: [2, 8] },
+      { word: 'compounding', definition: 'The process by which investment returns themselves earn additional returns over time', pages: [4, 6] },
+      { word: 'mandatory', definition: 'Required by law for eligible workers and employers', pages: [8] },
+      { word: 'voluntary', definition: 'Chosen freely, such as extra personal pension contributions in Tier 3', pages: [9, 10] },
     ],
     teacherGuide: {
       overview:
@@ -1213,7 +1213,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'The App That Created a Hundred Jobs',
     summary:
-      'In a fictional multi-year story beginning at a JHS coding club in Accra, Kwame and Adwoa learn why building an app without talking to users fails—and how customer discovery, low-bandwidth engineering, data privacy under Ghana’s Data Protection Act (Act 843), fair commission splits and years of perseverance grow a trusted repair-services platform that supports a hundred decent jobs.',
+      'In a fictional multi-year story beginning at a JHS coding club in Accra, Kwame and Adwoa learn why building an app without talking to users fails, and how customer discovery, low-bandwidth engineering, data privacy under Ghana’s Data Protection Act (Act 843), fair commission splits and years of perseverance grow a trusted repair-services platform that supports a hundred decent jobs.',
     classification: base({
       classIds: ['jhs-1', 'jhs-2', 'jhs-3'],
       ageMin: 12,
@@ -1257,7 +1257,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Honest, relatable setback: why technology fails when it ignores real user constraints.',
       },
       {
-        text: '‘We built for our own laptop screen instead of listening to real people,’ said Adwoa. They closed their laptops, picked up paper notebooks, and spent a month doing customer discovery—interviewing thirty shopkeepers, parents and vocational technicians with Master Ibrahim. They learned three critical truths: users needed tiny data usage, clear upfront pricing, and a way to know every technician was genuinely qualified and safe.',
+        text: '‘We built for our own laptop screen instead of listening to real people,’ said Adwoa. They closed their laptops, picked up paper notebooks, and spent a month doing customer discovery, interviewing thirty shopkeepers, parents and vocational technicians with Master Ibrahim. They learned three critical truths: users needed tiny data usage, clear upfront pricing, and a way to know every technician was genuinely qualified and safe.',
         alt: 'Adwoa and Kwame interview Madam Akua and Master Ibrahim with paper notebooks, listening carefully to what they actually need.',
         motif: '📓👂🏾',
         brief: 'Inside Master Ibrahim’s vocational workshop: Adwoa and Kwame taking notes in paper notebooks as Master Ibrahim and Madam Akua point to a simple checklist and a multimeter.',
@@ -1285,7 +1285,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Show that real tech businesses combine software with offline quality, training and safety.',
       },
       {
-        text: 'How did the business sustain itself financially? Kwame and Adwoa designed a transparent revenue model. When Madam Akua booked an electrical repair for one hundred cedis, ninety cedis—ninety percent—went directly to the certified technician for their skilled work and transport, while the platform kept a ten-cedi—ten percent—service fee to pay for servers, customer support, insurance and training.',
+        text: 'How did the business sustain itself financially? Kwame and Adwoa designed a transparent revenue model. When Madam Akua booked an electrical repair for one hundred cedis, ninety cedis, ninety percent, went directly to the certified technician for their skilled work and transport, while the platform kept a ten-cedi, ten percent, service fee to pay for servers, customer support, insurance and training.',
         alt: 'A visual diagram shows a 100-cedi repair payment splitting cleanly into 90 cedis for the technician and 10 cedis for the platform’s operating costs.',
         motif: '🪙⚖️',
         brief: 'Madam Akua smiling as she pays via mobile phone after her bakery mixer is fixed by a young female technician; a clean visual inset shows nine gold coins going to the technician and one coin going to the platform hub (no text).',
@@ -1299,7 +1299,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Realistic multi-year operational grit: backups, receipts, guarantees and gradual trust.',
       },
       {
-        text: 'Five years after launching Version 2, Kwame and Adwoa celebrated a milestone that meant more to them than any trophy. Their company employed twenty-five full-time salaried staff—software engineers, customer-support agents, quality inspectors and accountants—and provided steady, dignified daily income for seventy-five certified independent technicians across Ghana. Twenty-five plus seventy-five equalled one hundred decent jobs!',
+        text: 'Five years after launching Version 2, Kwame and Adwoa celebrated a milestone that meant more to them than any trophy. Their company employed twenty-five full-time salaried staff, software engineers, customer-support agents, quality inspectors and accountants, and provided steady, dignified daily income for seventy-five certified independent technicians across Ghana. Twenty-five plus seventy-five equalled one hundred decent jobs!',
         alt: 'Kwame, Adwoa and Master Ibrahim stand proudly with twenty-five office staff and seventy-five certified technicians in a sunny courtyard.',
         motif: '💯👷🏾‍♂️',
         brief: 'Wide celebratory courtyard photo in Accra: Kwame, Adwoa and Master Ibrahim surrounded by a joyful group of office staff (with laptops and headsets) and uniformed male and female technicians holding their toolkits.',
@@ -1313,7 +1313,7 @@ export const BATCH_4_STORIES: PilotStory[] = [
         narration: 'Show the multiplier effect of decent job creation and link back to Tier 3 pension habits.',
       },
       {
-        text: 'When Kwame and Adwoa visited their old JHS coding club to mentor the newest class of fourteen-year-olds, Adwoa wrote one sentence on the board: Code is a tool; solving human problems with fairness and trust is the business. The students opened their notebooks—ready to listen first, learn deeply, and build for Ghana’s future.',
+        text: 'When Kwame and Adwoa visited their old JHS coding club to mentor the newest class of fourteen-year-olds, Adwoa wrote one sentence on the board: Code is a tool; solving human problems with fairness and trust is the business. The students opened their notebooks, ready to listen first, learn deeply, and build for Ghana’s future.',
         alt: 'Kwame and Adwoa mentor JHS coding club students who have both laptops and customer-interview notebooks open on their desks.',
         motif: '🏫🌟',
         brief: 'Back in the JHS computer room: Kwame and Adwoa smiling warmly as JHS students work in pairs with both laptops and paper interview notebooks open on their desks.',
@@ -1391,10 +1391,10 @@ export const BATCH_4_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'encrypted', definition: 'protected with mathematical code so private data cannot be read by unauthorized people', pages: [6] },
-      { word: 'verification', definition: 'checking and testing a person’s identity, skills and safety before certifying them', pages: [7] },
-      { word: 'milestone', definition: 'an important stage or achievement reached after sustained effort', pages: [10] },
-      { word: 'apprentices', definition: 'young learners training under a skilled craftsperson or technician to master a trade', pages: [11] },
+      { word: 'encrypted', definition: 'Protected with mathematical code so private data cannot be read by unauthorized people', pages: [6] },
+      { word: 'verification', definition: 'Checking and testing a person’s identity, skills and safety before certifying them', pages: [7] },
+      { word: 'milestone', definition: 'An important stage or achievement reached after sustained effort', pages: [10] },
+      { word: 'apprentices', definition: 'Young learners training under a skilled craftsperson or technician to master a trade', pages: [11] },
     ],
     teacherGuide: {
       overview:

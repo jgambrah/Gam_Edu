@@ -11,10 +11,29 @@ import { StorybookReader } from './StorybookReader';
 const label = (list: readonly { id: string; label: string }[], id?: string) => list.find((x) => x.id === id)?.label ?? id ?? '';
 const minutes = (s?: number) => (s ? `${Math.max(1, Math.round(s / 60))} min` : '');
 
-export function LibraryDashboard({ createSource = createPreviewSource }: { createSource?: () => Promise<LibrarySource> }) {
+export type StageFilterId = 'all' | 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
+
+const STAGE_GROUPS: { id: StageFilterId; label: string; classes: readonly string[] }[] = [
+  { id: 'all', label: 'All Stories', classes: [] },
+  { id: 'early-years', label: '🌱 Nursery & KG', classes: ['nursery-1', 'nursery-2', 'kg-1', 'kg-2'] },
+  { id: 'lower-primary', label: '📘 Primary 1–3', classes: ['primary-1', 'primary-2', 'primary-3'] },
+  { id: 'upper-primary', label: '📗 Primary 4–6', classes: ['primary-4', 'primary-5', 'primary-6'] },
+  { id: 'jhs', label: '🎓 JHS 1–3', classes: ['jhs-1', 'jhs-2', 'jhs-3'] },
+];
+
+export function LibraryDashboard({
+  createSource = createPreviewSource,
+  defaultStage = 'all',
+  activeAgeTier,
+}: {
+  createSource?: () => Promise<LibrarySource>;
+  defaultStage?: StageFilterId;
+  activeAgeTier?: string;
+}) {
   const [source, setSource] = useState<LibrarySource | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sel, setSel] = useState<Selection>({});
+  const [stage, setStage] = useState<StageFilterId>(defaultStage);
   const [entries, setEntries] = useState<CatalogueEntry[]>([]);
   const [exhausted, setExhausted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -51,13 +70,27 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
     finally { setOpening(null); setTick((t) => t + 1); }
   };
 
+  const visibleEntries = useMemo(() => {
+    const stageDef = STAGE_GROUPS.find((g) => g.id === stage);
+    const filtered = !stageDef || stageDef.id === 'all'
+      ? entries
+      : entries.filter((e) => (e.classIds ?? []).some((c) => stageDef.classes.includes(c)));
+    if (activeAgeTier && stage === 'all' && !sel.classId) {
+      return [...filtered].sort((a, b) => (a.ageMin ?? 99) - (b.ageMin ?? 99));
+    }
+    return filtered;
+  }, [entries, stage, activeAgeTier, sel.classId]);
+
   if (error && !source) return <div role="alert" className="mx-auto max-w-xl rounded-2xl bg-red-50 p-6 text-red-900 ring-1 ring-red-200">The library could not be loaded: {error}</div>;
   if (!source) return <div className="p-10 text-center text-lg font-semibold text-slate-600" role="status">Opening the library…</div>;
 
   if (open) return <StorybookReader pkg={open.pkg} info={source.info(open.pkg.storyId)} source={source} onClose={() => { setOpen(null); setTick((t) => t + 1); }} />;
 
-  const sc = (k: keyof Selection, v: string | number | undefined) => setSel((s) => ({ ...s, [k]: v === '' ? undefined : v }));
-  const active = Object.values(sel).some((v) => v !== undefined);
+  const sc = (k: keyof Selection, v: string | number | undefined) => {
+    if (k === 'classId' && v !== '' && v !== undefined) setStage('all');
+    setSel((s) => ({ ...s, [k]: v === '' ? undefined : v }));
+  };
+  const active = Object.values(sel).some((v) => v !== undefined) || stage !== 'all';
 
   return (
     <div className="mx-auto w-full max-w-6xl" data-testid="library">
@@ -68,6 +101,26 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
       </section>
       {source.notice && <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200" role="note">{source.notice}</p>}
 
+      <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="School stage filter">
+        {STAGE_GROUPS.map((g) => {
+          const isActive = stage === g.id;
+          return (
+            <button
+              key={g.id}
+              type="button"
+              onClick={() => { setStage(g.id); if (g.id !== 'all') setSel((s) => ({ ...s, classId: undefined })); }}
+              className={`rounded-full px-4 py-1.5 text-sm font-extrabold transition ${
+                isActive
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-indigo-50'
+              }`}
+            >
+              {g.label}
+            </button>
+          );
+        })}
+      </div>
+
       <form className="mb-5 grid gap-3 rounded-2xl bg-white p-4 shadow ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-5" aria-label="Filter stories" onSubmit={(e) => e.preventDefault()}>
         <Field label="Class"><select aria-label="Class" value={sel.classId ?? ''} onChange={(e) => sc('classId', e.target.value)} className={selectCls}>
           <option value="">All classes</option>{CLASS_REGISTRY.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select></Field>
@@ -77,14 +130,14 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
           <option value="">All genres</option>{GENRES.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}</select></Field>
         <Field label="Reading level"><select aria-label="Reading level" value={sel.readingLevel ?? ''} onChange={(e) => sc('readingLevel', e.target.value)} className={selectCls}>
           <option value="">All levels</option>{READING_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}</select></Field>
-        <div className="flex items-end"><button type="button" disabled={!active} onClick={() => setSel({})} className="w-full rounded-xl border-2 border-slate-300 px-4 py-2 font-bold text-slate-800 disabled:opacity-40">Clear filters</button></div>
+        <div className="flex items-end"><button type="button" disabled={!active} onClick={() => { setSel({}); setStage('all'); }} className="w-full rounded-xl border-2 border-slate-300 px-4 py-2 font-bold text-slate-800 disabled:opacity-40">Clear filters</button></div>
       </form>
 
       <p className="mb-3 text-sm font-semibold text-slate-600" aria-live="polite" data-testid="result-count">
-        {loading && !entries.length ? 'Loading stories…' : `${entries.length} ${entries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
+        {loading && !visibleEntries.length ? 'Loading stories…' : `${visibleEntries.length} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
       </p>
 
-      {!loading && entries.length === 0 && (
+      {!loading && visibleEntries.length === 0 && (
         <div className="rounded-2xl bg-white p-8 text-center shadow ring-1 ring-slate-200" data-testid="empty">
           <div className="text-5xl" aria-hidden>📚</div>
           <p className="mt-2 text-lg font-bold text-slate-800">No stories match these filters yet.</p>
@@ -93,7 +146,7 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
       )}
 
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-testid="story-grid">
-        {entries.map((e) => <StoryCard key={e.storyKey} entry={e} source={source} busy={opening === e.storyKey} onOpen={() => openStory(e)} tick={tick} />)}
+        {visibleEntries.map((e) => <StoryCard key={e.storyKey} entry={e} source={source} busy={opening === e.storyKey} onOpen={() => openStory(e)} tick={tick} />)}
       </ul>
       {!exhausted && entries.length > 0 && <div className="mt-6 text-center"><button type="button" onClick={more} disabled={loading} className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white disabled:opacity-50">Show more stories</button></div>}
       {error && <div role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-red-900">{error}</div>}
