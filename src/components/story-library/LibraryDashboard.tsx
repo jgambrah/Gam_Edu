@@ -34,7 +34,7 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
     try {
       const f = new FilteredFeed(s.catalogue, planQuery(selection));
       feed.current = f;
-      await f.loadMore(48);
+      await f.loadMore(100);
       if (feed.current === f) { setEntries([...f.entries]); setExhausted(f.exhausted); }
     } catch (e: any) { setError(String(e?.message ?? e)); } finally { setLoading(false); setTick((t) => t + 1); }
   }, []);
