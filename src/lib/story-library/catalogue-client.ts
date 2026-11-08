@@ -141,7 +141,7 @@ export class CatalogueClient {
     for (let i = 0; i <= index; i++) {
       const key = this.pk(filter, i);
       const hit = this.kv.get<CachedPage>(key);
-      if (hit) { if (i === index) return hit.entries; continue; }
+      if (hit && Array.isArray(hit.entries)) { if (i === index) return hit.entries; continue; }
       const prev = i > 0 ? this.kv.get<CachedPage>(this.pk(filter, i - 1)) : undefined;
       if (i > 0 && prev?.exhausted) return [];
       const pf = parseFilterKey(filter);

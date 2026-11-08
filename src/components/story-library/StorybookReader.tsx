@@ -14,7 +14,7 @@ import { ActivityPlayer, type ActivityResult } from './ActivityPlayer';
 const SPEEDS = [0.75, 1, 1.25];
 
 export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPackage; info?: StoryPreviewInfo; source: LibrarySource; onClose: () => void }) {
-  const presentation = useMemo(() => presentationFor(info?.classification.classIds ?? []), [info]);
+  const presentation = useMemo(() => presentationFor(info?.classification?.classIds ?? []), [info]);
   const flow = useMemo(() => buildFlow(pkg), [pkg]);
   const resume = useMemo(() => loadProgress(pkg.storyId), [pkg.storyId]);
   const [mode, setMode] = useState<ReadMode>(presentation.defaultMode);
@@ -172,7 +172,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   };
   const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
-  const art = info?.pages[page ? page.n - 1 : 0];
+  const art = info?.pages?.[page ? page.n - 1 : 0];
   const words = page ? pageWords(page) : undefined;
   const fontSize = `clamp(1.15rem, 5.4vw, ${1.35 * presentation.textScale}rem)`;
   const [c0, c1] = info?.palette ?? ['#e2e8f0', '#94a3b8'];

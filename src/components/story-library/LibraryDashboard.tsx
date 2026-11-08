@@ -34,7 +34,7 @@ export function LibraryDashboard({ createSource = createPreviewSource }: { creat
     try {
       const f = new FilteredFeed(s.catalogue, planQuery(selection));
       feed.current = f;
-      await f.loadMore(36);
+      await f.loadMore(48);
       if (feed.current === f) { setEntries([...f.entries]); setExhausted(f.exhausted); }
     } catch (e: any) { setError(String(e?.message ?? e)); } finally { setLoading(false); setTick((t) => t + 1); }
   }, []);
@@ -113,7 +113,7 @@ function StoryCard({ entry, source, busy, onOpen, tick }: { entry: CatalogueEntr
   return (
     <li className="flex flex-col overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition hover:shadow-xl motion-reduce:transition-none" data-testid="story-card" data-story={entry.storyKey}>
       <PlaceholderArt
-        motif={info?.pages[0]?.motif ?? '📖'}
+        motif={info?.pages?.[0]?.motif ?? '📖'}
         palette={info?.palette ?? ['#e2e8f0', '#94a3b8']}
         alt={`Cover for ${entry.title}`}
         imageSrc={`/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp`}
