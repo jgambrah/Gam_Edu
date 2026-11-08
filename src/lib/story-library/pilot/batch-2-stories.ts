@@ -390,7 +390,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Steady, impressive tone on "one hundred times greater".',
       },
       {
-        text: 'Suddenly, on the pitch-black screen, Dr Akua switched off the ROV’s headlamps. Ama leaned forward in surprise. Blue and green sparks flashed in the darkness like living stars! A translucent comb jelly drifted past with rainbow ripples, and a deep-sea squid released a cloud of glowing blue light.',
+        text: 'Suddenly, in the recorded dive video, the pilots switched off the ROV’s headlamps. Ama leaned forward in surprise. Blue and green sparks flashed in the darkness like living stars! A translucent comb jelly drifted past with rainbow ripples, and a deep-sea squid released a cloud of glowing blue light.',
         alt: 'On the dark monitor, a deep-sea comb jelly and squid glow with vivid blue and green bioluminescent light.',
         motif: '✨🦑',
         brief: 'In the darkened lab, the big monitor shows pitch-black deep ocean water lit by a glowing blue bioluminescent squid and a shimmering comb jelly, reflecting blue light on Tetteh and Ama’s amazed faces.',
@@ -411,14 +411,14 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Lively and engaging as each survival strategy is explained.',
       },
       {
-        text: 'The ROV video jumped deeper, to three thousand metres on the Mid-Atlantic Ridge. Tall rocky chimneys rose from the seafloor, billowing thick dark clouds of mineral-rich water heated by magma far below the crust. ‘These are hydrothermal vents,’ said Dr Akua. ‘The water gushing out can exceed three hundred and fifty degrees Celsius, yet the crushing pressure stops it from boiling!’',
+        text: 'The ROV video jumped deeper, to three thousand metres along a deep ocean ridge. Tall rocky chimneys rose from the seafloor, billowing thick dark clouds of mineral-rich water heated by magma far below the crust. ‘These are hydrothermal vents,’ said Dr Akua. ‘The water gushing out can exceed three hundred and fifty degrees Celsius, yet the crushing pressure stops it from boiling!’',
         alt: 'The ROV illuminates tall rocky hydrothermal vent chimneys gushing dark mineral plumes on the ocean floor.',
         motif: '🌋🌊',
         brief: 'Deep seafloor scene illuminated by the yellow ROV: tall craggy hydrothermal vent chimneys ("black smokers") gushing dark mineral plumes surrounded by white crabs and tube worms.',
         narration: 'Dramatic and clear. Emphasise how pressure prevents the superheated water from boiling.',
       },
       {
-        text: 'Tetteh stared at the colonies of white vent crabs, pale shrimp and giant red-plumed tube worms crowded around the chimneys. ‘How can so many animals live down here with zero sunlight and no green plants?’ he asked. ‘This discovery in nineteen seventy-seven shocked biologists everywhere,’ Dr Akua said with a smile.',
+        text: 'In comparison footage from Pacific and Atlantic vents, Tetteh stared at the colonies of white vent crabs, pale shrimp and giant red-plumed tube worms crowded around the chimneys. ‘How can so many animals live down here with zero sunlight and no green plants?’ he asked. ‘This discovery in nineteen seventy-seven shocked biologists everywhere,’ Dr Akua said with a smile.',
         alt: 'Tetteh points closely at the monitor showing giant red-plumed tube worms and white crabs thriving beside a hydrothermal vent.',
         motif: '🪱🦀',
         brief: 'Close view of the monitor showing bright red-plumed giant tube worms and small white vent crabs clustered on a rocky vent chimney as Tetteh points in amazement.',
@@ -432,7 +432,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Clear emphasis on "chemosynthesis" in contrast to photosynthesis.',
       },
       {
-        text: 'As they stepped back outside into the warm Tema sunshine, Ama looked out at the endless Atlantic horizon. ‘Dr Akua, have scientists mapped the whole ocean floor yet?’ Dr Akua shook her head. ‘More than eighty percent of the global seafloor has never been mapped in high detail, and thousands of deep-sea species await discovery. The ocean still keeps most of its secrets for your generation to explore!’ The end.',
+        text: 'As they stepped back outside into the warm Tema sunshine, Ama looked out at the endless Atlantic horizon. ‘Dr Akua, have scientists mapped the whole ocean floor yet?’ Dr Akua shook her head. ‘More than seventy percent of the global seafloor has never been mapped in high detail, and thousands of deep-sea species await discovery. The ocean still keeps most of its secrets for your generation to explore!’ The end.',
         alt: 'Tetteh, Ama and Dr Akua stand on the sunny balcony of the Tema marine centre looking out over the sparkling Atlantic Ocean.',
         motif: '🌅🌊',
         brief: 'Sunny balcony of the Tema marine research centre overlooking the blue Atlantic Ocean. Dr Akua, Tetteh and Ama looking out toward the horizon with inspired expressions.',
@@ -515,7 +515,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         id: 'ocean-sel',
         type: 'sel',
         afterPage: 12,
-        prompt: 'Knowing that more than eighty percent of the deep ocean floor has not yet been mapped in detail, how do you feel about future ocean exploration?',
+        prompt: 'Knowing that more than seventy percent of the deep ocean floor has not yet been mapped in detail, how do you feel about future ocean exploration?',
         feelingOptions: ['Curious', 'Amazed', 'Eager', 'Inspired'],
       },
     ],
@@ -591,7 +591,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
           'Hydrothermal vents (discovered in 1977) support thriving ecosystems powered by chemosynthetic microbes oxidizing hydrogen sulfide rather than using sunlight.',
         ],
         whatWeAreStillDiscovering: [
-          'Over 80% of the global ocean floor remains unmapped at high acoustic resolution, and marine biologists discover hundreds of new deep-sea species every year.',
+          'Over 70% of the global ocean floor remains unmapped at high acoustic resolution, and marine biologists discover hundreds of new deep-sea species every year.',
           'Biochemists are still investigating unique enzymes and compounds in deep-sea sponges, microbes, and vent organisms that may lead to new medicines.',
           'Ecologists are still studying how deep-sea currents, carbon storage, and potential seabed mining affect fragile abyssal habitats.',
         ],
@@ -611,7 +611,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
           'Place the bottle at the edge of a table over a bucket or outdoors, peel off the tape all at once, and observe how far each stream of water shoots out horizontally.',
         ],
         whatToNotice:
-          'The stream from the bottom hole shoots out the farthest and fastest because there is a taller column of water pressing down above it—demonstrating how hydrostatic pressure increases with depth!',
+          'The stream from the bottom hole shoots out the farthest and fastest because there is a taller column of water pressing down above it, demonstrating how hydrostatic pressure increases with depth!',
         safetyNote:
           'Only the teacher should use a sharp point to make the pinholes in the plastic bottle; perform the water test outdoors or over a bucket so floors do not become slippery.',
       },
@@ -619,7 +619,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         {
           claim: 'About three-quarters of deep pelagic marine organisms produce bioluminescence using luciferin and luciferase.',
           explanation: 'QuantitativeROV surveys from the surface to 4,000 m show ~76% of macroscopic water-column individuals have bioluminescent capability.',
-          reference: 'Martini, S., & Haddock, S. H. D. (2017). Quantification of bioluminescence from the surface to the deep sea demonstrates its predominance as an ecological trait. Scientific Reports, 7, 45750; NOAA Ocean Exploration — Bioluminescence and Deep-Sea Vents.',
+          reference: 'Martini, S., & Haddock, S. H. D. (2017). Quantification of bioluminescence from the surface to the deep sea demonstrates its predominance as an ecological trait. Scientific Reports, 7, 45750; NOAA Ocean Exploration, Bioluminescence and Deep-Sea Vents.',
         },
         {
           claim: 'Hydrothermal vents host ecosystems powered by chemosynthesis rather than photosynthesis, first discovered in 1977.',
@@ -904,20 +904,20 @@ export const BATCH_2_STORIES: PilotStory[] = [
           'Compare how clear the tap sounds and feels through the solid wood compared to through the air.',
         ],
         whatToNotice:
-          'Vibrations travel strongly through solid materials like wood and soil—similar to how elephants sense low seismic rumbles through the ground with their feet!',
+          'Vibrations travel strongly through solid materials like wood and soil, similar to how elephants sense low seismic rumbles through the ground with their feet!',
         safetyNote:
-          'Tap only very gently with a fingertip or eraser—never bang hard while a classmate’s ear is resting on the desk.',
+          'Tap only very gently with a fingertip or eraser, never bang hard while a classmate’s ear is resting on the desk.',
       },
       factCheck: [
         {
           claim: 'Elephants communicate using low-frequency infrasound rumbles and detect seismic ground vibrations through their feet.',
           explanation: 'Elephant vocalizations include fundamental frequencies of 14–35 Hz that propagate through air and ground; elephant foot pads contain Pacinian corpuscles and acoustic fat pads sensitive to seismic vibrations.',
-          reference: 'O’Connell-Rodwell, C. E. (2007). Keeping an "Ear" to the Ground: Seismic Communication in Elephants. Physiology, 22(4), 287–294; Cornell Lab of Ornithology — Elephant Listening Project.',
+          reference: 'O’Connell-Rodwell, C. E. (2007). Keeping an "Ear" to the Ground: Seismic Communication in Elephants. Physiology, 22(4), 287–294; Cornell Lab of Ornithology, Elephant Listening Project.',
         },
         {
           claim: 'Beehive fences deter elephants from crop fields because elephants fear honeybee stings around their eyes and inside their trunks.',
           explanation: 'Field trials across Africa demonstrate that elephants actively avoid African honeybees (Apis mellifera scutellata) and emit specific alarm rumbles when hearing bee buzzes.',
-          reference: 'King, L. E., Douglas-Hamilton, I., & Vollrath, F. (2007). African elephants run from the sound of disturbed bees. Current Biology, 17(19), R832–R833; Save the Elephants — Elephants and Bees Project.',
+          reference: 'King, L. E., Douglas-Hamilton, I., & Vollrath, F. (2007). African elephants run from the sound of disturbed bees. Current Biology, 17(19), R832–R833; Save the Elephants, Elephants and Bees Project.',
         },
       ],
     },
@@ -967,7 +967,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
     ],
     pages: [
       {
-        text: 'Inside the domed theatre of the Ghana Planetarium in Accra, fourteen-year-old Kofi adjusted his glasses as a glowing river of stars arched overhead. ‘Look toward the constellation Sagittarius,’ said astrophysicist Dr Afia Boateng. ‘Right at the centre of our Milky Way galaxy hides an invisible giant four million times more massive than our Sun.’',
+        text: 'Inside the mobile astronomy dome in Accra, fourteen-year-old Kofi and his classmate Adwoa looked up as a glowing river of stars arched overhead. ‘Look toward the constellation Sagittarius,’ said astrophysicist Dr Afia Boateng. ‘Right at the centre of our Milky Way galaxy hides an invisible giant four million times more massive than our Sun.’',
         alt: 'Inside the planetarium dome in Accra, Kofi and Adwoa look up with Dr Afia Boateng at the glowing band of the Milky Way.',
         motif: '🌌🔭',
         brief: 'Inside the domed Ghana Planetarium in Accra. Kofi (14, round glasses, sky-blue collared shirt, navy trousers) and Adwoa (14, neat twists with headband, sky-blue shirt) looking up at the projected Milky Way galaxy while Dr Afia Boateng (indigo blazer over gold-patterned top) points upward.',
@@ -1023,7 +1023,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Warm praise on "Brilliant question!".',
       },
       {
-        text: '‘First,’ said Dr Afia, ‘astronomers tracked stars near the centre of our Milky Way for over twenty-five years. One star, called S2, whips around an completely empty-looking spot at thousands of kilometres per second! Using Kepler’s and Newton’s laws, the star’s orbit proves that four million solar masses are concentrated inside that tiny dark region, which we call Sagittarius A-Star.’',
+        text: '‘First,’ said Dr Afia, ‘astronomers tracked stars near the centre of our Milky Way for over twenty-five years. One star, called S2, whips around a completely empty-looking spot at thousands of kilometres per second! Using Kepler’s and Newton’s laws, the star’s orbit proves that four million solar masses are concentrated inside that tiny dark region, which we call Sagittarius A-Star.’',
         alt: 'The dome displays elliptical golden star orbits looping tightly around an unseen central point in the Milky Way.',
         motif: '💫🔄',
         brief: 'Planetarium dome showing bright golden elliptical loop tracks of stars orbiting tightly around an unseen central dark point (no text), as Kofi checks his calculator.',
@@ -1206,7 +1206,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         ],
         whatWeAreStillDiscovering: [
           'Physicists do not yet have a complete, experimentally verified theory of quantum gravity to describe what replaces the classical "singularity" inside a black hole.',
-          'The black hole information paradox—how quantum information is preserved when a black hole slowly evaporates via Hawking radiation—remains an active theoretical question.',
+          'The black hole information paradox, how quantum information is preserved when a black hole slowly evaporates via Hawking radiation, remains an active theoretical question.',
           'Astronomers are still investigating using the James Webb Space Telescope how the earliest supermassive black holes grew so rapidly in the young universe.',
         ],
       },
@@ -1296,7 +1296,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Warm and expressive. Perform a gentle "Phew!" on Kwame’s line.',
       },
       {
-        text: 'Across the yard stood One Big Neem Tree with wide green branches. All the children ran under its leafy roof. Underneath the tree, the ground felt cool and a gentle breeze touched their cheeks. ‘Why is it so much cooler under the tree?’ asked Abena.',
+        text: 'Across the yard stood one big neem tree with wide green branches. All the children ran under its leafy roof. Underneath the tree, the ground felt cool and a gentle breeze touched their cheeks. ‘Why is it so much cooler under the tree?’ asked Abena.',
         alt: 'Kwame, Abena and their classmates stand comfortably in the wide green shade of a large neem tree.',
         motif: '🌳😌',
         brief: 'Large leafy green neem tree casting a wide circle of cool shade on the schoolyard; Kwame and Abena smiling with relief under the branches.',
@@ -1310,7 +1310,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Bright, encouraging voice for Madam Akua.',
       },
       {
-        text: 'After ten minutes, they checked both thermometers. Out in the sun, the red line had climbed high, to thirty-six degrees! Under the neem tree, the red line stayed much lower, at thirty degrees. ‘The tree made the air six degrees cooler!’ cheered Kwame.',
+        text: 'After ten minutes, they checked both thermometers. Out in the sun, the red line had climbed high, to thirty-six degrees Celsius! Under the neem tree, the red line stayed much lower, at thirty degrees Celsius. ‘The tree made the air six degrees cooler!’ cheered Kwame.',
         alt: 'Kwame and Abena look closely at the two thermometers, seeing the lower red line in the shade.',
         motif: '📉🎉',
         brief: 'Close view of Kwame and Abena comparing two simple thermometer cards side by side (one with a taller red bar and one with a shorter red bar, no text or numbers) while Madam Akua smiles.',
@@ -1358,7 +1358,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
           'Trees make the playground darker at night',
         ],
         correctIndex: 0,
-        explanation: 'The thermometer in the sun read 36 degrees while the thermometer in the shade read 30 degrees—6 degrees cooler!',
+        explanation: 'The thermometer in the sun read 36 degrees while the thermometer in the shade read 30 degrees, 6 degrees cooler!',
       },
       {
         id: 'tree-c2',
@@ -1518,7 +1518,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         {
           claim: 'Trees cool their surroundings both by blocking direct solar radiation (shade) and through evaporative cooling from transpiration.',
           explanation: 'Canopy shading reduces surface radiant heating, while latent heat of vaporization during leaf transpiration cools ambient air temperature (typically 2–8 °C cooler surface/local feel depending on soil moisture and canopy density).',
-          reference: 'FAO Urban and Peri-Urban Forestry Guidelines; US EPA — Using Trees and Vegetation to Reduce Heat Islands.',
+          reference: 'FAO Urban and Peri-Urban Forestry Guidelines; US EPA, Using Trees and Vegetation to Reduce Heat Islands.',
         },
       ],
     },
@@ -1589,7 +1589,7 @@ export const BATCH_2_STORIES: PilotStory[] = [
         narration: 'Slow and clear on "Ghana Meteorological Agency" and "millimetres".',
       },
       {
-        text: 'Together, Akosua and Kojo set up the rain gauge on a sturdy post in the middle of the open school grass, far away from buildings and trees so wind and splash would not spoil the reading. ‘Every morning at eight o’clock,’ said Akosua, opening her weather logbook, ‘we will kneel to eye level, read the bottom curve of the water, write it down, and empty the cylinder for the next day.’',
+        text: 'Mr Boateng had mounted the rain gauge on a sturdy post in the middle of the open school grass before the week began, far away from buildings and trees so wind and splash would not spoil the reading. ‘Each day,’ said Akosua, opening her weather logbook, ‘we will kneel to eye level, read the bottom curve of the water, write it down, and empty the cylinder for the next day.’',
         alt: 'Akosua and Kojo mount the rain gauge on a wooden post in an open grassy area of the school compound.',
         motif: '🌱🌧️',
         brief: 'Open grassy area of the schoolyard far from trees and roofs: Akosua and Kojo securing the clear rain gauge onto a sturdy wooden post at chest height.',
@@ -1804,14 +1804,14 @@ export const BATCH_2_STORIES: PilotStory[] = [
         ],
         steps: [
           'Have the teacher cut the top curved shoulder off the plastic bottle (about one-third from the top).',
-          'Place a 3 cm layer of pebbles in the bottom of the bottle to weight it down so wind cannot tip it over, and pour water in just to the top of the pebbles—mark that flat water line as your "0 mm" starting line.',
+          'Place a 3 cm layer of pebbles in the bottom of the bottle to weight it down so wind cannot tip it over, and pour water in just to the top of the pebbles, mark that flat water line as your "0 mm" starting line.',
           'Tape a ruler vertically on the outside of the straight-sided bottle with the "0" mark aligned exactly with your starting water line, then invert the cut top into the bottle as a funnel.',
           'Place the gauge in an open spot outdoors during a rainy week, read how many millimetres the water rises above the 0 line at 8:00 a.m. each morning, refill/reset to the 0 line, and draw a 5-day bar graph!',
         ],
         whatToNotice:
           'Adding pebbles and filling water to a marked 0 line above the uneven bottle base gives a flat, straight-sided starting level so every millimetre of rain is measured accurately.',
         safetyNote:
-          'Only the teacher should cut the plastic bottle and smooth any sharp plastic edges with tape; never go outside into an open field during active lightning or thunder—wait until the storm has passed to read the gauge.',
+          'Only the teacher should cut the plastic bottle and smooth any sharp plastic edges with tape; never go outside into an open field during active lightning or thunder, wait until the storm has passed to read the gauge.',
       },
       factCheck: [
         {

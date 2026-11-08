@@ -49,7 +49,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
     }),
     palette: ['#14532d', '#fbbf24'],
     characters: [
-      'Ama: a nine-year-old Ghanaian girl in Primary 4, braided hair with bright yellow beads, wearing a coral-orange polo shirt, denim shorts and green sneakers.',
+      'Ama: a nine-year-old Ghanaian girl in Primary 4, braided hair with bright yellow beads, wearing a coral-orange polo shirt, denim shorts and green canvas shoes.',
       'Jayden: Ama’s ten-year-old cousin visiting Ghana from London, curly short hair, wearing a light blue t-shirt, beige cargo shorts and carrying a small digital camera.',
       'Ranger Kweku: a friendly Kakum National Park guide in his thirties, wearing a forest-green ranger uniform and cap.',
     ],
@@ -76,7 +76,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         narration: 'Build wonder and excitement on "Kakum Canopy Walkway".',
       },
       {
-        text: 'Jayden held the side ropes tightly as his sneakers stepped onto the first bridge. Forty metres below, the forest floor looked like a deep green carpet! ‘It sways a little!’ Jayden gasped. Ama held his hand and smiled. ‘Look at the thick steel cables and safety nets, Jayden. Step steadily in the middle of the planks, and look out at the treetops!’',
+        text: 'Jayden held the side ropes tightly as his canvas shoes stepped onto the first bridge. Forty metres below, the forest floor looked like a deep green carpet! ‘It sways a little!’ Jayden gasped. Ama held his hand and smiled. ‘Look at the thick steel cables and safety nets, Jayden. Step steadily in the middle of the planks, and look out at the treetops!’',
         alt: 'Ama encourages Jayden as they walk across the high rope-and-plank canopy bridge forty metres above the forest floor.',
         motif: '👣🌿',
         brief: 'Mid-bridge view on the Kakum Canopy Walkway: Jayden holding the side ropes while Ama smiles reassuringly beside him, surrounded by high green safety netting and sunlit rainforest canopy.',
@@ -235,7 +235,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         'Pause after page 8 to trace where visitor money goes (park rangers, trail maintenance, local guides, village artisans).',
       ],
       afterReading: [
-        'Have learners design a "Welcome to Kakum — Leave Only Footprints" poster listing three rules for visitors.',
+        'Have learners design a "Welcome to Kakum, Leave Only Footprints" poster listing three rules for visitors.',
       ],
       discussion: [
         'Why do more birds and monkeys live high in the rainforest canopy than on the dark forest floor?',
@@ -243,7 +243,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         'What is the difference between tourism that harms nature (littering, disturbing animals) and ecotourism that protects nature?',
       ],
       reflection: [
-        'What natural place in your own community—a stream, grove, park, or beach—needs people to care for it the way rangers care for Kakum?',
+        'What natural place in your own community, a stream, grove, park, or beach, needs people to care for it the way rangers care for Kakum?',
       ],
       mathsExtension: [
         {
@@ -302,7 +302,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         {
           claim: 'The Kakum Canopy Walkway consists of 7 bridges spanning ~350 metres at heights up to 40 metres, and Kakum is on Ghana’s UNESCO Tentative List while protecting the Kakum River watershed.',
           explanation: 'Kakum National Park (375 km²) protects the headwaters of the Kakum, Nemimi, and Nbuakosua rivers supplying Cape Coast; it is listed on the UNESCO World Heritage Tentative List (Ref. 1393, submitted 2000).',
-          reference: 'UNESCO World Heritage Centre — Kakum National Park (Assin Attandanso Reserve) Tentative List Ref. 1393; Forestry Commission of Ghana (Wildlife Division).',
+          reference: 'UNESCO World Heritage Centre, Kakum National Park (Assin Attandanso Reserve) Tentative List Ref. 1393; Forestry Commission of Ghana (Wildlife Division).',
         },
       ],
     },
@@ -639,7 +639,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'Kojo’s Amazing Greenhouse Farm',
     summary:
-      'When heavy rains and whiteflies damage his uncle’s open tomato field on the Accra Plains, eleven-year-old Kojo investigates how a tropical greenhouse manages light, heat, ventilation, drip irrigation, pests and farm budgets—and how a farm greenhouse differs from Earth’s atmospheric greenhouse effect.',
+      'When heavy rains and whiteflies damage his uncle’s open tomato field on the Accra Plains, eleven-year-old Kojo investigates how a tropical greenhouse manages light, heat, ventilation, drip irrigation, pests and farm budgets, and how a farm greenhouse differs from Earth’s atmospheric greenhouse effect.',
     classification: base({
       classIds: ['primary-5', 'primary-6'],
       ageMin: 10,
@@ -710,7 +710,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         narration: 'Lively praise on "Exactly right!" and clear warning about overheating.',
       },
       {
-        text: '‘That is why tropical greenhouses in Ghana are designed with high roof vents and Roll-Up side walls covered with fine mesh,’ Uncle Ofori showed them. ‘Hot air rises and escapes out of the top vent while cooler air flows in through the sides. We also watch humidity carefully: if the air stays too damp without airflow, mould and fungi can attack the leaves.’',
+        text: '‘That is why tropical greenhouses in Ghana are designed with high roof vents and roll-up side walls covered with fine mesh,’ Uncle Ofori showed them. ‘Hot air rises and escapes out of the top vent while cooler air flows in through the sides. We also watch humidity carefully: if the air stays too damp without airflow, mould and fungi can attack the leaves.’',
         alt: 'Gentle airflow arrows in the sunlit space show hot air rising out of the roof vent while fresh air enters through the side netting.',
         motif: '🌬️🌿',
         brief: 'Wide interior view of the tropical greenhouse showing the high open ridge vent at the peak of the roof and bright breezy mesh side walls keeping the tall tomato plants comfortable.',
@@ -731,7 +731,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         narration: 'Honest trade-off: reduces pesticide use, but requires strict hygiene and daily scouting.',
       },
       {
-        text: 'At the farm table, Uncle Ofori opened his account book. ‘Does a greenhouse guarantee easy money?’ he asked. ‘No! Building the frame, replacing torn nets, pumping water and buying quality seeds all cost money. This season, our seeds and compost cost three hundred cedis, water and nutrients cost two hundred and fifty cedis, labour and maintenance cost two hundred and fifty cedis, and we saved two hundred cedis toward frame repairs. That is one thousand cedis in total costs.’',
+        text: 'At the farm table, Uncle Ofori opened his account book. ‘Does a greenhouse guarantee easy money?’ he asked. ‘No! Building the frame, replacing torn nets, pumping water and buying quality seeds all cost money. This season, our seeds and compost cost three hundred cedis, water and nutrients cost two hundred and fifty cedis, labour and routine maintenance cost two hundred and fifty cedis, and our net-and-frame upkeep cost two hundred cedis. That is one thousand cedis in total costs.’',
         alt: 'At a wooden table outside the greenhouse, Uncle Ofori reviews his farm budget notebook with Kojo and Ama.',
         motif: '📓🧮',
         brief: 'Wooden table outside the greenhouse with crates of bright red tomatoes: Uncle Ofori showing his open farm ledger (neat columns, no readable text) to Kojo and Ama.',
@@ -997,7 +997,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         alt: 'Akosua kneels peacefully beside her bed in prayer while her schoolbag and unopened books rest on the desk behind her.',
         motif: '🌙🙏',
         brief: 'Soft lamplit bedroom: Akosua kneeling sincerely by her bedside in prayer, while on her desk behind her, her schoolbooks remain closed in a neat stack.',
-        narration: 'Sincere and gentle—never mocking her prayer.',
+        narration: 'Sincere and gentle, never mocking her prayer.',
       },
       {
         text: 'On Wednesday morning, the teacher gave a short practice quiz to check who was ready for Thursday’s examination. Akosua stared at the first question: Add one-half and one-quarter. She had skipped the lesson exercises on common denominators! Her pencil stayed still, and her eyes filled with tears when she got only four out of ten.',
@@ -1138,7 +1138,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
     ],
     teacherGuide: {
       overview:
-        'Set in Sunyani, this Primary 4–6 character and values story portrays a Ghanaian Christian family that reveres God as Supreme while teaching a vital life lesson: genuine faith inspires diligence, honesty, preparation, and service—never replacing study, planning, or medical care. It also models warm interfaith respect between Christian and Muslim classmates and explicitly affirms that poverty or misfortune never results from insufficient faith.',
+        'Set in Sunyani, this Primary 4–6 character and values story portrays a Ghanaian Christian family that reveres God as Supreme while teaching a vital life lesson: genuine faith inspires diligence, honesty, preparation, and service, never replacing study, planning, or medical care. It also models warm interfaith respect between Christian and Muslim classmates and explicitly affirms that poverty or misfortune never results from insufficient faith.',
       lessonMinutes: 40,
       learningGoals: [
         'Explain how faith, gratitude, and personal responsibility (studying, planning, asking questions) work together harmoniously.',
@@ -1219,7 +1219,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'Efua and the Business That Almost Failed',
     summary:
-      'In this sequel to Efua’s Honest Business, thirteen-year-old Efua sells a record one hundred packs of groundnut cakes in a single week—yet her cash tin runs short when she goes to restock! With Nana Ama and Auntie Dede, she learns to separate revenue, fixed and variable costs, profit, and cash flow.',
+      'In this sequel to Efua’s Honest Business, thirteen-year-old Efua sells a record one hundred packs of groundnut cakes in a single week, yet her cash tin runs short when she goes to restock! With Nana Ama and Auntie Dede, she learns to separate revenue, fixed and variable costs, profit, and cash flow.',
     classification: base({
       classIds: ['jhs-1', 'jhs-2', 'jhs-3'],
       ageMin: 12,
@@ -1291,7 +1291,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         narration: 'Clear step-by-step arithmetic: "one hundred and forty plus twenty-five gives one hundred and sixty-five cedis".',
       },
       {
-        text: 'Efua subtracted one hundred and sixty-five cedis of total expenses from the two hundred cedis of revenue. ‘My actual profit for the week was thirty-five cedis, not two hundred!’ she gasped. ‘Wait, Nana—if I earned thirty-five cedis in profit, why does my tin have less cash than I need to buy next week’s groundnuts?’',
+        text: 'Efua subtracted one hundred and sixty-five cedis of total expenses from the two hundred cedis of revenue. ‘My actual profit for the week was thirty-five cedis, not two hundred!’ she gasped. ‘Wait, Nana, if I earned thirty-five cedis in profit, why does my tin have less cash than I need to buy next week’s groundnuts?’',
         alt: 'Efua looks puzzled as she compares her ledger profit of 35 cedis with the small amount of cash in her tin.',
         motif: '🤔💵',
         brief: 'Efua holding her ledger in one hand and looking into the cash tin with the other, asking Nana Ama a thoughtful question.',
@@ -1367,7 +1367,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
           'Groundnuts stopped growing on farms',
         ],
         correctIndex: 0,
-        explanation: 'Selling 60 cedis on credit meant she only received 140 cedis in cash while paying 165 cedis in cash expenses—a cash-flow crunch!',
+        explanation: 'Selling 60 cedis on credit meant she only received 140 cedis in cash while paying 165 cedis in cash expenses, a cash-flow crunch!',
       },
       {
         id: 'efua2-v1',
@@ -1770,7 +1770,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
           'Observe how salt crystals form inside the pores of the chalk/stone as water evaporates and how salt speeds up rust on iron.',
         ],
         whatToNotice:
-          'Salt water and sea spray speed up rusting and leave salt crystals that weather porous stone and lime mortar—showing why GMMB conservators must work continually to preserve coastal monuments like Cape Coast Castle!',
+          'Salt water and sea spray speed up rusting and leave salt crystals that weather porous stone and lime mortar, showing why GMMB conservators must work continually to preserve coastal monuments like Cape Coast Castle!',
         safetyNote:
           'Wash hands after handling rusty nails or salt solutions, and dispose of rusted nails safely with the teacher.',
       },
@@ -1778,7 +1778,7 @@ export const BATCH_3_STORIES: PilotStory[] = [
         {
           claim: 'Cape Coast Castle was expanded as Carolusborg by the Swedes in 1653, taken by the British in 1664, and inscribed as a UNESCO World Heritage Site in 1979 under the stewardship of the Ghana Museums and Monuments Board.',
           explanation: 'Historical and architectural documentation by GMMB and UNESCO World Heritage Convention (Ref. 34) confirm the 1653 Swedish construction under Heinrich Caarlof, 1664 British capture, and 1979 UNESCO inscription.',
-          reference: 'UNESCO World Heritage Centre — Forts and Castles, Volta, Greater Accra, Central and Western Regions (Ref. 34); Anquandah, J. (1999). Castles & Forts of Ghana. Ghana Museums and Monuments Board; Trans-Atlantic Slave Trade Database (SlaveVoyages.org).',
+          reference: 'UNESCO World Heritage Centre, Forts and Castles, Volta, Greater Accra, Central and Western Regions (Ref. 34); Anquandah, J. (1999). Castles & Forts of Ghana. Ghana Museums and Monuments Board; Trans-Atlantic Slave Trade Database (SlaveVoyages.org).',
         },
       ],
     },

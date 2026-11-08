@@ -33,7 +33,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'The Promise That Bought a Vote',
     summary:
-      'During a fictional local council election in the town of Asasekro, fourteen-year-old Kofi and his classmate Ama notice one candidate handing out gifts and making huge uncosted promises while another shares a written budget plan—prompting the students to investigate how public budgets, independent verification, secret ballots and civic accountability really work.',
+      'During a fictional local council election in the town of Asasekro, fourteen-year-old Kofi and his classmate Ama notice one candidate handing out gifts and making huge uncosted promises while another shares a written budget plan, prompting the students to investigate how public budgets, independent verification, secret ballots and civic accountability really work.',
     classification: base({
       classIds: ['jhs-2', 'jhs-3'],
       ageMin: 13,
@@ -91,21 +91,21 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Clear, non-partisan civic explanation from Mrs Mensah.',
       },
       {
-        text: 'With Mrs Mensah’s guidance, the civic club inspected the published District Assembly budget summary at the library. Asasekro’s entire annual capital budget for local works was five hundred thousand cedis. Candidate A’s promised stadium and glass mall would cost over five million cedis — ten times the entire budget, with zero explanation of where the money would come from!',
+        text: 'With Mrs Mensah’s guidance, the civic club inspected the published District Assembly budget summary at the library. Asasekro’s entire annual capital budget for local works was five hundred thousand cedis. Candidate A’s promised stadium and glass mall would cost over five million cedis, ten times the entire budget, with zero explanation of where the money would come from!',
         alt: 'Kofi and Ama compare the official council budget binder with the cost of the promised projects using a calculator.',
         motif: '📚🧮',
         brief: 'School library table: Kofi and Ama looking at a large official budget binder and a calculator, comparing a small stack of five wooden blocks with a towering stack of fifty blocks (no text).',
         narration: 'Walk through the budget arithmetic clearly: 500,000 cedis available vs 5,000,000 cedis promised.',
       },
       {
-        text: 'Next, they checked Candidate B’s written plan. Fixing the leaking clinic roof cost one hundred and twenty thousand cedis, repairing the school footbridge cost eighty thousand cedis, and drilling two solar boreholes cost one hundred thousand cedis — three hundred thousand cedis in total, leaving two hundred thousand cedis for maintenance and drainage. Every cedi was accounted for within the real budget!',
-        alt: 'Ama traces the three costed items—clinic roof, footbridge and boreholes—totalling 300,000 cedis within the 500,000-cedi budget.',
+        text: 'Next, they checked Candidate B’s written plan. Fixing the leaking clinic roof cost one hundred and twenty thousand cedis, repairing the school footbridge cost eighty thousand cedis, and drilling two solar boreholes cost one hundred thousand cedis, three hundred thousand cedis in total, leaving two hundred thousand cedis for maintenance and drainage. Every cedi was accounted for within the real budget!',
+        alt: 'Ama traces the three costed items, clinic roof, footbridge and boreholes, totalling 300,000 cedis within the 500,000-cedi budget.',
         motif: '🏥🚰',
-        brief: 'Close view of Ama’s notebook showing three neat visual sketches—a clinic roof, a sturdy bridge, and a water tap—fitting comfortably inside a drawn budget box (no text).',
+        brief: 'Close view of Ama’s notebook showing three neat visual sketches, a clinic roof, a sturdy bridge, and a water tap, fitting comfortably inside a drawn budget box (no text).',
         narration: 'Clear, verifiable arithmetic: 120,000 + 80,000 + 100,000 = 300,000 cedis out of the 500,000-cedi budget.',
       },
       {
-        text: 'That evening, Kofi showed Uncle Yaw another calculation. ‘A council term lasts four years — about one thousand four hundred and sixty days,’ Kofi said. ‘If someone gives a voter fifty cedis to buy their vote for four years, that works out to less than four pesewas a day! Worse still, a politician who buys votes with private cash often treats office as a business to recover their money instead of serving the town.’',
+        text: 'That evening, Kofi showed Uncle Yaw another calculation. ‘A council term lasts four years, about one thousand four hundred and sixty days,’ Kofi said. ‘If someone gives a voter fifty cedis to buy their vote for four years, that works out to less than four pesewas a day! Worse still, a politician who buys votes with private cash often treats office as a business to recover their money instead of serving the town.’',
         alt: 'Kofi shows Uncle Yaw on a calculator how 50 cedis divided across four years (1,460 days) is less than four pesewas a day.',
         motif: '⏳🪙',
         brief: 'Evening veranda light: Kofi holding a single small coin beside a thick four-year calendar flipbook while Uncle Yaw looks surprised and thoughtful.',
@@ -119,21 +119,21 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Model respectful, evidence-based public dialogue.',
       },
       {
-        text: 'At the forum, Uncle Yaw’s friend whispered, ‘What if people get angry because we support different candidates?’ Mrs Mensah reminded the audience of a vital constitutional principle: ‘In a democracy, citizens can disagree on policies while remaining neighbours and friends. Even more importantly, the ballot is secret — nobody inside the voting booth can see whom you choose, so no gift or threat can force your hand.’',
+        text: 'At the forum, Uncle Yaw’s friend whispered, ‘What if people get angry because we support different candidates?’ Mrs Mensah reminded the audience of a vital constitutional principle: ‘In a democracy, citizens can disagree on policies while remaining neighbours and friends. Even more importantly, the ballot is secret, nobody inside the voting booth can see whom you choose, so no gift or threat can force your hand.’',
         alt: 'Mrs Mensah points to a demonstration cardboard voting screen showing how every voter marks their ballot in complete privacy.',
         motif: '🛡️🗳️',
         brief: 'Civic education table at the community hall: Mrs Mensah demonstrating a private three-sided voting screen and a transparent ballot box (no text) while Uncle Yaw and his friends nod.',
         narration: 'Emphasise both tolerance for differing views and the protection of the secret ballot.',
       },
       {
-        text: 'After the election, Kofi and Ama learned that citizenship does not end on voting day! Whether a candidate wins or loses, residents must attend town-hall budget hearings, inspect public project noticeboards, and track accountability — requiring leaders to explain how public funds are spent and whether promised milestones are met.',
+        text: 'After the election, Kofi and Ama learned that citizenship does not end on voting day! Whether a candidate wins or loses, residents must attend town-hall budget hearings, inspect public project noticeboards, and track accountability, requiring leaders to explain how public funds are spent and whether promised milestones are met.',
         alt: 'Kofi, Ama, Uncle Yaw and townspeople inspect a public project progress board outside the newly repaired clinic roof.',
         motif: '🏗️📋',
         brief: 'Sunny morning outside the community clinic where carpenters are installing new roof sheets: Kofi, Ama, Uncle Yaw and elders checking a visual progress chart mounted on a wooden post (no readable text).',
         narration: 'Show that democracy is an ongoing partnership of active citizens and accountable institutions.',
       },
       {
-        text: 'Walking across the newly repaired school footbridge a few months later, Kofi and Ama smiled. No single politician could magically fix every problem overnight, and good leaders deserved respect when they worked honestly — just as citizens deserved truth, clear budgets and real accountability. A strong Ghana, they realised, begins with minds that cannot be bought.',
+        text: 'Walking across the newly repaired school footbridge a few months later, Kofi and Ama smiled. No single politician could magically fix every problem overnight, and good leaders deserved respect when they worked honestly, just as citizens deserved truth, clear budgets and real accountability. A strong Ghana, they realised, begins with minds that cannot be bought.',
         alt: 'Kofi, Ama and Uncle Yaw walk safely across the sturdy repaired footbridge on their way to school.',
         motif: '🌉🌟',
         brief: 'Warm morning light: Kofi and Ama walking across a sturdy, newly built wooden-and-concrete footbridge over the stream while Uncle Yaw waves his carpenter’s rule from the bank.',
@@ -211,10 +211,10 @@ export const BATCH_5_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'credible', definition: 'convincing and trustworthy because it is backed by real evidence and workable numbers', pages: [5] },
-      { word: 'budget', definition: 'an official financial plan showing expected public revenue and how money will be spent on services and projects', pages: [3, 5, 6, 7, 9, 11] },
-      { word: 'ballot', definition: 'the slip or system used by a citizen to cast a secret vote in an election', pages: [10] },
-      { word: 'accountability', definition: 'the duty of public officials to explain their actions, report how public money is used, and answer to citizens', pages: [11, 12] },
+      { word: 'credible', definition: 'Convincing and trustworthy because it is backed by real evidence and workable numbers', pages: [5] },
+      { word: 'budget', definition: 'An official financial plan showing expected public revenue and how money will be spent on services and projects', pages: [3, 5, 6, 7, 9, 11] },
+      { word: 'ballot', definition: 'The slip or system used by a citizen to cast a secret vote in an election', pages: [10] },
+      { word: 'accountability', definition: 'The duty of public officials to explain their actions, report how public money is used, and answer to citizens', pages: [11, 12] },
     ],
     teacherGuide: {
       overview:
@@ -281,7 +281,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'The River That Lost Its Voice',
     summary:
-      'Twelve-year-old Esi and her grandfather Nana Kwaku notice that the once-clear Subri stream near their farming town has turned thick and yellowish-brown from destructive illegal mining upstream—leading Esi’s class and certified environmental scientists to investigate sediment, water treatment, laboratory testing for heavy metals, and lawful, sustainable livelihoods.',
+      'Twelve-year-old Esi and her grandfather Nana Kwaku notice that the once-clear Subri stream near their farming town has turned thick and yellowish-brown from destructive illegal mining upstream, leading Esi’s class and certified environmental scientists to investigate sediment, water treatment, laboratory testing for heavy metals, and lawful, sustainable livelihoods.',
     classification: base({
       classIds: ['primary-6', 'jhs-1', 'jhs-2'],
       ageMin: 11,
@@ -304,14 +304,14 @@ export const BATCH_5_STORIES: PilotStory[] = [
     ],
     pages: [
       {
-        text: 'When twelve-year-old Esi was in Primary 2, the river beside her town sang a clear, bubbling song over smooth grey pebbles. Silver tilapia darted beneath overhanging fern fronds, and Nana Kwaku’s riverside vegetable beds gleamed green. This term, however, the river had lost its voice. Instead of sparkling over stones, it crept past like thick, yellowish-brown soup.',
+        text: 'Years earlier, when twelve-year-old Esi was only in Primary 2, the river beside her town sang a clear, bubbling song over smooth grey pebbles. Silver tilapia darted beneath overhanging fern fronds, and Nana Kwaku’s riverside vegetable beds gleamed green. Now that she was in JHS 1, however, the river had lost its voice. Instead of sparkling over stones, it crept past like thick, yellowish-brown soup.',
         alt: 'Twelve-year-old Esi and her grandfather Nana Kwaku stand on the high bank looking down at a river that has turned thick and muddy yellowish-brown.',
         motif: '🏞️😟',
         brief: 'Lush Ghanaian riverbank split by contrast: Esi (12, forest-green school pinafore, white blouse, notebook) and Nana Kwaku (60, blue shirt, straw hat) standing safely on the high grassy bank looking down with concern at a thick, turbid yellowish-brown river.',
         narration: 'Poetic, evocative opening contrasting the clear singing stream of memory with the silent, muddy water today.',
       },
       {
-        text: 'Esi took a step down the bank with an empty glass jar, hoping to scoop a sample for her school science club. ‘Stop right there, Esi!’ called Nana Kwaku firmly, holding her shoulder back on the dry path. ‘Never touch, wade into, or scoop polluted river water with your bare hands! Upstream, unregulated machines have been digging up the riverbed for gold — galamsey — and only trained scientists in protective gear should collect samples.’',
+        text: 'Esi took a step down the bank with an empty glass jar, hoping to scoop a sample for her school science club. ‘Stop right there, Esi!’ called Nana Kwaku firmly, holding her shoulder back on the dry path. ‘Never touch, wade into, or scoop polluted river water with your bare hands! Upstream, unregulated machines have been digging up the riverbed for gold, galamsey, and only trained scientists in protective gear should collect samples.’',
         alt: 'Nana Kwaku firmly keeps Esi back on the safe dry bank away from the muddy river water.',
         motif: '🛑🧤',
         brief: 'On the high dry path well above the water: Nana Kwaku placing a protective hand on Esi’s shoulder so she stays far back from the muddy river edge, while Esi nods and puts her empty jar back into her bag.',
@@ -325,10 +325,10 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show proper professional sampling protocol and safety equipment.',
       },
       {
-        text: 'Back at the school veranda, Dr Mensah held up one sealed transparent bottle of river water beside a bottle of clean tap water. ‘Look at the thick cloudiness in the river bottle,’ she said. ‘Scientists call this high turbidity, caused by suspended sediment — fine clay, silt and sand churned up when excavators strip away riverbank soil and wash gold-bearing gravel directly in the stream.’',
+        text: 'Back at the school veranda, Dr Mensah held up one sealed transparent bottle of river water beside a bottle of clean tap water. ‘Look at the thick cloudiness in the river bottle,’ she said. ‘Scientists call this high turbidity, caused by suspended sediment, fine clay, silt and sand churned up when excavators strip away riverbank soil and wash gold-bearing gravel directly in the stream.’',
         alt: 'Dr Mensah holds up a sealed bottle of cloudy brown river water beside a sealed bottle of crystal-clear water.',
         motif: '🍼🔍',
-        brief: 'School veranda demonstration table: Dr Mensah in gloves holding two tightly sealed glass bottles—one brown and opaque with suspended sediment, the other crystal clear—as Esi and classmates observe.',
+        brief: 'School veranda demonstration table: Dr Mensah in gloves holding two tightly sealed glass bottles, one brown and opaque with suspended sediment, the other crystal clear, as Esi and classmates observe.',
         narration: 'Clear scientific explanation of turbidity and suspended sediment.',
       },
       {
@@ -339,7 +339,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Explain the ecological chain: blocked sunlight → lost plants/oxygen → clogged gills and smothered eggs.',
       },
       {
-        text: 'Then a classmate shouted, ‘I can see mercury in that brown bottle!’ Dr Mensah raised a finger carefully. ‘Let us think like real scientists. Can your eyes see dissolved mercury or heavy metals just by looking at muddy brown water? No! Brown colour proves there is suspended soil and sediment. Confirming whether toxic mercury or arsenic is present requires specialized laboratory instruments.’',
+        text: 'Then a classmate shouted, ‘I can see mercury in that brown bottle!’ Dr Mensah raised a finger carefully. ‘Let us think like real scientists. Can your eyes see dissolved mercury or heavy metals just by looking at muddy brown water? No! Brown colour proves there is suspended soil and sediment. Confirming whether toxic mercury or arsenic is present requires specialised laboratory instruments.’',
         alt: 'Dr Mensah explains the scientific difference between visible mud (turbidity) and invisible chemical contaminants that require laboratory testing.',
         motif: '🔬⚖️',
         brief: 'Close view of Dr Mensah pointing from the cloudy bottle to a photograph of a laboratory spectrometer machine (no text), while Esi writes carefully in her notebook.',
@@ -367,7 +367,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Empathetic, balanced portrayal: condemn the destructive practice while understanding the economic pressures on youth and pointing to lawful solutions.',
       },
       {
-        text: 'One week later, Dr Mensah returned with the official certified laboratory report from Accra. The lab tests confirmed both dangerous turbidity and elevated mercury levels downstream of the illegal pits — providing verified legal evidence! The community elders, the District Assembly and the Water Resources Commission used that report to halt the illegal dredging and launch a licensed land-reclamation project.',
+        text: 'One week later, Dr Mensah returned with the official certified laboratory report from Accra. The lab tests confirmed both dangerous turbidity and elevated mercury levels downstream of the illegal pits, providing verified legal evidence! The community elders, the District Assembly and the Water Resources Commission used that report to halt the illegal dredging and launch a licensed land-reclamation project.',
         alt: 'Dr Mensah presents the official laboratory report to the town elders and District Assembly officers.',
         motif: '📄✅',
         brief: 'At the community hall table: Dr Mensah presenting a sealed laboratory report folder with green-and-red graphs (no text) to Nana Kwaku, the traditional chief in kente cloth, and District Assembly officers.',
@@ -381,7 +381,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Hopeful, practical engineering and livelihood solution: land reclamation and riparian buffer planting.',
       },
       {
-        text: 'Eighteen months later, Esi stood with Nana Kwaku and Dr Mensah on the bridge. The river was not completely healed overnight — restoring an ecosystem takes years of vigilance — but the water ran clearer, green reeds lined the banks, and tiny fingerlings darted in the shallows again. ‘A river cannot speak in court or parliament,’ Esi wrote in her notebook, ‘so science, law and caring citizens must be its voice.’',
+        text: 'Eighteen months later, Esi stood with Nana Kwaku and Dr Mensah on the bridge. The river was not completely healed overnight, restoring an ecosystem takes years of vigilance, but the water ran clearer, green reeds lined the banks, and tiny fingerlings darted in the shallows again. ‘A river cannot speak in court or parliament,’ Esi wrote in her notebook, ‘so science, law and caring citizens must be its voice.’',
         alt: 'Standing on the bridge eighteen months later, Esi, Nana Kwaku, Kojo and Dr Mensah look down at a much clearer stream lined with young green bamboo and trees.',
         motif: '🏞️💚',
         brief: 'Golden morning light on the bridge: Esi, Nana Kwaku, Kojo and Dr Mensah looking down happily as clearer blue-green water flows over pebbles between lush newly planted riverbank trees.',
@@ -459,11 +459,11 @@ export const BATCH_5_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'turbidity', definition: 'the cloudiness or haziness of water caused by suspended soil, silt and clay particles', pages: [4, 8, 10] },
-      { word: 'sediment', definition: 'solid particles of soil, sand and silt carried in water or settled on a riverbed', pages: [4, 5] },
-      { word: 'photosynthesis', definition: 'the process by which green plants use sunlight to make food and release oxygen', pages: [5] },
-      { word: 'mercury', definition: 'a toxic heavy metal that can poison water, fish and human nervous systems if released during mining', pages: [6, 7, 10] },
-      { word: 'reclamation', definition: 'restoring damaged, mined land by refilling pits, rebuilding soil and planting vegetation', pages: [11] },
+      { word: 'turbidity', definition: 'The cloudiness or haziness of water caused by suspended soil, silt and clay particles', pages: [4, 8, 10] },
+      { word: 'sediment', definition: 'Solid particles of soil, sand and silt carried in water or settled on a riverbed', pages: [4, 5] },
+      { word: 'photosynthesis', definition: 'The process by which green plants use sunlight to make food and release oxygen', pages: [5] },
+      { word: 'mercury', definition: 'A toxic heavy metal that can poison water, fish and human nervous systems if released during mining', pages: [6, 7, 10] },
+      { word: 'reclamation', definition: 'Restoring damaged, mined land by refilling pits, rebuilding soil and planting vegetation', pages: [11] },
     ],
     teacherGuide: {
       overview:
@@ -491,7 +491,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
           'Dissolved or trace heavy metals (such as mercury or arsenic) cannot be identified by visual colour alone; confirmation requires certified analytical chemistry methods (such as atomic absorption spectroscopy).',
         ],
         underInvestigation: [
-          'Ghanaian environmental scientists and soil engineers are researching phytoremediation (using specialized plants and biochar) to help rehabilitate degraded mining soils faster.',
+          'Ghanaian environmental scientists and soil engineers are researching phytoremediation (using specialised plants and biochar) to help rehabilitate degraded mining soils faster.',
         ],
       },
       investigation: {
@@ -499,8 +499,8 @@ export const BATCH_5_STORIES: PilotStory[] = [
         Materials: 'Two clear plastic cups of clean tap water, one teaspoon of clean dry garden soil, a white card, and a small torch (never use polluted river water!).',
         steps: [
           'Leave Cup A filled with clear tap water. Stir one teaspoon of clean garden soil into Cup B to simulate suspended sediment.',
-          'Hold the white card behind Cup A and shine the torch through the side — notice how bright the light is on the card.',
-          'Shine the torch through Cup B — notice how the suspended soil scatters and blocks the light beam, just as turbid water blocks sunlight from underwater plants.',
+          'Hold the white card behind Cup A and shine the torch through the side, notice how bright the light is on the card.',
+          'Shine the torch through Cup B, notice how the suspended soil scatters and blocks the light beam, just as turbid water blocks sunlight from underwater plants.',
         ],
         explanation:
           'Suspended particles scatter and absorb light waves (the Tyndall/turbidity effect), demonstrating why muddy rivers lose underwater plant life and dissolved oxygen.',
@@ -530,7 +530,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'The Journey That Almost Took Everything',
     summary:
-      'Twenty-year-old Kwabena, frustrated after months of searching for steady work, is tempted by a flashy social-media agent promising an instant job abroad through an unverified overland route for 35,000 cedis—until his JHS sister Afia, his cousin Uncle Tetteh who returned from an unsafe journey, and a nurse cousin working legally abroad help him separate dangerous fraud from legal migration and real technical careers in Ghana.',
+      'Twenty-year-old Kwabena, frustrated after months of searching for steady work, is tempted by a flashy social-media agent promising an instant job abroad through an unverified overland route for 35,000 cedis, until his JHS sister Afia, his cousin Uncle Tetteh who returned from an unsafe journey, and a nurse cousin working legally abroad help him separate dangerous fraud from legal migration and real technical careers in Ghana.',
     classification: base({
       classIds: ['jhs-2', 'jhs-3'],
       ageMin: 13,
@@ -581,10 +581,10 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Practical verification steps every young person and family can use.',
       },
       {
-        text: 'The next morning, Maame asked Kwabena and Afia to visit Uncle Tetteh at his busy electrical and solar workshop near the market. Five years earlier, Uncle Tetteh had believed a similar smuggler’s promise. Sitting beside his workbench, Uncle Tetteh spoke without shame or exaggeration — only quiet truth.',
+        text: 'The next morning, Maame asked Kwabena and Afia to visit Uncle Tetteh at his busy electrical and solar workshop near the market. Five years earlier, Uncle Tetteh had believed a similar smuggler’s promise. Sitting beside his workbench, Uncle Tetteh spoke without shame or exaggeration, only quiet truth.',
         alt: 'In a bright solar-and-electrical workshop, Uncle Tetteh sits with Kwabena and Afia to share his real experience.',
         motif: '🛠️🗣️',
-        brief: 'Well-organized Ghanaian electrical and solar workshop: Uncle Tetteh (30, khaki work shirt) sitting on a stool across from Kwabena and Afia, gesturing calmly and respectfully.',
+        brief: 'Well-organised Ghanaian electrical and solar workshop: Uncle Tetteh (30, khaki work shirt) sitting on a stool across from Kwabena and Afia, gesturing calmly and respectfully.',
         narration: 'Respectful, non-sensational tone as Uncle Tetteh shares his lived experience.',
       },
       {
@@ -605,7 +605,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         text: '‘And let me be honest with you, Kwabena,’ Sister Akua added with a gentle smile. ‘Life abroad is not money growing on trees! I work long shifts, pay high rent, heating bills and taxes in winter, and budget carefully before sending remittances home. Whether you work abroad legally or build a career in Ghana, real success always requires certified skills, legal status and hard work.’',
         alt: 'Sister Akua holds up a monthly budget pie chart showing rent, taxes, bills and savings alongside her nursing study books.',
         motif: '📊❄️',
-        brief: 'On the tablet screen, Sister Akua showing a simple pie chart of living costs (house icon, tax icon, savings icon—no text) with a snowy window behind her.',
+        brief: 'On the tablet screen, Sister Akua showing a simple pie chart of living costs (house icon, tax icon, savings icon, no text) with a snowy window behind her.',
         narration: 'Demystify life abroad with honesty and warmth: real work, real bills, and real skills.',
       },
       {
@@ -630,7 +630,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Realistic, earned progress over two years of accredited skill-building and hard work.',
       },
       {
-        text: 'Two years later, Kwabena was invited to a short, fully funded solar-engineering workshop in Germany through an official embassy visa — and flew back home proudly to expand his Ghanaian workshop! ‘Whether a Ghanaian travels safely across the world or builds right here at home,’ Kwabena told Afia’s JHS class, ‘never gamble your life on a lie. Build real skills, verify the truth, and walk through legal doors with your head held high.’',
+        text: 'Two years later, Kwabena was invited to a short, fully funded solar-engineering workshop in Germany through an official embassy visa, and flew back home proudly to expand his Ghanaian workshop! ‘Whether a Ghanaian travels safely across the world or builds right here at home,’ Kwabena told Afia’s JHS class, ‘never gamble your life on a lie. Build real skills, verify the truth, and walk through legal doors with your head held high.’',
         alt: 'Kwabena holds his official passport and technical certificate as he speaks to Afia’s JHS class beside a solar model.',
         motif: '🌍🌟',
         brief: 'In Afia’s JHS classroom: Kwabena smiling confidently in his technician jacket, showing a small solar water-pump model and his official certificate folder to eager JHS students.',
@@ -649,14 +649,14 @@ export const BATCH_5_STORIES: PilotStory[] = [
           'He advised the family to check the official government website first',
         ],
         correctIndex: 0,
-        explanation: 'Demanding large cash payments, promising jobs without official embassy visas, and operating without a license are major human-smuggling and fraud red flags.',
+        explanation: 'Demanding large cash payments, promising jobs without official embassy visas, and operating without a licence are major human-smuggling and fraud red flags.',
       },
       {
         id: 'journey-v1',
         type: 'vocabulary',
         afterPage: 4,
         word: 'verify',
-        definition: 'To check whether a claim, license or document is true and official using reliable sources',
+        definition: 'To check whether a claim, licence or document is true and official using reliable sources',
         distractors: [
           'To believe a flashy video on social media without asking questions',
           'To sell family land in secret before Friday',
@@ -681,7 +681,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         afterPage: 10,
         question: 'How much did Kwabena’s family invest in his accredited solar-electrical course (2,500 cedis) and diagnostic tools (2,000 cedis)?',
         options: [
-          '4,500 cedis — saving their cocoa farm and avoiding the 35,000-cedi scam',
+          '4,500 cedis, saving their cocoa farm and avoiding the 35,000-cedi scam',
           '35,000 cedis in cash to an unregistered stranger',
           '100,000 cedis borrowed from a loan shark',
         ],
@@ -708,11 +708,11 @@ export const BATCH_5_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'unpatriotic', definition: 'not showing love or support for one’s country (the story explains that migrating safely for work or study is not unpatriotic)', pages: [3] },
-      { word: 'verify', definition: 'to confirm that information or a license is genuine by checking official authorities', pages: [4, 12] },
-      { word: 'embassy', definition: 'the official diplomatic office of a foreign country that issues legal visas', pages: [2, 4, 7, 12] },
-      { word: 'remittances', definition: 'money sent home by a worker living abroad to support their family', pages: [8] },
-      { word: 'accredited', definition: 'officially recognized and certified as meeting national educational or professional standards', pages: [10] },
+      { word: 'unpatriotic', definition: 'Not showing love or support for one’s country (the story explains that migrating safely for work or study is not unpatriotic)', pages: [3] },
+      { word: 'verify', definition: 'To confirm that information or a licence is genuine by checking official authorities', pages: [4, 12] },
+      { word: 'embassy', definition: 'The official diplomatic office of a foreign country that issues legal visas', pages: [2, 4, 7, 12] },
+      { word: 'remittances', definition: 'Money sent home by a worker living abroad to support their family', pages: [8] },
+      { word: 'accredited', definition: 'Officially recognised and certified as meeting national educational or professional standards', pages: [10] },
     ],
     teacherGuide: {
       overview:
@@ -779,7 +779,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'Adwoa Refused to Be Limited',
     summary:
-      'Eleven-year-old Adwoa loves gears, levers and building things, even when a neighbour claims engineering is only for boys. Encouraged by her parents—who share cooking, budgeting and workshop duties equally at home—her brother Kojo, and mechanical engineer Auntie Serwaa, Adwoa designs a pedal-powered groundnut sheller that shells thirty kilograms an hour instead of five.',
+      'Eleven-year-old Adwoa loves gears, levers and building things, even when a neighbour claims engineering is only for boys. Encouraged by her parents, who share cooking, budgeting and workshop duties equally at home, her brother Kojo, and mechanical engineer Auntie Serwaa, Adwoa designs a pedal-powered groundnut sheller that shells thirty kilograms an hour instead of five.',
     classification: base({
       classIds: ['primary-5', 'primary-6', 'jhs-1'],
       ageMin: 10,
@@ -824,7 +824,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Warm, dignified scene showing shared household and caregiving responsibilities in action.',
       },
       {
-        text: '‘In our home,’ Papa Kwame said kindly, ‘a spanner does not ask whether the hand holding it belongs to a girl or a boy — and neither does a cooking pot! When men and women, boys and girls share caregiving, cooking, budgeting and technical work with mutual respect, every person in the family grows stronger.’ Kojo grinned at his sister. ‘And Adwoa is the best machine builder in our class! Let us build that sheller together!’',
+        text: '‘In our home,’ Papa Kwame said kindly, ‘a spanner does not ask whether the hand holding it belongs to a girl or a boy, and neither does a cooking pot! When men and women, boys and girls share caregiving, cooking, budgeting and technical work with mutual respect, every person in the family grows stronger.’ Kojo grinned at his sister. ‘And Adwoa is the best machine builder in our class! Let us build that sheller together!’',
         alt: 'Papa Kwame, Mama Esi and Kojo encourage Adwoa at the veranda workbench.',
         motif: '🤝💜',
         brief: 'Around the veranda workbench: Papa Kwame and Mama Esi smiling encouragingly at Adwoa while brother Kojo hands her a bicycle sprocket.',
@@ -845,14 +845,14 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show real engineering problem-solving: measuring clearance and adjusting force.',
       },
       {
-        text: 'Adwoa measured the average thickness of the groundnut pods and raised the roller bearings by eight millimetres. She also added a small paddle fan driven by a second belt. When the pods cracked open against the screen, the heavy groundnut kernels dropped straight into a clean bowl below, while the gentle wind from the fan blew the light dry shells out through a side chute — winnowing them automatically!',
+        text: 'Adwoa measured the average thickness of the groundnut pods and raised the roller bearings by eight millimetres. She also added a small paddle fan driven by a second belt. When the pods cracked open against the screen, the heavy groundnut kernels dropped straight into a clean bowl below, while the gentle wind from the fan blew the light dry shells out through a side chute, winnowing them automatically!',
         alt: 'Adwoa adjusts the roller height with her spanner and adds a small belt-driven fan to blow away the light shells.',
         motif: '💨⚙️',
         brief: 'Close view of the pedal-powered machine: Adwoa tightening a bolt with her spanner as clean red groundnut kernels drop into a steel bowl underneath and papery shells blow into a basket on the side.',
         narration: 'Step-by-step physics and mechanical design: friction cracks the shell, gravity drops the dense kernel, airflow separates the light husk.',
       },
       {
-        text: 'Now it was time to measure the machine’s performance using maths! By hand, one person shelled five kilograms of groundnuts in one hour. When Adwoa and Kojo took turns pedalling their adjusted machine for ten minutes, it cleanly shelled five kilograms! ‘Ten minutes is one-sixth of an hour,’ calculated Adwoa. ‘Five kilograms times six equals thirty kilograms per hour — six times faster than shelling by hand!’',
+        text: 'Now it was time to measure the machine’s performance using maths! By hand, one person shelled five kilograms of groundnuts in one hour. When Adwoa and Kojo took turns pedalling their adjusted machine for ten minutes, it cleanly shelled five kilograms! ‘Ten minutes is one-sixth of an hour,’ calculated Adwoa. ‘Five kilograms times six equals thirty kilograms per hour, six times faster than shelling by hand!’',
         alt: 'Kojo times ten minutes on a stopwatch while Adwoa weighs five kilograms of cleanly shelled groundnuts on a scale.',
         motif: '⏱️⚖️',
         brief: 'In the courtyard: Kojo holding a stopwatch while Adwoa points to a mechanical dial scale holding a full bowl of clean groundnut kernels beside the pedal sheller (no numbers on the scale).',
@@ -924,7 +924,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         afterPage: 8,
         question: 'If Adwoa’s machine shells 5 kg in 10 minutes, how many kilograms does it shell in 1 hour (60 minutes)?',
         options: [
-          '30 kg per hour — six times faster than 5 kg per hour by hand',
+          '30 kg per hour, six times faster than 5 kg per hour by hand',
           '10 kg per hour',
           '5 kg per hour',
         ],
@@ -951,10 +951,10 @@ export const BATCH_5_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'cooperative', definition: 'a group of farmers or workers who join together to share tools, processing and marketing', pages: [1, 10] },
-      { word: 'clearances', definition: 'the carefully measured gaps between moving machine parts', pages: [6] },
-      { word: 'winnowing', definition: 'separating light husks or shells from heavier seeds using a stream of air', pages: [7] },
-      { word: 'sprocket', definition: 'a toothed wheel that engages with a chain to transmit motion and force', pages: [9] },
+      { word: 'cooperative', definition: 'A group of farmers or workers who join together to share tools, processing and marketing', pages: [1, 10] },
+      { word: 'clearances', definition: 'The carefully measured gaps between moving machine parts', pages: [6] },
+      { word: 'winnowing', definition: 'Separating light husks or shells from heavier seeds using a stream of air', pages: [7] },
+      { word: 'sprocket', definition: 'A toothed wheel that engages with a chain to transmit motion and force', pages: [9] },
     ],
     teacherGuide: {
       overview:
@@ -966,7 +966,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         'Practise respectful collaboration between girls and boys at school and at home.',
       ],
       discussionPrompts: [
-        'Why did Papa Kwame say "a spanner does not ask whether the hand holding it belongs to a girl or a boy — and neither does a cooking pot"?',
+        'Why did Papa Kwame say "a spanner does not ask whether the hand holding it belongs to a girl or a boy, and neither does a cooking pot"?',
         'How did Kojo and Adwoa work as true partners rather than competitors?',
         'What physical difference between groundnut kernels and dry shells allows the fan to separate them (winnowing)?',
         'How did the neighbour react when he saw the evidence of Adwoa’s working machine at the fair?',
@@ -1065,14 +1065,14 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Crucial distinction: children never do hazardous cleanup or replace public sanitation services, but practice safe waste sorting and civic engagement.',
       },
       {
-        text: '‘First,’ explained Mr Mensah, ‘we stop adding to the problem by sorting clean, dry recyclables right here in our school compound and homes. Second, we gather clear evidence and invite our local government representative — the Assembly Member — and our parents to do their part!’ That afternoon, with reusable gloves and Mr Mensah’s supervision, the class set up three painted barrels in the schoolyard: Green for clean plastic, Blue for paper and card, and Brown for fruit peels to make garden compost.',
+        text: '‘First,’ explained Mr Mensah, ‘we stop adding to the problem by sorting clean, dry recyclables right here in our school compound and homes. Second, we gather clear evidence and invite our local government representative, the Assembly Member, and our parents to do their part!’ That afternoon, with reusable gloves and Mr Mensah’s supervision, the class set up three painted barrels in the schoolyard: Green for clean plastic, Blue for paper and card, and Brown for fruit peels to make garden compost.',
         alt: 'Under Mr Mensah’s supervision in the schoolyard, Yao and Akosua place clean plastic bottles and paper into green, blue and brown sorting barrels.',
         motif: '♻️🛢️',
         brief: 'Clean sunny school courtyard: Mr Mensah supervising as Yao, Akosua and classmates wearing clean gardening gloves place dry plastic water bottles into a green barrel and scrap paper into a blue barrel (no text on barrels).',
         narration: 'Upbeat, safe, age-appropriate school waste segregation.',
       },
       {
-        text: 'At the end of the week, a licensed plastic-recycling van visited the school gate to weigh their clean, dry collection. The class had collected forty kilograms of clean plastic bottles and sachets plus twenty kilograms of old paper and cardboard — sixty kilograms of waste kept out of the gutters! Even better, the recycler paid the school two cedis per kilogram of plastic, earning eighty cedis for new library storybooks!',
+        text: 'At the end of the week, a licensed plastic-recycling van visited the school gate to weigh their clean, dry collection. The class had collected forty kilograms of clean plastic bottles and sachets plus twenty kilograms of old paper and cardboard, sixty kilograms of waste kept out of the gutters! Even better, the recycler paid the school two cedis per kilogram of plastic, earning eighty cedis for new library storybooks!',
         alt: 'At the school gate, a recycling collector weighs the sacks of clean plastic bottles on a scale while Yao, Akosua and Mr Mensah celebrate.',
         motif: '⚖️📚',
         brief: 'By the school gate: a smiling recycling worker in a green vest weighing large net sacks of clean plastic bottles on a hanging scale beside a small pickup van, while Mr Mensah, Yao and Akosua cheer.',
@@ -1107,7 +1107,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show the proper division of labour: adult crews handle heavy drains and trucks, adult traders maintain covered bins, and children stay safe.',
       },
       {
-        text: 'A month later, when the first heavy rains fell, rainwater flowed smoothly through the clear street drains without flooding a single shop! Market Street had new lidded bins, the skip truck arrived every Tuesday and Friday, and four more schools copied Primary 4’s recycling barrels. Yao and Akosua grinned at each other. Nobody was waiting for "Somebody" anymore — because citizens and local government were finally working together!',
+        text: 'A month later, when the first heavy rains fell, rainwater flowed smoothly through the clear street drains without flooding a single shop! Market Street had new lidded bins, the skip truck arrived every Tuesday and Friday, and four more schools copied Primary 4’s recycling barrels. Yao and Akosua grinned at each other. Nobody was waiting for "Somebody" anymore, because citizens and local government were finally working together!',
         alt: 'On a clean, bright Market Street with lidded bins and clear drains, Yao, Akosua, Mr Mensah and Honourable Tetteh smile together.',
         motif: '🌈🏘️',
         brief: 'Clean, vibrant Ghanaian street after a light rain: clear drains, neat lidded bins along the pavement, smiling shopkeepers, and Yao, Akosua, Mr Mensah and Honourable Tetteh giving a thumbs-up.',
@@ -1185,10 +1185,10 @@ export const BATCH_5_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'hazardous', definition: 'dangerous or harmful to health, such as sharp glass, chemicals or medical waste that children must never touch', pages: [3] },
-      { word: 'sanitation', definition: 'systems and practices that keep a community clean and protect public health through safe waste and drain management', pages: [3, 8] },
-      { word: 'compost', definition: 'natural soil food made from rotted fruit peels, leaves and plant matter', pages: [4] },
-      { word: 'reusable', definition: 'able to be washed and used again many times', pages: [4] },
+      { word: 'hazardous', definition: 'Dangerous or harmful to health, such as sharp glass, chemicals or medical waste that children must never touch', pages: [3] },
+      { word: 'sanitation', definition: 'Systems and practices that keep a community clean and protect public health through safe waste and drain management', pages: [3, 8] },
+      { word: 'compost', definition: 'Natural soil food made from rotted fruit peels, leaves and plant matter', pages: [4] },
+      { word: 'reusable', definition: 'Able to be washed and used again many times', pages: [4] },
     ],
     teacherGuide: {
       overview:
@@ -1255,7 +1255,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
     set: 'extension',
     title: 'We Built It Here in Ghana',
     summary:
-      'Following a fictional multi-year journey from an agricultural club in Sunyani to a certified agro-processing enterprise, cousin founders Mensah and Mansa turn surplus ripe plantains and cassava into shelf-stable snacks and flour—overcoming equipment breakdowns, high loan rates, and strict FDA Ghana and GSA quality standards to build a sustainable business supporting 18 factory staff and 45 smallholder farmers.',
+      'Following a fictional multi-year journey from an agricultural club in Sunyani to a certified agro-processing enterprise, cousin founders Mensah and Mansa turn surplus ripe plantains and cassava into shelf-stable snacks and flour, overcoming equipment breakdowns, high loan rates, and strict FDA Ghana and GSA quality standards to build a sustainable business supporting 18 factory staff and 45 smallholder farmers.',
     classification: base({
       classIds: ['jhs-1', 'jhs-2', 'jhs-3'],
       ageMin: 12,
@@ -1285,7 +1285,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Set up the economic paradox clearly: post-harvest gluts on farms alongside expensive imported snacks in shops.',
       },
       {
-        text: '‘Why do raw plantains and cassava spoil so fast after harvest?’ Mansa asked in her JHS Career Technology class. Her teacher explained that fresh tubers and ripe plantains contain high moisture, which allows moulds and enzymes to break them down within days. ‘Agro-processing,’ the teacher said, ‘uses food science — drying, slicing, roasting or milling — to remove moisture, extend shelf life for months, and add value right here in Ghana!’',
+        text: '‘Why do raw plantains and cassava spoil so fast after harvest?’ Mansa asked in her JHS Career Technology class. Her teacher explained that fresh tubers and ripe plantains contain high moisture, which allows moulds and enzymes to break them down within days. ‘Agro-processing,’ the teacher said, ‘uses food science, drying, slicing, roasting or milling, to remove moisture, extend shelf life for months, and add value right here in Ghana!’',
         alt: 'In the JHS Career Technology room, Mansa and Mensah compare fresh high-moisture plantains with shelf-stable dried plantain crisps and cassava flour.',
         motif: '🏫🔬',
         brief: 'JHS Career Technology classroom: the teacher showing Mansa and Mensah a fresh bunch of plantains beside sealed jars of golden plantain crisps and fine white cassava flour (no text labels).',
@@ -1299,7 +1299,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show realistic preparation: years of study in food science and accounting before launching.',
       },
       {
-        text: 'Building a real manufacturing business in Ghana was not easy! In their second month, they applied for a commercial bank loan to buy a bigger dehydrator, but the bank’s interest rate was twenty-eight percent a year — far too high for a young workshop with small sales. Instead of taking a reckless loan that could crush them, Mensah negotiated a phased equipment lease with an agricultural development fund and reinvested every cedi of early profit.',
+        text: 'Building a real manufacturing business in Ghana was not easy! In their second month, they applied for a commercial bank loan to buy a bigger dehydrator, but the bank’s interest rate was twenty-eight percent a year, far too high for a young workshop with small sales. Instead of taking a reckless loan that could crush them, Mensah negotiated a phased equipment lease with an agricultural development fund and reinvested every cedi of early profit.',
         alt: 'Mensah and Mansa review loan interest calculations at a desk and choose an affordable phased equipment lease instead.',
         motif: '📊🏦',
         brief: 'Small office desk: Mensah pointing to a steep red interest chart vs a manageable green step-by-step lease plan on his laptop (no text) while Mansa nods in agreement.',
@@ -1313,7 +1313,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show technical persistence and refusal to sell substandard products.',
       },
       {
-        text: 'Before they could sell to supermarkets, schools and hospitals, they had to meet strict national law. Mr Ofori from the Food and Drugs Authority — FDA Ghana — inspected their premises alongside standards guidelines from the Ghana Standards Authority — GSA. He checked handwashing stations, hairnets, pest screens, batch expiry dates, and tested the flour’s moisture content to ensure it was below twelve percent so mould could never grow.',
+        text: 'Before they could sell to supermarkets, schools and hospitals, they had to meet strict national law. Mr Ofori from the Food and Drugs Authority, FDA Ghana, inspected their premises alongside standards guidelines from the Ghana Standards Authority, GSA. He checked handwashing stations, hairnets, pest screens, batch expiry dates, and tested the flour’s moisture content to ensure it was below twelve percent so mould could never grow.',
         alt: 'FDA inspector Mr Ofori checks the stainless-steel hygiene stations and tests flour moisture while Mansa and Mensah take notes.',
         motif: '📋✅',
         brief: 'Spotless food-processing room: Mr Ofori (white inspection coat, moisture meter) testing a bowl of fine flour while Mansa and Mensah in hairnets and aprons stand beside a stainless-steel handwashing sink.',
@@ -1327,14 +1327,14 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Strong business ethics: food safety and regulatory integrity are non-negotiable.',
       },
       {
-        text: 'Mensah tracked the unit economics of every hundred-pack batch with precision. Buying fresh plantains directly from Auntie Yaa’s cooperative cost two hundred cedis. Washing, slicing, baking, solar-assisted drying, moisture-proof pouches and FDA-compliant labels cost one hundred and fifty cedis — making a total production cost of three hundred and fifty cedis for one hundred packs, or three cedis fifty pesewas per pack.',
+        text: 'Mensah tracked the unit economics of every hundred-pack batch with precision. Buying fresh plantains directly from Auntie Yaa’s cooperative cost two hundred cedis. Washing, slicing, baking, solar-assisted drying, moisture-proof pouches and FDA-compliant labels cost one hundred and fifty cedis, making a total production cost of three hundred and fifty cedis for one hundred packs, or three cedis fifty pesewas per pack.',
         alt: 'Mensah writes the batch cost breakdown on a whiteboard: 200 cedis raw plantains + 150 cedis processing and packaging = 350 cedis for 100 packs.',
         motif: '🧮🍌',
-        brief: 'At the workshop planning board: Mensah pointing to two visual cost stacks—two green coin stacks by a basket of plantains and one-and-a-half gold coin stacks by sealed pouches (no text or numbers).',
+        brief: 'At the workshop planning board: Mensah pointing to two visual cost stacks, two green coin stacks by a basket of plantains and one-and-a-half gold coin stacks by sealed pouches (no text or numbers).',
         narration: 'Walk through the exact cost arithmetic clearly: 200 + 150 = 350 cedis for 100 packs (3.50 cedis per pack).',
       },
       {
-        text: 'They priced each pack wholesale at five cedis. Selling one hundred packs brought in five hundred cedis of revenue! Subtracting the three-hundred-and-fifty-cedi total cost left one hundred and fifty cedis of gross profit per batch — a healthy thirty percent margin that paid workers’ wages, factory rent, electricity and savings for a second production line.',
+        text: 'They priced each pack wholesale at five cedis. Selling one hundred packs brought in five hundred cedis of revenue! Subtracting the three-hundred-and-fifty-cedi total cost left one hundred and fifty cedis of gross profit per batch, a healthy thirty percent margin that paid workers’ wages, factory rent, electricity and savings for a second production line.',
         alt: 'Mansa and Mensah stack 100 sealed packs into shipping cartons, earning 500 cedis in revenue and 150 cedis in gross profit.',
         motif: '📦📈',
         brief: 'Clean packing area: uniformed young workers packing sealed green-and-gold plantain crisp pouches into neat cardboard cartons while Mansa and Mensah check the inventory sheet.',
@@ -1348,14 +1348,14 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show how quality, packaging and reliability win customers fairly in a competitive market.',
       },
       {
-        text: 'After four years of steady work, the impact reached across the district. The factory employed eighteen full-time workers — food technicians, machine operators, quality clerks and drivers — all enrolled in SSNIT pensions, and signed guaranteed purchase contracts with forty-five smallholder farmers led by Auntie Yaa. Post-harvest plantain losses in their cooperative dropped by more than half!',
+        text: 'After four years of steady work, the impact reached across the district. The factory employed eighteen full-time workers, food technicians, machine operators, quality clerks and drivers, all enrolled in SSNIT pensions, and signed guaranteed purchase contracts with forty-five smallholder farmers led by Auntie Yaa. Post-harvest plantain losses in their cooperative dropped by more than half!',
         alt: 'Outside the expanded solar-roofed agro-processing facility, Mansa, Mensah and Auntie Yaa stand proudly with the 18 factory staff and visiting farmers.',
         motif: '🏭👩🏾‍🌾',
         brief: 'Sunny courtyard of a clean modern Ghanaian agro-processing plant with solar panels on the roof: Mansa, Mensah and Auntie Yaa smiling with eighteen uniformed factory staff and farmers beside a delivery van.',
         narration: 'Measurable, realistic 4-year impact: 18 factory jobs + 45 contracted smallholder farmers and reduced post-harvest loss.',
       },
       {
-        text: 'When JHS students from Sunyani toured the plant on Career Day, Mansa handed each student a warm, crunchy sample pack. ‘We did not build this overnight, and nobody handed us easy millions,’ she told them with a proud smile. ‘We combined science, honest accounting, food-safety law and persistence. Ghana grows the finest harvests on Earth — and your generation can process, package and share them with the world!’',
+        text: 'When JHS students from Sunyani toured the plant on Career Day, Mansa handed each student a warm, crunchy sample pack. ‘We did not build this overnight, and nobody handed us easy millions,’ she told them with a proud smile. ‘We combined science, honest accounting, food-safety law and persistence. Ghana grows the finest harvests on Earth, and your generation can process, package and share them with the world!’',
         alt: 'Mansa and Mensah welcome JHS students in hairnets and visitor coats through the viewing window of the clean food-processing line.',
         motif: '🎓🇬🇭',
         brief: 'Through a large glass viewing corridor in the clean food plant: Mansa and Mensah showing JHS students in visitor coats how golden plantains are sliced, dried and sealed inside the gleaming workshop.',
@@ -1433,11 +1433,11 @@ export const BATCH_5_STORIES: PilotStory[] = [
       },
     ],
     glossary: [
-      { word: 'tubers', definition: 'thick underground plant stems or roots that store nutrients, such as cassava and yam', pages: [1, 2] },
-      { word: 'dehydrator', definition: 'a machine that removes moisture from food using controlled warm airflow', pages: [4] },
-      { word: 'thermostat', definition: 'a sensor switch that keeps temperature steady inside an oven or dryer', pages: [5] },
-      { word: 'wholesale', definition: 'selling goods in larger quantities to shops and supermarkets at a unit price lower than retail', pages: [9] },
-      { word: 'margin', definition: 'the percentage of revenue left as profit after paying production costs', pages: [9] },
+      { word: 'tubers', definition: 'Thick underground plant stems or roots that store nutrients, such as cassava and yam', pages: [1, 2] },
+      { word: 'dehydrator', definition: 'A machine that removes moisture from food using controlled warm airflow', pages: [4] },
+      { word: 'thermostat', definition: 'A sensor switch that keeps temperature steady inside an oven or dryer', pages: [5] },
+      { word: 'wholesale', definition: 'Selling goods in larger quantities to shops and supermarkets at a unit price lower than retail', pages: [9] },
+      { word: 'margin', definition: 'The percentage of revenue left as profit after paying production costs', pages: [9] },
     ],
     teacherGuide: {
       overview:
@@ -1474,7 +1474,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         steps: [
           'Measure the starting mass (or thickness in millimetres) of a thin slice of fresh plantain on a clean plate covered with clean mesh.',
           'Place the covered plate in warm sunshine for 4 hours, then measure the mass (or thickness) again.',
-          'Observe how the slice becomes lighter, firmer and drier as water evaporates — the exact principle behind food dehydration!',
+          'Observe how the slice becomes lighter, firmer and drier as water evaporates, the exact principle behind food dehydration!',
         ],
         explanation:
           'Evaporating free water from plant cells removes the damp environment that moulds and bacteria need to multiply.',

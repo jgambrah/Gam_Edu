@@ -106,7 +106,7 @@ export const KOFI_MARKET: EditorialSample = {
       alt: 'Kofi and Mama counting six eggs in a basket together.', motif: '🥚🧺', brief: 'Basket with six eggs, Mama’s hand next to Kofi’s, a shared smile.', narration: 'Warm, shared counting, a little faster, in rhythm.' },
     { text: 'At the end of the market, Kofi saw his friend Ama. She waved with one hand. Then she waved with two. ‘Hello, Kofi!’ she said.',
       alt: 'A girl waves with one hand and then two to a smiling boy.', motif: '👋👧', brief: 'Ama waving, first with one hand then two (show both clearly), Kofi laughing.', narration: 'Playful; pause for the hands.' },
-    { text: 'Kofi counted all the way to ten. Ten tomatoes. Ten onions. Ten smiles on the way home. ‘I love counting,’ said Kofi. And he counted his very best thing of all: one Mama, one Kofi, and one big hug.',
+    { text: 'Kofi counted all the way to ten. One tomato, two onions, and ten bright smiles on the way home. ‘I love counting,’ said Kofi. And he counted his very best thing of all: one Mama, one Kofi, and one big hug.',
       alt: 'Kofi hugs his mother on the way home from the market, baskets beside them.', motif: '🤗❤️', brief: 'Kofi and Mama hugging on the walk home, baskets of goods beside them, a warm sunset.', narration: 'Warm, soft, slowing down to a hug.' },
   ],
   activities: [
