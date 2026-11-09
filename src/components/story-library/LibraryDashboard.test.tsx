@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the ninety-five stories with clean production badges', async () => {
+  it('lists the one hundred stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(95));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(100));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(95));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(100));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -58,16 +58,20 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Lost Capital of Old Ghana',
       'The Money Pit of Oak Island',
       'The Money That Worked While Afia Slept',
+      'The Mosque Built in a Dream',
       'The Night the Stars Asked Questions',
       'The Ocean That Hides a Thousand Secrets',
       'The River That Lost Its Voice',
+      'The Sculpture That Keeps a Secret',
       'The Secrets of the Great Pyramid',
       'The Stones of Stonehenge',
+      'The Stool from the Sky',
       'The Town That Vanished from the Map',
       'The Umbrella Before the Rain',
       'The Village That Owned a Factory',
       'The Village That Refused to Give Up',
       'The Voice Note',
+      'The Weights That Whisper Proverbs',
       'We Built It Here in Ghana',
       'Yaa and the Mystery of Changing Life',
     ]));
@@ -110,7 +114,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(95));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(100));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
