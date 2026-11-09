@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { nextPhrase, Piano, MAX_GAIN, DUCK_FACTOR, DEFAULT_VOLUME } from './piano';
+import { nextPhrase, Piano, MAX_GAIN, DUCK_FACTOR, DEFAULT_VOLUME, TUNE_PRESETS } from './piano';
 
 const PENTA = [261.63, 293.66, 329.63, 392.0, 440.0, 523.25, 587.33, 659.25];
 
@@ -65,6 +65,16 @@ describe('Piano', () => {
   });
   it('reports failure without audio support instead of throwing', () => {
     expect(new Piano(() => undefined).start()).toBe(false);
+  });
+  it('switches between the 5 background tunes while playing', () => {
+    const { ctx, made } = fakeAudio(); const p = new Piano(() => ctx); p.start();
+    expect(TUNE_PRESETS.length).toBeGreaterThanOrEqual(5);
+    for (const preset of TUNE_PRESETS) {
+      p.setTune(preset.id);
+      expect(p.currentTune).toBe(preset.id);
+    }
+    expect(made.osc).toBeGreaterThan(0);
+    p.dispose();
   });
   it('clamps volume and disposes the audio context', () => {
     const { ctx, made } = fakeAudio(); const p = new Piano(() => ctx); p.start();

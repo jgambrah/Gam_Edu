@@ -8,7 +8,7 @@ import { buildFlow, cleanWord, highlightAt, lookupWordHelp, modeInfo, NO_HIGHLIG
 import { GHANAIAN_PRONUNCIATIONS } from '@/lib/story-library/pronunciation/dictionary';
 import { buildSpokenScript } from '@/lib/story-library/pronunciation/apply';
 import { loadProgress, saveProgress } from '@/lib/story-library/progress-store';
-import { Piano } from '@/lib/story-spark/piano';
+import { Piano, TUNE_PRESETS, DEFAULT_VOLUME, type TuneId } from '@/lib/story-spark/piano';
 import { PlaceholderArt } from './PlaceholderArt';
 import { StoryNotes } from './StoryNotes';
 import { ActivityPlayer, type ActivityResult } from './ActivityPlayer';
@@ -32,6 +32,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [usingOfflineVoice, setUsingOfflineVoice] = useState<boolean>(false);
   const [autoRoll, setAutoRoll] = useState<boolean>(true);
   const [pianoOn, setPianoOn] = useState<boolean>(false);
+  const [pianoTune, setPianoTune] = useState<TuneId>('piano');
+  const [pianoVolume, setPianoVolume] = useState<number>(DEFAULT_VOLUME);
   const [customDurationScale, setCustomDurationScale] = useState<boolean>(true);
   const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
@@ -74,6 +76,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
       p.stop();
       setPianoOn(false);
     } else {
+      p.setTune(pianoTune);
+      p.setVolume(pianoVolume);
       const started = p.start();
       if (started) {
         p.duck(playing);
@@ -509,15 +513,54 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
             </button>
           </>
         )}
-        <button
-          type="button"
-          onClick={togglePiano}
-          aria-pressed={pianoOn}
-          className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${pianoOn ? 'bg-amber-100 text-amber-900 ring-1 ring-amber-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
-          title="Play soft background piano music that gently lowers while the narrator reads"
-        >
-          {pianoOn ? '🎹 Soft Piano: On' : '🎹 Soft Piano: Off'}
-        </button>
+        <div className="flex flex-wrap items-center gap-1.5 rounded-full bg-slate-100 px-2 py-1 ring-1 ring-slate-200">
+          <button
+            type="button"
+            onClick={togglePiano}
+            aria-pressed={pianoOn}
+            className={`rounded-full px-3 py-1 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${pianoOn ? 'bg-amber-200 text-amber-950 ring-1 ring-amber-400 shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-50'}`}
+            title="Play background music that gently lowers while the narrator reads"
+          >
+            {pianoOn ? '🎵 Music: On' : '🎹 Soft Piano: Off'}
+          </button>
+          {pianoOn && (
+            <>
+              <select
+                aria-label="Background tune"
+                value={pianoTune}
+                onChange={(e) => {
+                  const next = e.target.value as TuneId;
+                  setPianoTune(next);
+                  pianoRef.current?.setTune(next);
+                }}
+                className="rounded-full border border-amber-300 bg-white px-2.5 py-1 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                title="Choose background music style"
+              >
+                {TUNE_PRESETS.map((t) => (
+                  <option key={t.id} value={t.id}>{t.label}</option>
+                ))}
+              </select>
+              <label className="flex items-center gap-1.5 px-2 text-xs font-bold text-slate-700" title={`Music volume: ${Math.round(pianoVolume * 100)}%`}>
+                <span>🔊</span>
+                <input
+                  type="range"
+                  aria-label="Background music volume"
+                  min={0.1}
+                  max={1}
+                  step={0.05}
+                  value={pianoVolume}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setPianoVolume(v);
+                    pianoRef.current?.setVolume(v);
+                  }}
+                  className="h-1.5 w-20 cursor-pointer accent-amber-600"
+                />
+                <span className="w-8 text-[11px] font-extrabold text-amber-900">{Math.round(pianoVolume * 100)}%</span>
+              </label>
+            </>
+          )}
+        </div>
         <button
           type="button"
           onClick={toggleFullscreen}
