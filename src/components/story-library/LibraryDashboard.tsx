@@ -51,9 +51,9 @@ export function LibraryDashboard({
   const run = useCallback(async (s: LibrarySource, selection: Selection) => {
     setLoading(true);
     try {
-      const f = new FilteredFeed(s.catalogue, planQuery(selection));
+      const f = new FilteredFeed(s.catalogue, planQuery(selection), 50, 10);
       feed.current = f;
-      await f.loadMore(100);
+      await f.loadMore(500);
       if (feed.current === f) { setEntries([...f.entries]); setExhausted(f.exhausted); }
     } catch (e: any) { setError(String(e?.message ?? e)); } finally { setLoading(false); setTick((t) => t + 1); }
   }, []);
