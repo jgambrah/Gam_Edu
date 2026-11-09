@@ -4,7 +4,7 @@ import type { StoryPackage } from '@/lib/story-library/types';
 import type { LibrarySource, StoryPreviewInfo } from '@/lib/story-library/library-source';
 import type { ReadMode } from '@/lib/story-library/lazy-loader';
 import { presentationFor } from '@/lib/story-library/classification';
-import { buildFlow, cleanWord, highlightAt, lookupWord, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
+import { buildFlow, cleanWord, highlightAt, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
 import { loadProgress, saveProgress } from '@/lib/story-library/progress-store';
 import { Piano } from '@/lib/story-spark/piano';
 import { PlaceholderArt } from './PlaceholderArt';
@@ -23,7 +23,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [playing, setPlaying] = useState(false);
   const [needsTap, setNeedsTap] = useState(false);
   const [hl, setHl] = useState<HighlightState>(NO_HIGHLIGHT);
-  const [tapped, setTapped] = useState<{ word: string; definition?: string } | null>(null);
+  const [tapped, setTapped] = useState<{ word: string; definition: string; phonetic?: string; spokenText?: string } | null>(null);
   const [results, setResults] = useState<ActivityResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
@@ -165,10 +165,40 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   };
   const tapWord = (token: string) => {
     audioRef.current?.pause();
-    const g = page ? lookupWord(pkg.glossary, page.n, token) : undefined;
-    const w = cleanWord(token) || token;
-    setTapped({ word: w, definition: g?.definition });
-    speakWord(w);
+    const help = lookupWordHelp(token, {
+      glossary: pkg.glossary,
+      pageNumber: page?.n,
+      activities: pkg.activities,
+      pageText: page?.text,
+    });
+    setTapped({
+      word: help.word,
+      definition: help.definition,
+      phonetic: help.phonetic,
+      spokenText: help.spokenText,
+    });
+    speakWord(help.spokenText || help.word);
+
+    // If the word was not in our curated offline dictionary, optionally enrich from the Free Dictionary API when online
+    const cleaned = cleanWord(token);
+    if (help.fromFallback && cleaned && typeof window !== 'undefined' && typeof fetch === 'function') {
+      fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(cleaned)}`)
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          const def = data?.[0]?.meanings?.[0]?.definitions?.[0]?.definition;
+          const phon = data?.[0]?.phonetic;
+          if (typeof def === 'string' && def.trim()) {
+            setTapped((prev) =>
+              prev && prev.word === help.word
+                ? { ...prev, definition: def.trim(), phonetic: phon || prev.phonetic }
+                : prev,
+            );
+          }
+        })
+        .catch(() => {
+          /* stay on offline word help */
+        });
+    }
   };
   const canSpeak = typeof window !== 'undefined' && 'speechSynthesis' in window;
 
@@ -270,11 +300,18 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
             </p>
             {tapped && (
               <div role="status" aria-live="polite" className="mt-4 rounded-2xl bg-indigo-50 p-3 text-slate-900" data-testid="word-help">
-                <p className="text-xl font-extrabold">{tapped.word}</p>
-                <p className="text-base">{tapped.definition ?? 'No word help for this word yet.'}</p>
+                <div className="flex flex-wrap items-baseline gap-2">
+                  <p className="text-xl font-extrabold">{tapped.word}</p>
+                  {tapped.phonetic && (
+                    <span className="rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-bold text-indigo-800">
+                      {tapped.phonetic}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-base">{tapped.definition}</p>
                 {canSpeak && <p className="mt-1 text-xs text-slate-600">Spoken by your device’s voice, not the story narrator.</p>}
                 <div className="mt-2 flex gap-2">
-                  {canSpeak && <button type="button" onClick={() => speakWord(tapped.word)} className="rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-bold text-white">🔊 Hear it</button>}
+                  {canSpeak && <button type="button" onClick={() => speakWord(tapped.spokenText || tapped.word)} className="rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-bold text-white">🔊 Hear it</button>}
                   <button type="button" onClick={() => setTapped(null)} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-bold">Close</button>
                 </div>
               </div>

@@ -8,6 +8,9 @@
 import { activeIndex, effectiveHighlight, splitSentences, tokenize, type Activity, type GlossaryEntry, type HighlightLevel } from './premium';
 import type { PackagePage, StoryPackage } from './types';
 import type { ReadMode } from './lazy-loader';
+import { lookupWordHelp, type WordHelpResult } from './word-help';
+
+export { lookupWordHelp, type WordHelpResult };
 
 export const READ_MODES: Array<{ id: ReadMode; label: string; blurb: string; autoplay: boolean; autoAdvance: boolean; narration: boolean }> = [
   { id: 'listen', label: 'Listen to Me', blurb: 'The story is read to you and the pages turn by themselves.', autoplay: true, autoAdvance: true, narration: true },

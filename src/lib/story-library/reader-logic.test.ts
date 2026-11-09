@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { buildFlow, highlightAt, lookupWord, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription } from './reader-logic';
+import { buildFlow, highlightAt, lookupWord, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription } from './reader-logic';
 import type { PackagePage } from './types';
 import { PILOT_STORIES } from './pilot/pilot-stories';
 import { textOnlyPackage } from './pilot/pilot-package';
@@ -74,6 +74,15 @@ describe('tap a word', () => {
     expect(lookupWord(g, 2, 'goat')).toBeUndefined();
     expect(lookupWord(g, 1, '‘Meh-eh-eh!’')).toBeUndefined();
     expect(lookupWord(undefined, 1, 'goat')).toBeUndefined();
+  });
+
+  it('lookupWordHelp resolves meanings for any story word, including plurals, Ghanaian names, and possessives', () => {
+    expect(lookupWordHelp('stories').definition).toMatch(/story|tales/i);
+    expect(lookupWordHelp('Goat.', { glossary: g, pageNumber: 1 }).definition).toBe('An animal with horns.');
+    expect(lookupWordHelp('Kwame').definition).toMatch(/Saturday/i);
+    expect(lookupWordHelp('Kwame').phonetic).toBe('kwah-meh');
+    expect(lookupWordHelp('Ama’s').definition).toMatch(/Belonging to ama/i);
+    expect(lookupWordHelp('fourteen-year-old').definition).toMatch(/compound word/i);
   });
 });
 
