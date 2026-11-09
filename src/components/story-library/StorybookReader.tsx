@@ -5,6 +5,8 @@ import type { LibrarySource, StoryPreviewInfo } from '@/lib/story-library/librar
 import type { ReadMode } from '@/lib/story-library/lazy-loader';
 import { presentationFor } from '@/lib/story-library/classification';
 import { buildFlow, cleanWord, highlightAt, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
+import { GHANAIAN_PRONUNCIATIONS } from '@/lib/story-library/pronunciation/dictionary';
+import { buildSpokenScript } from '@/lib/story-library/pronunciation/apply';
 import { loadProgress, saveProgress } from '@/lib/story-library/progress-store';
 import { Piano } from '@/lib/story-spark/piano';
 import { PlaceholderArt } from './PlaceholderArt';
@@ -27,19 +29,41 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [results, setResults] = useState<ActivityResult[]>([]);
   const [finished, setFinished] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
+  const [usingOfflineVoice, setUsingOfflineVoice] = useState<boolean>(false);
   const [autoRoll, setAutoRoll] = useState<boolean>(true);
   const [pianoOn, setPianoOn] = useState<boolean>(false);
   const [customDurationScale, setCustomDurationScale] = useState<boolean>(true);
+  const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const pianoRef = useRef<Piano | null>(null);
   const raf = useRef<number>(0);
   const hlRef = useRef<HighlightState>(NO_HIGHLIGHT);
+  const synthTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const synthStartMsRef = useRef<number>(0);
+  const synthPausedElapsedRef = useRef<number>(0);
+  const usingOfflineVoiceRef = useRef<boolean>(false);
+
+  const stopOfflineSpeech = useCallback(() => {
+    if (synthTimerRef.current) {
+      clearInterval(synthTimerRef.current);
+      synthTimerRef.current = null;
+    }
+    try {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   useEffect(() => {
     const p = new Piano();
     pianoRef.current = p;
-    return () => { p.dispose(); pianoRef.current = null; };
-  }, []);
+    return () => {
+      stopOfflineSpeech();
+      p.dispose();
+      pianoRef.current = null;
+    };
+  }, [stopOfflineSpeech]);
 
   const togglePiano = () => {
     const p = pianoRef.current;
@@ -61,50 +85,208 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const m = modeInfo(mode);
   const pageNo = page ? page.n : undefined;
 
+  // Warm all pages of the opened story into Cache Storage in the background so cutting the internet mid-story never loses audio or art.
+  useEffect(() => {
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      for (const p of pkg.pages) {
+        if (cancelled) break;
+        const tasks: Promise<unknown>[] = [];
+        if (p.image && pkg.assets[p.image]?.path) {
+          tasks.push(source.assets.blob(pkg.assets[p.image].path, false).catch(() => null));
+        }
+        if (m.narration && p.audio && pkg.assets[p.audio.hash]?.path) {
+          tasks.push(source.assets.blob(pkg.assets[p.audio.hash].path, false).catch(() => null));
+        }
+        await Promise.all(tasks);
+      }
+    }, 350);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [pkg, mode, m.narration, source.assets]);
+
   // ---- remember where the child is (device only)
   useEffect(() => { saveProgress(pkg.storyId, { step, total: flow.length, done: finished, updatedAt: Date.now(), mode }); }, [step, finished, mode, pkg.storyId, flow.length]);
 
   const go = useCallback((delta: number) => {
+    stopOfflineSpeech();
     setTapped(null);
     setStep((s) => {
       const n = s + delta;
       if (n >= flow.length) { setFinished(true); return s; }
       return Math.max(0, n);
     });
-  }, [flow.length]);
+  }, [flow.length, stopOfflineSpeech]);
+
+  // Start offline device-voice narration for the current page with word-by-word highlighting when audio files are unreachable offline
+  const startOfflinePageNarration = useCallback((fromElapsedMs = 0) => {
+    if (!page) return false;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+      return false;
+    }
+    stopOfflineSpeech();
+    try {
+      const spokenScript = buildSpokenScript(page.text, GHANAIAN_PRONUNCIATIONS, 'browser', { allowUnverified: true }).spoken;
+      const u = new SpeechSynthesisUtterance(spokenScript || page.text);
+      u.lang = 'en-GB';
+      u.rate = Math.max(0.5, Math.min(2, speed * 0.95));
+
+      const baseDurationMs = page.audio?.durationMs ?? Math.max(4000, tokenizeFallback(page.text) * 420);
+      synthStartMsRef.current = performance.now() - fromElapsedMs;
+      synthPausedElapsedRef.current = fromElapsedMs;
+
+      u.onboundary = (ev: SpeechSynthesisEvent) => {
+        if (ev.name === 'word' && typeof ev.charIndex === 'number') {
+          const prefix = (spokenScript || page.text).slice(0, ev.charIndex);
+          const wordIdx = Math.max(0, (prefix.trim() ? prefix.trim().split(/\s+/).length : 0));
+          const pw = pageWords(page);
+          const clampedWord = Math.min(wordIdx, Math.max(0, pw.tokens.length - 1));
+          const next: HighlightState = {
+            level: 'word',
+            word: clampedWord,
+            sentence: pw.sentenceOfToken[clampedWord] ?? 0,
+          };
+          hlRef.current = next;
+          setHl(next);
+        }
+      };
+
+      u.onend = () => {
+        if (synthTimerRef.current) {
+          clearInterval(synthTimerRef.current);
+          synthTimerRef.current = null;
+        }
+        setPlaying(false);
+        pianoRef.current?.duck(false);
+        if (m.autoAdvance || autoRoll) setTimeout(() => go(1), 950);
+      };
+
+      u.onerror = () => {
+        if (synthTimerRef.current) {
+          clearInterval(synthTimerRef.current);
+          synthTimerRef.current = null;
+        }
+        setPlaying(false);
+        pianoRef.current?.duck(false);
+      };
+
+      setPlaying(true);
+      setNeedsTap(false);
+      setAudioError(null);
+      pianoRef.current?.duck(true);
+
+      // Drive smooth word-by-word highlight progression alongside speechSynthesis
+      synthTimerRef.current = setInterval(() => {
+        const elapsed = (performance.now() - synthStartMsRef.current) * speed;
+        synthPausedElapsedRef.current = elapsed;
+        const next = highlightAt(page, Math.min(elapsed, baseDurationMs), hlRef.current);
+        if (next.word !== hlRef.current.word || next.sentence !== hlRef.current.sentence || next.level !== hlRef.current.level) {
+          hlRef.current = next;
+          setHl(next);
+        }
+      }, 60);
+
+      window.speechSynthesis.speak(u);
+      return true;
+    } catch {
+      return false;
+    }
+  }, [page, speed, stopOfflineSpeech, m.autoAdvance, autoRoll, go]);
+
+  // Resolve cached illustration blob URL so page illustrations also work when offline
+  useEffect(() => {
+    let cancelled = false;
+    setCachedImageUrl(null);
+    if (!page) return;
+    const pkgImg = page.image ? pkg.assets[page.image]?.path : undefined;
+    const candidateImg = `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`;
+    (async () => {
+      for (const candidate of [pkgImg, candidateImg]) {
+        if (!candidate) continue;
+        try {
+          const blobUrl = await source.assets.objectUrl(candidate);
+          if (!cancelled && blobUrl) {
+            setCachedImageUrl(blobUrl);
+            return;
+          }
+        } catch { /* try next */ }
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [page, pkg, source.assets]);
 
   // ---- load narration for the page and (optionally) start it
   useEffect(() => {
     const el = audioRef.current;
     cancelAnimationFrame(raf.current);
+    stopOfflineSpeech();
     setHl(NO_HIGHLIGHT); hlRef.current = NO_HIGHLIGHT; setPlaying(false); setNeedsTap(false); setAudioError(null);
+    setUsingOfflineVoice(false); usingOfflineVoiceRef.current = false;
     if (!el) return;
     el.pause();
     if (!page || !m.narration || !page.audio) { el.removeAttribute('src'); return; }
     let cancelled = false;
     (async () => {
+      // 1. Trigger lazy loader for current page + look-ahead, but NEVER let a look-ahead network error abort current page playback!
       try {
-        await source.loader.showPage(pkg, current!.kind === 'page' ? current.index : 0, mode); // this page + look-ahead; cached after first load
-        const koreUrl = `/story-spark-preview/candidates/${pkg.storyId}/tts-Kore-page${page.n}.mp3`;
-        let url: string = koreUrl;
+        await source.loader.showPage(pkg, current!.kind === 'page' ? current.index : 0, mode);
+      } catch {
+        // Offline or look-ahead asset not cached yet; proceed to resolve current page from Cache Storage
+      }
+
+      const assetPath = pkg.assets[page.audio!.hash]?.path;
+      const koreUrl = `/story-spark-preview/candidates/${pkg.storyId}/tts-Kore-page${page.n}.mp3`;
+      let resolvedUrl: string | null = null;
+      let useCustomScale = true;
+
+      // 2. Resolve the package's content-hashed audio path through BrowserAssetCache (returns an offline-safe blob: URL)
+      if (assetPath) {
         try {
-          const fallback = await source.assets.objectUrl(pkg.assets[page.audio!.hash].path);
-          if (typeof window !== 'undefined' && typeof fetch === 'function') {
-            const check = await fetch(koreUrl).catch(() => null);
-            if (!check || !check.ok) {
-              url = fallback;
-              setCustomDurationScale(false);
-            } else {
-              setCustomDurationScale(true);
-            }
-          }
+          resolvedUrl = await source.assets.objectUrl(assetPath);
+          useCustomScale = true;
         } catch {
-          setCustomDurationScale(true);
+          resolvedUrl = null;
         }
-        if (cancelled) return;
-        el.src = url; el.playbackRate = speed; el.load();
-        if (m.autoplay) { try { await el.play(); } catch { if (!cancelled) setNeedsTap(true); } }
-      } catch (e) { if (!cancelled) setAudioError('Narration could not be loaded. You can still read the story.'); }
+      }
+
+      // 3. Fallback to candidate path via BrowserAssetCache if needed
+      if (!resolvedUrl) {
+        try {
+          resolvedUrl = await source.assets.objectUrl(koreUrl);
+          useCustomScale = true;
+        } catch {
+          resolvedUrl = null;
+        }
+      }
+
+      if (cancelled) return;
+
+      if (resolvedUrl) {
+        setCustomDurationScale(useCustomScale);
+        el.src = resolvedUrl;
+        el.playbackRate = speed;
+        el.load();
+        if (m.autoplay) {
+          try {
+            await el.play();
+          } catch {
+            if (!cancelled) setNeedsTap(true);
+          }
+        }
+        return;
+      }
+
+      // 4. Both network and Cache Storage missed (e.g. story opened after internet cut): use Offline Device Voice synthesis!
+      setUsingOfflineVoice(true);
+      usingOfflineVoiceRef.current = true;
+      if (m.autoplay) {
+        const ok = startOfflinePageNarration(0);
+        if (!ok && !cancelled) setNeedsTap(true);
+      } else {
+        setNeedsTap(true);
+      }
     })();
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -128,6 +310,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const onPlay = () => {
     setPlaying(true);
     setNeedsTap(false);
+    setAudioError(null);
     pianoRef.current?.duck(true);
     cancelAnimationFrame(raf.current);
     raf.current = requestAnimationFrame(tick);
@@ -143,11 +326,70 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     cancelAnimationFrame(raf.current);
     if (m.autoAdvance || autoRoll) setTimeout(() => go(1), 950);
   };
-  const toggle = async () => {
-    const el = audioRef.current; if (!el || !el.src) return;
-    if (el.paused) { try { await el.play(); } catch { setNeedsTap(true); } } else el.pause();
+  const onAudioElementError = () => {
+    // If the <audio> element fails (e.g., offline uncached URL), seamlessly fall back to offline device voice
+    setUsingOfflineVoice(true);
+    usingOfflineVoiceRef.current = true;
+    const started = startOfflinePageNarration(0);
+    if (!started) {
+      setNeedsTap(true);
+    }
   };
-  const replay = async () => { const el = audioRef.current; if (!el || !el.src) return; el.currentTime = 0; setHl(NO_HIGHLIGHT); hlRef.current = NO_HIGHLIGHT; try { await el.play(); } catch { setNeedsTap(true); } };
+  const toggle = async () => {
+    if (usingOfflineVoiceRef.current) {
+      if (playing) {
+        stopOfflineSpeech();
+        setPlaying(false);
+        pianoRef.current?.duck(false);
+      } else {
+        const ok = startOfflinePageNarration(synthPausedElapsedRef.current);
+        if (!ok) setAudioError('Narration could not be played on this device.');
+      }
+      return;
+    }
+    const el = audioRef.current;
+    if (!el || !el.src) {
+      setUsingOfflineVoice(true);
+      usingOfflineVoiceRef.current = true;
+      startOfflinePageNarration(0);
+      return;
+    }
+    if (el.paused) {
+      try {
+        await el.play();
+      } catch {
+        setUsingOfflineVoice(true);
+        usingOfflineVoiceRef.current = true;
+        if (!startOfflinePageNarration(0)) setNeedsTap(true);
+      }
+    } else {
+      el.pause();
+    }
+  };
+  const replay = async () => {
+    setHl(NO_HIGHLIGHT);
+    hlRef.current = NO_HIGHLIGHT;
+    synthPausedElapsedRef.current = 0;
+    if (usingOfflineVoiceRef.current) {
+      startOfflinePageNarration(0);
+      return;
+    }
+    const el = audioRef.current;
+    if (!el || !el.src) {
+      setUsingOfflineVoice(true);
+      usingOfflineVoiceRef.current = true;
+      startOfflinePageNarration(0);
+      return;
+    }
+    el.currentTime = 0;
+    try {
+      await el.play();
+    } catch {
+      setUsingOfflineVoice(true);
+      usingOfflineVoiceRef.current = true;
+      if (!startOfflinePageNarration(0)) setNeedsTap(true);
+    }
+  };
 
   // ---- keyboard
   useEffect(() => {
@@ -165,6 +407,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   };
   const tapWord = (token: string) => {
     audioRef.current?.pause();
+    stopOfflineSpeech();
+    setPlaying(false);
     const help = lookupWordHelp(token, {
       glossary: pkg.glossary,
       pageNumber: page?.n,
@@ -225,7 +469,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
 
   return (
     <div className="mx-auto w-full max-w-5xl" data-testid="reader" data-presentation={presentation.id}>
-      <audio ref={audioRef} onPlay={onPlay} onPause={onPause} onEnded={onEnded} onError={() => setAudioError('Narration could not be played.')} preload="auto" />
+      <audio ref={audioRef} onPlay={onPlay} onPause={onPause} onEnded={onEnded} onError={onAudioElementError} preload="auto" />
       <header className="mb-3 flex flex-wrap items-center gap-2">
         <button type="button" onClick={onClose} className="rounded-full border-2 border-slate-300 bg-white px-4 py-2 font-bold text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-200">← Library</button>
         <h2 className="min-w-0 flex-1 truncate text-xl font-extrabold text-slate-900">{pkg.title}</h2>
@@ -281,7 +525,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
               compact={presentation.layout === 'text-first'}
-              imageSrc={`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`}
+              imageSrc={cachedImageUrl ?? `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`}
             />
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
@@ -336,6 +580,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         </div>
         <p className="mt-2 text-center text-xs text-slate-600" data-testid="sync-status">
           {page ? `Page ${pageNo} of ${pkg.pages.length}. ${syncDescription(page, mode)}` : 'Activity time'}
+          {usingOfflineVoice && m.narration && <span className="ml-1 font-semibold text-indigo-700"> (Offline device voice active)</span>}
           {audioError && <span className="ml-1 font-semibold text-red-700"> {audioError}</span>}
         </p>
         <p className="text-center text-[11px] text-slate-500">{m.blurb}</p>
@@ -343,4 +588,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
       <StoryNotes info={info} />
     </div>
   );
+}
+
+function tokenizeFallback(text: string): number {
+  return text.trim() ? text.trim().split(/\s+/).length : 1;
 }
