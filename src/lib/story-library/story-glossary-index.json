@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts or objects that help show what is true."
+    "definition": "Facts or signs that help show whether something is true."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -598,7 +598,7 @@
     "definition": "A person who studies the past."
   },
   "historians": {
-    "definition": "Scholars who study the past by comparing written records, oral history, and archaeology."
+    "definition": "People who study the past from written records and other evidence."
   },
   "history": {
     "definition": "The study of past events, people, and societies."
@@ -607,7 +607,7 @@
     "definition": "Belonging to a time very long ago in history."
   },
   "museum": {
-    "definition": "A building where important historical, scientific, or artistic objects are cared for and shown to the public."
+    "definition": "A place that keeps and shows important objects and stories."
   },
   "curator": {
     "definition": "A specialist who cares for and studies the objects in a museum."
@@ -769,7 +769,7 @@
     "definition": "A huge body of salt water between continents, such as the Atlantic Ocean."
   },
   "atlantic": {
-    "definition": "The great ocean that borders the southern coast of Ghana."
+    "definition": "The large ocean between Africa and the Americas."
   },
   "wave": {
     "definition": "A ridge of moving water on the sea or a lake, or a friendly movement of the hand."
@@ -2791,7 +2791,7 @@
     "definition": "A plan or pattern showing how something will look and work."
   },
   "designed": {
-    "definition": "Planned and drew how something would be made."
+    "definition": "Planned and drew how something should look."
   },
   "shape": {
     "definition": "The outer form or outline of something, such as a circle, square, or triangle."
@@ -5146,7 +5146,7 @@
     "definition": "An institution of higher learning and research where students study for degrees."
   },
   "seal": {
-    "definition": "To close tightly so air or water cannot get in, or an official stamp."
+    "definition": "A sign or symbol that confirms an agreement."
   },
   "sealed": {
     "definition": "Closed tightly and securely."
@@ -5794,7 +5794,7 @@
     "definition": "A paper-like material made from a reed plant, used for writing long ago."
   },
   "ancestors": {
-    "definition": "People in a family or community who lived long ago."
+    "definition": "Family members who lived long ago."
   },
   "archaeology": {
     "definition": "The study of the past by digging up and examining old objects and buildings."
@@ -5815,7 +5815,7 @@
     "definition": "The readable message before it is turned into a code."
   },
   "tradition": {
-    "definition": "A belief or story passed down over generations."
+    "definition": "A story or custom passed down over many years."
   },
   "adobe": {
     "definition": "A building material made of mud and clay."
@@ -5834,6 +5834,27 @@
   },
   "beacon": {
     "definition": "A light or signal that guides or warns people."
+  },
+  "rival": {
+    "definition": "Someone who competes with you."
+  },
+  "dungeon": {
+    "definition": "A dark underground room used for holding prisoners."
+  },
+  "libation": {
+    "definition": "A drink poured out as a prayer or offering."
+  },
+  "union": {
+    "definition": "A group of states or people joined together for a shared purpose."
+  },
+  "chieftaincy": {
+    "definition": "The office or rule of a chief."
+  },
+  "archaeologists": {
+    "definition": "Scientists who study the past by digging up and examining old remains."
+  },
+  "symbol": {
+    "definition": "A picture or sign that stands for an idea."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6101,7 +6122,7 @@
     "definition": "To grow a business system so it can serve many more customers reliably"
   },
   "capital": {
-    "definition": "The most important city of a country or kingdom, where its rulers live."
+    "definition": "The main town where a ruler or government is based."
   },
   "valuation": {
     "definition": "The estimated total economic worth of a company (total shares multiplied by share price), not cash in a founder’s pocket"
@@ -6597,7 +6618,7 @@
     "definition": "A large area of land and people ruled by one powerful ruler or government."
   },
   "independence": {
-    "definition": "Freedom from rule by another country."
+    "definition": "Freedom from the control of another country."
   },
   "atlantis": {
     "definition": "A legendary island that Plato said sank beneath the sea."
@@ -6625,9 +6646,6 @@
   },
   "excavated": {
     "definition": "Dug up carefully to study what lies buried."
-  },
-  "archaeologists": {
-    "definition": "Scientists who study the past by digging up and examining old objects and buildings."
   },
   "herders": {
     "definition": "People who look after groups of animals such as cattle and goats."
@@ -6723,6 +6741,64 @@
   },
   "sweetness": {
     "definition": "The sweet taste or quality of something."
+  },
+  "fort": {
+    "definition": "A strong building with thick walls, used for defence."
+  },
+  "enslaved": {
+    "definition": "Forced to work for others without freedom or pay."
+  },
+  "descendants": {
+    "definition": "People who come from the same family line, later in time."
+  },
+  "restored": {
+    "definition": "Repaired and brought back to a good condition."
+  },
+  "portuguese": {
+    "definition": "From Portugal, a country in Europe."
+  },
+  "enclosure": {
+    "definition": "An area surrounded by a wall or fence."
+  },
+  "festival": {
+    "definition": "A special celebration, often held each year."
+  },
+  "sown": {
+    "definition": "Planted by scattering seeds in the soil."
+  },
+  "kpokpoi": {
+    "definition": "A festival food of steamed dough served with palm oil and soup. (Traditional Ga Homowo festival dish of steamed fermented corn/millet meal mixed with palm oil and served with palm-nut soup.)",
+    "phonetic": "kpoh-kpoi"
+  },
+  "twins": {
+    "definition": "Two children born to the same mother at the same time."
+  },
+  "conquered": {
+    "definition": "Took control of a place or people by force."
+  },
+  "decisive": {
+    "definition": "Settling the matter; deciding who wins."
+  },
+  "bundle": {
+    "definition": "Several things tied or held together."
+  },
+  "descendant": {
+    "definition": "A person who comes from a particular ancestor."
+  },
+  "oracle": {
+    "definition": "A person or object through which people believe they receive guidance from the spirits."
+  },
+  "drummers": {
+    "definition": "People who play drums, sometimes keeping history by memory."
+  },
+  "kola": {
+    "definition": "A bitter nut from a tree, traded and shared as a gift."
+  },
+  "colonial": {
+    "definition": "Related to a time when one country ruled another."
+  },
+  "anthem": {
+    "definition": "The official song of a country."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -7615,5 +7691,233 @@
   "aseye": {
     "definition": "Ewe unisex personal name meaning \"joy\" or \"praise\".",
     "phonetic": "ah-seh-yeh"
+  },
+  "maaya": {
+    "definition": "Ghanaian female personal name.",
+    "phonetic": "mah-yah"
+  },
+  "paa": {
+    "definition": "Akan (Fante) personal name or prefix (e.g., Paa Kwesi).",
+    "phonetic": "paah"
+  },
+  "ankrah": {
+    "definition": "Ghanaian family surname.",
+    "phonetic": "ahn-krah"
+  },
+  "elmina": {
+    "definition": "Historic coastal town in the Central Region of Ghana, site of Elmina Castle (started 1482).",
+    "phonetic": "el-mee-nah"
+  },
+  "tawia": {
+    "definition": "Traditional Ghanaian name given to the child born immediately after twins.",
+    "phonetic": "tah-wee-ah"
+  },
+  "konney": {
+    "definition": "Ga family surname.",
+    "phonetic": "koh-nee"
+  },
+  "worlanyo": {
+    "definition": "Ewe personal name meaning \"the Creator is good\".",
+    "phonetic": "wor-lah-nyoh"
+  },
+  "ayele": {
+    "definition": "Traditional Ga/Ewe first-born female personal name.",
+    "phonetic": "ah-yeh-leh"
+  },
+  "dotse": {
+    "definition": "Ewe male personal and family name.",
+    "phonetic": "doh-tseh"
+  },
+  "hogbetsotso": {
+    "definition": "Annual festival of the Anlo Ewe celebrating the exodus from Notsé.",
+    "phonetic": "hoh-gbeh-tsoh-tsoh"
+  },
+  "anlo": {
+    "definition": "Southern coastal Ewe group and traditional state in southeastern Ghana.",
+    "phonetic": "ahn-loh"
+  },
+  "notsé": {
+    "definition": "Ancestral walled town in modern Togo from which Ewe groups migrated.",
+    "phonetic": "noh-tseh"
+  },
+  "notse": {
+    "definition": "Ancestral walled town in modern Togo from which Ewe groups migrated.",
+    "phonetic": "noh-tseh"
+  },
+  "agokoli": {
+    "definition": "Traditional king of Notsé in the Ewe exodus account (also spelled Agorkoli).",
+    "phonetic": "ah-goh-koh-lee"
+  },
+  "agorkoli": {
+    "definition": "Alternate spelling of Agokoli, traditional ruler of Notsé.",
+    "phonetic": "ah-gor-koh-lee"
+  },
+  "hohoe": {
+    "definition": "Major town in the Volta Region of Ghana.",
+    "phonetic": "hoh-hoy"
+  },
+  "kpando": {
+    "definition": "Historic town near Lake Volta in the Volta Region of Ghana.",
+    "phonetic": "kpahn-doh"
+  },
+  "peki": {
+    "definition": "Historic Ewe town in the South Dayi District of the Volta Region.",
+    "phonetic": "peh-kee"
+  },
+  "lante": {
+    "definition": "Traditional Ga male personal name.",
+    "phonetic": "lahn-teh"
+  },
+  "naadu": {
+    "definition": "Traditional Ga female personal name.",
+    "phonetic": "naah-doo"
+  },
+  "ablade": {
+    "definition": "Ga personal and family name (related to dignity/nobility).",
+    "phonetic": "ah-blah-deh"
+  },
+  "homowo": {
+    "definition": "Harvest festival of the Ga people meaning \"hooting at hunger\".",
+    "phonetic": "hoh-moh-woh"
+  },
+  "kwadwo": {
+    "definition": "Akan day name for a boy born on Monday.",
+    "phonetic": "kwah-joh"
+  },
+  "anim": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-neem"
+  },
+  "denkyira": {
+    "definition": "Powerful seventeenth-century Akan forest kingdom defeated by the Asante union at Feyiase.",
+    "phonetic": "den-chee-rah"
+  },
+  "kwaaman": {
+    "definition": "Early settlement that grew into Kumasi, capital of the Asante kingdom.",
+    "phonetic": "kwah-mahn"
+  },
+  "oyoko": {
+    "definition": "Royal Akan abusua (matrilineal clan) to which Osei Tutu and the Asante royal house belong.",
+    "phonetic": "oh-yoh-koh"
+  },
+  "feyiase": {
+    "definition": "Town near Kumasi where the Asante union defeated Denkyira (1700 or 1701).",
+    "phonetic": "feh-yah-seh"
+  },
+  "gyakari": {
+    "definition": "Ruler of Denkyira (Ntim Gyakari) defeated at the Battle of Feyiase.",
+    "phonetic": "jah-kah-ree"
+  },
+  "odwira": {
+    "definition": "Annual Akan purification, thanksgiving and unity festival.",
+    "phonetic": "oh-jwi-rah"
+  },
+  "sulemana": {
+    "definition": "Male personal name (Solomon) common in northern Ghana.",
+    "phonetic": "soo-leh-mah-nah"
+  },
+  "zuwera": {
+    "definition": "Female personal name common in northern Ghana.",
+    "phonetic": "zoo-weh-rah"
+  },
+  "mahama": {
+    "definition": "Northern Ghanaian male personal and family surname.",
+    "phonetic": "mah-hah-mah"
+  },
+  "dagbon": {
+    "definition": "Historic kingdom of the Dagomba people in the Northern Region of Ghana, with its capital at Yendi.",
+    "phonetic": "dahg-bohn"
+  },
+  "yendi": {
+    "definition": "Traditional capital of the Kingdom of Dagbon in northern Ghana, seat of the Ya-Na.",
+    "phonetic": "yen-dee"
+  },
+  "lunsi": {
+    "definition": "Hereditary royal talking-drummers and oral historians of Dagbon.",
+    "phonetic": "loon-see"
+  },
+  "tohazie": {
+    "definition": "Legendary \"Red Hunter\" ancestor in the oral traditions of Dagbon, Mamprugu and Nanung.",
+    "phonetic": "toh-hah-zee-eh"
+  },
+  "gbewa": {
+    "definition": "Revered ancestor ruler (Naa Gbewa) of the Mole-Dagbon kingdoms at Pusiga.",
+    "phonetic": "gbeh-wah"
+  },
+  "pusiga": {
+    "definition": "Town in the Upper East Region of Ghana, traditional seat of Naa Gbewa.",
+    "phonetic": "poo-see-gah"
+  },
+  "mamprugu": {
+    "definition": "Historic kingdom in northeastern Ghana founded according to tradition by Tohagu, son of Naa Gbewa.",
+    "phonetic": "mahm-proo-goo"
+  },
+  "nanung": {
+    "definition": "Traditional kingdom of the Nanumba people in northern Ghana, related to Dagbon and Mamprugu.",
+    "phonetic": "nah-noong"
+  },
+  "tohagu": {
+    "definition": "Son of Naa Gbewa credited in oral tradition with founding Mamprugu.",
+    "phonetic": "toh-hah-goo"
+  },
+  "shitobu": {
+    "definition": "Son of Naa Gbewa revered in tradition as the founder of Dagbon.",
+    "phonetic": "shee-toh-boo"
+  },
+  "nyagse": {
+    "definition": "Early ruler of Dagbon (Naa Nyagse) who established the capital at Yani-Dabari.",
+    "phonetic": "nyahg-seh"
+  },
+  "tindaamba": {
+    "definition": "Traditional earth priests and custodians of the land in Dagbon and northern Ghana.",
+    "phonetic": "teen-dahm-bah"
+  },
+  "akwasi": {
+    "definition": "Akan day name for a boy born on Sunday (also Kwesi/Kwasi).",
+    "phonetic": "ah-kwah-see"
+  },
+  "sarpong": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "sar-pong"
+  },
+  "manso": {
+    "definition": "Bono Manso, ancient capital of the Bono state north of Techiman in the Bono East Region.",
+    "phonetic": "mahn-soh"
+  },
+  "dwabirem": {
+    "definition": "Historic trade market near Bono Manso linking forest and savanna merchants.",
+    "phonetic": "jwah-bee-rem"
+  },
+  "opoku": {
+    "definition": "Akan personal and royal name (Opoku Ware I, Asantehene).",
+    "phonetic": "oh-poh-koo"
+  },
+  "ware": {
+    "definition": "Akan personal and royal name (Opoku Ware I, Asantehene).",
+    "phonetic": "wah-reh"
+  },
+  "ato": {
+    "definition": "Fante day name for a boy born on Saturday.",
+    "phonetic": "ah-toh"
+  },
+  "ofosua": {
+    "definition": "Akan female personal name.",
+    "phonetic": "oh-foh-soo-ah"
+  },
+  "bortey": {
+    "definition": "Traditional Ga male personal and family name (from Nungua/Ga coastal towns).",
+    "phonetic": "bor-tay"
+  },
+  "theodosia": {
+    "definition": "First name of Theodosia Salome Okoh (1922–2015), Ghanaian teacher and artist who designed the national flag in 1957.",
+    "phonetic": "thee-oh-doh-shuh"
+  },
+  "okoh": {
+    "definition": "Ghanaian surname (Theodosia Salome Okoh, designer of the Ghana flag).",
+    "phonetic": "oh-koh"
+  },
+  "nkrumah": {
+    "definition": "Akan name for a ninth-born child; surname of Osagyefo Dr Kwame Nkrumah, first Prime Minister and President of Ghana.",
+    "phonetic": "en-kroo-mah"
   }
 }
