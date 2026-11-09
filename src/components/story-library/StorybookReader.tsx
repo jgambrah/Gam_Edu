@@ -34,6 +34,8 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const [pianoOn, setPianoOn] = useState<boolean>(false);
   const [customDurationScale, setCustomDurationScale] = useState<boolean>(true);
   const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const readerContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const pianoRef = useRef<Piano | null>(null);
   const raf = useRef<number>(0);
@@ -467,8 +469,18 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     );
   }
 
+  const toggleFullscreen = () => {
+    const el = readerContainerRef.current;
+    if (!el || typeof document === 'undefined') return;
+    if (!document.fullscreenElement) {
+      el.requestFullscreen?.().then(() => setIsFullscreen(true)).catch(() => {});
+    } else {
+      document.exitFullscreen?.().then(() => setIsFullscreen(false)).catch(() => {});
+    }
+  };
+
   return (
-    <div className="mx-auto w-full max-w-5xl" data-testid="reader" data-presentation={presentation.id}>
+    <div ref={readerContainerRef} className={`mx-auto w-full max-w-5xl ${isFullscreen ? 'min-h-screen bg-slate-50 p-4 md:p-8 overflow-y-auto' : ''}`} data-testid="reader" data-presentation={presentation.id}>
       <audio ref={audioRef} onPlay={onPlay} onPause={onPause} onEnded={onEnded} onError={onAudioElementError} preload="auto" />
       <header className="mb-3 flex flex-wrap items-center gap-2">
         <button type="button" onClick={onClose} className="rounded-full border-2 border-slate-300 bg-white px-4 py-2 font-bold text-slate-800 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-indigo-200">← Library</button>
@@ -506,9 +518,35 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         >
           {pianoOn ? '🎹 Soft Piano: On' : '🎹 Soft Piano: Off'}
         </button>
+        <button
+          type="button"
+          onClick={toggleFullscreen}
+          aria-pressed={isFullscreen}
+          className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          title="Expand storybook for classroom smartboard or projector"
+        >
+          {isFullscreen ? '🗗 Exit Fullscreen' : '⛶ Classroom View'}
+        </button>
       </header>
 
       {source.notice && <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">{source.notice}</p>}
+
+      {page && page.n === 1 && pkg.glossary && pkg.glossary.length > 0 && (
+        <div className="mb-3 flex flex-wrap items-center gap-2 rounded-2xl bg-amber-50/90 px-4 py-2.5 ring-1 ring-amber-200" data-testid="spotlight-words">
+          <span className="text-xs font-extrabold uppercase tracking-wider text-amber-900">✨ Spotlight Words:</span>
+          {pkg.glossary.map((g) => (
+            <button
+              key={g.word}
+              type="button"
+              onClick={() => tapWord(g.word)}
+              className="rounded-full bg-white px-3 py-1 text-xs font-bold text-amber-950 shadow-sm ring-1 ring-amber-300 transition hover:bg-amber-100"
+              title={`Tap to hear and see the meaning of "${g.word}"`}
+            >
+              🔊 {g.word}
+            </button>
+          ))}
+        </div>
+      )}
 
       {current?.kind === 'activity' && (
         <div key={`act-${current.activity.id}`} className="animate-in fade-in slide-in-from-right-4 duration-500">
