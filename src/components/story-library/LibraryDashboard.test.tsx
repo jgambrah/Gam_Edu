@@ -18,22 +18,23 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the one hundred stories with clean production badges', async () => {
+  it('lists the one hundred and eight stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(100));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(108));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(100));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(108));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
       'Abena Buys a Piece of a Company',
       'Abena and the Beginning of Everything',
       'Adwoa Refused to Be Limited',
+      'Black Star Rising (a poem)',
       'Down Where the Light Ends',
       'Efua and the Business That Almost Failed',
       'Efua’s Honest Business',
@@ -80,6 +81,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'Ama and the Lost Little Goat',
       'Dede and the Puddle',
       'Goodnight, Little Compound',
+      'Kente Colours (a rhyme)',
       'Little Hen’s Big Sneeze',
       'Little Turtle’s Big Swim',
       'The Little Star That Loved to Shine',
@@ -99,6 +101,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'Esi and the Elephant’s Secret Path',
       'Fiifi Goes Back for His Book',
       'Kojo and the Forest of a Thousand Lives',
+      'Market Day Song (a poem)',
       'The Butterfly That Knew the Way',
       'The Case of the Missing Kenkey',
       'The Clever Tortoise and the Rain',
@@ -114,7 +117,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(100));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(108));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -123,7 +126,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(95));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(108));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -132,10 +135,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   });
 
-  it('Efua and every Batch 1–14 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–16 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(95));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(108));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);

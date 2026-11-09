@@ -504,5 +504,7 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "koh-NAH-doo".', respell: 'koh-nah-doo', hint: 'Konadu is a Ghanaian (Akan) family name; say "koh-NAH-doo".', reviewerNotes: ['Confirm stress.'] }),
     entry({ id: 'adinkra', written: 'adinkra', kind: 'word', language: AKAN, meaning: 'Traditional Akan visual symbols representing concepts and proverbs',
       guidance: 'Candidate: "ah-DEEN-krah".', respell: 'ah-deen-krah', hint: '"Adinkra" refers to traditional Akan symbols; say "ah-DEEN-krah".', reviewerNotes: ['Confirm stress.'] }),
+    entry({ id: 'aseye', written: 'Aseye', kind: 'personal-name', language: 'Ewe', meaning: 'Ewe unisex personal name meaning "joy" or "praise"',
+      guidance: 'Candidate: "ah-SEH-yeh".', respell: 'ah-seh-yeh', hint: 'Aseye is a Ghanaian (Ewe) girl’s name meaning joy; say "ah-SEH-yeh".', reviewerNotes: ['Confirm Ewe tone and stress.'] }),
   ],
 };

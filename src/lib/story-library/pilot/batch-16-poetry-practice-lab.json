@@ -1,0 +1,637 @@
+{
+  "metadata": {
+    "title": "BECE-Style Poetry Practice Lab: Ghana Poems (32 objective items, 4 extract questions)",
+    "curriculum": "NaCCA Common Core Programme (CCP) / WAEC BECE Standard (style practice)",
+    "target_level": "BS 7 to BS 9 (JHS 1 to 3)",
+    "tier": "Practice",
+    "total_questions": 36,
+    "breakdown": {
+      "section_a_objectives": 32,
+      "section_b_theory_extracts": 4
+    },
+    "prescribed_texts": [
+      "My Mother Tongue (original poem)",
+      "Black Star Rising (original poem)",
+      "The Lantern at the Schoolgate (original poem)",
+      "Cocoa (original sonnet)"
+    ],
+    "note": "All poems are original works written for practice. They are NOT the Beacon of Light anthology poems. Item format follows the Beacon of Light seed files (item_number, text, strand, sub_strand, question, options A-D, correct_answer, explanation; theory items with sub_questions)."
+  },
+  "objectives": [
+    {
+      "item_number": 1,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "How many lines are there in each stanza of 'My Mother Tongue'?",
+      "options": {
+        "A": "Three",
+        "B": "Five",
+        "C": "Four",
+        "D": "Six"
+      },
+      "correct_answer": "C",
+      "explanation": "Each stanza is a quatrain, a stanza of four lines."
+    },
+    {
+      "item_number": 2,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "What is the rhyme scheme of each stanza?",
+      "options": {
+        "A": "ABAB",
+        "B": "AABB",
+        "C": "ABBA",
+        "D": "AAAA"
+      },
+      "correct_answer": "A",
+      "explanation": "Lines 1 and 3 rhyme, and lines 2 and 4 rhyme: ABAB."
+    },
+    {
+      "item_number": 3,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'My mother tongue is a river, calm and wide' is an example of:",
+      "options": {
+        "A": "A simile",
+        "B": "Onomatopoeia",
+        "C": "Hyperbole",
+        "D": "A metaphor"
+      },
+      "correct_answer": "D",
+      "explanation": "It says the mother tongue is a river without using 'like' or 'as', so it is a metaphor."
+    },
+    {
+      "item_number": 4,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'...pass it to children like seed to the soil' is an example of:",
+      "options": {
+        "A": "A metaphor",
+        "B": "A simile",
+        "C": "Personification",
+        "D": "Irony"
+      },
+      "correct_answer": "B",
+      "explanation": "It compares passing on a language to planting seed using the word 'like'."
+    },
+    {
+      "item_number": 5,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Imagery & Meaning",
+      "question": "'Each one is a drum with a beat of its own' suggests that each language:",
+      "options": {
+        "A": "Is very loud",
+        "B": "Is expensive to learn",
+        "C": "Has its own special rhythm and character",
+        "D": "Is used only at festivals"
+      },
+      "correct_answer": "C",
+      "explanation": "Each language is compared to a drum with a unique beat, showing that every language has its own character."
+    },
+    {
+      "item_number": 6,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Theme",
+      "question": "The main theme of the poem is:",
+      "options": {
+        "A": "Pride in one's mother tongue and the need to pass it on",
+        "B": "The cost of learning foreign languages",
+        "C": "The dangers of rivers",
+        "D": "The history of drumming"
+      },
+      "correct_answer": "A",
+      "explanation": "The poem celebrates the mother tongue and urges speakers to hand it on to children."
+    },
+    {
+      "item_number": 7,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Tone & Mood",
+      "question": "The tone of the poem is best described as:",
+      "options": {
+        "A": "Angry and bitter",
+        "B": "Fearful and anxious",
+        "C": "Sarcastic and bored",
+        "D": "Warm and proud"
+      },
+      "correct_answer": "D",
+      "explanation": "The images of kitchens, music and pride create a warm, proud tone."
+    },
+    {
+      "item_number": 8,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Diction & Meaning",
+      "question": "'But my mother tongue keeps my feet safe and sound' suggests that the mother tongue gives a person:",
+      "options": {
+        "A": "Strong shoes",
+        "B": "A sense of security and identity",
+        "C": "Permission to travel",
+        "D": "A good job"
+      },
+      "correct_answer": "B",
+      "explanation": "'Feet safe and sound' is figurative: the mother tongue keeps a person grounded and secure in who they are. 'Safe and sound' also shows alliteration."
+    },
+    {
+      "item_number": 9,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "What is the rhyme scheme of each stanza of 'Black Star Rising'?",
+      "options": {
+        "A": "AABB",
+        "B": "ABAB",
+        "C": "ABCB",
+        "D": "ABBA"
+      },
+      "correct_answer": "C",
+      "explanation": "Only the second and fourth lines rhyme: ABCB, the usual ballad pattern."
+    },
+    {
+      "item_number": 10,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Setting & Context",
+      "question": "'On the sixth of March, in fifty-seven' refers to:",
+      "options": {
+        "A": "Ghana's independence",
+        "B": "The opening of a school",
+        "C": "The end of harmattan",
+        "D": "A national harvest festival"
+      },
+      "correct_answer": "A",
+      "explanation": "Ghana became independent on 6 March 1957."
+    },
+    {
+      "item_number": 11,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Symbolism",
+      "question": "In the poem, 'Gold for the wealth in the ground' stands for:",
+      "options": {
+        "A": "The sun",
+        "B": "The harvest",
+        "C": "Royal cloth",
+        "D": "Mineral wealth"
+      },
+      "correct_answer": "D",
+      "explanation": "Gold stands for the mineral wealth of the land."
+    },
+    {
+      "item_number": 12,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'And hope rose up like morning mist' is an example of:",
+      "options": {
+        "A": "A metaphor",
+        "B": "A simile",
+        "C": "Hyperbole",
+        "D": "Irony"
+      },
+      "correct_answer": "B",
+      "explanation": "It compares hope to mist using the word 'like'."
+    },
+    {
+      "item_number": 13,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'Freedom is not a finish line, it is a road we walk' means that freedom:",
+      "options": {
+        "A": "Is easy to achieve",
+        "B": "Ends after a ceremony",
+        "C": "Needs continued effort and responsibility",
+        "D": "Belongs to leaders only"
+      },
+      "correct_answer": "C",
+      "explanation": "The metaphor of a road shows that freedom is an ongoing journey that needs work."
+    },
+    {
+      "item_number": 14,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'The drums spoke loud across the crowd' is an example of:",
+      "options": {
+        "A": "Personification",
+        "B": "Simile",
+        "C": "Alliteration only",
+        "D": "Irony"
+      },
+      "correct_answer": "A",
+      "explanation": "Drums are given the human action of speaking, so it is personification."
+    },
+    {
+      "item_number": 15,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Theme",
+      "question": "The main theme of the poem is:",
+      "options": {
+        "A": "The cost of building roads",
+        "B": "Drums are better than flags",
+        "C": "The weather in Accra",
+        "D": "Freedom is a gift that each generation must protect and build on"
+      },
+      "correct_answer": "D",
+      "explanation": "The poem moves from the celebration to a call to continue building the nation."
+    },
+    {
+      "item_number": 16,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Symbolism",
+      "question": "'Be a lantern in the night' encourages young people to:",
+      "options": {
+        "A": "Buy lamps",
+        "B": "Guide and inspire others with knowledge and good example",
+        "C": "Stay at home at night",
+        "D": "Avoid new ideas"
+      },
+      "correct_answer": "B",
+      "explanation": "The lantern is a symbol of guiding light, linked to the idea of a beacon of light."
+    },
+    {
+      "item_number": 17,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "'The Lantern at the Schoolgate' is written in:",
+      "options": {
+        "A": "A Shakespearean sonnet",
+        "B": "A ballad with ABCB rhymes",
+        "C": "Free verse with no regular rhyme scheme",
+        "D": "Rhyming couplets"
+      },
+      "correct_answer": "C",
+      "explanation": "The lines have no fixed rhyme or metre, so the poem is in free verse."
+    },
+    {
+      "item_number": 18,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'Her pencil scratches like a hen on dry ground' is an example of:",
+      "options": {
+        "A": "A simile",
+        "B": "A metaphor",
+        "C": "Personification",
+        "D": "Irony"
+      },
+      "correct_answer": "A",
+      "explanation": "It compares the pencil to a hen using the word 'like'."
+    },
+    {
+      "item_number": 19,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'The road is a black river' is an example of:",
+      "options": {
+        "A": "A simile",
+        "B": "Onomatopoeia",
+        "C": "Alliteration",
+        "D": "A metaphor"
+      },
+      "correct_answer": "D",
+      "explanation": "It says the road is a river without using 'like' or 'as'."
+    },
+    {
+      "item_number": 20,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'The classroom swallows the dark' is an example of:",
+      "options": {
+        "A": "Simile",
+        "B": "Personification",
+        "C": "Hyperbole",
+        "D": "Rhyme"
+      },
+      "correct_answer": "B",
+      "explanation": "The classroom is given the human action of swallowing."
+    },
+    {
+      "item_number": 21,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Imagery & Meaning",
+      "question": "'Each sum is a seed, each sentence a sprout' suggests that learning:",
+      "options": {
+        "A": "Is dangerous",
+        "B": "Is only for farmers",
+        "C": "Grows slowly into something valuable",
+        "D": "Happens only in daylight"
+      },
+      "correct_answer": "C",
+      "explanation": "The seed and sprout images show learning as slow growth."
+    },
+    {
+      "item_number": 22,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Symbolism",
+      "question": "In the poem, the lantern symbolises:",
+      "options": {
+        "A": "Hope and learning",
+        "B": "Poverty",
+        "C": "A broken generator",
+        "D": "Danger"
+      },
+      "correct_answer": "A",
+      "explanation": "The small flame that lights the page stands for hope and the light of learning."
+    },
+    {
+      "item_number": 23,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Tone & Mood",
+      "question": "The mood of the last stanza is:",
+      "options": {
+        "A": "Gloomy and hopeless",
+        "B": "Angry",
+        "C": "Humorous",
+        "D": "Hopeful and inspiring"
+      },
+      "correct_answer": "D",
+      "explanation": "The final stanza turns to hope: a stubborn light that will not go out."
+    },
+    {
+      "item_number": 24,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry",
+      "sub_strand": "Theme",
+      "question": "Which of these is a theme of the poem?",
+      "options": {
+        "A": "The price of kerosene",
+        "B": "Determination and education as a beacon in hard times",
+        "C": "Fear of the dark road",
+        "D": "The danger of owning hens"
+      },
+      "correct_answer": "B",
+      "explanation": "The poem shows a girl's determination to study as a source of light."
+    },
+    {
+      "item_number": 25,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "How many lines does the poem 'Cocoa' have?",
+      "options": {
+        "A": "12",
+        "B": "16",
+        "C": "14",
+        "D": "10"
+      },
+      "correct_answer": "C",
+      "explanation": "A sonnet has 14 lines."
+    },
+    {
+      "item_number": 26,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "What is the rhyme scheme of the Shakespearean sonnet 'Cocoa'?",
+      "options": {
+        "A": "ABAB CDCD EFEF GG",
+        "B": "AABB CCDD EEFF GG",
+        "C": "ABBA ABBA CDE CDE",
+        "D": "ABCB DEFE GHGH II"
+      },
+      "correct_answer": "A",
+      "explanation": "Three quatrains rhyme ABAB, CDCD and EFEF, and the closing couplet rhymes GG."
+    },
+    {
+      "item_number": 27,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Form & Design",
+      "question": "The last two lines of the poem are called a:",
+      "options": {
+        "A": "Quatrain",
+        "B": "Refrain",
+        "C": "Stanza of free verse",
+        "D": "Couplet"
+      },
+      "correct_answer": "D",
+      "explanation": "Two rhyming lines that end a poem form a couplet."
+    },
+    {
+      "item_number": 28,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'And someone smiles, unknowing whose the toil' is an example of:",
+      "options": {
+        "A": "Onomatopoeia",
+        "B": "Irony",
+        "C": "Simile",
+        "D": "Alliteration only"
+      },
+      "correct_answer": "B",
+      "explanation": "The consumer smiles and does not know whose hard work made the chocolate: this contrast is ironic."
+    },
+    {
+      "item_number": 29,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Figures of Speech",
+      "question": "'Pride is rooted deeper than the soil' is an example of:",
+      "options": {
+        "A": "A simile",
+        "B": "Hyperbole",
+        "C": "A metaphor",
+        "D": "Onomatopoeia"
+      },
+      "correct_answer": "C",
+      "explanation": "Pride is spoken of as if it had roots, so it is a metaphor suggesting strength and depth."
+    },
+    {
+      "item_number": 30,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Imagery",
+      "question": "'The pods hang heavy, gold and green and red' appeals mainly to the sense of:",
+      "options": {
+        "A": "Sight",
+        "B": "Sound",
+        "C": "Taste",
+        "D": "Smell"
+      },
+      "correct_answer": "A",
+      "explanation": "The colours create a visual image."
+    },
+    {
+      "item_number": 31,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Theme",
+      "question": "The main theme of the poem is:",
+      "options": {
+        "A": "The price of chocolate bars",
+        "B": "The history of cocoa trees",
+        "C": "The importance of fertiliser",
+        "D": "Appreciation for the hard work of farmers"
+      },
+      "correct_answer": "D",
+      "explanation": "The poem asks readers to remember and thank the farmers who grow cocoa."
+    },
+    {
+      "item_number": 32,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry",
+      "sub_strand": "Tone & Mood",
+      "question": "The tone of the poem is best described as:",
+      "options": {
+        "A": "Mocking",
+        "B": "Respectful and thoughtful",
+        "C": "Excited and playful",
+        "D": "Hopeless"
+      },
+      "correct_answer": "B",
+      "explanation": "The poet speaks with respect for the farmer and gently invites the reader to think."
+    }
+  ],
+  "theory": [
+    {
+      "item_number": 33,
+      "text": "My Mother Tongue (original poem)",
+      "strand": "Poetry Extract & Appreciation",
+      "extract": "Though Ghana has many tongues across the land,\nEach one is a drum with a beat of its own;\nTogether they play as a joyful band,\nA music no lonely voice has known.",
+      "total_marks": 10,
+      "sub_questions": [
+        {
+          "label": "(a)",
+          "question": "State the rhyme scheme of the stanza.",
+          "marks": 2,
+          "expected_answer": "ABAB (land and band rhyme; own and known rhyme)."
+        },
+        {
+          "label": "(b)",
+          "question": "Identify one metaphor in the stanza and explain what it means.",
+          "marks": 3,
+          "expected_answer": "'Each one is a drum' compares each language to a drum, suggesting each has its own beat, character and voice."
+        },
+        {
+          "label": "(c)",
+          "question": "What does 'a music no lonely voice has known' suggest about Ghana's languages?",
+          "marks": 3,
+          "expected_answer": "It suggests that the languages together create a richer 'music' than any single language alone, showing the value of unity in diversity."
+        },
+        {
+          "label": "(d)",
+          "question": "State the theme of the stanza.",
+          "marks": 2,
+          "expected_answer": "The beauty of Ghana's many languages living together, or unity in diversity."
+        }
+      ]
+    },
+    {
+      "item_number": 34,
+      "text": "Black Star Rising (original poem)",
+      "strand": "Poetry Extract & Appreciation",
+      "extract": "But freedom is not a finish line,\nIt is a road we walk;\nIt asks for hands that build and learn\nAnd honest words that talk.",
+      "total_marks": 10,
+      "sub_questions": [
+        {
+          "label": "(a)",
+          "question": "State the rhyme scheme of the stanza.",
+          "marks": 2,
+          "expected_answer": "ABCB (walk and talk rhyme)."
+        },
+        {
+          "label": "(b)",
+          "question": "Identify the figure of speech in 'freedom is ... a road we walk' and explain its effect.",
+          "marks": 3,
+          "expected_answer": "A metaphor: freedom is compared to a road to show it is a continuing journey that needs effort."
+        },
+        {
+          "label": "(c)",
+          "question": "What does the poet mean by 'hands that build and learn / And honest words that talk'?",
+          "marks": 3,
+          "expected_answer": "Citizens must work, study and speak honestly to build the nation."
+        },
+        {
+          "label": "(d)",
+          "question": "Describe the tone of the stanza.",
+          "marks": 2,
+          "expected_answer": "Serious, encouraging and hopeful, urging responsibility."
+        }
+      ]
+    },
+    {
+      "item_number": 35,
+      "text": "The Lantern at the Schoolgate (original poem)",
+      "strand": "Poetry Extract & Appreciation",
+      "extract": "Outside, the road is a black river;\nthe moon is a cracked coin;\nand fear stands at the gate\nwith its arms folded.",
+      "total_marks": 10,
+      "sub_questions": [
+        {
+          "label": "(a)",
+          "question": "Name the figure of speech in 'the road is a black river' and in 'the moon is a cracked coin'.",
+          "marks": 2,
+          "expected_answer": "Both are metaphors."
+        },
+        {
+          "label": "(b)",
+          "question": "Explain what is suggested by 'fear stands at the gate with its arms folded'.",
+          "marks": 3,
+          "expected_answer": "Fear is personified as a person blocking the way, showing how frightening the night and the journey feel."
+        },
+        {
+          "label": "(c)",
+          "question": "How does this stanza contrast with the one that follows?",
+          "marks": 3,
+          "expected_answer": "This stanza describes the dark and threat outside; the next shows the small flame lighting the page, so darkness is contrasted with hope."
+        },
+        {
+          "label": "(d)",
+          "question": "State the mood created in this stanza.",
+          "marks": 2,
+          "expected_answer": "Dark, tense and uneasy."
+        }
+      ]
+    },
+    {
+      "item_number": 36,
+      "text": "Cocoa (original sonnet)",
+      "strand": "Poetry Extract & Appreciation",
+      "extract": "Far off, a bar is wrapped in shining gold,\nAnd someone smiles, unknowing whose the toil;\nThe farmer’s price is small, the story old,\nYet pride is rooted deeper than the soil.",
+      "total_marks": 10,
+      "sub_questions": [
+        {
+          "label": "(a)",
+          "question": "State the rhyme scheme of the quatrain.",
+          "marks": 2,
+          "expected_answer": "ABAB (gold and old rhyme; toil and soil rhyme)."
+        },
+        {
+          "label": "(b)",
+          "question": "Identify the irony in 'someone smiles, unknowing whose the toil'.",
+          "marks": 3,
+          "expected_answer": "The person enjoys the chocolate without knowing the farmer's hard work: the farmer toils while the consumer smiles."
+        },
+        {
+          "label": "(c)",
+          "question": "Explain 'pride is rooted deeper than the soil'.",
+          "marks": 3,
+          "expected_answer": "A metaphor: the farmer's pride is like a deep-rooted plant, strong and lasting despite hardship."
+        },
+        {
+          "label": "(d)",
+          "question": "What is the tone of the quatrain?",
+          "marks": 2,
+          "expected_answer": "Respectful and gently critical."
+        }
+      ]
+    }
+  ]
+}
+
