@@ -5065,7 +5065,7 @@
             "id": "q_b8_rat_l05",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "If the exchange rate is $$1.00 = \\text{GH¢ } 15.00$, how much is $$60.00$ in Ghana Cedis?",
+            "prompt": "If the exchange rate is 1 US dollar = GH¢ 15.00, how much is 60 US dollars in Ghana Cedis?",
             "options": [
               "GH¢ 600.00",
               "GH¢ 750.00",
@@ -5073,7 +5073,7 @@
               "GH¢ 1,000.00"
             ],
             "correctAnswer": "GH¢ 900.00",
-            "hint": "Multiply $$60.00$ by 15.",
+            "hint": "Multiply 60 by 15.",
             "workedSolution": "$$60 \\times 15 = \\text{GH¢ } 900.00$$.",
             "points": 1
           },
@@ -7529,7 +7529,7 @@
             "id": "q_b8_rat_l05",
             "difficulty": "low",
             "dokLevel": 1,
-            "prompt": "If the exchange rate is $$1.00 = \\text{GH¢ } 15.00$, how much is $$60.00$ in Ghana Cedis?",
+            "prompt": "If the exchange rate is 1 US dollar = GH¢ 15.00, how much is 60 US dollars in Ghana Cedis?",
             "options": [
               "GH¢ 600.00",
               "GH¢ 750.00",
@@ -7537,7 +7537,7 @@
               "GH¢ 1,000.00"
             ],
             "correctAnswer": "GH¢ 900.00",
-            "hint": "Multiply $$60.00$ by 15.",
+            "hint": "Multiply 60 by 15.",
             "workedSolution": "$$60 \\times 15 = \\text{GH¢ } 900.00$$.",
             "points": 1
           },

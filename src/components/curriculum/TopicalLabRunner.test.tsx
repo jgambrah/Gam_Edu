@@ -52,10 +52,44 @@ describe('normalizeTopicalLabDoc', () => {
   });
 });
 
+/** Text a pupil would see, with the hidden formula source removed. Raw markup here means broken rendering. */
+function visibleText(container: HTMLElement): string {
+  container.querySelectorAll('annotation, .katex-mathml, svg').forEach((n) => n.remove());
+  return container.textContent || '';
+}
+const RAW_MARKUP = /\$\$|\*\*|\\begin\{|\\text\{|\\frac|<\/?(details|summary)\b/;
+
 describe('MathRenderer', () => {
-  it('renders $$\\begin{aligned}…$$ as display maths', () => {
-    const { container } = render(<MathRenderer content={'$$\\begin{aligned} x &= 1 \\\\ y &= 2 \\end{aligned}$$'} />);
+  it('renders multi-line $$\\begin{aligned}…$$ as display maths', () => {
+    const { container } = render(<MathRenderer content={'$$\\begin{aligned} x &= 1 \\\\\n y &= 2 \\end{aligned}$$'} />);
     expect(container.querySelector('.katex-display')).not.toBeNull();
     expect(container.querySelector('.katex-error')).toBeNull();
+    expect(visibleText(container)).not.toMatch(RAW_MARKUP);
   });
+
+  it('leaves a one-line $$…\\begin{cases}…$$ inside a list intact, and keeps rendering what follows', () => {
+    const content = '* **Round Off:** look at $r$:\n  $$\\text{Action} = \\begin{cases} a, & r < 5 \\\\ b, & r \\ge 5 \\end{cases}$$\n* **Round Up:** next value.\n\n### Next Section';
+    const { container } = render(<MathRenderer content={content} />);
+    expect(container.querySelector('.katex-error')).toBeNull();
+    expect(container.querySelectorAll('li').length).toBe(2);
+    expect(container.querySelector('h3')).not.toBeNull();
+    expect(visibleText(container)).not.toMatch(RAW_MARKUP);
+  });
+
+  it('shows no raw markup anywhere in the seeded study notes and worked examples', () => {
+    const offenders: string[] = [];
+    for (const file of payloadFiles.filter((f) => f.startsWith('topic_'))) {
+      const topicDoc = JSON.parse(fs.readFileSync(path.join(payloadDir, file), 'utf-8'));
+      for (const [levelKey, level] of Object.entries<any>(topicDoc.levels || {})) {
+        const texts: string[] = [level.notes];
+        for (const ex of level.workedExamples || []) texts.push(ex.problem, ...(ex.steps || []), ex.finalAnswer);
+        texts.filter((t) => typeof t === 'string' && t).forEach((t, i) => {
+          const { container, unmount } = render(<MathRenderer content={t} />);
+          if (container.querySelector('.katex-error') || RAW_MARKUP.test(visibleText(container))) offenders.push(`${file}:${levelKey}#${i}`);
+          unmount();
+        });
+      }
+    }
+    expect(offenders).toEqual([]);
+  }, 120000);
 });

@@ -70,12 +70,16 @@ export function MathRenderer({ content, className = '' }: MathRendererProps) {
       text = String(content);
     }
 
-    // Defensive normalization: Ensure display math ($) enclosing LaTeX environments (e.g. \begin{aligned})
-    // are placed on their own lines. In remark-math, non-newline tokens following $ on the first line
-    // are parsed as code-fence metadata, which strips the environment tag and breaks KaTeX parsing.
-    // Note: in a replacement string `$$` means one literal `$`, so `$$$$` is needed to emit `$$`.
-    text = text.replace(/\$\$(\s*\\begin\{[a-zA-Z*]+\})/g, '$$$$\n$1');
-    text = text.replace(/(\\end\{[a-zA-Z*]+\}\s*)\$\$/g, '$1\n$$$$');
+    // Display maths that spans several lines must have its `$$` fences on their own lines:
+    // in remark-math, anything after an opening `$$` on the same line is treated as fence
+    // metadata and dropped. A `$$ ... $$` block written on ONE line is already valid and is
+    // left alone — splitting only one side of it breaks everything that follows.
+    text = text.replace(/(^[ \t]*)?\$\$([\s\S]*?)\$\$/gm, (match: string, indent: string | undefined, body: string) => {
+      if (!body.includes('\n') || !/\\begin\{[a-zA-Z*]+\}/.test(body)) return match;
+      const pad = indent ?? '';
+      const fence = '$' + '$';
+      return `${pad}${fence}\n${pad}${body.trim()}\n${pad}${fence}`;
+    });
 
     // Safety fallback: if content contains pre-rendered KaTeX HTML tags
     // (from previous buggy compiles or legacy database saves), extract the raw TeX

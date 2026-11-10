@@ -4973,7 +4973,7 @@
             "Step 2 (Why we do this: Apply the fundamental addition theorem for two sets): Use $n(F \\cup S) = n(F) + n(S) - n(F \\cap S)$, letting $x = n(F \\cap S)$.",
             "Step 3 (Why we do this: Set up the equation with known values): \n  $$40 = 28 + 22 - x \\implies 40 = 50 - x$$",
             "Step 4 (Why we do this: Isolate x to find students studying both): \n  $$x = 50 - 40 = 10\\text{ students}$$",
-            "Step 5 (Why we do this: Deduce the single-subject crescent): The prompt specifically asks for Spanish only ($S \\cap F'). Subtract the middle overlap: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12\\text{ students}$."
+            "Step 5 (Why we do this: Deduce the single-subject crescent): The prompt specifically asks for Spanish only ($S \\cap F'$). Subtract the middle overlap: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12\\text{ students}$."
           ],
           "finalAnswer": "$$\\text{Both languages } [n(F \\cap S)] = 10, \\quad \\text{Spanish only} = 12$$"
         },
@@ -7436,7 +7436,7 @@
             "Step 2 (Why we do this: Apply the fundamental addition theorem for two sets): Use $n(F \\cup S) = n(F) + n(S) - n(F \\cap S)$, letting $x = n(F \\cap S)$.",
             "Step 3 (Why we do this: Set up the equation with known values): \n  $$40 = 28 + 22 - x \\implies 40 = 50 - x$$",
             "Step 4 (Why we do this: Isolate x to find students studying both): \n  $$x = 50 - 40 = 10\\text{ students}$$",
-            "Step 5 (Why we do this: Deduce the single-subject crescent): The prompt specifically asks for Spanish only ($S \\cap F'). Subtract the middle overlap: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12\\text{ students}$."
+            "Step 5 (Why we do this: Deduce the single-subject crescent): The prompt specifically asks for Spanish only ($S \\cap F'$). Subtract the middle overlap: $n(S \\text{ only}) = n(S) - x = 22 - 10 = 12\\text{ students}$."
           ],
           "finalAnswer": "$$\\text{Both languages } [n(F \\cap S)] = 10, \\quad \\text{Spanish only} = 12$$"
         },
