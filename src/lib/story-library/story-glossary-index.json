@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts or signs that help show whether something is true."
+    "definition": "Facts or examples that support a claim."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -355,7 +355,7 @@
     "definition": "Children learning in primary or junior high school."
   },
   "headmistress": {
-    "definition": "The female leader in charge of a school."
+    "definition": "The woman in charge of a school."
   },
   "headmaster": {
     "definition": "The male leader in charge of a school."
@@ -3757,7 +3757,7 @@
     "definition": "At or toward the back of someone or something."
   },
   "forward": {
-    "definition": "Ahead; toward the front."
+    "definition": "To send on a message you received to someone else."
   },
   "beside": {
     "definition": "Right next to; at the side of."
@@ -5867,7 +5867,7 @@
     "definition": "Made sure that a rule is obeyed."
   },
   "offence": {
-    "definition": "An act that breaks the law."
+    "definition": "A wrongdoing that breaks a rule or law."
   },
   "dredged": {
     "definition": "Dug mud and rubbish from the bottom of a river."
@@ -5922,6 +5922,30 @@
   },
   "salutation": {
     "definition": "The greeting at the start of a letter, such as “Dear Doreen,”."
+  },
+  "homesick": {
+    "definition": "Sad because you miss your home and family."
+  },
+  "rebuttal": {
+    "definition": "A reply that shows why an opponent’s point is weak or wrong."
+  },
+  "gracious": {
+    "definition": "Kind and polite, especially when it is difficult."
+  },
+  "bribery": {
+    "definition": "Giving something to win someone’s vote or favour unfairly."
+  },
+  "malpractice": {
+    "definition": "Cheating or breaking the rules in an examination."
+  },
+  "rumour": {
+    "definition": "A story passed around that may not be true."
+  },
+  "formal": {
+    "definition": "Polite and careful in style, used with officials."
+  },
+  "invigilator": {
+    "definition": "A person who supervises an examination."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6123,7 +6147,7 @@
     "definition": "The small streams where a river begins."
   },
   "treasure": {
-    "definition": "A store of valuable things such as gold or jewels."
+    "definition": "Something precious and valued."
   },
   "artefacts": {
     "definition": "Historical objects made or used by people in the past and preserved in museums."
@@ -6243,7 +6267,7 @@
     "definition": "Young learners training under a skilled craftsperson or technician to master a trade"
   },
   "ballot": {
-    "definition": "The slip or system used by a citizen to cast a secret vote in an election"
+    "definition": "A secret vote on paper."
   },
   "accountability": {
     "definition": "The duty of public officials to explain their actions, report how public money is used, and answer to citizens"
@@ -6585,7 +6609,7 @@
     "definition": "Left behind, with nobody living or working there."
   },
   "permission": {
-    "definition": "Agreement from someone in charge that you may do something."
+    "definition": "Approval to do something."
   },
   "fireflies": {
     "definition": "Small beetles that make flashes of light at night."
@@ -7010,7 +7034,7 @@
     "definition": "A teacher in charge of a school house or boarding group."
   },
   "reputation": {
-    "definition": "What people generally think about you."
+    "definition": "What people generally think of someone or something."
   },
   "habit": {
     "definition": "Something you do so often that it becomes automatic."
@@ -7035,9 +7059,6 @@
   },
   "relay": {
     "definition": "A race in which team members take turns to run part of the distance."
-  },
-  "gracious": {
-    "definition": "Kind and polite, especially when it is difficult."
   },
   "scoreboard": {
     "definition": "A board that shows the points in a game."
@@ -7101,6 +7122,87 @@
   },
   "abbreviations": {
     "definition": "Shortened forms of words."
+  },
+  "dormitory": {
+    "definition": "A large room where many students sleep."
+  },
+  "senior": {
+    "definition": "A student in a higher class."
+  },
+  "prep": {
+    "definition": "Supervised study time in a boarding school."
+  },
+  "settling": {
+    "definition": "Getting used to a new place."
+  },
+  "argument": {
+    "definition": "A claim supported by reasons and evidence."
+  },
+  "lectern": {
+    "definition": "A stand for a speaker’s notes."
+  },
+  "proposition": {
+    "definition": "The team that supports the motion."
+  },
+  "buzzer": {
+    "definition": "A button that makes a sound when pressed."
+  },
+  "prime": {
+    "definition": "A number greater than one that can only be divided by one and itself."
+  },
+  "quizmaster": {
+    "definition": "The person who asks the questions in a quiz."
+  },
+  "participation": {
+    "definition": "Taking part in something."
+  },
+  "revising": {
+    "definition": "Going over work to learn it better."
+  },
+  "candidates": {
+    "definition": "People who stand for election."
+  },
+  "rally": {
+    "definition": "A large meeting to support a cause or a candidate."
+  },
+  "register": {
+    "definition": "An official list of voters or names."
+  },
+  "electoral": {
+    "definition": "To do with elections."
+  },
+  "scams": {
+    "definition": "Tricks that take people’s money dishonestly."
+  },
+  "leak": {
+    "definition": "To let secret information get out."
+  },
+  "cancelled": {
+    "definition": "Stopped or made invalid."
+  },
+  "footprint": {
+    "definition": "The trace you leave online by what you post."
+  },
+  "screenshot": {
+    "definition": "A picture of what is on a screen."
+  },
+  "sincere": {
+    "definition": "Honest and meant from the heart."
+  },
+  "heading": {
+    "definition": "A title that tells the reader what a letter is about."
+  },
+  "consideration": {
+    "definition": "Careful thought about a request."
+  },
+  "examination": {
+    "definition": "A formal test of what you have learned."
+  },
+  "relief": {
+    "definition": "A feeling of comfort after worry."
+  },
+  "misty": {
+    "definition": "Filled with tears."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -8521,5 +8623,109 @@
   "cobbinah": {
     "definition": "Anglicised Fante/Nzema spelling of Kwabena (Tuesday-born).",
     "phonetic": "koh-bee-nah"
+  },
+  "dankyi": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "dahn-chee"
+  },
+  "koforidua": {
+    "definition": "Capital city of the Eastern Region of Ghana.",
+    "phonetic": "koh-foh-ree-dwah"
+  },
+  "gari": {
+    "definition": "Roasted grated cassava granules eaten across West Africa.",
+    "phonetic": "gah-ree"
+  },
+  "owusu": {
+    "definition": "Akan personal and family name.",
+    "phonetic": "oh-woo-soo"
+  },
+  "ocansey": {
+    "definition": "Dangme (Ada/Krobo) family surname.",
+    "phonetic": "oh-kahn-say"
+  },
+  "baidoo": {
+    "definition": "Anglicised Fante/Akan surname (from Badu, tenth-born child).",
+    "phonetic": "bay-doo"
+  },
+  "winneba": {
+    "definition": "Coastal town in the Central Region of Ghana (traditionally Simpa).",
+    "phonetic": "win-eh-bah"
+  },
+  "okuapem": {
+    "definition": "Traditional Akuapem ridge state in the Eastern Region of Ghana.",
+    "phonetic": "oh-kwah-pem"
+  },
+  "adjei": {
+    "definition": "Ghanaian personal and family surname (Agyei).",
+    "phonetic": "ah-jay"
+  },
+  "lamisi": {
+    "definition": "Northern Ghanaian day name for a girl born on Thursday.",
+    "phonetic": "lah-mee-see"
+  },
+  "laryea": {
+    "definition": "Ga family surname from coastal Accra.",
+    "phonetic": "lah-yeah"
+  },
+  "nortey": {
+    "definition": "Ga-Dangme male birth-order name and family surname.",
+    "phonetic": "nor-tay"
+  },
+  "sedem": {
+    "definition": "Ewe unisex name meaning \"God/Destiny heard me\" or \"saved me\".",
+    "phonetic": "seh-dem"
+  },
+  "gbeku": {
+    "definition": "Ewe family surname.",
+    "phonetic": "gbeh-koo"
+  },
+  "okyere": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "oh-cheh-reh"
+  },
+  "amoah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-moh-ah"
+  },
+  "yaaba": {
+    "definition": "Fante day name for a woman born on Thursday (variant of Yaa/Aba).",
+    "phonetic": "yaah-bah"
+  },
+  "kotey": {
+    "definition": "Ga male birth-order name and family surname.",
+    "phonetic": "koh-tay"
+  },
+  "takoradi": {
+    "definition": "Twin port city (Sekondi-Takoradi) in the Western Region of Ghana.",
+    "phonetic": "tah-koh-rah-dee"
+  },
+  "lordina": {
+    "definition": "Ghanaian female personal name.",
+    "phonetic": "lor-dee-nah"
+  },
+  "torgbor": {
+    "definition": "Southern Ghanaian family surname.",
+    "phonetic": "tor-gbor"
+  },
+  "allotey": {
+    "definition": "Ga male birth-order name and family surname.",
+    "phonetic": "ah-loh-tay"
+  },
+  "gyamera": {
+    "definition": "Akan family surname.",
+    "phonetic": "jah-meh-rah"
+  },
+  "duodu": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "dwoh-doo"
+  },
+  "sarfo": {
+    "definition": "Akan personal and family surname (Safo).",
+    "phonetic": "sah-foh"
+  },
+  "anan": {
+    "definition": "Fourth-born child name and surname (Annan).",
+    "phonetic": "ah-nahn"
   }
 }
