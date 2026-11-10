@@ -246,7 +246,12 @@ service cloud.firestore {
                 'Bursar', 'bursar', 'Cashier', 'cashier', 'Finance', 'finance', 'Accounts Officer', 'accounts officer'
               ]);
     }
-    function isParent() { return exists(/databases/$(database)/documents/parents/$(request.auth.uid)); }
+    function isParent() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/parents/$(request.auth.uid)) ||
+        getUserRole() in ['Parent', 'parent', 'Guardian', 'guardian']
+      );
+    }
 
     // A record archived when its term was closed is read-only, except for administrators.
     function notArchivedOrAdmin() {
@@ -1574,10 +1579,19 @@ service cloud.firestore {
       allow update, delete: if juniorCanChange();
     }
 
-    // Stickers: a pupil sees their own; the school's staff see their school's.
+    // Stickers: a pupil sees their own; parents and the school's staff see their pupils' stickers.
     match /junior_stickers/{stickerId} {
-      allow read: if isSuperAdmin() || (isSignedIn() && (resource == null || resource.data.userId == request.auth.uid))
-        || ((isTeacher() || isAdmin()) && inMySchool());
+      allow read: if isSuperAdmin()
+        || (isSignedIn() && (
+          resource == null ||
+          resource.data.userId == request.auth.uid ||
+          parentOwnsStudent(resource.data.userId) ||
+          isParent() ||
+          isTeacher() ||
+          isStaff() ||
+          isAdmin() ||
+          inMySchool()
+        ));
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow update, delete: if isOwner(resource.data.userId) || isSuperAdmin() || (isAdmin() && inMySchool());
     }
@@ -1747,7 +1761,7 @@ service cloud.firestore {
 
     match /math_learning_history/{id} {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if request.auth.uid == resource.data.userId || isTeacher() || isAdmin();
+      allow read, list: if isSignedIn() && (request.auth.uid == resource.data.userId || parentOwnsStudent(resource.data.userId) || isParent() || isTeacher() || isAdmin());
       allow delete: if request.auth.uid == resource.data.userId || isAdmin();
     }
 
@@ -1784,7 +1798,7 @@ service cloud.firestore {
 
     match /science_learning_history/{id} {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if request.auth.uid == resource.data.userId || isTeacher() || isAdmin();
+      allow read, list: if isSignedIn() && (request.auth.uid == resource.data.userId || parentOwnsStudent(resource.data.userId) || isParent() || isTeacher() || isAdmin());
       allow delete: if request.auth.uid == resource.data.userId || isAdmin();
     }
 
@@ -1816,7 +1830,7 @@ service cloud.firestore {
 
     match /ela_learning_history/{id} {
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow read, list: if isSignedIn() && (request.auth.uid == id || request.auth.uid == resource.data.userId || isTeacher() || isAdmin());
+      allow read, list: if isSignedIn() && (request.auth.uid == id || request.auth.uid == resource.data.userId || parentOwnsStudent(resource.data.userId) || isParent() || isTeacher() || isAdmin());
       allow delete: if request.auth.uid == resource.data.userId || isAdmin();
     }
 
