@@ -868,7 +868,7 @@
     "definition": "Openings or hollow spaces dug or worn into something."
   },
   "pit": {
-    "definition": "A deep hole dug into the ground."
+    "definition": "A deep hole dug in the ground."
   },
   "road": {
     "definition": "A wide path made for vehicles, bicycles, and people to travel between places."
@@ -1222,7 +1222,7 @@
     "definition": "A hardy shade tree common across Ghana whose bitter leaves and bark are traditionally known."
   },
   "cocoa": {
-    "definition": "A tree whose seeds are used to make chocolate."
+    "definition": "The beans from which chocolate and cocoa drink are made."
   },
   "pods": {
     "definition": "Seed cases of plants such as cocoa, beans, or okro that split open when ripe."
@@ -1534,7 +1534,7 @@
     "definition": "A safe, licensed institution where people keep, save, and borrow money; or the land beside a river."
   },
   "licensed": {
-    "definition": "Officially approved and permitted by law or a regulator to operate safely."
+    "definition": "Having official permission to do something."
   },
   "regulated": {
     "definition": "Supervised by official rules and authorities to keep people and money safe."
@@ -5672,7 +5672,7 @@
     "definition": "Convincing and trustworthy because it is backed by real evidence and workable numbers"
   },
   "turbidity": {
-    "definition": "The cloudiness or haziness of water caused by suspended soil, silt and clay particles"
+    "definition": "How cloudy water is because of tiny bits of soil and clay."
   },
   "verify": {
     "definition": "To confirm that information or a licence is genuine by checking official authorities"
@@ -5877,6 +5877,27 @@
   },
   "germs": {
     "definition": "Tiny living things that can make people sick."
+  },
+  "bioaccumulation": {
+    "definition": "The build-up of a harmful substance in living things."
+  },
+  "trafficking": {
+    "definition": "Taking people to work or live somewhere by force, lies or threats."
+  },
+  "heavy metals": {
+    "definition": "Metals such as mercury, lead and arsenic that can poison people in small amounts."
+  },
+  "custodian": {
+    "definition": "A person who looks after something for others and for the future."
+  },
+  "enforcement": {
+    "definition": "Making sure that people obey a law."
+  },
+  "remanded": {
+    "definition": "Kept in custody by a court while a case continues."
+  },
+  "biologically": {
+    "definition": "In terms of living things such as plants, fish and animals."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6207,7 +6228,7 @@
     "definition": "Solid material such as sand or silt carried and deposited by water or wind."
   },
   "mercury": {
-    "definition": "A toxic heavy metal that can poison water, fish and human nervous systems if released during mining"
+    "definition": "A heavy, silvery liquid metal that is poisonous to people."
   },
   "reclamation": {
     "definition": "Restoring damaged, mined land by refilling pits, rebuilding soil and planting vegetation"
@@ -6342,7 +6363,7 @@
     "definition": "Signs of illness felt by a person, such as fever, headache or tiredness."
   },
   "prevention": {
-    "definition": "Actions taken to stop a disease or problem from happening or spreading."
+    "definition": "Stopping something bad from happening."
   },
   "feasibility": {
     "definition": "An assessment of whether a proposed project or business plan is practical and financially viable."
@@ -6878,6 +6899,82 @@
   },
   "floodwater": {
     "definition": "Water that spreads over land after heavy rain."
+  },
+  "galamsey": {
+    "definition": "The Ghanaian word for illegal small-scale gold mining. (Illegal small-scale gold mining in Ghana (from \"gather them and sell\").)",
+    "phonetic": "gah-lahm-say"
+  },
+  "downstream": {
+    "definition": "In the direction that a river flows, away from its source."
+  },
+  "filters": {
+    "definition": "Layers that catch dirt as water passes through."
+  },
+  "amalgam": {
+    "definition": "A mixture of mercury with another metal, such as gold."
+  },
+  "vapour": {
+    "definition": "A gas formed when a liquid or solid is heated."
+  },
+  "retort": {
+    "definition": "A closed container that heats a substance and traps the gas it gives off."
+  },
+  "estimated": {
+    "definition": "Gave a careful guess about a number when the exact figure is not known."
+  },
+  "grant": {
+    "definition": "Money given to help someone, which does not have to be paid back."
+  },
+  "headteacher": {
+    "definition": "The teacher who leads a school."
+  },
+  "acre": {
+    "definition": "A measure of land, a little less than half a hectare."
+  },
+  "hectares": {
+    "definition": "Units of land area; one hectare is 10,000 square metres."
+  },
+  "seedling": {
+    "definition": "A young plant that has just grown from a seed."
+  },
+  "co-operative": {
+    "definition": "A group of farmers who work together and share the benefits."
+  },
+  "durbar": {
+    "definition": "A public gathering where chiefs and the people meet."
+  },
+  "bylaw": {
+    "definition": "A local rule made by a community or council."
+  },
+  "licences": {
+    "definition": "Official permissions to do something."
+  },
+  "bill": {
+    "definition": "A proposed law that is debated before it is passed."
+  },
+  "revoked": {
+    "definition": "Officially cancelled."
+  },
+  "convictions": {
+    "definition": "Findings by a court that someone is guilty."
+  },
+  "licence": {
+    "definition": "Official permission to do something."
+  },
+  "financiers": {
+    "definition": "People who provide the money for an activity."
+  },
+  "journalist": {
+    "definition": "A person who gathers and reports the news."
+  },
+  "petition": {
+    "definition": "A written request signed by many people and given to those in power."
+  },
+  "opinions": {
+    "definition": "What people think or feel, which may not be proven."
+  },
+  "editorial": {
+    "definition": "A newspaper article that gives the paper’s own opinion."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -8110,5 +8207,137 @@
   "hamdia": {
     "definition": "Female personal name meaning \"praiseworthy\".",
     "phonetic": "hahm-dee-ah"
+  },
+  "ntow": {
+    "definition": "Akan (Akuapem/Twi) personal and family name.",
+    "phonetic": "en-toh"
+  },
+  "mamle": {
+    "definition": "Traditional Krobo/Dangme name for a first-born daughter.",
+    "phonetic": "mahm-leh"
+  },
+  "appiah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-pee-ah"
+  },
+  "pra": {
+    "definition": "Major river in southern Ghana flowing into the Atlantic near Shama.",
+    "phonetic": "prah"
+  },
+  "ankobra": {
+    "definition": "Major river in the Western Region of Ghana.",
+    "phonetic": "ahn-koh-brah"
+  },
+  "birim": {
+    "definition": "Major river in the Eastern Region of Ghana, tributary of the Pra.",
+    "phonetic": "bee-reem"
+  },
+  "offin": {
+    "definition": "Major river in the Ashanti and Central Regions of Ghana, tributary of the Pra.",
+    "phonetic": "oh-feen"
+  },
+  "daboase": {
+    "definition": "Town on the lower Pra River in the Western Region, site of a major water treatment plant.",
+    "phonetic": "dah-bwah-seh"
+  },
+  "kyebi": {
+    "definition": "Capital of the Akyem Abuakwa traditional area in the Eastern Region of Ghana (also spelled Kibi).",
+    "phonetic": "cheh-bee"
+  },
+  "selom": {
+    "definition": "Ewe unisex personal name meaning \"the Creator loves me\".",
+    "phonetic": "seh-lom"
+  },
+  "nabila": {
+    "definition": "Northern Ghanaian royal title and female/male personal name.",
+    "phonetic": "nah-bee-lah"
+  },
+  "ayim": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-yeem"
+  },
+  "poku": {
+    "definition": "Akan personal and family name (short form of Opoku).",
+    "phonetic": "poh-koo"
+  },
+  "rashida": {
+    "definition": "Female personal name meaning \"rightly guided\".",
+    "phonetic": "rah-shee-dah"
+  },
+  "osafo": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "oh-sah-foh"
+  },
+  "badu": {
+    "definition": "Akan name given to a tenth-born child.",
+    "phonetic": "bah-doo"
+  },
+  "tsatsu": {
+    "definition": "Ewe male personal name.",
+    "phonetic": "tsah-tsoo"
+  },
+  "dadease": {
+    "definition": "Akan place-name element meaning \"under the baobab/iron tree\".",
+    "phonetic": "dah-dee-ah-seh"
+  },
+  "nkwanta": {
+    "definition": "Akan place-name word meaning \"junction / crossroads\".",
+    "phonetic": "en-kwahn-tah"
+  },
+  "kyei": {
+    "definition": "Akan male personal and family name.",
+    "phonetic": "chay"
+  },
+  "ohemaa": {
+    "definition": "Akan title for a Queen Mother (Ɔhemaa).",
+    "phonetic": "oh-heh-maah"
+  },
+  "kwaw": {
+    "definition": "Day name for a boy born on Thursday (variant of Yaw/Kow).",
+    "phonetic": "kwaw"
+  },
+  "yeboa": {
+    "definition": "Akan personal and family name (variant of Yeboah).",
+    "phonetic": "yeh-boh-ah"
+  },
+  "pokua": {
+    "definition": "Akan female personal name (feminine of Opoku/Poku).",
+    "phonetic": "poh-kwah"
+  },
+  "sackey": {
+    "definition": "Coastal Ghanaian family surname.",
+    "phonetic": "sah-kee"
+  },
+  "nartey": {
+    "definition": "Traditional Dangme/Ga personal and family surname.",
+    "phonetic": "nar-tay"
+  },
+  "musa": {
+    "definition": "Male personal name (Moses) common across Ghana.",
+    "phonetic": "moo-sah"
+  },
+  "ayorkor": {
+    "definition": "Traditional Ga female personal name.",
+    "phonetic": "ah-yor-kor"
+  },
+  "shika": {
+    "definition": "Ga word and female personal name meaning \"gold\" (Naa Shika).",
+    "phonetic": "shee-kah"
+  },
+  "nketia": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "en-keh-tyah"
+  },
+  "benewaa": {
+    "definition": "Akan female personal name.",
+    "phonetic": "beh-neh-waah"
+  },
+  "dakurah": {
+    "definition": "Upper West Ghanaian personal and family name.",
+    "phonetic": "dah-koo-rah"
+  },
+  "asamoah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-sah-moh-ah"
   }
 }

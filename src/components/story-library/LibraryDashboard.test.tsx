@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the one hundred and twenty-four stories with clean production badges', async () => {
+  it('lists the one hundred and thirty-two stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(124));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(132));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(124));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(132));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -44,10 +44,13 @@ describe('LibraryDashboard (real preview data)', () => {
       'June the Third',
       'Many Sticks, One Bundle',
       'Ninety-Two Minutes',
+      'Poku Leaves the Classroom',
       'The App That Created a Hundred Jobs',
       'The Boy Who Built a Voice',
       'The Castle Built for Gold',
+      'The Chief’s Long Night',
       'The Clay Dog of Kintampo',
+      'The Cocoa Farm and the Offer',
       'The Code in the Iron Box',
       'The Courage of Yaa Asantewaa',
       'The Door That Remembered',
@@ -72,6 +75,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Red Hunter and the Drummers',
       'The River That Learned to Smile',
       'The River That Lost Its Voice',
+      'The River in Twenty Years',
       'The Sculpture That Keeps a Secret',
       'The Secrets of the Great Pyramid',
       'The Stones of Stonehenge',
@@ -85,7 +89,9 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Voice Note',
       'The Wall of Notsé',
       'The Weights That Whisper Proverbs',
+      'Voices Along the River',
       'We Built It Here in Ghana',
+      'What Is Hiding in the Gold?',
       'Whose Drain Is It?',
       'Yaa and the Mystery of Changing Life',
     ]));
@@ -131,7 +137,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(124));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(132));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -140,7 +146,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(124));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(132));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -149,10 +155,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   });
 
-  it('Efua and every Batch 1–18 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–19 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(124));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(132));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
