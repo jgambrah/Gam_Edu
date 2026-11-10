@@ -239,6 +239,21 @@ export const MASTER_PREREQUISITE_MAP: Record<'b7' | 'b8' | 'b9', Record<'foundat
   }
 };
 
+/**
+ * Strand / sub-strand fields arrive either as plain text ("STRAND 1: NUMBER") or as
+ * an object ({ code: "S1", name: "STRAND 1: NUMBER" }) depending on which seeder wrote
+ * the document. Always reduce them to text before calling string methods.
+ */
+function labelText(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') {
+    const v = value as { name?: unknown; title?: unknown; code?: unknown };
+    const picked = v.name ?? v.title ?? v.code;
+    return typeof picked === 'string' ? picked : '';
+  }
+  return '';
+}
+
 interface TopicalLabRunnerProps {
   topicDoc: TopicalLabDocument;
   studentId?: string;
@@ -358,8 +373,8 @@ export function TopicalLabRunner({
     const sub = ((topicDoc.subject || '') as string).toLowerCase();
     const id = ((topicDoc.id || topicDoc.topicId || '') as string).toLowerCase();
     const title = ((topicDoc.title || '') as string).toLowerCase();
-    const strand = (((topicDoc as any).strandTitle || (topicDoc as any).strand || topicDoc.badge || '') as string).toLowerCase();
-    const subStrand = (((topicDoc as any).subStrandTitle || (topicDoc as any).subStrand || '') as string).toLowerCase();
+    const strand = labelText((topicDoc as any).strandTitle || (topicDoc as any).strand || topicDoc.badge).toLowerCase();
+    const subStrand = labelText((topicDoc as any).subStrandTitle || (topicDoc as any).subStrand).toLowerCase();
 
     return (
       sub.includes('science') ||
@@ -374,7 +389,7 @@ export function TopicalLabRunner({
     if (isScience) return false;
     const sub = ((topicDoc.subject || '') as string).toLowerCase();
     const id = ((topicDoc.id || topicDoc.topicId || '') as string).toLowerCase();
-    const strand = (((topicDoc as any).strandTitle || (topicDoc as any).strand || topicDoc.badge || '') as string).toLowerCase();
+    const strand = labelText((topicDoc as any).strandTitle || (topicDoc as any).strand || topicDoc.badge).toLowerCase();
     const title = ((topicDoc.title || '') as string).toLowerCase();
 
     return (
