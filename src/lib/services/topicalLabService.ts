@@ -580,7 +580,39 @@ export function adaptScienceUnitToTopicalLab(unit: any): TopicalLabDocument {
   } as any) as TopicalLabDocument;
 }
 
+/**
+ * Shared-bank documents are written by several seeders, and some store `strand` / `subStrand`
+ * as `{ code, name }` objects instead of plain text. Screens expect text, so every document is
+ * brought to one shape here, in the single place all reads pass through.
+ */
+export function normalizeTopicalLabDoc<T extends TopicalLabDocument | null>(docData: T): T {
+  if (!docData) return docData;
+  const out: any = { ...docData };
+  for (const [field, codeField, nameField] of [
+    ['strand', 'strandCode', 'strandName'],
+    ['subStrand', 'subStrandCode', 'subStrandName']
+  ] as const) {
+    const value = out[field];
+    if (value && typeof value === 'object') {
+      const name = typeof value.name === 'string' ? value.name : typeof value.title === 'string' ? value.title : '';
+      const code = typeof value.code === 'string' ? value.code : '';
+      out[field] = name || code;
+      if (code && !out[codeField]) out[codeField] = code;
+      if (name && !out[nameField]) out[nameField] = name;
+    }
+  }
+  return out as T;
+}
+
 export async function fetchTopicalLabDoc(
+  topicDocId: string,
+  levelId: string = 'jhs',
+  subjectId: string = 'math'
+): Promise<TopicalLabDocument | null> {
+  return normalizeTopicalLabDoc(await fetchTopicalLabDocRaw(topicDocId, levelId, subjectId));
+}
+
+async function fetchTopicalLabDocRaw(
   topicDocId: string,
   levelId: string = 'jhs',
   subjectId: string = 'math'
