@@ -8339,5 +8339,169 @@
   "asamoah": {
     "definition": "Akan personal and family surname.",
     "phonetic": "ah-sah-moh-ah"
+  },
+  "prefect": {
+    "definition": "A senior student who helps keep order in a school."
+  },
+  "punctuality": {
+    "definition": "Arriving on time."
+  },
+  "housemaster": {
+    "definition": "A teacher in charge of a school house or boarding group."
+  },
+  "reputation": {
+    "definition": "What people generally think about you."
+  },
+  "habit": {
+    "definition": "Something you do so often that it becomes automatic."
+  },
+  "charity": {
+    "definition": "Help given freely to people in need."
+  },
+  "pesewa": {
+    "definition": "A small unit of Ghanaian money; one hundred pesewas make one cedi."
+  },
+  "accountant": {
+    "definition": "A person who keeps records of money."
+  },
+  "protein": {
+    "definition": "A nutrient in food that helps the body grow and repair."
+  },
+  "tycoon": {
+    "definition": "A very rich and powerful business person."
+  },
+  "captain": {
+    "definition": "The leader of a team."
+  },
+  "relay": {
+    "definition": "A race in which team members take turns to run part of the distance."
+  },
+  "sportsmanship": {
+    "definition": "Playing fairly and being polite whether you win or lose."
+  },
+  "gracious": {
+    "definition": "Kind and polite, especially when it is difficult."
+  },
+  "scoreboard": {
+    "definition": "A board that shows the points in a game."
+  },
+  "charcoal": {
+    "definition": "A black material made from burnt wood, used in some filters."
+  },
+  "checklist": {
+    "definition": "A list of tasks to tick off."
+  },
+  "contributed": {
+    "definition": "Gave a share of the work or help."
+  },
+  "honesty": {
+    "definition": "Telling the truth, even when it is hard."
+  },
+  "revision": {
+    "definition": "Going over what you have learned to prepare for a test."
+  },
+  "timetable": {
+    "definition": "A plan that shows what to do at what time."
+  },
+  "cram": {
+    "definition": "To try to learn a lot in a very short time."
+  },
+  "mock": {
+    "definition": "A practice version of a real exam."
+  },
+  "markers": {
+    "definition": "The examiners who read and give marks to exam scripts."
+  },
+  "tone": {
+    "definition": "The feeling in the way something is said or written."
+  },
+  "informal": {
+    "definition": "Friendly and relaxed, not formal."
+  },
+  "astonished": {
+    "definition": "Very surprised."
+  },
+  "accent": {
+    "definition": "The way people from a place or group pronounce words."
+  },
+  "teasing": {
+    "definition": "Making fun of someone in an unkind way."
+  },
+  "counsellor": {
+    "definition": "A person trained to listen and help with problems."
+  },
+  "unkind": {
+    "definition": "Not kind; hurtful."
+  },
+  "sneer": {
+    "definition": "To show contempt with a smile or a voice."
+  },
+  "address": {
+    "definition": "The details of where a person lives."
+  },
+  "greeting": {
+    "definition": "The opening words that say hello to the reader."
+  },
+  "paragraph": {
+    "definition": "A block of sentences about one main idea."
+  },
+  "abbreviations": {
+    "definition": "Shortened forms of words."
+  },
+  "acquah": {
+    "definition": "Fante/Akan personal and family surname.",
+    "phonetic": "ah-kwah"
+  },
+  "ocran": {
+    "definition": "Fante/Akan family surname.",
+    "phonetic": "oh-krahn"
+  },
+  "ewuraba": {
+    "definition": "Fante female name and respectful term meaning \"lady\".",
+    "phonetic": "eh-woo-rah-bah"
+  },
+  "adjoa": {
+    "definition": "Akan day name for a girl born on Monday (Fante/English spelling of Adwoa).",
+    "phonetic": "ah-jwah"
+  },
+  "bartels": {
+    "definition": "Well-known coastal Ghanaian family surname.",
+    "phonetic": "bar-telz"
+  },
+  "quao": {
+    "definition": "Coastal Ghanaian surname (anglicised spelling of Kwao/Kwaw).",
+    "phonetic": "kwaw"
+  },
+  "ampadu": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ahm-pah-doo"
+  },
+  "akos": {
+    "definition": "Short form of the Akan Sunday day-name Akosua (or Akosah).",
+    "phonetic": "ah-kohs"
+  },
+  "quarcoo": {
+    "definition": "Coastal Ghanaian surname (anglicised spelling of Kwaku).",
+    "phonetic": "kwah-koo"
+  },
+  "teiko": {
+    "definition": "Ga/Dangme birth-order personal name.",
+    "phonetic": "tay-koh"
+  },
+  "rabiatu": {
+    "definition": "Female personal name (from Rabi’ah, fourth/spring).",
+    "phonetic": "rah-bee-ah-too"
+  },
+  "odoom": {
+    "definition": "Fante/Akan personal and family surname.",
+    "phonetic": "oh-doom"
+  },
+  "frimpomaa": {
+    "definition": "Akan female personal name (feminine of Frimpong).",
+    "phonetic": "frim-poh-maah"
+  },
+  "cobbinah": {
+    "definition": "Anglicised Fante/Nzema spelling of Kwabena (Tuesday-born).",
+    "phonetic": "koh-bee-nah"
   }
 }

@@ -34,6 +34,7 @@ import { BATCH_16_STORIES } from './batch-16-stories';
 import { BATCH_17_STORIES } from './batch-17-stories';
 import { BATCH_18_STORIES } from './batch-18-stories';
 import { BATCH_19_STORIES } from './batch-19-stories';
+import { BATCH_20_STORIES } from './batch-20-stories';
 import { normalizeTeacherGuide, type TeacherGuide } from './teacher-guide';
 
 export interface PilotPage {
@@ -354,6 +355,7 @@ export const PILOT_STORIES: PilotStory[] = [
   ...BATCH_17_STORIES.map((s) => ({ ...s, teacherGuide: normalizeTeacherGuide(s.teacherGuide, s.culturalNotes) })),
   ...BATCH_18_STORIES.map((s) => ({ ...s, teacherGuide: normalizeTeacherGuide(s.teacherGuide, s.culturalNotes) })),
   ...BATCH_19_STORIES.map((s) => ({ ...s, teacherGuide: normalizeTeacherGuide(s.teacherGuide, s.culturalNotes) })),
+  ...BATCH_20_STORIES.map((s) => ({ ...s, teacherGuide: normalizeTeacherGuide(s.teacherGuide, s.culturalNotes) })),
 ];
 
 export const pilotStory = (key: string) => PILOT_STORIES.find((s) => s.key === key);
