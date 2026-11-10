@@ -37,7 +37,7 @@ import {
   SSP_PHONICS_PRESET, SSPSoundCard, SSPPhaseGroup
 } from '@/lib/junior-age-levels';
 
-import { LibraryDashboard } from '@/components/story-library/LibraryDashboard';
+import { StorySparkConnectedLibrary } from '@/components/dashboard/junior-academy/StorySparkConnectedLibrary';
 import {
   JuniorSchoolContext, useJuniorSchoolId, juniorStamp, visibleForSchool, removeJuniorDoc, millisOf, useSchoolAndMine,
 } from '@/components/dashboard/junior-academy/junior-shared';
@@ -8925,7 +8925,7 @@ export default function JuniorCampusPage() {
                 </TabsContent>
                 <TabsContent value="stories" className="mt-0 animate-in fade-in-50 duration-300">
                   <div className="bg-white/80 backdrop-blur-md p-6 md:p-8 rounded-[40px] shadow-2xl border-4 border-white/90 border-b-[12px] border-b-purple-400">
-                    <LibraryDashboard activeAgeTier={activeAgeTier} />
+                    <StorySparkConnectedLibrary activeAgeTier={activeAgeTier} />
                   </div>
                 </TabsContent>
                 <TabsContent value="science" className="mt-0 animate-in fade-in-50 duration-300">

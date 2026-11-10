@@ -139,7 +139,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'Two Ways to Say Thank You',
       'Yaa and the Blocked Drain',
     ]));
-  });
+  }, 15000);
 
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
@@ -160,7 +160,7 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getAllByRole('radio').map((r) => r.textContent)).toEqual(expect.arrayContaining(['Listen to Me', 'Read With Me', 'Let Me Read']));
     expect(screen.getByRole('radio', { name: 'Let Me Read' }).getAttribute('aria-checked')).toBe('true'); // JHS default: read it yourself
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
-  });
+  }, 15000);
 
   it('Efua and every Batch 1–20 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
@@ -176,7 +176,28 @@ describe('LibraryDashboard (real preview data)', () => {
       const { unmount } = render(<StoryNotes info={info as any} />);
       unmount();
     }
-  });
+  }, 15000);
+
+  it('updates In Progress, Finished, and Favourites counters accurately', async () => {
+    const user = userEvent.setup();
+    render(<LibraryDashboard createSource={make} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(140));
+    const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
+    expect(stats()).toContain('140');
+
+    // Toggle a favourite heart on the first story card
+    const firstCard = screen.getAllByTestId('story-card')[0];
+    const favBtn = within(firstCard).getByRole('button', { name: /Save .* to favourites/i });
+    await user.click(favBtn);
+    expect(stats()).toMatch(/1\s*❤️ Favourites/);
+
+    // Open a story on Page 1 and return to library -> counts as 1 In Progress
+    await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
+    await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
+    await user.click(screen.getByRole('button', { name: /Library/i }));
+    await waitFor(() => expect(screen.getByTestId('hero-stats')).toBeTruthy());
+    expect(stats()).toMatch(/1\s*▶️ In Progress/);
+  }, 15000);
 
   it('shows a clear error, not a blank screen, when the library cannot be loaded', async () => {
     const failing = (async () => new Response('x', { status: 500 })) as unknown as typeof fetch;

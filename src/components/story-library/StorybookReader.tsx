@@ -113,8 +113,18 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
     };
   }, [pkg, mode, m.narration, source.assets]);
 
-  // ---- remember where the child is (device only)
-  useEffect(() => { saveProgress(pkg.storyId, { step, total: flow.length, done: finished, updatedAt: Date.now(), mode }); }, [step, finished, mode, pkg.storyId, flow.length]);
+  const wasAlreadyDone = Boolean(resume?.done);
+  const reachedFinalPage = flow.length > 1 && step >= flow.length - 1 && current?.kind === 'page';
+  // ---- remember where the child is (local + cloud-synced when signed in)
+  useEffect(() => {
+    saveProgress(pkg.storyId, {
+      step,
+      total: flow.length,
+      done: finished || wasAlreadyDone || reachedFinalPage,
+      updatedAt: Date.now(),
+      mode,
+    });
+  }, [step, finished, wasAlreadyDone, reachedFinalPage, mode, pkg.storyId, flow.length]);
 
   const go = useCallback((delta: number) => {
     stopOfflineSpeech();

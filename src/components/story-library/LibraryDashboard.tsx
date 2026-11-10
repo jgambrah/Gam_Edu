@@ -4,7 +4,7 @@ import type { CatalogueEntry, StoryPackage } from '@/lib/story-library/types';
 import { createPreviewSource, type LibrarySource } from '@/lib/story-library/library-source';
 import { CLASS_REGISTRY, GENRES, READING_LEVELS, presentationFor } from '@/lib/story-library/classification';
 import { FilteredFeed, planQuery, type Selection } from '@/lib/story-library/dashboard-query';
-import { loadFavourites, loadProgress, toggleFavourite } from '@/lib/story-library/progress-store';
+import { loadFavourites, loadProgress, subscribeProgressChanges, toggleFavourite, type LocalProgress } from '@/lib/story-library/progress-store';
 import { PlaceholderArt } from './PlaceholderArt';
 import { StorybookReader } from './StorybookReader';
 
@@ -138,6 +138,14 @@ export function LibraryDashboard({
   const [tick, setTick] = useState(0); // refresh stats after actions
   const feed = useRef<FilteredFeed | null>(null);
 
+  const isReaderOpenRef = useRef(false);
+  isReaderOpenRef.current = open !== null;
+  useEffect(() => {
+    return subscribeProgressChanges(() => {
+      if (!isReaderOpenRef.current) setTick((t) => t + 1);
+    });
+  }, []);
+
   useEffect(() => {
     let live = true;
     createSource().then(async (s) => { await s.catalogue.startSession(); if (live) setSource(s); }).catch((e) => live && setError(String(e?.message ?? e)));
@@ -171,13 +179,15 @@ export function LibraryDashboard({
     const favs = loadFavourites();
     const inProgress = new Set<string>();
     const completed = new Set<string>();
+    const byStory = new Map<string, LocalProgress>();
     for (const e of entries) {
       const p = loadProgress(e.storyKey);
       if (!p) continue;
+      byStory.set(e.storyKey, p);
       if (p.done) completed.add(e.storyKey);
-      else if (p.step > 0) inProgress.add(e.storyKey);
+      else if (p.step >= 0) inProgress.add(e.storyKey);
     }
-    return { favs, inProgress, completed };
+    return { favs, inProgress, completed, byStory };
   }, [entries, tick]);
 
   const visibleEntries = useMemo(() => {
@@ -226,38 +236,38 @@ export function LibraryDashboard({
             <h1 className="text-3xl font-black md:text-4xl" style={{ fontFamily: 'Fredoka, Nunito, system-ui, sans-serif' }}>Story Spark Library</h1>
             <p className="mt-1 max-w-2xl text-white/90">Illustrated, narrated stories & poems for every class from Nursery to JHS. Pick a collection, choose your reading mode, and explore.</p>
           </div>
-          <div className="flex flex-wrap gap-2 text-xs font-extrabold">
+          <div className="flex flex-wrap gap-2.5 text-xs font-extrabold" data-testid="hero-stats">
             <button
               type="button"
               onClick={() => setShelf('all')}
-              className="rounded-2xl bg-white/15 px-3.5 py-2 text-left backdrop-blur hover:bg-white/25"
+              className={`min-w-[116px] rounded-2xl px-3.5 py-2.5 text-left backdrop-blur transition ${shelf === 'all' ? 'bg-white/25 text-white ring-1 ring-white/50 shadow-sm' : 'bg-white/15 text-white hover:bg-white/25'}`}
             >
-              <span className="block text-lg font-black">{entries.length}</span>
-              <span className="text-white/85">📚 Books & Poems</span>
+              <span className="block text-xl font-black leading-tight text-white">{entries.length}</span>
+              <span className="text-white/90">📚 Books & Poems</span>
             </button>
             <button
               type="button"
               onClick={() => setShelf(shelf === 'continue' ? 'all' : 'continue')}
-              className={`rounded-2xl px-3.5 py-2 text-left backdrop-blur transition ${shelf === 'continue' ? 'bg-white text-indigo-900 shadow' : 'bg-white/15 hover:bg-white/25'}`}
+              className={`min-w-[116px] rounded-2xl px-3.5 py-2.5 text-left backdrop-blur transition ${shelf === 'continue' ? 'bg-white text-indigo-900 shadow' : 'bg-white/15 text-white hover:bg-white/25'}`}
             >
-              <span className="block text-lg font-black">{progressSnapshot.inProgress.size}</span>
-              <span>▶️ In Progress</span>
+              <span className={`block text-xl font-black leading-tight ${shelf === 'continue' ? 'text-indigo-950' : 'text-white'}`}>{progressSnapshot.inProgress.size}</span>
+              <span className={shelf === 'continue' ? 'text-indigo-900' : 'text-white/90'}>▶️ In Progress</span>
             </button>
             <button
               type="button"
               onClick={() => setShelf(shelf === 'completed' ? 'all' : 'completed')}
-              className={`rounded-2xl px-3.5 py-2 text-left backdrop-blur transition ${shelf === 'completed' ? 'bg-white text-indigo-900 shadow' : 'bg-white/15 hover:bg-white/25'}`}
+              className={`min-w-[116px] rounded-2xl px-3.5 py-2.5 text-left backdrop-blur transition ${shelf === 'completed' ? 'bg-white text-indigo-900 shadow' : 'bg-white/15 text-white hover:bg-white/25'}`}
             >
-              <span className="block text-lg font-black">{progressSnapshot.completed.size}</span>
-              <span>🏆 Finished</span>
+              <span className={`block text-xl font-black leading-tight ${shelf === 'completed' ? 'text-indigo-950' : 'text-white'}`}>{progressSnapshot.completed.size}</span>
+              <span className={shelf === 'completed' ? 'text-indigo-900' : 'text-white/90'}>🏆 Finished</span>
             </button>
             <button
               type="button"
               onClick={() => setShelf(shelf === 'favourites' ? 'all' : 'favourites')}
-              className={`rounded-2xl px-3.5 py-2 text-left backdrop-blur transition ${shelf === 'favourites' ? 'bg-white text-rose-700 shadow' : 'bg-white/15 hover:bg-white/25'}`}
+              className={`min-w-[116px] rounded-2xl px-3.5 py-2.5 text-left backdrop-blur transition ${shelf === 'favourites' ? 'bg-white text-rose-700 shadow' : 'bg-white/15 text-white hover:bg-white/25'}`}
             >
-              <span className="block text-lg font-black">{progressSnapshot.favs.size}</span>
-              <span>❤️ Favourites</span>
+              <span className={`block text-xl font-black leading-tight ${shelf === 'favourites' ? 'text-rose-700' : 'text-white'}`}>{progressSnapshot.favs.size}</span>
+              <span className={shelf === 'favourites' ? 'text-rose-700' : 'text-white/90'}>❤️ Favourites</span>
             </button>
           </div>
         </div>
@@ -265,7 +275,7 @@ export function LibraryDashboard({
       {source.notice && <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200" role="note">{source.notice}</p>}
 
       {/* Curated Collection Shelves (Epic!-inspired) */}
-      <div className="mb-3 flex items-center gap-2 overflow-x-auto pb-1.5" role="group" aria-label="Curated story collections">
+      <div className="mb-3 flex flex-wrap items-center gap-2 pb-1.5" role="group" aria-label="Curated story collections">
         {COLLECTION_SHELVES.map((c) => {
           const isSelected = shelf === c.id;
           return (
@@ -362,12 +372,11 @@ export function LibraryDashboard({
             source={source}
             busy={opening === e.storyKey}
             isFav={progressSnapshot.favs.has(e.storyKey)}
+            progress={progressSnapshot.byStory.get(e.storyKey)}
             onToggleFav={() => {
               toggleFavourite(e.storyKey);
-              setTick((t) => t + 1);
             }}
             onOpen={() => openStory(e)}
-            tick={tick}
           />
         ))}
       </ul>
@@ -380,9 +389,8 @@ export function LibraryDashboard({
 const selectCls = 'w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 text-base font-semibold text-slate-800 focus:border-indigo-500 focus:outline-none';
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => <label className="block text-sm font-bold text-slate-700"><span className="mb-1 block">{label}</span>{children}</label>;
 
-function StoryCard({ entry, source, busy, isFav, onToggleFav, onOpen, tick }: { entry: CatalogueEntry; source: LibrarySource; busy: boolean; isFav: boolean; onToggleFav: () => void; onOpen: () => void; tick: number }) {
+function StoryCard({ entry, source, busy, isFav, progress, onToggleFav, onOpen }: { entry: CatalogueEntry; source: LibrarySource; busy: boolean; isFav: boolean; progress?: LocalProgress; onToggleFav: () => void; onOpen: () => void }) {
   const info = source.info(entry.storyKey);
-  const progress = useMemo(() => loadProgress(entry.storyKey), [entry.storyKey, tick]);
   const presentation = presentationFor(entry.classIds ?? []);
   const classes = (entry.classIds ?? []);
   const classText = classes.length > 2 ? `${label(CLASS_REGISTRY, classes[0])} to ${label(CLASS_REGISTRY, classes[classes.length - 1])}` : classes.map((c) => label(CLASS_REGISTRY, c)).join(', ');
@@ -408,7 +416,7 @@ function StoryCard({ entry, source, busy, isFav, onToggleFav, onOpen, tick }: { 
         >
           {isFav ? '❤️' : '🤍'}
         </button>
-        {progress && !progress.done && progress.step > 0 && (
+        {progress && !progress.done && progress.step >= 0 && (
           <span className="absolute bottom-2 left-3 rounded-full bg-indigo-900/85 px-2.5 py-0.5 text-[11px] font-extrabold text-white backdrop-blur">
             In progress • Step {progress.step + 1}/{progress.total}
           </span>
