@@ -141,7 +141,7 @@
     "definition": "One of the main sections into which a longer book is divided."
   },
   "summary": {
-    "definition": "A short statement that tells the main points of a story or lesson."
+    "definition": "A short version of the main points."
   },
   "family": {
     "definition": "A group of people who belong together and care for one another, such as parents, children, and grandparents."
@@ -568,7 +568,7 @@
     "definition": "Based on careful observation, measurement, and testing."
   },
   "laboratory": {
-    "definition": "A special room or building equipped with tools for scientific experiments and testing."
+    "definition": "A room used for science experiments."
   },
   "experiment": {
     "definition": "A test done carefully to find something out."
@@ -5336,7 +5336,7 @@
     "definition": "Pictures and stories your mind makes while you sleep, or a big hope you work toward."
   },
   "standard": {
-    "definition": "An agreed level of quality, safety, or measurement."
+    "definition": "The accepted, correct form of a language used in school and exams."
   },
   "standards": {
     "definition": "Agreed rules of quality, honesty, or measurement that everyone can trust."
@@ -5898,6 +5898,30 @@
   },
   "biologically": {
     "definition": "In terms of living things such as plants, fish and animals."
+  },
+  "turn over a new leaf": {
+    "definition": "To start behaving in a better way."
+  },
+  "break the bank": {
+    "definition": "To spend too much money."
+  },
+  "sportsmanship": {
+    "definition": "Playing fairly and being polite whether you win or lose."
+  },
+  "contribute": {
+    "definition": "To give your part to a shared task."
+  },
+  "cram": {
+    "definition": "To try to learn a lot in a very short time."
+  },
+  "code-switching": {
+    "definition": "Changing the way you speak or write to suit the situation."
+  },
+  "bystander": {
+    "definition": "A person who sees something unkind happen and chooses whether to act."
+  },
+  "salutation": {
+    "definition": "The greeting at the start of a letter, such as “Dear Doreen,”."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6975,6 +6999,108 @@
   },
   "editorial": {
     "definition": "A newspaper article that gives the paper’s own opinion."
+  },
+  "prefect": {
+    "definition": "A senior student who helps keep order in a school."
+  },
+  "punctuality": {
+    "definition": "Arriving on time."
+  },
+  "housemaster": {
+    "definition": "A teacher in charge of a school house or boarding group."
+  },
+  "reputation": {
+    "definition": "What people generally think about you."
+  },
+  "habit": {
+    "definition": "Something you do so often that it becomes automatic."
+  },
+  "charity": {
+    "definition": "Help given freely to people in need."
+  },
+  "pesewa": {
+    "definition": "A small unit of Ghanaian money; one hundred pesewas make one cedi."
+  },
+  "accountant": {
+    "definition": "A person who keeps records of money."
+  },
+  "protein": {
+    "definition": "A nutrient in food that helps the body grow and repair."
+  },
+  "tycoon": {
+    "definition": "A very rich and powerful business person."
+  },
+  "captain": {
+    "definition": "The leader of a team."
+  },
+  "relay": {
+    "definition": "A race in which team members take turns to run part of the distance."
+  },
+  "gracious": {
+    "definition": "Kind and polite, especially when it is difficult."
+  },
+  "scoreboard": {
+    "definition": "A board that shows the points in a game."
+  },
+  "charcoal": {
+    "definition": "A black material made from burnt wood, used in some filters."
+  },
+  "checklist": {
+    "definition": "A list of things to check or tick off."
+  },
+  "contributed": {
+    "definition": "Gave a share of the work or help."
+  },
+  "honesty": {
+    "definition": "Telling the truth, even when it is hard."
+  },
+  "revision": {
+    "definition": "Going over what you have learned to prepare for a test."
+  },
+  "timetable": {
+    "definition": "A plan that shows what to do at what time."
+  },
+  "mock": {
+    "definition": "A practice version of a real exam."
+  },
+  "markers": {
+    "definition": "The examiners who read and give marks to exam scripts."
+  },
+  "tone": {
+    "definition": "The feeling in the way something is said or written."
+  },
+  "informal": {
+    "definition": "Friendly and relaxed, not formal."
+  },
+  "astonished": {
+    "definition": "Very surprised."
+  },
+  "accent": {
+    "definition": "The way people from a place or group pronounce words."
+  },
+  "teasing": {
+    "definition": "Making fun of someone in an unkind way."
+  },
+  "counsellor": {
+    "definition": "A person trained to listen and help with problems."
+  },
+  "unkind": {
+    "definition": "Not kind; hurtful."
+  },
+  "sneer": {
+    "definition": "To show contempt with a smile or a voice."
+  },
+  "address": {
+    "definition": "The details of where a person lives."
+  },
+  "greeting": {
+    "definition": "The opening words that say hello to the reader."
+  },
+  "paragraph": {
+    "definition": "A block of sentences about one main idea."
+  },
+  "abbreviations": {
+    "definition": "Shortened forms of words."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -8339,114 +8465,6 @@
   "asamoah": {
     "definition": "Akan personal and family surname.",
     "phonetic": "ah-sah-moh-ah"
-  },
-  "prefect": {
-    "definition": "A senior student who helps keep order in a school."
-  },
-  "punctuality": {
-    "definition": "Arriving on time."
-  },
-  "housemaster": {
-    "definition": "A teacher in charge of a school house or boarding group."
-  },
-  "reputation": {
-    "definition": "What people generally think about you."
-  },
-  "habit": {
-    "definition": "Something you do so often that it becomes automatic."
-  },
-  "charity": {
-    "definition": "Help given freely to people in need."
-  },
-  "pesewa": {
-    "definition": "A small unit of Ghanaian money; one hundred pesewas make one cedi."
-  },
-  "accountant": {
-    "definition": "A person who keeps records of money."
-  },
-  "protein": {
-    "definition": "A nutrient in food that helps the body grow and repair."
-  },
-  "tycoon": {
-    "definition": "A very rich and powerful business person."
-  },
-  "captain": {
-    "definition": "The leader of a team."
-  },
-  "relay": {
-    "definition": "A race in which team members take turns to run part of the distance."
-  },
-  "sportsmanship": {
-    "definition": "Playing fairly and being polite whether you win or lose."
-  },
-  "gracious": {
-    "definition": "Kind and polite, especially when it is difficult."
-  },
-  "scoreboard": {
-    "definition": "A board that shows the points in a game."
-  },
-  "charcoal": {
-    "definition": "A black material made from burnt wood, used in some filters."
-  },
-  "checklist": {
-    "definition": "A list of tasks to tick off."
-  },
-  "contributed": {
-    "definition": "Gave a share of the work or help."
-  },
-  "honesty": {
-    "definition": "Telling the truth, even when it is hard."
-  },
-  "revision": {
-    "definition": "Going over what you have learned to prepare for a test."
-  },
-  "timetable": {
-    "definition": "A plan that shows what to do at what time."
-  },
-  "cram": {
-    "definition": "To try to learn a lot in a very short time."
-  },
-  "mock": {
-    "definition": "A practice version of a real exam."
-  },
-  "markers": {
-    "definition": "The examiners who read and give marks to exam scripts."
-  },
-  "tone": {
-    "definition": "The feeling in the way something is said or written."
-  },
-  "informal": {
-    "definition": "Friendly and relaxed, not formal."
-  },
-  "astonished": {
-    "definition": "Very surprised."
-  },
-  "accent": {
-    "definition": "The way people from a place or group pronounce words."
-  },
-  "teasing": {
-    "definition": "Making fun of someone in an unkind way."
-  },
-  "counsellor": {
-    "definition": "A person trained to listen and help with problems."
-  },
-  "unkind": {
-    "definition": "Not kind; hurtful."
-  },
-  "sneer": {
-    "definition": "To show contempt with a smile or a voice."
-  },
-  "address": {
-    "definition": "The details of where a person lives."
-  },
-  "greeting": {
-    "definition": "The opening words that say hello to the reader."
-  },
-  "paragraph": {
-    "definition": "A block of sentences about one main idea."
-  },
-  "abbreviations": {
-    "definition": "Shortened forms of words."
   },
   "acquah": {
     "definition": "Fante/Akan personal and family surname.",
