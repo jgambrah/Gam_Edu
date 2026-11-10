@@ -42,7 +42,7 @@
     "definition": "An old, famous story passed down over generations that may mix history with wonder."
   },
   "mystery": {
-    "definition": "Something that is not yet explained."
+    "definition": "Something that is hard to explain until you find the clues."
   },
   "mysteries": {
     "definition": "Puzzling things or unsolved questions that people investigate with clues and evidence."
@@ -241,7 +241,7 @@
     "definition": "People you care about, play with, and help."
   },
   "neighbour": {
-    "definition": "Someone who lives near your house or compound."
+    "definition": "A person who lives near you."
   },
   "neighbours": {
     "definition": "People who live near you."
@@ -379,7 +379,7 @@
     "definition": "Something learned or taught in class or through an experience."
   },
   "assembly": {
-    "definition": "A morning gathering of the whole school for announcements, songs, and encouragement."
+    "definition": "The local government that looks after a town or district."
   },
   "homework": {
     "definition": "Schoolwork that a pupil does at home after classes."
@@ -952,7 +952,7 @@
     "definition": "A building where a family lives."
   },
   "compound": {
-    "definition": "A group of homes and a yard that a family shares."
+    "definition": "The yard and buildings of a school or home."
   },
   "veranda": {
     "definition": "A roofed porch along the outside of a house where people sit in the shade."
@@ -1366,7 +1366,7 @@
     "definition": "A tiny flying insect whose females bite skin and can spread malaria if we do not sleep under a net."
   },
   "mosquitoes": {
-    "definition": "Tiny flying insects that breed in stagnant water and can carry malaria."
+    "definition": "Small flying insects that bite and can spread diseases like malaria."
   },
   "dinosaur": {
     "definition": "A prehistoric reptile that lived on Earth millions of years ago."
@@ -3052,7 +3052,7 @@
     "definition": "Filling you with delight, admiration, and wonder."
   },
   "fine": {
-    "definition": "Very good, thin and delicate, or bright and clear."
+    "definition": "Money that must be paid as a punishment for breaking a rule."
   },
   "nice": {
     "definition": "Pleasant, kind, and enjoyable."
@@ -4546,7 +4546,7 @@
     "definition": "Announced clearly and firmly."
   },
   "gutter": {
-    "definition": "A channel at the edge of a roof or road that carries rainwater away."
+    "definition": "A channel that carries rainwater away from buildings and roads."
   },
   "cylinder": {
     "definition": "A solid or hollow tube shape with straight sides and circular ends."
@@ -4954,7 +4954,8 @@
     "definition": "A major port and industrial city on the coast of Ghana, just east of Accra, located on the Greenwich Meridian."
   },
   "sunyani": {
-    "definition": "The clean, green regional capital city of the Bono Region of Ghana."
+    "definition": "The clean, green regional capital city of the Bono Region of Ghana. (Capital city of the Bono Region of Ghana.)",
+    "phonetic": "soon-yah-nee"
   },
   "kuntunse": {
     "definition": "The town near Accra where the Ghana Radio Astronomy Observatory satellite dish is located."
@@ -5856,6 +5857,27 @@
   "symbol": {
     "definition": "A picture or sign that stands for an idea."
   },
+  "blockage": {
+    "definition": "Something that stops water or air from flowing through."
+  },
+  "estimate": {
+    "definition": "A careful guess about a number when the exact figure is not known."
+  },
+  "enforced": {
+    "definition": "Made sure that a rule is obeyed."
+  },
+  "offence": {
+    "definition": "An act that breaks the law."
+  },
+  "dredged": {
+    "definition": "Dug mud and rubbish from the bottom of a river."
+  },
+  "compulsory": {
+    "definition": "Something you must do because a rule or law says so."
+  },
+  "germs": {
+    "definition": "Tiny living things that can make people sick."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -5896,7 +5918,7 @@
     "definition": "A small piece of paper that tells you something about what it is stuck on."
   },
   "drain": {
-    "definition": "A channel that carries water away."
+    "definition": "A channel that carries away rainwater or waste water."
   },
   "plastic": {
     "definition": "A light material used to make bottles and bags, which does not rot away."
@@ -6164,7 +6186,7 @@
     "definition": "Required by law for eligible workers and employers"
   },
   "voluntary": {
-    "definition": "Chosen freely, such as extra personal pension contributions in Tier 3"
+    "definition": "Done by choice, not because you are forced."
   },
   "verification": {
     "definition": "Checking and testing a person’s identity, skills and safety before certifying them"
@@ -6799,6 +6821,63 @@
   },
   "anthem": {
     "definition": "The official song of a country."
+  },
+  "lagoon": {
+    "definition": "A shallow body of water near the sea."
+  },
+  "disaster": {
+    "definition": "An event that causes great harm or loss."
+  },
+  "estimates": {
+    "definition": "Careful guesses about a number when the exact figure is not known."
+  },
+  "waterways": {
+    "definition": "Rivers, streams and channels that carry water."
+  },
+  "wetlands": {
+    "definition": "Low, damp areas that soak up and hold water."
+  },
+  "shelter": {
+    "definition": "A place that keeps people safe from danger or weather."
+  },
+  "silt": {
+    "definition": "Fine soil carried by water and left in drains and rivers."
+  },
+  "motion": {
+    "definition": "The statement that a debate is about."
+  },
+  "refuse": {
+    "definition": "Rubbish or waste that people throw away."
+  },
+  "cholera": {
+    "definition": "A serious illness caused by dirty water."
+  },
+  "cleanliness": {
+    "definition": "The state of being clean."
+  },
+  "sewer": {
+    "definition": "A large pipe or channel that carries waste water."
+  },
+  "deadline": {
+    "definition": "A date by which something must be finished."
+  },
+  "habits": {
+    "definition": "Things we do regularly without thinking."
+  },
+  "umuganda": {
+    "definition": "A Rwandan word for communities coming together to do work."
+  },
+  "single-use": {
+    "definition": "Made to be used once and thrown away."
+  },
+  "detectives": {
+    "definition": "People who look for clues to solve a mystery."
+  },
+  "pavement": {
+    "definition": "The paved path beside a road where people walk."
+  },
+  "floodwater": {
+    "definition": "Water that spreads over land after heavy rain."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -7919,5 +7998,117 @@
   "nkrumah": {
     "definition": "Akan name for a ninth-born child; surname of Osagyefo Dr Kwame Nkrumah, first Prime Minister and President of Ghana.",
     "phonetic": "en-kroo-mah"
+  },
+  "zakari": {
+    "definition": "Male personal name (Zechariah) common in northern Ghana and Zongo communities.",
+    "phonetic": "zah-kah-ree"
+  },
+  "korkor": {
+    "definition": "Traditional Ga-Dangme name given to a second-born daughter.",
+    "phonetic": "kor-kor"
+  },
+  "boadi": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "bwah-dee"
+  },
+  "adotey": {
+    "definition": "Traditional Ga male personal and family name.",
+    "phonetic": "ah-doh-tay"
+  },
+  "efo": {
+    "definition": "Ewe male name and respectful title meaning \"older brother\".",
+    "phonetic": "eh-foh"
+  },
+  "kaneshie": {
+    "definition": "Major market and suburb in western Accra (meaning \"under the lamp\").",
+    "phonetic": "kah-neh-shee"
+  },
+  "odawna": {
+    "definition": "Low-lying neighbourhood near the Odaw drain and Kwame Nkrumah Circle in Accra.",
+    "phonetic": "oh-daw-nah"
+  },
+  "adabraka": {
+    "definition": "Historic central neighbourhood in Accra.",
+    "phonetic": "ah-dah-brah-kah"
+  },
+  "sedinam": {
+    "definition": "Ewe unisex name meaning \"destiny / God has ordained for me\".",
+    "phonetic": "seh-dee-nahm"
+  },
+  "armah": {
+    "definition": "Traditional Ga male personal and family name (Nii Armah).",
+    "phonetic": "ar-mah"
+  },
+  "aku": {
+    "definition": "Day name for a girl born on Wednesday.",
+    "phonetic": "ah-koo"
+  },
+  "aryee": {
+    "definition": "Traditional Ga personal and family surname.",
+    "phonetic": "ah-yee"
+  },
+  "sakumo": {
+    "definition": "Coastal lagoon and Ramsar wetland site between Accra and Tema.",
+    "phonetic": "sah-koo-moh"
+  },
+  "kpeshie": {
+    "definition": "Coastal lagoon and division in eastern Accra (La/Teshie).",
+    "phonetic": "kpeh-shee"
+  },
+  "maku": {
+    "definition": "Dangme female name (often for a fourth-born daughter).",
+    "phonetic": "mah-koo"
+  },
+  "oforiwaa": {
+    "definition": "Akan female personal name (feminine of Ofori).",
+    "phonetic": "oh-foh-ree-waah"
+  },
+  "idris": {
+    "definition": "Male personal name common across Ghana.",
+    "phonetic": "ee-drees"
+  },
+  "lapaz": {
+    "definition": "Busy commercial junction and suburb along the N1 highway in Accra.",
+    "phonetic": "lah-pahz"
+  },
+  "obaa": {
+    "definition": "Akan word and affectionate female name meaning \"woman / lady\" (Ɔbaa).",
+    "phonetic": "oh-baah"
+  },
+  "samir": {
+    "definition": "Male personal name meaning \"good companion\".",
+    "phonetic": "sah-meer"
+  },
+  "tweneboah": {
+    "definition": "Akan personal and family surname (Tweneboa).",
+    "phonetic": "chweh-neh-boh-ah"
+  },
+  "odaw": {
+    "definition": "Main river and drainage channel flowing through central Accra into the Korle Lagoon.",
+    "phonetic": "oh-daw"
+  },
+  "korle": {
+    "definition": "Major lagoon in Accra (Korle Lagoon) into which the Odaw flows.",
+    "phonetic": "kor-leh"
+  },
+  "pelpuo": {
+    "definition": "Upper West Ghanaian male personal and family name meaning \"white/pure heart\".",
+    "phonetic": "pel-pwoh"
+  },
+  "tagoe": {
+    "definition": "Traditional Ga family surname.",
+    "phonetic": "tay-goh"
+  },
+  "musah": {
+    "definition": "Male personal name (Moses) common in Ghana.",
+    "phonetic": "moo-sah"
+  },
+  "abla": {
+    "definition": "Ewe day name for a girl born on Tuesday.",
+    "phonetic": "ah-blah"
+  },
+  "hamdia": {
+    "definition": "Female personal name meaning \"praiseworthy\".",
+    "phonetic": "hahm-dee-ah"
   }
 }
