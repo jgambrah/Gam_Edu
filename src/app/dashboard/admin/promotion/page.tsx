@@ -5,6 +5,7 @@ import { useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, doc, writeBatch, serverTimestamp, getDoc } from 'firebase/firestore';
+import { PROMOTION_BATCH_SIZE } from '@/lib/promotion-batches';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -185,10 +186,11 @@ export default function PromotionPage() {
             console.error("Failed to fetch settings:", e);
         }
 
-        // At most 200 pupils per batch (each pupil = 2 writes; Firestore allows 500 per batch).
+        // Small batches: the security rules look up each pupil to approve their timeline entry, and Firestore
+        // allows only 20 look-ups per batch. Bigger batches fail with "Missing or insufficient permissions".
         const batches = [writeBatch(firestore)];
         let inBatch = 0;
-        const nextBatch = () => { if (inBatch >= 200) { batches.push(writeBatch(firestore)); inBatch = 0; } inBatch++; return batches[batches.length - 1]; };
+        const nextBatch = () => { if (inBatch >= PROMOTION_BATCH_SIZE) { batches.push(writeBatch(firestore)); inBatch = 0; } inBatch++; return batches[batches.length - 1]; };
         let count = 0;
 
         const sourceClassName = classes?.find(c => c.id === sourceClassId)?.name || 'Class';
@@ -196,7 +198,9 @@ export default function PromotionPage() {
 
         studentsToMove.forEach(student => {
             const batch = nextBatch();
-            const studentRef = doc(firestore, 'students', (student as any).id || student.uid);
+            // The pupil's document id: the record and its timeline must both be addressed by it.
+            const studentDocId = (student as any).id || student.uid;
+            const studentRef = doc(firestore, 'students', studentDocId);
             
             if (destinationClassId === 'GRADUATE') {
                 // Graduation Logic: Mark status and archive
@@ -212,7 +216,7 @@ export default function PromotionPage() {
 
                 // Add timeline event
                 TimelineService.logEventBatch(firestore, batch, {
-                    studentId: student.uid,
+                    studentId: studentDocId,
                     title: "Graduation 🎓",
                     description: `Graduated from school. Completed studies from Class ${sourceClassName}.`,
                     category: 'graduation',
@@ -235,7 +239,7 @@ export default function PromotionPage() {
 
                 // Add timeline event
                 TimelineService.logEventBatch(firestore, batch, {
-                    studentId: student.uid,
+                    studentId: studentDocId,
                     title: "Class Promotion",
                     description: `Promoted from Class ${sourceClassName} to Class ${destClassName}.`,
                     category: 'promotion',

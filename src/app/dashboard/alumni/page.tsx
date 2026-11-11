@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { collection, doc, query, where, getDocs, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { chunkForPromotion } from '@/lib/promotion-batches';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -73,10 +74,11 @@ function GraduatePupilsDialog({ open, setOpen, classes, schoolId }: { open: bool
     if (!list.length) return;
     setBusy(true);
     try {
-      // Up to 200 pupils per batch (each pupil = record update + timeline entry).
-      for (let i = 0; i < list.length; i += 200) {
+      // Small batches (each pupil = record update + timeline entry): the security rules look up each pupil
+      // for the timeline entry and Firestore allows only 20 look-ups per batch.
+      for (const group of chunkForPromotion(list)) {
         const batch = writeBatch(firestore);
-        list.slice(i, i + 200).forEach(p => {
+        group.forEach(p => {
           batch.update(doc(firestore, 'students', p.id), {
             enrollmentStatus: 'Graduated',
             graduationYear: year,

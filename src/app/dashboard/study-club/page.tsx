@@ -230,9 +230,9 @@ export default function StudyClubPage() {
                           <div className="flex gap-3">
                             <span className="w-5 h-5 rounded bg-indigo-500/10 border border-indigo-400/20 text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0">2</span>
                             <div>
-                              <p className="text-xs font-bold text-indigo-200">Integrated Speech Output (TTS)</p>
+                              <p className="text-xs font-bold text-indigo-200">Optional Voice (TTS)</p>
                               <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-                                Click the speaker icon next to any explanation block to hear Dr. Gam speak back. Excellent for grammar, reading, or foreign languages.
+                                Voice is off until you ask for it. Click the speaker icon on any reply to hear it, switch on Auto-Voice at the top of the chat, or simply type &quot;read it aloud&quot;, &quot;turn on voice&quot; or &quot;stop voice&quot;.
                               </p>
                             </div>
                           </div>

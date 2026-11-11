@@ -9,6 +9,13 @@ import { useUser } from '@/firebase';
 import { chatWithAiTutor } from '@/ai/flows/ai-tutor-flow';
 import { useToast } from '@/hooks/use-toast';
 import { useCurrentSchool } from '@/hooks/use-current-school';
+import { MathRenderer } from '@/components/curriculum/MathRenderer';
+import {
+  cleanTextForSpeech,
+  detectVoiceCommand,
+  loadAutoVoicePreference,
+  saveAutoVoicePreference,
+} from '@/lib/ai-tutor/voice';
 
 // Types
 type MessageRole = 'user' | 'model';
@@ -16,6 +23,8 @@ interface ChatMessage {
   role: MessageRole;
   content: string;
   timestamp: number;
+  /** Voice on/off confirmations are answered on the device: never sent to the AI, never billed. */
+  local?: boolean;
 }
 
 interface AITutorProps {
@@ -40,8 +49,9 @@ export const AITutor: React.FC<AITutorProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
 
-  // Voice Auto-Speak state
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  // Voice Auto-Speak state. Voice is optional: OFF until the student asks for it.
+  const [autoSpeak, setAutoSpeak] = useState(false);
+  const autoSpeakRef = useRef(false);
 
   // Voice Speech Synthesis (TTS) State
   const [playingId, setPlayingId] = useState<number | null>(null);
@@ -88,6 +98,24 @@ export const AITutor: React.FC<AITutorProps> = ({
     };
   }, []);
 
+  // 1b. Restore the student's saved voice choice (defaults to off)
+  useEffect(() => {
+    const saved = loadAutoVoicePreference();
+    autoSpeakRef.current = saved;
+    setAutoSpeak(saved);
+  }, []);
+
+  // Turn auto-voice on or off and remember the choice on this device
+  const applyAutoSpeak = (enabled: boolean) => {
+    autoSpeakRef.current = enabled;
+    setAutoSpeak(enabled);
+    saveAutoVoicePreference(enabled);
+    if (!enabled && synthRef.current) {
+      synthRef.current.cancel();
+      setPlayingId(null);
+    }
+  };
+
   // 2. Cycling Loading Messages
   useEffect(() => {
     let interval: any;
@@ -123,7 +151,54 @@ export const AITutor: React.FC<AITutorProps> = ({
     scrollToBottom();
   }, [messages]);
 
+  // Voice requests typed in the chat ("turn on voice", "stop talking", "read it aloud") are
+  // handled on the device: no AI call is made and no Spark is spent.
+  const handleVoiceCommand = (textToSend: string): boolean => {
+    const command = detectVoiceCommand(textToSend);
+    if (!command) return false;
+
+    const userMsg: ChatMessage = { role: 'user', content: textToSend, timestamp: Date.now(), local: true };
+    const reply = (content: string): ChatMessage => ({ role: 'model', content, timestamp: Date.now(), local: true });
+    const replyIdx = messages.length + 1;
+
+    if (command === 'disable') {
+      applyAutoSpeak(false);
+      setMessages([...messages, userMsg, reply("🔇 Voice is off. Tap the speaker on any reply whenever you want to hear it, or type \"turn on voice\".")]);
+      return true;
+    }
+
+    if (!synthRef.current) {
+      setMessages([...messages, userMsg, reply("Sorry, this browser can't read aloud. You can still read my replies here.")]);
+      return true;
+    }
+
+    if (command === 'enable') {
+      const content = "🔊 Voice is on. I'll read my replies aloud. Type \"stop voice\" any time to turn it off.";
+      applyAutoSpeak(true);
+      setMessages([...messages, userMsg, reply(content)]);
+      speakText(content, replyIdx);
+      return true;
+    }
+
+    // 'read-last': read the latest lesson reply once, without changing the setting
+    let lastIdx = -1;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'model' && !messages[i].local) { lastIdx = i; break; }
+    }
+    if (lastIdx === -1) {
+      setMessages([...messages, userMsg, reply("There's nothing to read yet. Ask me a question first!")]);
+      return true;
+    }
+    setMessages([...messages, userMsg]);
+    speakText(messages[lastIdx].content, lastIdx);
+    return true;
+  };
+
   const handleSendMessage = async (textToSend: string) => {
+    if (textToSend.trim() && !isLoading && user && handleVoiceCommand(textToSend.trim())) {
+      return;
+    }
+
     if (!textToSend.trim() || isLoading || !user || !schoolId) {
       if (!schoolId) {
         toast({ variant: "destructive", title: "Error", description: "School context is missing." });
@@ -149,7 +224,7 @@ export const AITutor: React.FC<AITutorProps> = ({
     setMessages(currentHistory);
 
     try {
-      const historyForApi = currentHistory.slice(-10).map(m => ({ 
+      const historyForApi = currentHistory.filter(m => !m.local).slice(-10).map(m => ({ 
           role: m.role, 
           content: m.content
       }));
@@ -176,16 +251,12 @@ export const AITutor: React.FC<AITutorProps> = ({
         timestamp: Date.now()
       };
 
-      setMessages(prev => {
-        const nextMsgs = [...prev, aiMsg];
-        const newIdx = nextMsgs.length - 1;
-        if (autoSpeak) {
-          setTimeout(() => {
-            speakText(response.text, newIdx);
-          }, 50);
-        }
-        return nextMsgs;
-      });
+      setMessages([...currentHistory, aiMsg]);
+
+      // Read aloud only when the student has switched voice on
+      if (autoSpeakRef.current) {
+        speakText(response.text, currentHistory.length);
+      }
       
     } catch (error: any) {
         console.error("Chat error", error);
@@ -213,10 +284,9 @@ export const AITutor: React.FC<AITutorProps> = ({
     
     synthRef.current.cancel();
     
-    // Strip markdown elements before reading
-    const utteranceText = text
-      .replace(/[\*\#\`\_]/g, '')
-      .replace(/SHOW BOARD:\s*\w+/i, '');
+    // Drop emojis and Markdown, and read maths as words
+    const utteranceText = cleanTextForSpeech(text);
+    if (!utteranceText) return;
 
     const utterance = new SpeechSynthesisUtterance(utteranceText);
     utterance.onend = () => setPlayingId(null);
@@ -326,19 +396,14 @@ export const AITutor: React.FC<AITutorProps> = ({
           {/* Auto-Speak Toggle Button */}
           <button
             type="button"
-            onClick={() => {
-              if (autoSpeak && synthRef.current) {
-                synthRef.current.cancel();
-                setPlayingId(null);
-              }
-              setAutoSpeak(!autoSpeak);
-            }}
+            onClick={() => applyAutoSpeak(!autoSpeak)}
+            aria-pressed={autoSpeak}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all duration-200 ${
               autoSpeak 
                 ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/35 hover:bg-indigo-500/20' 
                 : 'bg-slate-900 text-slate-500 border-slate-800 hover:text-slate-400'
             }`}
-            title={autoSpeak ? "Disable Auto-Speak" : "Enable Auto-Speak"}
+            title={autoSpeak ? "Dr. Gam reads every reply aloud. Click to turn voice off." : "Voice is off. Click to have Dr. Gam read every reply aloud."}
           >
             {autoSpeak ? (
               <>
@@ -348,7 +413,7 @@ export const AITutor: React.FC<AITutorProps> = ({
             ) : (
               <>
                 <VolumeX className="w-3.5 h-3.5 animate-none" />
-                <span>Voice Muted</span>
+                <span>Voice Off</span>
               </>
             )}
           </button>
@@ -389,7 +454,11 @@ export const AITutor: React.FC<AITutorProps> = ({
                   ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-500 rounded-tr-none shadow-indigo-600/10' 
                   : 'bg-slate-900/90 text-slate-200 border-indigo-500/10 rounded-tl-none'
               }`}>
-                <div className="whitespace-pre-wrap font-medium">{msg.content}</div>
+                {msg.role === 'model' ? (
+                  <MathRenderer content={msg.content} className="font-medium !text-[13.5px]" />
+                ) : (
+                  <div className="whitespace-pre-wrap font-medium">{msg.content}</div>
+                )}
 
                 {/* Speak button for AI Responses */}
                 {msg.role === 'model' && (
@@ -401,6 +470,7 @@ export const AITutor: React.FC<AITutorProps> = ({
                         : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-indigo-400 hover:border-indigo-500/30'
                     }`}
                     title={playingId === idx ? "Stop Listening" : "Listen to Explanation"}
+                    aria-label={playingId === idx ? "Stop listening" : "Listen to this reply"}
                   >
                     {playingId === idx ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
                   </button>
