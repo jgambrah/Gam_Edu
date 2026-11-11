@@ -312,7 +312,8 @@ export default function LearningAnalyticsPage() {
         classMetrics: rawClassMetrics,
         scatterData: rawScatterData,
         studentStats: rawStudentStats,
-        aiReport: aiReport || undefined
+        // Firestore rejects `undefined` values, so the report is only included once one exists.
+        ...(aiReport ? { aiReport } : {})
       };
 
       setDoc(doc(firestore, 'learning_analytics_snapshots', snapshotDocId), snapshotPayload, { merge: true })
