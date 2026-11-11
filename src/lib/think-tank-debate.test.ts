@@ -130,9 +130,9 @@ describe('Debate XP — follows the judge\'s marks instead of a fixed number', (
     const average = calculateDebateXp({ logicScore: 6, clarityScore: 6, rebuttalScore: 5 });
     const strong = calculateDebateXp({ logicScore: 9, clarityScore: 9, rebuttalScore: 9 });
 
-    expect(weak).toBe(20);
-    expect(average).toBe(57);
-    expect(strong).toBe(90);
+    expect(weak).toBe(10);
+    expect(average).toBe(28);
+    expect(strong).toBe(45);
     expect(weak).toBeLessThan(average);
     expect(average).toBeLessThan(strong);
   });
@@ -146,6 +146,6 @@ describe('Debate XP — follows the judge\'s marks instead of a fixed number', (
   it('stays between the minimum and maximum, even with odd values', () => {
     expect(calculateDebateXp({ logicScore: 1, clarityScore: 1, rebuttalScore: 1 })).toBe(DEBATE_MIN_XP);
     expect(calculateDebateXp({ logicScore: 10, clarityScore: 10, rebuttalScore: 10 })).toBe(DEBATE_MAX_XP);
-    expect(calculateDebateXp({ logicScore: 99, clarityScore: -5, rebuttalScore: NaN })).toBe(40);
+    expect(calculateDebateXp({ logicScore: 99, clarityScore: -5, rebuttalScore: NaN })).toBe(20);
   });
 });

@@ -3,7 +3,7 @@
  *
  * The students are basic-school pupils (Basic 1 to JHS 3, about 6 to 16 years old), so the debater must
  * speak simple English and use points from a pupil's everyday life. The judge must mark what the pupil
- * actually said in THIS debate, and the XP follows the judge's marks (it used to come out as a fixed 30).
+ * actually said in THIS debate, and the XP follows the judge's marks (it used to come out as a fixed 30 for everyone).
  *
  * Kept free of server-only imports so it can be unit tested.
  */
@@ -17,7 +17,7 @@ export interface DebateScores {
 }
 
 export const DEBATE_MIN_XP = 10;
-export const DEBATE_MAX_XP = 100;
+export const DEBATE_MAX_XP = 50;
 
 const DEFAULT_AUDIENCE = 'Basic school pupils (Upper Primary to JHS 3), about 10 to 16 years old';
 
@@ -146,12 +146,13 @@ export function buildDebateJudgePrompt(input: JudgePromptInput): string {
 
 /**
  * XP for a judged debate: it follows the judge's three marks, so a stronger debate earns more.
- * An average of 1/10 earns 10 XP and 10/10 earns 100 XP.
+ * An average of 1/10 earns 10 XP, 6/10 earns 30 XP (the old flat award) and 10/10 earns 50 XP, so debates
+ * stay in balance with the other Think Tank activities.
  */
 export function calculateDebateXp(scores: DebateScores): number {
   const values = [scores.logicScore, scores.clarityScore, scores.rebuttalScore].map((v) =>
     Number.isFinite(v) ? Math.max(1, Math.min(10, v)) : 1
   );
   const average = values.reduce((a, b) => a + b, 0) / values.length;
-  return Math.max(DEBATE_MIN_XP, Math.min(DEBATE_MAX_XP, Math.round(average * 10)));
+  return Math.max(DEBATE_MIN_XP, Math.min(DEBATE_MAX_XP, Math.round(average * 5)));
 }

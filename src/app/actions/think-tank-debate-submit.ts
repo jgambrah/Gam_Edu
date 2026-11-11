@@ -915,7 +915,7 @@ export async function concludeThinkTankDebateAction(
         MAX_SELF_XP_PER_DAY - earnedToday
       );
 
-      // XP follows the judge's three marks (10 to 100). It used to work out as a fixed 30 for every debate.
+      // XP follows the judge's three marks (10 to 50). It used to work out as a fixed 30 for every debate.
       const calculatedXp = calculateDebateXp(validatedEval);
       const requestedXp = !alreadyCompleted ? calculatedXp : 0;
       const awardedXp = Math.min(requestedXp, remainingDailyAllowance);
