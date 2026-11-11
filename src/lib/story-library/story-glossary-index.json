@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts or examples that support a claim."
+    "definition": "Facts that show something is true."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -141,7 +141,7 @@
     "definition": "One of the main sections into which a longer book is divided."
   },
   "summary": {
-    "definition": "A short version of the main points."
+    "definition": "A short account of the main points."
   },
   "family": {
     "definition": "A group of people who belong together and care for one another, such as parents, children, and grandparents."
@@ -904,7 +904,7 @@
     "definition": "Towns, villages, or neighbourhoods where people live and support one another."
   },
   "neighbourhood": {
-    "definition": "The area of a town or city around someone’s home."
+    "definition": "The area around where you live, and its people."
   },
   "country": {
     "definition": "A nation with its own land, people, and government, or rural land outside cities."
@@ -1561,7 +1561,7 @@
     "definition": "Extra money paid on savings or loans, or curiosity and attention toward a topic."
   },
   "investment": {
-    "definition": "Putting money, time, or effort into something useful so it grows or helps in the future."
+    "definition": "Money, time or effort put in for a future benefit."
   },
   "investors": {
     "definition": "People who put money into a business or project to help it grow."
@@ -1669,7 +1669,7 @@
     "definition": "Taught and practised a skill until able to do it well."
   },
   "service": {
-    "definition": "Helpful work done for others or the community."
+    "definition": "Work done to help other people."
   },
   "support": {
     "definition": "To hold up, help, or encourage someone or something."
@@ -1690,7 +1690,7 @@
     "definition": "Keeping people, animals, or nature safe from harm."
   },
   "protection": {
-    "definition": "Care or shelter that keeps someone or something safe."
+    "definition": "Keeping someone safe from harm."
   },
   "care": {
     "definition": "Close attention, kindness, and protection given to someone or something."
@@ -4102,7 +4102,7 @@
     "definition": "Something a person or community holds to be true or sacred."
   },
   "honour": {
-    "definition": "High respect, honesty, and reverence shown to people, elders, or heritage."
+    "definition": "Fairness and truthfulness in how you behave."
   },
   "teach": {
     "definition": "To help someone learn a skill, subject, or lesson."
@@ -5768,7 +5768,7 @@
     "definition": "A tool that shows which way is north."
   },
   "canopy": {
-    "definition": "The roof of leaves and branches high above a forest floor."
+    "definition": "A cover that gives shade or shelter."
   },
   "hypothesis": {
     "definition": "A guess that can be tested."
@@ -5947,6 +5947,25 @@
   "invigilator": {
     "definition": "A person who supervises an examination."
   },
+  "humility": {
+    "definition": "Not thinking you are better than others."
+  },
+  "stigma": {
+    "definition": "An unfair bad opinion that people have about a group."
+  },
+  "instalment": {
+    "definition": "One of several payments that together pay a larger amount."
+  },
+  "kayayo": {
+    "definition": "A girl or woman who carries goods on her head for shoppers in a market. (A female head porter who carries shoppers’ goods in a pan in Ghanaian city markets.)",
+    "phonetic": "kah-yah-yoh"
+  },
+  "designated": {
+    "definition": "Officially chosen for a particular purpose."
+  },
+  "distinguished": {
+    "definition": "Respected and well known."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6047,7 +6066,7 @@
     "definition": "In science, a well-tested explanation supported by many lines of evidence."
   },
   "stall": {
-    "definition": "A table or small booth where things are sold in a market."
+    "definition": "A small table or shop in a market or street for selling."
   },
   "mistake": {
     "definition": "Something done wrong by accident, without meaning to."
@@ -6995,7 +7014,7 @@
     "definition": "A local rule made by a community or council."
   },
   "licences": {
-    "definition": "Official permissions to do something."
+    "definition": "Official papers that give permission to do something."
   },
   "bill": {
     "definition": "A proposed law that is debated before it is passed."
@@ -7203,6 +7222,85 @@
   },
   "misty": {
     "definition": "Filled with tears."
+  },
+  "estate": {
+    "definition": "A planned area of houses, often with its own gate and security."
+  },
+  "murals": {
+    "definition": "Large pictures painted on walls."
+  },
+  "boast": {
+    "definition": "To talk proudly about what you have."
+  },
+  "generous": {
+    "definition": "Willing to share and give."
+  },
+  "zongo": {
+    "definition": "A neighbourhood in many Ghanaian towns that grew from traders and settlers from many places, often with a large Muslim population. (Historic multi-ethnic neighbourhood in Ghanaian towns originally settled by northern and West African traders.)",
+    "phonetic": "zon-goh"
+  },
+  "imam": {
+    "definition": "A leader of prayers in a mosque."
+  },
+  "modest": {
+    "definition": "Not large or fancy; simple."
+  },
+  "accounts": {
+    "definition": "Written records of money coming in and going out."
+  },
+  "hardship": {
+    "definition": "A time of great difficulty, especially with money."
+  },
+  "persuasive": {
+    "definition": "Good at making someone agree."
+  },
+  "volunteer": {
+    "definition": "A person who gives time to help without pay."
+  },
+  "welfare": {
+    "definition": "Help and care for people’s well-being."
+  },
+  "settlement": {
+    "definition": "A place where people live, often one that grew without planning."
+  },
+  "tournament": {
+    "definition": "A series of matches between several teams."
+  },
+  "ceremony": {
+    "definition": "A formal event held to mark something special."
+  },
+  "gutters": {
+    "definition": "Channels beside a road that carry away rainwater."
+  },
+  "pavements": {
+    "definition": "The paths beside a road for people on foot."
+  },
+  "consequently": {
+    "definition": "As a result."
+  },
+  "tragedy": {
+    "definition": "A very sad and serious event."
+  },
+  "conductor": {
+    "definition": "The person on a bus who collects fares."
+  },
+  "hawker": {
+    "definition": "A person who sells goods by carrying them around."
+  },
+  "accuse": {
+    "definition": "To say that someone has done something wrong."
+  },
+  "pronouns": {
+    "definition": "Words such as he, she, it and they that replace nouns."
+  },
+  "screenings": {
+    "definition": "Health checks to find problems early."
+  },
+  "friendly": {
+    "definition": "A match played for fun rather than for a prize."
+  },
+  "duties": {
+    "definition": "Things that people are expected to do."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -8727,5 +8825,101 @@
   "anan": {
     "definition": "Fourth-born child name and surname (Annan).",
     "phonetic": "ah-nahn"
+  },
+  "sackitey": {
+    "definition": "Krobo/Dangme male birth-order name and family surname.",
+    "phonetic": "sah-kee-tay"
+  },
+  "yirenkyi": {
+    "definition": "Akuapem Akan personal and family surname.",
+    "phonetic": "yee-ren-chee"
+  },
+  "dogbe": {
+    "definition": "Ewe personal and family surname.",
+    "phonetic": "doh-gbeh"
+  },
+  "koko": {
+    "definition": "Spiced fermented millet or corn porridge eaten warm for breakfast across Ghana.",
+    "phonetic": "koh-koh"
+  },
+  "koose": {
+    "definition": "Savory fried cowpea (black-eyed pea) bean cakes often eaten with koko.",
+    "phonetic": "koo-say"
+  },
+  "halima": {
+    "definition": "Female personal name meaning \"gentle, patient\".",
+    "phonetic": "hah-lee-mah"
+  },
+  "abdulai": {
+    "definition": "West African form of Abdullah (\"servant of God\"), used as given name and surname.",
+    "phonetic": "ahb-doo-lie"
+  },
+  "wahab": {
+    "definition": "Male personal name from Al-Wahhab (\"the Giver\").",
+    "phonetic": "wah-hahb"
+  },
+  "mallam": {
+    "definition": "Respectful title for an Islamic teacher or learned scholar (from Arabic mu‘allim).",
+    "phonetic": "mah-lahm"
+  },
+  "kadiri": {
+    "definition": "West African form of Qadir, male given name and surname.",
+    "phonetic": "kah-dee-ree"
+  },
+  "obeng": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "oh-beng"
+  },
+  "latifa": {
+    "definition": "Female personal name meaning \"gentle, kind\".",
+    "phonetic": "lah-tee-fah"
+  },
+  "ansah": {
+    "definition": "Akan family surname.",
+    "phonetic": "ahn-sah"
+  },
+  "ramatu": {
+    "definition": "West African female personal name (from Rahma, \"mercy/compassion\").",
+    "phonetic": "rah-mah-too"
+  },
+  "memunatu": {
+    "definition": "West African female personal name (from Maymuna, \"blessed\").",
+    "phonetic": "meh-moo-nah-too"
+  },
+  "kporha": {
+    "definition": "Southeastern Ghanaian family surname.",
+    "phonetic": "kpor-hah"
+  },
+  "nkansah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "n-kahn-sah"
+  },
+  "awudu": {
+    "definition": "West African male personal name.",
+    "phonetic": "ah-woo-doo"
+  },
+  "rahinatu": {
+    "definition": "West African female personal name.",
+    "phonetic": "rah-hee-nah-too"
+  },
+  "zormelo": {
+    "definition": "Ewe family surname from southeastern Ghana.",
+    "phonetic": "zor-meh-loh"
+  },
+  "okuapa": {
+    "definition": "Invented Ghanaian municipal name used for story setting.",
+    "phonetic": "oh-kwah-pah"
+  },
+  "gyimah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "jee-mah"
+  },
+  "attipoe": {
+    "definition": "Ewe family surname.",
+    "phonetic": "ah-tee-poh"
+  },
+  "oduro": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "oh-doo-roh"
   }
 }
