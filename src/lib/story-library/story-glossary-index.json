@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts that show something is true."
+    "definition": "Facts or information that show that something is true."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -141,7 +141,7 @@
     "definition": "One of the main sections into which a longer book is divided."
   },
   "summary": {
-    "definition": "A short account of the main points."
+    "definition": "A short account of the main points of a longer text."
   },
   "family": {
     "definition": "A group of people who belong together and care for one another, such as parents, children, and grandparents."
@@ -643,7 +643,7 @@
     "definition": "Warm, bright light from the sun when the sky is clear."
   },
   "solar": {
-    "definition": "Relating to the sun or energy collected from sunlight."
+    "definition": "Powered by the sun’s light and heat."
   },
   "moon": {
     "definition": "The natural satellite that orbits Earth and shines in the night sky by reflecting sunlight."
@@ -1558,7 +1558,7 @@
     "definition": "Received money or respect through honest work."
   },
   "interest": {
-    "definition": "Extra money paid on savings or loans, or curiosity and attention toward a topic."
+    "definition": "Extra money paid for borrowing money, or earned for saving it."
   },
   "investment": {
     "definition": "Money, time or effort put in for a future benefit."
@@ -5708,7 +5708,7 @@
     "definition": "The young stage of some insects, before they become adults."
   },
   "cooperative": {
-    "definition": "An organisation owned and controlled by its members for their shared benefit under agreed rules."
+    "definition": "A group of people who own and run a business together."
   },
   "accessibility": {
     "definition": "Designing products and environments so that people with diverse abilities can use them effectively."
@@ -5891,7 +5891,7 @@
     "definition": "A person who looks after something for others and for the future."
   },
   "enforcement": {
-    "definition": "Making sure that people obey a law."
+    "definition": "Making sure that a rule is followed."
   },
   "remanded": {
     "definition": "Kept in custody by a court while a case continues."
@@ -5989,6 +5989,15 @@
   },
   "headwaters": {
     "definition": "The streams near the source of a river."
+  },
+  "hermetic": {
+    "definition": "Airtight; sealed so that no air can get in or out."
+  },
+  "traceability": {
+    "definition": "Being able to find out where a product came from."
+  },
+  "monopoly": {
+    "definition": "When only one buyer or seller controls a market."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6316,7 +6325,7 @@
     "definition": "Solid material such as sand or silt carried and deposited by water or wind."
   },
   "mercury": {
-    "definition": "A heavy, silvery liquid metal that is poisonous to people."
+    "definition": "A poisonous liquid metal sometimes used to catch gold."
   },
   "reclamation": {
     "definition": "Restoring damaged, mined land by refilling pits, rebuilding soil and planting vegetation"
@@ -7002,7 +7011,7 @@
     "definition": "A gas formed when a liquid or solid is heated."
   },
   "retort": {
-    "definition": "A closed container that heats a substance and traps the gas it gives off."
+    "definition": "A closed container that catches mercury vapour so that it can be reused."
   },
   "estimated": {
     "definition": "Gave a careful guess about a number when the exact figure is not known."
@@ -7044,7 +7053,7 @@
     "definition": "Findings by a court that someone is guilty."
   },
   "licence": {
-    "definition": "Official permission to do something."
+    "definition": "Official permission to do something that the law controls."
   },
   "financiers": {
     "definition": "People who provide the money for an activity."
@@ -7339,7 +7348,7 @@
     "definition": "Water found underground in soil and rocks."
   },
   "descriptive": {
-    "definition": "Giving details so a reader can picture something."
+    "definition": "Describing something so that the reader can picture it."
   },
   "reserves": {
     "definition": "Areas of land set aside and protected by law."
@@ -7391,6 +7400,66 @@
   },
   "discursive": {
     "definition": "Looking at several sides of a question."
+  },
+  "gazette": {
+    "definition": "The official government notice in which new rules and applications are published."
+  },
+  "treasurer": {
+    "definition": "The person who keeps a group’s money and records."
+  },
+  "artisanal": {
+    "definition": "Done by hand or with simple tools, usually by small groups."
+  },
+  "weevils": {
+    "definition": "Small beetles that eat stored grain."
+  },
+  "aflatoxin": {
+    "definition": "A poison made by some moulds on stored grain and nuts."
+  },
+  "recommendation": {
+    "definition": "Advice about what should be done."
+  },
+  "hubs": {
+    "definition": "Central places where something is gathered or shared."
+  },
+  "quotations": {
+    "definition": "Written prices that a seller gives for goods or services."
+  },
+  "appeal": {
+    "definition": "To ask seriously and politely for something to be done."
+  },
+  "platforms": {
+    "definition": "Websites or apps that connect people, such as farmers and buyers."
+  },
+  "seedlings": {
+    "definition": "Very young plants grown from seeds."
+  },
+  "drones": {
+    "definition": "Small flying machines that are controlled from the ground."
+  },
+  "processor": {
+    "definition": "A person or business that changes a crop into another product."
+  },
+  "cassava": {
+    "definition": "A starchy root crop that is used to make gari and other foods."
+  },
+  "cooperatives": {
+    "definition": "Groups of people who own and run a business together."
+  },
+  "federation": {
+    "definition": "A large group made up of smaller groups that work together."
+  },
+  "reported": {
+    "definition": "Told to someone else in different words."
+  },
+  "beekeeping": {
+    "definition": "Keeping bees in hives to make honey and beeswax."
+  },
+  "propolis": {
+    "definition": "A sticky substance that bees make from tree resin."
+  },
+  "discipline": {
+    "definition": "The habit of doing what you planned to do."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9103,5 +9172,169 @@
   "densu": {
     "definition": "Major river rising in the Atewa Range and supplying western Greater Accra via Weija.",
     "phonetic": "den-soo"
+  },
+  "dwomoh": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "jwoh-moh"
+  },
+  "opare": {
+    "definition": "Akuapem/Akan personal and family surname.",
+    "phonetic": "oh-pah-reh"
+  },
+  "nunoo": {
+    "definition": "Ga personal and family surname from Greater Accra.",
+    "phonetic": "noo-noh"
+  },
+  "dunkwa": {
+    "definition": "Town on the Offin River (Dunkwa-on-Offin) in Ghana’s Central Region.",
+    "phonetic": "doon-kwah"
+  },
+  "akim": {
+    "definition": "Traditional spelling of Akyem, as in Akim Oda in Ghana’s Eastern Region.",
+    "phonetic": "ah-chim"
+  },
+  "oda": {
+    "definition": "Town (Akim Oda) in Ghana’s Eastern Region.",
+    "phonetic": "oh-dah"
+  },
+  "selikem": {
+    "definition": "Ewe personal name meaning \"God has established me\".",
+    "phonetic": "seh-lee-kem"
+  },
+  "adzaho": {
+    "definition": "Ewe family surname.",
+    "phonetic": "ah-dzah-hoh"
+  },
+  "tsikata": {
+    "definition": "Ewe family surname from southeastern Ghana.",
+    "phonetic": "tsee-kah-tah"
+  },
+  "hawawu": {
+    "definition": "West African female personal name (from Hawwa).",
+    "phonetic": "hah-wah-woo"
+  },
+  "shaibu": {
+    "definition": "West African male personal and family name.",
+    "phonetic": "shah-ee-boo"
+  },
+  "hajia": {
+    "definition": "Respectful title for a Muslim woman who has completed the Hajj pilgrimage, or an elder Muslim woman.",
+    "phonetic": "hah-jee-ah"
+  },
+  "asana": {
+    "definition": "Female personal name traditionally given to the first of twins (from Hassana).",
+    "phonetic": "ah-sah-nah"
+  },
+  "tia": {
+    "definition": "Ghanaian personal and family name.",
+    "phonetic": "tee-ah"
+  },
+  "enyonam": {
+    "definition": "Ewe personal name meaning \"It is good for me\".",
+    "phonetic": "eh-nyoh-nahm"
+  },
+  "kpodo": {
+    "definition": "Ewe family surname.",
+    "phonetic": "kpoh-doh"
+  },
+  "gbeve": {
+    "definition": "Ewe family surname.",
+    "phonetic": "gbeh-veh"
+  },
+  "kwao": {
+    "definition": "Ga-Dangme personal name for a Thursday-born boy (cognate with Akan Yaw).",
+    "phonetic": "kwah-oh"
+  },
+  "boadum": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "boh-ah-doom"
+  },
+  "elinam": {
+    "definition": "Ewe personal name meaning \"God exists for me / God is with me\".",
+    "phonetic": "eh-lee-nahm"
+  },
+  "akoto": {
+    "definition": "Ghanaian personal and family surname.",
+    "phonetic": "ah-koh-toh"
+  },
+  "boampong": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "boh-ahm-pong"
+  },
+  "yartey": {
+    "definition": "Ga-Dangme personal and family surname.",
+    "phonetic": "yar-tay"
+  },
+  "sumaiya": {
+    "definition": "Female personal name (from Sumayyah).",
+    "phonetic": "soo-my-yah"
+  },
+  "aidoo": {
+    "definition": "Fante/Akan personal and family surname.",
+    "phonetic": "ay-doo"
+  },
+  "wumpini": {
+    "definition": "Dagbani personal name meaning \"God’s gift\".",
+    "phonetic": "woom-pee-nee"
+  },
+  "amankwa": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-mahn-kwah"
+  },
+  "eyram": {
+    "definition": "Ewe personal name meaning \"I am blessed\".",
+    "phonetic": "ay-rahm"
+  },
+  "hormeku": {
+    "definition": "Southeastern Ghanaian family surname.",
+    "phonetic": "hor-meh-koo"
+  },
+  "dadzie": {
+    "definition": "Fante/Akan family surname.",
+    "phonetic": "dah-jee"
+  },
+  "agyemang": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-jeh-mahng"
+  },
+  "anand": {
+    "definition": "Town in Gujarat, western India, birthplace of the Amul dairy cooperative.",
+    "phonetic": "ah-nuhnd"
+  },
+  "gujarat": {
+    "definition": "State on the western coast of India.",
+    "phonetic": "goo-juh-raht"
+  },
+  "kaira": {
+    "definition": "Historical spelling of Kheda District in Gujarat, India (Kaira District Co-operative Milk Producers’ Union).",
+    "phonetic": "ky-rah"
+  },
+  "amul": {
+    "definition": "Indian dairy cooperative brand founded in Anand, Gujarat (from Sanskrit amulya, \"priceless\").",
+    "phonetic": "ah-mool"
+  },
+  "safo": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "sah-foh"
+  },
+  "fati": {
+    "definition": "West African female personal name (short form of Fatima).",
+    "phonetic": "fah-tee"
+  },
+  "ahenkorah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-hen-koh-rah"
+  },
+  "kyeremeh": {
+    "definition": "Bono/Akan personal and family surname (ky sounds like ch).",
+    "phonetic": "cheh-reh-meh"
+  },
+  "hudu": {
+    "definition": "Northern Ghanaian male personal name.",
+    "phonetic": "hoo-doo"
+  },
+  "farmerline": {
+    "definition": "Ghanaian agritech enterprise founded in Kumasi.",
+    "phonetic": "far-mer-line"
   }
 }

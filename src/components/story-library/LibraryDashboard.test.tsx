@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the one hundred and sixty-four stories with clean production badges', async () => {
+  it('lists the one hundred and seventy-two stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(172));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(172));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -45,20 +45,25 @@ describe('LibraryDashboard (real preview data)', () => {
       'Efua and the Business That Almost Failed',
       'Efua’s Honest Business',
       'Faces That Look Like Ours',
+      'Farming Is Not for Failures',
       'Friday in the Zongo',
       'From Kumasi to the World: The Girl Who Built a Billion-Dollar Idea',
       'Grandpa Mensah’s Secret to a Peaceful Retirement',
       'June the Third',
       'Late Again, Bismark?',
       'Many Sticks, One Bundle',
+      'Milk, Middlemen and a Cooperative',
       'Ninety-Two Minutes',
       'One Trotro, Four Worlds',
       'Pause Before You Post',
       'Poku Leaves the Classroom',
+      'Six Men and One Licence',
       'The App That Created a Hundred Jobs',
       'The Bacterium in the Insulin Bottle',
+      'The Bag That Keeps the Weevils Out',
       'The Boy Who Built a Voice',
       'The Castle Built for Gold',
+      'The Chain From Seed to Shelf',
       'The Chief’s Long Night',
       'The Clay Dog of Kintampo',
       'The Cocoa Farm and the Offer',
@@ -97,6 +102,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Science Fair and the Free Rider',
       'The Sculpture That Keeps a Secret',
       'The Secrets of the Great Pyramid',
+      'The Small Plan That Can Grow',
       'The Stones of Stonehenge',
       'The Stool from the Sky',
       'The Stream Under the Road',
@@ -111,6 +117,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Wall of Notsé',
       'The Weights That Whisper Proverbs',
       'The Woman Who Asked for Trees',
+      'Two Women and a Cold Room',
       'Typing Like You Talk',
       'Voices Along the River',
       'We Built It Here in Ghana',
@@ -161,7 +168,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(172));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -170,7 +177,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(172));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -179,10 +186,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   }, 15000);
 
-  it('Efua and every Batch 1–23 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–24 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(172));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
@@ -198,9 +205,9 @@ describe('LibraryDashboard (real preview data)', () => {
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(172));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
-    expect(stats()).toContain('164');
+    expect(stats()).toContain('172');
 
     // Toggle a favourite heart on the first story card
     const firstCard = screen.getAllByTestId('story-card')[0];
