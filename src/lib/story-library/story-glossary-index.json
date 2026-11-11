@@ -655,7 +655,7 @@
     "definition": "Glowing balls of hot gas in space that shine across the night sky."
   },
   "cloud": {
-    "definition": "A white or grey shape in the sky made of tiny drops of water."
+    "definition": "A large white or grey mass of tiny water drops in the sky."
   },
   "clouds": {
     "definition": "Masses of tiny water droplets floating in the sky that can bring shade or rain."
@@ -751,7 +751,7 @@
     "definition": "The clear liquid that falls as rain, fills rivers and lakes, and keeps all living things alive."
   },
   "river": {
-    "definition": "A large natural stream of fresh water flowing in a channel to the sea or a lake."
+    "definition": "A large stream of water that flows to the sea."
   },
   "stream": {
     "definition": "A small, narrow river of flowing fresh water."
@@ -841,7 +841,7 @@
     "definition": "The solid surface of the earth that we walk and build on."
   },
   "mud": {
-    "definition": "Soft, wet earth mixed with water."
+    "definition": "Wet soft earth."
   },
   "clay": {
     "definition": "Stiff, sticky fine earth that can be shaped when wet and baked or dried into pots, bricks, or figures."
@@ -1111,7 +1111,7 @@
     "definition": "Strong, thick cords used for tying, lifting, or mooring boats."
   },
   "net": {
-    "definition": "Open-mesh material knotted from cord or thread, used for catching fish or keeping mosquitoes out."
+    "definition": "A web of string or rope used to catch fish."
   },
   "nets": {
     "definition": "Mesh barriers or fishing gear, such as treated mosquito bed-nets."
@@ -1180,10 +1180,10 @@
     "definition": "The woody arms of a tree that hold leaves, flowers, and fruit."
   },
   "root": {
-    "definition": "The part of a plant that grows down into the soil to anchor it and drink up water."
+    "definition": "The part of a plant that grows down into the soil."
   },
   "roots": {
-    "definition": "The underground parts of a plant or tree that take in water and hold the soil together."
+    "definition": "The parts of a plant that grow down into the soil."
   },
   "leaf": {
     "definition": "A flat, usually green part of a plant that uses sunlight to make food."
@@ -1201,7 +1201,7 @@
     "definition": "Put seeds or young plants into the soil so they can grow."
   },
   "seed": {
-    "definition": "A small part produced by a plant from which a new plant can grow."
+    "definition": "A small thing that a new plant can grow from."
   },
   "seeds": {
     "definition": "Tiny parts of a plant that grow into new plants."
@@ -1279,7 +1279,7 @@
     "definition": "A rich sweet food made from roasted and ground cocoa beans."
   },
   "nectar": {
-    "definition": "A sweet liquid produced inside flowers that bees, sunbirds, and butterflies drink."
+    "definition": "The sweet juice inside a flower."
   },
   "animal": {
     "definition": "A living creature that can move, eat, and sense the world around it."
@@ -1366,7 +1366,7 @@
     "definition": "A tiny flying insect whose females bite skin and can spread malaria if we do not sleep under a net."
   },
   "mosquitoes": {
-    "definition": "Small flying insects that bite and can spread diseases like malaria."
+    "definition": "Small flying insects that bite and can spread illness."
   },
   "dinosaur": {
     "definition": "A prehistoric reptile that lived on Earth millions of years ago."
@@ -1438,7 +1438,7 @@
     "definition": "The state of being strong, well, and free from illness."
   },
   "healthy": {
-    "definition": "Strong and well in body and mind, or good for your body."
+    "definition": "Well and strong, not ill."
   },
   "disease": {
     "definition": "An illness or sickness that stops the body or a plant from working properly."
@@ -3229,7 +3229,7 @@
     "definition": "Very soft, dim, or barely noticeable."
   },
   "invisible": {
-    "definition": "Unable to be seen with the eyes."
+    "definition": "Too small or clear to be seen."
   },
   "pale": {
     "definition": "Light in colour or shade."
@@ -3352,7 +3352,7 @@
     "definition": "Tasting like sugar or honey, or kind and gentle."
   },
   "hungry": {
-    "definition": "Feeling the need to eat food."
+    "definition": "Wanting to eat."
   },
   "full": {
     "definition": "Holding as much as possible, or satisfied after eating."
@@ -5681,7 +5681,7 @@
     "definition": "Separating light husks or shells from heavier seeds using a stream of air"
   },
   "compost": {
-    "definition": "Natural soil food made from rotted fruit peels, leaves and plant matter"
+    "definition": "Rotted peelings and leaves that feed the soil."
   },
   "thermostat": {
     "definition": "A sensor switch that keeps temperature steady inside an oven or dryer"
@@ -5696,7 +5696,7 @@
     "definition": "Blew away the thin cracked husks after roasting so only pure cocoa nibs remained"
   },
   "pollen": {
-    "definition": "Fine powder produced by flowers that is transferred by pollinators to fertilise other flowers"
+    "definition": "Yellow dust inside a flower that helps it make seeds."
   },
   "aquifers": {
     "definition": "Underground layers of permeable rock or sediment that hold groundwater"
@@ -5876,7 +5876,7 @@
     "definition": "Something you must do because a rule or law says so."
   },
   "germs": {
-    "definition": "Tiny living things that can make people sick."
+    "definition": "Tiny things too small to see that can make us ill."
   },
   "bioaccumulation": {
     "definition": "The build-up of a harmful substance in living things."
@@ -7460,6 +7460,36 @@
   },
   "discipline": {
     "definition": "The habit of doing what you planned to do."
+  },
+  "soap": {
+    "definition": "Something we rub on wet hands to wash them clean."
+  },
+  "rinsed": {
+    "definition": "Washed off with clean water."
+  },
+  "shoot": {
+    "definition": "The first small green part of a plant that grows up out of the soil."
+  },
+  "cycle": {
+    "definition": "Something that goes round and round in the same order."
+  },
+  "canoe": {
+    "definition": "A long, narrow boat that is moved by paddles or a motor."
+  },
+  "basin": {
+    "definition": "A wide, round bowl."
+  },
+  "pond": {
+    "definition": "A small area of still water."
+  },
+  "sack": {
+    "definition": "A big bag made of strong cloth or plastic."
+  },
+  "shoots": {
+    "definition": "The first small green parts of a plant that grow up out of the soil."
+  },
+  "pits": {
+    "definition": "Deep holes dug in the ground."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9336,5 +9366,45 @@
   "farmerline": {
     "definition": "Ghanaian agritech enterprise founded in Kumasi.",
     "phonetic": "far-mer-line"
+  },
+  "afi": {
+    "definition": "Ewe day name for a girl born on Friday.",
+    "phonetic": "ah-fee"
+  },
+  "baako": {
+    "definition": "Akan personal name and numeral meaning \"one\" or \"first\".",
+    "phonetic": "baah-koh"
+  },
+  "frema": {
+    "definition": "Akan female personal name.",
+    "phonetic": "freh-mah"
+  },
+  "kakra": {
+    "definition": "Akan name given to the younger of twins (literally \"little / younger\").",
+    "phonetic": "kah-krah"
+  },
+  "atsu": {
+    "definition": "Ewe male twin name (traditionally for the elder or male twin).",
+    "phonetic": "ah-tsoo"
+  },
+  "korkoi": {
+    "definition": "Ga birth-order name for a second-born daughter.",
+    "phonetic": "kor-koy"
+  },
+  "okai": {
+    "definition": "Ga male personal name and family surname.",
+    "phonetic": "oh-ky"
+  },
+  "doku": {
+    "definition": "Southern Ghanaian name traditionally associated with birth order after twins.",
+    "phonetic": "doh-koo"
+  },
+  "pomaa": {
+    "definition": "Akan female personal name (short form of Ampomaa / Opomaa).",
+    "phonetic": "poh-maah"
+  },
+  "nuku": {
+    "definition": "Ewe male personal name and family surname.",
+    "phonetic": "noo-koo"
   }
 }
