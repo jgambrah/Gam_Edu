@@ -1,10 +1,15 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useAuth, useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, addDoc, doc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, query, where, addDoc, doc, updateDoc, deleteDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import {
+  MATERIAL_FILE_ACCEPT, MATERIAL_MAX_RECORD_BYTES, MATERIAL_MAX_WEEK, MATERIAL_TERMS, MATERIAL_TOPICS_PER_PAGE,
+  attachmentKind, checkMaterialFile, estimateRecordBytes, filterMaterials, formatFileSize, materialClassIds,
+  mergeMaterials, parseTags, parseWeek, removedStoragePaths,
+} from '@/lib/learning-materials';
 import { Class, Student, LearningMaterial, Attachment, VideoLink, RichQuizQuestion } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, Video, Link as LinkIcon, FileSpreadsheet, File, 
   Plus, Trash2, Edit, ExternalLink, Loader2, X, Folder, UploadCloud, Globe, ArrowLeft, BookOpen, Paperclip, HelpCircle,
+  Image as ImageIcon, Music, Presentation, Search,
   Calculator, Sparkles, FolderOpen, Trophy, RotateCcw, CheckCircle2, XCircle, Play, Check, Book, BookOpenCheck, Zap, Laptop, Languages
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -60,10 +66,22 @@ const MaterialIcon = ({ type }: { type: string }) => {
     case 'Video': return <Video className="h-5 w-5 text-blue-500" />;
     case 'Spreadsheet': return <FileSpreadsheet className="h-5 w-5 text-green-500" />;
     case 'Document': return <FileText className="h-5 w-5 text-blue-700" />;
+    case 'Image': return <ImageIcon className="h-5 w-5 text-pink-500" />;
+    case 'Audio': return <Music className="h-5 w-5 text-amber-500" />;
+    case 'Slides': return <Presentation className="h-5 w-5 text-orange-500" />;
     case 'Link': return <LinkIcon className="h-5 w-5 text-slate-500" />;
     default: return <File className="h-5 w-5 text-gray-500" />;
   }
 };
+
+/** Removes uploaded files that are no longer attached to any topic. Never blocks or fails the screen. */
+async function deleteStoredFiles(paths: string[]) {
+  if (!paths.length) return;
+  const storage = getStorage();
+  const results = await Promise.allSettled(paths.map(p => deleteObject(storageRef(storage, p))));
+  const failed = results.filter(r => r.status === 'rejected').length;
+  if (failed) console.warn(`Learning materials: ${failed} unused file(s) could not be removed from storage.`);
+}
 
 // --- COMPONENT: Add/Edit Material Form ---
 function MaterialForm({ 
@@ -96,7 +114,19 @@ function MaterialForm({
 
   const [topicTitle, setTopicTitle] = useState(materialToEdit?.topicTitle || '');
   const [description, setDescription] = useState(materialToEdit?.content || '');
-  const [classId, setClassId] = useState(materialToEdit?.classId || preSelectedClassId || '');
+  // A topic can be shared with several classes. The first one is also saved as `classId` for older screens.
+  const [classIds, setClassIds] = useState<string[]>(
+    materialToEdit ? materialClassIds(materialToEdit) : (preSelectedClassId ? [preSelectedClassId] : [])
+  );
+  const classId = classIds[0] || '';
+  const toggleClass = (id: string) =>
+    setClassIds(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
+  const [term, setTerm] = useState<string>(materialToEdit?.term || 'none');
+  const [week, setWeek] = useState<string>(materialToEdit?.week ? String(materialToEdit.week) : '');
+  const [tagsText, setTagsText] = useState<string>((materialToEdit?.tags || []).join(', '));
+  // Files uploaded while this form is open. If the form is closed without saving they are removed again.
+  const sessionUploads = useRef<string[]>([]);
+  const savedRef = useRef(false);
   const [subject, setSubject] = useState(materialToEdit?.subject || preSelectedSubject || ''); 
   const [videos, setVideos] = useState<VideoLink[]>(materialToEdit?.videoLinks || []);
   const [attachments, setAttachments] = useState<Attachment[]>(materialToEdit?.attachments || []);
@@ -121,14 +151,14 @@ function MaterialForm({
 
   // Files are uploaded to the school's storage and saved as a real link. (Before, only a temporary "blob:" link
   // that worked in the uploader's own browser tab was saved — pupils and other teachers got a broken link.)
-  const MAX_FILE_BYTES = 25 * 1024 * 1024;
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
     if (!schoolId) { toast({ variant: 'destructive', title: 'Error', description: 'School not found. Please refresh.' }); return; }
-    if (file.size > MAX_FILE_BYTES) { toast({ variant: 'destructive', title: 'File Too Large', description: 'Please choose a file smaller than 25 MB.' }); return; }
-    const type = file.type.includes('pdf') ? 'PDF' : file.type.includes('spreadsheet') || file.name.endsWith('.xlsx') || file.name.endsWith('.csv') ? 'Spreadsheet' : 'Document';
+    const check = checkMaterialFile(file);
+    if (!check.ok) { toast({ variant: 'destructive', title: check.title, description: check.message }); return; }
+    const type = check.kind;
     setIsUploadingFile(true);
     try {
       const safeName = file.name.replace(/[^A-Za-z0-9._-]+/g, '_').slice(-80);
@@ -136,7 +166,8 @@ function MaterialForm({
       const fileRef = storageRef(getStorage(), path);
       await uploadBytes(fileRef, file, { contentType: file.type || 'application/octet-stream' });
       const url = await getDownloadURL(fileRef);
-      setAttachments(prev => [...prev, { name: file.name, url, type: type as any, storagePath: path } as any]);
+      sessionUploads.current.push(path);
+      setAttachments(prev => [...prev, { name: file.name, url, type, storagePath: path, size: file.size, contentType: file.type || '' }]);
       toast({ title: "File Uploaded", description: `${file.name} is attached. Remember to save the folder.` });
     } catch (err: any) {
       console.error('Material upload failed:', err);
@@ -224,8 +255,8 @@ function MaterialForm({
         return;
     }
 
-    if (!topicTitle || !classId || !subject) {
-        toast({ variant: 'destructive', title: 'Missing Fields', description: 'Topic, Class, and Subject are required.' });
+    if (!topicTitle || classIds.length === 0 || !subject) {
+        toast({ variant: 'destructive', title: 'Missing Fields', description: 'Topic, at least one Class, and Subject are required.' });
         return;
     }
 
@@ -235,21 +266,33 @@ function MaterialForm({
     }
     setIsSubmitting(true);
     try {
+      const savedAttachments = attachments.filter(a => !String(a?.url || '').startsWith('blob:'));
       const dataToSave: any = {
-        strand: "STRAND 1: CORE ACADEMICS",
-        subStrand: "Sub-strand: Subject Materials",
+        strand: materialToEdit?.strand || "STRAND 1: CORE ACADEMICS",
+        subStrand: materialToEdit?.subStrand || "Sub-strand: Subject Materials",
         topicTitle,
         content: description,
         classId,
+        classIds,
+        term: term === 'none' ? '' : term,
+        week: parseWeek(week),
+        tags: parseTags(tagsText),
         subject,
         videoLinks: videos,
         // Temporary browser links ("blob:") can never be opened by anyone else — they are not saved.
-        attachments: attachments.filter(a => !String(a?.url || '').startsWith('blob:')),
+        attachments: savedAttachments,
         practiceQuestions: questions,
         uploadedBy: currentUser.uid,
         updatedAt: serverTimestamp(),
         schoolId: schoolId, 
       };
+
+      // One topic is one database record, which cannot exceed 1 MB. Files do not count (they live in storage).
+      if (estimateRecordBytes({ ...dataToSave, updatedAt: 0 }) > MATERIAL_MAX_RECORD_BYTES) {
+        toast({ variant: 'destructive', title: 'Topic Too Large', description: 'The notes and quiz together are too long for one topic. Move long notes into an attached PDF or split this into two topics.' });
+        setIsSubmitting(false);
+        return;
+      }
 
       if (materialToEdit) {
         await updateDoc(doc(firestore, 'learning_materials', materialToEdit.id), dataToSave);
@@ -260,6 +303,13 @@ function MaterialForm({
         await addDoc(collection(firestore, 'learning_materials'), dataToSave);
         toast({ title: 'Topic Folder Saved', description: 'Your new learning materials folder has been created.' });
       }
+      // Saved: remove files that were detached in this edit (or uploaded and then removed before saving).
+      savedRef.current = true;
+      void deleteStoredFiles(removedStoragePaths(
+        [...(materialToEdit?.attachments || []), ...sessionUploads.current.map(p => ({ storagePath: p }))],
+        savedAttachments,
+        schoolId
+      ));
       setIsSubmitting(false);
       setOpen(false);
     } catch (error: any) {
@@ -268,8 +318,17 @@ function MaterialForm({
     }
   };
 
+  // Closing without saving: files uploaded in this session were never attached to a topic, so remove them.
+  const handleOpenChange = (next: boolean) => {
+    if (!next && !savedRef.current && sessionUploads.current.length > 0) {
+      void deleteStoredFiles(removedStoragePaths(sessionUploads.current.map(p => ({ storagePath: p })), [], schoolId));
+      sessionUploads.current = [];
+    }
+    setOpen(next);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[750px] h-[90vh] flex flex-col p-6 rounded-2xl">
         <DialogHeader className="shrink-0 border-b pb-4">
           <DialogTitle className="text-xl font-black flex items-center gap-2">
@@ -300,28 +359,58 @@ function MaterialForm({
                 
                 {/* 1. Core Info Tab */}
                 <TabsContent value="info" className="space-y-4 m-0 focus:outline-none">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-slate-700 font-bold dark:text-slate-300">Subject *</Label>
+                    <Select value={subject} onValueChange={setSubject}>
+                      <SelectTrigger className="border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg">
+                        <SelectValue placeholder="Select Subject" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {subjectsList.map((s, i) => <SelectItem key={`${s}-${i}`} value={s}>{s}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-slate-700 font-bold dark:text-slate-300">Assign to Classes * <span className="font-normal text-slate-400 text-xs">(choose one or more)</span></Label>
+                    <div className="flex flex-wrap gap-2 border border-slate-200 rounded-lg p-2.5 max-h-32 overflow-y-auto bg-white dark:bg-slate-950" role="group" aria-label="Assign to classes">
+                      {(classes || []).map(c => {
+                        const picked = classIds.includes(c.id);
+                        return (
+                          <button
+                            key={c.id}
+                            type="button"
+                            aria-pressed={picked}
+                            onClick={() => toggleClass(c.id)}
+                            className={cn(
+                              "px-3 py-1.5 rounded-full border text-xs font-semibold transition-colors flex items-center gap-1",
+                              picked ? "bg-violet-600 border-violet-600 text-white" : "bg-white border-slate-200 text-slate-600 hover:border-violet-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300"
+                            )}
+                          >
+                            {picked && <Check className="h-3 w-3" />}{c.name}
+                          </button>
+                        );
+                      })}
+                      {(!classes || classes.length === 0) && <span className="text-xs text-slate-400 italic">No classes found.</span>}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="space-y-2">
-                      <Label className="text-slate-700 font-bold dark:text-slate-300">Subject *</Label>
-                      <Select value={subject} onValueChange={setSubject}>
-                        <SelectTrigger className="border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg">
-                          <SelectValue placeholder="Select Subject" />
-                        </SelectTrigger>
+                      <Label className="text-slate-700 font-bold dark:text-slate-300">Term</Label>
+                      <Select value={term} onValueChange={setTerm}>
+                        <SelectTrigger className="border-slate-200 rounded-lg"><SelectValue placeholder="Any term" /></SelectTrigger>
                         <SelectContent>
-                          {subjectsList.map((s, i) => <SelectItem key={`${s}-${i}`} value={s}>{s}</SelectItem>)}
+                          <SelectItem value="none">Any term</SelectItem>
+                          {MATERIAL_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-slate-700 font-bold dark:text-slate-300">Assign to Class *</Label>
-                      <Select value={classId} onValueChange={setClassId}>
-                        <SelectTrigger className="border-slate-200 focus:border-violet-500 focus:ring-violet-500/20 rounded-lg">
-                          <SelectValue placeholder="Select Class" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {classes?.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
-                        </SelectContent>
-                      </Select>
+                      <Label className="text-slate-700 font-bold dark:text-slate-300">Week</Label>
+                      <Input type="number" min={1} max={MATERIAL_MAX_WEEK} value={week} onChange={e => setWeek(e.target.value)} placeholder="e.g. 3" className="border-slate-200 rounded-lg" />
+                    </div>
+                    <div className="space-y-2 col-span-2">
+                      <Label className="text-slate-700 font-bold dark:text-slate-300">Tags <span className="font-normal text-slate-400 text-xs">(separate with commas)</span></Label>
+                      <Input value={tagsText} onChange={e => setTagsText(e.target.value)} placeholder="e.g. revision, BECE, practical" className="border-slate-200 rounded-lg" />
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -375,13 +464,13 @@ function MaterialForm({
                   <div className="bg-slate-50 dark:bg-slate-900 border rounded-xl p-4 space-y-4">
                     <h4 className="text-xs font-black text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
                       <Paperclip className="h-4 w-4 text-emerald-500" />
-                      File Attachments (PDFs, Slide decks, Spreadsheets)
+                      File Attachments (Documents, Slides, Images, Audio, Video)
                     </h4>
                     <div className="border border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 p-4 rounded-lg text-center flex flex-col items-center justify-center cursor-pointer transition-all hover:bg-slate-50 relative">
                       <UploadCloud className="h-8 w-8 text-slate-400 mb-2" />
-                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">{isUploadingFile ? 'Uploading… please wait' : 'Click to select a file to attach (max 25 MB)'}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">Supports PDF, Documents, and Spreadsheets</p>
-                      <Input type="file" onChange={handleFileUpload} disabled={isUploadingFile} className="absolute inset-0 opacity-0 cursor-pointer" />
+                      <p className="text-xs text-slate-600 dark:text-slate-400 font-semibold">{isUploadingFile ? 'Uploading… please wait' : 'Click to select a file to attach'}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">PDF, Word, PowerPoint, Excel, images and audio up to 25 MB (images 10 MB) • video up to 95 MB</p>
+                      <Input type="file" accept={MATERIAL_FILE_ACCEPT} onChange={handleFileUpload} disabled={isUploadingFile} className="absolute inset-0 opacity-0 cursor-pointer" />
                     </div>
                   </div>
 
@@ -404,10 +493,10 @@ function MaterialForm({
                       {attachments.map((res, i) => (
                         <div key={`file-${i}`} className="flex items-center justify-between p-2 border border-slate-100 rounded-lg hover:bg-slate-50 shadow-sm transition-colors">
                           <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="bg-emerald-100 dark:bg-emerald-950/40 p-2 rounded-lg"><MaterialIcon type={res.type} /></div>
+                            <div className="bg-emerald-100 dark:bg-emerald-950/40 p-2 rounded-lg"><MaterialIcon type={attachmentKind(res)} /></div>
                             <div className="flex flex-col min-w-0">
                               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate max-w-[300px]">{res.name}</span>
-                              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">{res.type}</span>
+                              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">{attachmentKind(res)}{res.size ? ` • ${formatFileSize(res.size)}` : ''}</span>
                             </div>
                           </div>
                           <Button type="button" variant="ghost" size="icon" onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="h-7 w-7 text-red-500 rounded-full hover:bg-red-50"><X className="h-4 w-4"/></Button>
@@ -866,9 +955,32 @@ export default function LearningMaterialsPage() {
   }, [subjectsData]);
 
   // 4. Materials Query (loads all class materials to aggregate counts)
-  const { data: materials, isLoading: isLoadingMaterials, forceRefetch: forceRefetchMaterials } = useCollection<LearningMaterial>(
+  const { data: ownClassMaterials, isLoading: isLoadingMaterials, forceRefetch: forceRefetchMaterials } = useCollection<LearningMaterial>(
     useMemoFirebase(() => (firestore && activeClassId && schoolId) ? query(collection(firestore, 'learning_materials'), where('schoolId', '==', schoolId), where('classId', '==', activeClassId)) : null, [firestore, activeClassId, schoolId])
   );
+
+  // Topics shared with this class from another class (`classIds`). Kept separate so that, if this search is
+  // ever unavailable, the class's own topics above still load.
+  const [sharedMaterials, setSharedMaterials] = useState<LearningMaterial[]>([]);
+  useEffect(() => {
+    setSharedMaterials([]);
+    if (!firestore || !activeClassId || !schoolId) return;
+    return onSnapshot(
+      query(collection(firestore, 'learning_materials'), where('schoolId', '==', schoolId), where('classIds', 'array-contains', activeClassId)),
+      snap => setSharedMaterials(snap.docs.map(d => ({ ...(d.data() as LearningMaterial), id: d.id }))),
+      err => { console.warn('Shared learning materials unavailable:', err); setSharedMaterials([]); }
+    );
+  }, [firestore, activeClassId, schoolId]);
+
+  const materials = useMemo(
+    () => (ownClassMaterials ? mergeMaterials<LearningMaterial>(ownClassMaterials, sharedMaterials) : (sharedMaterials.length ? sharedMaterials : null)),
+    [ownClassMaterials, sharedMaterials]
+  );
+
+  // Topic directory: search, term filter and "show more" paging
+  const [topicSearch, setTopicSearch] = useState('');
+  const [termFilter, setTermFilter] = useState<string>('all');
+  const [visibleCount, setVisibleCount] = useState(MATERIAL_TOPICS_PER_PAGE);
 
   // Topic Count helper
   const getSubjectCount = (subName: string) => {
@@ -884,6 +996,13 @@ export default function LearningMaterialsPage() {
       .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
   }, [materials, currentSubject]);
 
+  const filteredMaterials = useMemo(
+    () => filterMaterials(sortedMaterials, { search: topicSearch, term: termFilter }),
+    [sortedMaterials, topicSearch, termFilter]
+  );
+  const pagedMaterials = useMemo(() => filteredMaterials.slice(0, visibleCount), [filteredMaterials, visibleCount]);
+  useEffect(() => { setVisibleCount(MATERIAL_TOPICS_PER_PAGE); }, [topicSearch, termFilter, currentSubject, activeClassId]);
+
   // Active topic logic
   useEffect(() => {
     if (sortedMaterials && sortedMaterials.length > 0 && !selectedTopicId) {
@@ -898,7 +1017,10 @@ export default function LearningMaterialsPage() {
 
   const handleDelete = async (id: string) => {
     try {
+        const target = materials?.find(m => m.id === id);
         await deleteDoc(doc(firestore!, 'learning_materials', id));
+        // The topic is gone: remove its uploaded files too, so storage does not fill with unused files.
+        if (target && schoolId) void deleteStoredFiles(removedStoragePaths(target.attachments, [], schoolId));
         toast({ title: "Deleted", description: "Learning material folder removed." });
         if (selectedTopicId === id) {
           setSelectedTopicId('');
@@ -1216,12 +1338,40 @@ export default function LearningMaterialsPage() {
           
           {/* Left panel: list of topics in subject */}
           <div className="lg:col-span-2 space-y-3.5">
-            <div className="bg-slate-50 dark:bg-slate-900 border rounded-xl p-3">
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Topic Folder Directory</span>
+            <div className="bg-slate-50 dark:bg-slate-900 border rounded-xl p-3 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Topic Folder Directory</span>
+                <span className="text-[10px] text-slate-400 font-bold">{filteredMaterials.length} of {sortedMaterials.length}</span>
+              </div>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                  <Input
+                    value={topicSearch}
+                    onChange={e => setTopicSearch(e.target.value)}
+                    placeholder="Search topics, notes or tags..."
+                    aria-label="Search topics"
+                    className="pl-8 h-9 text-xs bg-white dark:bg-slate-950 rounded-lg"
+                  />
+                </div>
+                <Select value={termFilter} onValueChange={setTermFilter}>
+                  <SelectTrigger className="w-[110px] h-9 text-xs bg-white dark:bg-slate-950 rounded-lg" aria-label="Filter by term"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All terms</SelectItem>
+                    {MATERIAL_TERMS.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <ScrollArea className="h-[520px] pr-2">
               <div className="space-y-2.5">
-                {sortedMaterials.map((mat) => {
+                {filteredMaterials.length === 0 && (
+                  <div className="text-center py-10 text-xs text-slate-400 italic border border-dashed rounded-xl">
+                    No topics match your search.
+                  </div>
+                )}
+                {pagedMaterials.map((mat) => {
+                  const sharedWith = materialClassIds(mat).length;
                   const isSelected = mat.id === selectedTopicId;
                   const resourceCount = (mat.videoLinks?.length || 0) + (mat.attachments?.length || 0);
                   const questionsCount = mat.practiceQuestions?.length || 0;
@@ -1277,7 +1427,7 @@ export default function LearningMaterialsPage() {
                                 <AlertDialogHeader>
                                   <AlertDialogTitle>Delete Topic Folder?</AlertDialogTitle>
                                   <AlertDialogDescription>
-                                    Are you sure you want to delete the folder "<strong>{mat.topicTitle}</strong>"? This removes all study guides, video resources, and practice questions.
+                                    Are you sure you want to delete the folder "<strong>{mat.topicTitle}</strong>"? This removes all study guides, video resources, uploaded files, and practice questions.{sharedWith > 1 ? ` It is shared with ${sharedWith} classes and will be removed for all of them.` : ''}
                                   </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
@@ -1302,6 +1452,17 @@ export default function LearningMaterialsPage() {
                         {mat.content ? mat.content.replace(/<[^>]*>/g, '') : "No notes content description available."}
                       </p>
 
+                      {(mat.term || mat.week || sharedWith > 1 || (mat.tags && mat.tags.length > 0)) && (
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {mat.term && <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 text-[10px] font-bold dark:bg-indigo-950/30 dark:text-indigo-300 dark:border-indigo-900">{mat.term}</span>}
+                          {mat.week ? <span className="px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-100 text-[10px] font-bold dark:bg-sky-950/30 dark:text-sky-300 dark:border-sky-900">Week {mat.week}</span> : null}
+                          {sharedWith > 1 && <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-900">{sharedWith} classes</span>}
+                          {(mat.tags || []).slice(0, 4).map(tag => (
+                            <span key={tag} className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-semibold dark:bg-slate-800 dark:text-slate-300">#{tag}</span>
+                          ))}
+                        </div>
+                      )}
+
                       <div className="flex flex-wrap gap-2 items-center mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
                         <span className="flex items-center gap-0.5">
                           <Paperclip className="h-3 w-3 text-slate-400" /> {resourceCount} {resourceCount === 1 ? 'resource' : 'resources'}
@@ -1319,6 +1480,16 @@ export default function LearningMaterialsPage() {
                     </div>
                   );
                 })}
+                {filteredMaterials.length > pagedMaterials.length && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setVisibleCount(c => c + MATERIAL_TOPICS_PER_PAGE)}
+                    className="w-full rounded-xl text-xs font-bold"
+                  >
+                    Show more topics ({filteredMaterials.length - pagedMaterials.length} more)
+                  </Button>
+                )}
               </div>
             </ScrollArea>
           </div>
@@ -1474,27 +1645,43 @@ export default function LearningMaterialsPage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             {activeTopic.attachments.map((file, i) => String(file.url || '').startsWith('blob:') ? (
                               <div key={i} className="flex items-center gap-3 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
-                                <MaterialIcon type={file.type} />
+                                <MaterialIcon type={attachmentKind(file)} />
                                 <span className="truncate"><strong>{file.name}</strong> — this file was never uploaded (saved before uploads worked). Please ask the teacher to attach it again.</span>
                               </div>
-                            ) : (
-                              <a 
-                                key={i} 
-                                href={file.url}  
-                                target="_blank" 
-                                rel="noreferrer" 
-                                className="flex items-center justify-between p-3.5 bg-white border border-slate-200/60 rounded-xl hover:bg-slate-50 hover:border-purple-300 shadow-sm transition-all duration-200"
-                              >
-                                <div className="flex items-center gap-3 overflow-hidden pr-2">
-                                  <div className="bg-slate-100 p-2 rounded-lg"><MaterialIcon type={file.type} /></div>
-                                  <div className="flex flex-col min-w-0">
-                                    <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300 truncate max-w-[150px]">{file.name}</span>
-                                    <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{file.type} resource</span>
-                                  </div>
+                            ) : (() => {
+                              const kind = attachmentKind(file);
+                              const canPreview = kind === 'Image' || kind === 'Audio' || kind === 'Video';
+                              return (
+                                <div key={i} className={cn("bg-white border border-slate-200/60 rounded-xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800", canPreview && kind !== 'Audio' && "md:col-span-2")}>
+                                  {kind === 'Image' && (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img src={file.url} alt={file.name} loading="lazy" className="w-full max-h-[420px] object-contain bg-slate-50 dark:bg-slate-950" />
+                                  )}
+                                  {kind === 'Video' && (
+                                    <video src={file.url} controls preload="metadata" className="w-full max-h-[420px] bg-black" aria-label={file.name} />
+                                  )}
+                                  {kind === 'Audio' && (
+                                    <audio src={file.url} controls preload="none" className="w-full px-3 pt-3" aria-label={file.name} />
+                                  )}
+                                  <a
+                                    href={file.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex items-center justify-between p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-all duration-200"
+                                  >
+                                    <div className="flex items-center gap-3 overflow-hidden pr-2">
+                                      <div className="bg-slate-100 dark:bg-slate-800 p-2 rounded-lg"><MaterialIcon type={kind} /></div>
+                                      <div className="flex flex-col min-w-0">
+                                        <span className="text-xs font-extrabold text-slate-700 dark:text-slate-300 truncate max-w-[220px]">{file.name}</span>
+                                        <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">{kind}{file.size ? ` • ${formatFileSize(file.size)}` : ''}</span>
+                                      </div>
+                                    </div>
+                                    <span className="h-8 w-8 rounded-full flex items-center justify-center shrink-0" title="Open in a new tab"><ExternalLink className="h-4 w-4 text-purple-600" /></span>
+                                  </a>
                                 </div>
-                                <Button size="sm" variant="ghost" className="h-8 w-8 rounded-full p-0"><ExternalLink className="h-4 w-4 text-purple-600" /></Button>
-                              </a>
-                            ))}
+                              );
+                            })()
+                            )}
                           </div>
                         ) : (
                           <div className="text-center py-16 text-slate-400 italic text-xs bg-white border border-dashed rounded-xl">
