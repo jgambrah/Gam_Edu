@@ -138,7 +138,7 @@ export function normalizeTeacherGuide(raw: unknown, fallbackCulturalNotes: strin
     : undefined;
 
   const factCheck = Array.isArray(g.factCheck)
-    ? g.factCheck.map((fc: any) => ({
+    ? g.factCheck.map((fc: any) => typeof fc === 'string' ? { claim: 'Curriculum fact-check', explanation: fc, reference: 'Verified curriculum reference' } : ({
         claim: fc.claim,
         explanation: fc.explanation,
         reference: fc.reference ?? fc.source ?? 'Verified curriculum reference',

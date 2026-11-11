@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the one hundred and eighty-eight stories with clean production badges', async () => {
+  it('lists the one hundred and ninety-six stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(188));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(196));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(188));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(196));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -126,18 +126,21 @@ describe('LibraryDashboard (real preview data)', () => {
       'Yaa and the Mystery of Changing Life',
     ]));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-2');
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(11));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(14));
     await waitFor(() => expect(titles().sort()).toEqual([
       'Ama and the Lost Little Goat',
       'Buzz Finds a Flower',
       'Dede and the Puddle',
+      'Five Ripe Mangoes (a counting rhyme)',
       'Goodnight, Little Compound',
       'Kente Colours (a rhyme)',
       'Little Hen’s Big Sneeze',
       'Little Turtle’s Big Swim',
+      'My Busy Body (an action rhyme)',
       'Stop, Look, Listen!',
       'The Little Star That Loved to Shine',
       'Wash, Wash, Wash!',
+      'Who Says What? (an animal sounds rhyme)',
       'Zenabu’s Net Night',
     ]));
     await user.selectOptions(screen.getByLabelText('Genre'), 'bedtime');
@@ -168,6 +171,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Slowest Drummer',
       'The Town Where Everybody Waited',
       'The Treasure Under the Mango Tree',
+      'The Trees Say Thank You (a poem)',
       'The Water Under the Water',
       'Two Ways to Say Thank You',
       'When the River Turned Brown',
@@ -178,7 +182,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(188));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(196));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -187,7 +191,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(188));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(196));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -196,10 +200,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   }, 15000);
 
-  it('Efua and every Batch 1–26 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–27 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(188));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(196));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
@@ -215,9 +219,9 @@ describe('LibraryDashboard (real preview data)', () => {
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(188));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(196));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
-    expect(stats()).toContain('188');
+    expect(stats()).toContain('196');
 
     // Toggle a favourite heart on the first story card
     const firstCard = screen.getAllByTestId('story-card')[0];
