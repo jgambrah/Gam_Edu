@@ -70,6 +70,15 @@ export class BrowserAssetCache implements Backend {
   }
   async fetchFile(path: string) { return { bytes: (await this.blob(path)).size }; }
 
+  async clearPackages() {
+    try {
+      const cache = await this.cache();
+      if (!cache || typeof cache.keys !== 'function') return;
+      const keys = await cache.keys();
+      await Promise.all(keys.filter((r) => r.url.includes('/packages/')).map((r) => cache.delete(r)));
+    } catch { /* ignore */ }
+  }
+
   async clear() {
     try { await caches.delete(this.cacheName); } catch { /* ignore */ }
     for (const u of this.urls.values()) URL.revokeObjectURL(u);

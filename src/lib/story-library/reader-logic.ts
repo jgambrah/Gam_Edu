@@ -35,6 +35,19 @@ export function buildFlow(pkg: Pick<StoryPackage, 'pages' | 'activities'>): Step
 
 export interface PageWords { tokens: string[]; sentenceOfToken: number[]; sentenceCount: number }
 
+
+/** Token indexes after which an explicit newline (`\n`) occurs in verse/rhymes, without altering `tokenize()` indices. */
+export function lineBreakAfterTokens(text: string): Set<number> {
+  const lines = text.trim().split(/\r?\n/).map((l) => tokenize(l)).filter((t) => t.length > 0);
+  const out = new Set<number>();
+  let cursor = 0;
+  for (let i = 0; i < lines.length - 1; i++) {
+    cursor += lines[i].length;
+    out.add(cursor - 1);
+  }
+  return out;
+}
+
 export function pageWords(page: Pick<PackagePage, 'text' | 'sentences'>): PageWords {
   const tokens = tokenize(page.text);
   const sentences = page.sentences ?? splitSentences(page.text);

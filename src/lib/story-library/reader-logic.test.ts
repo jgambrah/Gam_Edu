@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { buildFlow, highlightAt, lookupWord, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription } from './reader-logic';
+import { buildFlow, highlightAt, lineBreakAfterTokens, lookupWord, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription } from './reader-logic';
 import type { PackagePage } from './types';
 import { PILOT_STORIES } from './pilot/pilot-stories';
 import { textOnlyPackage } from './pilot/pilot-package';
@@ -64,6 +64,14 @@ describe('highlight', () => {
     const w = pageWords(page());
     expect(w.tokens).toHaveLength(8);
     expect(w.sentenceOfToken).toEqual([0, 0, 0, 0, 1, 1, 1, 1]);
+  });
+  it('preserves explicit verse line breaks without altering word-timing token indices', () => {
+    const couplet = 'The stars are twinkling, one, two, three.\nThey shine up high for you and me.';
+    const w = pageWords({ text: couplet });
+    expect(w.tokens).toHaveLength(15);
+    expect(w.sentenceOfToken).toEqual([0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]);
+    expect(Array.from(lineBreakAfterTokens(couplet))).toEqual([6]);
+    expect(w.tokens[6]).toBe('three.');
   });
 });
 

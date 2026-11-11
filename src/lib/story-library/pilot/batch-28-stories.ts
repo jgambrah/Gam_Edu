@@ -139,11 +139,11 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Playful voice; numbers said a little louder', characters: ['A cheerful child in a school uniform showing fingers and toes, with a friend.'],
     music: 'A bouncy tune on a small drum, going up one note for each number (placeholder)',
     pages: [
-      pg('☝️', 'One finger, two fingers, three, four, five,\nWiggle them, jiggle them, look alive!', 'A child wiggling five fingers.', 'Count on your fingers, then wiggle.'),
-      pg('🖐️', 'Six fingers, seven, eight, nine, ten,\nClap them, tap them, and start again!', 'A child holding up ten fingers and clapping.', 'Count to ten, then clap.'),
-      pg('🦶', 'Ten little toes in my shoes all day,\nThey wiggle at night when I stretch and play.', 'A child wiggling bare toes on a mat.', 'Wiggle your toes if you can.'),
-      pg('👋', 'Wave to a friend with my hand held high,\nShake hands kindly and say hi.', 'Two children shaking hands and smiling.', 'Wave, then shake a friend’s hand gently.'),
-      pg('🧼', 'Wash my fingers, one by one,\nScrub them clean until we are done.', 'A child washing hands with soap and water.', 'Pretend to wash each finger.'),
+      pg('☝️', 'One finger, two fingers, three, four, five.\nWiggle them, jiggle them, look alive!', 'A child wiggling five fingers.', 'Count on your fingers, then wiggle.'),
+      pg('🖐️', 'Six fingers, seven, eight, nine, ten.\nClap them, tap them, and start again!', 'A child holding up ten fingers and clapping.', 'Count to ten, then clap.'),
+      pg('🦶', 'Ten little toes in my shoes all day.\nThey wiggle at night when I stretch and play.', 'A child wiggling bare toes on a mat.', 'Wiggle your toes if you can.'),
+      pg('👋', 'Wave to a friend with my hand held high.\nShake hands kindly and say hi.', 'Two children shaking hands and smiling.', 'Wave, then shake a friend’s hand gently.'),
+      pg('🧼', 'Wash my fingers, one by one.\nScrub them clean until we are done.', 'A child washing hands with soap and water.', 'Pretend to wash each finger.'),
     ],
     activities: [
       { id: 'tf-c1', type: 'comprehension', afterPage: 3, question: 'How many toes does the child have in all?', options: ['Ten', 'Five', 'Twenty'], correctIndex: 0 },
@@ -182,11 +182,11 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Lively market voice with a smile', characters: ['A child with a mother at a market stall, with heaps of tomatoes, bananas, pawpaw, green leaves and yams.'],
     music: 'A light shaker and a hand-drum with a market-call tune (placeholder)',
     pages: [
-      pg('🍅', 'Red, red, red are the tomatoes in a heap,\nPile them up high, but not too steep.', 'A neat heap of red tomatoes at a stall.', 'Point to something red.'),
-      pg('🍌', 'Yellow, yellow, bananas in a bunch,\nPeel one slowly for a tasty lunch.', 'A bunch of yellow bananas.', 'Point to something yellow.'),
-      pg('🥭', 'Orange is the pawpaw, ripe and sweet,\nScoop it with a spoon, a juicy treat.', 'A sliced pawpaw with orange flesh.', 'Point to something orange.'),
-      pg('🥬', 'Green, green, green are the leaves we buy,\nGood for our bodies, so wash them dry.', 'A basket of green leaves.', 'Point to something green.'),
-      pg('🍠', 'Brown is the yam, strong and round,\nMama carries it home, safe and sound.', 'A brown yam in a basket.', 'Point to something brown.'),
+      pg('🍅', 'Red, red, red are the tomatoes in a heap.\nPile them up high, but not too steep.', 'A neat heap of red tomatoes at a stall.', 'Point to something red.'),
+      pg('🍌', 'Yellow, yellow, bananas in a bunch.\nPeel one slowly for a tasty lunch.', 'A bunch of yellow bananas.', 'Point to something yellow.'),
+      pg('🥭', 'Orange is the pawpaw, ripe and sweet.\nScoop it with a spoon, a juicy treat.', 'A sliced pawpaw with orange flesh.', 'Point to something orange.'),
+      pg('🥬', 'Green, green, green are the leaves we buy.\nGood for our bodies, so wash them dry.', 'A basket of green leaves.', 'Point to something green.'),
+      pg('🍠', 'Brown is the yam, strong and round.\nMama carries it home, safe and sound.', 'A brown yam in a basket.', 'Point to something brown.'),
     ],
     activities: [
       { id: 'cm-c1', type: 'comprehension', afterPage: 2, question: 'What colour are the bananas?', options: ['Yellow', 'Red', 'Blue'], correctIndex: 0 },
@@ -224,10 +224,10 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Bright, brisk voice', characters: ['A child with a toothbrush and a cup of clean water at a basin, smiling with clean teeth.'],
     music: 'A quick two-beat rhythm, like brushing, on a shaker (placeholder)',
     pages: [
-      pg('🪥', 'Brush, brush, brush in the morning light,\nUp and down, left and right.', 'A child brushing teeth in the morning.', 'Pretend to brush up and down, then side to side.'),
-      pg('🦷', 'Little teeth, little teeth, all in a row,\nBrush them gently, nice and slow.', 'A child smiling to show clean teeth.', 'Smile and tap your teeth lightly.'),
-      pg('🌙', 'Brush, brush, brush when the day is done,\nBefore we sleep, we brush each one.', 'A child brushing teeth at night.', 'Yawn, then pretend to brush.'),
-      pg('💧', 'Spit it out and rinse with care,\nA clean fresh smile is ready to share.', 'A child rinsing with water from a cup.', 'Pretend to rinse and spit.'),
+      pg('🪥', 'Brush, brush, brush in the morning light,\nup and down, left and right.', 'A child brushing teeth in the morning.', 'Pretend to brush up and down, then side to side.'),
+      pg('🦷', 'Little teeth, little teeth, all in a row.\nBrush them gently, nice and slow.', 'A child smiling to show clean teeth.', 'Smile and tap your teeth lightly.'),
+      pg('🌙', 'Brush, brush, brush when the day is done.\nBefore we sleep, we brush each one.', 'A child brushing teeth at night.', 'Yawn, then pretend to brush.'),
+      pg('💧', 'Spit it out and rinse with care.\nA clean fresh smile is ready to share.', 'A child rinsing with water from a cup.', 'Pretend to rinse and spit.'),
     ],
     activities: [
       { id: 'bs-c1', type: 'comprehension', afterPage: 3, question: 'When do we brush our teeth?', options: ['In the morning and at night', 'Only on Sundays', 'Never'], correctIndex: 0 },
@@ -267,10 +267,10 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Very soft, slow and gentle, almost a whisper at the end', characters: ['A child in bed by a window, with a parent sitting close, and a moon and stars outside.'],
     music: 'A slow, soft hum with a gentle shaker (placeholder)',
     pages: [
-      pg('🌙', 'The moon is up, the day is through,\nThe night is calm and cool and blue.', 'A moon over a quiet village at night.', 'Slow and soft.'),
-      pg('⭐', 'The stars are twinkling, one, two, three,\nThey shine up high for you and me.', 'Stars in a dark blue sky.', 'Count the stars softly.'),
-      pg('🤗', 'A gentle hug and a kiss goodnight,\nThe room is cosy, the lamp is light.', 'A parent hugging a child in bed.', 'Very gentle.'),
-      pg('😴', 'Close your eyes and breathe out slow,\nSleep well, little one. Dream you go.', 'A sleeping child under a blanket.', 'Whisper the last line.'),
+      pg('🌙', 'The moon is up. The day is through.\nThe night is calm and cool and blue.', 'A moon over a quiet village at night.', 'Slow and soft.'),
+      pg('⭐', 'The stars are twinkling, one, two, three.\nThey shine up high for you and me.', 'Stars in a dark blue sky.', 'Count the stars softly.'),
+      pg('🤗', 'A gentle hug and a kiss goodnight.\nThe room is cosy. The lamp is light.', 'A parent hugging a child in bed.', 'Very gentle.'),
+      pg('😴', 'Close your eyes and breathe out slow.\nSleep well, little one. Dream you go.', 'A sleeping child under a blanket.', 'Whisper the last line.'),
     ],
     activities: [
       { id: 'ms-c1', type: 'comprehension', afterPage: 2, question: 'What is twinkling in the sky?', options: ['The stars', 'The sun', 'The kites'], correctIndex: 0 },
@@ -308,11 +308,11 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'A different tone for each feeling: bright, soft, firm, shaky', characters: ['Four children showing happy, sad, cross and scared faces, with a teacher kneeling to talk with them.'],
     music: 'A tune that changes with each feeling: bright, slow, firm, then soft (placeholder)',
     pages: [
-      pg('😀', 'When I am happy, I jump and sing,\nI share my smile with everything.', 'A child jumping with joy.', 'Bright and bouncy.'),
-      pg('😢', 'When I am sad, I tell a friend,\nA hug and a talk can help me mend.', 'A child talking to a friend.', 'Soft and slow.'),
-      pg('😠', 'When I am cross, I count to ten,\nThen I speak, and not shout, again.', 'A child counting on fingers.', 'Firm and steady.'),
-      pg('😨', 'When I am scared, I do not hide,\nI ask a grown-up to stay by my side.', 'A child holding a teacher’s hand.', 'Soft and shaky, then calm.'),
-      pg('🫶', 'All feelings are fine, they come and go,\nBe kind to yourself, and let them flow.', 'Children sitting in a circle with calm faces.', 'Warm and slow.'),
+      pg('😀', 'When I am happy, I jump and sing.\nI share my smile with everything.', 'A child jumping with joy.', 'Bright and bouncy.'),
+      pg('😢', 'When I am sad, I tell a friend.\nA hug and a talk can help me mend.', 'A child talking to a friend.', 'Soft and slow.'),
+      pg('😠', 'When I am cross, I count to ten.\nThen I speak, and not shout, again.', 'A child counting on fingers.', 'Firm and steady.'),
+      pg('😨', 'When I am scared, I do not hide.\nI ask a grown-up to stay by my side.', 'A child holding a teacher’s hand.', 'Soft and shaky, then calm.'),
+      pg('🫶', 'All feelings are fine. They come and go.\nBe kind to yourself, and let them flow.', 'Children sitting in a circle with calm faces.', 'Warm and slow.'),
     ],
     activities: [
       { id: 'fs-c1', type: 'comprehension', afterPage: 3, question: 'What does the child do when cross?', options: ['Counts to ten', 'Shouts', 'Runs away'], correctIndex: 0 },
@@ -350,11 +350,11 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Marching voice with small light taps', characters: ['A line of ants carrying crumbs along a path to a small ant hill, watched from a safe distance by two curious children.'],
     music: 'A light marching tap on a tin, small and steady (placeholder)',
     pages: [
-      pg('🐜', 'Left, right, left, right, ants on a track,\nCarrying crumbs on each tiny back.', 'A line of ants on a path, each carrying a crumb.', 'Tap fingers like tiny feet.'),
-      pg('🍞', 'A crumb is big when you are small,\nBut ants can carry it, one and all.', 'Several ants carrying a bread crumb.', 'Show a heavy load and smile.'),
-      pg('🏔️', 'Down the path to their hill they go,\nA house of tunnels, deep below.', 'Ants entering an earth mound.', 'Lower your voice like going underground.'),
-      pg('🤝', 'Together they work, and together they eat,\nNo ant is lonely, no ant is beat.', 'Ants sharing food in a nest.', 'Link arms.'),
-      pg('👀', 'We watch them from far, we do not touch,\nThey are small, but they do very much.', 'Two children watching ants from a few steps away.', 'Stand back and look carefully.'),
+      pg('🐜', 'Left, right, left, right, ants on a track,\ncarrying crumbs on each tiny back.', 'A line of ants on a path, each carrying a crumb.', 'Tap fingers like tiny feet.'),
+      pg('🍞', 'A crumb is big when you are small,\nbut ants can carry it, one and all.', 'Several ants carrying a bread crumb.', 'Show a heavy load and smile.'),
+      pg('🏔️', 'Down the path to their hill they go,\na house of tunnels, deep below.', 'Ants entering an earth mound.', 'Lower your voice like going underground.'),
+      pg('🤝', 'Together they work, and together they eat.\nNo ant is lonely. No ant is beat.', 'Ants sharing food in a nest.', 'Link arms.'),
+      pg('👀', 'We watch them from far. We do not touch.\nThey are small, but they do very much.', 'Two children watching ants from a few steps away.', 'Stand back and look carefully.'),
     ],
     activities: [
       { id: 'ap-c1', type: 'comprehension', afterPage: 2, question: 'Why can the ants carry a crumb?', options: ['They work together', 'They use a basket', 'They fly'], correctIndex: 0 },
@@ -394,11 +394,11 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Strong, cheerful voice', characters: ['Children in school uniforms sweeping, putting litter in a bin and watering a flower bed, with a teacher helping.'],
     music: 'A work-chant beat with claps (placeholder)',
     pages: [
-      pg('🧹', 'Sweep, sweep, sweep, the classroom floor,\nBrush the dust right out the door.', 'Children sweeping a classroom.', 'Sweep with strong arms.'),
-      pg('🚮', 'Pick up the paper, pick up the peel,\nPut it in the bin, that is the deal.', 'Children picking up litter and using a bin.', 'Pretend to pick up and drop in a bin.'),
-      pg('🌸', 'Water the flowers, give them a drink,\nA green school garden, what do you think?', 'Children watering a flower bed.', 'Pretend to water the plants.'),
-      pg('🧼', 'Wash your hands with soap and clean water,\nGerms wash away from every son and daughter.', 'Children washing hands at a basin.', 'Rub your hands.'),
-      pg('🤝', 'One hand cannot sweep it all,\nTogether we keep our school standing tall.', 'Children working together.', 'Join hands.'),
+      pg('🧹', 'Sweep, sweep, sweep, the classroom floor.\nBrush the dust right out the door.', 'Children sweeping a classroom.', 'Sweep with strong arms.'),
+      pg('🚮', 'Pick up the paper, pick up the peel.\nPut it in the bin. That is the deal.', 'Children picking up litter and using a bin.', 'Pretend to pick up and drop in a bin.'),
+      pg('🌸', 'Water the flowers. Give them a drink.\nA green school garden, what do you think?', 'Children watering a flower bed.', 'Pretend to water the plants.'),
+      pg('🧼', 'Wash your hands with soap and clean water.\nGerms wash away from every son and daughter.', 'Children washing hands at a basin.', 'Rub your hands.'),
+      pg('🤝', 'One hand cannot sweep it all.\nTogether we keep our school standing tall.', 'Children working together.', 'Join hands.'),
     ],
     activities: [
       { id: 'cs-c1', type: 'comprehension', afterPage: 2, question: 'Where does the litter go?', options: ['In the bin', 'On the floor', 'In the drain'], correctIndex: 0 },
@@ -434,11 +434,11 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Calm, wondering voice', characters: ['A child in a school uniform looking up at the daytime sky and at the Moon at night from a compound, with a teacher pointing at a model of the Earth.'],
     music: 'A slow, spinning flute tune and a soft drum (placeholder)',
     pages: [
-      pg('☀️', 'The Sun is a star that is far, far away,\nIt gives us the light and the warmth of day.', 'A bright sun over a village.', 'Slow and wondering. Never look straight at the Sun.'),
-      pg('🌍', 'The Earth is a ball that is turning round,\nOnce in a day, without a sound.', 'A globe with a small arrow showing it turns.', 'Turn slowly in a circle as you say it.'),
-      pg('🌗', 'When our side turns away, it is night,\nThe sky grows dark and the stars shine bright.', 'A village at night with stars.', 'Lower your voice.'),
-      pg('🌙', 'The Moon goes round us, slow and wide,\nWith the Sun’s light shining on its side.', 'The Moon above the Earth.', 'Move a hand in a circle around your head.'),
-      pg('🔭', 'So look and wonder, and ask and learn,\nThe sky has secrets for each in turn.', 'A child looking up at the sky with a notebook.', 'Warm and curious.'),
+      pg('☀️', 'The Sun is a star that is far, far away.\nIt gives us the light and the warmth of day.', 'A bright sun over a village.', 'Slow and wondering. Never look straight at the Sun.'),
+      pg('🌍', 'The Earth is a ball that is turning round,\nonce in a day, without a sound.', 'A globe with a small arrow showing it turns.', 'Turn slowly in a circle as you say it.'),
+      pg('🌗', 'When our side turns away, it is night.\nThe sky grows dark and the stars shine bright.', 'A village at night with stars.', 'Lower your voice.'),
+      pg('🌙', 'The Moon goes round us, slow and wide,\nwith the Sun’s light shining on its side.', 'The Moon above the Earth.', 'Move a hand in a circle around your head.'),
+      pg('🔭', 'So look and wonder, and ask and learn.\nThe sky has secrets for each in turn.', 'A child looking up at the sky with a notebook.', 'Warm and curious.'),
     ],
     activities: [
       { id: 'se-c1', type: 'comprehension', afterPage: 2, question: 'What makes day and night?', options: ['The Earth turning', 'The Moon moving fast', 'The clouds'], correctIndex: 0 },
@@ -466,3 +466,4 @@ export const BATCH_28_STORIES: PilotStory[] = [
     },
   }),
 ];
+

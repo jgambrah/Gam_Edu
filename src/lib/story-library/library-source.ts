@@ -92,6 +92,7 @@ export async function createPreviewSource(
   if (kv.get<string>('meta:sig') !== sig) {
     kv.clear();
     kv.set('meta:sig', sig);
+    await assets.clearPackages();
   }
   const catalogue = new CatalogueClient(backend, kv, { pageSize: 50, refresh: 'refetch' });
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });

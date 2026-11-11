@@ -4,7 +4,7 @@ import type { CatalogueEntry, StoryPackage } from '@/lib/story-library/types';
 import type { LibrarySource, StoryPreviewInfo } from '@/lib/story-library/library-source';
 import type { ReadMode } from '@/lib/story-library/lazy-loader';
 import { presentationFor } from '@/lib/story-library/classification';
-import { buildFlow, cleanWord, highlightAt, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
+import { buildFlow, cleanWord, highlightAt, lineBreakAfterTokens, lookupWordHelp, modeInfo, NO_HIGHLIGHT, pageWords, READ_MODES, scoreResults, syncDescription, type HighlightState } from '@/lib/story-library/reader-logic';
 import { GHANAIAN_PRONUNCIATIONS } from '@/lib/story-library/pronunciation/dictionary';
 import { buildSpokenScript } from '@/lib/story-library/pronunciation/apply';
 import { loadProgress, saveProgress } from '@/lib/story-library/progress-store';
@@ -495,6 +495,7 @@ export function StorybookReader({
 
   const art = info?.pages?.[page ? page.n - 1 : 0];
   const words = page ? pageWords(page) : undefined;
+  const lineBreaks = page ? lineBreakAfterTokens(page.text) : undefined;
   const fontSize = `clamp(1.15rem, 5.4vw, ${1.35 * presentation.textScale}rem)`;
   const [c0, c1] = info?.palette ?? entry?.palette ?? ['#e2e8f0', '#94a3b8'];
 
@@ -659,7 +660,7 @@ export function StorybookReader({
                   <span key={i}>
                     <button type="button" onClick={() => tapWord(t)} aria-label={`${t} (tap for help)`}
                       data-active={active ? 'true' : undefined}
-                      className={`rounded-lg px-1 py-0.5 text-inherit transition-colors motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-indigo-400 ${active && hl.level === 'word' ? 'bg-yellow-300 shadow' : active ? 'bg-yellow-200' : inSentence ? 'bg-yellow-50' : 'hover:bg-indigo-50'}`}>{t}</button>{' '}
+                      className={`rounded-lg px-1 py-0.5 text-inherit transition-colors motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-indigo-400 ${active && hl.level === 'word' ? 'bg-yellow-300 shadow' : active ? 'bg-yellow-200' : inSentence ? 'bg-yellow-50' : 'hover:bg-indigo-50'}`}>{t}</button>{' '}{lineBreaks?.has(i) ? <br /> : null}
                   </span>
                 );
               })}
