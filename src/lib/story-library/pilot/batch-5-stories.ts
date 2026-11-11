@@ -1107,7 +1107,7 @@ export const BATCH_5_STORIES: PilotStory[] = [
         narration: 'Show the proper division of labour: adult crews handle heavy drains and trucks, adult traders maintain covered bins, and children stay safe.',
       },
       {
-        text: 'A month later, when the first heavy rains fell, rainwater flowed smoothly through the clear street drains without flooding a single shop! Market Street had new lidded bins, the skip truck arrived every Tuesday and Friday, and four more schools copied Primary 4’s recycling barrels. Yao and Akosua grinned at each other. Nobody was waiting for "Somebody" anymore, because citizens and local government were finally working together!',
+        text: 'A month later, when the first heavy rains fell, rainwater flowed smoothly through the clear street drains without flooding a single shop! Market Street had new lidded bins, the skip truck arrived every Tuesday and Friday, and four more schools copied Primary 4’s recycling barrels. Yao and Akosua grinned at each other. Nobody was waiting for ‘Somebody’ anymore, because citizens and local government were finally working together!',
         alt: 'On a clean, bright Market Street with lidded bins and clear drains, Yao, Akosua, Mr Mensah and Honourable Tetteh smile together.',
         motif: '🌈🏘️',
         brief: 'Clean, vibrant Ghanaian street after a light rain: clear drains, neat lidded bins along the pavement, smiling shopkeepers, and Yao, Akosua, Mr Mensah and Honourable Tetteh giving a thumbs-up.',

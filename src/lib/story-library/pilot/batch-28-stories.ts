@@ -148,7 +148,7 @@ export const BATCH_28_STORIES: PilotStory[] = [
     activities: [
       { id: 'tf-c1', type: 'comprehension', afterPage: 3, question: 'How many toes does the child have in all?', options: ['Ten', 'Five', 'Twenty'], correctIndex: 0 },
       { id: 'tf-ph', type: 'phonics', afterPage: 1, targetSound: 'ive', prompt: 'Which word rhymes with five?', options: ['alive', 'ten', 'clap'], correctIndexes: [0] },
-      { id: 'tf-ph2', type: 'phonics', afterPage: 5, targetSound: 'un', prompt: 'Which words rhyme with one?', options: ['done', 'wash', 'clean'], correctIndexes: [0] },
+      { id: 'tf-ph2', type: 'phonics', afterPage: 5, targetSound: 'un', prompt: 'Which word rhymes with one?', options: ['done', 'wash', 'clean'], correctIndexes: [0] },
       { id: 'tf-sel', type: 'sel', afterPage: 5, prompt: 'How do you feel when you wave to a friend?', feelingOptions: ['Happy', 'Shy', 'Friendly', 'Proud'] },
     ],
     glossary: [
@@ -183,9 +183,9 @@ export const BATCH_28_STORIES: PilotStory[] = [
     music: 'A light shaker and a hand-drum with a market-call tune (placeholder)',
     pages: [
       pg('🍅', 'Red, red, red are the tomatoes in a heap.\nPile them up high, but not too steep.', 'A neat heap of red tomatoes at a stall.', 'Point to something red.'),
-      pg('🍌', 'Yellow, yellow, bananas in a bunch.\nPeel one slowly for a tasty lunch.', 'A bunch of yellow bananas.', 'Point to something yellow.'),
+      pg('🍌', 'Yellow, yellow are bananas in a bunch.\nPeel one slowly for a tasty lunch.', 'A bunch of yellow bananas.', 'Point to something yellow.'),
       pg('🥭', 'Orange is the pawpaw, ripe and sweet.\nScoop it with a spoon, a juicy treat.', 'A sliced pawpaw with orange flesh.', 'Point to something orange.'),
-      pg('🥬', 'Green, green, green are the leaves we buy.\nGood for our bodies, so wash them dry.', 'A basket of green leaves.', 'Point to something green.'),
+      pg('🥬', 'Green, green, green are the leaves we buy.\nWash them clean and pat them dry.', 'A basket of green leaves.', 'Point to something green.'),
       pg('🍠', 'Brown is the yam, strong and round.\nMama carries it home, safe and sound.', 'A brown yam in a basket.', 'Point to something brown.'),
     ],
     activities: [
@@ -232,7 +232,7 @@ export const BATCH_28_STORIES: PilotStory[] = [
     activities: [
       { id: 'bs-c1', type: 'comprehension', afterPage: 3, question: 'When do we brush our teeth?', options: ['In the morning and at night', 'Only on Sundays', 'Never'], correctIndex: 0 },
       { id: 'bs-ph', type: 'phonics', afterPage: 1, targetSound: 'ight', prompt: 'Which word rhymes with light?', options: ['right', 'brush', 'down'], correctIndexes: [0] },
-      { id: 'bs-ph2', type: 'phonics', afterPage: 2, targetSound: 'ow', prompt: 'Which words rhyme with row?', options: ['slow', 'teeth', 'gentle'], correctIndexes: [0] },
+      { id: 'bs-ph2', type: 'phonics', afterPage: 2, targetSound: 'ow', prompt: 'Which word rhymes with row?', options: ['slow', 'teeth', 'gentle'], correctIndexes: [0] },
       { id: 'bs-sel', type: 'sel', afterPage: 4, prompt: 'How do you feel with a clean mouth?', feelingOptions: ['Fresh', 'Happy', 'Proud', 'Sleepy'] },
     ],
     glossary: [
@@ -269,8 +269,8 @@ export const BATCH_28_STORIES: PilotStory[] = [
     pages: [
       pg('🌙', 'The moon is up. The day is through.\nThe night is calm and cool and blue.', 'A moon over a quiet village at night.', 'Slow and soft.'),
       pg('⭐', 'The stars are twinkling, one, two, three.\nThey shine up high for you and me.', 'Stars in a dark blue sky.', 'Count the stars softly.'),
-      pg('🤗', 'A gentle hug and a kiss goodnight.\nThe room is cosy. The lamp is light.', 'A parent hugging a child in bed.', 'Very gentle.'),
-      pg('😴', 'Close your eyes and breathe out slow.\nSleep well, little one. Dream you go.', 'A sleeping child under a blanket.', 'Whisper the last line.'),
+      pg('🤗', 'A gentle hug and a kiss goodnight.\nThe room is cosy, with soft warm light.', 'A parent hugging a child in bed.', 'Very gentle.'),
+      pg('😴', 'Close your eyes and breathe out slow.\nOff to gentle dreams you go.', 'A sleeping child under a blanket.', 'Whisper the last line.'),
     ],
     activities: [
       { id: 'ms-c1', type: 'comprehension', afterPage: 2, question: 'What is twinkling in the sky?', options: ['The stars', 'The sun', 'The kites'], correctIndex: 0 },
@@ -310,7 +310,7 @@ export const BATCH_28_STORIES: PilotStory[] = [
     pages: [
       pg('😀', 'When I am happy, I jump and sing.\nI share my smile with everything.', 'A child jumping with joy.', 'Bright and bouncy.'),
       pg('😢', 'When I am sad, I tell a friend.\nA hug and a talk can help me mend.', 'A child talking to a friend.', 'Soft and slow.'),
-      pg('😠', 'When I am cross, I count to ten.\nThen I speak, and not shout, again.', 'A child counting on fingers.', 'Firm and steady.'),
+      pg('😠', 'When I am cross, I count to ten.\nI take a calm breath and speak again.', 'A child counting on fingers.', 'Firm and steady.'),
       pg('😨', 'When I am scared, I do not hide.\nI ask a grown-up to stay by my side.', 'A child holding a teacher’s hand.', 'Soft and shaky, then calm.'),
       pg('🫶', 'All feelings are fine. They come and go.\nBe kind to yourself, and let them flow.', 'Children sitting in a circle with calm faces.', 'Warm and slow.'),
     ],
@@ -353,13 +353,13 @@ export const BATCH_28_STORIES: PilotStory[] = [
       pg('🐜', 'Left, right, left, right, ants on a track,\ncarrying crumbs on each tiny back.', 'A line of ants on a path, each carrying a crumb.', 'Tap fingers like tiny feet.'),
       pg('🍞', 'A crumb is big when you are small,\nbut ants can carry it, one and all.', 'Several ants carrying a bread crumb.', 'Show a heavy load and smile.'),
       pg('🏔️', 'Down the path to their hill they go,\na house of tunnels, deep below.', 'Ants entering an earth mound.', 'Lower your voice like going underground.'),
-      pg('🤝', 'Together they work, and together they eat.\nNo ant is lonely. No ant is beat.', 'Ants sharing food in a nest.', 'Link arms.'),
+      pg('🤝', 'Together they march on six tiny feet.\nTogether they work, and together they eat.', 'Ants sharing food in a nest.', 'Link arms.'),
       pg('👀', 'We watch them from far. We do not touch.\nThey are small, but they do very much.', 'Two children watching ants from a few steps away.', 'Stand back and look carefully.'),
     ],
     activities: [
-      { id: 'ap-c1', type: 'comprehension', afterPage: 2, question: 'Why can the ants carry a crumb?', options: ['They work together', 'They use a basket', 'They fly'], correctIndex: 0 },
+      { id: 'ap-c1', type: 'comprehension', afterPage: 4, question: 'Why can the ants carry a crumb?', options: ['They work together', 'They use a basket', 'They fly'], correctIndex: 0 },
       { id: 'ap-ph', type: 'phonics', afterPage: 2, targetSound: 'all', prompt: 'Which word rhymes with small?', options: ['all', 'ant', 'crumb'], correctIndexes: [0] },
-      { id: 'ap-ph2', type: 'phonics', afterPage: 1, targetSound: 'ine', prompt: 'Which word rhymes with line?', options: ['time', 'march', 'ant'], correctIndexes: [0] },
+      { id: 'ap-ph2', type: 'phonics', afterPage: 1, targetSound: 'ack', prompt: 'Which word rhymes with track?', options: ['back', 'leaf', 'ant'], correctIndexes: [0] },
       { id: 'ap-sel', type: 'sel', afterPage: 5, prompt: 'When have you worked with a friend to do a big job?', feelingOptions: ['Proud', 'Happy', 'Tired', 'Strong'] },
     ],
     glossary: [
@@ -370,7 +370,7 @@ export const BATCH_28_STORIES: PilotStory[] = [
     culturalNotes: ['Ants are common everywhere in Ghana. Some bite or sting, so children are taught to watch from a distance. The rhyme is original.'],
     reviewQuestions: ['Check the ant facts: ants live in colonies, follow trails and carry food together, and no claim is made about every species.', 'Confirm that the safety line (watch from far, do not touch) is clear.'],
     guide: {
-      overview: 'A marching rhyme about ant teamwork. Form: five couplets. Rhyming pairs: track/back, small/all, go/below, eat/beat, touch/much. It teaches teamwork and safe observation.',
+      overview: 'A marching rhyme about ant teamwork. Form: five couplets. Rhyming pairs: track/back, small/all, go/below, feet/eat, touch/much. It teaches teamwork and safe observation.',
       lessonMinutes: 20, goals: ['Say how ants work together.', 'Spot rhyming pairs.', 'Observe small animals safely.'],
       subjects: [['Integrated Science', 'Animals and their homes'], ['English Language', 'Rhyme']],
       before: ['Ask: where have you seen ants?'], during: ['Tap and march on the spot.'],
@@ -394,9 +394,9 @@ export const BATCH_28_STORIES: PilotStory[] = [
     voice: 'Strong, cheerful voice', characters: ['Children in school uniforms sweeping, putting litter in a bin and watering a flower bed, with a teacher helping.'],
     music: 'A work-chant beat with claps (placeholder)',
     pages: [
-      pg('🧹', 'Sweep, sweep, sweep, the classroom floor.\nBrush the dust right out the door.', 'Children sweeping a classroom.', 'Sweep with strong arms.'),
+      pg('🧹', 'Sweep, sweep, sweep the classroom floor.\nBrush the dust out of the door.', 'Children sweeping a classroom.', 'Sweep with strong arms.'),
       pg('🚮', 'Pick up the paper, pick up the peel.\nPut it in the bin. That is the deal.', 'Children picking up litter and using a bin.', 'Pretend to pick up and drop in a bin.'),
-      pg('🌸', 'Water the flowers. Give them a drink.\nA green school garden, what do you think?', 'Children watering a flower bed.', 'Pretend to water the plants.'),
+      pg('🌸', 'Water the flowers. Give them a drink.\nA green school garden: what do you think?', 'Children watering a flower bed.', 'Pretend to water the plants.'),
       pg('🧼', 'Wash your hands with soap and clean water.\nGerms wash away from every son and daughter.', 'Children washing hands at a basin.', 'Rub your hands.'),
       pg('🤝', 'One hand cannot sweep it all.\nTogether we keep our school standing tall.', 'Children working together.', 'Join hands.'),
     ],
@@ -442,7 +442,7 @@ export const BATCH_28_STORIES: PilotStory[] = [
     ],
     activities: [
       { id: 'se-c1', type: 'comprehension', afterPage: 2, question: 'What makes day and night?', options: ['The Earth turning', 'The Moon moving fast', 'The clouds'], correctIndex: 0 },
-      { id: 'se-ph', type: 'phonics', afterPage: 1, targetSound: 'ay', prompt: 'Which words rhyme with day?', options: ['away', 'star', 'far'], correctIndexes: [0] },
+      { id: 'se-ph', type: 'phonics', afterPage: 1, targetSound: 'ay', prompt: 'Which word rhymes with day?', options: ['away', 'star', 'far'], correctIndexes: [0] },
       { id: 'se-s1', type: 'sequencing', prompt: 'Put the poem’s ideas in order.', items: ['The Sun gives light and warmth.', 'The Earth turns round.', 'Our side turns away and it is night.', 'The Moon goes round us.'] },
       { id: 'se-sel', type: 'sel', afterPage: 5, prompt: 'How does it feel to wonder about the sky?', feelingOptions: ['Curious', 'Amazed', 'Calm', 'Excited'] },
     ],

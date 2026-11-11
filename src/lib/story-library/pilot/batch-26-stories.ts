@@ -303,7 +303,7 @@ export const BATCH_26_STORIES: PilotStory[] = [
     activities: [
       { id: 'abiba-c1', type: 'comprehension', afterPage: 4, question: 'How did Abiba feel on her first day at school?', options: ['Nervous', 'Angry', 'Sleepy'], correctIndex: 0 },
       { id: 'abiba-c2', type: 'comprehension', afterPage: 5, question: 'What did Kwartei share with Abiba?', options: ['A red crayon', 'A sweet', 'A ball'], correctIndex: 0 },
-      { id: 'abiba-ph', type: 'phonics', afterPage: 6, targetSound: 'sch', prompt: 'Which word has the sch sound, like school?', options: ['school', 'sun', 'song', 'smile'], correctIndexes: [0] },
+      { id: 'abiba-ph', type: 'phonics', afterPage: 6, targetSound: 'sm', prompt: 'Which words start with the sm sound, like smile?', options: ['smile', 'small', 'sun', 'sat'], correctIndexes: [0, 1] },
       { id: 'abiba-s1', type: 'sequencing', prompt: 'Put the story in order.', items: ['Abiba felt nervous at the gate.', 'Kwartei shared a crayon.', 'Abiba sang a new song.', 'Abiba told Mama about her friend.'] },
       { id: 'abiba-sel', type: 'sel', afterPage: 8, prompt: 'Abiba was nervous and then happy. How do you feel on a first day?', feelingOptions: ['Nervous', 'Excited', 'Shy', 'Brave'] },
     ],

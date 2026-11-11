@@ -161,7 +161,7 @@ export const BATCH_25_STORIES: PilotStory[] = [
     pages: [
       pg('🐝', 'Buzz was a little bee. Zzz, zzz, zzz! She was hungry. She wanted something sweet.', 'A small striped bee flies in the morning sun.'),
       pg('⛰️', 'Buzz flew over a hill. The hill was brown and bare. There were no flowers. Zzz, zzz.', 'A bee flies over a bare brown hill.'),
-      pg('🛣️', 'Buzz flew over a road. Honk, honk! A truck went by. There were no flowers here, too.', 'A bee flies over a road with a truck.'),
+      pg('🛣️', 'Buzz flew over a road. Honk, honk! A truck went by. There were no flowers there either.', 'A bee flies over a road with a truck.'),
       pg('1️⃣', 'Then Buzz saw one yellow flower. One! She landed on it. It had sweet juice inside. It is called nectar.', 'A bee lands on one yellow flower.'),
       pg('🌼', 'Yellow dust stuck to her legs. It is called pollen. Buzz flew to the next flower. Two! The pollen fell off. That helps flowers make seeds.', 'A bee with yellow dust on her legs lands on a second flower.'),
       pg('👧', 'A girl named Afi saw Buzz. ‘Bees like flowers,’ she said. ‘I will plant more!’ She put seeds in the soil.', 'A girl plants seeds in soil beside a bee.'),
@@ -493,7 +493,7 @@ export const BATCH_25_STORIES: PilotStory[] = [
     music: 'A rhythmic frog chorus and a playful drum, then silence at the quiet night (placeholder)',
     pages: [
       pg('🐸', 'It was the rainy season. Behind Atsu’s house, there was a pond, and in the pond lived a hundred frogs. Every night they sang, ‘Ribbit! Ribbit! Ribbit!’ Atsu could not sleep.', 'A boy lies in bed with a pillow over his head while frogs sing outside.'),
-      pg('👂', 'Atsu put cotton in his ears. It did not help. ‘Those frogs sing too loud!’ he groaned. ‘Tomorrow, I will chase them all away.’', 'A boy with cotton in his ears frowns at the window.'),
+      pg('👂', 'Atsu put cotton in his ears. It did not help. ‘Those frogs sing too loudly!’ he groaned. ‘Tomorrow, I will chase them all away.’', 'A boy with cotton in his ears frowns at the window.'),
       pg('👵', 'In the morning, Grandma Korkoi laughed. ‘Do not chase them,’ she said. ‘The boy frogs are singing to call the girl frogs. And a loud pond is a healthy pond.’ ‘Healthy?’ said Atsu.', 'A grandmother smiles at her grandson on the porch.'),
       pg('🦟', '‘Frogs eat insects, including mosquitoes,’ said Grandma. ‘And a frog has thin, soft skin that takes in water and air. So it needs clean water to live. When the water is spoiled, frogs go away.’', 'A frog catches a mosquito with its tongue beside a clean pond.'),
       pg('🗑️', 'A few weeks later, some people threw plastic bags and old bottles near the pond. Mud and rubbish drifted in. The water turned dull and smelly.', 'Plastic bags and bottles lie at the edge of a muddy pond.'),

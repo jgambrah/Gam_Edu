@@ -1,6 +1,6 @@
 {
   "story": {
-    "definition": "A tale about people, animals, or events that we read, tell, or listen to."
+    "definition": "A tale that tells what happened."
   },
   "stories": {
     "definition": "More than one story — tales about people, animals, or adventures that we read or share."
@@ -418,7 +418,7 @@
     "definition": "A hollow metal object that rings with a clear sound when struck, often to mark school time."
   },
   "uniform": {
-    "definition": "Special clothes that children wear to school."
+    "definition": "Clothes that all pupils at a school wear."
   },
   "club": {
     "definition": "A group of pupils or people who meet regularly to share an interest like science or reading."
@@ -529,7 +529,7 @@
     "definition": "Inspected or verified something carefully."
   },
   "test": {
-    "definition": "A careful trial or exam used to find out how well something works or what someone knows."
+    "definition": "A way to find out if something is true."
   },
   "tested": {
     "definition": "Tried out carefully to see if something is true, safe, or working."
@@ -646,16 +646,16 @@
     "definition": "Powered by the sun’s light and heat."
   },
   "moon": {
-    "definition": "The natural satellite that orbits Earth and shines in the night sky by reflecting sunlight."
+    "definition": "The big round rock that goes around the Earth."
   },
   "star": {
-    "definition": "A giant glowing ball of hot gas in space that shines like a point of light in the night sky."
+    "definition": "A huge ball of hot, glowing gas far away in space; the Sun is one."
   },
   "stars": {
-    "definition": "Glowing balls of hot gas in space that shine across the night sky."
+    "definition": "Bright points of light in the night sky."
   },
   "cloud": {
-    "definition": "A large white or grey mass of tiny water drops in the sky."
+    "definition": "Tiny drops of water floating together in the sky."
   },
   "clouds": {
     "definition": "Masses of tiny water droplets floating in the sky that can bring shade or rain."
@@ -733,7 +733,7 @@
     "definition": "Having little or no light."
   },
   "shadow": {
-    "definition": "A dark shape made on a surface when an object blocks light."
+    "definition": "A dark shape made when something blocks light."
   },
   "shadows": {
     "definition": "Dark shapes formed when objects block the light from the sun, moon, or a lamp."
@@ -751,7 +751,7 @@
     "definition": "The clear liquid that falls as rain, fills rivers and lakes, and keeps all living things alive."
   },
   "river": {
-    "definition": "A large stream of water that flows to the sea."
+    "definition": "A large stream of water flowing to the sea."
   },
   "stream": {
     "definition": "A small, narrow river of flowing fresh water."
@@ -1063,7 +1063,7 @@
     "definition": "A lamp with a handle that gives light."
   },
   "torch": {
-    "definition": "A hand-held battery light (flashlight) used to see in the dark."
+    "definition": "A small light that you hold in your hand and that runs on batteries."
   },
   "fan": {
     "definition": "A device with rotating blades or a hand-held woven blade that moves air to cool people."
@@ -1111,7 +1111,7 @@
     "definition": "Strong, thick cords used for tying, lifting, or mooring boats."
   },
   "net": {
-    "definition": "A web of string or rope used to catch fish."
+    "definition": "A thin cloth with small holes that hangs over a bed."
   },
   "nets": {
     "definition": "Mesh barriers or fishing gear, such as treated mosquito bed-nets."
@@ -1183,7 +1183,7 @@
     "definition": "The part of a plant that grows down into the soil."
   },
   "roots": {
-    "definition": "The parts of a plant that grow down into the soil."
+    "definition": "The parts of a plant under the soil that hold it and take in water."
   },
   "leaf": {
     "definition": "A flat, usually green part of a plant that uses sunlight to make food."
@@ -1201,7 +1201,7 @@
     "definition": "Put seeds or young plants into the soil so they can grow."
   },
   "seed": {
-    "definition": "A small thing that a new plant can grow from."
+    "definition": "The small part of a fruit that can grow into a new plant."
   },
   "seeds": {
     "definition": "Tiny parts of a plant that grow into new plants."
@@ -1231,7 +1231,7 @@
     "definition": "Edible seeds that grow in pods, such as cowpeas or cocoa beans."
   },
   "maize": {
-    "definition": "Corn — a tall cereal plant bearing yellow or white grains on cobs, used for kenkey, banku, and porridge."
+    "definition": "A tall crop with yellow grains, also called corn."
   },
   "rice": {
     "definition": "Small white or brown grains grown in wet fields and cooked as a staple meal."
@@ -1243,7 +1243,7 @@
     "definition": "A glossy red fruit used as a vegetable in Ghanaian stews, soups, and jollof."
   },
   "tomatoes": {
-    "definition": "Red, juicy fruits grown on farms and used in almost every Ghanaian stew and soup."
+    "definition": "Round red fruits that we cook in stew."
   },
   "vegetables": {
     "definition": "Parts of plants such as kontomire, okro, tomatoes, onions, and garden eggs eaten as food."
@@ -1363,7 +1363,7 @@
     "definition": "Insects with hard front wing-cases that protect their flying wings."
   },
   "mosquito": {
-    "definition": "A tiny flying insect whose females bite skin and can spread malaria if we do not sleep under a net."
+    "definition": "A tiny flying insect that bites."
   },
   "mosquitoes": {
     "definition": "Small flying insects that bite and can spread illness."
@@ -1390,7 +1390,7 @@
     "definition": "The organ on each side of the head that lets us hear sounds."
   },
   "ears": {
-    "definition": "The pair of organs on the head used for hearing."
+    "definition": "The parts of the body that you hear with."
   },
   "nose": {
     "definition": "The part of the face used for breathing and smelling."
@@ -1414,7 +1414,7 @@
     "definition": "The joint where the arm connects to the top of the body."
   },
   "heart": {
-    "definition": "The muscular organ in the chest that pumps blood, and the symbol of love, courage, and care."
+    "definition": "The part inside your chest that pumps blood around your body."
   },
   "tummy": {
     "definition": "A child-friendly word for the stomach or belly."
@@ -1444,7 +1444,7 @@
     "definition": "An illness or sickness that stops the body or a plant from working properly."
   },
   "malaria": {
-    "definition": "A serious fever illness caused by a tiny parasite carried by female Anopheles mosquitoes."
+    "definition": "An illness that some mosquitoes can spread when they bite."
   },
   "fever": {
     "definition": "A sign of illness when the body’s temperature becomes hotter than normal."
@@ -1696,7 +1696,7 @@
     "definition": "Close attention, kindness, and protection given to someone or something."
   },
   "careful": {
-    "definition": "Paying close attention so you do not make mistakes or get hurt."
+    "definition": "Thinking about danger and being safe."
   },
   "carefully": {
     "definition": "Slowly, paying attention to details."
@@ -1957,7 +1957,7 @@
     "definition": "The day after today."
   },
   "week": {
-    "definition": "A period of seven days."
+    "definition": "Seven days in a row."
   },
   "weeks": {
     "definition": "Periods of seven days."
@@ -2038,7 +2038,7 @@
     "definition": "For all future time."
   },
   "monday": {
-    "definition": "The day of the week after Sunday; in Akan tradition, boys are named Kwadwo and girls Adwoa."
+    "definition": "The first school day of the week."
   },
   "tuesday": {
     "definition": "The day of the week after Monday; in Akan tradition, boys are named Kwabena and girls Abenaa."
@@ -2149,7 +2149,7 @@
     "definition": "Made happy sounds of joy or amusement."
   },
   "smile": {
-    "definition": "A happy expression where the corners of your mouth curve upward."
+    "definition": "A happy look on the face."
   },
   "smiled": {
     "definition": "Curved the mouth upward in a warm, happy expression."
@@ -2263,7 +2263,7 @@
     "definition": "Found or learned about something for the first time."
   },
   "listen": {
-    "definition": "To give close attention with your ears to hear a sound or person."
+    "definition": "To use your ears to hear."
   },
   "listened": {
     "definition": "Paid close attention with the ears."
@@ -2545,7 +2545,7 @@
     "definition": "Past tense of give: handed or offered something to someone."
   },
   "share": {
-    "definition": "To divide something fairly or let others use and enjoy it with you."
+    "definition": "To give some of what you have to another person."
   },
   "shared": {
     "definition": "Divided or enjoyed something together with others."
@@ -2815,7 +2815,7 @@
     "definition": "Breaking up and moving soil to make a hole or trench."
   },
   "break": {
-    "definition": "To separate into pieces, or a short rest between lessons."
+    "definition": "A short rest time at school when pupils can eat and play."
   },
   "broken": {
     "definition": "Damaged or split into pieces so it no longer works."
@@ -3409,7 +3409,7 @@
     "definition": "Without anyone else present."
   },
   "together": {
-    "definition": "With one another; side by side in unity."
+    "definition": "With each other."
   },
   "proud": {
     "definition": "Feeling pleased and honoured about a good achievement or heritage."
@@ -3418,7 +3418,7 @@
     "definition": "With a warm feeling of pride and honour."
   },
   "happy": {
-    "definition": "Feeling joy, pleasure, and contentment."
+    "definition": "Feeling glad and pleased."
   },
   "sad": {
     "definition": "Feeling unhappy or sorrowful."
@@ -4705,7 +4705,7 @@
     "definition": "The air taken into and let out of the lungs."
   },
   "breathe": {
-    "definition": "To take air into your lungs and let it out again."
+    "definition": "To take air into your body and let it out."
   },
   "breathed": {
     "definition": "Took air in and out of the lungs."
@@ -4717,7 +4717,8 @@
     "definition": "A nutritious protein-rich bean (often used in waakye, red-red, and gablee) grown across West Africa."
   },
   "homo": {
-    "definition": "The scientific Latin genus name for humans (\"Homo sapiens\" means \"wise human\")."
+    "definition": "The scientific Latin genus name for humans (\"Homo sapiens\" means \"wise human\"). (Ga word meaning \"hunger\" (hɔmɔ), root of Homowo.)",
+    "phonetic": "haw-maw"
   },
   "sapiens": {
     "definition": "The scientific species name for modern human beings, meaning \"wise\"."
@@ -4732,7 +4733,7 @@
     "definition": "One of the five small digits at the front end of your foot."
   },
   "toes": {
-    "definition": "The five digits at the end of each foot."
+    "definition": "The five small parts at the end of each foot."
   },
   "century": {
     "definition": "A period of one hundred (100) years."
@@ -4780,7 +4781,7 @@
     "definition": "In the right, accurate, and careful way."
   },
   "bin": {
-    "definition": "A container for keeping rubbish or recycling so the compound and street stay clean."
+    "definition": "A container for rubbish."
   },
   "dish": {
     "definition": "A shallow bowl or plate for serving food, or a prepared meal."
@@ -4915,7 +4916,8 @@
     "definition": "Cooking over dry heat or hot coals."
   },
   "ewe": {
-    "definition": "A major Ghanaian language and people of the Volta Region and southern Togo, or a female sheep."
+    "definition": "A major Ghanaian language and people of the Volta Region and southern Togo, or a female sheep. (The Ewe people and language (Èʋegbe) of southeastern Ghana, Togo and Benin.)",
+    "phonetic": "eh-veh"
   },
   "twi": {
     "definition": "A widely spoken dialect of the Akan language in Ghana."
@@ -5324,7 +5326,7 @@
     "definition": "Trusted to do the right thing and take care of a duty."
   },
   "ripe": {
-    "definition": "Fully grown and ready to be picked and eaten (like a yellow mango or red tomato)."
+    "definition": "Ready to eat, soft and sweet."
   },
   "crisps": {
     "definition": "Thin slices of plantain, yam, or potato fried until crunchy."
@@ -5549,7 +5551,7 @@
     "definition": "Free to govern oneself and make one’s own decisions (Ghana became independent on 6 March 1957)."
   },
   "bunch": {
-    "definition": "A group of things growing or fastened together, like a bunch of plantains or keys."
+    "definition": "Several things growing or tied together."
   },
   "bunches": {
     "definition": "Groups of fruits (such as plantains or bananas) or leaves fastened together."
@@ -5594,7 +5596,7 @@
     "definition": "Waiting calmly without giving up."
   },
   "nervous": {
-    "definition": "Feeling a little worried about something new."
+    "definition": "A little afraid or worried."
   },
   "profit": {
     "definition": "Money left after subtracting all costs from income."
@@ -5720,7 +5722,7 @@
     "definition": "Walked very quietly on the tips of your toes."
   },
   "cross": {
-    "definition": "Feeling angry or upset."
+    "definition": "Feeling angry or annoyed."
   },
   "wisdom": {
     "definition": "Good understanding and sensible ideas."
@@ -5876,7 +5878,7 @@
     "definition": "Something you must do because a rule or law says so."
   },
   "germs": {
-    "definition": "Tiny things too small to see that can make us ill."
+    "definition": "Tiny living things too small to see."
   },
   "bioaccumulation": {
     "definition": "The build-up of a harmful substance in living things."
@@ -5947,11 +5949,8 @@
   "invigilator": {
     "definition": "A person who supervises an examination."
   },
-  "humility": {
-    "definition": "Not thinking you are better than others."
-  },
-  "stigma": {
-    "definition": "An unfair bad opinion that people have about a group."
+  "boast": {
+    "definition": "To talk proudly about what you have."
   },
   "instalment": {
     "definition": "One of several payments that together pay a larger amount."
@@ -5966,8 +5965,8 @@
   "distinguished": {
     "definition": "Respected and well known."
   },
-  "recovery": {
-    "definition": "Getting better after being damaged."
+  "sewage": {
+    "definition": "Waste water and waste matter carried away from homes and toilets."
   },
   "demolished": {
     "definition": "Knocked down on purpose."
@@ -6039,13 +6038,13 @@
     "definition": "A small piece of paper that tells you something about what it is stuck on."
   },
   "drain": {
-    "definition": "A channel that carries away rainwater or waste water."
+    "definition": "A channel that carries water away."
   },
   "plastic": {
-    "definition": "A light material used to make bottles and bags, which does not rot away."
+    "definition": "A light, strong material that is used to make bottles and bags."
   },
   "rubbish": {
-    "definition": "Things that people throw away."
+    "definition": "Things we throw away, such as paper and plastic."
   },
   "recycling": {
     "definition": "Using old materials again to make something new."
@@ -6178,7 +6177,7 @@
     "definition": "The coming together of gas and matter under gravity into a swirling disk around a massive object."
   },
   "shade": {
-    "definition": "A cool, darker area where something blocks direct sunlight."
+    "definition": "A cool place out of the sun."
   },
   "evaporates": {
     "definition": "Turns from liquid water into invisible water vapour in the air, which cools the surface."
@@ -6989,7 +6988,7 @@
     "definition": "People who look for clues to solve a mystery."
   },
   "pavement": {
-    "definition": "The paved path beside a road where people walk."
+    "definition": "The path beside a road where people walk."
   },
   "floodwater": {
     "definition": "Water that spreads over land after heavy rain."
@@ -7256,9 +7255,6 @@
   "murals": {
     "definition": "Large pictures painted on walls."
   },
-  "boast": {
-    "definition": "To talk proudly about what you have."
-  },
   "generous": {
     "definition": "Willing to share and give."
   },
@@ -7328,9 +7324,6 @@
   },
   "duties": {
     "definition": "Things that people are expected to do."
-  },
-  "sewage": {
-    "definition": "Waste water and waste matter carried away from homes and toilets."
   },
   "nitrates": {
     "definition": "Chemicals from waste and fertiliser that can harm water life when there is too much."
@@ -7490,6 +7483,93 @@
   },
   "pits": {
     "definition": "Deep holes dug in the ground."
+  },
+  "crayon": {
+    "definition": "A coloured stick used for drawing."
+  },
+  "toothache": {
+    "definition": "A pain in a tooth."
+  },
+  "dentist": {
+    "definition": "A person who looks after teeth."
+  },
+  "reuse": {
+    "definition": "To use something again instead of throwing it away."
+  },
+  "rumbled": {
+    "definition": "Made a low, rolling sound."
+  },
+  "crumpled": {
+    "definition": "Squeezed into a small, rough ball."
+  },
+  "results": {
+    "definition": "What you find out from a test."
+  },
+  "sniff": {
+    "definition": "To breathe in through your nose to smell something."
+  },
+  "rooster": {
+    "definition": "A male chicken."
+  },
+  "buzz": {
+    "definition": "The humming sound a bee makes."
+  },
+  "croak": {
+    "definition": "The deep sound a frog makes."
+  },
+  "maakye": {
+    "definition": "Good morning in Twi. (Twi (Akan) morning greeting meaning \"Good morning\".) (Twi (Akan) morning greeting meaning \"good morning\".)",
+    "phonetic": "maah-cheh"
+  },
+  "maaha": {
+    "definition": "Good afternoon in Twi. (Twi (Akan) afternoon greeting meaning \"Good afternoon\".) (Twi (Akan) afternoon greeting meaning \"good afternoon\".)",
+    "phonetic": "maah-hah"
+  },
+  "akwaaba": {
+    "definition": "Welcome in Twi. (Twi (Akan) greeting meaning \"Welcome\".) (Twi (Akan) greeting meaning \"welcome\".)",
+    "phonetic": "ah-kwaah-bah"
+  },
+  "boil": {
+    "definition": "To heat water until it bubbles."
+  },
+  "nests": {
+    "definition": "Homes that birds build for their eggs and chicks."
+  },
+  "wiggle": {
+    "definition": "To move with small quick movements."
+  },
+  "scrub": {
+    "definition": "To rub hard to make clean."
+  },
+  "yam": {
+    "definition": "A big brown root that we boil, pound or fry."
+  },
+  "brush": {
+    "definition": "To clean with a brush, such as teeth."
+  },
+  "rinse": {
+    "definition": "To wash with clean water."
+  },
+  "twinkling": {
+    "definition": "Shining with small, quick flashes of light."
+  },
+  "cosy": {
+    "definition": "Warm, comfortable and safe."
+  },
+  "scared": {
+    "definition": "Feeling afraid."
+  },
+  "crumb": {
+    "definition": "A tiny piece of bread or food."
+  },
+  "tunnels": {
+    "definition": "Long holes under the ground."
+  },
+  "peel": {
+    "definition": "The skin of a fruit, such as a banana or orange."
+  },
+  "turning": {
+    "definition": "Moving round and round."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9406,5 +9486,141 @@
   "nuku": {
     "definition": "Ewe male personal name and family surname.",
     "phonetic": "noo-koo"
+  },
+  "zenabu": {
+    "definition": "Ghanaian female personal name (variant of Zainab).",
+    "phonetic": "zeh-nah-boo"
+  },
+  "odarkor": {
+    "definition": "Ga personal name.",
+    "phonetic": "oh-dar-kor"
+  },
+  "adjeley": {
+    "definition": "Ga birth-order name for a first-born daughter.",
+    "phonetic": "ah-jeh-lay"
+  },
+  "abiba": {
+    "definition": "Ghanaian Muslim female personal name (from Habiba, \"beloved\").",
+    "phonetic": "ah-bee-bah"
+  },
+  "kwartei": {
+    "definition": "Ga male personal name (also spelled Quartey).",
+    "phonetic": "kwar-tay"
+  },
+  "aduku": {
+    "definition": "Ghanaian family surname.",
+    "phonetic": "ah-doo-koo"
+  },
+  "iddi": {
+    "definition": "Ghanaian male personal name (short form of Idrisu / Idris).",
+    "phonetic": "ee-dee"
+  },
+  "manu": {
+    "definition": "Akan personal and family name traditionally given to a second consecutive child.",
+    "phonetic": "mah-noo"
+  },
+  "shamsia": {
+    "definition": "Female personal name meaning \"radiant / sunlit\".",
+    "phonetic": "shahm-see-ah"
+  },
+  "mubarak": {
+    "definition": "Male personal name meaning \"blessed\".",
+    "phonetic": "moo-bah-rahk"
+  },
+  "acheampong": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-chahm-pong"
+  },
+  "ayeley": {
+    "definition": "Ga birth-order name for a first-born daughter.",
+    "phonetic": "ah-yeh-lay"
+  },
+  "kofitse": {
+    "definition": "Southeastern Ghanaian male personal name.",
+    "phonetic": "koh-fee-tseh"
+  },
+  "lartekor": {
+    "definition": "Ga personal name.",
+    "phonetic": "lar-teh-kor"
+  },
+  "efia": {
+    "definition": "Akan day name for a girl born on Friday.",
+    "phonetic": "eh-fee-ah"
+  },
+  "ayeyi": {
+    "definition": "Akan personal name and Twi word meaning \"praise\".",
+    "phonetic": "ah-yeh-yee"
+  },
+  "marfo": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "mar-foh"
+  },
+  "maakye-lower": {
+    "definition": "Twi (Akan) morning greeting meaning \"good morning\".",
+    "phonetic": "maah-cheh"
+  },
+  "maaha-lower": {
+    "definition": "Twi (Akan) afternoon greeting meaning \"good afternoon\".",
+    "phonetic": "maah-hah"
+  },
+  "maadwo": {
+    "definition": "Twi (Akan) evening greeting meaning \"Good evening\". (Twi (Akan) evening greeting meaning \"good evening\".)",
+    "phonetic": "maah-joh"
+  },
+  "maadwo-lower": {
+    "definition": "Twi (Akan) evening greeting meaning \"good evening\".",
+    "phonetic": "maah-joh"
+  },
+  "akwaaba-lower": {
+    "definition": "Twi (Akan) greeting meaning \"welcome\".",
+    "phonetic": "ah-kwaah-bah"
+  },
+  "ewe-people": {
+    "definition": "The Ewe people and language (Èʋegbe) of southeastern Ghana, Togo and Benin.",
+    "phonetic": "eh-veh"
+  },
+  "ga": {
+    "definition": "The Ga people and language of Greater Accra, Ghana.",
+    "phonetic": "gah"
+  },
+  "ga-people": {
+    "definition": "The Ga people and language of Greater Accra, Ghana.",
+    "phonetic": "gah"
+  },
+  "akan": {
+    "definition": "The Akan people and language group of Ghana and Côte d'Ivoire.",
+    "phonetic": "ah-kahn"
+  },
+  "akan-people": {
+    "definition": "The Akan people and language group of Ghana and Côte d'Ivoire.",
+    "phonetic": "ah-kahn"
+  },
+  "homo-hunger": {
+    "definition": "Ga word meaning \"hunger\" (hɔmɔ), root of Homowo.",
+    "phonetic": "haw-maw"
+  },
+  "ya-na": {
+    "definition": "Title of the Overlord (King) of Dagbon.",
+    "phonetic": "yaah-nah"
+  },
+  "yaa-naa": {
+    "definition": "Title of the Overlord (King) of Dagbon (alternate spelling of Ya-Na).",
+    "phonetic": "yaah-naah"
+  },
+  "yani-dabari": {
+    "definition": "Historic early capital of Dagbon meaning \"abandoned Yendi\".",
+    "phonetic": "yah-nee-dah-bah-ree"
+  },
+  "juula": {
+    "definition": "West African Mande-speaking merchant communities of the savanna-forest trade.",
+    "phonetic": "joo-lah"
+  },
+  "djenné": {
+    "definition": "Historic trading city in the Inland Niger Delta of Mali.",
+    "phonetic": "jeh-nay"
+  },
+  "djenne": {
+    "definition": "Historic trading city in the Inland Niger Delta of Mali.",
+    "phonetic": "jeh-nay"
   }
 }
