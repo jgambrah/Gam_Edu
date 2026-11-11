@@ -5,6 +5,7 @@ import { requireSignedInAction } from '@/lib/session-guard';
 import { ai } from '@/ai/genkit';
 import { z } from 'zod';
 import { checkAndSpendCredits } from '@/app/actions/credits';
+import { buildDebateJudgePrompt, buildDebateOpponentPrompt } from '@/lib/think-tank-debate';
 
 // --- SHARED TYPES ---
 const MessageSchema = z.object({
@@ -28,28 +29,7 @@ export async function generateDebateResponse(input: z.infer<typeof DebateInputSc
       return { success: false, text: "You are out of AI credits for this debate." };
     }
 
-    const historyText = input.history
-      .map(m => `${m.role === 'user' ? 'Debater' : 'Opponent'}: ${m.text}`)
-      .join('\n');
-    
-    const prompt = `
-      You are a skilled Debate Coach and Opponent.
-      TOPIC: "${input.topic}"
-      
-      GOAL: Challenge the user's arguments logically. Play "Devil's Advocate".
-      
-      INSTRUCTIONS:
-      1. Concise response (max 3 sentences).
-      2. End with ONE probing question.
-      3. Maintain context.
-      
-      HISTORY:
-      ${historyText}
-      
-      USER ARGUMENT: "${input.lastMessage}"
-      
-      YOUR COUNTER:
-    `;
+    const prompt = buildDebateOpponentPrompt(input);
 
     const response = await ai.generate({
       prompt: prompt,
@@ -81,31 +61,7 @@ export async function evaluateDebateAction(history: z.infer<typeof MessageSchema
 
     console.log("👨‍⚖️ Judge is reviewing history length:", history.length);
 
-    // 1. Better Transcript Formatting
-    const transcript = history.map(m => {
-        const speaker = m.role === 'user' ? '[[STUDENT]]' : '[[OPPONENT]]';
-        return `${speaker}: ${m.text}`;
-    }).join('\n\n');
-
-    console.log("📜 Transcript Preview:\n", transcript.substring(0, 200) + "...");
-
-    const prompt = `
-      Act as an impartial, expert Debate Judge.
-      
-      Your task is to evaluate the performance of the **[[STUDENT]]** in the following debate transcript.
-      Ignore the performance of the [[OPPONENT]].
-      
-      TRANSCRIPT START:
-      ${transcript}
-      TRANSCRIPT END.
-      
-      CRITERIA:
-      1. Logic: Did the STUDENT make coherent arguments?
-      2. Clarity: Was the STUDENT's language clear?
-      3. Rebuttal: Did the STUDENT actually answer the OPPONENT's questions?
-
-      NOTE: If the student participated at all, do NOT give a score of 1. Be fair.
-    `;
+    const prompt = buildDebateJudgePrompt({ topic: 'the motion discussed in the transcript', messages: history });
 
     const { output } = await ai.generate({
       prompt: prompt,

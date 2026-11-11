@@ -12,6 +12,11 @@ import {
 } from '@/lib/resolve-think-tank-student';
 import { MAX_SELF_XP_PER_DAY } from '@/lib/think-tank-xp';
 import { getTrustedDebate } from '@/lib/think-tank-server-curriculum';
+import {
+  buildDebateJudgePrompt,
+  buildDebateOpponentPrompt,
+  calculateDebateXp,
+} from '@/lib/think-tank-debate';
 
 export type DebateMessage = {
   role: 'user' | 'model';
@@ -74,10 +79,14 @@ export interface DebateActionTestDeps {
     topic: string;
     history: DebateMessage[];
     lastMessage: string;
+    context?: string;
+    targetGroup?: string;
   }) => Promise<string>;
   judgeEvaluator?: (input: {
     topic: string;
     messages: DebateMessage[];
+    context?: string;
+    targetGroup?: string;
   }) => Promise<DebateEvaluationScorecard>;
 }
 
@@ -295,29 +304,11 @@ async function defaultOpponentGenerator(input: {
   topic: string;
   history: DebateMessage[];
   lastMessage: string;
+  context?: string;
+  targetGroup?: string;
 }): Promise<string> {
-  const historyText = input.history
-    .map((m) => `${m.role === 'user' ? 'Debater' : 'Opponent'}: ${m.text}`)
-    .join('\n');
-
-  const prompt = `
-    You are a skilled Debate Coach and Opponent.
-    TOPIC: "${input.topic}"
-
-    GOAL: Challenge the user's arguments logically. Play "Devil's Advocate".
-
-    INSTRUCTIONS:
-    1. Concise response (max 3 sentences).
-    2. End with ONE probing question.
-    3. Maintain context.
-
-    HISTORY:
-    ${historyText}
-
-    USER ARGUMENT: "${input.lastMessage}"
-
-    YOUR COUNTER:
-  `;
+  // Simple English and pupil-friendly points for basic-school students (see think-tank-debate.ts).
+  const prompt = buildDebateOpponentPrompt(input);
 
   const response = await ai.generate({ prompt });
   const text = typeof response?.text === 'string' ? response.text.trim() : '';
@@ -328,41 +319,22 @@ async function defaultOpponentGenerator(input: {
 }
 
 const JudgeEvaluationSchema = z.object({
-  logicScore: z.number().describe('Score out of 10 for logical consistency'),
-  clarityScore: z.number().describe('Score out of 10 for clarity of expression'),
-  rebuttalScore: z.number().describe('Score out of 10 for ability to counter-argue'),
-  feedback: z.string().describe("Constructive feedback on the user's performance"),
-  keyStrength: z.string().describe('One specific thing the user did well'),
-  areaForImprovement: z.string().describe('One specific thing to improve'),
+  logicScore: z.number().describe("Whole number 1-10 for the student's points and reasons in this transcript"),
+  clarityScore: z.number().describe('Whole number 1-10 for how easy the student was to follow in this transcript'),
+  rebuttalScore: z.number().describe("Whole number 1-10 for how well the student answered the opponent in this transcript"),
+  feedback: z.string().describe('2-3 short, simple sentences that mention a point the student really made'),
+  keyStrength: z.string().describe('One specific thing this student did well in this debate'),
+  areaForImprovement: z.string().describe('One specific, practical thing to improve, with a short example'),
 });
 
 async function defaultJudgeEvaluator(input: {
   topic: string;
   messages: DebateMessage[];
+  context?: string;
+  targetGroup?: string;
 }): Promise<DebateEvaluationScorecard> {
-  const transcript = input.messages
-    .map((m) => {
-      const speaker = m.role === 'user' ? '[[STUDENT]]' : '[[OPPONENT]]';
-      return `${speaker}: ${m.text}`;
-    })
-    .join('\n\n');
-
-  const prompt = `
-    Act as an impartial, expert Debate Judge.
-    DEBATE MOTION: "${input.topic}"
-
-    Your task is to evaluate the performance of the **[[STUDENT]]** in the following debate transcript on the motion above.
-    Ignore the performance of the [[OPPONENT]].
-
-    TRANSCRIPT START:
-    ${transcript}
-    TRANSCRIPT END.
-
-    CRITERIA (1 to 10):
-    1. Logic: Did the STUDENT make coherent arguments relevant to the motion?
-    2. Clarity: Was the STUDENT's language clear?
-    3. Rebuttal: Did the STUDENT actually answer the OPPONENT's questions?
-  `;
+  // Marks come from what the student actually wrote in this debate (see think-tank-debate.ts).
+  const prompt = buildDebateJudgePrompt(input);
 
   const { output } = await ai.generate({
     prompt,
@@ -637,6 +609,8 @@ export async function submitThinkTankDebateTurnAction(
       topic: debateTopic.topic,
       history: preState.messages,
       lastMessage: cleanMessage,
+      context: debateTopic.context,
+      targetGroup: debateTopic.targetGroup,
     });
 
     const cleanReply = typeof rawReply === 'string' ? rawReply.trim() : '';
@@ -866,6 +840,8 @@ export async function concludeThinkTankDebateAction(
     const rawEval = await judgeFn({
       topic: debateTopic.topic,
       messages: preEval.messages,
+      context: debateTopic.context,
+      targetGroup: debateTopic.targetGroup,
     });
     const validatedEval = validateJudgeScorecard(rawEval);
 
@@ -939,10 +915,8 @@ export async function concludeThinkTankDebateAction(
         MAX_SELF_XP_PER_DAY - earnedToday
       );
 
-      const calculatedXp = Math.max(
-        30,
-        Math.min(100, Math.floor(validatedEval.logicScore) + 10)
-      );
+      // XP follows the judge's three marks (10 to 50). It used to work out as a fixed 30 for every debate.
+      const calculatedXp = calculateDebateXp(validatedEval);
       const requestedXp = !alreadyCompleted ? calculatedXp : 0;
       const awardedXp = Math.min(requestedXp, remainingDailyAllowance);
       const newDailyEarned = earnedToday + awardedXp;
