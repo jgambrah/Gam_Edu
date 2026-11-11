@@ -126,9 +126,16 @@ service firebase.storage {
     }
 
     // Learning materials. Staff upload; members of the school read.
+    // Only teaching files may be stored (documents, slides, spreadsheets, images, audio, video): the file name must
+    // end in an allowed extension, and it may not be served as a web page, script or SVG. Keep this list the same as
+    // EXTENSION_KINDS in src/lib/learning-materials.ts.
+    function isLearningMaterialFile() {
+      return request.resource.name.lower().matches('.*[.](pdf|jpg|jpeg|png|gif|webp|mp3|m4a|wav|ogg|aac|mp4|webm|mov|m4v|ppt|pptx|odp|xls|xlsx|csv|ods|doc|docx|odt|rtf|txt)')
+        && !request.resource.contentType.lower().matches('text/html.*|application/xhtml.*|image/svg.*|.*javascript.*|.*ecmascript.*');
+    }
     match /schools/{schoolId}/learning_materials/{allPaths=**} {
       allow read: if memberOf(schoolId);
-      allow create, update: if isSchoolStaff(schoolId) && sizeOk();
+      allow create, update: if isSchoolStaff(schoolId) && sizeOk() && isLearningMaterialFile();
       allow delete: if isSchoolStaff(schoolId);
     }
 
