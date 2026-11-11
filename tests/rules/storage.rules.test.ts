@@ -126,6 +126,57 @@ describe('Storage rules — membership is decided from Firestore, per school', (
   });
 });
 
+describe('Storage rules — learning materials accept teaching files only', () => {
+  const file = (name: string) => `schools/${SCHOOL_A}/learning_materials/jhs1/1700000000000-${name}`;
+
+  it.each([
+    ['notes.pdf', 'application/pdf'],
+    ['NOTES.PDF', 'application/pdf'],
+    ['diagram.png', 'image/png'],
+    ['photo.JPG', 'image/jpeg'],
+    ['listening.mp3', 'audio/mpeg'],
+    ['experiment.mp4', 'video/mp4'],
+    ['Lesson_3.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    ['scores.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'],
+    ['data.csv', 'text/csv'],
+    ['worksheet.docx', 'application/octet-stream'], // browsers without Office report no type; the page sends this
+    ['plain.txt', 'text/plain'],
+  ])('a teacher can upload %s (%s)', async (name, contentType) => {
+    await assertSucceeds(put('teacherA', file(name), { contentType }));
+  });
+
+  it.each([
+    ['virus.exe', 'application/octet-stream'],
+    ['page.html', 'text/html'],
+    ['script.js', 'text/javascript'],
+    ['archive.zip', 'application/zip'],
+    ['drawing.svg', 'image/svg+xml'],
+    ['noextension', 'application/pdf'],
+    ['trick.pdf.exe', 'application/pdf'],
+  ])('nobody can upload %s (%s), not even an administrator', async (name, contentType) => {
+    await assertFails(put('teacherA', file(name), { contentType }));
+    await assertFails(put('adminA', file(name), { contentType }));
+  });
+
+  it('a file with an allowed name cannot be stored as a web page, script or SVG', async () => {
+    await assertFails(put('teacherA', file('notes.pdf'), HTML));
+    await assertFails(put('teacherA', file('notes.pdf'), { contentType: 'application/javascript' }));
+    await assertFails(put('teacherA', file('picture.png'), { contentType: 'image/svg+xml' }));
+  });
+
+  it('files that are already stored can still be read and removed, whatever their type', async () => {
+    await seed(file('old-archive.zip'), { contentType: 'application/zip' });
+    await assertSucceeds(read('pupilA', file('old-archive.zip')));
+    await assertSucceeds(remove('teacherA', file('old-archive.zip')));
+  });
+
+  it('the school and role checks still apply to allowed files', async () => {
+    await assertFails(put('pupilA', file('notes.pdf'), PDF));
+    await assertFails(put('teacherB', file('notes.pdf'), PDF));
+    await assertFails(put('anon', file('notes.pdf'), PDF));
+  });
+});
+
 describe('Storage rules — people can see only their own school', () => {
   it('school B people get school B, and only school B', async () => {
     await assertSucceeds(put('adminB', P.logo(SCHOOL_B)));

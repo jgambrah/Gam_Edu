@@ -991,10 +991,27 @@ service cloud.firestore {
       allow update, delete: if isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (isAdmin() || (isTeacher() && resource.data.teacherId == request.auth.uid)));
     }
 
+    // Learning materials belong to ONE school. Until Nov 2026 any signed-in account of ANY school could read every
+    // school's materials, and any teacher of ANY school could delete or take over another school's topic.
+    //   * Reading a list: the query must filter by schoolId (the Learning Materials page and the dashboard both do).
+    //   * The BS7 Integrated Science course page lists by courseId only, and its original topics were saved by the
+    //     platform owner with no school, so that one course stays listable by any signed-in user, exactly as before.
+    //   * Topics with no schoolId (that older platform content) can be opened by any signed-in user, but only the
+    //     platform owner can change or delete them.
+    function materialInMySchool() {
+      return getUserSchoolId() != '' && resource.data.get('schoolId', '') == getUserSchoolId();
+    }
     match /learning_materials/{materialId} {
-      allow read, list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || isAdmin() || isTeacher();
+      allow get: if isSuperAdmin() || (isSignedIn() && (
+        resource == null
+        || materialInMySchool()
+        || resource.data.get('schoolId', '') == ''
+        || resource.data.get('courseId', '') == 'bs7-integrated-science'
+      ));
+      allow list: if isSuperAdmin() || inMySchool() || (isSignedIn() && resource.data.courseId == 'bs7-integrated-science');
+      allow create: if isSuperAdmin() || ((isTeacher() || isAdmin()) && getUserSchoolId() != '' && getUserSchoolId() == request.resource.data.schoolId);
+      allow update: if isSuperAdmin() || ((isTeacher() || isAdmin()) && materialInMySchool() && getUserSchoolId() == request.resource.data.schoolId);
+      allow delete: if isSuperAdmin() || ((isAdmin() || isTeacher()) && materialInMySchool());
     }
 
     match /behavioral_records/{recordId} {
