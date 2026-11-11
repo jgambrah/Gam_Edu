@@ -1076,5 +1076,7 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: "\"ah-KWAAH-bah\" (long middle vowel).", respell: "ah-kwaah-bah", hint: "\"Akwaaba\" is the Ghanaian (Twi/Akan) word for \"Welcome\"; say \"ah-KWAAH-bah\".", reviewerNotes: ["Confirm vowel length and stress."] }),
     entry({ id: "akwaaba-lower", written: "akwaaba", kind: "word", language: AKAN, meaning: "Twi (Akan) greeting meaning \"welcome\"",
       guidance: "\"ah-KWAAH-bah\" (long middle vowel).", respell: "ah-kwaah-bah", hint: "\"akwaaba\" is the Ghanaian (Twi/Akan) word for \"welcome\"; say \"ah-KWAAH-bah\".", reviewerNotes: ["Confirm vowel length and stress."] }),
+    entry({ id: "ewe-people", written: "Ewe", kind: "word", language: "Ewe", meaning: "The Ewe people and language (Èʋegbe) of southeastern Ghana, Togo and Benin",
+      guidance: "\"EH-veh\" (two syllables, never the English word for a female sheep).", respell: "eh-veh", hint: "\"Ewe\" is the Ghanaian and Togolese people and language (Èʋegbe), NOT the English word for a sheep; say two syllables, \"EH-veh\".", reviewerNotes: ["Confirm bilabial fricative approximation in English."] }),
   ],
 };
