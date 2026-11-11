@@ -59,6 +59,14 @@ beforeEach(async () => {
 });
 
 describe('Graduating a final-year class to Alumni', () => {
+  it('PROBE (CI only, not asserted): does one batch of 30 get refused?', async () => {
+    const ids = pupilIds(30);
+    await seedPupils(ids);
+    let outcome = 'ACCEPTED';
+    try { await graduationBatch(db('adminA'), ids); } catch (e: any) { outcome = `REFUSED: ${e?.code} ${String(e?.message).slice(0, 200)}`; }
+    console.log(`PROBE_BATCH_30 => ${outcome}`);
+  });
+
   it('USE CASE: a Director graduates a class of 30 when it is sent in small batches', async () => {
     const ids = pupilIds(30);
     await seedPupils(ids);
