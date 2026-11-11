@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the one hundred and fifty-six stories with clean production badges', async () => {
+  it('lists the one hundred and sixty-four stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(156));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(156));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -56,6 +56,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'Pause Before You Post',
       'Poku Leaves the Classroom',
       'The App That Created a Hundred Jobs',
+      'The Bacterium in the Insulin Bottle',
       'The Boy Who Built a Voice',
       'The Castle Built for Gold',
       'The Chief’s Long Night',
@@ -80,8 +81,10 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Last Saturday',
       'The Loom That Clicked at Midnight',
       'The Lost Capital of Old Ghana',
+      'The Midge That Makes the Chocolate',
       'The Money Pit of Oak Island',
       'The Money That Worked While Afia Slept',
+      'The Monkeys of Boabeng-Fiema',
       'The Mosque Built in a Dream',
       'The New Girl and the Joke That Stung',
       'The Night the Stars Asked Questions',
@@ -89,12 +92,14 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Red Hunter and the Drummers',
       'The River That Learned to Smile',
       'The River That Lost Its Voice',
+      'The River They Called Dead',
       'The River in Twenty Years',
       'The Science Fair and the Free Rider',
       'The Sculpture That Keeps a Secret',
       'The Secrets of the Great Pyramid',
       'The Stones of Stonehenge',
       'The Stool from the Sky',
+      'The Stream Under the Road',
       'The Teacher Who Drew the Flag',
       'The Town That Vanished from the Map',
       'The True Reasons',
@@ -105,6 +110,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Voice Note',
       'The Wall of Notsé',
       'The Weights That Whisper Proverbs',
+      'The Woman Who Asked for Trees',
       'Typing Like You Talk',
       'Voices Along the River',
       'We Built It Here in Ghana',
@@ -113,6 +119,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'Yaa and the Mystery of Changing Life',
     ]));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-2');
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(7));
     await waitFor(() => expect(titles().sort()).toEqual([
       'Ama and the Lost Little Goat',
       'Dede and the Puddle',
@@ -154,7 +161,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(156));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -163,7 +170,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(156));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -172,10 +179,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   }, 15000);
 
-  it('Efua and every Batch 1–22 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–23 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(156));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
@@ -191,9 +198,9 @@ describe('LibraryDashboard (real preview data)', () => {
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(156));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(164));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
-    expect(stats()).toContain('156');
+    expect(stats()).toContain('164');
 
     // Toggle a favourite heart on the first story card
     const firstCard = screen.getAllByTestId('story-card')[0];

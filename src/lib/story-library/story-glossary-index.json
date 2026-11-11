@@ -679,10 +679,10 @@
     "definition": "The invisible mixture of gases around Earth that people, plants, and animals breathe."
   },
   "oxygen": {
-    "definition": "A gas in the air that people and animals need to breathe in order to live, and that fire needs to burn."
+    "definition": "A gas in air and water that living things need to breathe."
   },
   "carbon": {
-    "definition": "An important chemical element found in all living things, charcoal, and carbon dioxide gas."
+    "definition": "An element stored in trees and soil; too much carbon dioxide in the air warms the planet."
   },
   "atmosphere": {
     "definition": "The blanket of air and gases surrounding planet Earth."
@@ -5240,7 +5240,7 @@
     "definition": "The weather, surroundings, or rules affecting how something works."
   },
   "scheme": {
-    "definition": "A planned arrangement or pattern (such as the rhyme scheme of a poem)."
+    "definition": "An organised plan or programme."
   },
   "authority": {
     "definition": "The official right and responsibility to make decisions or enforce safety rules."
@@ -5648,7 +5648,7 @@
     "definition": "Working carefully, steadily and thoroughly without giving up."
   },
   "revenue": {
-    "definition": "The total money a business brings in from selling its goods or services before subtracting any costs"
+    "definition": "Money that a government or business receives."
   },
   "resilience": {
     "definition": "The strength of spirit to endure suffering without losing one’s humanity and hope."
@@ -5705,7 +5705,7 @@
     "definition": "The wearing away and removal of sand, soil or rock by water or wind."
   },
   "larvae": {
-    "definition": "The immature, wingless early stage of insects such as mosquitoes that hatch from eggs."
+    "definition": "The young stage of some insects, before they become adults."
   },
   "cooperative": {
     "definition": "An organisation owned and controlled by its members for their shared benefit under agreed rules."
@@ -5750,7 +5750,7 @@
     "definition": "Special liquids that protect cells from ice damage during freezing."
   },
   "species": {
-    "definition": "A group of living things that can have healthy offspring together."
+    "definition": "A kind of living thing."
   },
   "accessions": {
     "definition": "Samples recorded and stored in a gene bank."
@@ -5822,7 +5822,7 @@
     "definition": "A building material made of mud and clay."
   },
   "sacred": {
-    "definition": "Very special and holy, deserving great respect."
+    "definition": "Treated as holy and to be respected."
   },
   "alloy": {
     "definition": "A metal made by mixing two or more metals."
@@ -5965,6 +5965,30 @@
   },
   "distinguished": {
     "definition": "Respected and well known."
+  },
+  "recovery": {
+    "definition": "Getting better after being damaged."
+  },
+  "demolished": {
+    "definition": "Knocked down on purpose."
+  },
+  "ecosystem": {
+    "definition": "All the living things in a place and how they depend on each other and their surroundings."
+  },
+  "movement": {
+    "definition": "A group of people working together for a cause."
+  },
+  "enzyme": {
+    "definition": "A substance made by living things that speeds up a chemical change."
+  },
+  "sanctuary": {
+    "definition": "A protected place where animals are kept safe."
+  },
+  "pollinate": {
+    "definition": "To carry pollen so that a flower can make fruit or seeds."
+  },
+  "headwaters": {
+    "definition": "The streams near the source of a river."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6162,9 +6186,6 @@
   "average": {
     "definition": "A central value found by adding quantities together and dividing by how many there are."
   },
-  "headwaters": {
-    "definition": "The small streams where a river begins."
-  },
   "treasure": {
     "definition": "Something precious and valued."
   },
@@ -6208,7 +6229,7 @@
     "definition": "An arrangement where a customer receives goods now and agrees to pay for them later."
   },
   "reserve": {
-    "definition": "Money saved and set aside by a business to handle unexpected emergencies or price increases."
+    "definition": "An area of land protected by law."
   },
   "dignity": {
     "definition": "The inherent worth and right of every human being to be treated with respect and freedom."
@@ -6792,9 +6813,6 @@
   "grove": {
     "definition": "A small patch of forest or trees."
   },
-  "sanctuary": {
-    "definition": "A protected place where animals are kept safe."
-  },
   "goldweights": {
     "definition": "Small brass objects the Akan used to weigh gold dust."
   },
@@ -6999,7 +7017,7 @@
     "definition": "A measure of land, a little less than half a hectare."
   },
   "hectares": {
-    "definition": "Units of land area; one hectare is 10,000 square metres."
+    "definition": "Units of land area; one hectare is about the size of a football pitch and a half."
   },
   "seedling": {
     "definition": "A young plant that has just grown from a seed."
@@ -7301,6 +7319,78 @@
   },
   "duties": {
     "definition": "Things that people are expected to do."
+  },
+  "sewage": {
+    "definition": "Waste water and waste matter carried away from homes and toilets."
+  },
+  "nitrates": {
+    "definition": "Chemicals from waste and fertiliser that can harm water life when there is too much."
+  },
+  "overflow": {
+    "definition": "To spill over the edge or limit."
+  },
+  "patrol": {
+    "definition": "A group that walks around an area to watch over it."
+  },
+  "elevated": {
+    "definition": "Raised above the ground."
+  },
+  "groundwater": {
+    "definition": "Water found underground in soil and rocks."
+  },
+  "descriptive": {
+    "definition": "Giving details so a reader can picture something."
+  },
+  "reserves": {
+    "definition": "Areas of land set aside and protected by law."
+  },
+  "doctorate": {
+    "definition": "The highest university degree."
+  },
+  "firewood": {
+    "definition": "Wood collected to burn for cooking or heat."
+  },
+  "nurseries": {
+    "definition": "Places where young plants are grown."
+  },
+  "sustainable": {
+    "definition": "Able to continue without using up or damaging resources."
+  },
+  "rota": {
+    "definition": "A list of people taking turns to do a job."
+  },
+  "diabetes": {
+    "definition": "A condition in which the body cannot control the sugar in the blood properly."
+  },
+  "pancreas": {
+    "definition": "An organ that makes insulin."
+  },
+  "bacterium": {
+    "definition": "A tiny living thing made of one cell (plural: bacteria)."
+  },
+  "precaution": {
+    "definition": "Care taken in advance to avoid a risk."
+  },
+  "rites": {
+    "definition": "Formal ceremonies or customs."
+  },
+  "conservation": {
+    "definition": "Protecting nature and wildlife."
+  },
+  "tourism": {
+    "definition": "Visiting places for interest and leisure."
+  },
+  "litter": {
+    "definition": "Fallen leaves and plant bits lying on the ground."
+  },
+  "extension": {
+    "definition": "Advice and training for farmers from agricultural officers."
+  },
+  "bauxite": {
+    "definition": "A rock from which aluminium is made."
+  },
+  "discursive": {
+    "definition": "Looking at several sides of a question."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -8921,5 +9011,97 @@
   "oduro": {
     "definition": "Akan personal and family surname.",
     "phonetic": "oh-doo-roh"
+  },
+  "afua": {
+    "definition": "Akan day name for a girl born on Friday (Twi spelling of Efua).",
+    "phonetic": "ah-fwah"
+  },
+  "fordjour": {
+    "definition": "Akan personal and family surname (variant of Fodwo).",
+    "phonetic": "for-joh"
+  },
+  "adomako": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-doh-mah-koh"
+  },
+  "fosu": {
+    "definition": "Akan personal and family surname (short form of Ofosu).",
+    "phonetic": "foh-soo"
+  },
+  "cheonggyecheon": {
+    "definition": "Restored urban stream running through downtown Seoul, South Korea.",
+    "phonetic": "chong-gyeh-chon"
+  },
+  "ohene": {
+    "definition": "Akan title and family surname meaning chief or king (Ɔhene).",
+    "phonetic": "oh-heh-neh"
+  },
+  "wangari": {
+    "definition": "Kenyan (Kikuyu) female personal name (Wangari Maathai).",
+    "phonetic": "wahn-gah-ree"
+  },
+  "maathai": {
+    "definition": "Kenyan family surname (Nobel Peace Prize laureate Wangari Maathai).",
+    "phonetic": "mah-thigh"
+  },
+  "nyeri": {
+    "definition": "Highland town and county in central Kenya near Mount Kenya.",
+    "phonetic": "nyeh-ree"
+  },
+  "enchill": {
+    "definition": "Coastal Fante family surname (anglicised spelling of Enkyir).",
+    "phonetic": "en-chil"
+  },
+  "nibima": {
+    "definition": "Twi name for Cryptolepis sanguinolenta, a medicinal yellow-rooted shrub used in Ghana.",
+    "phonetic": "nee-bee-mah"
+  },
+  "darkwah": {
+    "definition": "Akan personal and family surname (variant of Darko/Darkwa).",
+    "phonetic": "dar-kwah"
+  },
+  "blay": {
+    "definition": "Western Region Ghanaian family surname.",
+    "phonetic": "blay"
+  },
+  "boabeng": {
+    "definition": "Town in the Bono East Region of Ghana, co-guardian of the Boabeng-Fiema Monkey Sanctuary.",
+    "phonetic": "boh-ah-beng"
+  },
+  "fiema": {
+    "definition": "Town in the Bono East Region of Ghana, co-guardian of the Boabeng-Fiema Monkey Sanctuary.",
+    "phonetic": "fee-eh-mah"
+  },
+  "bampoe": {
+    "definition": "Akuapem/Akan family surname.",
+    "phonetic": "bahm-poh"
+  },
+  "amoo": {
+    "definition": "Coastal Ghanaian personal and family surname.",
+    "phonetic": "ah-moh"
+  },
+  "sakyi": {
+    "definition": "Akan personal and family surname (ky sounds like ch).",
+    "phonetic": "sah-chee"
+  },
+  "awuah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "ah-woo-ah"
+  },
+  "ahiable": {
+    "definition": "Ewe family surname.",
+    "phonetic": "ah-hyah-bleh"
+  },
+  "atewa": {
+    "definition": "Upland evergreen forest range in the Eastern Region of Ghana.",
+    "phonetic": "ah-teh-wah"
+  },
+  "ayensu": {
+    "definition": "River rising in the Atewa Range and flowing through Ghana’s Eastern and Central Regions.",
+    "phonetic": "ah-yen-soo"
+  },
+  "densu": {
+    "definition": "Major river rising in the Atewa Range and supplying western Greater Accra via Weija.",
+    "phonetic": "den-soo"
   }
 }
