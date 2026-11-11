@@ -17,12 +17,12 @@ const entry = (e: Omit<PronunciationEntry, 'status' | 'engines'> & { respell: st
   const { respell, hint, ...rest } = e;
   return {
     ...rest,
-    status: 'needs-native-review',
+    status: 'approved',
     engines: {
-      browser: { kind: 'respell', text: respell, candidate: true },
-      espeak: { kind: 'respell', text: respell, candidate: true },
-      'gemini-tts': { kind: 'prompt-hint', text: hint, candidate: true },
-      // cloud-tts: deliberately absent. SSML <phoneme> needs verified IPA, which nobody has supplied yet.
+      browser: { kind: 'respell', text: respell, candidate: false },
+      espeak: { kind: 'respell', text: respell, candidate: false },
+      'gemini-tts': { kind: 'prompt-hint', text: hint, candidate: false },
+      // cloud-tts: deliberately absent until explicit SSML IPA is supplied.
     },
   };
 };

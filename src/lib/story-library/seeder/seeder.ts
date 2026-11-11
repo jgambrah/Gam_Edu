@@ -1,8 +1,12 @@
 /**
- * Story seeder (Stage 2). EMULATOR / SYNTHETIC ONLY. DRAFT ONLY. It has no way to approve or publish.
+ * Story seeder (Stage 2 — Instant Pre-Verified Approval).
+ *
+ * Stories are verified prior to seeding, so every accepted story is written directly with `status: 'approved'`
+ * (`approvedBy: SEEDER_UID`, `approvedAt: now`). Publishing to `story_catalogue` + `library_meta` remains the atomic job of
+ * `publishStory` in `publication.ts`.
  *
  * Per story: claim -> stage media (create-only, content-addressed) -> ONE atomic transaction that does the duplicate
- * check, writes the draft admin document, updates the duplicate index and marks the item done. Because the decision and
+ * check, writes the approved admin document, updates the duplicate index and marks the item done. Because the decision and
  * the writes share a transaction, a crash can never leave a half-seeded story, two concurrent runners can never both
  * accept the same (near-)duplicate, and a re-run is a no-op.
  */
@@ -12,7 +16,7 @@ import {
   type Doc, type ItemOutcome, type SeedBackend, type StoryInput, type Tx,
 } from './types';
 import { assertSyntheticOnly } from './guard';
-import { NEAR_DUPLICATE_THRESHOLD, bandKeys, estimateJaccard, signatureOf, titleSlug } from './fingerprint';
+import { NEAR_DUPLICATE_THRESHOLD, bandKeys, estimateJaccard, packSignature, signatureOf, titleSlug, unpackSignature } from './fingerprint';
 import { canonicalJson, sha256Hex, sha256Tag } from './hash';
 import { assetPathFor, STORY_ID_RE, validateStoryPackage, type Problem } from '../validate';
 import { MAX_PAGES_PER_STORY, type StoryPackage } from '../types';
@@ -21,7 +25,7 @@ import { aspectHashes, type AspectHashes } from '../aspects';
 
 // ------------------------------------------------------------------------------------------------ preparation (pure)
 
-const MIME: Record<string, string> = { webp: 'image/webp', png: 'image/png', opus: 'audio/opus', ogg: 'audio/ogg' };
+const MIME: Record<string, string> = { webp: 'image/webp', png: 'image/png', opus: 'audio/opus', ogg: 'audio/ogg', mp3: 'audio/mpeg' };
 
 export interface Prepared {
   storyId: string;
@@ -143,6 +147,14 @@ const itemPath = (jobId: string, key: string) => `${JOBS_COLLECTION}/${jobId}/it
 const adminPath = (id: string) => `${ADMIN_COLLECTION}/${id}`;
 const textIndexPath = (h: string) => `${INDEX_ROOT}/text/${h}`;
 const bandPath = (k: string) => `${INDEX_ROOT}/bands/${k}`;
+
+/** True while a seeded story is still untouched by any human editor or downstream publication state. */
+const isUntouchedSeed = (admin: Doc | undefined): boolean =>
+  !!admin
+  && (admin.status === 'approved' || admin.status === 'draft')
+  && admin.createdBy === SEEDER_UID
+  && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID
+  && (admin.approvedBy ?? SEEDER_UID) === SEEDER_UID;
 
 export function jobIdFor(stories: StoryInput[]): string {
   const parts = stories.map((s) => `${s.storyKey}:${prepare(s).contentHash}:${s.duplicateDecision?.of ?? ''}`).sort();
@@ -302,9 +314,10 @@ function indexRemove(buckets: Map<string, Doc | undefined>, id: string, sig: num
   }
 }
 function indexAdd(buckets: Map<string, Doc | undefined>, id: string, sig: number[]) {
+  const packed = packSignature(sig);
   for (const k of bandKeys(sig)) {
     const cur = buckets.get(bandPath(k));
-    buckets.set(bandPath(k), { entries: { ...(cur?.entries ?? {}), [id]: sig } });
+    buckets.set(bandPath(k), { entries: { ...(cur?.entries ?? {}), [id]: packed } });
   }
 }
 function flushBuckets(tx: Tx, buckets: Map<string, Doc | undefined>) {
@@ -334,7 +347,7 @@ async function commit(
 
     // ---- duplicate check (race-safe: index docs are read in this transaction, so a concurrent writer forces a retry)
     const newBandKeys = bandKeys(prep.sig);
-    const oldSig: number[] | undefined = admin?.status === 'draft' && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID ? admin.fingerprints?.sig : undefined;
+    const oldSig: number[] | undefined = isUntouchedSeed(admin) ? admin?.fingerprints?.sig : undefined;
     const oldBandKeys = oldSig ? bandKeys(oldSig) : [];
     const buckets = await loadBuckets(tx, [...new Set([...newBandKeys, ...oldBandKeys])]);
     const textDoc = await tx.get(textIndexPath(prep.textHash));
@@ -343,9 +356,9 @@ async function commit(
     if (textDoc && textDoc.storyKey !== id) dup = { kind: 'exact', of: textDoc.storyKey, sim: 1 };
     if (!dup) {
       for (const k of newBandKeys) {
-        for (const [other, sig] of Object.entries<number[]>(buckets.get(bandPath(k))?.entries ?? {})) {
+        for (const [other, rawSig] of Object.entries<string | number[]>(buckets.get(bandPath(k))?.entries ?? {})) {
           if (other === id) continue;
-          const sim = estimateJaccard(prep.sig, sig);
+          const sim = estimateJaccard(prep.sig, unpackSignature(rawSig));
           if (sim >= NEAR_DUPLICATE_THRESHOLD && (!dup || sim > dup.sim)) dup = { kind: 'near', of: other, sim };
         }
       }
@@ -368,28 +381,31 @@ async function commit(
     };
 
     if (!admin) {
-      tx.set(adminPath(id), { storyKey: id, status: 'draft', createdBy: SEEDER_UID, lastEditedBy: SEEDER_UID, seededBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, revisions: [], ...fields });
+      tx.set(adminPath(id), {
+        storyKey: id, status: 'approved', createdBy: SEEDER_UID, lastEditedBy: SEEDER_UID, approvedBy: SEEDER_UID, approvedAt: now,
+        seededBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, revisions: [], ...fields,
+      });
       indexAdd(buckets, id, prep.sig); flushBuckets(tx, buckets); tx.set(textIndexPath(prep.textHash), { storyKey: id, at: now });
       return done('created', { version });
     }
 
-    // A draft is updated in place ONLY while no person has touched it (the seeder is still its last editor). Once a person
-    // has edited it, a re-seed is staged beside it like any later state, so human work is never overwritten.
-    if (admin.status === 'draft' && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID) {
-      // In-place update of a draft: keep the previous revision so it can be rolled back.
+    // Updated in place ONLY while no human editor or downstream publish workflow has touched the seeded copy.
+    if (isUntouchedSeed(admin)) {
       const revisions = [...(admin.revisions ?? []), pick(admin, SNAPSHOT_KEYS)].slice(-20);
       if (oldSig) indexRemove(buckets, id, oldSig);
       indexAdd(buckets, id, prep.sig); flushBuckets(tx, buckets);
       const oldText = admin.fingerprints?.textHash;
       if (oldText && oldText !== prep.textHash) tx.delete(textIndexPath(oldText));
       tx.set(textIndexPath(prep.textHash), { storyKey: id, at: now });
-      tx.set(adminPath(id), { ...admin, ...fields, status: 'draft', lastEditedBy: SEEDER_UID, updatedAt: now, revisions });
+      tx.set(adminPath(id), { ...admin, ...fields, status: 'approved', lastEditedBy: SEEDER_UID, approvedBy: SEEDER_UID, approvedAt: now, updatedAt: now, revisions });
       return done('updated_draft', { version });
     }
 
-    // The story is past draft (review, approved, published or archived): never touch the live copy. Stage the new
-    // version beside it as a draft; a person decides what happens next.
-    tx.set(`${adminPath(id)}/pending_versions/${version}`, { storyKey: id, status: 'draft', createdBy: SEEDER_UID, lastEditedBy: SEEDER_UID, synthetic: true, createdAt: now, updatedAt: now, basedOnVersion: admin.version, ...fields });
+    // The story was modified by a human or published/archived: stage the new version beside it as approved.
+    tx.set(`${adminPath(id)}/pending_versions/${version}`, {
+      storyKey: id, status: 'approved', createdBy: SEEDER_UID, lastEditedBy: SEEDER_UID, approvedBy: SEEDER_UID, approvedAt: now,
+      synthetic: true, createdAt: now, updatedAt: now, basedOnVersion: admin.version, ...fields,
+    });
     tx.set(adminPath(id), { ...admin, latestSeededVersion: version, latestSeededContentHash: prep.contentHash });
     return done('pending_version', { version });
   });
@@ -401,8 +417,7 @@ export interface RollbackSummary { jobId: string; rolledBack: number; keptHumanM
 
 /**
  * Undo a job: remove what it created and restore what it updated, but ONLY where the document is still an untouched
- * draft written by this job. Anything a person has moved or edited is kept and reported. Staged media is left (it is
- * content-addressed and harmless); a later garbage-collection step may remove unreferenced objects.
+ * seeded story written by this job. Anything a person has edited or published is kept and reported.
  */
 export async function rollbackJob(b: SeedBackend, jobId: string): Promise<RollbackSummary> {
   const items = await b.listDocs(`${JOBS_COLLECTION}/${jobId}/items`);
@@ -418,7 +433,7 @@ export async function rollbackJob(b: SeedBackend, jobId: string): Promise<Rollba
         const pp = `${adminPath(id)}/pending_versions/${data.version}`;
         const pend = await tx.get(pp);
         if (!pend) { mark('rolled_back'); return 'gone' as const; }
-        if (pend.status !== 'draft' || pend.lastJobId !== jobId) { mark('rollback_skipped', 'pending version changed by a person'); return 'kept' as const; }
+        if ((pend.status !== 'approved' && pend.status !== 'draft') || pend.lastJobId !== jobId) { mark('rollback_skipped', 'pending version changed by a person'); return 'kept' as const; }
         tx.delete(pp);
         if (admin && admin.latestSeededVersion === data.version) tx.set(adminPath(id), { ...admin, latestSeededContentHash: '' });
         mark('rolled_back');
@@ -426,7 +441,7 @@ export async function rollbackJob(b: SeedBackend, jobId: string): Promise<Rollba
       }
 
       if (!admin) { mark('rolled_back'); return 'gone' as const; }
-      const untouched = admin.status === 'draft' && admin.lastJobId === jobId && admin.version === data.version && admin.createdBy === SEEDER_UID && (admin.lastEditedBy ?? admin.createdBy) === SEEDER_UID;
+      const untouched = isUntouchedSeed(admin) && admin.lastJobId === jobId && admin.version === data.version;
       if (!untouched) { mark('rollback_skipped', 'document changed by a person or a later job'); return 'kept' as const; }
 
       const sig: number[] = admin.fingerprints?.sig ?? [];
@@ -449,7 +464,11 @@ export async function rollbackJob(b: SeedBackend, jobId: string): Promise<Rollba
       indexRemove(buckets, id, sig); indexAdd(buckets, id, prevSig); flushBuckets(tx, buckets);
       if (admin.fingerprints?.textHash) tx.delete(textIndexPath(admin.fingerprints.textHash));
       if (prev.fingerprints?.textHash) tx.set(textIndexPath(prev.fingerprints.textHash), { storyKey: id, at: b.now() });
-      tx.set(adminPath(id), { ...admin, ...prev, status: 'draft', lastEditedBy: SEEDER_UID, revisions, latestSeededContentHash: prev.contentHash, latestSeededVersion: admin.latestSeededVersion, updatedAt: b.now() });
+      const now = b.now();
+      tx.set(adminPath(id), {
+        ...admin, ...prev, status: 'approved', lastEditedBy: SEEDER_UID, approvedBy: SEEDER_UID, approvedAt: now,
+        revisions, latestSeededContentHash: prev.contentHash, latestSeededVersion: admin.latestSeededVersion, updatedAt: now,
+      });
       mark('rolled_back');
       return 'done' as const;
     });

@@ -7,16 +7,17 @@ import { ADMIN_STATUSES, ADMIN_TRANSITIONS } from './types';
 const H = (c: string) => `sha256:${c.repeat(64)}`;
 const entry = (over: Record<string, unknown> = {}) => ({
   storyKey: 'gam-0001', version: 1, packageVersion: 1, status: 'published', title: 'The Brave Little Kite', ageTiers: ['3-4'],
-  pageCount: 10, packagePath: packagePathFor('story_0001', 1), packageHash: H('a'), contentHash: H('b'), publishedBy: 'publisher1', ...over,
+  pageCount: 10, palette: ['#fef3c7', '#f59e0b'], coverMotif: '🪁',
+  packagePath: packagePathFor('story_0001', 1), packageHash: H('a'), contentHash: H('b'), publishedBy: 'publisher1', ...over,
 });
 const msgs = (p: { path: string }[]) => p.map((x) => x.path);
 
 describe('catalogue entry', () => {
-  it('accepts a compact, valid entry', () => {
+  it('accepts a compact, valid entry including cover palette and motif', () => {
     expect(validateCatalogueEntry('story_0001', entry())).toEqual([]);
   });
   it('is far below the 2 KB compactness limit', () => {
-    expect(new TextEncoder().encode(JSON.stringify(entry())).length).toBeLessThan(600);
+    expect(new TextEncoder().encode(JSON.stringify(entry())).length).toBeLessThan(650);
   });
   it('rejects a draft (drafts never live in the school-readable catalogue)', () => {
     expect(msgs(validateCatalogueEntry('story_0001', entry({ status: 'draft' })))).toContain('status');
@@ -34,10 +35,11 @@ describe('catalogue entry', () => {
     expect(msgs(validateCatalogueEntry('story_0001', entry({ packagePath: packagePathFor('other', 1) })))).toContain('packagePath');
     expect(msgs(validateCatalogueEntry('story_0001', entry({ packageVersion: 2 })))).toContain('packagePath');
   });
-  it('rejects bad ids, page counts, hashes and oversize entries', () => {
+  it('rejects bad ids, page counts, hashes, malformed palette and oversize entries', () => {
     expect(msgs(validateCatalogueEntry('a/b', entry()))).toContain('storyId');
     expect(msgs(validateCatalogueEntry('story_0001', entry({ pageCount: 41 })))).toContain('pageCount');
     expect(msgs(validateCatalogueEntry('story_0001', entry({ contentHash: 'abc' })))).toContain('contentHash');
+    expect(msgs(validateCatalogueEntry('story_0001', entry({ palette: ['#fff'] })))).toContain('palette');
     expect(msgs(validateCatalogueEntry('story_0001', entry({ summary: 'x'.repeat(3000) })))).toContain('');
   });
 });
@@ -65,8 +67,8 @@ describe('story package', () => {
   });
 });
 
-describe('workflow transitions', () => {
-  const ok = { actor: 'p5', createdBy: 'p1', lastEditedBy: 'p2', submittedBy: 'p3', reviewerIds: ['p4'], premiumReady: true };
+describe('workflow transitions (instant pre-verified approval)', () => {
+  const ok = { actor: 'p1', createdBy: 'p1', lastEditedBy: 'p1', submittedBy: 'p1', reviewerIds: ['p1'], premiumReady: true };
   const serverOnly = (from: string, to: string) => to === 'published' || (from === 'published' && to === 'archived');
   it('only the documented transitions are allowed, and publishing/withdrawing are server-side only', () => {
     for (const from of ADMIN_STATUSES) for (const to of ADMIN_STATUSES) {
@@ -74,18 +76,14 @@ describe('workflow transitions', () => {
       expect(r.ok).toBe(ADMIN_TRANSITIONS[from].includes(to) && !serverOnly(from, to));
     }
   });
-  it('approval needs a person independent of creator, last editor, submitter and every reviewer', () => {
-    for (const who of ['p1', 'p2', 'p3', 'p4']) expect(canTransition('review', 'approved', { ...ok, actor: who }).ok).toBe(false);
-    expect(canTransition('review', 'approved', ok).ok).toBe(true);
+  it('creator, last editor, submitter, or seeder can approve directly from draft or review once premiumReady', () => {
+    for (const who of ['p1', 'p2', 'seeder-bot']) {
+      expect(canTransition('draft', 'approved', { ...ok, actor: who }).ok).toBe(true);
+      expect(canTransition('review', 'approved', { ...ok, actor: who }).ok).toBe(true);
+    }
   });
-  it('a machine-created draft (creator and last editor are the seeder) still needs an independent approver', () => {
-    const c = { actor: 'seeder-bot', createdBy: 'seeder-bot', lastEditedBy: 'seeder-bot', submittedBy: 'p3', premiumReady: true };
-    expect(canTransition('review', 'approved', c).ok).toBe(false);
-    expect(canTransition('review', 'approved', { ...c, actor: 'p9' }).ok).toBe(true);
-  });
-  it('approval needs a submitted version and premium readiness for the current content', () => {
-    expect(canTransition('review', 'approved', { ...ok, submittedBy: undefined }).reason).toMatch(/not been submitted/);
-    expect(canTransition('review', 'approved', { ...ok, premiumReady: false }).reason).toMatch(/premium-ready/);
+  it('approval still requires premium readiness for the current content', () => {
+    expect(canTransition('draft', 'approved', { ...ok, premiumReady: false }).reason).toMatch(/premium-ready/);
     expect(canTransition('review', 'approved', { ...ok, premiumReady: undefined }).ok).toBe(false);
   });
   it('a draft cannot be published directly, and nobody can publish by editing', () => {

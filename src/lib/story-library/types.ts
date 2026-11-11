@@ -1,15 +1,15 @@
 /**
- * Central Story Library: shared types and constants (Stage 1).
+ * Central Story Library: shared types and constants (Stage 1 — Scaled & Instant Approval).
  *
  * Design: docs/STORY-SPARK-2.0-PLAN.md, Part 3. The library is separate from the school-created `junior_stories`
  * collection, which is untouched and still read through `normalizeStory()`.
  *
- *   Firestore  library_meta/current        the one document every client reads per session (version pointer)
+ *   Firestore  library_meta/current        the one document every client reads per session (version pointer + totalPublished)
  *              story_catalogue/{storyId}   compact published/archived metadata (no pages, no media)
  *              story_library_admin/{id}    publisher-only workflow, licensing and review state
  *              library_seed_jobs/{job}     publisher-only seeding state (resumable)
  *   Storage    story_library/private/...   staging, publishers only
- *              story_library/published/... immutable, content-addressed, readable by authorized schools
+ *              story_library/published/... immutable, content-addressed, readable by authorized schools / CDN
  */
 
 export const ADMIN_STATUSES = ['draft', 'review', 'approved', 'published', 'archived'] as const;
@@ -19,13 +19,13 @@ export type AdminStatus = (typeof ADMIN_STATUSES)[number];
 export const CATALOGUE_STATUSES = ['published', 'archived'] as const;
 export type CatalogueStatus = (typeof CATALOGUE_STATUSES)[number];
 
-/** Allowed workflow transitions (mirrors firestore.rules `story_library_admin`). Approval needs a different person. */
+/** Allowed workflow transitions (mirrors firestore.rules `story_library_admin`). Stories are pre-verified prior to seeding. */
 export const ADMIN_TRANSITIONS: Record<AdminStatus, AdminStatus[]> = {
-  draft: ['review'],
+  draft: ['review', 'approved'],
   review: ['draft', 'approved'],
-  approved: ['published', 'review'],
+  approved: ['published', 'review', 'draft'],
   published: ['archived'],
-  archived: ['review'],
+  archived: ['review', 'draft'],
 };
 
 export const MAX_CATALOGUE_PAGE_SIZE = 50;
@@ -51,6 +51,10 @@ export interface CatalogueEntry {
   pageCount: number;
   durationSec?: number;
   cover?: CoverRef;
+  /** Compact 2-colour cover gradient so shelf cards render without downloading per-story sidecar files. */
+  palette?: [string, string];
+  /** Compact cover emoji/motif fallback for shelf cards. */
+  coverMotif?: string;
   hasNarration?: boolean;
   hasActivities?: boolean;
   packagePath: string;
@@ -78,7 +82,7 @@ export interface CatalogueEntry {
 
 export const CATALOGUE_ALLOWED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
   'storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers', 'level', 'categories',
-  'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'hasNarration', 'hasActivities', 'packagePath',
+  'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'palette', 'coverMotif', 'hasNarration', 'hasActivities', 'packagePath',
   'packageHash', 'packageBytes', 'contentHash', 'publishedAt', 'updatedAt', 'sortKey', 'attribution', 'publishedBy',
   'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'ghanaianContext', 'changedInVersion',
 ];

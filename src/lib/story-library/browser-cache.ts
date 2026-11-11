@@ -1,6 +1,7 @@
 /**
  * Persistent asset cache for the reader (Cache Storage API), plus the `Backend` the StoryLoader uses.
  * Everything is keyed by URL, and library URLs are content-hashed/immutable, so a cached file is never stale.
+ * Supports an optional CDN/Storage URL resolver so content-addressed Storage paths resolve transparently to CDN URLs.
  * If Cache Storage is unavailable (older browsers, private mode) it falls back to plain fetch: slower, never broken.
  */
 import type { StoryPackage } from './types';
@@ -14,14 +15,19 @@ export const CACHE_NAME = 'story-spark-library-v1';
 export class BrowserAssetCache implements Backend {
   readonly stats = emptyCacheStats();
   private urls = new Map<string, string>();
-  constructor(private fetchFn: typeof fetch = (...a) => fetch(...a), private cacheName = CACHE_NAME) {}
+  constructor(
+    private fetchFn: typeof fetch = (...a) => fetch(...a),
+    private cacheName = CACHE_NAME,
+    private resolveUrl: (path: string) => string = (p) => p,
+  ) {}
 
   private async cache(): Promise<Cache | undefined> {
     try { return typeof caches !== 'undefined' ? await caches.open(this.cacheName) : undefined; } catch { return undefined; }
   }
 
   /** The response body as a Blob, from the device cache when present, else downloaded once and stored. */
-  async blob(url: string, countHit = true): Promise<Blob> {
+  async blob(pathOrUrl: string, countHit = true): Promise<Blob> {
+    const url = this.resolveUrl(pathOrUrl);
     const cache = await this.cache();
     if (cache) {
       const hit = await cache.match(url);
@@ -39,7 +45,8 @@ export class BrowserAssetCache implements Backend {
   }
 
   /** An object URL for <audio>/<img>, reused for the life of the page. */
-  async objectUrl(url: string): Promise<string> {
+  async objectUrl(pathOrUrl: string): Promise<string> {
+    const url = this.resolveUrl(pathOrUrl);
     const known = this.urls.get(url);
     if (known) return known;
     // Re-reading a file the loader just fetched is not a new cache hit, so it is not counted.

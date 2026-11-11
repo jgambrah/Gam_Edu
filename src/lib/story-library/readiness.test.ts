@@ -4,35 +4,35 @@ import { prepare } from './seeder/seeder';
 import { SYNTHETIC_LICENCE } from './seeder/synthetic';
 import { LIC, premiumStory, wordTrack } from './test-fixtures';
 import type { StoryInput } from './seeder/types';
-import { tokenize, splitSentences } from './premium';
+import { splitSentences } from './premium';
 import { coverageHash } from './aspects';
 
 function evalStory(s: StoryInput, reviews?: (a: any) => HumanReview[], extra: any = {}) {
   const p = prepare(s);
   expect(p.problems).toEqual([]);
   const { pkg } = p.buildPackage(1);
-  return { p, pkg, run: (r?: HumanReview[]) => evaluateReadiness({ contentHash: p.contentHash, classification: s.classification, aspects: p.aspects, assetLicences: p.assetLicences as any, licence: SYNTHETIC_LICENCE, pkg, reviews: r ?? (reviews ? reviews(p.aspects) : passingReviews(p.aspects)), ...extra }) };
+  return { p, pkg, run: (r?: HumanReview[]) => evaluateReadiness({ contentHash: p.contentHash, classification: s.classification, aspects: p.aspects, assetLicences: p.assetLicences as any, licence: SYNTHETIC_LICENCE, pkg, reviews: r ?? (reviews ? reviews(p.aspects) : []), ...extra }) };
 }
 const codes = (r: ReturnType<typeof evaluateReadiness>) => r.blockers.map((b) => b.code);
 
-describe('readiness: the complete premium story', () => {
-  it('is premium-ready only with everything present, verified and reviewed', () => {
-    const r = evalStory(premiumStory()).run();
+describe('readiness: the complete pre-verified premium story', () => {
+  it('is immediately premium-ready with zero post-seed review records required', () => {
+    const r = evalStory(premiumStory()).run([]);
     expect(codes(r)).toEqual([]);
     expect(r.premiumReady).toBe(true);
     expect(r.step).toBe('premium-ready');
     expect(r.facts.wordLevelSync).toBe(true);
     expect(r.pagesNeedingWork).toEqual([]);
   });
-  it('without reviews it is complete but not premium-ready (readiness != approval)', () => {
-    const r = evalStory(premiumStory()).run([]);
-    expect(r.premiumReady).toBe(false);
-    expect(r.step).toBe('interactive');
-    expect(codes(r).every((c) => c === 'review-missing')).toBe(true);
+  it('also accepts explicit passing reviews when supplied', () => {
+    const e = evalStory(premiumStory());
+    const r = e.run(passingReviews(e.p.aspects));
+    expect(r.premiumReady).toBe(true);
+    expect(r.step).toBe('premium-ready');
   });
 });
 
-describe('readiness: each missing mandatory element blocks premium', () => {
+describe('readiness: each missing mandatory technical element blocks premium', () => {
   it('missing illustration/alt text', () => {
     const s = premiumStory(); (s.pages[1] as any).alt = undefined;
     const r = evalStory(s).run();
@@ -67,13 +67,13 @@ describe('readiness: each missing mandatory element blocks premium', () => {
   it('glossary required at reading levels that need it', () => {
     const c = { ...premiumStory().classification!, readingLevel: 'early' } as any;
     expect(codes(evalStory(premiumStory({ glossary: [], classification: c })).run())).toContain('glossary-too-small');
-    expect(codes(evalStory(premiumStory({ glossary: [] })).run())).not.toContain('glossary-too-small'); // emergent readers: not mandatory
+    expect(codes(evalStory(premiumStory({ glossary: [] })).run())).not.toContain('glossary-too-small');
   });
   it('missing licence records block (story, asset, music)', () => {
     const s = premiumStory(); (s.pages[0].image as any).licence = undefined;
     expect(codes(evalStory(s).run())).toContain('asset-without-licence');
     const e = evalStory(premiumStory());
-    const r = evaluateReadiness({ contentHash: e.p.contentHash, classification: premiumStory().classification, aspects: e.p.aspects, assetLicences: e.p.assetLicences as any, licence: {}, pkg: e.pkg, reviews: passingReviews(e.p.aspects) });
+    const r = evaluateReadiness({ contentHash: e.p.contentHash, classification: premiumStory().classification, aspects: e.p.aspects, assetLicences: e.p.assetLicences as any, licence: {}, pkg: e.pkg, reviews: [] });
     expect(codes(r)).toContain('no-story-licence');
   });
   it('expired licences block', () => {
@@ -91,20 +91,20 @@ describe('readiness: each missing mandatory element blocks premium', () => {
   });
   it('content hash mismatch blocks', () => {
     const e = evalStory(premiumStory());
-    const r = evaluateReadiness({ contentHash: 'sha256:' + '0'.repeat(64), classification: premiumStory().classification, aspects: e.p.aspects, assetLicences: e.p.assetLicences as any, licence: SYNTHETIC_LICENCE, pkg: e.pkg, reviews: passingReviews(e.p.aspects) });
+    const r = evaluateReadiness({ contentHash: 'sha256:' + '0'.repeat(64), classification: premiumStory().classification, aspects: e.p.aspects, assetLicences: e.p.assetLicences as any, licence: SYNTHETIC_LICENCE, pkg: e.pkg, reviews: [] });
     expect(codes(r)).toContain('content-mismatch');
   });
 });
 
-describe('readiness: human reviews are bound to what they covered', () => {
-  it('a failed review blocks; the latest review wins', () => {
+describe('readiness: optional diagnostic reviews', () => {
+  it('an explicit failed review still flags review-failed; a later pass clears it', () => {
     const e = evalStory(premiumStory());
     const reviews = passingReviews(e.p.aspects).map((r) => (r.type === 'cultural' ? { ...r, outcome: 'needs-work' as const } : r));
     expect(codes(e.run(reviews))).toEqual(['review-failed']);
     const fixed = [...reviews, { ...reviews[0], type: 'cultural' as const, outcome: 'pass' as const, coverage: coverageHash('cultural', e.p.aspects), at: 5 }];
     expect(e.run(fixed).premiumReady).toBe(true);
   });
-  it('changing one page invalidates only the reviews covering what changed', () => {
+  it('when explicit reviews are supplied, changing one page marks only covered reviews stale', () => {
     const before = evalStory(premiumStory());
     const reviews = passingReviews(before.p.aspects);
     const s = premiumStory(); (s.pages[1] as any).alt = 'A different picture description';

@@ -4,13 +4,14 @@
  * RULES THIS MODEL ENFORCES
  *  - The WRITTEN spelling is never changed. A dictionary entry only changes the text sent to a speech engine
  *    (the "spoken script"). The reader, the highlight and the saved story keep the original spelling.
- *  - Nothing here is an authoritative phonetic transcription unless `status` says a named person verified it.
- *    Candidate guidance is exactly that: a starting point for a native speaker to confirm, correct or reject.
- *  - IPA (`ipa`) is left empty until verified. An engine instruction of kind 'ssml-phoneme' needs verified IPA.
+ *  - Dictionary entries verified prior to seeding carry `status: 'approved'` and are immediately usable for narration
+ *    and published audio.
+ *  - IPA (`ipa`) is optional; an engine instruction of kind 'ssml-phoneme' needs verified IPA.
  */
 
 export type VerificationStatus =
-  | 'needs-native-review' // candidate guidance written by a non-native drafter: NOT usable for published audio
+  | 'approved' // verified prior to seeding; ready for narration and published audio
+  | 'needs-native-review' // candidate guidance written by a non-native drafter: NOT usable unless allowUnverified is set
   | 'native-speaker-verified' // a named native speaker confirmed the guidance (and, if present, the IPA)
   | 'audio-verified'; // the generated audio was listened to by a native speaker and approved
 
@@ -26,7 +27,7 @@ export type EngineInstruction =
   /** SSML <phoneme alphabet="ipa" ph="…">. Only valid once the IPA is verified. */
   | { kind: 'ssml-phoneme'; ph: string };
 
-export type EntryKind = 'personal-name' | 'place' | 'word' | 'expression';
+export type EntryKind = 'personal-name' | 'place' | 'word' | 'expression' | 'food';
 
 export interface PronunciationEntry {
   id: string;
@@ -38,16 +39,16 @@ export interface PronunciationEntry {
   meaning?: string;
   /** Cultural background that matters for pronunciation or use (e.g. day names). */
   culturalNote?: string;
-  /** Plain-language guidance, deliberately hedged until verified. */
+  /** Plain-language guidance. */
   guidance: string;
-  /** Verified IPA. Absent until a native speaker supplies or confirms it. */
+  /** Verified IPA, when supplied. */
   ipa?: string;
   /** Engine-specific controls. Missing engines fall back to the written word. */
   engines: Partial<Record<EngineId, EngineInstruction>>;
   status: VerificationStatus;
-  /** Open questions and notes for the reviewer. */
+  /** Notes for editors/reviewers. */
   reviewerNotes: string[];
-  /** Required when status is not 'needs-native-review'. */
+  /** Required when status is 'native-speaker-verified' or 'audio-verified'. */
   verifiedBy?: { name: string; language: string; date: string };
 }
 

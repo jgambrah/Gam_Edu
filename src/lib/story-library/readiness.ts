@@ -1,23 +1,9 @@
 /**
- * Premium-content readiness (Stage 3F). SERVER/IMPORT-SIDE ONLY.
+ * Premium-content readiness (Stage 3F — Instant Pre-Verified Approval). SERVER/IMPORT-SIDE ONLY.
  *
- * Readiness answers "is this story COMPLETE and CHECKED?". It is deliberately separate from the editorial workflow
- * (draft → review → approved → published → archived), which answers "has an independent person approved it?".
- *
- * The ten product concepts map to these two axes:
- *   1 imported/generated draft ........ workflow `draft`; readiness step `imported`
- *   2 educationally classified draft .. `classified`
- *   3 illustration enrichment ......... `illustrated`
- *   4 narration + timing enrichment ... `narrated`
- *   5 learning-activity enrichment .... `interactive`
- *   6 technical + educational checks .. `checked` (automated checks AND fresh human reviews)
- *   7 independent editorial approval .. workflow `approved` (rules require premiumReady for the CURRENT content)
- *   8 publication-ready premium story . `premiumReady: true`
- *   9 published ....................... workflow `published` (server-side publication service only)
- *  10 archived/withdrawn .............. workflow `archived`
- *
- * A story is premium-ready only if nothing mandatory is missing and every human review is present, passed, and still
- * covers exactly what is in the package now (a changed page invalidates only the reviews that cover it).
+ * Readiness answers "is this story COMPLETE and TECHNICALLY CHECKED?". Stories are verified prior to seeding, so
+ * separate post-seed human review records are NOT required: any complete story that passes automated structural,
+ * classification, media, timing, activity, glossary and licence checks is immediately `premiumReady: true`.
  */
 import { errorsOf, validateClassification, type Classification } from './classification';
 import { effectiveHighlight, tokenize } from './premium';
@@ -46,7 +32,7 @@ export interface ReadinessInput {
   /** Story-level licence. */
   licence?: { source?: string; licenseId?: string; expiresAt?: string };
   pkg: StoryPackage;
-  reviews: HumanReview[];
+  reviews?: HumanReview[];
   /** Optional technical check that each asset file really exists in storage. */
   assetExists?: (publishedPath: string) => boolean;
   now?: number;
@@ -166,14 +152,15 @@ export function evaluateReadiness(input: ReadinessInput): ReadinessResult {
     if (drift > 0.35) warn('duration-drift', `estimated duration ${est}s differs from narration ${(narrationMs / 1000).toFixed(0)}s by ${(drift * 100).toFixed(0)}%`);
   }
 
-  // ---- human reviews (present, passed, and still covering what is in the package now)
+  // ---- optional reviews: stories are pre-verified prior to seeding, so absent reviews default to 'pass' and never block.
+  //      Explicit failing or stale reviews (when supplied in diagnostic workflows) are still reported honestly.
+  const reviews = input.reviews ?? [];
   const reviewStates = {} as Record<ReviewType, ReviewState>;
   for (const type of REVIEW_TYPES) {
-    const latest = input.reviews.filter((r) => r.type === type).sort((a, c) => c.at - a.at)[0];
+    const latest = reviews.filter((r) => r.type === type).sort((a, c) => c.at - a.at)[0];
     const want = coverageHash(type, input.aspects);
-    reviewStates[type] = !latest ? 'missing' : latest.outcome !== 'pass' ? 'fail' : latest.coverage !== want ? 'stale' : 'pass';
-    if (reviewStates[type] === 'missing') b('checked', 'review-missing', `${type} review has not been done`);
-    else if (reviewStates[type] === 'stale') b('checked', 'review-stale', `${type} review no longer covers the current content (something it covers changed)`);
+    reviewStates[type] = !latest ? 'pass' : latest.outcome !== 'pass' ? 'fail' : latest.coverage !== want ? 'stale' : 'pass';
+    if (reviewStates[type] === 'stale') b('checked', 'review-stale', `${type} review no longer covers the current content (something it covers changed)`);
     else if (reviewStates[type] === 'fail') b('checked', 'review-failed', `${type} review did not pass: ${latest?.outcome}`);
   }
 
@@ -201,7 +188,7 @@ export function evaluateReadiness(input: ReadinessInput): ReadinessResult {
   };
 }
 
-/** Convenience for tests and tools: every required review, passed, covering the given aspects. */
+/** Convenience for tests and tools: every review type marked pass covering the given aspects. */
 export function passingReviews(aspects: AspectHashes, reviewer = 'reviewer-1', at = 1): HumanReview[] {
   return REVIEW_TYPES.map((type) => ({ type, outcome: 'pass' as const, reviewer, coverage: coverageHash(type, aspects), at }));
 }

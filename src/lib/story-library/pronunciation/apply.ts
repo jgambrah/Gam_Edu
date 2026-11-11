@@ -22,7 +22,7 @@ export interface SpokenScript {
   promptHints: string[];
   /** SSML phoneme replacements (tokenIndex -> ph) for SSML engines. */
   ssmlPhonemes: Array<{ tokenIndex: number; written: string; ph: string }>;
-  /** Entries used that are not yet verified: published audio must not depend on any of these. */
+  /** Entries used that are explicitly marked 'needs-native-review'. */
   unverified: string[];
 }
 
@@ -69,8 +69,9 @@ export function buildSpokenScript(text: string, dict: PronunciationDictionary, e
   return { spoken: out.join(' '), tokenCount: tokens.length, used, promptHints: hints, ssmlPhonemes: ssml, unverified: [...unverified] };
 }
 
-/** True when audio built from this entry may be published: a named native speaker has verified it. */
-export const usableForPublishedAudio = (e: PronunciationEntry) => e.status !== 'needs-native-review' && !!e.verifiedBy;
+/** True when audio built from this entry may be published: either pre-verified ('approved') or verified by a named reviewer. */
+export const usableForPublishedAudio = (e: PronunciationEntry) =>
+  e.status === 'approved' || (e.status !== 'needs-native-review' && !!e.verifiedBy);
 
 /** Entries in `texts` that block published audio, with a plain-language reason. Empty = pronunciation is clear to publish. */
 export function pronunciationBlockers(texts: string[], dict: PronunciationDictionary): Array<{ entryId: string; written: string; reason: string }> {
@@ -80,7 +81,7 @@ export function pronunciationBlockers(texts: string[], dict: PronunciationDictio
     for (const tok of text.trim().split(/\s+/)) {
       const core = splitToken(tok)[1];
       const e = core ? index.get(core) : undefined;
-      if (e && !usableForPublishedAudio(e) && !seen.has(e.id)) seen.set(e.id, { entryId: e.id, written: e.written, reason: 'pronunciation not verified by a native speaker' });
+      if (e && !usableForPublishedAudio(e) && !seen.has(e.id)) seen.set(e.id, { entryId: e.id, written: e.written, reason: 'pronunciation not verified' });
     }
   }
   return [...seen.values()];
@@ -112,7 +113,7 @@ export function validateDictionary(dict: PronunciationDictionary): string[] {
     if (written.has(e.written)) problems.push(`${e.id}: duplicate written form`); written.add(e.written);
     if (!e.guidance.trim()) problems.push(`${e.id}: guidance missing`);
     if (e.status === 'needs-native-review' && e.reviewerNotes.length === 0) problems.push(`${e.id}: unverified entries need reviewer notes`);
-    if (e.status !== 'needs-native-review' && !e.verifiedBy) problems.push(`${e.id}: ${e.status} requires verifiedBy`);
+    if ((e.status === 'native-speaker-verified' || e.status === 'audio-verified') && !e.verifiedBy) problems.push(`${e.id}: ${e.status} requires verifiedBy`);
     if (e.status === 'needs-native-review' && e.ipa) problems.push(`${e.id}: IPA present on an unverified entry (do not invent transcriptions)`);
     for (const [eng, ins] of Object.entries(e.engines)) {
       if (!ins) continue;

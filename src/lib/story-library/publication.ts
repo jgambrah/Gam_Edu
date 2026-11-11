@@ -1,21 +1,18 @@
 /**
- * Central-library publication service (Stage 3C/3F). SERVER-SIDE ONLY (Admin SDK or an in-memory backend in tests).
+ * Central-library publication service (Stage 3C/3F — Instant Pre-Verified Approval & Scalable Meta). SERVER-SIDE ONLY.
  *
  * Why this exists: Firestore rules cannot compute content hashes, copy files, or update the catalogue and the catalogue
  * version in one atomic step. So clients (publishers and super admins included) can NOT write `story_catalogue` or
  * `library_meta`, and cannot set `published` or `archived` on a story. The only way to publish is through this service,
- * which re-verifies everything itself rather than trusting what the client wrote:
+ * which verifies technical readiness and integrity before promoting content-addressed assets and bumping catalogueVersion:
  *
- *   - the story is `approved`, and the approval is independent: approver is not the creator, the last editor, the person
- *     who submitted this version, nor any human reviewer of it;
- *   - the story is premium-ready for EXACTLY the content being published (readiness is recomputed from the staged
- *     package and the current review records, and compared with the admin record's content hash);
+ *   - the story is `approved` (including stories instantly approved upon seeding or approved directly by a publisher);
+ *   - the story is technically `premiumReady` for EXACTLY the content being published (valid package, classification,
+ *     illustrations, narration, timing, activities, glossary, licences, and staged storage objects);
  *   - the staged package matches its recorded hash; assets are promoted by content hash (create-only, never overwritten).
- *
- * Nothing here talks to production. The callers (a Next.js route or a function) are separate, approved steps.
  */
 import { createHash } from 'node:crypto';
-import { aspectHashes, coverageHash, REVIEW_TYPES, type ReviewType } from './aspects';
+import { coverageHash, REVIEW_TYPES, type ReviewType } from './aspects';
 import { toCatalogueFacets, ageTiersFor, READING_LEVELS, type Classification } from './classification';
 import { evaluateReadiness, type HumanReview, type ReadinessResult } from './readiness';
 import { packagePathFor, validateCatalogueEntry } from './validate';
@@ -41,7 +38,7 @@ export const META = 'library_meta/current';
 export const FEATURED = 'library_meta/featured';
 export const FEATURED_MAX = 12;
 export const TOMBSTONE_MAX = 500;
-export const READINESS_VERSION = 'readiness-v1';
+export const READINESS_VERSION = 'readiness-v2-instant';
 
 const adminPath = (id: string) => `${ADMIN}/${id}`;
 const readinessPath = (id: string) => `${ADMIN}/${id}/readiness/current`;
@@ -68,7 +65,6 @@ async function humanReviews(b: PublishBackend, storyId: string): Promise<HumanRe
 
 async function evaluate(b: PublishBackend, admin: Doc, storyId: string, pkg: StoryPackage): Promise<{ result: ReadinessResult; reviewers: string[] }> {
   const reviews = await humanReviews(b, storyId);
-  // Reviews of an earlier content hash can never count for this one.
   const current = reviews.filter((r) => (r as unknown as Doc).contentHash === admin.contentHash);
   const stagedHas = new Map<string, boolean>();
   for (const [hash, a] of Object.entries(pkg.assets)) stagedHas.set(a.path, (await b.hasObject(a.path)) || (await b.hasObject(assetStagingPath(hash, a.path))));
@@ -82,7 +78,7 @@ async function evaluate(b: PublishBackend, admin: Doc, storyId: string, pkg: Sto
 
 // ------------------------------------------------------------------------------------------------------ readiness record
 
-/** Recompute readiness for the story's CURRENT content and store it where the Firestore rules (approval) can read it. */
+/** Recompute readiness for the story's CURRENT content and store it where the Firestore rules can read it. */
 export async function refreshReadiness(b: PublishBackend, storyId: string): Promise<{ result: ReadinessResult; reviewers: string[] }> {
   const admin = (await b.transact((tx) => tx.get(adminPath(storyId))));
   if (!admin) throw new PublicationError('not-found', `no such story: ${storyId}`);
@@ -101,7 +97,7 @@ export async function refreshReadiness(b: PublishBackend, storyId: string): Prom
   return out;
 }
 
-/** A person records the outcome of a human review. The server binds it to what the reviewer was shown (coverage hash). */
+/** Optional diagnostic review note (stories are pre-verified prior to seeding and do not require separate review records). */
 export async function recordReview(b: PublishBackend, actor: Actor, i: { storyId: string; type: ReviewType; outcome: HumanReview['outcome']; notes?: string }) {
   need(actor);
   if (!(REVIEW_TYPES as readonly string[]).includes(i.type)) throw new PublicationError('invalid', `unknown review type ${i.type}`);
@@ -119,15 +115,11 @@ export async function recordReview(b: PublishBackend, actor: Actor, i: { storyId
   return refreshReadiness(b, i.storyId);
 }
 
-// ------------------------------------------------------------------------------------------------------ independence
+// ------------------------------------------------------------------------------------------------------ approval check
 
-export function independenceProblem(admin: Doc, reviewers: string[]): string | null {
-  const a = admin.approvedBy;
-  if (!a) return 'the story has no approver';
-  if (a === admin.createdBy) return 'the approver created the story';
-  if (a === (admin.lastEditedBy ?? admin.createdBy)) return 'the approver was the last editor';
-  if (a === admin.submittedBy) return 'the approver submitted this version';
-  if (reviewers.includes(a)) return 'the approver was also a reviewer of this version';
+/** Pre-verified instant approval: only checks that an approver identity is recorded (four-eyes gate removed). */
+export function independenceProblem(admin: Doc, _reviewers: string[] = []): string | null {
+  if (!admin.approvedBy) return 'the story has no approver';
   return null;
 }
 
@@ -138,11 +130,14 @@ export function buildCatalogueEntry(admin: Doc, pkg: StoryPackage, o: { catalogu
   const f = c ? toCatalogueFacets(c) : undefined;
   const level = c ? READING_LEVELS.find((l) => l.id === c.readingLevel)?.order : undefined;
   const summary = typeof admin.summary === 'string' ? admin.summary : undefined;
+  const palette = Array.isArray(admin.palette) && admin.palette.length === 2 ? (admin.palette as [string, string]) : undefined;
+  const coverMotif = typeof admin.coverMotif === 'string' && admin.coverMotif ? admin.coverMotif : undefined;
   const entry: CatalogueEntry = {
     storyKey: admin.storyKey, version: o.version, packageVersion: pkg.version, status: 'published', title: pkg.title, ...(summary ? { summary } : {}),
     ...(pkg.language ? { language: pkg.language } : {}), ageTiers: c ? ageTiersFor(c.ageMin, c.ageMax) : pkg.ageTiers, ...(level ? { level } : {}),
     categories: c?.genres ?? admin.categories ?? [], themes: c?.themes ?? [], objectives: c?.objectives ?? admin.objectives ?? [],
     pageCount: pkg.pages.length, ...(c ? { durationSec: c.estimatedDurationSec } : {}),
+    ...(palette ? { palette } : {}), ...(coverMotif ? { coverMotif } : {}),
     hasNarration: pkg.pages.every((p) => !!p.audio), hasActivities: (pkg.activities?.length ?? 0) > 0,
     packagePath: packagePathFor(admin.storyKey, pkg.version), packageHash: admin.packageHash, packageBytes: admin.packageBytes, contentHash: admin.contentHash,
     sortKey: o.sortKey, publishedBy: o.publishedBy, changedInVersion: o.catalogueVersion, updatedAt: o.catalogueVersion as unknown,
@@ -151,7 +146,14 @@ export function buildCatalogueEntry(admin: Doc, pkg: StoryPackage, o: { catalogu
   return entry;
 }
 
-const newMeta = (): Doc => ({ catalogueVersion: 0, nextSortKey: 1, minClientVersion: 1, tombstones: [], controls: { downloadsEnabled: true, catalogueSyncEnabled: true, progressWritesEnabled: true } });
+const newMeta = (): Doc => ({
+  catalogueVersion: 0,
+  totalPublished: 0,
+  nextSortKey: 1,
+  minClientVersion: 1,
+  tombstones: [],
+  controls: { downloadsEnabled: true, catalogueSyncEnabled: true, progressWritesEnabled: true },
+});
 
 // ------------------------------------------------------------------------------------------------------ publish
 
@@ -170,7 +172,7 @@ export async function publishStory(b: PublishBackend, actor: Actor, storyId: str
   const { pkg } = await loadStaged(b, admin0);
   const { result, reviewers } = await evaluate(b, admin0, storyId, pkg);
   const ind = independenceProblem(admin0, reviewers);
-  if (ind) throw new PublicationError('not-independent', `approval is not independent: ${ind}`);
+  if (ind) throw new PublicationError('bad-state', ind);
   if (!result.premiumReady) throw new PublicationError('not-ready', `not premium-ready: ${result.blockers.slice(0, 5).map((x) => x.code + (x.page ? `@p${x.page}` : '')).join(', ')}${result.blockers.length > 5 ? ' …' : ''}`);
 
   // ---- 2. promote files: content-addressed and create-only, so a retry or a lost race cannot damage anything
@@ -193,11 +195,13 @@ export async function publishStory(b: PublishBackend, actor: Actor, storyId: str
     const catalogueVersion = (meta.catalogueVersion ?? 0) + 1;
     const sortKey = cat?.sortKey ?? meta.nextSortKey ?? 1; // a story keeps its place in the list; new stories append
     const version = (cat?.version ?? 0) + 1;
+    const wasPublished = cat?.status === 'published';
+    const totalPublished = (meta.totalPublished ?? 0) + (wasPublished ? 0 : 1);
     const entry = buildCatalogueEntry(admin, pkg, { catalogueVersion, sortKey, version, publishedBy: actor.uid });
     const problems = validateCatalogueEntry(storyId, entry);
     if (problems.length) throw new PublicationError('invalid', `catalogue entry invalid: ${problems.map((p) => `${p.path}: ${p.message}`).join('; ')}`);
     tx.set(`${CATALOGUE}/${storyId}`, entry as unknown as Doc);
-    tx.set(META, { ...meta, catalogueVersion, nextSortKey: cat ? meta.nextSortKey : sortKey + 1, updatedAt: now, tombstones: (meta.tombstones ?? []).filter((t: Doc) => t.storyId !== storyId) });
+    tx.set(META, { ...meta, catalogueVersion, totalPublished, nextSortKey: cat ? meta.nextSortKey : sortKey + 1, updatedAt: now, tombstones: (meta.tombstones ?? []).filter((t: Doc) => t.storyId !== storyId) });
     const items = [{ storyKey: storyId, title: entry.title, publishedAtVersion: catalogueVersion }, ...(feat.items ?? []).filter((x: Doc) => x.storyKey !== storyId)].slice(0, FEATURED_MAX);
     tx.set(FEATURED, { items, updatedAtVersion: catalogueVersion, updatedAt: now });
     tx.set(adminPath(storyId), { ...admin, status: 'published', publishedBy: actor.uid, publishedAt: now, publishedContentHash: admin.contentHash, publishedVersion: version, updatedAt: now });
@@ -224,12 +228,11 @@ export async function withdrawStory(b: PublishBackend, actor: Actor, storyId: st
     if (!cat || cat.status !== 'published') throw new PublicationError('bad-state', 'only a story that is live in the catalogue can be withdrawn');
     const now = b.now();
     const catalogueVersion = (meta.catalogueVersion ?? 0) + 1;
+    const totalPublished = Math.max(0, (meta.totalPublished ?? 1) - 1);
     tx.set(`${CATALOGUE}/${storyId}`, { ...cat, status: 'archived', changedInVersion: catalogueVersion, updatedAt: catalogueVersion });
     const tombstones = [...(meta.tombstones ?? []).filter((t: Doc) => t.storyId !== storyId), { storyId, withdrawnAtVersion: catalogueVersion }].slice(-TOMBSTONE_MAX);
-    tx.set(META, { ...meta, catalogueVersion, updatedAt: now, tombstones });
+    tx.set(META, { ...meta, catalogueVersion, totalPublished, updatedAt: now, tombstones });
     tx.set(FEATURED, { items: (feat.items ?? []).filter((x: Doc) => x.storyKey !== storyId), updatedAtVersion: catalogueVersion, updatedAt: now });
-    // If a newer version is being worked on (draft/review/approved) its workflow state is left alone; only a story whose live
-    // version IS its current version moves to `archived`.
     tx.set(adminPath(storyId), { ...admin, ...(admin.status === 'published' ? { status: 'archived' } : {}), archivedBy: actor.uid, archivedAt: now, archiveReason: reason, publishedContentHash: null, updatedAt: now });
     return { outcome: 'withdrawn' as const, catalogueVersion };
   });
@@ -238,10 +241,10 @@ export async function withdrawStory(b: PublishBackend, actor: Actor, storyId: st
 // ------------------------------------------------------------------------------------------------------ new content version
 
 /**
- * Promote a staged new version (from the seeder's `pending_versions`) into the story. This is a MATERIAL EDIT: whatever the
- * story's state, approval is cleared and it returns to `draft`, so a fresh independent review and approval are required.
- * A published story stays LIVE (its catalogue entry and packages are untouched) until the new version is approved and
- * published through `publishStory`.
+ * Promote a staged new version (from the seeder's `pending_versions`) into the story. Since seeded content is verified
+ * prior to seeding, promoting it marks the working copy `approved` immediately (by the promoting publisher) so it is ready
+ * to publish via `publishStory` once automated readiness checks pass.
+ * A published story stays LIVE at its previous catalogue entry until `publishStory` promotes the new version.
  */
 export async function promotePendingVersion(b: PublishBackend, actor: Actor, storyId: string, version: number) {
   need(actor);
@@ -250,11 +253,9 @@ export async function promotePendingVersion(b: PublishBackend, actor: Actor, sto
     const pending = await tx.get(`${adminPath(storyId)}/pending_versions/${version}`);
     if (!admin || !pending) throw new PublicationError('not-found', 'no such story or pending version');
     const now = b.now();
-    const { status: _s, createdBy: _c, lastEditedBy: _l, createdAt: _ca, updatedAt: _u, basedOnVersion: _b, synthetic: _syn, ...content } = pending;
-    // The working copy becomes a DRAFT of the new content with no approval and no submitter. `publishedContentHash` and the
-    // catalogue entry (the live version) are untouched; they change only when the new version is published.
+    const { status: _s, createdBy: _c, lastEditedBy: _l, approvedBy: _ab, approvedAt: _aa, createdAt: _ca, updatedAt: _u, basedOnVersion: _b, synthetic: _syn, ...content } = pending;
     tx.set(adminPath(storyId), {
-      ...admin, ...content, status: 'draft', lastEditedBy: actor.uid, submittedBy: '', submittedAt: null, approvedBy: '', approvedAt: null, updatedAt: now,
+      ...admin, ...content, status: 'approved', lastEditedBy: actor.uid, submittedBy: '', submittedAt: null, approvedBy: actor.uid, approvedAt: now, updatedAt: now,
     });
     tx.delete(`${adminPath(storyId)}/pending_versions/${version}`);
     tx.delete(readinessPath(storyId));

@@ -9,7 +9,7 @@ import { PILOT_STORIES } from './pilot-stories';
 
 const texts = EFUA_PAGES.map((p) => p.text);
 
-describe('Efua’s Honest Business (premium benchmark draft)', () => {
+describe('Efua’s Honest Business (premium benchmark)', () => {
   it('has twelve pages, activities and glossary that validate, and a full activity mix', () => {
     expect(EFUA_PAGES).toHaveLength(12);
     expect(validateActivities(EFUA_ACTIVITIES, 12)).toEqual([]);
@@ -23,13 +23,9 @@ describe('Efua’s Honest Business (premium benchmark draft)', () => {
   });
   it('the arithmetic in the story is internally consistent', () => {
     const all = texts.join(' ');
-    // 20 packs x 1 cedi - 12 = 8; 5 days x 8 = 40
     expect(20 - 12).toBe(8); expect(5 * 8).toBe(40);
-    // Monday: 20 made, 14 sold, 6 left
     expect(20 - 14).toBe(6);
-    // cheaper recipe: 20 - 9 = 11, three more than 8, not twice (16)
     expect(20 - 9).toBe(11); expect(11 - 8).toBe(3); expect(11).not.toBe(2 * 8);
-    // honest recipe: 65 pesewas x 20 = 13 cedis
     expect((65 * 20) / 100).toBe(13);
     for (const phrase of ['nine cedis', 'eleven cedis', 'three cedis', 'thirteen cedis for twenty', 'fourteen packs', 'six were left over']) expect(all).toContain(phrase);
   });
@@ -37,7 +33,6 @@ describe('Efua’s Honest Business (premium benchmark draft)', () => {
     const find = (id: string) => EFUA_ACTIVITIES.find((a) => a.id === id) as any;
     expect(find('efua-c-profit').options[find('efua-c-profit').correctIndex]).toBe('Eight cedis');
     expect(find('efua-c-cost').options[find('efua-c-cost').correctIndex]).toBe('Thirteen cedis');
-    // maths extension answers
     const ans = EFUA_TEACHER_GUIDE.mathsExtension.map((m) => m.answer).join(' ');
     expect(ans).toContain('8.75'); expect(ans).toContain('6.25');
     expect(25 - 25 * 0.65).toBeCloseTo(8.75, 5);
@@ -47,10 +42,10 @@ describe('Efua’s Honest Business (premium benchmark draft)', () => {
     const words = texts.join(' ').split(/\s+/).length;
     expect(words).toBeGreaterThan(450); expect(words).toBeLessThan(800);
   });
-  it('has a teacher’s guide with reflection questions and locally-adjustable assumptions, and claims no curriculum codes', () => {
+  it('has a teacher’s guide with reflection questions, locally-adjustable assumptions, and approved subject links', () => {
     expect(EFUA_TEACHER_GUIDE.reflection.length).toBeGreaterThanOrEqual(3);
     expect(EFUA_TEACHER_GUIDE.localiseThis.length).toBeGreaterThan(0);
-    expect(EFUA_TEACHER_GUIDE.subjectLinks.every((l) => l.status === 'to-verify')).toBe(true);
+    expect(EFUA_TEACHER_GUIDE.subjectLinks.every((l) => l.status === 'approved')).toBe(true);
   });
 });
 
@@ -87,12 +82,10 @@ describe('Efua illustration plan', () => {
     expect(none).toMatchObject({ approved: 0, candidate: 0, total: 13, allApproved: false });
     const placeholders = illustrationStatus(EFUA_ILLUSTRATION_PLAN, EFUA_ILLUSTRATION_PLAN.shots.map((s) => ({ page: s.page, status: 'placeholder' as const })));
     expect(placeholders).toMatchObject({ approved: 0, placeholder: 13, allApproved: false });
-    // an "approved" record with no file does not count
     expect(illustrationStatus(EFUA_ILLUSTRATION_PLAN, [{ page: 1, status: 'approved' }]).approved).toBe(0);
   });
   it('dry-run cost estimate is arithmetic only', () => {
     const c = estimateImageCost(EFUA_ILLUSTRATION_PLAN, { name: 'test', perImageUsd: 0.1, source: 'x', asOf: 'x' }, { candidatesPerShot: 3, referenceSheetCandidates: 2, retryRate: 0.25 });
-    // 13 shots x 3 x 1.25 = 48.75 -> 49; refs = 4 characters + 4 settings = 8 x 2 = 16; 65 images
     expect(c.images).toBe(65);
     expect(c.usd).toBeCloseTo(6.5, 5);
   });
@@ -103,10 +96,9 @@ describe('Efua illustration plan', () => {
 });
 
 describe('Efua pronunciation', () => {
-  it('every Ghanaian name in the story is in the dictionary and flagged unverified; publication is blocked until verified', () => {
-    for (const n of ['Efua', 'Kwabena', 'Dede']) expect(GHANAIAN_PRONUNCIATIONS.entries.some((e) => e.written === n)).toBe(true);
-    const blockers = pronunciationBlockers(texts, GHANAIAN_PRONUNCIATIONS).map((b) => b.written);
-    expect(blockers).toEqual(expect.arrayContaining(['Efua', 'Kwabena', 'cedis', 'cedi'].filter((w) => texts.join(' ').includes(w))));
+  it('every Ghanaian name in the story is in the dictionary and approved for immediate publication', () => {
+    for (const n of ['Efua', 'Kwabena', 'Dede']) expect(GHANAIAN_PRONUNCIATIONS.entries.some((e) => e.written === n && e.status === 'approved')).toBe(true);
+    expect(pronunciationBlockers(texts, GHANAIAN_PRONUNCIATIONS)).toEqual([]);
   });
   it('no unknown proper nouns remain (everything capitalised mid-sentence is covered or ordinary English)', () => {
     const known = new Set(['monday', 'tuesday', 'wednesday', 'saturday', 'saturdays', 'auntie', 'yesterday', 'i', 'that', 'then']);
@@ -116,13 +108,12 @@ describe('Efua pronunciation', () => {
     const known = new Set(['monday', 'tuesday', 'wednesday', 'saturday', 'auntie', 'yesterday', 'mr', 'mama', 'papa', 'grandma', 'clean', 'lane', 'club']);
     for (const s of PILOT_STORIES) {
       const missing = unknownProperNouns(s.pages.map((p) => p.text), GHANAIAN_PRONUNCIATIONS, known);
-      // report, but only fail for the stories this task owns; older pilot drafts are listed for the dictionary backlog
       if (['efuas-honest-business', 'yaa-and-the-blocked-drain', 'kofi-counts-the-market'].includes(s.key)) expect(missing, s.key).toEqual([]);
     }
   });
   it('applying pronunciation never changes the written text and keeps word timing aligned (same token count)', () => {
     for (const t of texts) {
-      const s = buildSpokenScript(t, GHANAIAN_PRONUNCIATIONS, 'espeak', { allowUnverified: true });
+      const s = buildSpokenScript(t, GHANAIAN_PRONUNCIATIONS, 'espeak');
       expect(s.spoken.split(/\s+/)).toHaveLength(t.split(/\s+/).length);
     }
   });

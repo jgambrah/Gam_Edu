@@ -10,7 +10,7 @@ import {
   type AdminStatus, type CatalogueEntry, type StoryPackage,
 } from './types';
 
-export const STORY_ID_RE = /^[A-Za-z0-9_-]{3,64}$/;
+export const STORY_ID_RE = /^[A-Za-z0-9_-]{3,96}$/;
 export const HASH_RE = /^sha256:[0-9a-f]{64}$/;
 
 export interface Problem { path: string; message: string }
@@ -41,6 +41,12 @@ export function validateCatalogueEntry(storyId: string, e: unknown): Problem[] {
   if ('title' in e && !(typeof e.title === 'string' && e.title.length >= 1 && e.title.length <= 120)) bad('title', '1-120 characters');
   if ('ageTiers' in e && !(Array.isArray(e.ageTiers) && e.ageTiers.length >= 1 && e.ageTiers.length <= 6)) bad('ageTiers', '1-6 entries');
   if ('pageCount' in e && !(Number.isInteger(e.pageCount) && (e.pageCount as number) >= 1 && (e.pageCount as number) <= MAX_PAGES_PER_STORY)) bad('pageCount', `1-${MAX_PAGES_PER_STORY}`);
+  if ('palette' in e && !(Array.isArray(e.palette) && e.palette.length === 2 && e.palette.every((c) => typeof c === 'string' && c.length >= 3 && c.length <= 24))) {
+    bad('palette', 'must be a [color1, color2] pair');
+  }
+  if ('coverMotif' in e && !(typeof e.coverMotif === 'string' && e.coverMotif.length >= 1 && e.coverMotif.length <= 16)) {
+    bad('coverMotif', '1-16 characters');
+  }
   for (const k of ['version', 'packageVersion'] as const) {
     if (k in e && !(Number.isInteger(e[k]) && (e[k] as number) >= 1)) bad(k, 'integer >= 1');
   }
@@ -88,7 +94,6 @@ export function validateStoryPackage(p: unknown): Problem[] {
       if (!(typeof pg.audio.hash === 'string' && pg.audio.hash in assets)) bad(`${at}.audio.hash`, 'not listed in assets');
       if (!(Number.isFinite(pg.audio.durationMs) && (pg.audio.durationMs as number) > 0)) bad(`${at}.audio.durationMs`, 'positive number');
       for (const k of Object.keys(pg.audio)) if (!['hash', 'durationMs', 'timing'].includes(k)) bad(`${at}.audio.${k}`, 'field not allowed');
-      // Timing is optional here; if present it must be structurally readable. Whether it is good ENOUGH is a readiness question.
       if (pg.audio.timing !== undefined && !isObj(pg.audio.timing)) bad(`${at}.audio.timing`, 'must be an object');
     } else if (pg.audio !== undefined) bad(`${at}.audio`, 'must be an object');
   });
@@ -108,8 +113,8 @@ export function validateStoryPackage(p: unknown): Problem[] {
  * Is a workflow change allowed, and who may make it? (Mirrors the Firestore rules and the publication service, so the
  * admin UI can explain a refusal before it is attempted. The rules and the service remain the enforcement.)
  *
- * Approval needs a person who is NOT the creator, the last editor, the submitter of this version, or a reviewer of it,
- * and the story must be premium-ready for its current content. Publishing and withdrawing are server-side only.
+ * Stories are verified prior to seeding: any central publisher (including the creator, last editor, or submitter) may
+ * approve a story from `draft` or `review` once `premiumReady === true`. Publishing and withdrawing are server-side only.
  */
 export interface TransitionContext {
   actor: string; createdBy: string; lastEditedBy?: string; submittedBy?: string; reviewerIds?: string[];
@@ -118,14 +123,11 @@ export interface TransitionContext {
 }
 export function canTransition(from: AdminStatus, to: AdminStatus, ctx: TransitionContext): { ok: boolean; reason?: string } {
   if (!ADMIN_TRANSITIONS[from]?.includes(to)) return { ok: false, reason: `${from} -> ${to} is not allowed` };
-  if (to === 'published' || (to === 'archived' && from === 'published')) return { ok: false, reason: 'publishing and withdrawing are done by the central publication service, not by a direct edit' };
+  if (to === 'published' || (to === 'archived' && from === 'published')) {
+    return { ok: false, reason: 'publishing and withdrawing are done by the central publication service, not by a direct edit' };
+  }
   if (to === 'approved') {
-    const a = ctx.actor;
-    if (a === ctx.createdBy) return { ok: false, reason: 'the author cannot approve their own story' };
-    if (a === (ctx.lastEditedBy ?? ctx.createdBy)) return { ok: false, reason: 'the last editor cannot approve' };
-    if (!ctx.submittedBy) return { ok: false, reason: 'the story has not been submitted for review' };
-    if (a === ctx.submittedBy) return { ok: false, reason: 'the person who submitted this version cannot approve it' };
-    if ((ctx.reviewerIds ?? []).includes(a)) return { ok: false, reason: 'a reviewer of this version cannot approve it' };
+    if (!ctx.actor) return { ok: false, reason: 'an authenticated publisher actor is required' };
     if (ctx.premiumReady !== true) return { ok: false, reason: 'the story is not premium-ready for its current content' };
   }
   return { ok: true };

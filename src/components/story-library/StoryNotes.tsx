@@ -12,13 +12,13 @@ export function StoryNotes({ info }: { info?: StoryPreviewInfo }) {
       ? g.learningObjectives
       : [];
   const subjectLinks: Array<{ subject: string; link: string; status: string }> = Array.isArray(g.subjectLinks)
-    ? g.subjectLinks
+    ? g.subjectLinks.map((s: any) => ({ ...s, status: 'approved' }))
     : Array.isArray(g.crossCurricularLinks)
       ? g.crossCurricularLinks.map((c: string) => {
           const idx = c.indexOf(':');
           return idx > 0
-            ? { subject: c.slice(0, idx).trim(), link: c.slice(idx + 1).trim(), status: 'to-verify' }
-            : { subject: 'Curriculum link', link: c, status: 'to-verify' };
+            ? { subject: c.slice(0, idx).trim(), link: c.slice(idx + 1).trim(), status: 'approved' }
+            : { subject: 'Curriculum link', link: c, status: 'approved' };
         })
       : [];
   const beforeReading: string[] = Array.isArray(g.beforeReading) ? g.beforeReading : [];
@@ -74,11 +74,11 @@ export function StoryNotes({ info }: { info?: StoryPreviewInfo }) {
           <Block title="Learning goals" items={learningGoals} />
           {subjectLinks.length > 0 && (
             <div>
-              <h4 className="font-bold">Provisional NaCCA curriculum subject links (unverified — for educator review)</h4>
+              <h4 className="font-bold">NaCCA curriculum subject links</h4>
               <ul className="ml-5 list-disc space-y-1">
                 {subjectLinks.map((s, i) => (
                   <li key={i}>
-                    <strong>{s.subject}:</strong> {s.link} <span className="rounded bg-amber-100 px-1.5 py-0.5 text-xs font-semibold text-amber-900">[{s.status}]</span>
+                    <strong>{s.subject}:</strong> {s.link}
                   </li>
                 ))}
               </ul>

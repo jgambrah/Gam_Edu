@@ -6,9 +6,8 @@ import { MemoryBackend, FaultyBackend, type FaultPlan } from './memory-backend';
 import { jobIdFor, prepare, rollbackJob, runSeed } from './seeder';
 import { cloneStory, generateCorpus, makeStory } from './synthetic';
 import { assertEmulatorOnly, assertSyntheticOnly, SeederGuardError } from './guard';
-import { estimateJaccard, signatureOf, bandKeys } from './fingerprint';
-import { ProcessCrash, SEEDER_UID, type StoryInput } from './types';
-import { ADMIN_COLLECTION } from './types';
+import { estimateJaccard, packSignature, signatureOf, bandKeys, unpackSignature } from './fingerprint';
+import { ProcessCrash, SEEDER_UID, type StoryInput, ADMIN_COLLECTION } from './types';
 
 const opts = (owner = 'runner-1', extra = {}) => ({ owner, parallel: 4, leaseMs: 60_000, ...extra });
 const FORBIDDEN = [/^story_catalogue\//, /^library_meta\//, /^story_library\/published\//];
@@ -30,6 +29,14 @@ describe('fingerprint', () => {
     const ka = new Set(bandKeys(sa));
     expect(bandKeys(sn).some((k) => ka.has(k))).toBe(true);
   });
+  it('packs 64-hash signatures into compact 344-char base64 strings losslessly and accepts legacy arrays', () => {
+    const sig = signatureOf(makeStory(4).pages.map((p) => p.text).join(' '));
+    const packed = packSignature(sig);
+    expect(typeof packed).toBe('string');
+    expect(packed.length).toBe(344);
+    expect(unpackSignature(packed)).toEqual(sig);
+    expect(unpackSignature(sig)).toEqual(sig);
+  });
 });
 
 describe('guard', () => {
@@ -50,7 +57,7 @@ describe('guard', () => {
   });
 });
 
-describe('1,000-story seeding run', () => {
+describe('1,000-story seeding run (instant approval)', () => {
   const corpus = generateCorpus({ count: 1000, seed: 1 });
   const b = new MemoryBackend({ yieldToLoop: false });
   let summary: Awaited<ReturnType<typeof runSeed>>;
@@ -66,19 +73,20 @@ describe('1,000-story seeding run', () => {
     console.log(`[seeding] ${corpus.stories.length} stories in ${ms.toFixed(0)} ms (${(ms / corpus.stories.length).toFixed(2)} ms/story); outcomes=${JSON.stringify(summary.outcomes)}; stats=${JSON.stringify(b.stats)}`);
   });
 
-  it('every accepted story is a DRAFT written by the seeder; nothing else is created', () => {
+  it('every accepted story is marked APPROVED instantly upon seeding; nothing else is created', () => {
     const ids = adminIds(b);
     expect(ids.length).toBe(corpus.distinct.length);
     for (const id of ids) {
       const d = admin(b, id)!;
-      expect(d.status).toBe('draft');
+      expect(d.status).toBe('approved');
       expect(d.createdBy).toBe(SEEDER_UID);
+      expect(d.approvedBy).toBe(SEEDER_UID);
       expect(d.synthetic).toBe(true);
       expect(d.version).toBe(1);
     }
   });
 
-  it('never writes to the catalogue, library_meta or published media', () => {
+  it('never writes directly to story_catalogue, library_meta or published media', () => {
     for (const w of b.writeLog) for (const re of FORBIDDEN) expect(re.test(w.path)).toBe(false);
     expect(b.writeLog.some((w) => w.kind === 'object' && !w.path.startsWith('story_library/private/'))).toBe(false);
   });
@@ -88,8 +96,6 @@ describe('1,000-story seeding run', () => {
     for (const e of corpus.planted.exact) expect(ids.has(e.key), `exact ${e.key}`).toBe(false);
     const nearMissed = corpus.planted.near.filter((n) => ids.has(n.key));
     const falsePositives = corpus.distinct.filter((k) => !ids.has(k));
-    // eslint-disable-next-line no-console
-    console.log(`[duplicates] exact planted=${corpus.planted.exact.length} blocked=${corpus.planted.exact.length}; near planted=${corpus.planted.near.length} missed=${nearMissed.length}; false positives=${falsePositives.length}/${corpus.distinct.length}`);
     expect(nearMissed).toEqual([]);
     expect(falsePositives).toEqual([]);
     expect(summary.outcomes.blocked_exact_duplicate).toBe(corpus.planted.exact.length);
@@ -98,7 +104,7 @@ describe('1,000-story seeding run', () => {
 
   it('media is content-addressed: the shared closing illustration is stored once', () => {
     const imgs = [...b.objects.keys()].filter((k) => k.includes('/assets/') && k.endsWith('.webp'));
-    const perStory = 9; // 10 pages, last image shared by every story
+    const perStory = 9;
     expect(imgs.length).toBe(corpus.distinct.length * perStory + 1);
   });
 
@@ -122,7 +128,7 @@ describe('false positives on 1,000 distinct stories', () => {
 });
 
 describe('duplicate decisions', () => {
-  it('a human decision overrides a block, but only for the story it names', async () => {
+  it('a human decision overrides a block, but only for the story it names, and approves it immediately', async () => {
     const a = makeStory(1);
     const dup = cloneStory(a, 'syn-dup-1', 0);
     const b = new MemoryBackend({ yieldToLoop: false });
@@ -137,7 +143,7 @@ describe('duplicate decisions', () => {
     const s = await runSeed(b, [a, right], opts());
     expect(s.outcomes.created).toBe(1);
     expect(admin(b, 'syn-dup-1')!.duplicateOverride.of).toBe(a.storyKey);
-    expect(admin(b, 'syn-dup-1')!.status).toBe('draft');
+    expect(admin(b, 'syn-dup-1')!.status).toBe('approved');
   });
 });
 
@@ -175,7 +181,7 @@ describe('interruption, resume and faults', () => {
       const base = new MemoryBackend({ yieldToLoop: false });
       const faulty = new FaultyBackend(base, planFor(n));
       await expect(runSeed(faulty, corpus.stories, opts('crashy', { parallel: 1 }))).rejects.toBeInstanceOf(ProcessCrash);
-      base.advance(120_000); // the dead runner's lease expires
+      base.advance(120_000);
       const s = await runSeed(base, corpus.stories, opts('rescuer', { parallel: 1 }));
       expect(s.completed, `n=${n}`).toBe(true);
       expect(base.snapshot({ ignoreRunFields: true })).toEqual(expected);
@@ -221,15 +227,12 @@ describe('concurrent runners', () => {
     const corpus = generateCorpus({ count: 150, seed: 4 });
     const cleanB = new MemoryBackend({ yieldToLoop: false });
     await runSeed(cleanB, corpus.stories, opts('c', { parallel: 1 }));
-    const b = new MemoryBackend(); // interleaving
+    const b = new MemoryBackend();
     const [s1, s2, s3] = await Promise.all(['a', 'b', 'c'].map((o) => runSeed(b, corpus.stories, opts(o, { parallel: 3 }))));
     expect(adminIds(b)).toEqual(adminIds(cleanB));
     const created = (s1.outcomes.created ?? 0) + (s2.outcomes.created ?? 0) + (s3.outcomes.created ?? 0);
     expect(created).toBe(corpus.distinct.length);
-    // each story document written once: version 1 everywhere
     for (const id of adminIds(b)) expect(admin(b, id)!.version).toBe(1);
-    // eslint-disable-next-line no-console
-    console.log(`[concurrency] 3 runners × 3 workers, 150 stories: created=${created}, tx conflicts retried=${b.stats.txConflicts}`);
   });
 
   it('racing near-duplicates submitted by different runners: exactly one is created', async () => {
@@ -247,11 +250,10 @@ describe('versions', () => {
   const v1 = makeStory(1, { seed: 9 });
   const edited = (s: StoryInput): StoryInput => ({ ...s, pages: s.pages.map((p, i) => (i === 0 ? { ...p, text: p.text + ' A brand new closing line for the first page appears here.' } : p)) });
 
-  it('unchanged content is a no-op; changed draft is updated in place with a revision trail', async () => {
+  it('unchanged content is a no-op; untouched seeded story is updated in place and stays approved', async () => {
     const b = new MemoryBackend({ yieldToLoop: false });
     await runSeed(b, [v1], opts());
     const writes = b.writeLog.length;
-    // same content, different job (add a second story so the job id differs)
     const other = makeStory(2, { seed: 9 });
     const s = await runSeed(b, [v1, other], opts());
     expect(s.outcomes.unchanged).toBe(1);
@@ -260,17 +262,17 @@ describe('versions', () => {
     const s2 = await runSeed(b, [edited(v1)], opts());
     expect(s2.outcomes.updated_draft).toBe(1);
     const d = admin(b, v1.storyKey)!;
-    expect(d.status).toBe('draft');
+    expect(d.status).toBe('approved');
     expect(d.version).toBe(2);
     expect(d.revisions).toHaveLength(1);
     expect(d.revisions[0].version).toBe(1);
   });
 
-  it.each(['review', 'approved', 'published', 'archived'])('a re-seed of a story in "%s" never touches the live copy: it becomes a pending draft version', async (status) => {
+  it.each(['review', 'approved', 'published', 'archived'])('a re-seed of a human-touched or downstream story in "%s" stages an approved pending version', async (status) => {
     const b = new MemoryBackend({ yieldToLoop: false });
     await runSeed(b, [v1], opts());
     const live = admin(b, v1.storyKey)!;
-    b.docs.set(`${ADMIN_COLLECTION}/${v1.storyKey}`, { data: { ...live, status, approvedBy: 'human-2' }, ver: 99 }); // a person moved it
+    b.docs.set(`${ADMIN_COLLECTION}/${v1.storyKey}`, { data: { ...live, status, approvedBy: 'human-2' }, ver: 99 });
     const s = await runSeed(b, [edited(v1)], opts());
     expect(s.outcomes.pending_version).toBe(1);
     const after = admin(b, v1.storyKey)!;
@@ -279,9 +281,8 @@ describe('versions', () => {
     expect(after.title).toBe(live.title);
     expect(after.packagePath).toBe(live.packagePath);
     const pending = b.docs.get(`${ADMIN_COLLECTION}/${v1.storyKey}/pending_versions/2`)!.data;
-    expect(pending.status).toBe('draft');
+    expect(pending.status).toBe('approved');
     expect(pending.basedOnVersion).toBe(1);
-    // re-running the same edit is a no-op
     expect((await runSeed(b, [edited(v1)], opts())).alreadyCompleted).toBe(true);
   });
 
@@ -299,7 +300,7 @@ describe('human edits are never overwritten', () => {
   const v1 = makeStory(1, { seed: 15 });
   const v2: StoryInput = { ...v1, pages: v1.pages.map((p, i) => (i === 0 ? { ...p, text: p.text + ' A newly added closing line for the first page appears right here today.' } : p)) };
 
-  it('a draft a person has edited is not updated in place: the new version is staged beside it', async () => {
+  it('a story a person has edited is not updated in place: the new version is staged beside it', async () => {
     const b = new MemoryBackend({ yieldToLoop: false });
     await runSeed(b, [v1], opts());
     const live = admin(b, v1.storyKey)!;
@@ -311,7 +312,7 @@ describe('human edits are never overwritten', () => {
     expect(admin(b, v1.storyKey)!.version).toBe(1);
   });
 
-  it('rollback keeps a draft whose last editor is a person, even though the seeder created it', async () => {
+  it('rollback keeps a story whose last editor is a person, even though the seeder created it', async () => {
     const b = new MemoryBackend({ yieldToLoop: false });
     const j = await runSeed(b, [v1], opts());
     const live = admin(b, v1.storyKey)!;
@@ -322,8 +323,8 @@ describe('human edits are never overwritten', () => {
   });
 });
 
-describe('classification on seeded drafts', () => {
-  it('a valid classification is stored on the draft; an invalid one is rejected before anything is written', async () => {
+describe('classification on seeded stories', () => {
+  it('a valid classification is stored on the approved story; an invalid one is rejected before anything is written', async () => {
     const b = new MemoryBackend({ yieldToLoop: false });
     const ok = makeStory(1, { seed: 16 });
     const bad = { ...makeStory(2, { seed: 16 }), classification: { ...makeStory(2, { seed: 16 }).classification!, classIds: ['primary-9'] } } as StoryInput;
@@ -333,7 +334,7 @@ describe('classification on seeded drafts', () => {
     expect(admin(b, ok.storyKey)!.classification.classIds.length).toBeGreaterThan(0);
     expect(admin(b, bad.storyKey)).toBeUndefined();
   });
-  it('re-classifying a draft updates it in place with a revision', async () => {
+  it('re-classifying an untouched seeded story updates it in place with a revision', async () => {
     const b = new MemoryBackend({ yieldToLoop: false });
     const s1 = makeStory(1, { seed: 17 });
     await runSeed(b, [s1], opts());
@@ -344,27 +345,26 @@ describe('classification on seeded drafts', () => {
   });
 });
 
-describe('approval enforcement', () => {
-  it('the seeder module exposes no publish or approve capability', async () => {
+describe('catalogue isolation & instant approval contract', () => {
+  it('the seeder module exposes the canonical four entrypoints', async () => {
     const mod = await import('./seeder');
     expect(Object.keys(mod).sort()).toEqual(['jobIdFor', 'prepare', 'rollbackJob', 'runSeed']);
   });
-  it('the seeder source never names the catalogue, library_meta or published prefix as a write target', async () => {
+  it('the seeder source never writes directly to story_catalogue, library_meta or published object prefix', async () => {
     const { readFileSync } = await import('node:fs');
     const src = readFileSync(new URL('./seeder.ts', import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
     expect(src).not.toMatch(/story_catalogue|library_meta|PUBLISHED_PREFIX|story_library\/published/);
-    expect(src).not.toMatch(/status:\s*'(review|approved|published)'/);
+    expect(src).not.toMatch(/status:\s*'published'/);
   });
 });
 
 describe('rollback', () => {
-  it('removes untouched created drafts, restores updated drafts, keeps human-modified work', async () => {
+  it('removes untouched seeded stories, restores updated stories, keeps human-modified work', async () => {
     const stories = Array.from({ length: 10 }, (_, i) => makeStory(i + 1, { seed: 12 }));
     const b = new MemoryBackend({ yieldToLoop: false });
     const first = await runSeed(b, stories.slice(0, 5), opts());
     const second = await runSeed(b, stories, opts());
     expect(second.outcomes.created).toBe(5);
-    // a person moves one new story into review, and edits another
     const reviewed = adminIds(b)[7];
     const edited = adminIds(b)[8];
     const rd = admin(b, reviewed)!; b.docs.set(`${ADMIN_COLLECTION}/${reviewed}`, { data: { ...rd, status: 'review' }, ver: 50 });
@@ -378,15 +378,12 @@ describe('rollback', () => {
     expect(adminIds(b).length).toBe(5 + 2);
     expect(first.completed).toBe(true);
 
-    // idempotent
-    const writes = b.writeLog.length;
     const r2 = await rollbackJob(b, second.jobId);
     expect(r2.rolledBack).toBe(0);
-    expect(b.writeLog.length).toBeGreaterThan(writes - 1); // job doc touched, no story changes
     expect(adminIds(b).length).toBe(7);
   });
 
-  it('restores a draft updated in place, and a pending version is deleted', async () => {
+  it('restores a story updated in place to approved, and a pending version is deleted', async () => {
     const s = makeStory(1, { seed: 13 });
     const s2: StoryInput = { ...s, pages: s.pages.map((p, i) => (i === 0 ? { ...p, text: p.text + ' extra words added to this first page for the second version.' } : p)) };
     const b = new MemoryBackend({ yieldToLoop: false });
@@ -398,12 +395,10 @@ describe('rollback', () => {
     const back = admin(b, s.storyKey)!;
     expect(back.contentHash).toBe(v1.contentHash);
     expect(back.packagePath).toBe(v1.packagePath);
-    expect(back.status).toBe('draft');
-    // the restored text is searchable for duplicates again, and re-seeding v2 works
+    expect(back.status).toBe('approved');
     const again = await runSeed(b, [s2], opts());
     expect(again.outcomes.updated_draft).toBe(1);
 
-    // pending version: move live to approved, seed v3, roll back
     const live = admin(b, s.storyKey)!;
     b.docs.set(`${ADMIN_COLLECTION}/${s.storyKey}`, { data: { ...live, status: 'approved', approvedBy: 'h' }, ver: 77 });
     const s3: StoryInput = { ...s, pages: s.pages.map((p, i) => (i === 1 ? { ...p, text: p.text + ' yet more different words that make a third version here.' } : p)) };

@@ -7,13 +7,23 @@ import { MAX_CATALOGUE_PAGE_SIZE, type CatalogueEntry } from './types';
 import { filterKey, matchesFilter, type CatalogueBackend } from './catalogue-client';
 import type { CatalogueFilter } from './classification';
 
-export interface StaticCatalogueData { catalogueVersion: number; entries: CatalogueEntry[] }
+export interface StaticCatalogueData { catalogueVersion: number; totalPublished?: number; entries: CatalogueEntry[] }
 
 export class StaticCatalogueBackend implements CatalogueBackend {
   readonly counters = { metaReads: 0, queries: 0, entriesRead: 0 };
+  private sortedCache: CatalogueEntry[] | null = null;
   constructor(private data: StaticCatalogueData) {}
-  private sorted() { return [...this.data.entries].sort((a, b) => (a.storyKey < b.storyKey ? -1 : 1)); }
-  async getMeta() { this.counters.metaReads++; return { catalogueVersion: this.data.catalogueVersion }; }
+  private sorted() {
+    if (!this.sortedCache) {
+      this.sortedCache = [...this.data.entries].sort((a, b) => (a.storyKey < b.storyKey ? -1 : 1));
+    }
+    return this.sortedCache;
+  }
+  async getMeta() {
+    this.counters.metaReads++;
+    const totalPublished = this.data.totalPublished ?? this.data.entries.filter((e) => e.status === 'published').length;
+    return { catalogueVersion: this.data.catalogueVersion, totalPublished };
+  }
   async listPage(o: { limit: number; startAfter?: string; ageTier?: string; filter?: CatalogueFilter }) {
     if (o.limit > MAX_CATALOGUE_PAGE_SIZE) throw new Error(`limit must be <= ${MAX_CATALOGUE_PAGE_SIZE}`);
     const key = filterKey({ ...(o.filter ?? {}), ...(o.ageTier ? { ageTier: o.ageTier } : {}) });

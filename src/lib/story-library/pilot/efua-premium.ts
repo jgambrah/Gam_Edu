@@ -89,10 +89,10 @@ export const EFUA_TEACHER_GUIDE: TeacherGuide = {
     'Apply the story to a real choice in the learner’s own life.',
   ],
   subjectLinks: [
-    { subject: 'Mathematics', link: 'Money, cost and profit; checking a claim with calculation.', status: 'to-verify' },
-    { subject: 'English Language', link: 'Reading comprehension, inference, vocabulary, discussion.', status: 'to-verify' },
-    { subject: 'Career Technology / entrepreneurship', link: 'Costing, pricing, customer care.', status: 'to-verify' },
-    { subject: 'Religious and Moral Education', link: 'Honesty and integrity.', status: 'to-verify' },
+    { subject: 'Mathematics', link: 'Money, cost and profit; checking a claim with calculation.', status: 'approved' },
+    { subject: 'English Language', link: 'Reading comprehension, inference, vocabulary, discussion.', status: 'approved' },
+    { subject: 'Career Technology / entrepreneurship', link: 'Costing, pricing, customer care.', status: 'approved' },
+    { subject: 'Religious and Moral Education', link: 'Honesty and integrity.', status: 'approved' },
   ],
   beforeReading: [
     'Ask: "Have you ever bought something from a school-gate seller? What made you go back, or not?"',

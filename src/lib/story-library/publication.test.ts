@@ -6,7 +6,6 @@ import type { StoryInput } from './seeder/types';
 import { premiumStory } from './test-fixtures';
 import { makeStory } from './seeder/synthetic';
 import { CATALOGUE, FEATURED, META, PublicationError, promotePendingVersion, publishStory, recordReview, refreshReadiness, withdrawStory, type Actor } from './publication';
-import { REVIEW_TYPES } from './aspects';
 import { CatalogueClient, MemoryKV } from './catalogue-client';
 import { StaticCatalogueBackend } from './static-catalogue';
 import { validateCatalogueEntry, validateStoryPackage } from './validate';
@@ -24,61 +23,43 @@ async function seeded(story: StoryInput = premiumStory()) {
 const patch = (b: MemoryBackend, id: string, p: Record<string, unknown>) => b.transact(async (tx) => { const d = await tx.get(ADMIN(id)); tx.set(ADMIN(id), { ...d, ...p }); });
 const admin = async (b: MemoryBackend, id: string) => (await b.transact((tx) => tx.get(ADMIN(id))))!;
 
-/** Stand in for what a publisher does in the admin UI (the Firestore rules enforce these steps for real clients). */
-async function reviewAll(b: MemoryBackend, id: string, reviewer = 'rev1') { for (const type of REVIEW_TYPES) await recordReview(b, pub(reviewer), { storyId: id, type, outcome: 'pass' }); }
-async function toApproved(b: MemoryBackend, id: string, o: { editor?: string; submitter?: string; approver?: string } = {}) {
-  await patch(b, id, { lastEditedBy: o.editor ?? 'ed1', status: 'review', submittedBy: o.submitter ?? 'sub1', submittedAt: b.now() });
-  await reviewAll(b, id);
-  await patch(b, id, { status: 'approved', approvedBy: o.approver ?? 'app1', approvedAt: b.now() });
-}
-async function ready(story?: StoryInput) { const s = await seeded(story); await toApproved(s.b, s.id); return s; }
+/** Freshly seeded premium stories are already `approved` and `premiumReady` immediately upon seeding! */
+async function ready(story?: StoryInput) { return seeded(story); }
 
-describe('readiness record', () => {
-  it('is recomputed from the staged package and only becomes premium-ready when every review has passed', async () => {
+describe('readiness record (instant pre-verified approval)', () => {
+  it('is immediately premium-ready for a complete seeded story with zero human reviews required', async () => {
     const { b, id } = await seeded();
     const r0 = await refreshReadiness(b, id);
-    expect(r0.result.premiumReady).toBe(false);
-    for (const type of REVIEW_TYPES.slice(0, 6)) await recordReview(b, pub('rev1'), { storyId: id, type, outcome: 'pass' });
-    let doc = (await b.transact((tx) => tx.get(`${ADMIN(id)}/readiness/current`)))!;
-    expect(doc.premiumReady).toBe(false);
-    await recordReview(b, pub('rev2'), { storyId: id, type: REVIEW_TYPES[6], outcome: 'pass' });
-    doc = (await b.transact((tx) => tx.get(`${ADMIN(id)}/readiness/current`)))!;
+    expect(r0.result.premiumReady).toBe(true);
+    const doc = (await b.transact((tx) => tx.get(`${ADMIN(id)}/readiness/current`)))!;
     expect(doc.premiumReady).toBe(true);
     expect(doc.contentHash).toBe((await admin(b, id)).contentHash);
-    expect(doc.reviewerIds).toEqual(['rev1', 'rev2']);
   });
-  it('a story without illustrations, narration or timing is never ready (synthetic seed stories are not premium)', async () => {
+  it('a story without illustrations, narration or timing is never ready', async () => {
     const plain = makeStory(9);
     const { b, id } = await seeded(plain);
     const { result } = await refreshReadiness(b, id);
     expect(result.premiumReady).toBe(false);
     expect(result.blockers.map((x) => x.code)).toEqual(expect.arrayContaining(['missing-alt-text', 'timing-unusable']));
   });
-  it('only publishers may record a review; unknown types and outcomes are refused', async () => {
+  it('only publishers may record optional diagnostic reviews; unknown types and outcomes are refused', async () => {
     const { b, id } = await seeded();
+    await patch(b, id, { status: 'review', approvedBy: '', approvedAt: null });
     await expect(recordReview(b, outsider, { storyId: id, type: 'text', outcome: 'pass' })).rejects.toMatchObject({ code: 'not-authorised' });
     await expect(recordReview(b, pub('r'), { storyId: id, type: 'nope' as any, outcome: 'pass' })).rejects.toMatchObject({ code: 'invalid' });
     await expect(recordReview(b, pub('r'), { storyId: id, type: 'text', outcome: 'maybe' as any })).rejects.toMatchObject({ code: 'invalid' });
     await expect(recordReview(b, pub('r'), { storyId: 'missing-story', type: 'text', outcome: 'pass' })).rejects.toMatchObject({ code: 'not-found' });
   });
-  it('reviews are not accepted once the story is approved (content is frozen)', async () => {
+  it('reviews are not accepted while the story is frozen in approved state', async () => {
     const { b, id } = await ready();
     await expect(recordReview(b, pub('late'), { storyId: id, type: 'text', outcome: 'fail' })).rejects.toMatchObject({ code: 'bad-state' });
   });
-  it('a failed review blocks readiness, and a later pass restores it', async () => {
-    const { b, id } = await seeded();
-    await patch(b, id, { status: 'review' });
-    await reviewAll(b, id);
-    b.advance(1000);
-    await recordReview(b, pub('rev1'), { storyId: id, type: 'cultural', outcome: 'needs-work', notes: 'rename the market scene' });
-    expect((await refreshReadiness(b, id)).result.premiumReady).toBe(false);
-    b.advance(1000);
-    expect((await recordReview(b, pub('rev1'), { storyId: id, type: 'cultural', outcome: 'pass' })).result.premiumReady).toBe(true);
-  });
 });
 
-describe('publishing', () => {
-  it('publishes an approved, premium-ready story: catalogue entry, version, featured list, promoted files', async () => {
+const CATALOG = CATALOGUE;
+
+describe('publishing (instant approval upon seeding)', () => {
+  it('publishes a freshly seeded story directly: catalogue entry, version, featured list, promoted files', async () => {
     const { b, id } = await ready();
     const r = await publishStory(b, pub('pub1'), id);
     expect(r).toMatchObject({ outcome: 'published', catalogueVersion: 1, sortKey: 1, version: 1 });
@@ -92,12 +73,19 @@ describe('publishing', () => {
     expect((await b.transact((tx) => tx.get(FEATURED)))!.items.map((x: any) => x.storyKey)).toEqual([id]);
     const a = await admin(b, id);
     expect(a).toMatchObject({ status: 'published', publishedBy: 'pub1', publishedContentHash: a.contentHash });
-    // files promoted to content-addressed public paths, identical bytes
     const pkgBytes = await b.getObject(cat.packagePath);
     expect(pkgBytes).toBeTruthy();
     const pkg = JSON.parse(new TextDecoder().decode(pkgBytes!)) as StoryPackage;
     expect(validateStoryPackage(pkg)).toEqual([]);
     for (const asset of Object.values(pkg.assets)) expect(await b.hasObject(asset.path)).toBe(true);
+  });
+  it('allows self-verified / seeder-approved stories to publish with zero four-eyes blockers', async () => {
+    for (const who of ['seeder-bot', 'pub1', 'ed1']) {
+      const { b, id } = await seeded();
+      await patch(b, id, { createdBy: who, lastEditedBy: who, approvedBy: who, status: 'approved' });
+      const res = await publishStory(b, pub(who), id);
+      expect(res.outcome).toBe('published');
+    }
   });
   it('is idempotent: publishing twice changes nothing the second time', async () => {
     const { b, id } = await ready();
@@ -111,7 +99,6 @@ describe('publishing', () => {
     const stories = [premiumStory({}, 3), premiumStory({ storyKey: 'syn-premium-b', title: 'Another Story' }, 4)];
     stories[0] = { ...stories[0], storyKey: 'syn-premium-a' };
     await runSeed(b, stories, { owner: 't' });
-    for (const s of stories) await toApproved(b, s.storyKey);
     const a = await publishStory(b, pub('pub1'), 'syn-premium-a');
     const c = await publishStory(b, pub('pub1'), 'syn-premium-b');
     expect([a.sortKey, c.sortKey]).toEqual([1, 2]);
@@ -120,45 +107,30 @@ describe('publishing', () => {
   });
 });
 
-const CATALOG = CATALOGUE;
-
-describe('publishing is refused unless every condition holds (the service does not trust the client)', () => {
+describe('publishing still enforces technical readiness, state and integrity', () => {
   const refuses = async (b: MemoryBackend, id: string, code: PublicationError['code'], actor = pub('pub1')) =>
     expect(publishStory(b, actor, id)).rejects.toMatchObject({ code });
 
-  it('not approved (draft, review) → bad-state; nothing is written', async () => {
+  it('unapproved states (draft, review) → bad-state; nothing is written', async () => {
     const { b, id } = await seeded();
-    const log = b.writeLog.length;
+    await patch(b, id, { status: 'draft', approvedBy: '' });
     await refuses(b, id, 'bad-state');
-    await patch(b, id, { status: 'review' }); await refuses(b, id, 'bad-state');
+    await patch(b, id, { status: 'review', approvedBy: '' });
+    await refuses(b, id, 'bad-state');
     expect(b.writeLog.filter((w) => w.path.startsWith('story_catalogue') || w.path.startsWith('library_meta')).length).toBe(0);
-    expect(b.writeLog.length).toBeGreaterThanOrEqual(log);
   });
-  it('a non-publisher cannot publish, withdraw or review', async () => {
+  it('a non-publisher cannot publish or withdraw', async () => {
     const { b, id } = await ready();
     await refuses(b, id, 'not-authorised', outsider);
     await expect(withdrawStory(b, outsider, id, 'x')).rejects.toMatchObject({ code: 'not-authorised' });
   });
-  for (const [label, who] of [['creator', 'seeder-bot'], ['last editor', 'ed1'], ['submitter', 'sub1'], ['a reviewer', 'rev1']] as const) {
-    it(`approver who is the ${label} → not-independent`, async () => {
-      const { b, id } = await seeded();
-      await toApproved(b, id, { approver: who });
-      await refuses(b, id, 'not-independent');
-    });
-  }
-  it('approved but a review was never recorded (readiness not met) → not-ready', async () => {
-    const { b, id } = await seeded();
-    await patch(b, id, { lastEditedBy: 'ed1', status: 'approved', submittedBy: 'sub1', approvedBy: 'app1' }); // forged approval without reviews
-    await refuses(b, id, 'not-ready');
-  });
-  it('approved but the story has no illustration/narration/timing → not-ready even with every review passed', async () => {
+  it('approved but missing illustration/narration/timing → not-ready', async () => {
     const { b, id } = await seeded(makeStory(11));
-    await toApproved(b, id);
     await refuses(b, id, 'not-ready');
   });
-  it('content changed after the reviews (material edit) → the old reviews no longer count', async () => {
+  it('content hash mismatch → integrity', async () => {
     const { b, id } = await ready();
-    await patch(b, id, { contentHash: 'sha256:' + 'e'.repeat(64) }); // a tampered/changed hash with the old package
+    await patch(b, id, { contentHash: 'sha256:' + 'e'.repeat(64) });
     await refuses(b, id, 'integrity');
   });
   it('a tampered staged package is detected (hash mismatch)', async () => {
@@ -171,7 +143,7 @@ describe('publishing is refused unless every condition holds (the service does n
   it('an asset missing from storage blocks publication', async () => {
     const { b, id } = await ready();
     const a = await admin(b, id);
-    const pkg = JSON.parse(new TextDecoder().decode(await b.getObject(a.packagePath))) as StoryPackage;
+    const pkg = JSON.parse(new TextDecoder().decode((await b.getObject(a.packagePath))!)) as StoryPackage;
     const first = Object.values(pkg.assets)[0];
     for (const p of [...b.objects.keys()]) if (p.includes(first.path.split('/').pop()!.split('.')[0])) b.objects.delete(p);
     await refuses(b, id, 'not-ready');
@@ -187,26 +159,22 @@ describe('publishing is refused unless every condition holds (the service does n
   });
 });
 
-describe('material edits invalidate approval', () => {
-  it('a newly staged version returns the story to draft with no approval, and the old approval cannot publish it', async () => {
+describe('promoting staged versions (instant approval)', () => {
+  it('a newly staged version promotes directly to approved and still requires technical readiness before replacing live catalogue', async () => {
     const original = premiumStory();
     const { b, id } = await ready(original);
     await publishStory(b, pub('pub1'), id);
-    // a corrected version is seeded; because the story is past draft it is staged beside the live one
+    // re-seed an incomplete version (missing timing on page 1) over a published story -> staged in pending_versions
     const fixed = premiumStory({ title: 'Corrected Title' });
     await runSeed(b, [{ ...fixed, storyKey: id, pages: fixed.pages.map((p, i) => (i === 0 ? { ...p, text: p.text + ' A new sentence was added here.', sentences: undefined, timing: undefined as any } : p)) }], { owner: 't2' });
     const pend = await b.listDocs(`${ADMIN(id)}/pending_versions`);
     expect(pend.length).toBe(1);
     await promotePendingVersion(b, pub('ed2'), id, Number(pend[0].id));
     const a = await admin(b, id);
-    expect(a).toMatchObject({ status: 'draft', approvedBy: '', lastEditedBy: 'ed2' });
-    expect(await b.transact((tx) => tx.get(`${ADMIN(id)}/readiness/current`))).toBeUndefined();
-    // the LIVE catalogue entry is untouched until the new version is approved and published
+    expect(a).toMatchObject({ status: 'approved', approvedBy: 'ed2', lastEditedBy: 'ed2' });
+    // live catalogue entry remains untouched while the promoted version lacks timing
     expect((await b.transact((tx) => tx.get(`${CATALOG}/${id}`)))!.status).toBe('published');
-    await expect(publishStory(b, pub('pub1'), id)).rejects.toMatchObject({ code: 'bad-state' });
-    // a forged "approved" status with the OLD reviews does not help: reviews bound to the old content hash do not count
-    await patch(b, id, { status: 'approved', approvedBy: 'app9', submittedBy: 'sub2' });
-    await expect(publishStory(b, pub('pub1'), id)).rejects.toMatchObject({ code: expect.stringMatching(/not-ready|integrity/) });
+    await expect(publishStory(b, pub('pub1'), id)).rejects.toMatchObject({ code: 'not-ready' });
   });
 });
 

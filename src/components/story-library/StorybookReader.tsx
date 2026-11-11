@@ -1,6 +1,6 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { StoryPackage } from '@/lib/story-library/types';
+import type { CatalogueEntry, StoryPackage } from '@/lib/story-library/types';
 import type { LibrarySource, StoryPreviewInfo } from '@/lib/story-library/library-source';
 import type { ReadMode } from '@/lib/story-library/lazy-loader';
 import { presentationFor } from '@/lib/story-library/classification';
@@ -15,8 +15,38 @@ import { ActivityPlayer, type ActivityResult } from './ActivityPlayer';
 
 const SPEEDS = [0.75, 1, 1.25];
 
-export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPackage; info?: StoryPreviewInfo; source: LibrarySource; onClose: () => void }) {
-  const presentation = useMemo(() => presentationFor(info?.classification?.classIds ?? []), [info]);
+export function StorybookReader({
+  pkg,
+  entry,
+  info: initialInfo,
+  source,
+  onClose,
+}: {
+  pkg: StoryPackage;
+  entry?: CatalogueEntry;
+  info?: StoryPreviewInfo;
+  source: LibrarySource;
+  onClose: () => void;
+}) {
+  const [loadedInfo, setLoadedInfo] = useState<StoryPreviewInfo | undefined>(initialInfo);
+  useEffect(() => {
+    if (initialInfo) {
+      setLoadedInfo(initialInfo);
+      return;
+    }
+    if (!source.loadInfo) return;
+    let live = true;
+    source.loadInfo(pkg.storyId).then((res) => {
+      if (live && res) setLoadedInfo(res);
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [initialInfo, pkg.storyId, source]);
+
+  const info = loadedInfo ?? initialInfo;
+  const presentation = useMemo(
+    () => presentationFor(info?.classification?.classIds ?? entry?.classIds ?? []),
+    [info, entry?.classIds],
+  );
   const flow = useMemo(() => buildFlow(pkg), [pkg]);
   const resume = useMemo(() => loadProgress(pkg.storyId), [pkg.storyId]);
   const [mode, setMode] = useState<ReadMode>(presentation.defaultMode);
@@ -46,6 +76,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const synthStartMsRef = useRef<number>(0);
   const synthPausedElapsedRef = useRef<number>(0);
   const usingOfflineVoiceRef = useRef<boolean>(false);
+  const resolveMediaUrl = useMemo(() => source.resolveMediaUrl ?? ((p: string) => p), [source.resolveMediaUrl]);
 
   const stopOfflineSpeech = useCallback(() => {
     if (synthTimerRef.current) {
@@ -465,7 +496,7 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
   const art = info?.pages?.[page ? page.n - 1 : 0];
   const words = page ? pageWords(page) : undefined;
   const fontSize = `clamp(1.15rem, 5.4vw, ${1.35 * presentation.textScale}rem)`;
-  const [c0, c1] = info?.palette ?? ['#e2e8f0', '#94a3b8'];
+  const [c0, c1] = info?.palette ?? entry?.palette ?? ['#e2e8f0', '#94a3b8'];
 
   if (finished) {
     const sc = scoreResults(results);
@@ -611,12 +642,12 @@ export function StorybookReader({ pkg, info, source, onClose }: { pkg: StoryPack
         <div key={`page-${page.n}`} className={`grid gap-4 animate-in fade-in slide-in-from-right-4 duration-500 ${presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
           <div className={presentation.layout === 'text-first' ? 'order-2 md:order-2' : ''}>
             <PlaceholderArt
-              motif={art?.motif ?? '📖'}
+              motif={art?.motif ?? (page.n === 1 ? entry?.coverMotif : undefined) ?? '📖'}
               palette={[c0, c1]}
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
               compact={presentation.layout === 'text-first'}
-              imageSrc={cachedImageUrl ?? `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`}
+              imageSrc={cachedImageUrl ?? resolveMediaUrl(`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
             />
           </div>
           <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">

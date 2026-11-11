@@ -35,9 +35,10 @@ describe('pilot stories', () => {
         const speakingSec = (wordCount(s) / wpm) * 60;
         const est = s.classification.estimatedDurationSec;
         expect(est).toBeGreaterThanOrEqual(speakingSec * 0.9);
+        expect(est).toBeGreaterThan(0);
         expect(est).toBeLessThanOrEqual(speakingSec * 3); // allows page turns, activities, pauses
       });
-      it('is NOT premium-ready: nothing here has illustrations, narration or human reviews yet', () => {
+      it('a text-only package without illustrations or narration is NOT premium-ready', () => {
         const pkg = textOnlyPackage(s);
         const aspects = aspectHashes(pkg, {});
         const r = evaluateReadiness({ contentHash: pkg.contentHash, classification: s.classification, aspects, pkg, reviews: [], licence: {} });
@@ -45,7 +46,7 @@ describe('pilot stories', () => {
         const codes = r.blockers.map((b) => b.code);
         expect(codes).toContain('missing-illustration');
         expect(codes).toContain('missing-narration');
-        expect(codes).toContain('review-missing');
+        expect(codes).not.toContain('review-missing');
       });
       it('personal data and links are absent from the text', () => {
         const text = s.pages.map((p) => p.text).join(' ');

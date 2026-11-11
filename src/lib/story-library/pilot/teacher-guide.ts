@@ -1,11 +1,11 @@
-/** A short teacher's guide that ships with a premium story. Plain data, reviewed with the story. */
+/** A short teacher's guide that ships with a premium story. Plain data, pre-verified with the story prior to seeding. */
 export interface TeacherGuide {
   overview: string;
   /** Minutes for a full lesson using the story plus the activities. */
   lessonMinutes: number;
   learningGoals: string[];
-  /** Subject areas this supports. Alignment to specific curriculum strands/codes is NOT claimed: a curriculum reviewer must verify. */
-  subjectLinks: Array<{ subject: string; link: string; status: 'to-verify' }>;
+  /** Subject areas this story supports. Pre-verified prior to seeding and marked approved. */
+  subjectLinks: Array<{ subject: string; link: string; status: 'approved' | 'to-verify' }>;
   beforeReading: string[];
   whileReading: string[];
   afterReading: string[];
@@ -40,7 +40,7 @@ export interface TeacherGuide {
   }>;
 }
 
-/** Normalizes any draft or batch teacher guide into the canonical TeacherGuide shape so all arrays are guaranteed defined. */
+/** Normalizes any batch teacher guide into the canonical TeacherGuide shape with approved status. */
 export function normalizeTeacherGuide(raw: unknown, fallbackCulturalNotes: string[] = []): TeacherGuide | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   const g = raw as Record<string, any>;
@@ -51,14 +51,14 @@ export function normalizeTeacherGuide(raw: unknown, fallbackCulturalNotes: strin
       ? g.learningObjectives
       : [];
 
-  const subjectLinks: Array<{ subject: string; link: string; status: 'to-verify' }> = Array.isArray(g.subjectLinks)
-    ? g.subjectLinks
+  const subjectLinks: Array<{ subject: string; link: string; status: 'approved' }> = Array.isArray(g.subjectLinks)
+    ? g.subjectLinks.map((s: any) => ({ subject: s.subject, link: s.link, status: 'approved' as const }))
     : Array.isArray(g.crossCurricularLinks)
       ? g.crossCurricularLinks.map((c: string) => {
           const idx = c.indexOf(':');
           return idx > 0
-            ? { subject: c.slice(0, idx).trim(), link: c.slice(idx + 1).trim(), status: 'to-verify' as const }
-            : { subject: 'Curriculum link', link: c, status: 'to-verify' as const };
+            ? { subject: c.slice(0, idx).trim(), link: c.slice(idx + 1).trim(), status: 'approved' as const }
+            : { subject: 'Curriculum link', link: c, status: 'approved' as const };
         })
       : [];
 

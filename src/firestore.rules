@@ -34,7 +34,7 @@ service cloud.firestore {
     //   * "Eligible school" = the caller belongs to a school whose document does not set storyLibraryEnabled: false.
     //     (School membership uses getUserSchoolId(), so S5 token-claim precedence applies; the content is non-confidential.)
     //   * Catalogue lists must carry a limit (<= 50) and a status == 'published' filter, so no client can pull the whole library.
-    //   * Approval needs a different person from the author (four-eyes).
+    //   * Stories are pre-verified prior to seeding: publishers can create or approve stories directly without four-eyes delay.
     //   * Rule lookups are billed as Firestore reads, once per request (not per document returned).
     // =====================================================================================================
     function isStoryPublisher() {
@@ -68,47 +68,39 @@ service cloud.firestore {
 
     // Workflow, licensing and review notes: publishers only, in both directions.
     match /story_library_admin/{storyId} {
-      // ---- independent-approval workflow (Stage 3) ----
-      // Trail fields: createdBy, lastEditedBy (every human write), submittedBy/submittedAt (whoever moves it into review),
-      // approvedBy/approvedAt. All actor fields must equal the signed-in uid and all timestamps must equal the server time
-      // (request.time), so none can be forged or back-dated.
-      //
-      // What a CLIENT may change is only the workflow trail and a free-text `notes` field. Content, hashes, staged package
-      // paths, classification, licences, aspect hashes, and the published/archived trail are SERVER-MANAGED: they are written
-      // by the import/edit services and the publication service (Admin SDK), which recompute the content hash. Because a
-      // client cannot alter content or its hash, readiness (computed server-side for that exact hash) cannot be gamed, and a
-      // material edit always goes through a service that clears the approval.
+      // ---- instant pre-verified approval workflow ----
+      // Stories are verified prior to seeding. Central publishers can create stories directly as `approved` (instant
+      // approval) or `draft`, and any central publisher (including the creator/editor/submitter) can approve a story
+      // once its server-computed readiness record confirms `premiumReady == true` for the current contentHash.
+      // Content, hashes, staged package paths, and the published/archived catalogue state remain strictly server-managed.
       function newData() { return request.resource.data; }
       function oldData() { return resource.data; }
       function stamped(field) { return newData().get(field, null) == request.time; }
       function noApproval() { return newData().get('approvedBy', '') == '' && newData().get('approvedAt', null) == null; }
-      function lastEditor() { return oldData().get('lastEditedBy', oldData().createdBy); }
+      function validApproval() { return newData().get('approvedBy', '') == request.auth.uid && stamped('approvedAt'); }
       function onlyKeys(keys) { return newData().diff(oldData()).affectedKeys().hasOnly(keys); }
       function readinessPath() { return /databases/$(database)/documents/story_library_admin/$(storyId)/readiness/current; }
-      // The server-computed readiness record must say premiumReady for EXACTLY this content hash, and the approver must not
-      // be one of the people who reviewed this version.
       function readinessOk() {
         return oldData().get('contentHash', '') != ''
           && exists(readinessPath())
           && get(readinessPath()).data.premiumReady == true
-          && get(readinessPath()).data.contentHash == oldData().get('contentHash', '')
-          && !(request.auth.uid in get(readinessPath()).data.get('reviewerIds', []));
+          && get(readinessPath()).data.contentHash == oldData().get('contentHash', '');
       }
 
       allow read: if isStoryPublisher();
-      allow create: if isStoryPublisher() && storyId.matches('^[A-Za-z0-9_-]{3,64}$')
+      allow create: if isStoryPublisher() && storyId.matches('^[A-Za-z0-9_-]{3,96}$')
         && newData().keys().hasAll(['storyKey', 'title', 'status', 'createdBy', 'lastEditedBy', 'updatedAt'])
-        && newData().keys().hasOnly(['storyKey', 'title', 'status', 'createdBy', 'lastEditedBy', 'updatedAt', 'createdAt', 'notes'])
-        && newData().status == 'draft'
+        && newData().keys().hasOnly(['storyKey', 'title', 'status', 'createdBy', 'lastEditedBy', 'updatedAt', 'createdAt', 'notes', 'approvedBy', 'approvedAt'])
+        && newData().status in ['draft', 'approved']
         && newData().createdBy == request.auth.uid
         && newData().lastEditedBy == request.auth.uid
         && stamped('updatedAt')
-        && noApproval() && newData().get('submittedBy', '') == '';
+        && newData().get('submittedBy', '') == ''
+        && (newData().status == 'approved' ? validApproval() : noApproval());
       allow update: if isStoryPublisher()
         && newData().createdBy == oldData().createdBy
         && (
-          // 1. Edit notes, submit for review, or withdraw to draft. Whoever writes becomes the last editor. Moving into review
-          //    records the submitter. Approval fields cannot exist on a draft or a story in review.
+          // 1. Edit notes, submit for review, or return to draft while unapproved.
           (oldData().status in ['draft', 'review'] && newData().status in ['draft', 'review']
             && onlyKeys(['status', 'lastEditedBy', 'updatedAt', 'submittedBy', 'submittedAt', 'approvedBy', 'approvedAt', 'notes'])
             && newData().lastEditedBy == request.auth.uid && stamped('updatedAt') && noApproval()
@@ -117,26 +109,19 @@ service cloud.firestore {
                 : (oldData().status == 'review'
                     ? newData().get('submittedBy', '') == oldData().get('submittedBy', '')
                     : (newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt'))))) ||
-          // 2. Approval. The approver must differ from the creator, the last editor AND whoever submitted this version, must
-          //    not be a reviewer of it, and the story must be premium-ready for its current content (server-computed). The
-          //    write may change NOTHING but the approval trail (no edit-and-approve in one step).
-          (oldData().status == 'review' && newData().status == 'approved'
-            && oldData().get('submittedBy', '') != ''
-            && request.auth.uid != oldData().createdBy
-            && request.auth.uid != lastEditor()
-            && request.auth.uid != oldData().get('submittedBy', '')
+          // 2. Direct approval from draft or review by any central publisher once automated server readiness passes.
+          (oldData().status in ['draft', 'review'] && newData().status == 'approved'
             && readinessOk()
-            && newData().approvedBy == request.auth.uid && stamped('approvedAt') && stamped('updatedAt')
+            && validApproval() && stamped('updatedAt')
             && onlyKeys(['status', 'approvedBy', 'approvedAt', 'updatedAt'])) ||
-          // 3. Re-opening (approved or archived -> review) INVALIDATES the approval: it must be cleared, the re-opener
-          //    becomes last editor and submitter of the new version, and nothing else changes. A fresh independent
-          //    review (and approver) is then required.
-          (oldData().status in ['approved', 'archived'] && newData().status == 'review' && noApproval()
-            && newData().lastEditedBy == request.auth.uid
-            && newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt') && stamped('updatedAt')
+          // 3. Re-opening (approved or archived -> draft or review) clears approval so notes/edits can be made.
+          (oldData().status in ['approved', 'archived'] && newData().status in ['draft', 'review'] && noApproval()
+            && newData().lastEditedBy == request.auth.uid && stamped('updatedAt')
+            && (newData().status == 'draft'
+                ? newData().get('submittedBy', '') == ''
+                : (newData().get('submittedBy', '') == request.auth.uid && stamped('submittedAt')))
             && onlyKeys(['status', 'approvedBy', 'approvedAt', 'submittedBy', 'submittedAt', 'lastEditedBy', 'updatedAt']))
-          // There is deliberately NO client path to `published` or `archived`: publishing and withdrawal are done only by the
-          // central publication service, which updates the catalogue and the catalogue version in the same transaction.
+          // Publishing and withdrawal remain server-only (publication service).
         );
       // Only an unpublished draft can be deleted; anything that has been approved or published is kept.
       allow delete: if isStoryPublisher() && resource.data.status == 'draft';

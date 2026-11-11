@@ -57,6 +57,34 @@ export function estimateJaccard(a: number[], b: number[]): number {
   return same / NUM_HASHES;
 }
 
+/**
+ * Compact 256-byte (344-char base64) encoding of a 64-hash MinHash signature.
+ * Cuts Firestore LSH band bucket entry size by >2x vs storing a 64-element integer array,
+ * doubling per-bucket capacity as the corpus scales past 5,000+ stories.
+ */
+export function packSignature(sig: number[]): string {
+  const bytes = new Uint8Array(sig.length * 4);
+  const view = new DataView(bytes.buffer);
+  for (let i = 0; i < sig.length; i++) view.setUint32(i * 4, sig[i] >>> 0, true);
+  if (typeof Buffer !== 'undefined') return Buffer.from(bytes).toString('base64');
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+/** Decodes either a compact base64 signature string or a legacy `number[]` signature array. */
+export function unpackSignature(raw: string | number[]): number[] {
+  if (Array.isArray(raw)) return raw;
+  const bytes = typeof Buffer !== 'undefined'
+    ? new Uint8Array(Buffer.from(raw, 'base64'))
+    : Uint8Array.from(atob(raw), (c) => c.charCodeAt(0));
+  const count = Math.floor(bytes.byteLength / 4);
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const out = new Array<number>(count);
+  for (let i = 0; i < count; i++) out[i] = view.getUint32(i * 4, true);
+  return out;
+}
+
 /** One bucket id per band. Two stories sharing any bucket are candidates. */
 export function bandKeys(sig: number[]): string[] {
   const keys: string[] = [];

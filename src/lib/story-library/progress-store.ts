@@ -2,7 +2,7 @@
  * Reading progress and favourites store.
  * - Pure TypeScript with zero Firebase imports so /story-spark-preview stays 100% isolated (preview-isolation.test.ts).
  * - Supports user-scoped local keys when signed in, automatic one-time migration of legacy device keys,
- *   change listeners for instant UI updates, and deterministic cloud merge helpers for cross-computer sync.
+ *   change listeners for instant UI updates, O(opened-books) shelf snapshots, and deterministic cloud merge helpers.
  */
 export interface LocalProgress {
   step: number;
@@ -22,6 +22,13 @@ export interface StoryShelfCloudPayload {
   favMeta: Record<string, FavRecord>;
   favourites: string[];
   updatedAt: number;
+}
+
+export interface ProgressSnapshot {
+  favs: Set<string>;
+  inProgress: Set<string>;
+  completed: Set<string>;
+  byStory: Map<string, LocalProgress>;
 }
 
 const LEGACY_PROGRESS_PREFIX = 'story-spark-preview:progress:';
@@ -152,6 +159,55 @@ export function loadProgress(
   }
 }
 
+/**
+ * O(opened-books) shelf progress snapshot: scans only the keys actually stored for the learner
+ * rather than looping over thousands of catalogue entries on every render.
+ */
+export function loadProgressSnapshot(
+  fallbackStoryKeys?: readonly string[],
+  storage: Storage | undefined = safe(),
+  uid: string | null = activeUserId,
+): ProgressSnapshot {
+  const favs = loadFavourites(storage, uid);
+  const inProgress = new Set<string>();
+  const completed = new Set<string>();
+  const byStory = new Map<string, LocalProgress>();
+
+  if (!storage) return { favs, inProgress, completed, byStory };
+
+  const pref = progressPrefix(uid);
+  try {
+    if (typeof storage.length === 'number' && typeof storage.key === 'function') {
+      for (let i = 0; i < storage.length; i++) {
+        const k = storage.key(i);
+        if (!k || !k.startsWith(pref)) continue;
+        const storyKey = k.slice(pref.length);
+        const raw = storage.getItem(k);
+        if (!raw) continue;
+        try {
+          const p = JSON.parse(raw);
+          if (!isValidProgress(p)) continue;
+          byStory.set(storyKey, p);
+          if (p.done) completed.add(storyKey);
+          else if (p.step >= 0) inProgress.add(storyKey);
+        } catch { /* ignore corrupt item */ }
+      }
+      return { favs, inProgress, completed, byStory };
+    }
+  } catch { /* fall back to known keys */ }
+
+  if (fallbackStoryKeys) {
+    for (const storyKey of fallbackStoryKeys) {
+      const p = loadProgress(storyKey, storage, uid);
+      if (!p) continue;
+      byStory.set(storyKey, p);
+      if (p.done) completed.add(storyKey);
+      else if (p.step >= 0) inProgress.add(storyKey);
+    }
+  }
+  return { favs, inProgress, completed, byStory };
+}
+
 export function saveProgress(
   storyKey: string,
   p: LocalProgress,
@@ -237,26 +293,9 @@ export function exportCloudShelf(
   knownStoryKeys?: readonly string[],
   storage: Storage | undefined = safe(),
 ): StoryShelfCloudPayload {
-  const progress: Record<string, LocalProgress> = {};
-  if (storage) {
-    const pref = progressPrefix(uid);
-    if (typeof storage.length === 'number' && typeof storage.key === 'function') {
-      for (let i = 0; i < storage.length; i++) {
-        const k = storage.key(i);
-        if (k && k.startsWith(pref)) {
-          const storyKey = k.slice(pref.length);
-          const p = loadProgress(storyKey, storage, uid);
-          if (p) progress[storyKey] = p;
-        }
-      }
-    } else if (knownStoryKeys) {
-      for (const storyKey of knownStoryKeys) {
-        const p = loadProgress(storyKey, storage, uid);
-        if (p) progress[storyKey] = p;
-      }
-    }
-  }
-  const favs = loadFavourites(storage, uid);
+  const snap = loadProgressSnapshot(knownStoryKeys, storage, uid);
+  const progress: Record<string, LocalProgress> = Object.fromEntries(snap.byStory.entries());
+  const favs = snap.favs;
   const favMeta = loadFavMeta(storage, uid);
   for (const k of favs) {
     if (!favMeta[k]) favMeta[k] = { on: true, updatedAt: 1 };

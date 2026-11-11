@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PersistentKV } from './persistent-kv';
+import { IndexedDBKV, PersistentKV, openPersistentKV } from './persistent-kv';
 import { CatalogueClient } from './catalogue-client';
 import { StaticCatalogueBackend } from './static-catalogue';
 
@@ -12,7 +12,7 @@ class FakeStorage {
   removeItem(k: string) { this.m.delete(k); }
 }
 
-describe('PersistentKV', () => {
+describe('PersistentKV & IndexedDBKV', () => {
   it('survives a reload (a new instance over the same storage)', () => {
     const st = new FakeStorage();
     const a = new PersistentKV('t', st); a.set('x', { n: 1 }); a.set('y', [1, 2]);
@@ -26,22 +26,33 @@ describe('PersistentKV', () => {
     const kv = new PersistentKV('t', st);
     expect(kv.keys()).toEqual([]); expect(st.getItem('t:bad')).toBeNull(); expect(st.getItem('other:z')).toBe('1');
   });
-  it('degrades to memory when storage is unavailable or full: browsing still works', () => {
+  it('degrades to memory when storage is unavailable or full: browsing still works', async () => {
     const none = new PersistentKV('t', null); none.set('a', 1); expect(none.get('a')).toBe(1); expect(none.persistent).toBe(false);
     const st = new FakeStorage(); st.failWrites = true;
     const full = new PersistentKV('t', st); full.set('a', 1);
     expect(full.get('a')).toBe(1); expect(full.persistent).toBe(false);
+    const idbFallback = await IndexedDBKV.open('t', undefined);
+    idbFallback.set('k', { scaled: 5000 });
+    expect(idbFallback.get('k')).toEqual({ scaled: 5000 });
+    const autoKv = await openPersistentKV('story-spark-scale-test');
+    autoKv.set('count', 2500);
+    expect(autoKv.get('count')).toBe(2500);
   });
-  it('a corrupted cached page cannot break the catalogue client: it is just refetched', async () => {
+  it('a cached session serves pages with zero queries and preserves totalPublished', async () => {
     const st = new FakeStorage();
     const entries = [1, 2, 3].map((i) => ({ storyKey: `s-${i}`, version: 1, packageVersion: 1, status: 'published' as const, title: `S${i}`, ageTiers: ['5-6'], pageCount: 1, packagePath: '/p', packageHash: 'h', contentHash: 'c', publishedBy: 'x', updatedAt: 1 as unknown }));
     const backend = new StaticCatalogueBackend({ catalogueVersion: 1, entries });
     const c1 = new CatalogueClient(backend, new PersistentKV('t', st), { pageSize: 2, refresh: 'delta' });
-    await c1.startSession(); expect((await c1.getPage(0)).length).toBe(2);
+    await c1.startSession();
+    expect(c1.totalPublished).toBe(3);
+    expect((await c1.getPage(0)).length).toBe(2);
     const q = backend.counters.queries;
     // second visit, same version: served from the device, no query
     const c2 = new CatalogueClient(backend, new PersistentKV('t', st), { pageSize: 2, refresh: 'delta' });
-    await c2.startSession(); expect((await c2.getPage(0)).length).toBe(2); expect(backend.counters.queries).toBe(q);
+    await c2.startSession();
+    expect(c2.totalPublished).toBe(3);
+    expect((await c2.getPage(0)).length).toBe(2);
+    expect(backend.counters.queries).toBe(q);
   });
   it('new catalogue version: removed (archived) stories disappear on the next session', async () => {
     const st = new FakeStorage();
@@ -52,6 +63,7 @@ describe('PersistentKV', () => {
     const v2 = new StaticCatalogueBackend({ catalogueVersion: 2, entries: [mk(1), mk(2, 'archived', 2), mk(3)] });
     const c2 = new CatalogueClient(v2, new PersistentKV('t', st), { pageSize: 10, refresh: 'delta' });
     const s = await c2.startSession(); expect(s.changed).toBe(true);
+    expect(c2.totalPublished).toBe(2);
     expect((await c2.getPage(0)).map((e) => e.storyKey)).toEqual(['s-1', 's-3']);
   });
 });

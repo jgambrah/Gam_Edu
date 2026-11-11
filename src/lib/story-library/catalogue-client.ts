@@ -1,14 +1,14 @@
 /**
- * Catalogue client (Stage 2: logic + measurement; the IndexedDB-backed KeyValueStore arrives in Stage 3).
+ * Catalogue client (Stage 3: cursor-paginated, delta-synced, IndexedDB-ready, with totalPublished count).
  *
  * What a learner session costs in Firestore, by design:
- *   - ONE read of library_meta/current to learn the catalogue version;
+ *   - ONE read of library_meta/current to learn the catalogue version (and totalPublished count);
  *   - unchanged version → every page already browsed is served from the device cache: 0 further reads;
  *   - changed version → either refetch the pages the learner actually browses ('refetch'), or ask only for entries that
- *     changed since the cached version ('delta', keyed on the existing `updatedAt` field, so reads follow the number of
+ *     changed since the cached version ('delta', keyed on `changedInVersion` / `updatedAt`, so reads follow the number of
  *     CHANGES, not the size of the library);
  *   - pages are small (<= 50, enforced by the rules), loaded on demand, never the whole catalogue, and no listeners.
- * Opening a story costs no Firestore read at all: the package and media come from Storage.
+ * Opening a story costs no Firestore read at all: the package and media come from Storage / CDN.
  */
 import { MAX_CATALOGUE_PAGE_SIZE, type CatalogueEntry } from './types';
 import type { CatalogueFilter } from './classification';
@@ -44,7 +44,7 @@ export function matchesFilter(e: CatalogueEntry, key: string): boolean {
 }
 
 export interface CatalogueBackend {
-  getMeta(): Promise<{ catalogueVersion: number }>;
+  getMeta(): Promise<{ catalogueVersion: number; totalPublished?: number }>;
   listPage(o: { limit: number; startAfter?: string; ageTier?: string; filter?: CatalogueFilter }): Promise<CatalogueEntry[]>;
   listChangedSince(o: { since: number; limit: number; startAfter?: string }): Promise<CatalogueEntry[]>;
 }
@@ -63,6 +63,7 @@ interface CachedPage { entries: CatalogueEntry[]; lastId?: string; exhausted: bo
 
 export class CatalogueClient {
   private version = -1;
+  private totalCount: number | undefined;
   constructor(
     private backend: CatalogueBackend,
     private kv: KeyValueStore,
@@ -71,18 +72,24 @@ export class CatalogueClient {
     if (opts.pageSize > MAX_CATALOGUE_PAGE_SIZE) throw new Error(`pageSize must be <= ${MAX_CATALOGUE_PAGE_SIZE}`);
   }
 
+  get totalPublished(): number | undefined {
+    return this.totalCount;
+  }
+
   private pk = (filter: string, i: number) => `page:${filter}:${i}`;
   private filters(): string[] {
     return [...new Set(this.kv.keys().filter((k) => k.startsWith('page:')).map((k) => k.split(':')[1]))];
   }
 
   /** Call once when a learner opens the library. Costs one `library_meta` read (+ a delta query if the version moved). */
-  async startSession(): Promise<{ catalogueVersion: number; changed: boolean }> {
-    const { catalogueVersion } = await this.backend.getMeta();
+  async startSession(): Promise<{ catalogueVersion: number; totalPublished?: number; changed: boolean }> {
+    const { catalogueVersion, totalPublished } = await this.backend.getMeta();
     const cached = this.kv.get<number>('meta:version');
     this.version = catalogueVersion;
-    if (cached === catalogueVersion) return { catalogueVersion, changed: false };
-    if (cached === undefined) { this.kv.set('meta:version', catalogueVersion); return { catalogueVersion, changed: false }; }
+    this.totalCount = totalPublished ?? this.kv.get<number>('meta:totalPublished');
+    if (totalPublished !== undefined) this.kv.set('meta:totalPublished', totalPublished);
+    if (cached === catalogueVersion) return { catalogueVersion, totalPublished: this.totalCount, changed: false };
+    if (cached === undefined) { this.kv.set('meta:version', catalogueVersion); return { catalogueVersion, totalPublished: this.totalCount, changed: false }; }
 
     if (this.opts.refresh === 'refetch') {
       for (const k of this.kv.keys().filter((k) => k.startsWith('page:'))) this.kv.delete(k); // pages refetch on demand
@@ -90,7 +97,7 @@ export class CatalogueClient {
       await this.applyDelta(cached);
     }
     this.kv.set('meta:version', catalogueVersion);
-    return { catalogueVersion, changed: true };
+    return { catalogueVersion, totalPublished: this.totalCount, changed: true };
   }
 
   private async applyDelta(since: number) {
@@ -199,7 +206,10 @@ export class SimulatedCatalogue implements CatalogueBackend {
   }
   private bill(n: number) { this.counters.reads += Math.max(1, n); this.counters.queries++; this.counters.rulesReads += this.rulesReadsPerRequest; }
   private cap(limit: number) { if (limit > MAX_CATALOGUE_PAGE_SIZE) throw new Error('rules refuse list limits above 50'); }
-  async getMeta() { this.bill(1); return { catalogueVersion: this.catalogueVersion }; }
+  async getMeta() {
+    this.bill(1);
+    return { catalogueVersion: this.catalogueVersion, totalPublished: this.truth().length };
+  }
   async listPage(o: { limit: number; startAfter?: string; ageTier?: string; filter?: CatalogueFilter }) {
     this.cap(o.limit);
     const rows = this.entries.filter((e) => e.status === 'published' && matchesFilter(e, filterKey({ ...(o.filter ?? {}), ...(o.ageTier ? { ageTier: o.ageTier } : {}) })) && (!o.startAfter || e.storyKey > o.startAfter)).slice(0, o.limit);

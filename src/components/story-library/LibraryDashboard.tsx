@@ -1,15 +1,19 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { CatalogueEntry, StoryPackage } from '@/lib/story-library/types';
+import { PUBLISHED_PREFIX, type CatalogueEntry, type StoryPackage } from '@/lib/story-library/types';
 import { createPreviewSource, type LibrarySource } from '@/lib/story-library/library-source';
 import { CLASS_REGISTRY, GENRES, READING_LEVELS, presentationFor } from '@/lib/story-library/classification';
 import { FilteredFeed, planQuery, type Selection } from '@/lib/story-library/dashboard-query';
-import { loadFavourites, loadProgress, subscribeProgressChanges, toggleFavourite, type LocalProgress } from '@/lib/story-library/progress-store';
+import { loadProgressSnapshot, subscribeProgressChanges, toggleFavourite, type LocalProgress } from '@/lib/story-library/progress-store';
 import { PlaceholderArt } from './PlaceholderArt';
 import { StorybookReader } from './StorybookReader';
 
 const label = (list: readonly { id: string; label: string }[], id?: string) => list.find((x) => x.id === id)?.label ?? id ?? '';
 const minutes = (s?: number) => (s ? `${Math.max(1, Math.round(s / 60))} min` : '');
+
+const INITIAL_FEED_BATCH = 240;
+const INITIAL_RENDER_WINDOW = 240;
+const RENDER_WINDOW_STEP = 60;
 
 export type StageFilterId = 'all' | 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
 export type CollectionShelfId =
@@ -132,11 +136,13 @@ export function LibraryDashboard({
   const [search, setSearch] = useState<string>('');
   const [entries, setEntries] = useState<CatalogueEntry[]>([]);
   const [exhausted, setExhausted] = useState(false);
+  const [renderLimit, setRenderLimit] = useState(INITIAL_RENDER_WINDOW);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<{ pkg: StoryPackage; entry: CatalogueEntry } | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
   const [tick, setTick] = useState(0); // refresh stats after actions
   const feed = useRef<FilteredFeed | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const isReaderOpenRef = useRef(false);
   isReaderOpenRef.current = open !== null;
@@ -154,41 +160,53 @@ export function LibraryDashboard({
 
   const run = useCallback(async (s: LibrarySource, selection: Selection) => {
     setLoading(true);
+    setRenderLimit(INITIAL_RENDER_WINDOW);
     try {
-      const f = new FilteredFeed(s.catalogue, planQuery(selection), 50, 10);
+      const f = new FilteredFeed(s.catalogue, planQuery(selection), 50, 6);
       feed.current = f;
-      await f.loadMore(500);
+      await f.loadMore(INITIAL_FEED_BATCH);
       if (feed.current === f) { setEntries([...f.entries]); setExhausted(f.exhausted); }
     } catch (e: any) { setError(String(e?.message ?? e)); } finally { setLoading(false); setTick((t) => t + 1); }
   }, []);
 
   useEffect(() => { if (source) run(source, sel); }, [source, sel, run]);
 
-  const more = async () => { if (!feed.current || !source) return; setLoading(true); await feed.current.loadMore(12); setEntries([...feed.current.entries]); setExhausted(feed.current.exhausted); setLoading(false); setTick((t) => t + 1); };
+  const more = useCallback(async () => {
+    setRenderLimit((prev) => prev + RENDER_WINDOW_STEP);
+    if (!feed.current || !source || feed.current.exhausted || loading) return;
+    setLoading(true);
+    try {
+      await feed.current.loadMore(RENDER_WINDOW_STEP);
+      setEntries([...feed.current.entries]);
+      setExhausted(feed.current.exhausted);
+    } finally {
+      setLoading(false);
+      setTick((t) => t + 1);
+    }
+  }, [source, loading]);
 
   const openStory = async (e: CatalogueEntry) => {
     if (!source) return;
     setOpening(e.storyKey);
-    try { const pkg = await source.loader.openPackage(e.packagePath); setOpen({ pkg, entry: e }); }
-    catch { setError('That story could not be opened. Check your connection and try again.'); }
-    finally { setOpening(null); setTick((t) => t + 1); }
+    try {
+      const [pkg] = await Promise.all([
+        source.loader.openPackage(e.packagePath),
+        source.loadInfo ? source.loadInfo(e.storyKey).catch(() => undefined) : Promise.resolve(undefined),
+      ]);
+      setOpen({ pkg, entry: e });
+    } catch {
+      setError('That story could not be opened. Check your connection and try again.');
+    } finally {
+      setOpening(null);
+      setTick((t) => t + 1);
+    }
   };
 
+  // O(opened-books) progress scan — independent of total library size even at 5,000+ stories
   const progressSnapshot = useMemo(() => {
     void tick;
-    const favs = loadFavourites();
-    const inProgress = new Set<string>();
-    const completed = new Set<string>();
-    const byStory = new Map<string, LocalProgress>();
-    for (const e of entries) {
-      const p = loadProgress(e.storyKey);
-      if (!p) continue;
-      byStory.set(e.storyKey, p);
-      if (p.done) completed.add(e.storyKey);
-      else if (p.step >= 0) inProgress.add(e.storyKey);
-    }
-    return { favs, inProgress, completed, byStory };
-  }, [entries, tick]);
+    return loadProgressSnapshot();
+  }, [tick]);
 
   const visibleEntries = useMemo(() => {
     const stageDef = STAGE_GROUPS.find((g) => g.id === stage);
@@ -215,10 +233,42 @@ export function LibraryDashboard({
     return filtered;
   }, [entries, stage, shelf, search, progressSnapshot, activeAgeTier, sel.classId]);
 
+  const windowedEntries = useMemo(
+    () => visibleEntries.slice(0, renderLimit),
+    [visibleEntries, renderLimit],
+  );
+  const hasMoreToShow = windowedEntries.length < visibleEntries.length || !exhausted;
+
+  // Progressive infinite scroll as the learner scrolls near the bottom of the shelf
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasMoreToShow || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver(
+      (records) => {
+        if (records.some((r) => r.isIntersecting)) {
+          void more();
+        }
+      },
+      { rootMargin: '400px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [hasMoreToShow, more]);
+
   if (error && !source) return <div role="alert" className="mx-auto max-w-xl rounded-2xl bg-red-50 p-6 text-red-900 ring-1 ring-red-200">The library could not be loaded: {error}</div>;
   if (!source) return <div className="p-10 text-center text-lg font-semibold text-slate-600" role="status">Opening the library…</div>;
 
-  if (open) return <StorybookReader pkg={open.pkg} info={source.info(open.pkg.storyId)} source={source} onClose={() => { setOpen(null); setTick((t) => t + 1); }} />;
+  if (open) {
+    return (
+      <StorybookReader
+        pkg={open.pkg}
+        entry={open.entry}
+        info={source.info(open.pkg.storyId)}
+        source={source}
+        onClose={() => { setOpen(null); setTick((t) => t + 1); }}
+      />
+    );
+  }
 
   const sc = (k: keyof Selection, v: string | number | undefined) => {
     if (k === 'classId' && v !== '' && v !== undefined) setStage('all');
@@ -226,6 +276,7 @@ export function LibraryDashboard({
   };
   const active = Object.values(sel).some((v) => v !== undefined) || stage !== 'all' || shelf !== 'all' || search.trim() !== '';
   const activeShelf = COLLECTION_SHELVES.find((c) => c.id === shelf) ?? COLLECTION_SHELVES[0];
+  const totalBooksCount = source.catalogue.totalPublished ?? entries.length;
 
   return (
     <div className="mx-auto w-full max-w-6xl" data-testid="library">
@@ -242,7 +293,7 @@ export function LibraryDashboard({
               onClick={() => setShelf('all')}
               className={`min-w-[116px] rounded-2xl px-3.5 py-2.5 text-left backdrop-blur transition ${shelf === 'all' ? 'bg-white/25 text-white ring-1 ring-white/50 shadow-sm' : 'bg-white/15 text-white hover:bg-white/25'}`}
             >
-              <span className="block text-xl font-black leading-tight text-white">{entries.length}</span>
+              <span className="block text-xl font-black leading-tight text-white">{totalBooksCount}</span>
               <span className="text-white/90">📚 Books & Poems</span>
             </button>
             <button
@@ -365,7 +416,7 @@ export function LibraryDashboard({
       )}
 
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-testid="story-grid">
-        {visibleEntries.map((e) => (
+        {windowedEntries.map((e) => (
           <StoryCard
             key={e.storyKey}
             entry={e}
@@ -380,7 +431,13 @@ export function LibraryDashboard({
           />
         ))}
       </ul>
-      {!exhausted && entries.length > 0 && <div className="mt-6 text-center"><button type="button" onClick={more} disabled={loading} className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white disabled:opacity-50">Show more stories</button></div>}
+      {hasMoreToShow && visibleEntries.length > 0 && (
+        <div ref={sentinelRef} className="mt-6 text-center">
+          <button type="button" onClick={more} disabled={loading} className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white disabled:opacity-50">
+            {loading ? 'Loading more…' : 'Show more stories'}
+          </button>
+        </div>
+      )}
       {error && <div role="alert" className="mt-4 rounded-xl bg-red-50 p-3 text-red-900">{error}</div>}
     </div>
   );
@@ -389,19 +446,33 @@ export function LibraryDashboard({
 const selectCls = 'w-full rounded-xl border-2 border-slate-200 bg-white px-3 py-2 text-base font-semibold text-slate-800 focus:border-indigo-500 focus:outline-none';
 const Field = ({ label, children }: { label: string; children: React.ReactNode }) => <label className="block text-sm font-bold text-slate-700"><span className="mb-1 block">{label}</span>{children}</label>;
 
+function resolveCoverUrl(entry: CatalogueEntry, source: LibrarySource): string {
+  const resolve = source.resolveMediaUrl ?? ((p: string) => p);
+  if (entry.cover?.hash?.startsWith('sha256:')) {
+    const hex = entry.cover.hash.slice(7);
+    return resolve(`/${PUBLISHED_PREFIX}assets/${hex.slice(0, 2)}/${hex}.webp`);
+  }
+  return resolve(`/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp`);
+}
+
 function StoryCard({ entry, source, busy, isFav, progress, onToggleFav, onOpen }: { entry: CatalogueEntry; source: LibrarySource; busy: boolean; isFav: boolean; progress?: LocalProgress; onToggleFav: () => void; onOpen: () => void }) {
   const info = source.info(entry.storyKey);
   const presentation = presentationFor(entry.classIds ?? []);
-  const classes = (entry.classIds ?? []);
+  const classes = entry.classIds ?? [];
   const classText = classes.length > 2 ? `${label(CLASS_REGISTRY, classes[0])} to ${label(CLASS_REGISTRY, classes[classes.length - 1])}` : classes.map((c) => label(CLASS_REGISTRY, c)).join(', ');
   return (
-    <li className="relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition hover:shadow-xl motion-reduce:transition-none" data-testid="story-card" data-story={entry.storyKey}>
+    <li
+      className="relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition hover:shadow-xl motion-reduce:transition-none"
+      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 440px' }}
+      data-testid="story-card"
+      data-story={entry.storyKey}
+    >
       <div className="relative">
         <PlaceholderArt
-          motif={info?.pages?.[0]?.motif ?? '📖'}
-          palette={info?.palette ?? ['#e2e8f0', '#94a3b8']}
-          alt={`Cover for ${entry.title}`}
-          imageSrc={`/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp`}
+          motif={entry.coverMotif ?? info?.pages?.[0]?.motif ?? '📖'}
+          palette={entry.palette ?? info?.palette ?? ['#e2e8f0', '#94a3b8']}
+          alt={entry.cover?.alt ?? `Cover for ${entry.title}`}
+          imageSrc={resolveCoverUrl(entry, source)}
           compact
         />
         <button
