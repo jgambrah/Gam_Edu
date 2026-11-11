@@ -993,7 +993,11 @@ export interface VideoLink {
 export interface Attachment {
   name: string;
   url: string;
-  type: 'PDF' | 'IMAGE' | 'DOC' | 'Spreadsheet' | 'Link' | 'AUDIO';
+  type: 'PDF' | 'IMAGE' | 'DOC' | 'Spreadsheet' | 'Link' | 'AUDIO' | 'Document' | 'Image' | 'Audio' | 'Video' | 'Slides';
+  /** Where an uploaded file lives in storage, so it can be removed when no longer used. */
+  storagePath?: string;
+  size?: number;
+  contentType?: string;
   category?: 'PDF Document' | 'Worksheet' | 'Revision Guide' | 'Interactive Material' | 'Audio Lesson';
 }
 
@@ -1008,7 +1012,13 @@ export interface LearningMaterial {
   id: string;
   topicTitle: string;
   content: string;
+  /** First class of `classIds` (kept so older screens and searches still work). */
   classId: string;
+  /** Every class this topic is shared with. Older topics only have `classId`. */
+  classIds?: string[];
+  term?: string;
+  week?: number | null;
+  tags?: string[];
   subject: string;
   videoLinks: VideoLink[];
   attachments: Attachment[];

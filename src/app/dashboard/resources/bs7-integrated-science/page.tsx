@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -32,6 +33,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { useCurrentSchool } from '@/hooks/use-current-school';
 import { updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { 
   BookOpen, Edit, Loader2, Save, Plus, Trash2, 
@@ -74,6 +76,7 @@ function MaterialEditorDialog({
 }) {
   const firestore = useFirestore();
   const { toast } = useToast();
+  const { schoolId } = useCurrentSchool();
   const [isSaving, setIsSaving] = useState(false);
 
   // Form State
@@ -143,6 +146,10 @@ function MaterialEditorDialog({
 
   const handleSave = async () => {
     if (!firestore) return;
+    if (!schoolId) {
+        toast({ variant: "destructive", title: "School Not Found", description: "Please refresh the page and try again." });
+        return;
+    }
     if (!topicTitle) {
         toast({ variant: "destructive", title: "Missing Title", description: "Please enter a topic title." });
         return;
@@ -152,6 +159,8 @@ function MaterialEditorDialog({
     try {
       const dataToSave = {
         courseId: 'bs7-integrated-science',
+        // Every topic belongs to the school that wrote it (it used to be saved with no school at all).
+        schoolId,
         strand,
         subStrand,
         topicTitle,
@@ -383,7 +392,13 @@ export default function BS7IntegratedSciencePage() {
     [firestore]
   );
 
-  const { data: materials, isLoading } = useCollection<LearningMaterial>(materialsQuery);
+  const { schoolId } = useCurrentSchool();
+  const { data: allCourseMaterials, isLoading } = useCollection<LearningMaterial>(materialsQuery);
+  // Show only this school's own topics (plus older topics saved before schools were recorded).
+  const materials = useMemo(
+    () => allCourseMaterials ? allCourseMaterials.filter(m => !m.schoolId || m.schoolId === schoolId) : allCourseMaterials,
+    [allCourseMaterials, schoolId]
+  );
 
   // Grouping Logic: Strand -> SubStrand -> Topics (with authoritative NaCCA curriculum fallbacks)
   const groupedData = useMemo(() => {
