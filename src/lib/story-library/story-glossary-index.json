@@ -679,7 +679,7 @@
     "definition": "The invisible mixture of gases around Earth that people, plants, and animals breathe."
   },
   "oxygen": {
-    "definition": "A gas in air and water that living things need to breathe."
+    "definition": "A gas in the air that our bodies need."
   },
   "carbon": {
     "definition": "An element stored in trees and soil; too much carbon dioxide in the air warms the planet."
@@ -733,7 +733,7 @@
     "definition": "Having little or no light."
   },
   "shadow": {
-    "definition": "A dark shape made when something blocks light."
+    "definition": "A dark shape made when something blocks the light."
   },
   "shadows": {
     "definition": "Dark shapes formed when objects block the light from the sun, moon, or a lamp."
@@ -1063,7 +1063,7 @@
     "definition": "A lamp with a handle that gives light."
   },
   "torch": {
-    "definition": "A small light that you hold in your hand and that runs on batteries."
+    "definition": "A small hand lamp that makes light."
   },
   "fan": {
     "definition": "A device with rotating blades or a hand-held woven blade that moves air to cool people."
@@ -1093,7 +1093,7 @@
     "definition": "A visual sheet of information shown as a table, graph, or diagram."
   },
   "poster": {
-    "definition": "A large printed picture or notice put on a wall to share information."
+    "definition": "A large picture sheet made to share an idea on a wall."
   },
   "card": {
     "definition": "A piece of stiff paper used for notes, identity, or games."
@@ -1123,10 +1123,10 @@
     "definition": "A hard, strong material such as iron, brass, gold, or copper."
   },
   "iron": {
-    "definition": "A strong, heavy grey metal used to make tools, roofs, and machines."
+    "definition": "A hard grey metal that magnets pull."
   },
   "steel": {
-    "definition": "Very strong iron mixed with a little carbon, used in bridges, tools, and buildings."
+    "definition": "A strong metal made mainly from iron."
   },
   "brass": {
     "definition": "A bright yellow-gold metal alloy made by mixing copper and zinc, used for traditional Akan goldweights."
@@ -1450,7 +1450,7 @@
     "definition": "A sign of illness when the body’s temperature becomes hotter than normal."
   },
   "sleep": {
-    "definition": "To rest your body and mind with eyes closed, especially at night."
+    "definition": "The quiet rest at night when the body and brain recover and grow."
   },
   "slept": {
     "definition": "Past tense of sleep: rested with eyes closed."
@@ -1573,7 +1573,7 @@
     "definition": "How much something is worth, or an important principle we live by."
   },
   "fair": {
-    "definition": "Treating people equally and honestly according to the rules."
+    "definition": "Done properly by changing only one thing and keeping everything else equal."
   },
   "risk": {
     "definition": "The chance that something dangerous or unwanted might happen."
@@ -2263,7 +2263,7 @@
     "definition": "Found or learned about something for the first time."
   },
   "listen": {
-    "definition": "To use your ears to hear."
+    "definition": "To pay quiet, careful attention to what someone is saying."
   },
   "listened": {
     "definition": "Paid close attention with the ears."
@@ -2395,7 +2395,7 @@
     "definition": "Moving through the air with wings."
   },
   "float": {
-    "definition": "To rest on top of water or drift gently in the air without sinking."
+    "definition": "To stay on top of water without sinking."
   },
   "swim": {
     "definition": "To move through water using arms, legs, or fins."
@@ -4219,7 +4219,7 @@
     "definition": "A solid flat-sided piece of wood, stone, or cement used for building; or to stop movement."
   },
   "blocks": {
-    "definition": "Solid pieces of stone, mud-brick, or cement used to build walls."
+    "definition": "Stops something from going through."
   },
   "quality": {
     "definition": "How good, strong, or well-made something is."
@@ -6008,6 +6008,15 @@
   "worthless": {
     "definition": "Having no value, importance, or use."
   },
+  "opposite": {
+    "definition": "Completely different or facing the other way."
+  },
+  "dissolve": {
+    "definition": "To mix completely into a liquid until you can no longer see it."
+  },
+  "savings": {
+    "definition": "Money kept safely aside for later."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6121,9 +6130,6 @@
   },
   "character": {
     "definition": "A person’s inner qualities, such as honesty, kindness and hard work."
-  },
-  "savings": {
-    "definition": "Money that you have put aside over time for a future need or goal."
   },
   "courtyard": {
     "definition": "An open space surrounded by walls or rooms inside a family home."
@@ -7480,7 +7486,7 @@
     "definition": "A long, narrow boat that is moved by paddles or a motor."
   },
   "basin": {
-    "definition": "A wide, round bowl."
+    "definition": "A wide, open bowl used for holding water."
   },
   "pond": {
     "definition": "A small area of still water."
@@ -7618,6 +7624,37 @@
   "crickets": {
     "definition": "Small jumping insects that make a rhythmic chirping sound."
   },
+  "sank": {
+    "definition": "Went down to the bottom of the water."
+  },
+  "magnet": {
+    "definition": "An object that pulls things made of iron or steel."
+  },
+  "heartbeat": {
+    "definition": "The steady thump you feel when your heart pumps blood."
+  },
+  "muscles": {
+    "definition": "Parts of the body that pull on bones to help us move."
+  },
+  "yawned": {
+    "definition": "Opened the mouth wide and breathed in deeply because of tiredness."
+  },
+  "routine": {
+    "definition": "Helpful steps we follow in the same order each day."
+  },
+  "repeating": {
+    "definition": "Doing an investigation again in the exact same way to check the result."
+  },
+  "cedis": {
+    "definition": "The unit of money used in Ghana. (Plural of cedi.)",
+    "phonetic": "see-deez"
+  },
+  "goal": {
+    "definition": "Something specific you plan and work toward achieving."
+  },
+  "disagree": {
+    "definition": "To hold a different idea or wish from someone else."
+  },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
     "phonetic": "eh-foo-ah"
@@ -7665,10 +7702,6 @@
   "cedi": {
     "definition": "The currency of Ghana.",
     "phonetic": "see-dee"
-  },
-  "cedis": {
-    "definition": "Plural of cedi.",
-    "phonetic": "see-deez"
   },
   "pesewas": {
     "definition": "Plural of pesewa, one hundredth of a cedi.",
@@ -9737,5 +9770,53 @@
   "aboagyewaa": {
     "definition": "Akan female personal name (feminine of Aboagye).",
     "phonetic": "ah-bwah-jeh-waah"
+  },
+  "dufie": {
+    "definition": "Akan female personal name.",
+    "phonetic": "doo-fee-eh"
+  },
+  "kpakpo": {
+    "definition": "Ga personal name traditionally given to a second-born son.",
+    "phonetic": "kpahk-poh"
+  },
+  "rahina": {
+    "definition": "Ghanaian Muslim female personal name.",
+    "phonetic": "rah-hee-nah"
+  },
+  "ameyaw": {
+    "definition": "Akan male personal and family name.",
+    "phonetic": "ah-meh-yaw"
+  },
+  "zaara": {
+    "definition": "Female personal name meaning \"radiant flower\".",
+    "phonetic": "zaah-rah"
+  },
+  "worla": {
+    "definition": "Ewe personal name meaning \"the Creator is good\".",
+    "phonetic": "wor-lah"
+  },
+  "salamatu": {
+    "definition": "West African female personal name meaning \"peace\".",
+    "phonetic": "sah-lah-mah-too"
+  },
+  "adoley": {
+    "definition": "Ga female personal name given to a first-born daughter.",
+    "phonetic": "ah-doh-lay"
+  },
+  "kotei": {
+    "definition": "Ga personal and family surname.",
+    "phonetic": "koh-tay"
+  },
+  "ohenewaa": {
+    "definition": "Akan female personal name meaning \"princess\".",
+    "phonetic": "oh-heh-neh-waah"
+  },
+  "akrofi": {
+    "definition": "Akuapem/Akan male personal and family name.",
+    "phonetic": "ah-kroh-fee"
+  },
+  "lekettey": {
+    "definition": "Ga-Dangme personal and family name.",
+    "phonetic": "leh-keh-tay"
   }
 }
