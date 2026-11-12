@@ -427,7 +427,7 @@
     "definition": "A planned piece of work or investigation that takes careful effort to complete."
   },
   "question": {
-    "definition": "A sentence that asks for information or tests understanding."
+    "definition": "Something we ask when we want to learn or understand clearly."
   },
   "questions": {
     "definition": "Sentences or problems that ask for information, reasons, or answers."
@@ -541,7 +541,7 @@
     "definition": "To show that something is true using clear evidence or maths."
   },
   "truth": {
-    "definition": "What is really so — facts that match reality without any lie or make-believe."
+    "definition": "What really happened, told honestly without hiding."
   },
   "true": {
     "definition": "Matching the real facts; not false or made up."
@@ -706,7 +706,7 @@
     "definition": "A time of the year with its own weather pattern, such as the rainy season or the dry harmattan season."
   },
   "heat": {
-    "definition": "Warmth or high temperature."
+    "definition": "Energy of warmth that moves from warmer things to cooler things."
   },
   "temperature": {
     "definition": "A measure of how hot or cold something is, often measured in degrees Celsius (°C)."
@@ -1120,7 +1120,7 @@
     "definition": "A thin, flexible strand of metal used to carry electricity or fasten things."
   },
   "metal": {
-    "definition": "A hard, strong material such as iron, brass, gold, or copper."
+    "definition": "A hard, shiny material—such as steel or aluminium—that lets heat pass through easily."
   },
   "iron": {
     "definition": "A hard grey metal that magnets pull."
@@ -1183,7 +1183,7 @@
     "definition": "The part of a plant that grows down into the soil."
   },
   "roots": {
-    "definition": "The parts of a plant under the soil that hold it and take in water."
+    "definition": "The parts of a plant that grow under the soil and take in water."
   },
   "leaf": {
     "definition": "A flat, usually green part of a plant that uses sunlight to make food."
@@ -2659,7 +2659,7 @@
     "definition": "To strike a drum in rhythm, or the steady pulse of music or a heart."
   },
   "turn": {
-    "definition": "To move around in a circle or change direction; or your chance in a game."
+    "definition": "The right moment for you to act fairly after those ahead of you."
   },
   "turns": {
     "definition": "Rotates or changes into something else."
@@ -2926,7 +2926,7 @@
     "definition": "Words set to music to be sung."
   },
   "drum": {
-    "definition": "A musical instrument you hit to make a sound."
+    "definition": "A musical instrument with a stretched skin that makes sound when struck."
   },
   "drums": {
     "definition": "Percussion instruments played across Ghana to make music, dance rhythms, and messages."
@@ -5603,7 +5603,7 @@
     "definition": "Money left after subtracting all costs from income."
   },
   "trust": {
-    "definition": "Believing that someone is honest and will treat you fairly."
+    "definition": "Confidence that someone is honest and reliable."
   },
   "blocked": {
     "definition": "Stopped from moving or passing through."
@@ -5684,7 +5684,7 @@
     "definition": "Separating light husks or shells from heavier seeds using a stream of air"
   },
   "compost": {
-    "definition": "Rotted peelings and leaves that feed the soil."
+    "definition": "Rotted plant waste that makes rich, dark food for garden soil."
   },
   "thermostat": {
     "definition": "A sensor switch that keeps temperature steady inside an oven or dryer"
@@ -6016,6 +6016,12 @@
   },
   "savings": {
     "definition": "Money kept safely aside for later."
+  },
+  "evaporation": {
+    "definition": "When liquid water turns into a gas and goes into the air."
+  },
+  "vibration": {
+    "definition": "A fast shaking movement back and forth."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6535,7 +6541,7 @@
     "definition": "Tools with a small bowl on a handle, used for eating or stirring."
   },
   "puddle": {
-    "definition": "A small pool of water on the ground after rain."
+    "definition": "A small pool of rainwater on the ground."
   },
   "sip": {
     "definition": "A very small drink."
@@ -7023,7 +7029,7 @@
     "definition": "A mixture of mercury with another metal, such as gold."
   },
   "vapour": {
-    "definition": "A gas formed when a liquid or solid is heated."
+    "definition": "Water in the form of an invisible gas in the air."
   },
   "retort": {
     "definition": "A closed container that catches mercury vapour so that it can be reused."
@@ -7654,6 +7660,42 @@
   },
   "disagree": {
     "definition": "To hold a different idea or wish from someone else."
+  },
+  "stem": {
+    "definition": "The main stalk of a plant that carries water up from the roots."
+  },
+  "petals": {
+    "definition": "The soft coloured outer parts of a flower."
+  },
+  "volume": {
+    "definition": "How loud or soft a sound is."
+  },
+  "porridge": {
+    "definition": "A smooth, warm breakfast dish cooked from grains such as maize or millet."
+  },
+  "handle": {
+    "definition": "The part of a spoon, tool, or pot made to be held in the hand."
+  },
+  "peels": {
+    "definition": "The outer skins removed from fruits and vegetables."
+  },
+  "crumbly": {
+    "definition": "Soft and breaking easily into small, soil-like pieces."
+  },
+  "broke": {
+    "definition": "Shattered or came apart into pieces after falling."
+  },
+  "halves": {
+    "definition": "Two equal parts that make up one whole."
+  },
+  "equally": {
+    "definition": "Shared so every group receives the exact same amount."
+  },
+  "borehole": {
+    "definition": "A deep, narrow well fitted with a pump that brings up clean underground water."
+  },
+  "precious": {
+    "definition": "Very valuable and worthy of careful protection, never to be wasted."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9818,5 +9860,65 @@
   "lekettey": {
     "definition": "Ga-Dangme personal and family name.",
     "phonetic": "leh-keh-tay"
+  },
+  "delanyo": {
+    "definition": "Ewe unisex personal name meaning \"the Saviour is good\".",
+    "phonetic": "deh-lah-nyoh"
+  },
+  "tiwaa": {
+    "definition": "Akan female personal name.",
+    "phonetic": "tee-waah"
+  },
+  "zulaiha": {
+    "definition": "West African Muslim female personal name (Zulaykha).",
+    "phonetic": "zoo-ly-hah"
+  },
+  "nsoh": {
+    "definition": "Upper East Ghanaian personal name.",
+    "phonetic": "en-soh"
+  },
+  "klenam": {
+    "definition": "Ewe unisex personal name meaning \"shine for me\".",
+    "phonetic": "kleh-nahm"
+  },
+  "mame": {
+    "definition": "Akan female personal name (also affectionate form of Maame).",
+    "phonetic": "mah-meh"
+  },
+  "mame-name": {
+    "definition": "Akan female personal name (also affectionate form of Maame).",
+    "phonetic": "mah-meh"
+  },
+  "habiba": {
+    "definition": "Female personal name meaning \"beloved\".",
+    "phonetic": "hah-bee-bah"
+  },
+  "gyamea": {
+    "definition": "Akan female personal name.",
+    "phonetic": "jah-meh-ah"
+  },
+  "awuku": {
+    "definition": "Wednesday-born male personal name in Akuapem/Guan communities.",
+    "phonetic": "ah-woo-koo"
+  },
+  "jamila": {
+    "definition": "Female personal name meaning \"beautiful, graceful\".",
+    "phonetic": "jah-mee-lah"
+  },
+  "dzigbodi": {
+    "definition": "Ewe personal name meaning \"patience\".",
+    "phonetic": "dzee-gboh-dee"
+  },
+  "sumaila": {
+    "definition": "West African male personal name (from Ismail).",
+    "phonetic": "soo-my-lah"
+  },
+  "adwubi": {
+    "definition": "Akan female personal name.",
+    "phonetic": "ah-jwoo-bee"
+  },
+  "safiatu": {
+    "definition": "West African Muslim female personal name (from Safiyyah).",
+    "phonetic": "sah-fee-ah-too"
   }
 }
