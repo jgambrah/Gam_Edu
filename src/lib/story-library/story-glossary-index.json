@@ -220,10 +220,10 @@
     "phonetic": "nah-nah"
   },
   "elder": {
-    "definition": "An older, respected person in a community."
+    "definition": "An older person in the community respected for wisdom and experience."
   },
   "elders": {
-    "definition": "Respected older members of a family or community who guide others and keep traditions."
+    "definition": "Older members of a community respected for their experience and wisdom."
   },
   "chief": {
     "definition": "A traditional leader who guides and serves a town, village, or community."
@@ -523,7 +523,7 @@
     "definition": "To give an answer when you do not yet know all the facts for sure."
   },
   "check": {
-    "definition": "To look at something carefully to make sure it is safe, true, or correct."
+    "definition": "To test or examine something carefully to see whether it is accurate."
   },
   "checked": {
     "definition": "Inspected or verified something carefully."
@@ -1936,7 +1936,7 @@
     "definition": "The end of the day when the sun sets and night begins."
   },
   "dusk": {
-    "definition": "The soft twilight time just after the sun goes down and before full night."
+    "definition": "The quiet time of evening just after sunset, before full dark."
   },
   "night": {
     "definition": "The dark hours between sunset and sunrise when people sleep and stars shine."
@@ -3187,7 +3187,7 @@
     "definition": "Making a strong sound that is easy to hear from far away."
   },
   "calm": {
-    "definition": "Peaceful, steady, and free from panic or rough waves."
+    "definition": "Steady, quiet, and not panicking."
   },
   "gentle": {
     "definition": "Kind, mild, and careful; not rough."
@@ -4099,7 +4099,7 @@
     "definition": "The inner life, courage, and character of a person or community."
   },
   "belief": {
-    "definition": "Something a person or community holds to be true or sacred."
+    "definition": "Something that people hold to be true, even when it cannot be proven."
   },
   "honour": {
     "definition": "Fairness and truthfulness in how you behave."
@@ -4920,7 +4920,8 @@
     "phonetic": "eh-veh"
   },
   "twi": {
-    "definition": "A widely spoken dialect of the Akan language in Ghana."
+    "definition": "A widely spoken dialect of the Akan language in Ghana. (Principal Akan dialect spoken widely across Ghana.)",
+    "phonetic": "chwee"
   },
   "ring": {
     "definition": "A small circular band worn on a finger, a circle, or the clear sound of a bell."
@@ -5518,7 +5519,7 @@
     "definition": "To move smoothly, quietly, and effortlessly through the air or over water."
   },
   "glided": {
-    "definition": "Moved smoothly and quietly."
+    "definition": "Moved smoothly and quietly through the air."
   },
   "treetop": {
     "definition": "The highest branches and leaves at the very top of a tree."
@@ -5725,7 +5726,7 @@
     "definition": "Feeling angry or annoyed."
   },
   "wisdom": {
-    "definition": "Good understanding and sensible ideas."
+    "definition": "Good judgement and understanding about how to live well."
   },
   "classmate": {
     "definition": "A child who is in the same class as you."
@@ -5997,6 +5998,15 @@
   },
   "monopoly": {
     "definition": "When only one buyer or seller controls a market."
+  },
+  "folklore": {
+    "definition": "The traditional stories and beliefs of a community."
+  },
+  "folktale": {
+    "definition": "A traditional story passed down by word of mouth over many years."
+  },
+  "worthless": {
+    "definition": "Having no value, importance, or use."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6648,7 +6658,7 @@
     "definition": "Found out how long or big something is."
   },
   "whistle": {
-    "definition": "A small tool that makes a loud, high sound when you blow it."
+    "definition": "A small tube you blow into to make a clear, loud sound."
   },
   "observe": {
     "definition": "Look carefully and notice what is happening."
@@ -6657,7 +6667,7 @@
     "definition": "Left behind, with nobody living or working there."
   },
   "permission": {
-    "definition": "Approval to do something."
+    "definition": "Clear agreement allowing someone to do something."
   },
   "fireflies": {
     "definition": "Small beetles that make flashes of light at night."
@@ -6687,7 +6697,7 @@
     "definition": "An empty space inside something, like a tree trunk."
   },
   "respect": {
-    "definition": "Treating someone or something with care and honour."
+    "definition": "To treat someone or something with care and honour."
   },
   "kente": {
     "definition": "A colourful woven cloth from Ghana. (Traditional Ghanaian hand-woven strip cloth.)",
@@ -7151,7 +7161,7 @@
     "definition": "A person trained to listen and help with problems."
   },
   "unkind": {
-    "definition": "Not kind; hurtful."
+    "definition": "Not caring or friendly; hurting someone’s feelings."
   },
   "sneer": {
     "definition": "To show contempt with a smile or a voice."
@@ -7570,6 +7580,43 @@
   },
   "turning": {
     "definition": "Moving round and round."
+  },
+  "mmoatia": {
+    "definition": "Little forest people in Akan folklore (told as a belief, not proven fact). (Short mythical forest beings in Akan folklore.) (Mythical forest fairy in Akan folklore.)",
+    "phonetic": "mm-wah-tee-ah"
+  },
+  "python": {
+    "definition": "A very large snake that coils around its prey."
+  },
+  "hornets": {
+    "definition": "Large flying insects with a painful sting."
+  },
+  "leopard": {
+    "definition": "A large, fast wild cat with dark spots."
+  },
+  "searchers": {
+    "definition": "People working together to find someone who is lost."
+  },
+  "honey": {
+    "definition": "A sweet, golden food that bees make from flower nectar."
+  },
+  "hives": {
+    "definition": "The homes where bees live and store their honey."
+  },
+  "foolish": {
+    "definition": "Unwise; acting without thinking about what will happen later."
+  },
+  "dwarfism": {
+    "definition": "A medical condition in which a person’s bones grow differently, making them much shorter than average."
+  },
+  "ashamed": {
+    "definition": "Feeling sorry and uncomfortable about something wrong you did."
+  },
+  "interrupting": {
+    "definition": "Speaking over someone before they have finished talking."
+  },
+  "crickets": {
+    "definition": "Small jumping insects that make a rhythmic chirping sound."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9622,5 +9669,73 @@
   "djenne": {
     "definition": "Historic trading city in the Inland Niger Delta of Mali.",
     "phonetic": "jeh-nay"
+  },
+  "kwamla": {
+    "definition": "Southeastern Ghanaian day name for a boy born on Tuesday.",
+    "phonetic": "kwahm-lah"
+  },
+  "akyaa": {
+    "definition": "Akan female personal name.",
+    "phonetic": "ah-chaah"
+  },
+  "ewuradjoa": {
+    "definition": "Fante respectful day name for a girl born on Monday (\"Lady Adwoa\").",
+    "phonetic": "eh-woo-rah-jwah"
+  },
+  "mmoatia-lower": {
+    "definition": "Short mythical forest beings in Akan folklore.",
+    "phonetic": "mm-wah-tee-ah"
+  },
+  "mmoatia-upper": {
+    "definition": "Mythical forest fairy in Akan folklore.",
+    "phonetic": "mm-wah-tee-ah"
+  },
+  "twi-lang": {
+    "definition": "Principal Akan dialect spoken widely across Ghana.",
+    "phonetic": "chwee"
+  },
+  "nyame": {
+    "definition": "The Supreme Sky God in Akan tradition.",
+    "phonetic": "nyah-meh"
+  },
+  "onini": {
+    "definition": "The great python in Ananse folktales.",
+    "phonetic": "oh-nee-nee"
+  },
+  "mmoboro": {
+    "definition": "The stinging hornets in Ananse folktales.",
+    "phonetic": "mm-moh-boh-roh"
+  },
+  "osebo": {
+    "definition": "The leopard in Ananse folktales.",
+    "phonetic": "oh-seh-boh"
+  },
+  "anansesem": {
+    "definition": "Akan word meaning \"spider stories\" (folktales).",
+    "phonetic": "ah-nahn-seh-sem"
+  },
+  "appiagyei": {
+    "definition": "Akan personal and family name.",
+    "phonetic": "ah-pee-ah-jay"
+  },
+  "fosuaa": {
+    "definition": "Akan female personal name (feminine of Fosu).",
+    "phonetic": "foh-soo-aah"
+  },
+  "nuamah": {
+    "definition": "Akan personal and family name.",
+    "phonetic": "noo-ah-mah"
+  },
+  "ayisi": {
+    "definition": "Akan personal name.",
+    "phonetic": "ah-yee-see"
+  },
+  "esaaba": {
+    "definition": "Fante female personal name.",
+    "phonetic": "eh-saah-bah"
+  },
+  "aboagyewaa": {
+    "definition": "Akan female personal name (feminine of Aboagye).",
+    "phonetic": "ah-bwah-jeh-waah"
   }
 }

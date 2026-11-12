@@ -18,16 +18,16 @@ beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the two hundred and four stories with clean production badges', async () => {
+  it('lists the two hundred and twelve stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(204));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(204));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -77,6 +77,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Freezer That Keeps Tomorrow',
       'The Girl Who Carries the Market',
       'The Girl Who Taught a Drone to See',
+      'The Girl Who Wrote Down the Stories',
       'The Gold Road to Manso',
       'The Island That Sank in a Night',
       'The Lagoon Side Cup',
@@ -117,6 +118,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Wall of Notsé',
       'The Weights That Whisper Proverbs',
       'The Woman Who Asked for Trees',
+      'Two Kinds of Truth',
       'Two Women and a Cold Room',
       'Typing Like You Talk',
       'Voices Along the River',
@@ -163,15 +165,19 @@ describe('LibraryDashboard (real preview data)', () => {
       'Ananse and the Pot of Wisdom',
       'Esi and the Elephant’s Secret Path',
       'Fiifi Goes Back for His Book',
+      'Fosuaa Joins Class Three',
       'Kojo and the Forest of a Thousand Lives',
       'Market Day Song (a poem)',
       'Okai’s Sack Garden',
       'Sun, Earth and Moon (a poem)',
+      'The Boy Who Came Out of the Forest',
       'The Butterfly That Knew the Way',
       'The Case of the Missing Kenkey',
       'The Clever Tortoise and the Rain',
       'The Frogs Who Sang Too Loud',
       'The Girl Who Asked Why',
+      'The Girl Who Wrote Down the Stories',
+      'The Little People of the Forest',
       'The Night the Lights Went Out',
       'The Queen of the Market',
       'The Slowest Drummer',
@@ -179,6 +185,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Treasure Under the Mango Tree',
       'The Trees Say Thank You (a poem)',
       'The Water Under the Water',
+      'Two Kinds of Truth',
       'Two Ways to Say Thank You',
       'When the River Turned Brown',
       'Yaa and the Blocked Drain',
@@ -188,7 +195,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(204));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -197,7 +204,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(204));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -206,10 +213,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   }, 15000);
 
-  it('Efua and every Batch 1–28 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–30 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(204));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
@@ -225,9 +232,9 @@ describe('LibraryDashboard (real preview data)', () => {
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(204));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
-    expect(stats()).toContain('204');
+    expect(stats()).toContain('212');
 
     // Toggle a favourite heart on the first story card
     const firstCard = screen.getAllByTestId('story-card')[0];
