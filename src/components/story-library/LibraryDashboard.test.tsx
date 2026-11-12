@@ -16,17 +16,19 @@ const fileFetch = (async (u: string) => {
 
 beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL = vi.fn(() => 'blob:x'); });
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
+// Baseline timestamp before any 2026+ 48h batch releaseAt, keeping the 228 legacy public-shelf assertions deterministic forever.
+const LEGACY_PUBLIC_NOW_MS = 1_700_000_000_000;
 
 describe('LibraryDashboard (real preview data)', () => {
   it('lists the two hundred and twenty-eight stories with clean production badges', async () => {
-    render(<LibraryDashboard createSource={make} />);
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
@@ -200,7 +202,7 @@ describe('LibraryDashboard (real preview data)', () => {
 
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
@@ -209,7 +211,7 @@ describe('LibraryDashboard (real preview data)', () => {
 
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
@@ -219,9 +221,9 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   }, 15000);
 
-  it('Efua and every Batch 1–32 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–35 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
@@ -237,7 +239,7 @@ describe('LibraryDashboard (real preview data)', () => {
 
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
     expect(stats()).toContain('228');
@@ -261,4 +263,97 @@ describe('LibraryDashboard (real preview data)', () => {
     render(<LibraryDashboard createSource={() => createPreviewSource('/story-spark-preview', failing)} />);
     await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/could not be loaded/));
   });
+
+  it('enforces the 48-hour developer quarantine in the UI and exposes Under Review + Hold controls only to jamesgambrah@gmail.com', async () => {
+    const user = userEvent.setup();
+    const fixedNow = 1_800_000_000_000;
+    const quarantineFetch = (async (u: string) => {
+      if (u.endsWith('/catalogue.json')) {
+        const raw = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
+        const publicBaseEntries = raw.entries.filter((e: any) => !e.releaseAt);
+        const base = publicBaseEntries[0];
+        const quarantinedEntry = {
+          ...base,
+          storyKey: 'quarantine-batch-test-story',
+          title: 'Quarantined Batch Preview Story',
+          sortKey: 229,
+          publishedAt: fixedNow,
+          releaseAt: fixedNow + 48 * 60 * 60 * 1000,
+        };
+        const body = JSON.stringify({
+          ...raw,
+          catalogueVersion: raw.catalogueVersion + 1,
+          totalPublished: publicBaseEntries.length + 1,
+          entries: [...publicBaseEntries, quarantinedEntry],
+        });
+        return new Response(body, { status: 200 });
+      }
+      return fileFetch(u);
+    }) as unknown as typeof fetch;
+
+    const makeWithQuarantine = () => createPreviewSource('/story-spark-preview', quarantineFetch);
+
+    // 1. Non-developer viewer: sees 228 public stories, hides quarantined story & hides Under Review tab
+    const { unmount } = render(
+      <LibraryDashboard createSource={makeWithQuarantine} viewerEmail="teacher@school.edu.gh" nowMs={fixedNow + 60_000} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
+    expect(screen.queryByText('Quarantined Batch Preview Story')).toBeNull();
+    expect(screen.queryByTestId('under-review-tab')).toBeNull();
+    expect(screen.getByTestId('hero-stats').textContent).toContain('228');
+    unmount();
+
+    // 2. Developer viewer (jamesgambrah@gmail.com): sees all 229 stories, Under Review (48h) tab, countdown badge, and Hold button
+    const { unmount: unmountDev } = render(
+      <LibraryDashboard createSource={makeWithQuarantine} viewerEmail="jamesgambrah@gmail.com" nowMs={fixedNow + 60_000} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(229));
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (1)');
+
+    await user.click(screen.getByTestId('under-review-tab'));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(1));
+    expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
+    expect(screen.getByTestId('quarantine-badge').textContent).toMatch(/Under Review • 48h left/);
+
+    // Hold / Flag before 48h expires
+    await user.click(screen.getByRole('button', { name: /Hold \/ Flag/i }));
+    await waitFor(() => expect(screen.getByTestId('quarantine-badge').textContent).toBe('🚩 Held from Release'));
+    unmountDev();
+
+    // 3. After 48 hours have elapsed (with clean overrides): auto-promoted to general readers with zero cron jobs
+    localStorage.clear();
+    render(
+      <LibraryDashboard
+        createSource={makeWithQuarantine}
+        viewerEmail="pupil@school.edu.gh"
+        nowMs={fixedNow + 49 * 60 * 60 * 1000}
+      />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(229));
+    expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
+  }, 15000);
+
+  it('exposes all 246 real catalogue stories (including Quarantined Batches 33–35) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
+    const rawCat = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
+    const newEntries = rawCat.entries.filter((e: any) => e.sortKey > 228);
+    expect(newEntries).toHaveLength(18);
+    const duringQuarantineMs = Math.max(...newEntries.map((e: any) => e.publishedAt)) + 60_000;
+    const afterQuarantineMs = Math.max(...newEntries.map((e: any) => e.releaseAt)) + 60_000;
+
+    const { unmount: unmountPublic } = render(
+      <LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={duringQuarantineMs} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
+    unmountPublic();
+
+    const { unmount: unmountDev } = render(
+      <LibraryDashboard createSource={make} viewerEmail="jamesgambrah@gmail.com" nowMs={duringQuarantineMs} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(246));
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (18)');
+    unmountDev();
+
+    render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterQuarantineMs} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(246));
+  }, 15000);
 });

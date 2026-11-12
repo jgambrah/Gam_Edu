@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { useFirestore, useUser } from '@/firebase';
 import { LibraryDashboard, type StageFilterId } from '@/components/story-library/LibraryDashboard';
@@ -11,13 +11,20 @@ import {
   subscribeProgressChanges,
   type StoryShelfCloudPayload,
 } from '@/lib/story-library/progress-store';
+import {
+  isDeveloperReviewer,
+  loadLocalReviewOverrides,
+  saveCachedViewerEmail,
+  saveLocalReviewOverrides,
+  type ReviewOverrides,
+} from '@/lib/story-library/quarantine';
 
 /**
- * Authenticated wrapper around LibraryDashboard that syncs reading progress (In Progress, Finished)
- * and Favourites to the user's Firestore profile (`users/{uid}.storySparkShelf`), so switching between
- * a home laptop, office desktop, or school tablet keeps every counter and shelf in sync.
- *
- * Keeps LibraryDashboard itself 100% free of Firebase imports so /story-spark-preview stays isolated.
+ * Authenticated wrapper around LibraryDashboard that:
+ *   1. Syncs reading progress (In Progress, Finished) and Favourites to `users/{uid}.storySparkShelf`.
+ *   2. Passes `viewerEmail` (`user?.email`) and syncs `library_meta/review_overrides` for the 48-hour
+ *      developer quarantine (`jamesgambrah@gmail.com`), allowing one-click Hold/Flag or Early Release
+ *      across all schools without introducing any Firebase imports into `LibraryDashboard` itself.
  */
 export function StorySparkConnectedLibrary({
   activeAgeTier,
@@ -31,6 +38,96 @@ export function StorySparkConnectedLibrary({
   const syncingFromRemote = useRef(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dirtyRef = useRef(false);
+
+  const [overrides, setOverrides] = useState<ReviewOverrides>(() => loadLocalReviewOverrides());
+  const viewerEmail = user?.email ?? null;
+
+  useEffect(() => {
+    saveCachedViewerEmail(viewerEmail);
+  }, [viewerEmail]);
+
+  // Pull global review quarantine overrides (`library_meta/review_overrides`) once per session
+  useEffect(() => {
+    if (!firestore || !user?.uid) return;
+    let cancelled = false;
+    const overridesRef = doc(firestore, 'library_meta', 'review_overrides');
+    getDoc(overridesRef)
+      .then((snap) => {
+        if (cancelled || !snap.exists()) return;
+        const data = snap.data() as Partial<ReviewOverrides>;
+        const next: ReviewOverrides = {
+          heldKeys: Array.isArray(data.heldKeys) ? data.heldKeys.filter((x): x is string => typeof x === 'string') : [],
+          approvedKeys: Array.isArray(data.approvedKeys)
+            ? data.approvedKeys.filter((x): x is string => typeof x === 'string')
+            : [],
+          updatedAt: typeof data.updatedAt === 'number' ? data.updatedAt : Date.now(),
+        };
+        setOverrides(next);
+        saveLocalReviewOverrides(next);
+      })
+      .catch(() => {
+        /* offline or rules-restricted: fallback to local overrides */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [firestore, user?.uid]);
+
+  const persistOverrides = useCallback(
+    async (next: ReviewOverrides) => {
+      setOverrides(next);
+      saveLocalReviewOverrides(next);
+      if (!firestore || !isDeveloperReviewer(viewerEmail)) return;
+      try {
+        await setDoc(doc(firestore, 'library_meta', 'review_overrides'), {
+          heldKeys: next.heldKeys,
+          approvedKeys: next.approvedKeys,
+          updatedAt: Date.now(),
+          updatedBy: viewerEmail,
+        });
+      } catch {
+        /* local storage preserves state if offline */
+      }
+    },
+    [firestore, viewerEmail],
+  );
+
+  const handleToggleHoldStory = useCallback(
+    (storyKey: string, nextHold: boolean) => {
+      const heldSet = new Set(overrides.heldKeys);
+      const approvedSet = new Set(overrides.approvedKeys);
+      if (nextHold) {
+        heldSet.add(storyKey);
+        approvedSet.delete(storyKey);
+      } else {
+        heldSet.delete(storyKey);
+      }
+      void persistOverrides({
+        heldKeys: [...heldSet],
+        approvedKeys: [...approvedSet],
+        updatedAt: Date.now(),
+      });
+    },
+    [overrides, persistOverrides],
+  );
+
+  const handleApproveStoryEarly = useCallback(
+    (storyKey: string) => {
+      const heldSet = new Set(overrides.heldKeys);
+      const approvedSet = new Set(overrides.approvedKeys);
+      heldSet.delete(storyKey);
+      approvedSet.add(storyKey);
+      void persistOverrides({
+        heldKeys: [...heldSet],
+        approvedKeys: [...approvedSet],
+        updatedAt: Date.now(),
+      });
+    },
+    [overrides, persistOverrides],
+  );
+
+  const heldStoryKeys = useMemo(() => new Set(overrides.heldKeys), [overrides.heldKeys]);
+  const approvedEarlyStoryKeys = useMemo(() => new Set(overrides.approvedKeys), [overrides.approvedKeys]);
 
   useEffect(() => {
     const uid = user?.uid ?? null;
@@ -106,5 +203,15 @@ export function StorySparkConnectedLibrary({
     };
   }, [user?.uid, firestore]);
 
-  return <LibraryDashboard activeAgeTier={activeAgeTier} defaultStage={defaultStage} />;
+  return (
+    <LibraryDashboard
+      activeAgeTier={activeAgeTier}
+      defaultStage={defaultStage}
+      viewerEmail={viewerEmail}
+      heldStoryKeys={heldStoryKeys}
+      approvedEarlyStoryKeys={approvedEarlyStoryKeys}
+      onToggleHoldStory={handleToggleHoldStory}
+      onApproveStoryEarly={handleApproveStoryEarly}
+    />
+  );
 }

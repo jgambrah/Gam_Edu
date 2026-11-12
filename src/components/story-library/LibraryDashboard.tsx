@@ -5,6 +5,16 @@ import { createPreviewSource, type LibrarySource } from '@/lib/story-library/lib
 import { CLASS_REGISTRY, GENRES, READING_LEVELS, presentationFor } from '@/lib/story-library/classification';
 import { FilteredFeed, planQuery, type Selection } from '@/lib/story-library/dashboard-query';
 import { loadProgressSnapshot, subscribeProgressChanges, toggleFavourite, type LocalProgress } from '@/lib/story-library/progress-store';
+import {
+  formatQuarantineBadge,
+  getStoryQuarantineStatus,
+  isDeveloperReviewer,
+  isStoryVisibleToViewer,
+  loadCachedViewerEmail,
+  loadLocalReviewOverrides,
+  saveLocalReviewOverrides,
+  type StoryQuarantineStatus,
+} from '@/lib/story-library/quarantine';
 import { PlaceholderArt } from './PlaceholderArt';
 import { StorybookReader } from './StorybookReader';
 
@@ -18,6 +28,7 @@ const RENDER_WINDOW_STEP = 60;
 export type StageFilterId = 'all' | 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
 export type CollectionShelfId =
   | 'all'
+  | 'under-review'
   | 'continue'
   | 'favourites'
   | 'completed'
@@ -41,7 +52,8 @@ interface CollectionShelf {
   id: CollectionShelfId;
   label: string;
   blurb: string;
-  match: (e: CatalogueEntry, ctx: { favs: Set<string>; inProgress: Set<string>; completed: Set<string> }) => boolean;
+  developerOnly?: boolean;
+  match: (e: CatalogueEntry, ctx: { favs: Set<string>; inProgress: Set<string>; completed: Set<string>; quarantined: Set<string> }) => boolean;
 }
 
 const COLLECTION_SHELVES: CollectionShelf[] = [
@@ -50,6 +62,13 @@ const COLLECTION_SHELVES: CollectionShelf[] = [
     label: '✨ All Collections',
     blurb: 'Explore the complete GAM EDU Story Spark library across all subjects and ages.',
     match: () => true,
+  },
+  {
+    id: 'under-review',
+    label: '🛡️ Under Review (48h)',
+    blurb: 'Developer quarantine inbox (jamesgambrah@gmail.com only): newly seeded stories stay private here for 48 hours before auto-promoting to schools and readers, unless held.',
+    developerOnly: true,
+    match: (e, ctx) => ctx.quarantined.has(e.storyKey),
   },
   {
     id: 'continue',
@@ -123,10 +142,22 @@ export function LibraryDashboard({
   createSource = createPreviewSource,
   defaultStage = 'all',
   activeAgeTier,
+  viewerEmail,
+  heldStoryKeys,
+  approvedEarlyStoryKeys,
+  onToggleHoldStory,
+  onApproveStoryEarly,
+  nowMs,
 }: {
   createSource?: () => Promise<LibrarySource>;
   defaultStage?: StageFilterId;
   activeAgeTier?: string;
+  viewerEmail?: string | null;
+  heldStoryKeys?: ReadonlySet<string>;
+  approvedEarlyStoryKeys?: ReadonlySet<string>;
+  onToggleHoldStory?: (storyKey: string, nextHold: boolean) => void;
+  onApproveStoryEarly?: (storyKey: string) => void;
+  nowMs?: number;
 }) {
   const [source, setSource] = useState<LibrarySource | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -141,8 +172,71 @@ export function LibraryDashboard({
   const [open, setOpen] = useState<{ pkg: StoryPackage; entry: CatalogueEntry } | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
   const [tick, setTick] = useState(0); // refresh stats after actions
+  const [cachedEmail, setCachedEmail] = useState<string | null>(null);
+  const [localOverrides, setLocalOverrides] = useState(() => loadLocalReviewOverrides());
   const feed = useRef<FilteredFeed | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setCachedEmail(loadCachedViewerEmail());
+    setLocalOverrides(loadLocalReviewOverrides());
+  }, []);
+
+  const effectiveViewerEmail = viewerEmail !== undefined ? viewerEmail : cachedEmail;
+  const isDeveloper = isDeveloperReviewer(effectiveViewerEmail);
+  const currentNowMs = nowMs ?? Date.now();
+
+  const effectiveHeldKeys = useMemo(() => {
+    if (heldStoryKeys) return heldStoryKeys;
+    return new Set(localOverrides.heldKeys);
+  }, [heldStoryKeys, localOverrides.heldKeys]);
+
+  const effectiveApprovedKeys = useMemo(() => {
+    if (approvedEarlyStoryKeys) return approvedEarlyStoryKeys;
+    return new Set(localOverrides.approvedKeys);
+  }, [approvedEarlyStoryKeys, localOverrides.approvedKeys]);
+
+  const handleToggleHold = useCallback(
+    (storyKey: string, nextHold: boolean) => {
+      if (onToggleHoldStory) {
+        onToggleHoldStory(storyKey, nextHold);
+        return;
+      }
+      setLocalOverrides((prev) => {
+        const held = new Set(prev.heldKeys);
+        const approved = new Set(prev.approvedKeys);
+        if (nextHold) {
+          held.add(storyKey);
+          approved.delete(storyKey);
+        } else {
+          held.delete(storyKey);
+        }
+        const next = { heldKeys: [...held], approvedKeys: [...approved], updatedAt: Date.now() };
+        saveLocalReviewOverrides(next);
+        return next;
+      });
+    },
+    [onToggleHoldStory],
+  );
+
+  const handleApproveEarly = useCallback(
+    (storyKey: string) => {
+      if (onApproveStoryEarly) {
+        onApproveStoryEarly(storyKey);
+        return;
+      }
+      setLocalOverrides((prev) => {
+        const held = new Set(prev.heldKeys);
+        const approved = new Set(prev.approvedKeys);
+        held.delete(storyKey);
+        approved.add(storyKey);
+        const next = { heldKeys: [...held], approvedKeys: [...approved], updatedAt: Date.now() };
+        saveLocalReviewOverrides(next);
+        return next;
+      });
+    },
+    [onApproveStoryEarly],
+  );
 
   const isReaderOpenRef = useRef(false);
   isReaderOpenRef.current = open !== null;
@@ -187,6 +281,9 @@ export function LibraryDashboard({
 
   const openStory = async (e: CatalogueEntry) => {
     if (!source) return;
+    if (!isStoryVisibleToViewer(e, { viewerEmail: effectiveViewerEmail, nowMs: currentNowMs, heldKeys: effectiveHeldKeys, approvedKeys: effectiveApprovedKeys })) {
+      return;
+    }
     setOpening(e.storyKey);
     try {
       const [pkg] = await Promise.all([
@@ -208,16 +305,48 @@ export function LibraryDashboard({
     return loadProgressSnapshot();
   }, [tick]);
 
+  const quarantineMap = useMemo(() => {
+    const map = new Map<string, StoryQuarantineStatus>();
+    const quarantinedSet = new Set<string>();
+    for (const e of entries) {
+      const st = getStoryQuarantineStatus(e, {
+        nowMs: currentNowMs,
+        heldKeys: effectiveHeldKeys,
+        approvedKeys: effectiveApprovedKeys,
+      });
+      map.set(e.storyKey, st);
+      if (st.isQuarantined) quarantinedSet.add(e.storyKey);
+    }
+    return { byKey: map, quarantinedSet };
+  }, [entries, currentNowMs, effectiveHeldKeys, effectiveApprovedKeys]);
+
+  const audienceEntries = useMemo(() => {
+    return entries.filter((e) =>
+      isStoryVisibleToViewer(e, {
+        viewerEmail: effectiveViewerEmail,
+        nowMs: currentNowMs,
+        heldKeys: effectiveHeldKeys,
+        approvedKeys: effectiveApprovedKeys,
+      }),
+    );
+  }, [entries, effectiveViewerEmail, currentNowMs, effectiveHeldKeys, effectiveApprovedKeys]);
+
+  const availableShelves = useMemo(
+    () => COLLECTION_SHELVES.filter((c) => !c.developerOnly || isDeveloper),
+    [isDeveloper],
+  );
+
   const visibleEntries = useMemo(() => {
     const stageDef = STAGE_GROUPS.find((g) => g.id === stage);
-    const shelfDef = COLLECTION_SHELVES.find((c) => c.id === shelf);
+    const shelfDef = availableShelves.find((c) => c.id === shelf);
     const q = search.trim().toLowerCase();
+    const shelfCtx = { ...progressSnapshot, quarantined: quarantineMap.quarantinedSet };
 
-    const filtered = entries.filter((e) => {
+    const filtered = audienceEntries.filter((e) => {
       if (stageDef && stageDef.id !== 'all' && !(e.classIds ?? []).some((c) => stageDef.classes.includes(c))) {
         return false;
       }
-      if (shelfDef && shelfDef.id !== 'all' && !shelfDef.match(e, progressSnapshot)) {
+      if (shelfDef && shelfDef.id !== 'all' && !shelfDef.match(e, shelfCtx)) {
         return false;
       }
       if (q) {
@@ -231,7 +360,7 @@ export function LibraryDashboard({
       return [...filtered].sort((a, b) => (a.ageMin ?? 99) - (b.ageMin ?? 99));
     }
     return filtered;
-  }, [entries, stage, shelf, search, progressSnapshot, activeAgeTier, sel.classId]);
+  }, [audienceEntries, stage, shelf, availableShelves, search, progressSnapshot, quarantineMap.quarantinedSet, activeAgeTier, sel.classId]);
 
   const windowedEntries = useMemo(
     () => visibleEntries.slice(0, renderLimit),
@@ -275,8 +404,11 @@ export function LibraryDashboard({
     setSel((s) => ({ ...s, [k]: v === '' ? undefined : v }));
   };
   const active = Object.values(sel).some((v) => v !== undefined) || stage !== 'all' || shelf !== 'all' || search.trim() !== '';
-  const activeShelf = COLLECTION_SHELVES.find((c) => c.id === shelf) ?? COLLECTION_SHELVES[0];
-  const totalBooksCount = source.catalogue.totalPublished ?? entries.length;
+  const activeShelf = availableShelves.find((c) => c.id === shelf) ?? availableShelves[0];
+  const hiddenQuarantinedCount = isDeveloper ? 0 : quarantineMap.quarantinedSet.size;
+  const rawTotal = source.catalogue.totalPublished ?? entries.length;
+  const totalBooksCount = Math.max(0, rawTotal - hiddenQuarantinedCount);
+  const underReviewCount = quarantineMap.quarantinedSet.size;
 
   return (
     <div className="mx-auto w-full max-w-6xl" data-testid="library">
@@ -296,6 +428,23 @@ export function LibraryDashboard({
               <span className="block text-xl font-black leading-tight text-white">{totalBooksCount}</span>
               <span className="text-white/90">📚 Books & Poems</span>
             </button>
+            {isDeveloper && (
+              <button
+                type="button"
+                data-testid="under-review-stat"
+                onClick={() => setShelf(shelf === 'under-review' ? 'all' : 'under-review')}
+                className={`min-w-[132px] rounded-2xl px-3.5 py-2.5 text-left backdrop-blur transition ${
+                  shelf === 'under-review'
+                    ? 'bg-amber-300 text-slate-950 shadow ring-2 ring-white'
+                    : 'bg-amber-400/25 text-amber-50 ring-1 ring-amber-200/60 hover:bg-amber-400/35'
+                }`}
+              >
+                <span className={`block text-xl font-black leading-tight ${shelf === 'under-review' ? 'text-slate-950' : 'text-white'}`}>
+                  {underReviewCount}
+                </span>
+                <span className={shelf === 'under-review' ? 'text-slate-900' : 'text-amber-100'}>🛡️ Under Review (48h)</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setShelf(shelf === 'continue' ? 'all' : 'continue')}
@@ -327,20 +476,26 @@ export function LibraryDashboard({
 
       {/* Curated Collection Shelves (Epic!-inspired) */}
       <div className="mb-3 flex flex-wrap items-center gap-2 pb-1.5" role="group" aria-label="Curated story collections">
-        {COLLECTION_SHELVES.map((c) => {
+        {availableShelves.map((c) => {
           const isSelected = shelf === c.id;
+          const pillLabel = c.id === 'under-review' ? `${c.label} (${underReviewCount})` : c.label;
           return (
             <button
               key={c.id}
               type="button"
+              data-testid={c.id === 'under-review' ? 'under-review-tab' : undefined}
               onClick={() => setShelf(isSelected && c.id !== 'all' ? 'all' : c.id)}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-extrabold transition ${
                 isSelected
-                  ? 'bg-violet-700 text-white shadow-sm ring-2 ring-violet-300'
-                  : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-violet-50'
+                  ? c.id === 'under-review'
+                    ? 'bg-amber-600 text-white shadow-sm ring-2 ring-amber-300'
+                    : 'bg-violet-700 text-white shadow-sm ring-2 ring-violet-300'
+                  : c.id === 'under-review'
+                    ? 'bg-amber-50 text-amber-950 ring-1 ring-amber-300 hover:bg-amber-100'
+                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-violet-50'
               }`}
             >
-              {c.label}
+              {pillLabel}
             </button>
           );
         })}
@@ -424,6 +579,10 @@ export function LibraryDashboard({
             busy={opening === e.storyKey}
             isFav={progressSnapshot.favs.has(e.storyKey)}
             progress={progressSnapshot.byStory.get(e.storyKey)}
+            isDeveloper={isDeveloper}
+            quarantine={quarantineMap.byKey.get(e.storyKey)}
+            onToggleHold={(nextHold) => handleToggleHold(e.storyKey, nextHold)}
+            onApproveEarly={() => handleApproveEarly(e.storyKey)}
             onToggleFav={() => {
               toggleFavourite(e.storyKey);
             }}
@@ -455,14 +614,46 @@ function resolveCoverUrl(entry: CatalogueEntry, source: LibrarySource): string {
   return resolve(`/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp`);
 }
 
-function StoryCard({ entry, source, busy, isFav, progress, onToggleFav, onOpen }: { entry: CatalogueEntry; source: LibrarySource; busy: boolean; isFav: boolean; progress?: LocalProgress; onToggleFav: () => void; onOpen: () => void }) {
+function StoryCard({
+  entry,
+  source,
+  busy,
+  isFav,
+  progress,
+  isDeveloper,
+  quarantine,
+  onToggleHold,
+  onApproveEarly,
+  onToggleFav,
+  onOpen,
+}: {
+  entry: CatalogueEntry;
+  source: LibrarySource;
+  busy: boolean;
+  isFav: boolean;
+  progress?: LocalProgress;
+  isDeveloper: boolean;
+  quarantine?: StoryQuarantineStatus;
+  onToggleHold: (nextHold: boolean) => void;
+  onApproveEarly: () => void;
+  onToggleFav: () => void;
+  onOpen: () => void;
+}) {
   const info = source.info(entry.storyKey);
   const presentation = presentationFor(entry.classIds ?? []);
   const classes = entry.classIds ?? [];
   const classText = classes.length > 2 ? `${label(CLASS_REGISTRY, classes[0])} to ${label(CLASS_REGISTRY, classes[classes.length - 1])}` : classes.map((c) => label(CLASS_REGISTRY, c)).join(', ');
+  const badgeText = isDeveloper && quarantine?.isQuarantined ? formatQuarantineBadge(quarantine) : '';
+
   return (
     <li
-      className="relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-md ring-1 ring-slate-200 transition hover:shadow-xl motion-reduce:transition-none"
+      className={`relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-md transition hover:shadow-xl motion-reduce:transition-none ${
+        badgeText
+          ? quarantine?.isHeld
+            ? 'ring-2 ring-rose-500'
+            : 'ring-2 ring-amber-400'
+          : 'ring-1 ring-slate-200'
+      }`}
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 440px' }}
       data-testid="story-card"
       data-story={entry.storyKey}
@@ -475,6 +666,16 @@ function StoryCard({ entry, source, busy, isFav, progress, onToggleFav, onOpen }
           imageSrc={resolveCoverUrl(entry, source)}
           compact
         />
+        {badgeText && (
+          <span
+            data-testid="quarantine-badge"
+            className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[11px] font-extrabold text-white shadow backdrop-blur ${
+              quarantine?.isHeld ? 'bg-rose-700/95' : 'bg-amber-600/95'
+            }`}
+          >
+            {badgeText}
+          </span>
+        )}
         <button
           type="button"
           onClick={onToggleFav}
@@ -513,6 +714,30 @@ function StoryCard({ entry, source, busy, isFav, progress, onToggleFav, onOpen }
           {entry.hasActivities && <Chip tone="emerald">✨ Activities</Chip>}
           <Chip tone="indigo">🎨 Illustrated</Chip>
         </div>
+        {isDeveloper && (quarantine?.isQuarantined || quarantine?.isApprovedEarly) && (
+          <div className="mt-3 flex flex-wrap gap-1.5 rounded-2xl bg-amber-50 p-2 text-xs font-bold ring-1 ring-amber-200" data-testid="developer-quarantine-controls">
+            <button
+              type="button"
+              onClick={() => onToggleHold(!quarantine?.isHeld)}
+              className={`flex-1 rounded-xl px-2.5 py-1.5 transition ${
+                quarantine?.isHeld
+                  ? 'bg-slate-800 text-white hover:bg-slate-900'
+                  : 'bg-rose-600 text-white hover:bg-rose-700'
+              }`}
+            >
+              {quarantine?.isHeld ? '↩️ Remove Hold' : '🚩 Hold / Flag'}
+            </button>
+            {quarantine?.isQuarantined && (
+              <button
+                type="button"
+                onClick={onApproveEarly}
+                className="flex-1 rounded-xl bg-emerald-600 px-2.5 py-1.5 text-white transition hover:bg-emerald-700"
+              >
+                ✅ Release Live
+              </button>
+            )}
+          </div>
+        )}
         <div className="mt-auto pt-4">
           <button type="button" onClick={onOpen} disabled={busy} aria-label={`Open ${entry.title}`}
             className="w-full rounded-full bg-indigo-600 px-5 py-3 text-lg font-bold text-white hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-300 disabled:opacity-60">

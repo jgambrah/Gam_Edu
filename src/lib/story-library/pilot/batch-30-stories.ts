@@ -123,7 +123,7 @@ const mk = (s: Spec): PilotStory => {
 
 /**
  * Batch 30: Folklore and belief, told honestly. Eight stories for primary 1 to JHS 1: the mmoatia (little forest people) as an
- * Akan belief, how Ananse won the sky god's stories, a lost boy who stays safe, a new folktale about honey and bees, a
+ * Akan belief, how Ananse won Nyame’s stories, a lost boy who stays safe, a new folktale about honey and bees, a
  * classmate with dwarfism, two kinds of truth, a child who writes down an elder's story, and a night of forest sounds.
  *
  * Standing rules: community beliefs are told as beliefs ("elders say"), never as proven fact. Competing accounts are shown.
@@ -147,7 +147,7 @@ export const BATCH_30_STORIES: PilotStory[] = [
     music: 'Soft night insects and a low flute (placeholder)',
     pages: [
       pg('🌳', 'One evening, Kwamla sat with Nana Akyaa under the neem tree. The forest grew dark beyond the farm. “Nana, are there little people in the forest?” he asked.', 'Kwamla and his grandmother Nana Akyaa sitting on low wooden stools under a leafy neem tree in a village courtyard at dusk, with a dark green forest beyond the farm.'),
-      pg('📖', 'Nana smiled. “Elders in our part of Ghana tell of the mmoatia, the little people of the forest. A Twi dictionary calls them short mythical creatures, or fairies, from Akan folklore. I tell you what we are told. It is a story we keep.”', 'Nana Akyaa speaking gently with warm expressive hands while Kwamla leans forward on his stool listening closely under the evening sky.'),
+      pg('📖', 'Nana smiled. “Elders in our part of Ghana tell of the mmoatia, the little people of the forest. In Akan folklore, they are short mythical forest dwarfs. I tell you what we are told. It is a story we keep.”', 'Nana Akyaa speaking gently with warm expressive hands while Kwamla leans forward on his stool listening closely under the evening sky.'),
       pg('❓', 'Kwamla’s eyes grew wide. “Some people say a person was taken by them and came back with special powers.” Nana nodded. “People do say such things. I have seen no proof, so I tell it as a story and a belief, not as something I can show you.”', 'Close view of Kwamla looking wide-eyed and curious while Nana Akyaa nods thoughtfully with a calm, honest expression.'),
       pg('🚶', '“Then what do we do in the forest?” asked Kwamla. “We do what is true and safe,” said Nana. “We walk with grown-ups, we do not go in at night, and we respect the trees and the animals.”', 'Nana Akyaa pointing calmly toward a sunlit-dusk footpath at the edge of the tall forest trees while Kwamla looks toward the path attentively.'),
       pg('🤝', 'Kwamla thought of a girl at school who was short. “Ewuradjoa is not one of the mmoatia, Nana,” he said. “Of course not,” said Nana. “She is a child, just like you. Stories belong to the forest. They never belong to our classmates.”', 'Kwamla and Nana Akyaa talking earnestly face to face under the warm glow of a courtyard lantern, Nana resting a gentle hand on Kwamla’s shoulder.'),
@@ -165,7 +165,7 @@ export const BATCH_30_STORIES: PilotStory[] = [
       { word: 'respect', definition: 'To treat someone or something with care and honour.', pages: [4] },
       { word: 'belief', definition: 'Something that people hold to be true, even when it cannot be proven.', pages: [3] },
     ],
-    culturalNotes: ['Twi dictionaries describe the mmoatia as “short mythical creatures or fairies, common in Akan folklore”. Beliefs about the little people differ between places and families, and some people hold them as serious beliefs. This story tells the belief as a belief and does not claim it is proven.', 'Stories of people taken by little people and returning with special powers are told in some communities. They should be checked with local elders and recorded respectfully as community accounts.', 'People with dwarfism are ordinary people. The story says clearly that no child is ever a spirit.'],
+    culturalNotes: ['In Akan folklore, the mmoatia are short mythical forest dwarfs (little people of the forest) depicted as compact, wingless forest dwellers. Beliefs about the little people differ between places and families, and some people hold them as serious beliefs. This story tells the belief as a belief and does not claim it is proven.', 'Stories of people taken by little people and returning with special powers are told in some communities. They should be checked with local elders and recorded respectfully as community accounts.', 'People with dwarfism are ordinary people. The story says clearly that no child is ever a spirit.'],
     reviewQuestions: ['Check the spelling and use of mmoatia (some sources write mmoetia).', 'Ask a local elder whether the wording about the little people matches what is told in your area, and whether anything should not be told to children.'],
     guide: {
       overview: 'A conversation between a boy and his grandmother. It teaches that a community belief can be told with respect and honesty, that no proof is claimed, that children stay safe near the forest, and that a classmate is never a character in a story. Form: realistic dialogue.',
@@ -184,50 +184,65 @@ export const BATCH_30_STORIES: PilotStory[] = [
   // 2
   mk({
     key: 'how-ananse-won-the-stories',
-    title: 'How Ananse Won the Sky God’s Stories',
-    summary: 'In an Akan tale, Ananse the spider wins all the world’s stories from Nyame, the sky god, by completing four hard tasks. The story is told as a folktale, with other versions noted.',
+    title: 'How Ananse Won Nyame’s Stories',
+    summary: 'In an Akan tale, Ananse climbs his web to the heavens and wins the world’s stories from Nyame, the Creator, by outwitting Ɔnini the python, Mmɔborɔ the stinging hornets, Osebo the leopard, and Mmoatia the forest dwarf.',
     classIds: ['primary-1', 'primary-2', 'primary-3'], ageMin: 6, ageMax: 9, readingLevel: 'early', difficulty: 2,
     genres: ['cultural', 'moral', 'humour'], themes: ['identity', 'family', 'community'], objectives: ['cultural-heritage', 'oral-language', 'reading-comprehension', 'sequencing'],
     ghanaianContext: 'central', culturalTags: ['local-names'], wpm: 85, paceWord: 'Lively storytelling, with a pause for each task', palette: ['#b45309', '#7c3aed'],
-    voice: 'A lively storyteller; a booming voice for Nyame and a quick, clever voice for Ananse',
+    voice: 'A lively storyteller; a booming, warm voice for Nyame and a quick, clever voice for Ananse',
     characters: [
       'Ananse: a charming, expressive folkloric spider character walking upright with a round brown body, clever bright eyes, and a small woven kente sash.',
-      'Nyame: the majestic, kindly Akan Sky God with a silver beard and golden kente robes, seated among glowing golden clouds.',
+      'Nyame: the majestic, kindly Supreme Creator in Akan tradition, with a silver beard and golden kente robes, seated on an Adinkra-carved golden stool in radiant heavenly light.',
       'Aso: Ananse’s wise, warm-hearted wife wearing a colourful headscarf and wrapper inside their cosy earthen home.',
+      'Mmoatia: a small West African forest dwarf of Akan folklore—depicted as a compact, wingless, earth-toned forest dweller.',
     ],
     music: 'A bright drum and a quick xylophone for Ananse (placeholder)',
     pages: [
-      pg('☁️', 'Long ago, all the stories in the world belonged to Nyame, the sky god. Ananse the spider climbed up to the sky and asked for them. “What price will you pay for my stories?” Nyame asked.', 'Small clever Ananse the spider standing on a wispy cloud looking up respectfully at the majestic, kindly Sky God Nyame in golden kente robes among radiant clouds.'),
-      pg('🔟', 'Nyame set four hard tasks. “Bring me Onini the python, the Mmoboro hornets, Osebo the leopard, and Mmoatia the fairy,” he said. Some storytellers change this list a little.', 'Nyame the Sky God among golden clouds holding up four fingers clearly while small Ananse listens attentively below.'),
-      pg('🕸️', 'Ananse went home and asked his wife, Aso, for help. In many tellings, she gives clever advice. Together they made a smart plan, because two minds are better than one.', 'Ananse and his thoughtful wife Aso sitting together at a wooden table inside their cosy home with a calabash gourd and woven vine, smiling as they plan.'),
-      pg('📜', 'One by one, in the story, Ananse tricked each creature and carried them up to the sky. This is only a tale. Nobody should ever trap real snakes, hornets, or leopards. They are dangerous, and they belong in the wild.', 'Ananse climbing a glowing stairway of clouds toward the sky carrying a closed woven basket and gourd, while far below in the lush green forest wild animals roam free and undisturbed.'),
-      pg('🌟', 'Nyame was amazed. “You have done everything I asked,” he said. “From today, the stories are yours, and they shall be called Spider Stories.”', 'Nyame smiling warmly among the clouds and handing a glowing golden carved wooden story-box to joyful Ananse.'),
-      pg('👂', 'That is why many Akan people call folktales Anansesem, or spider stories. When elders tell them in the evening, children gather round to listen and learn.', 'A Ghanaian village elder seated by a warm evening courtyard fire telling an animated story while happy children sit on mats listening in wonder under starry skies.'),
+      pg('🕸️', 'Long ago, all the stories in the world belonged to Nyame, the Creator. Ananse the spider spun a silver web and climbed up to the heavens to ask Nyame for them. “What price will you pay for my stories?” Nyame asked.', 'Small clever Ananse having climbed his shimmering silver spider-web up to the heavens, looking up respectfully at Nyame, the Creator, in golden kente robes.'),
+      pg('🔟', 'Nyame set four hard tasks. “Bring me Ɔnini the python, Mmɔborɔ, the stinging hornets, Osebo the leopard, and Mmoatia the forest dwarf,” he said. Some storytellers change this list a little.', 'Nyame, the Creator, seated in radiant heavenly clouds holding up four fingers clearly while small Ananse listens attentively below.'),
+      pg('🏺', 'Ananse went home and asked his wife, Aso, for help. Together they prepared an empty calabash gourd, cool water, and strong vine, because two minds are better than one.', 'Ananse and his thoughtful wife Aso sitting together at a wooden table inside their cosy home with an empty calabash gourd and coiled vine, smiling as they plan.'),
+      pg('🌧️', 'In the tale, Ananse sprinkled water like rain so Mmɔborɔ, the stinging hornets, flew into his empty gourd for shelter. Then he measured Ɔnini along a palm branch and outwitted Osebo and Mmoatia the forest dwarf. Never touch or trap real wild animals or hornets!', 'Ananse climbing toward the heavens carrying a closed woven basket and calabash gourd, while far below in the green forest the leopard and python rest free and undisturbed.'),
+      pg('🌟', 'Ananse climbed his web back to the heavens with all four. Nyame, the Creator, was amazed. “You have done everything I asked,” he said. “From today, the stories are yours, and they shall be called Spider Stories.”', 'Nyame, the Creator, smiling warmly in the heavens and handing a glowing golden carved wooden story-box to joyful Ananse.'),
+      pg('👂', 'That is why many Akan people call folktales Anansesɛm, or Spider Stories. When elders tell them in the evening, children gather round to listen and learn.', 'A Ghanaian village elder seated by a warm evening courtyard fire telling an animated story while happy children sit on mats listening in wonder under starry skies.'),
     ],
     activities: [
-      { id: 'an-c1', type: 'comprehension', afterPage: 2, question: 'Who owned all the stories at first?', options: ['Nyame, the sky god', 'Ananse', 'Aso'], correctIndex: 0 },
-      { id: 'an-s1', type: 'sequencing', prompt: 'Put the story in order.', items: ['Ananse asks Nyame for the stories.', 'Nyame sets four hard tasks.', 'Ananse plans with Aso’s help.', 'The stories are called Spider Stories.'] },
+      { id: 'an-c1', type: 'comprehension', afterPage: 2, question: 'Who owned all the stories at first?', options: ['Nyame, the Creator', 'Ananse', 'Aso'], correctIndex: 0 },
+      { id: 'an-c2', type: 'comprehension', afterPage: 4, question: 'How did Ananse trick Mmɔborɔ, the stinging hornets, in the tale?', options: ['Sprinkled water like rain beside an empty gourd', 'Chased them with a stick', 'Asked Osebo to catch them'], correctIndex: 0 },
+      { id: 'an-s1', type: 'sequencing', prompt: 'Put the story in order.', items: ['Ananse climbs his web to ask Nyame for the stories.', 'Nyame sets four hard tasks.', 'Ananse plans with Aso using a gourd and vine.', 'The stories are called Anansesɛm, or Spider Stories.'] },
       { id: 'an-pr', type: 'prediction', afterPage: 2, prompt: 'What do you think Ananse will do to finish the tasks?', options: ['Use his wits and ask Aso', 'Fight with a stick', 'Give up'] },
       { id: 'an-voc', type: 'vocabulary', afterPage: 6, word: 'folktale', definition: 'A traditional story passed down by word of mouth over many years.', distractors: ['A school test', 'A kind of drum'] },
     ],
     glossary: [
-      { word: 'python', definition: 'A very large snake that coils around its prey.', pages: [2] },
-      { word: 'hornets', definition: 'Large flying insects with a painful sting.', pages: [2] },
-      { word: 'leopard', definition: 'A large, fast wild cat with dark spots.', pages: [2] },
+      { word: 'Nyame', definition: 'In Akan tradition, the Supreme God and Creator of heaven and earth.', pages: [1, 2, 5] },
+      { word: 'Ɔnini', definition: 'Standard Twi name in Ananse tales for the great African rock python.', pages: [2, 4] },
+      { word: 'Mmɔborɔ', definition: 'Traditional Akan folktale name for the stinging hornets.', pages: [2, 4] },
+      { word: 'Mmoatia', definition: 'A small West African forest dwarf in Akan folklore.', pages: [2, 4] },
+      { word: 'gourd', definition: 'A hard-shelled hollow fruit, such as a calabash, dried and used as a container.', pages: [3, 4] },
+      { word: 'Anansesɛm', definition: 'Standard Twi word meaning “spider stories” (folktales).', pages: [6] },
     ],
-    culturalNotes: ['In the most common version told, Nyame sets four tasks: to bring Onini the python, the Mmoboro hornets, Osebo the leopard, and Mmoatia the fairy. Versions differ: some leave out Aso, and some name three tasks instead of four. This telling follows the common version and notes that tellings vary.', 'Anansesem means “spider stories”. Ananse tales are Akan tales told across Ghana and the diaspora.', 'The story reminds children plainly never to approach or trap wild animals.'],
-    reviewQuestions: ['Check the spelling of Onini, Mmoboro, Osebo, Mmoatia, Aso and Anansesem.', 'Have a storyteller read page 4 and confirm that the safety reminder flows naturally with the tale.'],
+    culturalNotes: [
+      'In Akan and Ghanaian thought, Nyame (Onyame / Onyankopɔn) is the Supreme God, Creator of heaven and earth. Ananse climbs his web up to the heavens to petition Nyame, the Creator.',
+      'In the widely told Akan version, Nyame sets four tasks: Ɔnini the African rock python (Standard Twi Ɔnini; ASCII Onini), Mmɔborɔ, the stinging hornets (ASCII Mmoboro—their traditional Anansesɛm name, whereas kotokurodu is the everyday Twi word for hornet or wasp), Osebo (Ɔsebɔ) the leopard, and Mmoatia the forest dwarf (a small wingless West African forest dweller). Regional tellings vary in small details.',
+      'In the classic hornet episode, Ananse sprinkles water to mimic rain so Mmɔborɔ fly into an empty calabash gourd for shelter. Anansesɛm means “spider stories”, and the story reminds children plainly never to approach or trap real wild animals or stinging insects.',
+    ],
+    reviewQuestions: ['Check Standard Twi spelling of Ɔnini, Mmɔborɔ, Osebo (Ɔsebɔ), Mmoatia, Aso, Nyame, and Anansesɛm.', 'Have a storyteller read page 4 and confirm that the gourd rain trick and safety reminder flow naturally together.'],
     guide: {
-      overview: 'A retelling of the Akan tale of how Ananse won the world’s stories, noting that versions differ and reminding children never to trap wild animals. It teaches sequencing, folktale features, teamwork, and respect for oral tradition.',
-      lessonMinutes: 25, goals: ['Retell the four tasks in order.', 'Explain what a folktale is.', 'Describe one way that versions of the same tale can differ.'],
-      subjects: [['English Language', 'Folktales and sequencing'], ['Creative Arts', 'Storytelling and drama']],
-      before: ['Ask children what Ananse tales they already know.'], during: ['Hold up four fingers as each task is named on page 2.'],
-      after: ['Act out the story in four short scenes.', 'Ask an elder or parent for their version of the tale and compare.'],
-      discussion: ['Why does the story say two minds are better than one?', 'How can two storytellers tell the same tale differently?'],
+      overview: 'A retelling of the Akan tale of how Ananse climbed his web to the heavens and won Nyame’s stories, honouring Standard Twi names (Nyame the Creator, Ɔnini, Mmɔborɔ, Mmoatia the forest dwarf, Anansesɛm), noting regional variations, and reminding children never to trap wild animals.',
+      lessonMinutes: 25, goals: ['Retell the four tasks set by Nyame, the Creator, in order.', 'Explain how Ananse and Aso used cleverness (such as the gourd and rain trick) instead of force.', 'Describe what a folktale (Anansesɛm) is and how tellings can vary.'],
+      subjects: [['English Language', 'Folktales and sequencing'], ['Creative Arts', 'Storytelling and drama'], ['Our World Our People', 'Ghanaian oral heritage']],
+      before: ['Ask children what Anansesɛm (Ananse tales) they already know.'], during: ['Hold up four fingers as each task is named on page 2 (Ɔnini, Mmɔborɔ, Osebo, Mmoatia).'],
+      after: ['Act out the story in four short scenes.', 'Ask an elder or parent for their version of how Ananse won Nyame’s stories and compare.'],
+      discussion: ['Why does the story say two minds are better than one?', 'Why must we never copy folktale tricks around real snakes, hornets, or wild animals?'],
       reflection: ['Who do you ask for help when a task feels too big?'],
-      support: ['Use four picture cards for the four tasks.'], stretch: ['Write what you think Aso whispered to Ananse as part of their clever plan.'],
-      localise: ['Share the version told in your own community and credit the elder who tells it.'],
-      factCheck: ['The four tasks (python, hornets, leopard, fairy) reflect the widely told Akan version of How Ananse Won the Stories; regional tellings vary.'],
+      support: ['Use four picture cards for the four tasks (python, hornets in a gourd, leopard, forest dwarf).'], stretch: ['Write the conversation between Ananse and Aso as they plan the rain-and-gourd trick for Mmɔborɔ.'],
+      localise: ['Share the version told in your own community, note everyday Twi terms such as kotokurodu alongside Mmɔborɔ, and credit the elder who tells it.'],
+      factCheck: [
+        {
+          claim: 'Akan names and roles in How Ananse Won Nyame’s Stories',
+          explanation: 'In Akan cosmology Nyame (Onyame / Onyankopɔn) is the Supreme Creator; the four classic Anansesɛm tasks name Ɔnini the python, Mmɔborɔ the stinging hornets (everyday Twi: kotokurodu), Osebo (Ɔsebɔ) the leopard, and Mmoatia the forest dwarf.',
+          reference: 'Christaller Twi Dictionary / Rattray Akan-Ashanti Folk-Tales / NaCCA Primary Curriculum',
+        },
+      ],
     },
   }),
 
@@ -396,8 +411,8 @@ export const BATCH_30_STORIES: PilotStory[] = [
     pages: [
       pg('🌆', 'After supper, Ayisi sat on the veranda with her grandfather and asked, “Nana, is Ananse real? Is every story true?” Nana Boakye set down his cup. “That is a very good question,” he said.', 'Ayisi with her notebook and pencil sitting beside white-bearded Nana Boakye on a warm lantern-lit Ghanaian veranda at dusk, Nana setting a clay cup on a small wooden table.'),
       pg('🔍', '“Some accounts tell us what really happens in nature,” said Nana. “The Earth spins, so we have day and night. We can test and check that in books and with our own eyes. That is one kind of truth.”', 'Nana Boakye pointing gently up toward the twilight sky where the first evening stars glow, while Ayisi looks up thoughtfully from the veranda.'),
-      pg('🕸️', '“Other stories are told to teach us how to live,” Nana continued. “When elders tell of Ananse, we cannot check whether a spider bought the sky god’s stories. Yet the tale teaches us that clever thinking and teamwork matter. That is another kind of truth.”', 'Nana Boakye gesturing expressively like a traditional storyteller while Ayisi smiles, imagining a tiny friendly spider web glistening on the veranda rail nearby.'),
-      pg('⚖️', '“So we must never tell a folktale as if it were a fact we can measure,” said Nana. “And we must never call an old story worthless just because it is a tale. We say clearly what kind of story it is, and we treasure the wisdom it teaches.”', 'On the veranda, Nana Boakye holds out both hands evenly like a balanced scale—a closed science book on one side of the low wooden table and a traditional carved wooden drum on the other—while Ayisi watches attentively.'),
+      pg('🕸️', '“Other stories are told to teach us how to live,” Nana continued. “When elders tell of Ananse, we cannot check whether a spider won Nyame’s stories. Yet the tale teaches us that clever thinking and teamwork matter. That is another kind of truth.”', 'Nana Boakye gesturing expressively like a traditional storyteller while Ayisi smiles, imagining a tiny friendly spider web glistening on the veranda rail nearby.'),
+      pg('⚖️', '“So we must never tell a folktale as if it were a fact we can measure,” said Nana. “And we must never call an old story worthless just because it is a tale. We say clearly what kind of story it is, and we treasure the wisdom it teaches.”', 'On the veranda, Nana Boakye holds out both hands like a balanced scale—a science book on one side of the low table and a carved wooden drum on the other—while Ayisi watches.'),
       pg('📝', 'Ayisi opened her exercise book and drew two neat columns. On one side, she sketched things we can check: day and night, rain clouds, and bees visiting flowers. On the other side, she sketched stories that teach wisdom: Ananse’s gourd and forest tales.', 'Ayisi leaning over the veranda table drawing tiny simple pictures—a sun, rain cloud, and bee on one side, and a gourd and drum on the other—in her open notebook with a pencil while Nana smiles.'),
       pg('🌠', 'Ayisi looked up and smiled. “I can value both,” she said. Nana nodded proudly. “You have understood, my child. Keep asking questions, respect our elders’ tales, and always know which is which.”', 'Ayisi and Nana Boakye smiling warmly together on the peaceful veranda under a deep purple-indigo night sky filled with bright stars.'),
     ],

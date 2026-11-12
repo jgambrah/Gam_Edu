@@ -47,6 +47,12 @@ export function validateCatalogueEntry(storyId: string, e: unknown): Problem[] {
   if ('coverMotif' in e && !(typeof e.coverMotif === 'string' && e.coverMotif.length >= 1 && e.coverMotif.length <= 16)) {
     bad('coverMotif', '1-16 characters');
   }
+  if ('releaseAt' in e && !(typeof e.releaseAt === 'number' && Number.isFinite(e.releaseAt) && e.releaseAt >= 0)) {
+    bad('releaseAt', 'must be a finite non-negative epoch timestamp (ms)');
+  }
+  if ('reviewHold' in e && typeof e.reviewHold !== 'boolean') {
+    bad('reviewHold', 'must be a boolean');
+  }
   for (const k of ['version', 'packageVersion'] as const) {
     if (k in e && !(Number.isInteger(e[k]) && (e[k] as number) >= 1)) bad(k, 'integer >= 1');
   }

@@ -304,7 +304,7 @@
     "definition": "People who work together on a job, farm, factory, or project."
   },
   "team": {
-    "definition": "A group of people working or playing together toward a shared goal."
+    "definition": "A group that works together."
   },
   "group": {
     "definition": "Several people or things gathered or classed together."
@@ -628,7 +628,7 @@
     "definition": "All of space and everything in it, including stars, planets, and galaxies."
   },
   "space": {
-    "definition": "The vast expanse beyond Earth where stars and planets travel, or an open area."
+    "definition": "Room that a thing takes up."
   },
   "sky": {
     "definition": "The space above the Earth where we see clouds, the sun, the moon, and stars."
@@ -673,10 +673,10 @@
     "definition": "Strong wind with heavy rain, thunder, or lightning."
   },
   "wind": {
-    "definition": "Moving air outside."
+    "definition": "Air that is moving."
   },
   "air": {
-    "definition": "The invisible mixture of gases around Earth that people, plants, and animals breathe."
+    "definition": "The mixture of gases all around us that we breathe."
   },
   "oxygen": {
     "definition": "A gas in the air that our bodies need."
@@ -703,7 +703,7 @@
     "definition": "The state of the atmosphere at a particular place and time from day to day."
   },
   "season": {
-    "definition": "A time of the year with its own weather pattern, such as the rainy season or the dry harmattan season."
+    "definition": "A part of the year with its own kind of weather."
   },
   "heat": {
     "definition": "Energy of warmth that moves from warmer things to cooler things."
@@ -721,10 +721,10 @@
     "definition": "Heat and bright flames produced when something burns."
   },
   "smoke": {
-    "definition": "The grey or white gas and tiny particles that rise from a fire."
+    "definition": "The grey cloud that comes from something burning."
   },
   "light": {
-    "definition": "Brightness from the sun, a lamp, or a fire that lets us see; or not heavy in weight."
+    "definition": "What lets us see. It comes from the sun, a bulb and a torch."
   },
   "lights": {
     "definition": "Lamps, bulbs, or lanterns that shine to brighten a place."
@@ -760,7 +760,8 @@
     "definition": "A large area of water surrounded by land, such as Lake Volta."
   },
   "volta": {
-    "definition": "Ghana’s great river system and Lake Volta, one of the largest reservoir lakes in the world."
+    "definition": "Ghana’s great river system and Lake Volta, one of the largest reservoir lakes in the world. (Ghana’s principal river system (Black, White and Red Volta, Lake Volta).)",
+    "phonetic": "vol-tah"
   },
   "sea": {
     "definition": "The vast body of salty water that covers most of the Earth and meets the coast."
@@ -829,7 +830,7 @@
     "definition": "The work of growing crops and raising animals on the land."
   },
   "harvest": {
-    "definition": "The season or act of gathering ripe crops from the fields."
+    "definition": "The time when the crops are gathered."
   },
   "garden": {
     "definition": "A plot of land near a home or school where flowers, vegetables, or herbs are grown."
@@ -856,7 +857,7 @@
     "definition": "Large or small pieces of hard stone found in the ground, hills, or coast."
   },
   "stone": {
-    "definition": "Hard solid rock, often shaped for building, carving, or grinding."
+    "definition": "A hard piece of rock."
   },
   "stones": {
     "definition": "Pieces of hard rock."
@@ -988,7 +989,7 @@
     "definition": "Buildings where goods are manufactured using machines and teamwork."
   },
   "clinic": {
-    "definition": "A health centre where doctors and nurses care for patients and give medicine."
+    "definition": "A place where health workers care for sick people."
   },
   "office": {
     "definition": "A room or building where people do administrative, business, or council work."
@@ -1063,7 +1064,7 @@
     "definition": "A lamp with a handle that gives light."
   },
   "torch": {
-    "definition": "A small hand lamp that makes light."
+    "definition": "A small light you hold in your hand."
   },
   "fan": {
     "definition": "A device with rotating blades or a hand-held woven blade that moves air to cool people."
@@ -1141,7 +1142,7 @@
     "definition": "A shiny greyish-white precious metal, or a bright metallic grey colour."
   },
   "wood": {
-    "definition": "The hard fibrous material that forms the trunk and branches of a tree."
+    "definition": "The hard material from the trunk and branches of trees."
   },
   "wooden": {
     "definition": "Made of wood."
@@ -1180,7 +1181,7 @@
     "definition": "The woody arms of a tree that hold leaves, flowers, and fruit."
   },
   "root": {
-    "definition": "The part of a plant that grows down into the soil."
+    "definition": "The part of a plant that grows down into the soil and takes in water."
   },
   "roots": {
     "definition": "The parts of a plant that grow under the soil and take in water."
@@ -1201,7 +1202,7 @@
     "definition": "Put seeds or young plants into the soil so they can grow."
   },
   "seed": {
-    "definition": "The small part of a fruit that can grow into a new plant."
+    "definition": "The small part of a plant that can grow into a new plant."
   },
   "seeds": {
     "definition": "Tiny parts of a plant that grow into new plants."
@@ -1603,7 +1604,7 @@
     "definition": "Instruments like hammers, hoes, rulers, or magnifying glasses used to do work."
   },
   "machine": {
-    "definition": "A device with moving parts that uses power to help do work."
+    "definition": "A tool that makes work easier."
   },
   "machines": {
     "definition": "Devices with moving parts that help people weave, build, print, or farm."
@@ -1627,13 +1628,13 @@
     "definition": "Using science and mathematics to design and build useful structures, machines, and systems."
   },
   "electricity": {
-    "definition": "Energy that flows through wires to power lights, fans, phones, and machines."
+    "definition": "A kind of energy that makes lights and machines work."
   },
   "electrical": {
     "definition": "Operating by or relating to electricity."
   },
   "power": {
-    "definition": "Energy that makes lights and machines work, or strength and ability."
+    "definition": "Electricity that makes lights and machines work."
   },
   "powerful": {
     "definition": "Having great strength, energy, or influence."
@@ -2686,7 +2687,7 @@
     "definition": "To put something over the top of another thing to protect or hide it."
   },
   "covered": {
-    "definition": "Placed a layer over the top of something."
+    "definition": "Having a lid or cloth on top."
   },
   "hide": {
     "definition": "To put yourself or an object where it cannot easily be seen."
@@ -2884,7 +2885,7 @@
     "definition": "Made a home in a place, or was alive."
   },
   "living": {
-    "definition": "Alive and breathing."
+    "definition": "Alive: able to grow, need food and air, and make young ones."
   },
   "life": {
     "definition": "The state of being alive, growing, and experiencing the world."
@@ -3214,7 +3215,7 @@
     "definition": "Newly made or gathered, clean, and cool (like fresh morning water)."
   },
   "damp": {
-    "definition": "Slightly wet."
+    "definition": "A little wet."
   },
   "bright": {
     "definition": "Shining with plenty of light, or vivid in colour."
@@ -3964,7 +3965,8 @@
     "definition": "A West African girl’s name meaning \"trustworthy and faithful\"."
   },
   "boateng": {
-    "definition": "A well-known Ghanaian (Akan) family surname."
+    "definition": "A well-known Ghanaian (Akan) family surname. (Widely used Akan personal and family surname.)",
+    "phonetic": "boh-ah-teng"
   },
   "agyeman": {
     "definition": "A Ghanaian (Akan) name meaning \"saviour or defender of the nation\"."
@@ -4555,10 +4557,10 @@
     "definition": "An official organisation that provides a public service or regulates safety."
   },
   "spoil": {
-    "definition": "To go bad or become unfit to eat when food is not kept cool and clean."
+    "definition": "To go bad so that you cannot eat it safely."
   },
   "spoiled": {
-    "definition": "Went bad or became damaged."
+    "definition": "Gone bad so that it is not safe to eat."
   },
   "list": {
     "definition": "A series of names, words, or numbers written one after another."
@@ -4874,7 +4876,7 @@
     "definition": "A series of steps taken in order to make or achieve something."
   },
   "medicine": {
-    "definition": "A substance given by a doctor, nurse, or pharmacist to treat or prevent illness."
+    "definition": "Something that helps the body get better when you use it correctly."
   },
   "everyday": {
     "definition": "Happening or used each ordinary day."
@@ -5348,7 +5350,7 @@
     "definition": "The flavour of food or drink sensed by the tongue (such as sweet, salty, sour, or bitter)."
   },
   "dam": {
-    "definition": "A strong barrier built across a river (like the Akosombo Dam on the Volta River) to hold back water and generate electricity."
+    "definition": "A strong wall built across a river to hold back water."
   },
   "ai": {
     "definition": "Short for Artificial Intelligence — computer systems designed to recognise patterns and help people with tasks."
@@ -5675,7 +5677,7 @@
     "definition": "Convincing and trustworthy because it is backed by real evidence and workable numbers"
   },
   "turbidity": {
-    "definition": "How cloudy water is because of tiny bits of soil and clay."
+    "definition": "The cloudiness of water caused by large numbers of suspended particles such as silt and clay."
   },
   "verify": {
     "definition": "To confirm that information or a licence is genuine by checking official authorities"
@@ -5684,7 +5686,7 @@
     "definition": "Separating light husks or shells from heavier seeds using a stream of air"
   },
   "compost": {
-    "definition": "Rotted plant waste that makes rich, dark food for garden soil."
+    "definition": "Old plant and food waste that rots into food for soil."
   },
   "thermostat": {
     "definition": "A sensor switch that keeps temperature steady inside an oven or dryer"
@@ -5879,7 +5881,7 @@
     "definition": "Something you must do because a rule or law says so."
   },
   "germs": {
-    "definition": "Tiny living things too small to see."
+    "definition": "Tiny living things that can make us sick."
   },
   "bioaccumulation": {
     "definition": "The build-up of a harmful substance in living things."
@@ -6023,6 +6025,36 @@
   "vibration": {
     "definition": "A fast shaking movement back and forth."
   },
+  "melt": {
+    "definition": "To change from a solid to a liquid when warmed."
+  },
+  "mixture": {
+    "definition": "Two or more things together that are not joined."
+  },
+  "recurring": {
+    "definition": "Happening again and again."
+  },
+  "battery": {
+    "definition": "A container that stores electrical energy."
+  },
+  "scrub": {
+    "definition": "To rub hard to clean something."
+  },
+  "infection": {
+    "definition": "An illness caused by tiny living things getting into the body."
+  },
+  "filtrate": {
+    "definition": "The clear liquid collected after a mixture passes through a filter, which may still hold dissolved substances."
+  },
+  "sprout": {
+    "definition": "To start to grow from a seed."
+  },
+  "habitat": {
+    "definition": "The place where a living thing finds food, water and shelter."
+  },
+  "muscles": {
+    "definition": "Parts of the body that help bones move."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6069,7 +6101,7 @@
     "definition": "A light, strong material that is used to make bottles and bags."
   },
   "rubbish": {
-    "definition": "Things we throw away, such as paper and plastic."
+    "definition": "Things we throw away."
   },
   "recycling": {
     "definition": "Using old materials again to make something new."
@@ -6433,10 +6465,10 @@
     "definition": "A fraudulent investment scam that pays early participants with money taken from new participants rather than real business profits"
   },
   "stewardship": {
-    "definition": "The responsible care, protection and honest management of resources entrusted to a person or community"
+    "definition": "The moral duty to care for and protect God’s creation and natural resources for future generations."
   },
   "pathogens": {
-    "definition": "Microscopic disease-causing organisms such as bacteria, viruses and parasites that cannot be seen with the naked eye"
+    "definition": "Disease-causing microorganisms, such as certain bacteria and viruses, destroyed by boiling or chlorination."
   },
   "shoreline": {
     "definition": "The line where a body of water meets the land or beach."
@@ -6974,7 +7006,7 @@
     "definition": "Low, damp areas that soak up and hold water."
   },
   "shelter": {
-    "definition": "A place that keeps people safe from danger or weather."
+    "definition": "A place that keeps a living thing safe from weather and enemies."
   },
   "silt": {
     "definition": "Fine soil carried by water and left in drains and rivers."
@@ -7477,13 +7509,13 @@
     "definition": "The habit of doing what you planned to do."
   },
   "soap": {
-    "definition": "Something we rub on wet hands to wash them clean."
+    "definition": "A cleaning bar or liquid that lifts dirt and germs off the skin."
   },
   "rinsed": {
     "definition": "Washed off with clean water."
   },
   "shoot": {
-    "definition": "The first small green part of a plant that grows up out of the soil."
+    "definition": "The young part of a plant that grows upwards from a seed."
   },
   "cycle": {
     "definition": "Something that goes round and round in the same order."
@@ -7560,9 +7592,6 @@
   "wiggle": {
     "definition": "To move with small quick movements."
   },
-  "scrub": {
-    "definition": "To rub hard to make clean."
-  },
   "yam": {
     "definition": "A big brown root that we boil, pound or fry."
   },
@@ -7594,17 +7623,27 @@
     "definition": "Moving round and round."
   },
   "mmoatia": {
-    "definition": "Little forest people in Akan folklore (told as a belief, not proven fact). (Short mythical forest beings in Akan folklore.) (Mythical forest fairy in Akan folklore.)",
+    "definition": "A small West African forest dwarf in Akan folklore. (Forest dwarfs (little forest beings) in Akan folklore.) (Forest dwarf in Akan folklore.)",
     "phonetic": "mm-wah-tee-ah"
   },
-  "python": {
-    "definition": "A very large snake that coils around its prey."
+  "nyame": {
+    "definition": "In Akan tradition, the Supreme God and Creator of heaven and earth. (The Supreme God and Creator of heaven and earth in Akan tradition.)",
+    "phonetic": "nyah-meh"
   },
-  "hornets": {
-    "definition": "Large flying insects with a painful sting."
+  "ɔnini": {
+    "definition": "Standard Twi name in Ananse tales for the great African rock python. (Standard Twi name for the African rock python in Ananse folktales.)",
+    "phonetic": "aw-nee-nee"
   },
-  "leopard": {
-    "definition": "A large, fast wild cat with dark spots."
+  "mmɔborɔ": {
+    "definition": "Traditional Akan folktale name for the stinging hornets. (Traditional Anansesɛm name for the stinging hornets in Akan folklore.)",
+    "phonetic": "mm-maw-baw-raw"
+  },
+  "gourd": {
+    "definition": "A hard-shelled hollow fruit, such as a calabash, dried and used as a container."
+  },
+  "anansesɛm": {
+    "definition": "Standard Twi word meaning “spider stories” (folktales). (Standard Twi word meaning \"spider stories\" (folktales).)",
+    "phonetic": "ah-nahn-seh-sem"
   },
   "searchers": {
     "definition": "People working together to find someone who is lost."
@@ -7638,9 +7677,6 @@
   },
   "heartbeat": {
     "definition": "The steady thump you feel when your heart pumps blood."
-  },
-  "muscles": {
-    "definition": "Parts of the body that pull on bones to help us move."
   },
   "yawned": {
     "definition": "Opened the mouth wide and breathed in deeply because of tiredness."
@@ -7696,6 +7732,45 @@
   },
   "precious": {
     "definition": "Very valuable and worthy of careful protection, never to be wasted."
+  },
+  "melting": {
+    "definition": "Changing from a solid to a liquid because of heat."
+  },
+  "solid": {
+    "definition": "Something that keeps its shape, such as ice or a stone."
+  },
+  "liquid": {
+    "definition": "Something that flows and takes the shape of its container, such as water."
+  },
+  "sieve": {
+    "definition": "A tool with small holes that lets small things pass through."
+  },
+  "wheelbarrow": {
+    "definition": "A small cart with one wheel and two handles for carrying loads."
+  },
+  "ramp": {
+    "definition": "A sloping surface that joins a lower level to a higher one."
+  },
+  "pulley": {
+    "definition": "A wheel with a rope over it that helps to lift things."
+  },
+  "mould": {
+    "definition": "A soft, fuzzy growth on old food."
+  },
+  "ringworm": {
+    "definition": "A skin infection caused by a fungus that makes round, itchy patches."
+  },
+  "suspension": {
+    "definition": "A heterogeneous mixture in which insoluble solid particles hang in a liquid and settle on standing."
+  },
+  "brain": {
+    "definition": "The part of the body in the head that thinks and sends messages."
+  },
+  "sneeze": {
+    "definition": "To push air out of your nose and mouth suddenly."
+  },
+  "elbow": {
+    "definition": "The bend in the middle of your arm."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9758,35 +9833,55 @@
     "phonetic": "eh-woo-rah-jwah"
   },
   "mmoatia-lower": {
-    "definition": "Short mythical forest beings in Akan folklore.",
+    "definition": "Forest dwarfs (little forest beings) in Akan folklore.",
     "phonetic": "mm-wah-tee-ah"
   },
   "mmoatia-upper": {
-    "definition": "Mythical forest fairy in Akan folklore.",
+    "definition": "Forest dwarf in Akan folklore.",
     "phonetic": "mm-wah-tee-ah"
   },
   "twi-lang": {
     "definition": "Principal Akan dialect spoken widely across Ghana.",
     "phonetic": "chwee"
   },
-  "nyame": {
-    "definition": "The Supreme Sky God in Akan tradition.",
-    "phonetic": "nyah-meh"
-  },
   "onini": {
-    "definition": "The great python in Ananse folktales.",
-    "phonetic": "oh-nee-nee"
+    "definition": "ASCII spelling of Ɔnini, the great African rock python in Ananse folktales.",
+    "phonetic": "aw-nee-nee"
+  },
+  "onini-twi": {
+    "definition": "Standard Twi name for the African rock python in Ananse folktales.",
+    "phonetic": "aw-nee-nee"
   },
   "mmoboro": {
-    "definition": "The stinging hornets in Ananse folktales.",
-    "phonetic": "mm-moh-boh-roh"
+    "definition": "ASCII spelling of Mmɔborɔ, the stinging hornets in Ananse folktales.",
+    "phonetic": "mm-maw-baw-raw"
+  },
+  "mmoboro-twi": {
+    "definition": "Traditional Anansesɛm name for the stinging hornets in Akan folklore.",
+    "phonetic": "mm-maw-baw-raw"
+  },
+  "kotokurodu": {
+    "definition": "Everyday Twi word for hornet or wasp.",
+    "phonetic": "koh-toh-koo-roh-doo"
   },
   "osebo": {
-    "definition": "The leopard in Ananse folktales.",
-    "phonetic": "oh-seh-boh"
+    "definition": "The leopard in Ananse folktales (Standard Twi Ɔsebɔ).",
+    "phonetic": "aw-seh-baw"
+  },
+  "ɔsebɔ": {
+    "definition": "Standard Twi name for the leopard in Ananse folktales.",
+    "phonetic": "aw-seh-baw"
+  },
+  "osebo-twi": {
+    "definition": "Standard Twi name for the leopard in Ananse folktales.",
+    "phonetic": "aw-seh-baw"
   },
   "anansesem": {
-    "definition": "Akan word meaning \"spider stories\" (folktales).",
+    "definition": "ASCII spelling of Anansesɛm, meaning \"spider stories\" (folktales).",
+    "phonetic": "ah-nahn-seh-sem"
+  },
+  "anansesem-twi": {
+    "definition": "Standard Twi word meaning \"spider stories\" (folktales).",
     "phonetic": "ah-nahn-seh-sem"
   },
   "appiagyei": {
@@ -9920,5 +10015,177 @@
   "safiatu": {
     "definition": "West African Muslim female personal name (from Safiyyah).",
     "phonetic": "sah-fee-ah-too"
+  },
+  "senam": {
+    "definition": "Ewe unisex personal name meaning \"the Creator has given me\".",
+    "phonetic": "seh-nahm"
+  },
+  "dapaah": {
+    "definition": "Akan personal and family name (associated with Dapaa festival eve).",
+    "phonetic": "dah-paah"
+  },
+  "alidu": {
+    "definition": "West African male personal name.",
+    "phonetic": "ah-lee-doo"
+  },
+  "mariam": {
+    "definition": "Female personal name (Maryam).",
+    "phonetic": "mah-ree-ahm"
+  },
+  "sherifa": {
+    "definition": "Female personal name meaning \"noble, honourable\".",
+    "phonetic": "sheh-ree-fah"
+  },
+  "esenam": {
+    "definition": "Ewe personal name meaning \"the Creator has heard me\".",
+    "phonetic": "eh-seh-nahm"
+  },
+  "karim": {
+    "definition": "Male personal name meaning \"generous\".",
+    "phonetic": "kah-reem"
+  },
+  "edinam": {
+    "definition": "Ewe unisex personal name meaning \"God has redeemed me / answered me\".",
+    "phonetic": "eh-dee-nahm"
+  },
+  "wunpini": {
+    "definition": "Dagbani unisex personal name meaning \"God’s gift\" (variant spelling of Wumpini).",
+    "phonetic": "woon-pee-nee"
+  },
+  "okaikoi": {
+    "definition": "Historic Ga royal and personal name from Accra.",
+    "phonetic": "oh-ky-koy"
+  },
+  "nafisa": {
+    "definition": "Female personal name meaning \"precious\".",
+    "phonetic": "nah-fee-sah"
+  },
+  "akosombo": {
+    "definition": "Gorge town in Ghana’s Eastern Region, site of the Akosombo hydroelectric dam on the Volta River.",
+    "phonetic": "ah-koh-sohm-boh"
+  },
+  "dari": {
+    "definition": "Upper West Ghanaian personal and family name.",
+    "phonetic": "dah-ree"
+  },
+  "akuffo": {
+    "definition": "Akuapem/Akan personal and family name.",
+    "phonetic": "ah-koo-foh"
+  },
+  "kumi": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "koo-mee"
+  },
+  "sosu": {
+    "definition": "Ewe male personal and family name.",
+    "phonetic": "soh-soo"
+  },
+  "amissah": {
+    "definition": "Fante/Akan personal and family surname.",
+    "phonetic": "ah-mee-sah"
+  },
+  "rahmatu": {
+    "definition": "West African female personal name meaning \"mercy, compassion\".",
+    "phonetic": "rah-mah-too"
+  },
+  "husseina": {
+    "definition": "Female personal name traditionally given to the second of twins.",
+    "phonetic": "hoo-say-nah"
+  },
+  "odenkey": {
+    "definition": "Coastal Ghanaian male personal name.",
+    "phonetic": "oh-den-kay"
+  },
+  "zakaria": {
+    "definition": "Male personal and family name.",
+    "phonetic": "zah-kah-ree-ah"
+  },
+  "azumah": {
+    "definition": "Ghanaian personal and family name.",
+    "phonetic": "ah-zoo-mah"
+  },
+  "assin": {
+    "definition": "Traditional Akan area and district in Ghana’s Central Region (e.g., Assin Nsuta, Assin Fosu).",
+    "phonetic": "ah-sin"
+  },
+  "nsuta": {
+    "definition": "Akan town name meaning \"twin streams / watered place\" (as in Assin Nsuta).",
+    "phonetic": "n-soo-tah"
+  },
+  "subin": {
+    "definition": "Common Akan river and stream name in southern and central Ghana.",
+    "phonetic": "soo-bin"
+  },
+  "kwesi": {
+    "definition": "Fante/Akan day name for a boy born on Sunday (variant of Kwasi).",
+    "phonetic": "kweh-see"
+  },
+  "khalifah": {
+    "definition": "Steward or trustee of Allah’s creation on Earth in Islamic teaching.",
+    "phonetic": "kah-lee-fah"
+  },
+  "bempong": {
+    "definition": "Akan male personal and family surname.",
+    "phonetic": "bem-pong"
+  },
+  "fiati": {
+    "definition": "Ewe personal and family name.",
+    "phonetic": "fee-ah-tee"
+  },
+  "tuffour": {
+    "definition": "Akan personal and family surname (variant spelling of Tufuor).",
+    "phonetic": "too-fwor"
+  },
+  "atiah": {
+    "definition": "Northern Ghanaian personal and family name.",
+    "phonetic": "ah-tee-ah"
+  },
+  "anum": {
+    "definition": "Ghanaian town and personal name.",
+    "phonetic": "ah-noom"
+  },
+  "ocloo": {
+    "definition": "Southeastern Ghanaian family surname.",
+    "phonetic": "oh-kloo"
+  },
+  "bawa": {
+    "definition": "Northern Ghanaian male personal and family name.",
+    "phonetic": "bah-wah"
+  },
+  "napari": {
+    "definition": "Dagbani personal name from Northern Ghana.",
+    "phonetic": "nah-pah-ree"
+  },
+  "adu": {
+    "definition": "Akan male personal and family surname.",
+    "phonetic": "ah-doo"
+  },
+  "dery": {
+    "definition": "Upper West Ghanaian personal and family name.",
+    "phonetic": "deh-ree"
+  },
+  "ayamga": {
+    "definition": "Upper East Ghanaian personal and family name.",
+    "phonetic": "ah-yahm-gah"
+  },
+  "kuuire": {
+    "definition": "Dagaare personal and family surname from Upper West Ghana.",
+    "phonetic": "koo-ee-reh"
+  },
+  "ofei": {
+    "definition": "Akuapem/Guan male personal and family surname.",
+    "phonetic": "oh-fay"
+  },
+  "gbeddy": {
+    "definition": "Ewe family surname.",
+    "phonetic": "gbeh-dee"
+  },
+  "zumah": {
+    "definition": "Ghanaian personal and family name.",
+    "phonetic": "zoo-mah"
+  },
+  "dzobo": {
+    "definition": "Ewe family surname from the Volta Region of Ghana.",
+    "phonetic": "dzoh-boh"
   }
 }

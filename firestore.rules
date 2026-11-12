@@ -45,23 +45,31 @@ service cloud.firestore {
       return schoolId != '' && (!exists(/databases/$(database)/documents/schools/$(schoolId)) ||
         get(/databases/$(database)/documents/schools/$(schoolId)).data.get('storyLibraryEnabled', true) != false);
     }
+    function isDeveloperReviewer() {
+      return isSignedIn() && request.auth.token != null && request.auth.token.email == "jamesgambrah@gmail.com";
+    }
     function libraryReader() {
       return isStoryPublisher() || (isSignedIn() && libraryEligibleSchool(getUserSchoolId()));
     }
     // The catalogue entry is validated and written by the central publication service (src/lib/story-library/publication.ts,
-    // Admin SDK). No client, publisher or super admin writes `story_catalogue` or `library_meta` directly, because the
-    // service must verify independence and readiness, copy files, and move the catalogue version in one atomic step.
+    // Admin SDK). Only `library_meta/review_overrides` may be updated by the developer reviewer (`jamesgambrah@gmail.com`)
+    // to hold/flag or early-approve stories during the 48-hour developer quarantine window.
 
-    // One document every client reads per session: the catalogue version pointer and kill-switch flags.
+    // One document every client reads per session (`current`), plus `review_overrides` for 48h quarantine hold/early-release.
     match /library_meta/{docId} {
       allow get: if libraryReader();
       allow list: if false;
-      allow write: if false; // server-only (publication service)
+      allow write: if docId == 'review_overrides' && isDeveloperReviewer()
+        && request.resource.data.keys().hasOnly(['heldKeys', 'approvedKeys', 'updatedAt', 'updatedBy']);
     }
 
     // Compact published metadata. Never deleted: a withdrawn story becomes `archived` (a tombstone clients can purge on).
+    // Direct reads enforce the 48-hour developer quarantine (`releaseAt <= request.time.toMillis()` and not `reviewHold`).
     match /story_catalogue/{storyId} {
-      allow get: if isStoryPublisher() || (libraryReader() && resource.data.status == 'published');
+      allow get: if isStoryPublisher() || isDeveloperReviewer() || (libraryReader()
+        && resource.data.status == 'published'
+        && resource.data.get('reviewHold', false) != true
+        && resource.data.get('releaseAt', 0) <= request.time.toMillis());
       allow list: if isStoryPublisher() || (libraryReader() && request.query.limit <= 50 && resource.data.status == 'published');
       allow write: if false; // server-only (publication service); withdrawn stories become `archived` tombstones, never deleted
     }

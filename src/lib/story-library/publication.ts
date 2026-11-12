@@ -17,6 +17,7 @@ import { toCatalogueFacets, ageTiersFor, READING_LEVELS, type Classification } f
 import { evaluateReadiness, type HumanReview, type ReadinessResult } from './readiness';
 import { packagePathFor, validateCatalogueEntry } from './validate';
 import { PRIVATE_ASSET_PREFIX, type Doc, type PutResult, type SeedBackend } from './seeder/types';
+import { REVIEW_QUARANTINE_MS } from './quarantine';
 import type { CatalogueEntry, StoryPackage } from './types';
 
 export interface PublishBackend extends SeedBackend {
@@ -125,7 +126,7 @@ export function independenceProblem(admin: Doc, _reviewers: string[] = []): stri
 
 // ------------------------------------------------------------------------------------------------------ catalogue entry
 
-export function buildCatalogueEntry(admin: Doc, pkg: StoryPackage, o: { catalogueVersion: number; sortKey: number; version: number; publishedBy: string }): CatalogueEntry {
+export function buildCatalogueEntry(admin: Doc, pkg: StoryPackage, o: { catalogueVersion: number; sortKey: number; version: number; publishedBy: string; publishedAt?: number; releaseAt?: number; reviewHold?: boolean }): CatalogueEntry {
   const c = admin.classification as Classification | null;
   const f = c ? toCatalogueFacets(c) : undefined;
   const level = c ? READING_LEVELS.find((l) => l.id === c.readingLevel)?.order : undefined;
@@ -141,6 +142,9 @@ export function buildCatalogueEntry(admin: Doc, pkg: StoryPackage, o: { catalogu
     hasNarration: pkg.pages.every((p) => !!p.audio), hasActivities: (pkg.activities?.length ?? 0) > 0,
     packagePath: packagePathFor(admin.storyKey, pkg.version), packageHash: admin.packageHash, packageBytes: admin.packageBytes, contentHash: admin.contentHash,
     sortKey: o.sortKey, publishedBy: o.publishedBy, changedInVersion: o.catalogueVersion, updatedAt: o.catalogueVersion as unknown,
+    ...(o.publishedAt !== undefined ? { publishedAt: o.publishedAt } : {}),
+    ...(o.releaseAt !== undefined ? { releaseAt: o.releaseAt } : {}),
+    ...(o.reviewHold !== undefined ? { reviewHold: o.reviewHold } : {}),
     ...(f ? { classIds: f.classIds, classMin: f.classMin, classMax: f.classMax, ageMin: f.ageMin, ageMax: f.ageMax, readingLevel: f.readingLevel, difficulty: f.difficulty, genres: f.genres, ghanaianContext: f.ghanaianContext } : {}),
   };
   return entry;
@@ -159,7 +163,7 @@ const newMeta = (): Doc => ({
 
 export type PublishOutcome = { outcome: 'published' | 'republished' | 'unchanged'; catalogueVersion: number; sortKey: number; version: number };
 
-export async function publishStory(b: PublishBackend, actor: Actor, storyId: string): Promise<PublishOutcome> {
+export async function publishStory(b: PublishBackend, actor: Actor, storyId: string, opts?: { quarantineMs?: number; skipQuarantine?: boolean }): Promise<PublishOutcome> {
   need(actor);
   // ---- 1. read and verify everything outside the transaction (object reads cannot be part of it)
   const admin0 = await b.transact((tx) => tx.get(adminPath(storyId)));
@@ -197,7 +201,10 @@ export async function publishStory(b: PublishBackend, actor: Actor, storyId: str
     const version = (cat?.version ?? 0) + 1;
     const wasPublished = cat?.status === 'published';
     const totalPublished = (meta.totalPublished ?? 0) + (wasPublished ? 0 : 1);
-    const entry = buildCatalogueEntry(admin, pkg, { catalogueVersion, sortKey, version, publishedBy: actor.uid });
+    const quarantineWindow = opts?.skipQuarantine ? 0 : (opts?.quarantineMs ?? REVIEW_QUARANTINE_MS);
+    const releaseAt = quarantineWindow > 0 ? now + quarantineWindow : undefined;
+    const reviewHold = admin.reviewHold === true ? true : undefined;
+    const entry = buildCatalogueEntry(admin, pkg, { catalogueVersion, sortKey, version, publishedBy: actor.uid, publishedAt: now, releaseAt, reviewHold });
     const problems = validateCatalogueEntry(storyId, entry);
     if (problems.length) throw new PublicationError('invalid', `catalogue entry invalid: ${problems.map((p) => `${p.path}: ${p.message}`).join('; ')}`);
     tx.set(`${CATALOGUE}/${storyId}`, entry as unknown as Doc);
