@@ -238,7 +238,7 @@
     "definition": "Someone you know well, trust, and enjoy spending time with."
   },
   "friends": {
-    "definition": "People you care about, play with, and help."
+    "definition": "People we like and play with."
   },
   "neighbour": {
     "definition": "A person who lives near you."
@@ -304,7 +304,7 @@
     "definition": "People who work together on a job, farm, factory, or project."
   },
   "team": {
-    "definition": "A group of people working or playing together toward a shared goal."
+    "definition": "A group that plays or works together."
   },
   "group": {
     "definition": "Several people or things gathered or classed together."
@@ -541,7 +541,7 @@
     "definition": "To show that something is true using clear evidence or maths."
   },
   "truth": {
-    "definition": "What is really so — facts that match reality without any lie or make-believe."
+    "definition": "What really happened."
   },
   "true": {
     "definition": "Matching the real facts; not false or made up."
@@ -811,7 +811,7 @@
     "definition": "Wild land covered with shrubs and trees outside a town or farm, or a low woody plant."
   },
   "field": {
-    "definition": "An open area of land used for growing crops or playing games like football."
+    "definition": "A large open piece of land."
   },
   "farm": {
     "definition": "Land used for growing crops like cocoa, maize, and tomatoes, or raising animals."
@@ -868,10 +868,10 @@
     "definition": "Openings or hollow spaces dug or worn into something."
   },
   "pit": {
-    "definition": "A deep hole dug in the ground."
+    "definition": "A small hollow for holding seeds."
   },
   "road": {
-    "definition": "A wide path made for vehicles, bicycles, and people to travel between places."
+    "definition": "A path for cars, buses and bikes."
   },
   "street": {
     "definition": "A public road in a town or city with houses and shops along it."
@@ -1105,7 +1105,7 @@
     "definition": "Sheets of paper, newspapers, or official documents."
   },
   "rope": {
-    "definition": "A thick string used to tie things."
+    "definition": "A thick, strong string."
   },
   "ropes": {
     "definition": "Strong, thick cords used for tying, lifting, or mooring boats."
@@ -1204,7 +1204,7 @@
     "definition": "The small part of a fruit that can grow into a new plant."
   },
   "seeds": {
-    "definition": "Tiny parts of a plant that grow into new plants."
+    "definition": "Small hard parts of a plant; here they are used as counters."
   },
   "flower": {
     "definition": "The colourful part of a plant that produces seeds and nectar."
@@ -1573,7 +1573,7 @@
     "definition": "How much something is worth, or an important principle we live by."
   },
   "fair": {
-    "definition": "Treating people equally and honestly according to the rules."
+    "definition": "Following the rules and treating everyone the same."
   },
   "risk": {
     "definition": "The chance that something dangerous or unwanted might happen."
@@ -2254,7 +2254,7 @@
     "definition": "To discover or locate something you were looking for."
   },
   "found": {
-    "definition": "Past tense of find: discovered or located something."
+    "definition": "Discovered after looking."
   },
   "discover": {
     "definition": "To find out or see something for the very first time."
@@ -2365,7 +2365,7 @@
     "definition": "Lifted and placed a foot down to move."
   },
   "jump": {
-    "definition": "To push yourself up into the air with your legs and feet."
+    "definition": "To push yourself up off the ground."
   },
   "leap": {
     "definition": "To jump high or far with energy."
@@ -2659,7 +2659,7 @@
     "definition": "To strike a drum in rhythm, or the steady pulse of music or a heart."
   },
   "turn": {
-    "definition": "To move around in a circle or change direction; or your chance in a game."
+    "definition": "Your chance to do something, one after another."
   },
   "turns": {
     "definition": "Rotates or changes into something else."
@@ -2689,7 +2689,7 @@
     "definition": "Placed a layer over the top of something."
   },
   "hide": {
-    "definition": "To put yourself or an object where it cannot easily be seen."
+    "definition": "To go where no one can see you."
   },
   "hidden": {
     "definition": "Kept out of sight where it is hard to find."
@@ -2938,7 +2938,7 @@
     "definition": "Past tense of draw: made a picture with lines, or pulled."
   },
   "count": {
-    "definition": "To say numbers in order to find out how many."
+    "definition": "To say numbers one after another."
   },
   "use": {
     "definition": "To do work with a tool, word, or material for a purpose."
@@ -4844,7 +4844,7 @@
     "definition": "No longer alive."
   },
   "alive": {
-    "definition": "Living, breathing, and growing."
+    "definition": "Full of life and energy."
   },
   "lean": {
     "definition": "To tilt or rest against something for support."
@@ -7570,6 +7570,24 @@
   },
   "turning": {
     "definition": "Moving round and round."
+  },
+  "heave": {
+    "definition": "To pull or lift with effort."
+  },
+  "kite": {
+    "definition": "A light toy that flies in the wind on a string."
+  },
+  "wires": {
+    "definition": "Long metal cables that can carry electricity."
+  },
+  "grace": {
+    "definition": "A kind and gentle way of behaving."
+  },
+  "grown-up": {
+    "definition": "An older person, such as a parent or teacher."
+  },
+  "fetches": {
+    "definition": "Goes and brings back."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
