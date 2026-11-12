@@ -333,10 +333,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
   }, 15000);
 
-  it('exposes all 246 real catalogue stories (including Quarantined Batches 33–35) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
+  it('exposes all 254 real catalogue stories (including Quarantined Batches 33–36) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
     const rawCat = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
     const newEntries = rawCat.entries.filter((e: any) => e.sortKey > 228);
-    expect(newEntries).toHaveLength(18);
+    expect(newEntries).toHaveLength(26);
     const duringQuarantineMs = Math.max(...newEntries.map((e: any) => e.publishedAt)) + 60_000;
     const afterQuarantineMs = Math.max(...newEntries.map((e: any) => e.releaseAt)) + 60_000;
 
@@ -350,7 +350,7 @@ describe('LibraryDashboard (real preview data)', () => {
       <LibraryDashboard createSource={make} viewerEmail="jamesgambrah@gmail.com" nowMs={duringQuarantineMs} />,
     );
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(246));
-    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (18)');
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (26)');
     unmountDev();
 
     render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterQuarantineMs} />);

@@ -649,7 +649,7 @@
     "definition": "The big round rock that goes around the Earth."
   },
   "star": {
-    "definition": "A huge ball of hot, glowing gas far away in space; the Sun is one."
+    "definition": "A huge ball of hot glowing gas in space that produces its own light and heat."
   },
   "stars": {
     "definition": "Bright points of light in the night sky."
@@ -1184,13 +1184,13 @@
     "definition": "The part of a plant that grows down into the soil and takes in water."
   },
   "roots": {
-    "definition": "The parts of a plant that grow under the soil and take in water."
+    "definition": "The parts of a plant that hold it in the soil and take in water."
   },
   "leaf": {
     "definition": "A flat, usually green part of a plant that uses sunlight to make food."
   },
   "leaves": {
-    "definition": "More than one leaf — the green parts of plants and trees; or goes away from a place."
+    "definition": "The flat green parts of a plant that make food using sunlight, air, and water."
   },
   "plant": {
     "definition": "A living thing that grows in soil or water and has roots, stems, and leaves; or to put seeds in the ground."
@@ -1208,7 +1208,7 @@
     "definition": "Tiny parts of a plant that grow into new plants."
   },
   "flower": {
-    "definition": "The colourful part of a plant that produces seeds and nectar."
+    "definition": "The part of a plant that makes seeds for new plants."
   },
   "flowers": {
     "definition": "The colourful blossoms of plants that attract bees and butterflies."
@@ -1628,7 +1628,7 @@
     "definition": "Using science and mathematics to design and build useful structures, machines, and systems."
   },
   "electricity": {
-    "definition": "A kind of energy that makes lights and machines work."
+    "definition": "A form of energy carried through wires that powers lights, fans, and appliances."
   },
   "electrical": {
     "definition": "Operating by or relating to electricity."
@@ -1745,7 +1745,7 @@
     "definition": "A standard quantity used to measure things, such as a metre, kilogram, or cedi."
   },
   "units": {
-    "definition": "Standard quantities used for measurement, or individual items."
+    "definition": "Measured amounts of electricity recorded on a meter and paid for by households."
   },
   "metre": {
     "definition": "The basic metric unit of length, equal to 100 centimetres."
@@ -1778,7 +1778,7 @@
     "definition": "How far it is from one place or point to another."
   },
   "balance": {
-    "definition": "Steady evenness where both sides are equal, or a scale used for weighing."
+    "definition": "A healthy, steady state in which each part of an ecosystem supports the others."
   },
   "equal": {
     "definition": "Being the same in amount, size, value, or rights."
@@ -4686,7 +4686,7 @@
     "definition": "A large round world in space, such as Earth, Mars, or Jupiter, that orbits a star."
   },
   "planets": {
-    "definition": "Large round worlds in space that travel in orbits around a star like our sun."
+    "definition": "Large round bodies in space that move in orbits around a star such as the Sun."
   },
   "lid": {
     "definition": "A removable cover that fits over the top of a pot, box, or jar."
@@ -5293,7 +5293,7 @@
     "definition": "Physical injury or damage."
   },
   "filter": {
-    "definition": "A porous device (like clean cloth, sand, or charcoal) that removes dirt from water or air."
+    "definition": "A tool that traps dirt as water passes through."
   },
   "law": {
     "definition": "A system of official rules made by a country to keep everyone safe and treated fairly."
@@ -5881,7 +5881,7 @@
     "definition": "Something you must do because a rule or law says so."
   },
   "germs": {
-    "definition": "Tiny living things that can make us sick."
+    "definition": "Tiny living things too small to see that can cause illness."
   },
   "bioaccumulation": {
     "definition": "The build-up of a harmful substance in living things."
@@ -5975,7 +5975,7 @@
     "definition": "Knocked down on purpose."
   },
   "ecosystem": {
-    "definition": "All the living things in a place and how they depend on each other and their surroundings."
+    "definition": "A community of living things interacting with non-living things such as water, air, sunlight, and soil."
   },
   "movement": {
     "definition": "A group of people working together for a cause."
@@ -6054,6 +6054,24 @@
   },
   "muscles": {
     "definition": "Parts of the body that help bones move."
+  },
+  "reptile": {
+    "definition": "An animal with dry skin covered in scales."
+  },
+  "stem": {
+    "definition": "The part of a plant that holds it upright and carries water."
+  },
+  "nutrients": {
+    "definition": "The useful parts of food that pass into the blood to nourish the body."
+  },
+  "orbit": {
+    "definition": "The curved path a planet or moon follows around a larger body in space."
+  },
+  "meter": {
+    "definition": "A device installed in a home or school that measures how much electricity is used."
+  },
+  "vaccine": {
+    "definition": "A protective medicine that prepares the body to fight off a specific disease."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6138,9 +6156,6 @@
   },
   "decomposers": {
     "definition": "Living things like fungi, termites and bacteria that break down dead matter."
-  },
-  "nutrients": {
-    "definition": "Nourishing substances in soil or food that help living things grow."
   },
   "fossils": {
     "definition": "Remains or traces of ancient living things preserved in rock or soil."
@@ -6553,9 +6568,6 @@
   },
   "gravitational": {
     "definition": "Relating to gravity, the force of attraction between masses in the universe."
-  },
-  "orbit": {
-    "definition": "The curved path of an object going around a planet."
   },
   "extraterrestrial": {
     "definition": "Originating or existing outside Earth and its atmosphere."
@@ -7697,9 +7709,6 @@
   "disagree": {
     "definition": "To hold a different idea or wish from someone else."
   },
-  "stem": {
-    "definition": "The main stalk of a plant that carries water up from the roots."
-  },
   "petals": {
     "definition": "The soft coloured outer parts of a flower."
   },
@@ -7771,6 +7780,45 @@
   },
   "elbow": {
     "definition": "The bend in the middle of your arm."
+  },
+  "insect": {
+    "definition": "A small animal with six legs and a body in three parts."
+  },
+  "mammals": {
+    "definition": "Animals with hair or fur whose mothers feed their babies milk."
+  },
+  "scales": {
+    "definition": "Small, hard, thin plates that cover the skin of reptiles."
+  },
+  "boiling": {
+    "definition": "Heating water until bubbles rise briskly, which kills germs."
+  },
+  "chlorine": {
+    "definition": "A safe water-treatment chemical that kills germs when used in the right amount."
+  },
+  "saliva": {
+    "definition": "The clear liquid in the mouth that softens food and starts breaking it down."
+  },
+  "stomach": {
+    "definition": "A stretchy muscular bag where swallowed food is churned with digestive juices."
+  },
+  "intestine": {
+    "definition": "A long tube below the stomach where nutrients and water are absorbed and waste forms."
+  },
+  "satellite": {
+    "definition": "A body in space that travels around a planet; the Moon is Earth’s natural satellite."
+  },
+  "rash": {
+    "definition": "Many small red spots or patches appearing on the skin."
+  },
+  "measles": {
+    "definition": "A contagious viral illness causing fever, cough, runny nose, red eyes, and a skin rash."
+  },
+  "virus": {
+    "definition": "An extremely tiny germ that can cause illnesses such as measles or colds."
+  },
+  "depend": {
+    "definition": "To rely on or need something else in order to survive and thrive."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -10187,5 +10235,69 @@
   "dzobo": {
     "definition": "Ewe family surname from the Volta Region of Ghana.",
     "phonetic": "dzoh-boh"
+  },
+  "oppong": {
+    "definition": "Widely used Akan personal and family surname.",
+    "phonetic": "oh-pong"
+  },
+  "naab": {
+    "definition": "Northern Ghanaian personal and family name related to chieftaincy.",
+    "phonetic": "nahb"
+  },
+  "yiadom": {
+    "definition": "Akan personal and royal surname (as in Konadu Yiadom / Boakye Yiadom).",
+    "phonetic": "yee-ah-dom"
+  },
+  "lobnibe": {
+    "definition": "Dagaare personal and family surname from Upper West Ghana.",
+    "phonetic": "lob-nee-beh"
+  },
+  "brobbey": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "brob-ee"
+  },
+  "amegashie": {
+    "definition": "Ewe family surname from southeastern Ghana.",
+    "phonetic": "ah-meh-gah-shee"
+  },
+  "ayivor": {
+    "definition": "Ewe personal and family surname from the Volta Region.",
+    "phonetic": "ah-yee-vor"
+  },
+  "mettle": {
+    "definition": "Coastal Accra Ghanaian family surname.",
+    "phonetic": "met-uhl"
+  },
+  "tanko": {
+    "definition": "Hausa and northern Ghanaian male personal name.",
+    "phonetic": "tahn-koh"
+  },
+  "nikoi": {
+    "definition": "Ga personal and family name from Greater Accra.",
+    "phonetic": "nee-koy"
+  },
+  "adamu": {
+    "definition": "West African and northern Ghanaian male personal name.",
+    "phonetic": "ah-dah-moo"
+  },
+  "gadzekpo": {
+    "definition": "Ewe family surname from the Volta Region.",
+    "phonetic": "gah-dzek-poh"
+  },
+  "ashitey": {
+    "definition": "Ga family and personal name from Teshie and Accra.",
+    "phonetic": "ah-shih-tay"
+  },
+  "quaicoe": {
+    "definition": "Traditional Fante coastal spelling related to Kweku (boy born on Wednesday).",
+    "phonetic": "kway-koh"
+  },
+  "mohammed": {
+    "definition": "Widely used Muslim male personal name across Ghana.",
+    "phonetic": "moh-hah-med"
+  },
+  "baah": {
+    "definition": "Akan personal and family surname.",
+    "phonetic": "bah"
   }
 }
