@@ -238,7 +238,7 @@
     "definition": "Someone you know well, trust, and enjoy spending time with."
   },
   "friends": {
-    "definition": "People you care about, play with, and help."
+    "definition": "People we like and play with."
   },
   "neighbour": {
     "definition": "A person who lives near you."
@@ -812,7 +812,7 @@
     "definition": "Wild land covered with shrubs and trees outside a town or farm, or a low woody plant."
   },
   "field": {
-    "definition": "An open area of land used for growing crops or playing games like football."
+    "definition": "A large open piece of land."
   },
   "farm": {
     "definition": "Land used for growing crops like cocoa, maize, and tomatoes, or raising animals."
@@ -869,10 +869,10 @@
     "definition": "Openings or hollow spaces dug or worn into something."
   },
   "pit": {
-    "definition": "A deep hole dug in the ground."
+    "definition": "A small hollow for holding seeds."
   },
   "road": {
-    "definition": "A wide path made for vehicles, bicycles, and people to travel between places."
+    "definition": "A path for cars, buses and bikes."
   },
   "street": {
     "definition": "A public road in a town or city with houses and shops along it."
@@ -1106,7 +1106,7 @@
     "definition": "Sheets of paper, newspapers, or official documents."
   },
   "rope": {
-    "definition": "A thick string used to tie things."
+    "definition": "A thick, strong string."
   },
   "ropes": {
     "definition": "Strong, thick cords used for tying, lifting, or mooring boats."
@@ -1205,7 +1205,7 @@
     "definition": "The small part of a plant that can grow into a new plant."
   },
   "seeds": {
-    "definition": "Tiny parts of a plant that grow into new plants."
+    "definition": "Small hard parts of a plant; here they are used as counters."
   },
   "flower": {
     "definition": "The part of a plant that makes seeds for new plants."
@@ -1634,7 +1634,7 @@
     "definition": "Operating by or relating to electricity."
   },
   "power": {
-    "definition": "Electricity that makes lights and machines work."
+    "definition": "The rate at which electrical energy is transferred by an appliance, measured in watts (W) or kilowatts (kW), where P = V × I."
   },
   "powerful": {
     "definition": "Having great strength, energy, or influence."
@@ -2255,7 +2255,7 @@
     "definition": "To discover or locate something you were looking for."
   },
   "found": {
-    "definition": "Past tense of find: discovered or located something."
+    "definition": "Discovered after looking."
   },
   "discover": {
     "definition": "To find out or see something for the very first time."
@@ -2366,7 +2366,7 @@
     "definition": "Lifted and placed a foot down to move."
   },
   "jump": {
-    "definition": "To push yourself up into the air with your legs and feet."
+    "definition": "To push yourself up off the ground."
   },
   "leap": {
     "definition": "To jump high or far with energy."
@@ -2690,7 +2690,7 @@
     "definition": "Having a lid or cloth on top."
   },
   "hide": {
-    "definition": "To put yourself or an object where it cannot easily be seen."
+    "definition": "To go where no one can see you."
   },
   "hidden": {
     "definition": "Kept out of sight where it is hard to find."
@@ -2939,7 +2939,7 @@
     "definition": "Past tense of draw: made a picture with lines, or pulled."
   },
   "count": {
-    "definition": "To say numbers in order to find out how many."
+    "definition": "To say numbers one after another."
   },
   "use": {
     "definition": "To do work with a tool, word, or material for a purpose."
@@ -4846,7 +4846,7 @@
     "definition": "No longer alive."
   },
   "alive": {
-    "definition": "Living, breathing, and growing."
+    "definition": "Full of life and energy."
   },
   "lean": {
     "definition": "To tilt or rest against something for support."
@@ -4882,7 +4882,8 @@
     "definition": "Happening or used each ordinary day."
   },
   "kontomire": {
-    "definition": "Cocoyam leaves — a nutritious leafy green vegetable used to make delicious Ghanaian kontomire stew."
+    "definition": "Cocoyam leaves — a nutritious leafy green vegetable used to make delicious Ghanaian kontomire stew. (Nutrient-rich cooked cocoyam leaves widely eaten in Ghana.)",
+    "phonetic": "kohn-toh-mee-ray"
   },
   "minus": {
     "definition": "Subtracted by (−)."
@@ -5686,7 +5687,7 @@
     "definition": "Separating light husks or shells from heavier seeds using a stream of air"
   },
   "compost": {
-    "definition": "Old plant and food waste that rots into food for soil."
+    "definition": "Nutrient-rich soil conditioner produced when decomposers break down biodegradable organic waste such as plant peels."
   },
   "thermostat": {
     "definition": "A sensor switch that keeps temperature steady inside an oven or dryer"
@@ -5713,7 +5714,7 @@
     "definition": "The young stage of some insects, before they become adults."
   },
   "cooperative": {
-    "definition": "A group of people who own and run a business together."
+    "definition": "The spoilage, damage, or waste of farm produce between harvesting and human consumption due to poor storage, transport, or processing."
   },
   "accessibility": {
     "definition": "Designing products and environments so that people with diverse abilities can use them effectively."
@@ -6068,10 +6069,28 @@
     "definition": "The curved path a planet or moon follows around a larger body in space."
   },
   "meter": {
-    "definition": "A device installed in a home or school that measures how much electricity is used."
+    "definition": "An instrument measuring total electrical energy consumed in kilowatt-hours (kWh)."
   },
   "vaccine": {
     "definition": "A protective medicine that prepares the body to fight off a specific disease."
+  },
+  "assertiveness": {
+    "definition": "Communicating a clear, respectful \"No\" or personal boundary firmly without hostility or apology."
+  },
+  "non-biodegradable": {
+    "definition": "Describing materials such as polythene plastics that microorganisms cannot break down in any useful time, so they persist for decades."
+  },
+  "neutralisation": {
+    "definition": "A reaction between an acid and a base. With some bases, such as carbonates, carbon dioxide is also released."
+  },
+  "friction": {
+    "definition": "The force opposing motion between two surfaces in contact; grooved tyre treads preserve friction on wet roads."
+  },
+  "heredity": {
+    "definition": "The transmission of genetic traits (such as blood group or haemoglobin genotype) from parents to offspring."
+  },
+  "photovoltaic": {
+    "definition": "Technology (PV) in which semiconductor solar cells convert sunlight directly into direct-current (DC) electricity."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6134,7 +6153,7 @@
     "definition": "To grow larger or stretch out over a wider space."
   },
   "gravity": {
-    "definition": "The universal force of attraction between all objects with mass or energy."
+    "definition": "The single point through which the entire weight of a body appears to act; keeping it low and over a wide base increases stability."
   },
   "redshift": {
     "definition": "The stretching of light waves toward the red end of the spectrum as space expands."
@@ -6182,7 +6201,7 @@
     "definition": "Completely necessary; something you cannot do without."
   },
   "character": {
-    "definition": "A person’s inner qualities, such as honesty, kindness and hard work."
+    "definition": "An Akan concept meaning upright character, self-discipline, and honourable conduct."
   },
   "courtyard": {
     "definition": "An open space surrounded by walls or rooms inside a family home."
@@ -6216,7 +6235,7 @@
     "definition": "Microscopic plant-like organisms drifting in sunlit surface water that make food by photosynthesis."
   },
   "pressure": {
-    "definition": "The continuous physical force exerted on or against an object by the weight of water or air above it."
+    "definition": "The perpendicular force acting per unit area of a surface (P = F ÷ A), measured in pascals (Pa) or newtons per square metre (N/m²)."
   },
   "luciferin": {
     "definition": "A light-emitting compound found in organisms that produce bioluminescence."
@@ -6276,7 +6295,7 @@
     "definition": "Strong defensive barriers built from thick timber logs during the 1900 war."
   },
   "photosynthesis": {
-    "definition": "The process by which green plants use sunlight to make food and release oxygen"
+    "definition": "The continuous natural movement of carbon among the atmosphere, plants, animals, soil, oceans, and fuels."
   },
   "ventilation": {
     "definition": "The movement of fresh air through a space to control heat and dampness."
@@ -7634,6 +7653,24 @@
   "turning": {
     "definition": "Moving round and round."
   },
+  "heave": {
+    "definition": "To pull or lift with effort."
+  },
+  "kite": {
+    "definition": "A light toy that flies in the wind on a string."
+  },
+  "wires": {
+    "definition": "Long metal cables that can carry electricity."
+  },
+  "grace": {
+    "definition": "A kind and gentle way of behaving."
+  },
+  "grown-up": {
+    "definition": "An older person, such as a parent or teacher."
+  },
+  "fetches": {
+    "definition": "Goes and brings back."
+  },
   "mmoatia": {
     "definition": "A small West African forest dwarf in Akan folklore. (Forest dwarfs (little forest beings) in Akan folklore.) (Forest dwarf in Akan folklore.)",
     "phonetic": "mm-wah-tee-ah"
@@ -7819,6 +7856,70 @@
   },
   "depend": {
     "definition": "To rely on or need something else in order to survive and thrive."
+  },
+  "respiration": {
+    "definition": "The biochemical process inside cells that breaks down glucose (with oxygen in aerobic respiration) to release usable energy."
+  },
+  "adenosine": {
+    "definition": "A naturally occurring chemical messenger involved in sleepiness; caffeine blocks some of its receptors and can temporarily increase alertness."
+  },
+  "puberty": {
+    "definition": "The developmental stage during adolescence when hormones trigger rapid growth and reproductive maturity."
+  },
+  "fuse": {
+    "definition": "An automatic safety switch designed to cut off electrical current when an overload or short circuit occurs."
+  },
+  "tariffs": {
+    "definition": "The official schedule of rates or prices charged per unit for public utilities such as electricity or water."
+  },
+  "integrity": {
+    "definition": "Steadfast honesty and adherence to moral principles even when wrongdoing could be hidden from authorities."
+  },
+  "plasmodium": {
+    "definition": "The single-celled protozoan parasite that causes malaria in humans."
+  },
+  "vector": {
+    "definition": "An organism—such as the female Anopheles mosquito in malaria—that transmits a pathogen from one host to another."
+  },
+  "indicator": {
+    "definition": "A numerical scale from 0 to 14 measuring how acidic (below 7), neutral (7), or alkaline/basic (above 7) a substance is."
+  },
+  "legumes": {
+    "definition": "The conversion of nitrogen gas into ammonia by certain bacteria, including those living in the root nodules of legumes."
+  },
+  "rotation": {
+    "definition": "Growing different types of crops in a planned sequence on the same land across seasons."
+  },
+  "mulching": {
+    "definition": "Covering topsoil around plants with dry leaves, straw, or grass clippings to conserve moisture, suppress weeds, prevent erosion, and add humus as it decays."
+  },
+  "momentum": {
+    "definition": "The product of a vehicle mass and velocity, determining the force required to bring it to a stop."
+  },
+  "boasetɔ": {
+    "definition": "An Akan virtue meaning patience, restraint, and calm self-mastery—vital for safe driving and peaceful civic life. (Akan moral value of patience, calm self-control, and restraint.)",
+    "phonetic": "bwah-seh-taw"
+  },
+  "haemoglobin": {
+    "definition": "The iron-containing protein inside red blood cells that binds oxygen in the lungs and transports it to body tissues."
+  },
+  "genotype": {
+    "definition": "The specific genetic makeup of an individual for a particular trait, such as HbAA, HbAS, HbAC, HbSC, or HbSS."
+  },
+  "carrier": {
+    "definition": "An individual (such as someone with HbAS) who possesses one recessive allele for a condition without having the disease, yet can pass that allele to offspring."
+  },
+  "stigma": {
+    "definition": "Unfair social disapproval, shame, or discrimination directed at someone because of a health condition or difference."
+  },
+  "current": {
+    "definition": "Electric current (DC) in which charges flow steadily in one direction, as produced by solar cells and batteries."
+  },
+  "inverter": {
+    "definition": "An electronic device that converts direct current (DC) from solar panels or batteries into alternating current (AC) for standard appliances."
+  },
+  "entrepreneurship": {
+    "definition": "Identifying a real community need, organising resources responsibly, and bearing calculated risk to create sustainable value."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -10300,22 +10401,40 @@
     "definition": "Akan personal and family surname.",
     "phonetic": "bah"
   },
-  "heave": {
-    "definition": "To pull or lift with effort."
+  "baffour": {
+    "definition": "Akan male personal and title name.",
+    "phonetic": "bah-foor"
   },
-  "kite": {
-    "definition": "A light toy that flies in the wind on a string."
+  "agyeiwaa": {
+    "definition": "Akan female personal name (feminine of Agyei).",
+    "phonetic": "ah-jay-waah"
   },
-  "wires": {
-    "definition": "Long metal cables that can carry electricity."
+  "fauzia": {
+    "definition": "Female personal name meaning victorious or successful.",
+    "phonetic": "fow-zee-ah"
   },
-  "grace": {
-    "definition": "A kind and gentle way of behaving."
+  "boaseto": {
+    "definition": "Akan moral value of patience, calm self-control, and restraint.",
+    "phonetic": "bwah-seh-taw"
   },
-  "grown-up": {
-    "definition": "An older person, such as a parent or teacher."
+  "adwuma": {
+    "definition": "Akan word for work, labour, or enterprise.",
+    "phonetic": "ah-joo-mah"
   },
-  "fetches": {
-    "definition": "Goes and brings back."
+  "amanah": {
+    "definition": "Sacred trust, integrity, and moral responsibility.",
+    "phonetic": "ah-mah-nah"
+  },
+  "sadaqah": {
+    "definition": "Voluntary charity or act of kindness for the common good.",
+    "phonetic": "sah-dah-kah"
+  },
+  "suban pa": {
+    "definition": "Good character, honourable conduct, and moral integrity.",
+    "phonetic": "soo-bahn pah"
+  },
+  "suban-pa": {
+    "definition": "Good character, honourable conduct, and moral integrity.",
+    "phonetic": "soo-bahn pah"
   }
 }

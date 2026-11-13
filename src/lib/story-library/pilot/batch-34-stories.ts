@@ -292,7 +292,7 @@ export const BATCH_34_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'Curriculum Integration: Directly aligns with NaCCA Common Core Programme (CCP) JHS Science (B8.1.1.1: Mixtures and scientific separation methods; Strand 5: Understanding the Environment), Social Studies (B7.1.1.1, B8.1.1.1: Environmental challenges, water pollution, and illegal mining / galamsey), and RME (B8.1.2.1, B9.1.2.1: Caring for God’s creation across Christianity, Islam, and African Traditional Religion).',
+      'Curriculum Integration: Directly aligns with NaCCA Common Core Programme (CCP) JHS Science (B7.1.1.2 / B8.1.1.1 & B8.5.5.1: Mixtures, suspensions, filtration, and water pollution), Social Studies (B7.1.1.1 / B8.1.1.1: Environmental degradation and river buffer conservation), and RME (B7.1.1 / B8.1.1: Caring for God’s creation across Christianity, Islam, and African Traditional Religion).',
       'Scientific Accuracy Guardrail: Emphasises a vital BECE distinction—sedimentation and filtration remove insoluble suspended matter (residue), and boiling kills biological pathogens, but neither removes dissolved toxic heavy metals (such as mercury or lead). Heating mercury-contaminated water in enclosed spaces can also pose vapour hazards, and evaporation concentrates non-volatile dissolved salts and metal ions.',
       'RME & Indigenous Knowledge Respect: Presents Christian stewardship, Islamic Khalifah (trusteeship), and Akan/Ghanaian traditional river buffer taboos side by side as complementary moral frameworks, showing learners the sound ecological reasoning behind indigenous conservation practices.',
       'Adolescent Safety Rule: JHS learners must never visit active mining pits, handle polluted river water without gloves, taste laboratory samples, or confront illegal miners; civic action focuses on supervised buffer-zone tree planting and public education.',
@@ -312,9 +312,9 @@ export const BATCH_34_STORIES: PilotStory[] = [
         'Compare Christian, Islamic, and African Traditional Religion teachings on environmental stewardship and river conservation.',
       ],
       subjects: [
-        ['Integrated Science (NaCCA CCP B8.1.1.1)', 'Mixtures: Suspensions, filtration, and limits of purification'],
-        ['Social Studies (NaCCA CCP B7.1.1.1, B8.1.1.1)', 'Environmental issues, water pollution, and sustainable resource use'],
-        ['Religious & Moral Education (NaCCA CCP B8.1.2.1, B9.1.2.1)', 'Stewardship of God’s creation across the three major religions'],
+        ['Integrated Science (NaCCA CCP B7.1.1.2 / B8.1.1.1 & B8.5.5.1)', 'Mixtures: Suspensions, filtration, and water pollution'],
+        ['Social Studies (NaCCA CCP B7.1.1.1 / B8.1.1.1)', 'Environmental degradation and river buffer conservation'],
+        ['Religious & Moral Education (NaCCA CCP B7.1.1 / B8.1.1)', 'Caring for God’s creation'],
       ],
       before: [
         'Show two jars: one with clean tap water mixed with clean garden soil, and one with salt dissolved in clear water. Ask: if we pass both through filter paper, what stays behind and what passes through?',
@@ -360,12 +360,12 @@ export const BATCH_34_STORIES: PilotStory[] = [
         {
           claim: 'Filtration removes insoluble suspended solids, and boiling kills biological pathogens, but neither removes dissolved heavy metals such as mercury or lead.',
           explanation: 'Dissolved heavy-metal ions pass straight through filter paper pores and remain non-volatile in water when boiled (with evaporation increasing their concentration in the remaining liquid).',
-          reference: 'NaCCA Common Core Programme (CCP) Integrated Science Curriculum for Basic 7–9 (B8.1.1.1) & WHO Guidelines for Drinking-water Quality.',
+          reference: 'NaCCA Common Core Programme (CCP) Integrated Science Curriculum for Basic 7–9 (B7.1.1.2 / B8.1.1.1 & B8.5.5.1) & WHO Guidelines for Drinking-water Quality.',
         },
         {
           claim: 'Vegetated riparian buffer zones stabilise riverbanks and reduce sediment and runoff entering streams.',
           explanation: 'Ghana’s Riparian Buffer Zone Policy (Water Resources Commission) and traditional Ghanaian riverbank taboos both maintain tree/bamboo root networks along stream corridors to prevent bank collapse and siltation.',
-          reference: 'NaCCA CCP Social Studies (B7.1.1.1, B8.1.1.1), RME (B8.1.2.1, B9.1.2.1), & Ghana Water Resources Commission Riparian Buffer Zone Policy.',
+          reference: 'NaCCA CCP Social Studies (B7.1.1.1 / B8.1.1.1), RME (B7.1.1 / B8.1.1), & Ghana Water Resources Commission Riparian Buffer Zone Policy.',
         },
       ],
     },

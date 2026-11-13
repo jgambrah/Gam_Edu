@@ -90,7 +90,7 @@ export const CATALOGUE_ALLOWED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
   'storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers', 'level', 'categories',
   'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'palette', 'coverMotif', 'hasNarration', 'hasActivities', 'packagePath',
   'packageHash', 'packageBytes', 'contentHash', 'publishedAt', 'releaseAt', 'reviewHold', 'updatedAt', 'sortKey', 'attribution', 'publishedBy',
-  'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'ghanaianContext', 'changedInVersion',
+  'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'nacca', 'ghanaianContext', 'changedInVersion',
 ];
 
 export const CATALOGUE_REQUIRED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
