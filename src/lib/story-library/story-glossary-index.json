@@ -655,7 +655,7 @@
     "definition": "Bright points of light in the night sky."
   },
   "cloud": {
-    "definition": "Tiny drops of water floating together in the sky."
+    "definition": "Remote internet-connected servers used to back up, synchronise, and share files safely."
   },
   "clouds": {
     "definition": "Masses of tiny water droplets floating in the sky that can bring shade or rain."
@@ -1112,7 +1112,7 @@
     "definition": "Strong, thick cords used for tying, lifting, or mooring boats."
   },
   "net": {
-    "definition": "A thin cloth with small holes that hangs over a bed."
+    "definition": "A flat two-dimensional pattern of polygons showing every face of a 3D prism."
   },
   "nets": {
     "definition": "Mesh barriers or fishing gear, such as treated mosquito bed-nets."
@@ -1559,7 +1559,7 @@
     "definition": "Received money or respect through honest work."
   },
   "interest": {
-    "definition": "Extra money paid for borrowing money, or earned for saving it."
+    "definition": "The fee charged by a lender to a borrower for the use of borrowed money over time."
   },
   "investment": {
     "definition": "Money, time or effort put in for a future benefit."
@@ -5603,7 +5603,7 @@
     "definition": "A little afraid or worried."
   },
   "profit": {
-    "definition": "Money left after subtracting all costs from income."
+    "definition": "The financial gain when total selling price exceeds total cost price."
   },
   "trust": {
     "definition": "Confidence that someone is honest and reliable."
@@ -5696,7 +5696,7 @@
     "definition": "A rotary machine whose curved blades are spun by fast-flowing water, steam or wind"
   },
   "bias": {
-    "definition": "A distortion or unfair skew in data or results when training examples leave out real-world conditions"
+    "definition": "Systematic errors in AI predictions caused by incomplete or unrepresentative training data."
   },
   "winnowed": {
     "definition": "Blew away the thin cracked husks after roasting so only pure cocoa nibs remained"
@@ -6092,6 +6092,24 @@
   "photovoltaic": {
     "definition": "Technology (PV) in which semiconductor solar cells convert sunlight directly into direct-current (DC) electricity."
   },
+  "break-even": {
+    "definition": "The point where total revenue equals total cost, resulting in neither profit nor loss."
+  },
+  "ergonomics": {
+    "definition": "Designing workstations to prevent musculoskeletal strain and injury."
+  },
+  "outlier": {
+    "definition": "An extreme data point that pulls the arithmetic mean away from typical values."
+  },
+  "phishing": {
+    "definition": "Fraudulent attempts via fake links or calls to steal credentials or money."
+  },
+  "switch": {
+    "definition": "A central LAN device that connects nodes and forwards frames using MAC addresses."
+  },
+  "thermoplastic": {
+    "definition": "A plastic polymer that softens when heated and hardens when cooled, allowing reshaping."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6478,7 +6496,7 @@
     "definition": "A structured collection of data, such as labelled photographs, used to train and test a computer model"
   },
   "fermentation": {
-    "definition": "A natural biological process in which yeasts and bacteria break down sugars in cocoa pulp, generating heat and developing chocolate flavour precursors"
+    "definition": "A biochemical food-processing step essential in cassava processing to improve safety and flavour."
   },
   "nibs": {
     "definition": "Crunchy pieces of roasted, shelled cocoa bean kernel that are ground to make cocoa liquor"
@@ -6493,7 +6511,7 @@
     "definition": "The pair of sensitive feelers on an insect’s head used to detect smells, air movement and balance"
   },
   "principal": {
-    "definition": "The original sum of money saved, invested, or borrowed before interest is added"
+    "definition": "The initial sum of money borrowed or invested, before any interest is added."
   },
   "ponzi": {
     "definition": "A fraudulent investment scam that pays early participants with money taken from new participants rather than real business profits"
@@ -7173,7 +7191,8 @@
     "definition": "Help given freely to people in need."
   },
   "pesewa": {
-    "definition": "A small unit of Ghanaian money; one hundred pesewas make one cedi."
+    "definition": "The Ghanaian currency coin unit (100 pesewas equal 1 Ghana Cedi). (Sub-unit of Ghanaian currency (100 pesewas = 1 Ghana Cedi).)",
+    "phonetic": "peh-seh-wah"
   },
   "accountant": {
     "definition": "A person who keeps records of money."
@@ -7750,7 +7769,7 @@
     "definition": "The soft coloured outer parts of a flower."
   },
   "volume": {
-    "definition": "How loud or soft a sound is."
+    "definition": "The amount of three-dimensional space enclosed inside a closed solid or container."
   },
   "porridge": {
     "definition": "A smooth, warm breakfast dish cooked from grains such as maize or millet."
@@ -7879,7 +7898,7 @@
     "definition": "The single-celled protozoan parasite that causes malaria in humans."
   },
   "vector": {
-    "definition": "An organism—such as the female Anopheles mosquito in malaria—that transmits a pathogen from one host to another."
+    "definition": "A quantity having both magnitude and direction, represented on a coordinate plane."
   },
   "indicator": {
     "definition": "A numerical scale from 0 to 14 measuring how acidic (below 7), neutral (7), or alkaline/basic (above 7) a substance is."
@@ -7920,6 +7939,76 @@
   },
   "entrepreneurship": {
     "definition": "Identifying a real community need, organising resources responsibly, and bearing calculated risk to create sustainable value."
+  },
+  "cross-contamination": {
+    "definition": "The transfer of harmful germs from raw foods to ready-to-eat foods via hands or boards."
+  },
+  "spreadsheet": {
+    "definition": "An interactive grid program using rows, columns, and formulas for dynamic calculation."
+  },
+  "precedence": {
+    "definition": "The mathematical order of operations determining which calculations evaluate first."
+  },
+  "triangulation": {
+    "definition": "Strengthening a frame by dividing it into rigid triangles using diagonal struts."
+  },
+  "seasoning": {
+    "definition": "Controlled drying of timber to reduce moisture and prevent warping or splitting."
+  },
+  "strut": {
+    "definition": "A structural piece designed to resist pressure in the direction of its length."
+  },
+  "try-square": {
+    "definition": "An L-shaped measuring tool used in woodwork to test and mark accurate 90° right angles."
+  },
+  "algorithm": {
+    "definition": "A set of rules followed by a computer to learn patterns and solve problems."
+  },
+  "actuator": {
+    "definition": "A mechanical output component in a robot that carries out physical action."
+  },
+  "resistor": {
+    "definition": "An electrical component that limits current flow in a circuit."
+  },
+  "median": {
+    "definition": "The middle value when a dataset is arranged in order, resisting extreme outliers."
+  },
+  "seam": {
+    "definition": "The stitched line joining two pieces of fabric together."
+  },
+  "confidentiality": {
+    "definition": "Ensuring sensitive data is accessed only by authorised persons."
+  },
+  "probability": {
+    "definition": "A numerical measure from 0 to 1 expressing the likelihood that an event will occur."
+  },
+  "topology": {
+    "definition": "The layout showing how computers and network devices are interconnected."
+  },
+  "bearing": {
+    "definition": "A direction angle measured clockwise from North, written with three digits."
+  },
+  "conduit": {
+    "definition": "Protective tubing installed along walls to shield cables from moisture and damage."
+  },
+  "sector": {
+    "definition": "A slice of a pie chart, bounded by two radii and an arc, representing a data category."
+  },
+  "gari": {
+    "definition": "A fine, roasted granular food product made from fermented, pressed cassava mash. (Roasted grated cassava granules eaten across West Africa.)",
+    "phonetic": "gah-ree"
+  },
+  "burr": {
+    "definition": "A rough edge or ridge remaining on metal or plastic after cutting or punching."
+  },
+  "html": {
+    "definition": "HyperText Markup Language—the standard language using tags to structure content on webpages."
+  },
+  "multimedia": {
+    "definition": "Using more than one medium of expression or communication, such as text, images, and slides."
+  },
+  "invoice": {
+    "definition": "A commercial document issued by a seller listing goods provided and the amount payable."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -9345,10 +9434,6 @@
     "definition": "Capital city of the Eastern Region of Ghana.",
     "phonetic": "koh-foh-ree-dwah"
   },
-  "gari": {
-    "definition": "Roasted grated cassava granules eaten across West Africa.",
-    "phonetic": "gah-ree"
-  },
   "owusu": {
     "definition": "Akan personal and family name.",
     "phonetic": "oh-woo-soo"
@@ -10436,5 +10521,41 @@
   "suban-pa": {
     "definition": "Good character, honourable conduct, and moral integrity.",
     "phonetic": "soo-bahn pah"
+  },
+  "mensah-bonsu": {
+    "definition": "Akan compound family surname.",
+    "phonetic": "men-sah bohn-soo"
+  },
+  "dzifa": {
+    "definition": "Ewe personal name meaning one is at peace or comforted.",
+    "phonetic": "jee-fah"
+  },
+  "sugri": {
+    "definition": "Northern Ghanaian personal name meaning patience or endurance.",
+    "phonetic": "soo-gree"
+  },
+  "pokuaa": {
+    "definition": "Akan female personal name.",
+    "phonetic": "poh-kwaah"
+  },
+  "abdul-aziz": {
+    "definition": "Muslim personal name meaning servant of the Almighty.",
+    "phonetic": "ahb-dool ah-zeez"
+  },
+  "bature": {
+    "definition": "Northern Ghanaian / Hausa personal name.",
+    "phonetic": "bah-too-ray"
+  },
+  "torgbui": {
+    "definition": "Ewe title or name denoting chief, elder, or respected grandfather.",
+    "phonetic": "tor-gbwee"
+  },
+  "kwakye": {
+    "definition": "Akan family surname and personal name.",
+    "phonetic": "kwah-chee"
+  },
+  "sobolo": {
+    "definition": "Chilled spiced Ghanaian beverage brewed from dried roselle/hibiscus petals and ginger.",
+    "phonetic": "soh-boh-loh"
   }
 }
