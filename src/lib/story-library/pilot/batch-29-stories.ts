@@ -222,8 +222,8 @@ export const BATCH_29_STORIES: PilotStory[] = [
     music: 'A quick beat on a small drum, matching the rope (placeholder)',
     pages: [
       pg('🪢', 'Turn the rope; turn it round.\nJump when it touches the ground!', 'Two children turn a rope while a third waits to jump.', 'Make circles with your arms.'),
-      pg('🔢', 'One, two, three, four, five—\nwe keep on jumping, bright and alive!', 'A child jumping as others count.', 'Count faster and faster.'),
-      pg('😮', 'Oh no! The rope has caught my toe.\nThat is all right—I try, and off I go!', 'A child whose foot caught in the rope, smiling.', 'Shrug and smile.'),
+      pg('🔢', 'One, two, three, four, five,\nwe keep on jumping, bright and alive!', 'A child jumping as others count.', 'Count faster and faster.'),
+      pg('😮', 'Oh no! The rope has caught my toe.\nThat is all right, I try, and off I go!', 'A child whose foot caught in the rope, smiling.', 'Shrug and smile.'),
       pg('🌳', 'We skip on the flat and grassy ground,\nwhere no cars come and no hard stones are found.', 'Children skipping in a safe, clear yard.', 'Slow down to a calm voice.'),
     ],
     activities: [

@@ -147,7 +147,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     key: 'formula-in-cell-d6',
     title: 'The Formula in Cell D6',
     summary:
-      'Preparing meat pies and chilled sobolo for their JHS Career Technology enterprise day, Serwaa, Nii, and Latifa catch two costly mistakes—plain numbers typed where spreadsheet formulas belong, and percentage profit worked out on the selling price—and fix both when flour prices rise at the market.',
+      'Preparing meat pies and chilled sobolo for their JHS Career Technology enterprise day, Serwaa, Nii, and Latifa catch two costly mistakes: plain numbers typed where spreadsheet formulas belong, and percentage profit worked out on the selling price, and fix both when flour prices rise at the market.',
     classIds: ['jhs-1', 'jhs-2', 'jhs-3'] as unknown as Classification['classIds'],
     ageMin: 12,
     ageMax: 15,
@@ -323,10 +323,10 @@ export const BATCH_38_STORIES: PilotStory[] = [
           answer: 'Scale factor = 100 ÷ 20 = 5. Flour = 1,250 g × 5 = 6,250 g = 6.25 kg. Margarine = 500 g × 5 = 2,500 g = 2.5 kg.',
         },
       ],
-      support: ['Provide a paper 4×6 spreadsheet grid labelled Columns A–D and Rows 1–6 so learners trace cell coordinates visually before typing.'],
+      support: ['Provide a paper 4×6 spreadsheet grid labelled Columns A to D and Rows 1 to 6 so learners trace cell coordinates visually before typing.'],
       stretch: ['With total sales entered in cell D8, add the logical formula =IF(D8>D6, "PROFIT", "LOSS") to display enterprise status automatically.'],
       localise: ['Substitute local snacks familiar to your school (e.g., bofrot, baked chips, kulikuli, or fresh zomkom/sobolo).'],
-      factCheck: ['To be checked against official NaCCA CCP Computing B8.2.4, Career Technology B8.1.1 & B8.6.2, and Mathematics B8.1.3–B8.2.3.'],
+      factCheck: ['To be checked against official NaCCA CCP Computing B8.2.4, Career Technology B8.1.1 & B8.6.2, and Mathematics B8.1.3 to B8.2.3.'],
     },
   }),
 
@@ -499,8 +499,8 @@ export const BATCH_38_STORIES: PilotStory[] = [
         ['Mathematics (NaCCA CCP B8.1.4.1, B8.3.1.2)', 'Scale ratios, Pythagoras’ theorem, and surface area'],
         ['Computing (NaCCA CCP B8.1.3.1, B8.2.3.1)', 'ICT health/ergonomics (RSI prevention) and Desktop Publishing'],
       ],
-      before: ['Build a quick 4-stick pin-jointed square and a 3-stick triangle using paper strips and split pins—let students push both!'],
-      during: ['Pause on Page 3 to verify why 60² + 80² = 10,000 gives a 100 cm brace—and why adding 60 + 80 = 140 cm would never fit.'],
+      before: ['Build a quick 4-stick pin-jointed square and a 3-stick triangle using paper strips and split pins; let students push both!'],
+      during: ['Pause on Page 3 to verify why 60² + 80² = 10,000 gives a 100 cm brace, and why adding 60 + 80 = 140 cm would never fit.'],
       after: ['Audit your school ICT chairs/desks for ergonomic angles and draw a 1 : 10 scale elevation of one desk bay with a diagonal brace.'],
       discussion: ['Where can you spot triangulation right now in pylon towers, Adomi Bridge trusses, bicycle frames, or market roof rafters?'],
       reflection: ['How does "measure twice, cut once" save money, timber, and time in engineering?'],
@@ -513,7 +513,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       support: ['Provide pre-cut 3-4-5 right-angled triangle card templates so learners verify a² + b² = c² visually by counting grid squares.'],
       stretch: ['Distinguish between struts (members resisting compression) and ties (members resisting tension) inside a loaded roof truss.'],
       localise: ['Reference familiar Ghanaian timbers (Odum, Mahogany, Wawa, Teak) and inspect roof trusses in your school assembly hall.'],
-      factCheck: ['To be checked against official NaCCA CCP Career Technology B8.2.2–B8.5.1, Mathematics B8.3.1, and Computing B8.1.3.'],
+      factCheck: ['To be checked against official NaCCA CCP Career Technology B8.2.2 to B8.5.1, Mathematics B8.3.1, and Computing B8.1.3.'],
     },
   }),
 
@@ -674,7 +674,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     ],
     guide: {
       overview:
-        'Brings NaCCA Computational Thinking and Robotics alive in a Ghanaian school garden—combining flowchart logic, 5 V LED/sensor electronics, cylinder volume geometry, and statistical outlier handling.',
+        'Brings NaCCA Computational Thinking and Robotics alive in a Ghanaian school garden, combining flowchart logic, 5 V LED/sensor electronics, cylinder volume geometry, and statistical outlier handling.',
       lessonMinutes: 45,
       goals: [
         'Draw standard flowchart symbols (oval, parallelogram, rectangle, diamond) for selection loops.',
@@ -699,8 +699,8 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ],
       support: ['Provide cut-out paper flowchart shapes (oval, parallelogram, diamond, rectangle) for groups to arrange on desks before drawing.'],
       stretch: ['Write pseudocode using IF...THEN...ELSE and a WHILE loop matching Dzifa’s flowchart.'],
-      localise: ['Use safe 3 V–6 V battery holders or offline unplugged role-play if microcontrollers are not yet in the lab.'],
-      factCheck: ['To be checked against official NaCCA CCP Computing Strand 4 (B8.4.1–B8.4.3), Career Tech B8.4.1, and Mathematics B8.3.2 & B8.4.1.'],
+      localise: ['Use safe 3 V to 6 V battery holders or offline unplugged role-play if microcontrollers are not yet in the lab.'],
+      factCheck: ['To be checked against official NaCCA CCP Computing Strand 4 (B8.4.1 to B8.4.3), Career Tech B8.4.1, and Mathematics B8.3.2 & B8.4.1.'],
     },
   }),
 
@@ -806,7 +806,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
         type: 'sequencing',
         prompt: 'Put the safe verification steps in order when you receive a suspicious payment-reversal call or SMS.',
         items: [
-          'Pause—do NOT panic, click links, or read out any PIN or 6-digit OTP.',
+          'Pause: do NOT panic, click links, or read out any PIN or 6-digit OTP.',
           'Hang up the suspicious call and inspect sender number carefully.',
           'Check wallet balance independently using official shortcode or app.',
           'Report and block fraudulent number through telecom fraud helpline.',
@@ -852,7 +852,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'Proposed NaCCA CCP curriculum links: Computing (B8.1.1.1 QR Codes, B8.3.3.1 Information Security—CIA Triad), Career Technology (B8.2.1 Textiles, B8.6.2 Enterprise), and Mathematics (B8.4.2.1 Probability, B8.1.3.1 Percentages & Discounts).',
+      'Proposed NaCCA CCP curriculum links: Computing (B8.1.1.1 QR Codes, B8.3.3.1 Information Security (CIA Triad), Career Technology (B8.2.1 Textiles, B8.6.2 Enterprise), and Mathematics (B8.4.2.1 Probability, B8.1.3.1 Percentages & Discounts).',
       'Ghana Cyber Security Authority (CSA) Relevance: Directly addresses Mobile Money social-engineering OTP scams and fake reversal messages targeting youth enterprises.',
     ],
     reviewQuestions: [
@@ -873,7 +873,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
         ['Career Technology (NaCCA CCP B8.2.1.1, B8.3.3.1, B8.6.2.1)', 'Compliant textile fabrication, seam allowance, and enterprise sales'],
         ['Mathematics (NaCCA CCP B8.4.2.1, B8.1.3.1)', 'Probability of code combinations, percentage discounts, and fees'],
       ],
-      before: ['Write two URLs on the board: https://example.com and http://example.invalid/free-bonus—ask students to spot warning signs.'],
+      before: ['Write two URLs on the board: https://example.com and http://example.invalid/free-bonus, and ask students to spot warning signs.'],
       during: ['Pause on Page 3 to match real examples to CIA Triad pillars.'],
       after: ['Calculate how much fabric is needed to sew a laptop sleeve when seam allowance is added to every side.'],
       discussion: ['Why do scammers always try to create panic ("within two minutes!") during phone attacks?'],
@@ -896,7 +896,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     key: 'star-hub-on-bearing-053',
     title: 'The Star Switch on Bearing 053°',
     summary:
-      'When a chewed single backbone cable knocks out every computer in the old JHS block, Kobby, Sena, and Hamdia redesign the school Local Area Network from a fragile Bus topology to a central Star topology—using column vectors, three-figure bearings, and weatherproof PVC conduit trunking to link the library cleanly.',
+      'When a chewed single backbone cable knocks out every computer in the old JHS block, Kobby, Sena, and Hamdia redesign the school Local Area Network from a fragile Bus topology to a central Star topology, using column vectors, three-figure bearings, and weatherproof PVC conduit trunking to link the library cleanly.',
     classIds: ['jhs-1', 'jhs-2', 'jhs-3'] as unknown as Classification['classIds'],
     ageMin: 12,
     ageMax: 15,
@@ -922,27 +922,27 @@ export const BATCH_38_STORIES: PilotStory[] = [
     pages: [
       pg(
         '🖧',
-        'Ten minutes before Basic 8’s mock digital quiz, every desktop in the ICT room lost connection to the local offline learning server at once! Tracing the dusty skirting board with Uncle Fiifi, Sena found where a mouse had chewed through one shared cable near Door 1. “This old setup used a Bus topology, where all nodes share a single central backbone cable,” Uncle Fiifi explained. “Its biggest weakness is that a single break in the main bus brings the entire Local Area Network (LAN) down! Upgrading to a Star topology gives every computer—and the library block—its own dedicated twisted-pair cable running into a central network switch.”',
+        'Ten minutes before Basic 8’s mock digital quiz, every desktop in the ICT room lost connection to the local offline learning server at once! Tracing the dusty skirting board with Uncle Fiifi, Sena found where a mouse had chewed through one shared cable near Door 1. “This old setup used a Bus topology, where all nodes share a single central backbone cable,” Uncle Fiifi explained. “Its biggest weakness is that a single break in the main bus brings the entire Local Area Network (LAN) down! Upgrading to a Star topology gives every computer, as well as the library block, its own dedicated twisted-pair cable running into a central network switch.”',
         'Inside a Ghanaian JHS computer lab, Uncle Fiifi holds up a chewed grey backbone cable while Sena points to a chalkboard diagram contrasting Bus Topology with Star Topology.'
       ),
       pg(
         '🧭',
-        'To link the library reading corner to the ICT room’s new central switch, Kobby plotted both buildings on a campus coordinate grid scaled in metres where the Y-axis pointed due North. From the ICT switch at origin I(0, 0), the library terminal L lay 24 metres East and 18 metres North—giving displacement vector IL = (24, 18), which can be written as a column vector with 24 above 18! Using vector magnitude (Pythagoras’ theorem), Kobby found the straight-line distance: |IL| = √(24² + 18²) = √(576 + 324) = √900 = 30 metres. Calculating clockwise from North, Kobby used tan⁻¹(24 ÷ 18) ≈ 53.1°, which rounds to 53°, written as a three-figure bearing: 053°!',
+        'To link the library reading corner to the ICT room’s new central switch, Kobby plotted both buildings on a campus coordinate grid scaled in metres where the Y-axis pointed due North. From the ICT switch at origin I(0, 0), the library terminal L lay 24 metres East and 18 metres North, giving displacement vector IL = (24, 18), which can be written as a column vector with 24 above 18! Using vector magnitude (Pythagoras’ theorem), Kobby found the straight-line distance: |IL| = √(24² + 18²) = √(576 + 324) = √900 = 30 metres. Calculating clockwise from North, Kobby used tan⁻¹(24 ÷ 18) ≈ 53.1°, which rounds to 53°, written as a three-figure bearing: 053°!',
         'Close-up view of campus coordinate grid showing North at 000°, ICT Room at (0,0), Library at (24 m East, 18 m North), straight path 30 m, and clockwise angle marked 053°.'
       ),
       pg(
         '🔄',
-        'Hamdia tested Kobby’s BECE geometry with a sharp follow-up question: “If the bearing of the Library from the ICT switch is 053°, what is the back-bearing of the ICT switch from the Library when we sight back along the straight line between the buildings?” Drawing a second North arrow at point L and using alternate interior angles, Kobby added 180° to 053°: “180° + 53° = 233°! Whenever a forward bearing is less than 180°, you add 180° to find the reverse bearing—and you always measure clockwise from North, never from East or South.”',
+        'Hamdia tested Kobby’s BECE geometry with a sharp follow-up question: “If the bearing of the Library from the ICT switch is 053°, what is the back-bearing of the ICT switch from the Library when we sight back along the straight line between the buildings?” Drawing a second North arrow at point L and using alternate interior angles, Kobby added 180° to 053°: “180° + 53° = 233°! Whenever a forward bearing is less than 180°, you add 180° to find the reverse bearing, and you always measure clockwise from North, never from East or South.”',
         'Clear geometric diagram on graph paper showing two parallel North arrows at points I and L, illustrating forward bearing 053° and clockwise back-bearing 233°.'
       ),
       pg(
         '🛠️',
-        'Rather than stringing bare Cat6 cable across the sunny courtyard where footsteps, rainwater, and rodents would ruin it—or digging straight through a flowerbed—the team followed the paved L-shaped walkway (24 m East + 18 m North = 42 m along the walls, plus 6 m of vertical cable allowances = 48 m of cable). The wall-mounted conduit covered the 42 m walkway route, while the remaining 6 m allowed for cable drops inside the buildings. Using Career Technology skills, Hamdia planned rigid UV-resistant PVC conduit in 3-metre lengths (42 ÷ 3 = 14 straight pipe lengths, with suitable bends and fittings counted separately), cut square ends cleanly with a fine-toothed junior hacksaw, smoothed burrs with abrasive paper so sharp plastic edges would not scrape cable insulation, and installed suitable inspection bends following the manufacturer’s instructions.',
+        'Rather than stringing bare Cat6 cable across the sunny courtyard where footsteps, rainwater, and rodents would ruin it, and without digging straight through a flowerbed, the team followed the paved L-shaped walkway (24 m East + 18 m North = 42 m along the walls, plus 6 m of vertical cable allowances = 48 m of cable). The wall-mounted conduit covered the 42 m walkway route, while the remaining 6 m allowed for cable drops inside the buildings. Using Career Technology skills, Hamdia planned rigid UV-resistant PVC conduit in 3-metre lengths (42 ÷ 3 = 14 straight pipe lengths, with suitable bends and fittings counted separately), cut square ends cleanly with a fine-toothed junior hacksaw, smoothed burrs with abrasive paper so sharp plastic edges would not scrape cable insulation, and installed suitable inspection bends following the manufacturer’s instructions.',
         'Along a shaded school veranda wall, Hamdia in safety goggles fits neat grey PVC conduit pipes with saddle clips and smooth 90-degree inspection elbows using a spirit level.'
       ),
       pg(
         '🔌',
-        'Back inside, Uncle Fiifi explained why their Star LAN used a network switch rather than an old hub or a wide-area router alone. “A switch learns the hardware MAC addresses of each computer and learns connected devices’ MAC addresses and normally forwards Ethernet frames to the appropriate port, reducing unnecessary traffic compared with a hub,” he noted. “Later, when the school connects this LAN to the wider internet—a Wide Area Network (WAN)—a router and firewall will sit at the gateway between our switch and the outside world.” Under Uncle Fiifi’s supervision, Sena terminated the low-voltage Ethernet connectors correctly and checked them with a cable tester and clicked each cable into the switch.',
+        'Back inside, Uncle Fiifi explained why their Star LAN used a network switch rather than an old hub or a wide-area router alone. “A switch learns the hardware MAC addresses of each computer and learns connected devices’ MAC addresses and normally forwards Ethernet frames to the appropriate port, reducing unnecessary traffic compared with a hub,” he noted. “Later, when the school connects this LAN to the wider internet, known as a Wide Area Network (WAN), a router and firewall will sit at the gateway between our switch and the outside world.” Under Uncle Fiifi’s supervision, Sena terminated the low-voltage Ethernet connectors correctly and checked them with a cable tester and clicked each cable into the switch.',
         'Close-up detailed scene of Sena clicking colour-coded Cat6 RJ45 plugs into an 8-port Ethernet switch with green blinking link LEDs inside a ventilated wall cabinet.'
       ),
       pg(
@@ -1084,7 +1084,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     key: 'the-crop-app-that-missed-cassava',
     title: 'The Crop App That Missed Cassava',
     summary:
-      'Testing a free smartphone Artificial Intelligence leaf-scanner at their town’s cassava-gari cooperative, JHS 3 students Afia, Bature, and Mawuli discover why foreign training data caused the AI to misdiagnose Ghanaian cassava mosaic—using stratified data collection and 360° pie charts to retrain a fair local model.',
+      'Testing a free smartphone Artificial Intelligence leaf-scanner at their town’s cassava-gari cooperative, JHS 3 students Afia, Bature, and Mawuli discover why foreign training data caused the AI to misdiagnose Ghanaian cassava mosaic, using stratified data collection and 360° pie charts to retrain a fair local model.',
     classIds: ['jhs-1', 'jhs-2', 'jhs-3'] as unknown as Classification['classIds'],
     ageMin: 12,
     ageMax: 15,
@@ -1110,7 +1110,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     pages: [
       pg(
         '🌿',
-        'At a women’s gari-processing cooperative near Assin Foso, Mawuli’s aunties knew that good gari starts with sound cassava roots and careful processing: hygienic peeling, washing, grating, controlled fermentation and pressing to help reduce naturally occurring cyanogenic compounds, sieving, and thorough roasting. Fortification, if used, requires a separately approved and measured ingredient process. When Afia tested a downloaded “Smart Farm AI” leaf-camera app on mottled yellow-and-green cassava leaves showing symptoms consistent with cassava mosaic disease, the app confidently flashed: “96% Match: Maple Leaf Frostbite—Apply Winter Mulch!” Bature burst out laughing: “Snow frostbite in Ghana? Why did a smart computer say something so foolish?”',
+        'At a women’s gari-processing cooperative near Assin Foso, Mawuli’s aunties knew that good gari starts with sound cassava roots and careful processing: hygienic peeling, washing, grating, controlled fermentation and pressing to help reduce naturally occurring cyanogenic compounds, sieving, and thorough roasting. Fortification, if used, requires a separately approved and measured ingredient process. When Afia tested a downloaded “Smart Farm AI” leaf-camera app on mottled yellow-and-green cassava leaves showing symptoms consistent with cassava mosaic disease, the app confidently flashed: “96% Match: Maple Leaf Frostbite: Apply Winter Mulch!” Bature burst out laughing: “Snow frostbite in Ghana? Why did a smart computer say something so foolish?”',
         'Beside a Ghanaian cassava farm, Afia holds a tablet showing a mottled leaf mislabelled as Maple Frostbite while Bature and Mawuli look on amazed.'
       ),
       pg(
@@ -1125,17 +1125,17 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ),
       pg(
         '🥧',
-        'To present the dataset distribution to the cooperative, Bature constructed an accurate pie chart in his Mathematics book—avoiding the common mistake of plotting raw numbers or percentages directly as degrees! “A full circle measures 360°,” Bature reminded Mawuli. “Each sector angle equals (Category Frequency ÷ Total Frequency) × 360°.” Calculating carefully: Healthy = (90 ÷ 180) × 360° = 180°; Mosaic Disease = (45 ÷ 180) × 360° = 90°; Green Mite = (27 ÷ 180) × 360° = 54°; and Bacterial Blight = (18 ÷ 180) × 360° = 36°. Checking the sum—180° + 90° + 54° + 36° = 360°—every degree accounted for!',
+        'To present the dataset distribution to the cooperative, Bature constructed an accurate pie chart in his Mathematics book, avoiding the common mistake of plotting raw numbers or percentages directly as degrees! “A full circle measures 360°,” Bature reminded Mawuli. “Each sector angle equals (Category Frequency ÷ Total Frequency) × 360°.” Calculating carefully: Healthy = (90 ÷ 180) × 360° = 180°; Mosaic Disease = (45 ÷ 180) × 360° = 90°; Green Mite = (27 ÷ 180) × 360° = 54°; and Bacterial Blight = (18 ÷ 180) × 360° = 36°. Checking the sum, 180° + 90° + 54° + 36° = 360°, every degree was accounted for!',
         'Close-up view of Bature’s notebook showing a compass circle divided with a protractor into four sectors: 180°, 90°, 54°, and 36°.'
       ),
       pg(
         '🧠',
-        'Using a classroom image classifier in the ICT lab, Afia grouped photographs by source plant before splitting them, to reduce the chance that near-identical photos appeared in both sets. The group trained on 144 photos and reserved 36 unseen photos for a small demonstration test. On that test, their model classified 33 of 36 correctly (91.7%, about 92%). They had not run a comparable test of the downloaded app, so they did not claim a proven improvement over it! Even then, Madam Adomako taught a crucial ethical rule: “Three of these 36 test images were misclassified, and performance on other farms or in different light remains unknown. Responsible AI keeps a ‘human-in-the-loop’—farmers and extension officers verify high-stakes decisions rather than obeying software blindly, and farmer farm-location privacy must always be respected.”',
-        'In the ICT lab, Afia tests unseen cassava leaf images showing 92% accuracy beside a reminder banner: AI Assists Experts — Always Verify!'
+        'Using a classroom image classifier in the ICT lab, Afia grouped photographs by source plant before splitting them, to reduce the chance that near-identical photos appeared in both sets. The group trained on 144 photos and reserved 36 unseen photos for a small demonstration test. On that test, their model classified 33 of 36 correctly (91.7%, about 92%). They had not run a comparable test of the downloaded app, so they did not claim a proven improvement over it! Even then, Madam Adomako taught a crucial ethical rule: “Three of these 36 test images were misclassified, and performance on other farms or in different light remains unknown. Responsible AI keeps a ‘human-in-the-loop’, where farmers and extension officers verify high-stakes decisions rather than obeying software blindly, and farmer farm-location privacy must always be respected.”',
+        'In the ICT lab, Afia tests unseen cassava leaf images showing 92% accuracy beside a reminder banner: AI Assists Experts: Always Verify!'
       ),
       pg(
         '🥣',
-        'At Friday’s cooperative meeting, the students presented their colour-coded pie chart alongside a laminated visual leaf guide and their locally trained offline classifier—helping farmers recognise possible disease symptoms and consult extension officers about removing affected plants and choosing healthy, recommended planting material. Months later, harvesting sound tubers for Mawuli’s aunties to roast into golden soya-fortified gari in hygienic stainless-steel pans, the trio saw how African data, honest statistics, and food technology make Artificial Intelligence truly serve local communities.',
+        'At Friday’s cooperative meeting, the students presented their colour-coded pie chart alongside a laminated visual leaf guide and their locally trained offline classifier, helping farmers recognise possible disease symptoms and consult extension officers about removing affected plants and choosing healthy, recommended planting material. Months later, harvesting sound tubers for Mawuli’s aunties to roast into golden soya-fortified gari in hygienic stainless-steel pans, the trio saw how African data, honest statistics, and food technology make Artificial Intelligence truly serve local communities.',
         'Warm cooperative scene showing women roasting golden gari in stainless pans under a chimney while farmers consult the students’ Pie Chart and tablet.'
       ),
     ],
@@ -1227,7 +1227,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'Proposed CCP curriculum links: Computing (B8.4.4.1 / B9.4.4.1 AI & Machine Learning bias), Mathematics (B7.4.1.1 / B8.4.1.1 Frequency Tables & Pie Charts), and Career Technology (B8.2.4.1 Food Commodities—cassava to gari value chain).',
+      'Proposed CCP curriculum links: Computing (B8.4.4.1 / B9.4.4.1 AI & Machine Learning bias), Mathematics (B7.4.1.1 / B8.4.1.1 Frequency Tables & Pie Charts), and Career Technology (B8.2.4.1 Food Commodities: cassava to gari value chain).',
       'BECE Maths Guardrail: Explicitly contrasts Percentage (25%) with Pie-Chart Sector Angle (90°).',
     ],
     reviewQuestions: [
@@ -1236,7 +1236,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     ],
     guide: {
       overview:
-        'Demystifies Artificial Intelligence for Ghanaian JHS students—connecting Machine Learning training bias, BECE pie-chart construction, unbiased sampling, and hygienic local cassava-to-gari agro-processing.',
+        'Demystifies Artificial Intelligence for Ghanaian JHS students, connecting Machine Learning training bias, BECE pie-chart construction, unbiased sampling, and hygienic local cassava-to-gari agro-processing.',
       lessonMinutes: 45,
       goals: [
         'Explain how Machine Learning models learn from training data and why bias occurs.',
@@ -1261,7 +1261,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ],
       support: ['Teach unit degree shortcut: when Total = 180, 1 item = 360° ÷ 180 = 2°.'],
       stretch: ['Explore image classification using classroom objects and note changes with lighting.'],
-      localise: ['Adapt crop examples to local produce—cocoa black pod, maize fall armyworm, mango anthracnose.'],
+      localise: ['Adapt crop examples to local produce: cocoa black pod, maize fall armyworm, mango anthracnose.'],
       factCheck: ['Provisional mapping; verify against official NaCCA CCP Computing B8.4.4, Mathematics B8.4.1, and Career Technology.'],
     },
   }),
@@ -1271,7 +1271,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     key: 'no-gaps-in-the-solar-dryer',
     title: 'No Gaps in the Solar Dryer',
     summary:
-      'To stop roadside dust and blowflies from contaminating sliced mangoes and pepper, JHS 3 makers Adoley, Torgbui, and Fuseini construct a hygienic triangular-prism solar cabinet dryer—combining 2D geometric nets and total surface area with aluminium sheet metalwork, UV polycarbonate thermoplastics, a smart thermochromic heat strip, and cloud temperature logging.',
+      'To stop roadside dust and blowflies from contaminating sliced mangoes and pepper, JHS 3 makers Adoley, Torgbui, and Fuseini construct a hygienic triangular-prism solar cabinet dryer, combining 2D geometric nets and total surface area with aluminium sheet metalwork, UV polycarbonate thermoplastics, a smart thermochromic heat strip, and cloud temperature logging.',
     classIds: ['jhs-1', 'jhs-2', 'jhs-3'] as unknown as Classification['classIds'],
     ageMin: 12,
     ageMax: 15,
@@ -1302,17 +1302,17 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ),
       pg(
         '📐',
-        'Before ordering a single sheet of material, Adoley unfolded the 3D triangular prism into its flat 2D net of five faces: two congruent right-angled triangular ends plus three rectangles! First, she found the slanted roof edge using Pythagoras’ theorem: c = √(30² + 40²) = √(900 + 1,600) = √2,500 = 50 cm—warning Torgbui never to confuse the triangle’s 40 cm perpendicular height with its 50 cm slant hypotenuse! Next, she calculated the Total Surface Area (TSA): two triangular ends = 2 × (½ × 30 × 40) = 1,200 cm²; rectangular base = 30 × 100 = 3,000 cm²; vertical back = 40 × 100 = 4,000 cm²; and slanted clear top = 50 × 100 = 5,000 cm²—giving an exact TSA of 13,200 cm² (1.32 m²)!',
+        'Before ordering a single sheet of material, Adoley unfolded the 3D triangular prism into its flat 2D net of five faces: two congruent right-angled triangular ends plus three rectangles! First, she found the slanted roof edge using Pythagoras’ theorem: c = √(30² + 40²) = √(900 + 1,600) = √2,500 = 50 cm. She warned Torgbui never to confuse the triangle’s 40 cm perpendicular height with its 50 cm slant hypotenuse! Next, she calculated the Total Surface Area (TSA): two triangular ends = 2 × (½ × 30 × 40) = 1,200 cm²; rectangular base = 30 × 100 = 3,000 cm²; vertical back = 40 × 100 = 4,000 cm²; and slanted clear top = 50 × 100 = 5,000 cm². This gave an exact TSA of 13,200 cm² (1.32 m²)!',
         'Unfolded 2D net of right-angled triangular prism labelled with dimensions (30 cm, 40 cm, 50 cm slant, 100 cm length) and total area 13,200 cm².'
       ),
       pg(
         '🔩',
-        'Selecting materials carefully from the NaCCA Career Technology syllabus, Torgbui chose non-rusting aluminium sheet painted matte black with food-safe exterior coating for an external heat-absorbing collector surface kept separate from food contact, stainless-steel mesh for the removable drying tray, and UV-stabilised clear polycarbonate—a tough thermoplastic that softens only at high factory moulding temperatures rather than shattering like glass—for the 50 cm × 100 cm slanted glazing! Wearing leather gloves and goggles, he scribed fold allowances, cut straight edges with tin snips, filed away every sharp metal burr, and assembled the frame with appropriate fasteners and screened, adjustable ventilation. The teacher checked all food-contact surfaces and edges before use.',
+        'Selecting materials carefully from the NaCCA Career Technology syllabus, Torgbui chose non-rusting aluminium sheet painted matte black with food-safe exterior coating for an external heat-absorbing collector surface kept separate from food contact, stainless-steel mesh for the removable drying tray, and UV-stabilised clear polycarbonate, a tough thermoplastic that softens only at high factory moulding temperatures rather than shattering like glass, for the 50 cm × 100 cm slanted glazing! Wearing leather gloves and goggles, he scribed fold allowances, cut straight edges with tin snips, filed away every sharp metal burr, and assembled the frame with appropriate fasteners and screened, adjustable ventilation. The teacher checked all food-contact surfaces and edges before use.',
         'Torgbui in leather gloves and safety goggles filing smooth edges on an aluminium collector tray and assembling clear polycarbonate glazing.'
       ),
       pg(
         '🌡️',
-        'Madam Kwakye then introduced a modern Smart Material from the Basic 9 curriculum to give the operator a visible temperature warning: a self-adhesive thermochromic strip stuck inside the viewing edge! “Smart materials change their properties reversibly in response to an external stimulus such as heat, light, or moisture,” she explained. “A suitable commercially specified indicator could change colour at a chosen threshold. We must calibrate it against a thermometer; one ordinary strip does not automatically show green throughout 45–60°C and red above 65°C. Drying temperatures and times depend on the fruit, slice thickness, airflow, and hygiene guidance.”',
+        'Madam Kwakye then introduced a modern Smart Material from the Basic 9 curriculum to give the operator a visible temperature warning: a self-adhesive thermochromic strip stuck inside the viewing edge! “Smart materials change their properties reversibly in response to an external stimulus such as heat, light, or moisture,” she explained. “A suitable commercially specified indicator could change colour at a chosen threshold. We must calibrate it against a thermometer; one ordinary strip does not automatically show green throughout 45°C to 60°C and red above 65°C. Drying temperatures and times depend on the fruit, slice thickness, airflow, and hygiene guidance.”',
         'View through slanted lid showing golden mango slices on mesh beside a temperature-indicator strip and digital thermometer reading 55°C.'
       ),
       pg(
@@ -1448,7 +1448,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ],
       support: ['Colour-code each of the 5 faces on the 2D net differently so learners calculate all 5 areas.'],
       stretch: ['Contrast thermoplastics with thermosetting plastics (Bakelite, melamine).'],
-      localise: ['Adapt dried produce to local crops—pepper, okra (nkruma), cassava Kokonte chips, pineapple.'],
+      localise: ['Adapt dried produce to local crops: pepper, okra (nkruma), cassava Kokonte chips, pineapple.'],
       factCheck: ['Provisional mapping; verify against official NaCCA CCP Career Technology B8.2.2, Mathematics B8.3.2, and Computing B9.1.1.'],
     },
   }),
@@ -1494,7 +1494,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ),
       pg(
         '📽️',
-        'Next, Kwaku prepared their five-slide Multimedia Presentation for the judges. Remembering Computing presentation design principles, he replaced cramped walls of tiny yellow text on a bright background with high-contrast dark navy headings on soft cream slides, concise five-point bullet summaries, consistent font sizes, and genuine photos of their bamboo curing process—avoiding dizzying sound effects on every line so the judges focused on the engineering and numbers.',
+        'Next, Kwaku prepared their five-slide Multimedia Presentation for the judges. Remembering Computing presentation design principles, he replaced cramped walls of tiny yellow text on a bright background with high-contrast dark navy headings on soft cream slides, concise five-point bullet summaries, consistent font sizes, and genuine photos of their bamboo curing process, avoiding dizzying sound effects on every line so the judges focused on the engineering and numbers.',
         'Kwaku and Eyram rehearsing beside a projected slide showing clean high-contrast bullet points, product photos, and zero cluttered text.'
       ),
       pg(
@@ -1504,12 +1504,12 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ),
       pg(
         '🧮',
-        'Zuwera worked both options step by step on Principal P = GH¢ 2,000 for Time T = 9/12 years. Under the Credit Union’s 18% per annum rate: I = (2,000 × 18 × 9) ÷ (100 × 12) = 324,000 ÷ 1,200 = GH¢ 270.00 interest, giving Total Amount A = P + I = GH¢ 2,270.00! Under the informal lender’s 4% monthly flat rate for 9 months: I = 2,000 × (4 ÷ 100) × 9 = GH¢ 720.00 interest—Total Amount GH¢ 2,720.00, costing GH¢ 450.00 more! She also checked the registered tool-shop invoice for a GH¢ 1,600 bench drill plus an assumed 15% VAT for this classroom example: 0.15 × 1,600 = GH¢ 240, giving GH¢ 1,840 and leaving GH¢ 160 for sanding belts. Zuwera warned that real Ghanaian invoices must use the applicable tax rules and levies on the transaction date.',
+        'Zuwera worked both options step by step on Principal P = GH¢ 2,000 for Time T = 9/12 years. Under the Credit Union’s 18% per annum rate: I = (2,000 × 18 × 9) ÷ (100 × 12) = 324,000 ÷ 1,200 = GH¢ 270.00 interest, giving Total Amount A = P + I = GH¢ 2,270.00! Under the informal lender’s 4% monthly flat rate for 9 months: I = 2,000 × (4 ÷ 100) × 9 = GH¢ 720.00 interest, giving a Total Amount of GH¢ 2,720.00, which cost GH¢ 450.00 more! She also checked the registered tool-shop invoice for a GH¢ 1,600 bench drill plus an assumed 15% VAT for this classroom example: 0.15 × 1,600 = GH¢ 240, giving GH¢ 1,840 and leaving GH¢ 160 for sanding belts. Zuwera warned that real Ghanaian invoices must use the applicable tax rules and levies on the transaction date.',
         'Calculation table comparing Credit Union Repayment (GH¢ 2,270) vs Informal Lender (GH¢ 2,720), alongside illustrative invoice showing GH¢ 1,600 + GH¢ 240 VAT.'
       ),
       pg(
         '🏆',
-        'At Friday’s Pitch Day, Mr Mensah and the panel applauded the team’s accessible HTML catalogue, crisp slides, carefully checked illustrative supplier invoice, and razor-sharp Simple Interest comparison—offering to review the club’s proposal for a supervised school micro-grant after the required approvals! Watching juniors test their bamboo bookstands in the library, the trio proved that clean code, clear communication, and mathematical vigilance protect young entrepreneurs from debt traps before business even begins.',
+        'At Friday’s Pitch Day, Mr Mensah and the panel applauded the team’s accessible HTML catalogue, crisp slides, carefully checked illustrative supplier invoice, and razor-sharp Simple Interest comparison, and offered to review the club’s proposal for a supervised school micro-grant after the required approvals! Watching juniors test their bamboo bookstands in the library, the trio proved that clean code, clear communication, and mathematical vigilance protect young entrepreneurs from debt traps before business even begins.',
         'JHS Pitch Day finale showing Eyram, Kwaku, and Zuwera presenting their bamboo artefacts and financial table to smiling judges and parents.'
       ),
     ],
@@ -1576,7 +1576,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     glossary: [
       {
         word: 'HTML',
-        definition: 'HyperText Markup Language—the standard language using tags to structure content on webpages.',
+        definition: 'HyperText Markup Language, the standard language using tags to structure content on webpages.',
         pages: [2, 6],
       },
       {
@@ -1611,7 +1611,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
     ],
     guide: {
       overview:
-        'Brings Basic 9 readiness full circle—uniting HTML web structure and presentation design with sustainable bamboo Career Technology craft, Business Plan writing, VAT compliance, and predatory-loan defence using Simple Interest.',
+        'Brings Basic 9 readiness full circle, uniting HTML web structure and presentation design with sustainable bamboo Career Technology craft, Business Plan writing, VAT compliance, and predatory-loan defence using Simple Interest.',
       lessonMinutes: 45,
       goals: [
         'Write well-formed HTML tags and design high-contrast presentation slides.',
@@ -1623,7 +1623,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
         ['Career Technology (NaCCA CCP B8.2.2, B9.6.2.1)', 'Sustainable bamboo/leather craft and writing a simple Business Plan'],
         ['Mathematics (NaCCA CCP B8.1.3.2 / B9.1.3.1)', 'Simple Interest (months vs years), Total Amount, and VAT calculations'],
       ],
-      before: ['Ask: Which loan charges more interest over a year—3% per month or 20% per annum?'],
+      before: ['Ask: Which loan charges more interest over a year: 3% per month or 20% per annum?'],
       during: ['Pause on Page 2 to spot paired container tags vs void tags, and on Page 5 to underline 9 ÷ 12.'],
       after: ['Save a 12-line index.html file in Notepad showcasing craft items and open in a browser.'],
       discussion: ['Why should a business request a valid supplier invoice instead of trusting a handwritten total?'],
@@ -1636,7 +1636,7 @@ export const BATCH_38_STORIES: PilotStory[] = [
       ],
       support: ['Highlight Months Rule in red: Rate in % p.a. and Time in months -> write Months / 12.'],
       stretch: ['Add basic inline CSS styling and an HTML table displaying product prices.'],
-      localise: ['Substitute regional craft commodities—Bolgatanga straw baskets, Kente strip accessories.'],
+      localise: ['Substitute regional craft commodities: Bolgatanga straw baskets, Kente strip accessories.'],
       factCheck: ['Provisional mapping; verify against official NaCCA CCP Computing B8.2.2, Career Technology B9.6.2, and Mathematics B8.1.3.'],
     },
   }),

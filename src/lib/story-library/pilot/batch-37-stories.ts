@@ -182,12 +182,12 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '🗣️',
-        'Later that morning in Social Studies, Madam Mensah taught a lesson on adolescent development and peer pressure. “During puberty, hormones such as testosterone in boys and oestrogen in girls trigger growth spurts,” she explained. “Each body follows its own normal timetable. Comparing yourself with an older classmate makes you feel insecure for no good reason—and negative peer pressure feeds on that insecurity.” Assertiveness, she said, means holding your ground calmly. On the board she wrote three steps: say a firm “No” without apologising, state the harm plainly, and walk away towards supportive friends or a trusted adult.',
+        'Later that morning in Social Studies, Madam Mensah taught a lesson on adolescent development and peer pressure. “During puberty, hormones such as testosterone in boys and oestrogen in girls trigger growth spurts,” she explained. “Each body follows its own normal timetable. Comparing yourself with an older classmate makes you feel insecure for no good reason, and negative peer pressure feeds on that insecurity.” Assertiveness, she said, means holding your ground calmly. On the board she wrote three steps: say a firm “No” without apologising, state the harm plainly, and walk away towards supportive friends or a trusted adult.',
         'Madam Mensah teaching a JHS class beside a chalkboard showing normal adolescent growth curves and three numbered assertive refusal steps.',
       ),
       pg(
         '⚖️',
-        'In the last period, RME, the class discussed how moral choices test character when no referee is watching. Ibrahim raised his hand. “In Islam, life and a clear mind are sacred trusts. Anything that intoxicates the mind or harms the body is forbidden, whatever nickname people give it.” Esi agreed. “Christians are taught that our bodies belong to God, so we should practise self-control and win honestly.” Kofi remembered what his grandmother often said in Twi about suban pa—good character. It outlasts every trophy won by cheating.',
+        'In the last period, RME, the class discussed how moral choices test character when no referee is watching. Ibrahim raised his hand. “In Islam, life and a clear mind are sacred trusts. Anything that intoxicates the mind or harms the body is forbidden, whatever nickname people give it.” Esi agreed. “Christians are taught that our bodies belong to God, so we should practise self-control and win honestly.” Kofi remembered what his grandmother often said in Twi about suban pa, meaning good character. It outlasts every trophy won by cheating.',
         'Bright JHS classroom scene where Ibrahim, Esi, and Kofi contribute thoughtfully during an RME discussion on bodily integrity and honest competition.',
       ),
       pg(
@@ -197,7 +197,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '🏅',
-        'Madam Mensah and the Physical Education master acted quietly before race day. They confiscated the mixture and arranged health counselling for Baffour, without shaming him in public. On Friday, Kofi ran on boiled yam and kontomire stew from the evening before, clean water, and eight hours of sleep. He took the curve of the 200 metres smoothly and finished a proud second—enough to make the circuit team for the district games. Crossing the white line strong and clear-headed, he knew his real victory had been won two days earlier.',
+        'Madam Mensah and the Physical Education master acted quietly before race day. They confiscated the mixture and arranged health counselling for Baffour, without shaming him in public. On Friday, Kofi ran on boiled yam and kontomire stew from the evening before, clean water, and eight hours of sleep. He took the curve of the 200 metres smoothly and finished a proud second, which was enough to make the circuit team for the district games. Crossing the white line strong and clear-headed, he knew his real victory had been won two days earlier.',
         'Kofi sprinting cleanly across a white chalk finish line on a sunny Ghanaian school grass track while classmates cheer from the touchline.',
       ),
     ],
@@ -302,7 +302,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'NaCCA CCP Alignment: Integrated Science (B8.3.1.1 / B9.3.1.1 & B8.5.2.1: Human body systems, cellular respiration, and dangers of drug/substance abuse), Social Studies (B7.2.1.1 / B8.2.1.1: Strand 2, Sub-strand 1: Adolescent Reproductive Health, puberty, body image, and peer pressure), and RME (B8.5.1.1 / B9.5.1.1: Strand 5: Ethics & Moral Life—moral decision-making, self-control, and substance abuse prevention).',
+      'NaCCA CCP Alignment: Integrated Science (B8.3.1.1 / B9.3.1.1 & B8.5.2.1: Human body systems, cellular respiration, and dangers of drug/substance abuse), Social Studies (B7.2.1.1 / B8.2.1.1: Strand 2, Sub-strand 1: Adolescent Reproductive Health, puberty, body image, and peer pressure), and RME (B8.5.1.1 / B9.5.1.1: Strand 5: Ethics & Moral Life: moral decision-making, self-control, and substance abuse prevention).',
       'FDA Ghana & GES SHEP Relevance: Addresses high-caffeine drinks and the risks of unknown or unprescribed medicines; the story does not identify the unknown tablet as tramadol.',
       'Safety Guardrail: The text deliberately gives no quantities or preparation detail for the mixture; do not add any when localising.',
       'Science note: a 200-metre sprint relies heavily on anaerobic respiration, so the story says cells release the most energy with oxygen, not only with oxygen.',
@@ -381,12 +381,12 @@ export const BATCH_37_STORIES: PilotStory[] = [
     pages: [
       pg(
         '⚡',
-        'Every Thursday evening in Asafo, the prepaid electricity meter on the compound-house wall began its sharp warning beep—credit almost finished again. Tenants blamed one another around the courtyard. Uncle Nii lowered his voice: “A man at the lorry park offered to connect our heavy sockets so that they bypass the meter, for a small fee, so our credits stop draining.” Mansa exchanged a worried look with her cousin Tetteh. “Before anyone touches illegal wires, Uncle,” Mansa asked respectfully, “may Tetteh and I calculate where the kilowatt-hours are actually going?”',
+        'Every Thursday evening in Asafo, the prepaid electricity meter on the compound-house wall began its sharp warning beep, showing that credit was almost finished again. Tenants blamed one another around the courtyard. Uncle Nii lowered his voice: “A man at the lorry park offered to connect our heavy sockets so that they bypass the meter, for a small fee, so our credits stop draining.” Mansa exchanged a worried look with her cousin Tetteh. “Before anyone touches illegal wires, Uncle,” Mansa asked respectfully, “may Tetteh and I calculate where the kilowatt-hours are actually going?”',
         'In a Ghanaian compound-house courtyard at dusk, tenants gather anxiously beneath a wall-mounted prepaid electricity meter flashing a red low-credit light while Mansa holds up her science notebook.',
       ),
       pg(
         '📊',
-        'Mansa and Tetteh read the rating plate on every appliance—never touching live wires—and recorded each power rating in watts (W). “Electrical power is voltage multiplied by current: P = V × I,” Tetteh said. “But the meter charges us for energy. Energy is power in kilowatts multiplied by time in hours, E = P × t, measured in kilowatt-hours (kWh).” They began to calculate. The compound’s ten old 60-watt filament bulbs, burning five hours a night, used 3.0 kWh; ten 9-watt LEDs would need only 0.45 kWh. The 1,500-watt pressing iron, used for two hours, took another 3.0 kWh. And Auntie Akweley’s secondhand refrigerator had a torn rubber door seal, so its 300-watt compressor ran non-stop, day and night.',
+        'Mansa and Tetteh read the rating plate on every appliance, without touching live wires, and recorded each power rating in watts (W). “Electrical power is voltage multiplied by current: P = V × I,” Tetteh said. “But the meter charges us for energy. Energy is power in kilowatts multiplied by time in hours, E = P × t, measured in kilowatt-hours (kWh).” They began to calculate. The compound’s ten old 60-watt filament bulbs, burning five hours a night, used 3.0 kWh; ten 9-watt LEDs would need only 0.45 kWh. The 1,500-watt pressing iron, used for two hours, took another 3.0 kWh. And Auntie Akweley’s secondhand refrigerator had a torn rubber door seal, so its 300-watt compressor ran non-stop, day and night.',
         'Mansa and Tetteh inspecting the metal wattage rating label on the back of an unplugged pressing iron and checking a torn rubber door gasket on an old refrigerator, recording figures in a table.',
       ),
       pg(
@@ -401,12 +401,12 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '⚖️',
-        'Uncle Nii rubbed his chin. Auntie Akweley spoke quietly. “Whether in church, at the mosque, or by family custom, taking what you have not paid for is theft—even when the wire is hidden inside the wall. My Muslim neighbours call it a breach of amanah, trust. My pastor says integrity means doing right in secret just as in public. And our elders say a good name is better than riches.” Uncle Nii took out his phone and deleted the wireman’s number on the spot.',
+        'Uncle Nii rubbed his chin. Auntie Akweley spoke quietly. “Whether in church, at the mosque, or by family custom, taking what you have not paid for is theft, even when the wire is hidden inside the wall. My Muslim neighbours call it a breach of amanah, trust. My pastor says integrity means doing right in secret just as in public. And our elders say a good name is better than riches.” Uncle Nii took out his phone and deleted the wireman’s number on the spot.',
         'Compound-house neighbours nodding in agreement around a wooden table in the courtyard as Uncle Nii deletes a contact on his phone with relief and resolve.',
       ),
       pg(
         '💡',
-        'Together, the tenants replaced the torn refrigerator gasket so cold air stopped escaping. They swapped the old filament bulbs for 9-watt LEDs, reduced ironing from two hours each day to one three-hour session per week, and threw out the scorched extension board. Two weeks later, their prepaid credit lasted nearly twice as long—legally and safely. Pinning the wattage chart on the veranda wall, Mansa smiled. “Physics showed us the leak, civic duty protects our transformer, and honesty lets every room sleep safely.”',
+        'Together, the tenants replaced the torn refrigerator gasket so cold air stopped escaping. They swapped the old filament bulbs for 9-watt LEDs, reduced ironing from two hours each day to one three-hour session per week, and threw out the scorched extension board. Two weeks later, their prepaid credit lasted nearly twice as long, legally and safely. Pinning the wattage chart on the veranda wall, Mansa smiled. “Physics showed us the leak, civic duty protects our transformer, and honesty lets every room sleep safely.”',
         'Bright, tidy compound veranda with cool white LED bulbs, a neatly sealed refrigerator, and Mansa pinning a colourful household Energy Conservation Chart beside a green-lit prepaid meter.',
       ),
     ],
@@ -511,8 +511,8 @@ export const BATCH_37_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'NaCCA CCP Alignment: Integrated Science (B8.4.2.1 / B9.4.2.1 & B8.4.3.1: Electricity and electronics—power P = VI, energy in kWh, fuses, earthing, circuit breakers, and energy conservation), Social Studies (B7.1.1.2 & B8.4.1.1: Civic responsibility, protecting public utilities, and energy conservation), and RME (B8.6.1.1 / B9.6.1.1: Strand 6: Religion and Economic Life—money, honesty, integrity, and anti-corruption).',
-      'BECE Physics Clarity: Distinguishes clearly between Power (rate in watts/kilowatts) and Energy (total consumption in kilowatt-hours = kW × h)—one of the most frequently tested and confused JHS calculations.',
+      'NaCCA CCP Alignment: Integrated Science (B8.4.2.1 / B9.4.2.1 & B8.4.3.1: Electricity and electronics: power P = VI, energy in kWh, fuses, earthing, circuit breakers, and energy conservation), Social Studies (B7.1.1.2 & B8.4.1.1: Civic responsibility, protecting public utilities, and energy conservation), and RME (B8.6.1.1 / B9.6.1.1: Strand 6: Religion and Economic Life: money, honesty, integrity, and anti-corruption).',
+      'BECE Physics Clarity: Distinguishes clearly between Power (rate in watts/kilowatts) and Energy (total consumption in kilowatt-hours = kW × h), one of the most frequently tested and confused JHS calculations.',
       'Safety Guardrail: Students only read manufacturer rating plates on unplugged appliances; all wiring inspection is performed by an Energy Commission-certified electrician.',
       'Illustrative usage assumptions behind “nearly twice as long”: before, about 18.2 kWh/day; after, about 9.09 kWh/day. These are modelled values; actual savings depend on appliance cycling and usage habits.',
     ],
@@ -594,7 +594,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
     pages: [
       pg(
         '🌧️',
-        'The downpour lasted barely ninety minutes, yet brown floodwater surged over the concrete culvert at Zongo Junction. It soaked three bales of wax print in the stall of Fauzia’s mother. Five weeks later, five students at the school—Selorm’s younger sister among them—were absent with confirmed malaria. “It is the gutter smell that made them sick,” a trader insisted. Kukua was not sure. From the paved walkway she pointed to a tangled dam of sachet-water rubbers, takeaway packs, and silt wedged across the drain mouth. “People blame only the heavy rain,” Fauzia said quietly, “but look at what held the water back.”',
+        'The downpour lasted barely ninety minutes, yet brown floodwater surged over the concrete culvert at Zongo Junction. It soaked three bales of wax print in the stall of Fauzia’s mother. Five weeks later, five students at the school, including Selorm’s younger sister, were absent with confirmed malaria. “It is the gutter smell that made them sick,” a trader insisted. Kukua was not sure. From the paved walkway she pointed to a tangled dam of sachet-water rubbers, takeaway packs, and silt wedged across the drain mouth. “People blame only the heavy rain,” Fauzia said quietly, “but look at what held the water back.”',
         'Three JHS students standing safely on a dry raised walkway inspecting a concrete roadside storm drain choked with clear plastic water sachets, foam packs, and silt after a flood.',
       ),
       pg(
@@ -614,7 +614,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '🤲',
-        'In RME, the trio prepared an appeal for Friday mosque announcements, Sunday church notices, and Saturday communal labour. Fauzia began with her mother’s spoiled cloth. Then she quoted the Islamic teaching that cleanliness is part of faith, and that removing a harmful thing from the public path is an act of charity, sadaqah. Kukua added the Christian call to love your neighbour in deed—never dumping waste that floods a neighbour’s home. Selorm ended with Ghanaian communal tradition: keeping compounds and waterways clean honours both the elders and children not yet born.',
+        'In RME, the trio prepared an appeal for Friday mosque announcements, Sunday church notices, and Saturday communal labour. Fauzia began with her mother’s spoiled cloth. Then she quoted the Islamic teaching that cleanliness is part of faith, and that removing a harmful thing from the public path is an act of charity, sadaqah. Kukua added the Christian call to love your neighbour in deed, and never dump waste that floods a neighbour’s home. Selorm ended with Ghanaian communal tradition: keeping compounds and waterways clean honours both the elders and children not yet born.',
         'Fauzia, Kukua, and Selorm presenting neat bilingual sanitation posters to market queens and religious leaders under a market canopy.',
       ),
       pg(
@@ -714,7 +714,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       },
       {
         word: 'vector',
-        definition: 'An organism—such as the female Anopheles mosquito in malaria—that transmits a pathogen from one host to another.',
+        definition: 'An organism, such as the female Anopheles mosquito in malaria, that transmits a pathogen from one host to another.',
         pages: [3],
       },
       {
@@ -807,7 +807,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '🧪',
-        'Madam Agyeiwaa, the District Agricultural Extension Officer, showed the class a simple test. They took soil from three spots on the plot, stirred each sample into distilled water, and let the soil settle. Then they dipped test papers into the liquid. Blue litmus paper turned red. The universal indicator matched 4.8 on the pH scale—strongly acidic. “Most crops prefer soil that is only slightly acidic or nearly neutral,” Madam Agyeiwaa explained. “Heavy rain washes calcium and magnesium down out of reach of the roots. Using a lot of ammonium fertiliser year after year also makes soil more acidic. In acidic soil, roots struggle to take up nutrients such as phosphorus.”',
+        'Madam Agyeiwaa, the District Agricultural Extension Officer, showed the class a simple test. They took soil from three spots on the plot, stirred each sample into distilled water, and let the soil settle. Then they dipped test papers into the liquid. Blue litmus paper turned red. The universal indicator matched 4.8 on the pH scale, which is strongly acidic. “Most crops prefer soil that is only slightly acidic or nearly neutral,” Madam Agyeiwaa explained. “Heavy rain washes calcium and magnesium down out of reach of the roots. Using a lot of ammonium fertiliser year after year also makes soil more acidic. In acidic soil, roots struggle to take up nutrients such as phosphorus.”',
         'Close-up gouache scene at a wooden garden bench showing clear jars of settled soil and water, blue litmus paper turning red, and a colour pH chart pointing to pH 4.8.',
       ),
       pg(
@@ -933,7 +933,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
     ],
     culturalNotes: [
       'NaCCA CCP Alignment: Integrated Science (B9.1.1.1: Acids, Bases & Salts; B9.2.1.1: Nitrogen Cycle; B8.3.4.1: Farming Systems / Crop Rotation), Social Studies (B8.1.1.1 & B8.5.1: Agricultural productivity and environmental stewardship), and RME (B8.1.1: Intergenerational land stewardship across Ghanaian tradition, Christianity, and Islam).',
-      'Crucial BECE Chemistry & Agriculture Link: Explicitly teaches two classic WAEC questions—(1) using agricultural lime (calcium carbonate) to correct soil acidity, and (2) why lime must never be mixed simultaneously with ammonium sulphate fertiliser (loss of volatile ammonia gas, NH₃).',
+      'Crucial BECE Chemistry & Agriculture Link: Explicitly teaches two classic WAEC questions: (1) using agricultural lime (calcium carbonate) to correct soil acidity, and (2) why lime must never be mixed simultaneously with ammonium sulphate fertiliser (loss of volatile ammonia gas, NH₃).',
       'Fair-test note: on Page 6 the untreated half of the plot is the control, so learners can compare like with like.',
     ],
     reviewQuestions: [
@@ -945,7 +945,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
         'Connects classroom acid-base chemistry directly to sustainable Ghanaian agriculture, showing JHS learners how pH testing, liming, nitrogen-fixing legumes, and mulching outperform destructive slash-and-burn farming.',
       lessonMinutes: 45,
       goals: [
-        'Interpret litmus and universal indicator results on the 0–14 pH scale and explain soil neutralisation with agricultural lime.',
+        'Interpret litmus and universal indicator results on the 0 to 14 pH scale and explain soil neutralisation with agricultural lime.',
         'Explain why mixing alkaline lime directly with ammonium fertilisers wastes nitrogen as ammonia gas.',
         'Describe symbiotic nitrogen fixation in legume root nodules and design a four-plot crop rotation.',
         'Evaluate the ecological and moral harms of indiscriminate bush burning against intergenerational land stewardship.',
@@ -966,9 +966,9 @@ export const BATCH_37_STORIES: PilotStory[] = [
           answer: 'Area = 8 m × 5 m = 40 m². Lime needed = 40 × 200 g = 8,000 g = 8 kg.',
         },
       ],
-      support: ['Provide a colour-coded pH number line (0–6.9 Acidic, 7.0 Neutral, 7.1–14 Alkaline) and root-nodule diagram.'],
+      support: ['Provide a colour-coded pH number line (0 to 6.9 Acidic, 7.0 Neutral, 7.1 to 14 Alkaline) and root-nodule diagram.'],
       stretch: ['Write the balanced symbol equation for calcium hydroxide reacting with ammonium sulphate.'],
-      localise: ['Adapt crop examples to local staples—e.g., groundnut/millet/sorghum in northern Ghana or cowpea/maize/cassava in southern Ghana.'],
+      localise: ['Adapt crop examples to local staples, such as groundnut, millet, or sorghum in northern Ghana or cowpea, maize, or cassava in southern Ghana.'],
       factCheck: [
         {
           claim: 'Agricultural lime neutralises acidic soil (pH < 5.5), whereas mixing lime directly with ammonium fertiliser volatilises ammonia gas.',
@@ -1015,7 +1015,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '⚙️',
-        'In Integrated Science, the teacher turned the near-miss into an investigation. Kojo hooked a spring balance to a loaded wooden block and pulled it across three surfaces: dry sandpaper, dry wood, and smooth wet plastic. On the wet plastic, the reading fell sharply. There was far less friction. “Brakes do not work by magic,” the teacher said. “Brake fluid carries pressure to the brakes. They slow the wheels and turn the vehicle’s kinetic energy—its movement energy—into heat. But the tyres must still grip the road. The grooves in a tyre push water out of the way. A worn tyre cannot do that, so on a wet road it slides.”',
+        'In Integrated Science, the teacher turned the near-miss into an investigation. Kojo hooked a spring balance to a loaded wooden block and pulled it across three surfaces: dry sandpaper, dry wood, and smooth wet plastic. On the wet plastic, the reading fell sharply. There was far less friction. “Brakes do not work by magic,” the teacher said. “Brake fluid carries pressure to the brakes. They slow the wheels and turn the vehicle’s kinetic energy, or movement energy, into heat. But the tyres must still grip the road. The grooves in a tyre push water out of the way. A worn tyre cannot do that, so on a wet road it slides.”',
         'JHS lab table showing Kojo pulling weighted wooden blocks with a Newton spring balance across rough sandpaper versus smooth wet plastic, beside a cross-section diagram of grooved vs bald tyre treads.',
       ),
       pg(
@@ -1035,7 +1035,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '🛣️',
-        'The school did not stop at talk. Together with the Parent-Teacher Association, the municipal roads engineer, and Corporal Adjei, it petitioned the assembly. Soon there were speed humps, rumble strips, and clear warning signs near the school gate. Eyram’s road wardens also taught the primary pupils the crossing rule. Stop at the kerb. Look left, look right, and look left again. Make sure drivers have seen you. Obey the crossing guard. Cross only when traffic has stopped in every lane—above all on wet tar, where physics never bends for impatient feet.',
+        'The school did not stop at talk. Together with the Parent-Teacher Association, the municipal roads engineer, and Corporal Adjei, it petitioned the assembly. Soon there were speed humps, rumble strips, and clear warning signs near the school gate. Eyram’s road wardens also taught the primary pupils the crossing rule. Stop at the kerb. Look left, look right, and look left again. Make sure drivers have seen you. Obey the crossing guard. Cross only when traffic has stopped in every lane, especially on wet tar, where physics never bends for impatient feet.',
         'Sunny morning outside the JHS gate showing newly built speed humps, clear warning signs, a slowed trotro halted cleanly before the zebra crossing, and Eyram guiding younger pupils safely across.',
       ),
     ],
@@ -1135,12 +1135,12 @@ export const BATCH_37_STORIES: PilotStory[] = [
       },
       {
         word: 'boasetɔ',
-        definition: 'An Akan virtue meaning patience, restraint, and calm self-mastery—vital for safe driving and peaceful civic life.',
+        definition: 'An Akan virtue meaning patience, restraint, and calm self-mastery, which is vital for safe driving and peaceful civic life.',
         pages: [5],
       },
     ],
     culturalNotes: [
-      'NaCCA CCP Alignment: Integrated Science (B8.4.4.1 / B9.4.4.1: Strand 4, Sub-strand 4: Force and Motion—friction, momentum, pressure P = F/A, centre of gravity and stability), Social Studies (B8.4.1.1 / B9.4.1.1: Strand 4: Law and Order—road safety regulations and causes of crashes), and RME (B7.5.1.1 / B8.5.1.1: Sanctity of human life, patience, and civic responsibility).',
+      'NaCCA CCP Alignment: Integrated Science (B8.4.4.1 / B9.4.4.1: Strand 4, Sub-strand 4: Force and Motion: friction, momentum, pressure P = F/A, centre of gravity and stability), Social Studies (B8.4.1.1 / B9.4.1.1: Strand 4: Law and Order: road safety regulations and causes of crashes), and RME (B7.5.1.1 / B8.5.1.1: Sanctity of human life, patience, and civic responsibility).',
       'Ghana Traffic Convention: Ghana drives on the RIGHT-hand side (since 1974), so traffic in the nearest lane approaches from the LEFT. Learners look left, right, and left again, and must wait on the kerb until vehicles reach a complete standstill.',
     ],
     reviewQuestions: [
@@ -1162,7 +1162,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
         ['Social Studies (NaCCA CCP B8.4.1.1 / B9.4.1.1)', 'Road safety, traffic law obedience, and crash prevention'],
         ['Religious & Moral Education (NaCCA CCP B7.5.1.1 / B8.5.1.1)', 'Sanctity of life, patience, and public responsibility'],
       ],
-      before: ['Rub dry palms briskly together (feel heat from friction), then rub soapy wet palms—how does grip change?'],
+      before: ['Rub dry palms briskly together (feel heat from friction), then rub soapy wet palms: how does grip change?'],
       during: ['Pause on Page 3 to solve a quick board calculation comparing pressure from a narrow strap vs a wide seatbelt.'],
       after: ['Measure friction across dry desk wood, rough concrete, and wet plastic tray using a spring balance and weighted block.'],
       discussion: ['Which road risks can drivers and passengers identify and prevent before a crash happens?'],
@@ -1170,10 +1170,10 @@ export const BATCH_37_STORIES: PilotStory[] = [
       maths: [
         {
           task: 'During sudden braking, a forward force of 1,200 N acts against a passenger’s seatbelt. Compare the pressure exerted by a proper wide seatbelt of contact area 0.06 m² versus a twisted thin strap of area 0.01 m².',
-          answer: 'Wide seatbelt: P = 1,200 N ÷ 0.06 m² = 20,000 Pa (20 kPa). Twisted thin strap: P = 1,200 N ÷ 0.01 m² = 120,000 Pa (120 kPa)—six times as much bruising pressure!',
+          answer: 'Wide seatbelt: P = 1,200 N ÷ 0.06 m² = 20,000 Pa (20 kPa). Twisted thin strap: P = 1,200 N ÷ 0.01 m² = 120,000 Pa (120 kPa), which is six times as much bruising pressure!',
         },
       ],
-      support: ['Use two matchboxes—one weighted at the bottom and one weighted on top—tilted slowly on a book to demonstrate centre of gravity.'],
+      support: ['Use two matchboxes (one weighted at the bottom and one weighted on top) tilted slowly on a book to demonstrate centre of gravity.'],
       stretch: ['Explain Pascal’s Principle in hydraulic braking systems and why air bubbles cause spongy brakes.'],
       localise: ['Invite a local MTTD officer or NRSA representative to inspect the crossing outside your school compound.'],
       factCheck: [
@@ -1348,12 +1348,12 @@ export const BATCH_37_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'NaCCA CCP Alignment: Integrated Science (B9.3.1.1: Circulatory system and blood functions; B8.5.2.1 / B9.5.2.1: Non-communicable inherited conditions vs communicable diseases), Social Studies (B8.2.2.1 / B9.2.2.1: Strand 2: The Family—genetic counselling before marriage, dispelling superstitions), and RME (B7.5.1.1 / B8.5.1.1: Human dignity, empathy for the sick, and anti-discrimination). Note: The HbAS × HbAS Punnett square serves as a visual enrichment bridge to SHS 1 Genetics.',
+      'NaCCA CCP Alignment: Integrated Science (B9.3.1.1: Circulatory system and blood functions; B8.5.2.1 / B9.5.2.1: Non-communicable inherited conditions vs communicable diseases), Social Studies (B8.2.2.1 / B9.2.2.1: Strand 2: The Family: genetic counselling before marriage, dispelling superstitions), and RME (B7.5.1.1 / B8.5.1.1: Human dignity, empathy for the sick, and anti-discrimination). Note: The HbAS × HbAS Punnett square serves as a visual enrichment bridge to SHS 1 Genetics.',
       'Dignity note: Page 1 states that Sena himself is open about his condition, so the health talk does not disclose private medical information. Never use this story to single out a real learner.',
     ],
     reviewQuestions: [
       'Verify the HbAS × HbAS Punnett-square ratios (25% HbAA, 50% HbAS, 25% HbSS) and confirm clear distinction between blood group and haemoglobin genotype.',
-      'Ensure Sena is portrayed with full agency, high capability, and dignity—never fragility or pity.',
+      'Ensure Sena is portrayed with full agency, high capability, and dignity, never fragility or pity.',
     ],
     guide: {
       overview:
@@ -1399,7 +1399,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
     key: 'sunlight-on-the-cold-store-roof',
     title: 'Sunlight on the Cold-Store Roof',
     summary:
-      'When daytime power cuts spoil harvested tomatoes at their town’s cooperative market, JHS 3 classmates Naana, Bawa, and Edem learn how solar photovoltaic panels, charge controllers, batteries, and inverters work together—linking renewable energy, enterprise, and honest work.',
+      'When daytime power cuts spoil harvested tomatoes at their town’s cooperative market, JHS 3 classmates Naana, Bawa, and Edem learn how solar photovoltaic panels, charge controllers, batteries, and inverters work together, linking renewable energy, enterprise, and honest work.',
     classIds: ['jhs-1', 'jhs-2', 'jhs-3'],
     ageMin: 12,
     ageMax: 15,
@@ -1445,7 +1445,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ),
       pg(
         '🛠️',
-        'In RME, the class talked about honest work. “Some young people are tempted by internet fraud or betting, because they think skilled work is too slow,” Naana said. “But Christians are taught that hard work brings dignity, and that whoever is faithful with a little can be trusted with much. Islam honours halal earnings: money gained through honest labour, fair weights, and kept promises. And our elders praise adwuma pa—good, honest work.” Edem thought of the cooperative’s ledger. “That is why the women record every cedi,” he said. “Trust is part of the business.”',
+        'In RME, the class talked about honest work. “Some young people are tempted by internet fraud or betting, because they think skilled work is too slow,” Naana said. “But Christians are taught that hard work brings dignity, and that whoever is faithful with a little can be trusted with much. Islam honours halal earnings: money gained through honest labour, fair weights, and kept promises. And our elders praise adwuma pa, which means good, honest work.” Edem thought of the cooperative’s ledger. “That is why the women record every cedi,” he said. “Trust is part of the business.”',
         'Naana, Bawa, and Edem in Career Technology aprons assembling a small low-voltage 6-volt solar-LED lantern kit on their workbench while Engineer Maame Efua coaches them.',
       ),
       pg(
@@ -1555,13 +1555,13 @@ export const BATCH_37_STORIES: PilotStory[] = [
       },
     ],
     culturalNotes: [
-      'NaCCA CCP Alignment: Integrated Science (B8.4.1.1, B8.4.3.1 & B9.4.2.1: Energy transformations, solar PV cells, DC vs AC, storage batteries, and electronics), Social Studies (B8.5.1 / B9.5.1: Strand 5: Socio-Economic Development—entrepreneurship, cooperatives, reducing post-harvest losses, TVET careers), and RME (B7.6.1.1: Strand 6: Work, Entrepreneurship and Social Security—dignity of labour, halal enterprise, honest work adwuma pa).',
+      'NaCCA CCP Alignment: Integrated Science (B8.4.1.1, B8.4.3.1 & B9.4.2.1: Energy transformations, solar PV cells, DC vs AC, storage batteries, and electronics), Social Studies (B8.5.1 / B9.5.1: Strand 5: Socio-Economic Development: entrepreneurship, cooperatives, reducing post-harvest losses, TVET careers), and RME (B7.6.1.1: Strand 6: Work, Entrepreneurship and Social Security: dignity of labour, halal enterprise, honest work adwuma pa).',
       'Food-science note: tomatoes are chilled in a cold room (roughly 10 to 13 °C), not frozen; freezers suit fish and meat.',
       'Practical Maintenance Insight for Ghana: Harmattan dust can reduce the sunlight reaching solar panels. Cleaning should follow manufacturer safety instructions.',
     ],
     reviewQuestions: [
       'Verify accurate distinction between DC (panels/batteries) and AC (mains/inverter output) and the exact sequence of energy transformations.',
-      'Ensure student hands-on building is strictly limited to safe 5 V–6 V low-voltage educational kits, while 230 V inverter installations are handled solely by certified technicians.',
+      'Ensure student hands-on building is strictly limited to safe 5 V to 6 V low-voltage educational kits, while 230 V inverter installations are handled solely by certified technicians.',
     ],
     guide: {
       overview:
@@ -1581,7 +1581,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       before: ['Bring a small solar-powered calculator or solar garden torch to class: cover the dark PV strip with a thumb and watch what happens!'],
       during: ['Pause on Page 2 to draw the 4-block system diagram (PV Panel → Charge Controller → Battery → Inverter → AC Load) in notebooks.'],
       after: ['Compare total 3-year costs of a petrol generator vs a solar PV unit (initial purchase cost + 1,000 days of fuel/maintenance).'],
-      discussion: ['Why do many bright enterprises collapse when members neglect maintenance savings or honest bookkeeping—and how did the women’s cooperative prevent that?'],
+      discussion: ['Why do many bright enterprises collapse when members neglect maintenance savings or honest bookkeeping, and how did the women’s cooperative prevent that?'],
       reflection: ['What real problem in your town or school could technical skill and honest teamwork turn into a useful enterprise?'],
       maths: [
         {
@@ -1591,7 +1591,7 @@ export const BATCH_37_STORIES: PilotStory[] = [
       ],
       support: ['Provide cut-out cards of the 4 solar components for learners to arrange in sequence with arrows labelled "DC" and "AC".'],
       stretch: ['Investigate why solar panels in Ghana are mounted at a gentle southward tilt for optimal year-round sunlight and rain-clearing.'],
-      localise: ['Adapt the perishable commodity to your district—e.g., fresh marine/Volta fish, tomatoes, mangoes, plantain, or fresh milk.'],
+      localise: ['Adapt the perishable commodity to your district, such as fresh marine or Volta fish, tomatoes, mangoes, plantain, or fresh milk.'],
       factCheck: [
         {
           claim: 'Solar photovoltaic (PV) cells convert light energy directly into DC electricity, which charge controllers and inverters condition for battery storage and AC loads.',

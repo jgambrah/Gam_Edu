@@ -67,7 +67,7 @@ const mk = (s: Spec): PilotStory => {
   const g = s.guide;
   const normalizedFactCheck = g.factCheck?.map((fc) =>
     typeof fc === 'string'
-      ? { claim: s.title, explanation: fc, reference: 'NaCCA Science Curriculum for Basic 1–3 (Ghana)' }
+      ? { claim: s.title, explanation: fc, reference: 'NaCCA Science Curriculum for Basic 1-3 (Ghana)' }
       : fc,
   );
   const classification: Classification = {

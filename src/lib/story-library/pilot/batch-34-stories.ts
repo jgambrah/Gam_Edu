@@ -135,7 +135,7 @@ const mk = (s: Spec): PilotStory => {
 };
 
 /**
- * Batch 34 — Integrated JHS Story (Basic 7 to Basic 9 / JHS 1 to 3):
+ * Batch 34: Integrated JHS Story (Basic 7 to Basic 9 / JHS 1 to 3):
  * Bridges NaCCA Common Core Programme (CCP) Science (B8.1.1.1: Mixtures, suspensions, filtration, and limits of water
  * purification), Social Studies (B7.1.1.1, B8.1.1.1: Environmental degradation, water pollution from illegal mining,
  * and river buffer zones), and RME (B8.1.2.1, B9.1.2.1: Stewardship of God's creation across Christianity, Islam, and
@@ -293,7 +293,7 @@ export const BATCH_34_STORIES: PilotStory[] = [
     ],
     culturalNotes: [
       'Curriculum Integration: Directly aligns with NaCCA Common Core Programme (CCP) JHS Science (B7.1.1.2 / B8.1.1.1 & B8.5.5.1: Mixtures, suspensions, filtration, and water pollution), Social Studies (B7.1.1.1 / B8.1.1.1: Environmental degradation and river buffer conservation), and RME (B7.1.1 / B8.1.1: Caring for God’s creation across Christianity, Islam, and African Traditional Religion).',
-      'Scientific Accuracy Guardrail: Emphasises a vital BECE distinction—sedimentation and filtration remove insoluble suspended matter (residue), and boiling kills biological pathogens, but neither removes dissolved toxic heavy metals (such as mercury or lead). Heating mercury-contaminated water in enclosed spaces can also pose vapour hazards, and evaporation concentrates non-volatile dissolved salts and metal ions.',
+      'Scientific Accuracy Guardrail: Emphasises a vital BECE distinction: sedimentation and filtration remove insoluble suspended matter (residue), and boiling kills biological pathogens, but neither removes dissolved toxic heavy metals (such as mercury or lead). Heating mercury-contaminated water in enclosed spaces can also pose vapour hazards, and evaporation concentrates non-volatile dissolved salts and metal ions.',
       'RME & Indigenous Knowledge Respect: Presents Christian stewardship, Islamic Khalifah (trusteeship), and Akan/Ghanaian traditional river buffer taboos side by side as complementary moral frameworks, showing learners the sound ecological reasoning behind indigenous conservation practices.',
       'Adolescent Safety Rule: JHS learners must never visit active mining pits, handle polluted river water without gloves, taste laboratory samples, or confront illegal miners; civic action focuses on supervised buffer-zone tree planting and public education.',
     ],
@@ -322,7 +322,7 @@ export const BATCH_34_STORIES: PilotStory[] = [
       ],
       during: [
         'Pause after Page 2 and ask learners to define suspension, residue, and filtrate in their own words.',
-        'Pause after Page 3 and challenge learners: "Why is Kwesi’s assumption—that clear, boiled filtrate is always safe—dangerous when chemical pollutants are present?"',
+        'Pause after Page 3 and challenge learners: "Why is Kwesi’s assumption, that clear, boiled filtrate is always safe, dangerous when chemical pollutants are present?"',
         'Pause after Page 5 to connect RME concepts (stewardship, Khalifah, and sacred buffer-zone taboos) to modern Water Resources Commission buffer-zone rules.',
       ],
       after: [
@@ -350,7 +350,7 @@ export const BATCH_34_STORIES: PilotStory[] = [
         'Provide a labelled diagram of a funnel, filter paper, residue, conical flask, and filtrate with colour-coded particle icons showing large clay particles trapped and tiny dissolved ions passing through.',
       ],
       stretch: [
-        'Research how Ghana Water Limited uses coagulation, flocculation (with alum), sedimentation, rapid sand filtration, and chlorination—and explain why raw water above critical Nephelometric Turbidity Units (NTU) still forces plant shutdowns.',
+        'Research how Ghana Water Limited uses coagulation, flocculation (with alum), sedimentation, rapid sand filtration, and chlorination, and explain why raw water above critical Nephelometric Turbidity Units (NTU) still forces plant shutdowns.',
       ],
       localise: [
         'Substitute River Subin with the major river basin serving your district (e.g., Pra, Offin, Birim, Ankobra, Densu, White Volta, or Oti).',
@@ -360,7 +360,7 @@ export const BATCH_34_STORIES: PilotStory[] = [
         {
           claim: 'Filtration removes insoluble suspended solids, and boiling kills biological pathogens, but neither removes dissolved heavy metals such as mercury or lead.',
           explanation: 'Dissolved heavy-metal ions pass straight through filter paper pores and remain non-volatile in water when boiled (with evaporation increasing their concentration in the remaining liquid).',
-          reference: 'NaCCA Common Core Programme (CCP) Integrated Science Curriculum for Basic 7–9 (B7.1.1.2 / B8.1.1.1 & B8.5.5.1) & WHO Guidelines for Drinking-water Quality.',
+          reference: 'NaCCA Common Core Programme (CCP) Integrated Science Curriculum for Basic 7-9 (B7.1.1.2 / B8.1.1.1 & B8.5.5.1) & WHO Guidelines for Drinking-water Quality.',
         },
         {
           claim: 'Vegetated riparian buffer zones stabilise riverbanks and reduce sediment and runoff entering streams.',

@@ -139,7 +139,7 @@ const mk = (s: Spec): PilotStory => {
  * (B4.1.1.1.1, B4.1.1.1.2); parts of a plant and their jobs (B4.2.2.1.1); making water safe for use (B4.2.1.5.1);
  * the digestive system (B4.3.1.1.1); the Sun at the centre of the solar system (B4.3.2.1.1); conserving electricity
  * (B4.4.2.1.2); measles (B4.5.2.1.1); and the ecosystem (B4.3.3.1.1). Standards aligned with the NaCCA Science Upper
- * Primary B4–B6 curriculum.
+ * Primary B4-B6 curriculum.
  */
 
 export const BATCH_36_STORIES: PilotStory[] = [
@@ -237,7 +237,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       discussion: ['Why does the frog not fit our four groups?', 'Why is it important for animals to feed and reproduce?'],
       reflection: ['Which animal group surprised you most today?'],
       support: ['Use picture cards with a key feature prompt on each.'],
-      stretch: ['Investigate an animal that surprises people—such as a bat—and explain why it is a mammal rather than a bird.'],
+      stretch: ['Investigate an animal that surprises people, such as a bat, and explain why it is a mammal rather than a bird.'],
       localise: ['Observe the animals found safely around your school compound.', 'Look, do not touch: some animals bite or sting. Wash hands with soap after the walk.'],
       factCheck: [
         {
@@ -399,7 +399,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       ),
       pg(
         '🔥',
-        '“One sure way is boiling,” said the teacher. “Boiling water for a few minutes and letting it cool in a clean, covered container kills germs and makes it safe to drink. Remember, children must never boil water alone or touch hot pots—a grown-up must do it.”',
+        '“One sure way is boiling,” said the teacher. “Boiling water for a few minutes and letting it cool in a clean, covered container kills germs and makes it safe to drink. Remember, children must never boil water alone or touch hot pots; a grown-up must do it.”',
         'The teacher points to a wordless classroom picture showing an adult safely boiling water in a covered pot on a stove as Brobbey and Amegashie listen.',
       ),
       pg(
@@ -434,7 +434,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       'Check that filtering and alum settling are clearly distinguished from germ disinfection (boiling or chlorine).',
     ],
     guide: {
-      overview: 'Learners compare water samples, build a simple sand-and-cloth filter, and learn why disinfection by boiling or approved chlorine treatment—plus clean covered storage—is essential for safe drinking water. Based on NaCCA Basic 4 Science.',
+      overview: 'Learners compare water samples, build a simple sand-and-cloth filter, and learn why disinfection by boiling or approved chlorine treatment, along with clean covered storage, is essential for safe drinking water. Based on NaCCA Basic 4 Science.',
       lessonMinutes: 40,
       goals: [
         'Describe three stages used to make cloudy water safe (filtering, boiling or chlorinating, and clean covered storage).',
@@ -506,7 +506,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       ),
       pg(
         '🌀',
-        '“From the stomach, the food moves into the small intestine, a long, coiled tube,” said the teacher. “Here the food is broken down even further, and the good parts—called nutrients—pass into the blood. The blood carries nutrients to every part of your body.”',
+        '“From the stomach, the food moves into the small intestine, a long, coiled tube,” said the teacher. “Here the food is broken down even further, and the good parts, called nutrients, pass into the blood. The blood carries nutrients to every part of your body.”',
         'Mettle and Ayivor lean forward at their desks looking at a bright wordless diagram of the coiled small intestine surrounded by glowing droplets.',
       ),
       pg(
@@ -664,7 +664,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       after: ['Mould a clay model of the solar system on cardboard.', 'List ways your family uses sunlight every day (drying crops/laundry, growing food, solar lamps).'],
       discussion: ['How is a star like the Sun different from a planet like Earth?', 'What would happen on Earth without the Sun’s light and heat?'],
       reflection: ['What surprised you most about Earth’s movement in space?'],
-      support: ['Focus first on three bodies—Sun, Earth, and Moon—before adding the remaining planets.'],
+      support: ['Focus first on three bodies (Sun, Earth, and Moon) before adding the remaining planets.'],
       stretch: ['Learn the names of all eight planets in order from the Sun outward.'],
       localise: ['Invite learners to share names for the Sun, Moon, and stars in Akan, Ewe, Ga, Dagbani, Dagaare, or Hausa.', 'Remind learners never to look directly at the Sun.'],
       factCheck: [
@@ -710,7 +710,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       ),
       pg(
         '🏠',
-        'Next afternoon, they walked around the house checking each room. A bulb shone in an empty bedroom, a fan spun with nobody inside, and the television played to an empty sofa. On a table sat an iron left plugged in! “Do not touch it,” warned Gadzekpo wisely. “Tell Mama right away—it could start a fire.”',
+        'Next afternoon, they walked around the house checking each room. A bulb shone in an empty bedroom, a fan spun with nobody inside, and the television played to an empty sofa. On a table sat an iron left plugged in! “Do not touch it,” warned Gadzekpo wisely. “Tell Mama right away, because it could start a fire.”',
         'Inside a tidy Ghanaian living room, Adamu and Gadzekpo stand safely back and point toward a lit bulb, a spinning fan, an unwatched television, and a plugged-in iron.',
       ),
       pg(
@@ -826,7 +826,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       ),
       pg(
         '🏥',
-        'At the clinic, the nurse examined Quaicoe gently. “This illness is measles,” she explained. “It is caused by a tiny germ called a virus. Measles spreads through the air when a sick person coughs or sneezes, so it is very easy to catch—and it is never caused by anything a child did wrong.”',
+        'At the clinic, the nurse examined Quaicoe gently. “This illness is measles,” she explained. “It is caused by a tiny germ called a virus. Measles spreads through the air when a sick person coughs or sneezes, so it is very easy to catch, and it is never caused by anything a child did wrong.”',
         'In a clean, bright Ghanaian clinic room, a kind female nurse in a teal uniform gently examines little Quaicoe sitting on his mother’s lap.',
       ),
       pg(
@@ -923,7 +923,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
     pages: [
       pg(
         '🐸',
-        'Behind the school garden lay a small shallow pond ringed with stones. Frogs croaked, tiny fish flashed in the water, and insects buzzed over green reeds and lily pads. “This pond is an ecosystem,” said the teacher. “It is a community of living things and the non-living things around them—such as water, air, sunlight, and soil. They all depend on one another.”',
+        'Behind the school garden lay a small shallow pond ringed with stones. Frogs croaked, tiny fish flashed in the water, and insects buzzed over green reeds and lily pads. “This pond is an ecosystem,” said the teacher. “It is a community of living things and the non-living things around them, such as water, air, sunlight, and soil. They all depend on one another.”',
         'Mohammed, Baah, and their teacher stand safely behind a stone border watching green frogs, tiny fish, reeds, and dragonflies in a lively school pond.',
       ),
       pg(
@@ -972,7 +972,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       'Confirm water-margin safety is clearly modelled in both text and illustrations.',
     ],
     guide: {
-      overview: 'When two well-meaning pupils clear native plants from a school pond to make it look neat, they witness how habitat loss disrupts an ecosystem—and work with their teacher to restore its balance. Based on NaCCA Basic 4 Science.',
+      overview: 'When two well-meaning pupils clear native plants from a school pond to make it look neat, they witness how habitat loss disrupts an ecosystem, and work with their teacher to restore its balance. Based on NaCCA Basic 4 Science.',
       lessonMinutes: 40,
       goals: [
         'Define an ecosystem as living things interacting with non-living surroundings.',
@@ -985,7 +985,7 @@ export const BATCH_36_STORIES: PilotStory[] = [
       ],
       before: ['Ask: what living and non-living things can we spot in a school garden or under a shady tree?'],
       during: ['Pause on page 3 and let learners predict why the frogs and dragonflies disappeared.'],
-      after: ['Play a “web of life” yarn game where each learner represents sun, water, soil, reed, insect, frog, or fish—then gently drop one strand to feel how others are affected.', 'Draw a local habitat and group its parts into Living and Non-Living.'],
+      after: ['Play a “web of life” yarn game where each learner represents sun, water, soil, reed, insect, frog, or fish, then gently drop one strand to feel how others are affected.', 'Draw a local habitat and group its parts into Living and Non-Living.'],
       discussion: ['Why can a natural habitat that looks “messy” to humans actually be healthy for wildlife?', 'Why should we always consult teachers or elders before altering a natural area?'],
       reflection: ['Name one small habitat around your school or home that you can help protect.'],
       support: ['Sort picture cards of a pond into two columns: Living Things and Non-Living Things.'],
