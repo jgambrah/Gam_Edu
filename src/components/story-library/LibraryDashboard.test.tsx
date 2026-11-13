@@ -16,18 +16,20 @@ const fileFetch = (async (u: string) => {
 
 beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL = vi.fn(() => 'blob:x'); });
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
+// Baseline timestamp before any 2026+ 48h batch releaseAt, keeping the 228 legacy public-shelf assertions deterministic forever.
+const LEGACY_PUBLIC_NOW_MS = 1_700_000_000_000;
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the two hundred and twelve stories with clean production badges', async () => {
-    render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
+  it('lists the two hundred and thirty-six stories with clean production badges', async () => {
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
@@ -77,6 +79,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Freezer That Keeps Tomorrow',
       'The Girl Who Carries the Market',
       'The Girl Who Taught a Drone to See',
+      'The Girl Who Wrote Down the Stories',
       'The Gold Road to Manso',
       'The Island That Sank in a Night',
       'The Lagoon Side Cup',
@@ -117,6 +120,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Wall of Notsé',
       'The Weights That Whisper Proverbs',
       'The Woman Who Asked for Trees',
+      'Two Kinds of Truth',
       'Two Women and a Cold Room',
       'Typing Like You Talk',
       'Voices Along the River',
@@ -159,21 +163,31 @@ describe('LibraryDashboard (real preview data)', () => {
     await user.click(screen.getByText('Clear filters'));
     await user.selectOptions(screen.getByLabelText('Reading level'), 'developing');
     await waitFor(() => expect(titles().sort()).toEqual([
+      'Adoley and the Racing Heart',
       'Adwoa and the Missing Market Change',
+      'Akrofi and the Sugar Test',
       'Ama’s Journey Above the Rainforest',
       'Ananse and the Midnight Thread',
       'Ananse and the Pot of Wisdom',
+      'Awuku and the Peel Heap',
       'Esi and the Elephant’s Secret Path',
       'Fiifi Goes Back for His Book',
+      'Fosuaa Joins Class Three',
+      'Habiba and the Hot Spoon',
       'Kojo and the Forest of a Thousand Lives',
+      'Lekettey and the Kite Tin',
       'Market Day Song (a poem)',
       'Okai’s Sack Garden',
+      'Sumaila and the Question at the Back',
       'Sun, Earth and Moon (a poem)',
+      'The Boy Who Came Out of the Forest',
       'The Butterfly That Knew the Way',
       'The Case of the Missing Kenkey',
       'The Clever Tortoise and the Rain',
       'The Frogs Who Sang Too Loud',
       'The Girl Who Asked Why',
+      'The Girl Who Wrote Down the Stories',
+      'The Little People of the Forest',
       'The Night the Lights Went Out',
       'The Queen of the Market',
       'The Slowest Drummer',
@@ -181,6 +195,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'The Treasure Under the Mango Tree',
       'The Trees Say Thank You (a poem)',
       'The Water Under the Water',
+      'Two Kinds of Truth',
       'Two Ways to Say Thank You',
       'When the River Turned Brown',
       'Yaa and the Blocked Drain',
@@ -189,8 +204,8 @@ describe('LibraryDashboard (real preview data)', () => {
 
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -198,8 +213,8 @@ describe('LibraryDashboard (real preview data)', () => {
 
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -208,10 +223,10 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByTestId('sync-status').textContent).toMatch(/No narration in this mode/);
   }, 15000);
 
-  it('Efua and every Batch 1–29 story render their teacher’s guide without errors', async () => {
+  it('Efua and every Batch 1–35 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
@@ -226,10 +241,10 @@ describe('LibraryDashboard (real preview data)', () => {
 
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
-    render(<LibraryDashboard createSource={make} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(212));
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
-    expect(stats()).toContain('212');
+    expect(stats()).toContain('236');
 
     // Toggle a favourite heart on the first story card
     const firstCard = screen.getAllByTestId('story-card')[0];
@@ -250,4 +265,97 @@ describe('LibraryDashboard (real preview data)', () => {
     render(<LibraryDashboard createSource={() => createPreviewSource('/story-spark-preview', failing)} />);
     await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/could not be loaded/));
   });
+
+  it('enforces the 48-hour developer quarantine in the UI and exposes Under Review + Hold controls only to jamesgambrah@gmail.com', async () => {
+    const user = userEvent.setup();
+    const fixedNow = 1_800_000_000_000;
+    const quarantineFetch = (async (u: string) => {
+      if (u.endsWith('/catalogue.json')) {
+        const raw = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
+        const publicBaseEntries = raw.entries.filter((e: any) => !e.releaseAt);
+        const base = publicBaseEntries[0];
+        const quarantinedEntry = {
+          ...base,
+          storyKey: 'quarantine-batch-test-story',
+          title: 'Quarantined Batch Preview Story',
+          sortKey: 229,
+          publishedAt: fixedNow,
+          releaseAt: fixedNow + 48 * 60 * 60 * 1000,
+        };
+        const body = JSON.stringify({
+          ...raw,
+          catalogueVersion: raw.catalogueVersion + 1,
+          totalPublished: publicBaseEntries.length + 1,
+          entries: [...publicBaseEntries, quarantinedEntry],
+        });
+        return new Response(body, { status: 200 });
+      }
+      return fileFetch(u);
+    }) as unknown as typeof fetch;
+
+    const makeWithQuarantine = () => createPreviewSource('/story-spark-preview', quarantineFetch);
+
+    // 1. Non-developer viewer: sees 236 public stories, hides quarantined story & hides Under Review tab
+    const { unmount } = render(
+      <LibraryDashboard createSource={makeWithQuarantine} viewerEmail="teacher@school.edu.gh" nowMs={fixedNow + 60_000} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    expect(screen.queryByText('Quarantined Batch Preview Story')).toBeNull();
+    expect(screen.queryByTestId('under-review-tab')).toBeNull();
+    expect(screen.getByTestId('hero-stats').textContent).toContain('236');
+    unmount();
+
+    // 2. Developer viewer (jamesgambrah@gmail.com): sees all 229 stories, Under Review (48h) tab, countdown badge, and Hold button
+    const { unmount: unmountDev } = render(
+      <LibraryDashboard createSource={makeWithQuarantine} viewerEmail="jamesgambrah@gmail.com" nowMs={fixedNow + 60_000} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(237));
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (1)');
+
+    await user.click(screen.getByTestId('under-review-tab'));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(1));
+    expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
+    expect(screen.getByTestId('quarantine-badge').textContent).toMatch(/Under Review • 48h left/);
+
+    // Hold / Flag before 48h expires
+    await user.click(screen.getByRole('button', { name: /Hold \/ Flag/i }));
+    await waitFor(() => expect(screen.getByTestId('quarantine-badge').textContent).toBe('🚩 Held from Release'));
+    unmountDev();
+
+    // 3. After 48 hours have elapsed (with clean overrides): auto-promoted to general readers with zero cron jobs
+    localStorage.clear();
+    render(
+      <LibraryDashboard
+        createSource={makeWithQuarantine}
+        viewerEmail="pupil@school.edu.gh"
+        nowMs={fixedNow + 49 * 60 * 60 * 1000}
+      />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(237));
+    expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
+  }, 15000);
+
+  it('exposes all 262 real catalogue stories (including Quarantined Batches 33–36) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
+    const rawCat = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
+    const newEntries = rawCat.entries.filter((e: any) => e.sortKey > 228 && e.releaseAt);
+    expect(newEntries).toHaveLength(26);
+    const duringQuarantineMs = Math.max(...newEntries.map((e: any) => e.publishedAt)) + 60_000;
+    const afterQuarantineMs = Math.max(...newEntries.map((e: any) => e.releaseAt)) + 60_000;
+
+    const { unmount: unmountPublic } = render(
+      <LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={duringQuarantineMs} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    unmountPublic();
+
+    const { unmount: unmountDev } = render(
+      <LibraryDashboard createSource={make} viewerEmail="jamesgambrah@gmail.com" nowMs={duringQuarantineMs} />,
+    );
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(262));
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (26)');
+    unmountDev();
+
+    render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterQuarantineMs} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(262));
+  }, 15000);
 });

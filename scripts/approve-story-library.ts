@@ -10,6 +10,7 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { LEGACY_PUBLIC_MAX_SORT_KEY, REVIEW_QUARANTINE_MS } from '../src/lib/story-library/quarantine';
 import { CATALOGUE_ALLOWED_KEYS } from '../src/lib/story-library/types';
 
 const ROOT = path.resolve(__dirname, '..');
@@ -109,6 +110,18 @@ function main() {
     updated++;
   }
 
+  const parseCsvFlag = (flag: string): Set<string> => {
+    const idx = process.argv.indexOf(flag);
+    if (idx === -1 || !process.argv[idx + 1]) return new Set();
+    return new Set(process.argv[idx + 1].split(',').map((k) => k.trim()).filter(Boolean));
+  };
+  const noQuarantine = process.argv.includes('--no-quarantine');
+  const forceQuarantineKeys = parseCsvFlag('--quarantine');
+  const forceReleaseKeys = parseCsvFlag('--release');
+  const forceHoldKeys = parseCsvFlag('--hold');
+  const nowMs = Date.now();
+  let quarantinedCount = 0;
+
   const allowedSet = new Set<string>(CATALOGUE_ALLOWED_KEYS);
   const enrichedEntries = catalogue.entries.map((entry) => {
     const info = preview[entry.storyKey];
@@ -124,11 +137,38 @@ function main() {
         ? 'GAM EDU Story Spark Original'
         : entry.attribution ?? 'GAM EDU Story Spark Original';
 
+    const isNewStoryBeyondBaseline =
+      !noQuarantine &&
+      typeof entry.sortKey === 'number' &&
+      entry.sortKey > LEGACY_PUBLIC_MAX_SORT_KEY &&
+      entry.releaseAt === undefined &&
+      entry.publishedAt === undefined;
+
+    let publishedAt = entry.publishedAt;
+    let releaseAt = entry.releaseAt;
+    let reviewHold = entry.reviewHold;
+
+    if (forceQuarantineKeys.has(entry.storyKey) || isNewStoryBeyondBaseline) {
+      publishedAt = typeof publishedAt === 'number' ? publishedAt : nowMs;
+      releaseAt = nowMs + REVIEW_QUARANTINE_MS;
+      quarantinedCount++;
+    }
+    if (forceReleaseKeys.has(entry.storyKey)) {
+      releaseAt = undefined;
+      reviewHold = undefined;
+    }
+    if (forceHoldKeys.has(entry.storyKey)) {
+      reviewHold = true;
+    }
+
     const rawMerged: Record<string, unknown> = {
       ...entry,
       attribution,
       ...(palette ? { palette } : {}),
       ...(coverMotif ? { coverMotif } : {}),
+      publishedAt,
+      releaseAt,
+      reviewHold,
     };
     const clean: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(rawMerged)) {
@@ -147,7 +187,7 @@ function main() {
   fs.writeFileSync(CATALOGUE_PATH, JSON.stringify(nextCatalogue));
   fs.writeFileSync(PREVIEW_PATH, JSON.stringify(preview));
   console.log(
-    `[approve-story-library] Marked ${updated} stories approved, wrote ${updated} sharded info/<storyKey>.json files, and enriched ${publishedCount} published catalogue entries.`,
+    `[approve-story-library] Marked ${updated} stories approved, wrote ${updated} sharded info/<storyKey>.json files, enriched ${publishedCount} published catalogue entries (${quarantinedCount} stamped for 48h developer quarantine).`,
   );
 }
 
