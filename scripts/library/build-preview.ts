@@ -16,6 +16,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { PILOT_STORIES } from '../../src/lib/story-library/pilot/pilot-stories';
 import { ageTiersFor, READING_LEVELS, toCatalogueFacets } from '../../src/lib/story-library/classification';
+import { naccaCodesFromSubjectLinks } from '../../src/lib/story-library/nacca';
 import { effectiveHighlight, splitSentences } from '../../src/lib/story-library/premium';
 import type { CatalogueEntry, StoryPackage } from '../../src/lib/story-library/types';
 import { PREVIEW_BASE } from '../../src/lib/story-library/preview-source';
@@ -198,6 +199,7 @@ PILOT_STORIES.forEach((s, idx) => {
     readingLevel: f.readingLevel,
     difficulty: f.difficulty,
     genres: f.genres,
+    ...(naccaCodesFromSubjectLinks(s.teacherGuide?.subjectLinks).length ? { nacca: naccaCodesFromSubjectLinks(s.teacherGuide?.subjectLinks) } : {}),
     ghanaianContext: f.ghanaianContext,
   });
 

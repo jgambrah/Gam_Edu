@@ -16,6 +16,8 @@ const fileFetch = (async (u: string) => {
 
 beforeEach(() => { localStorage.clear(); (globalThis as any).URL.createObjectURL = vi.fn(() => 'blob:x'); });
 const make = () => createPreviewSource('/story-spark-preview', fileFetch);
+// The detailed filters (class, age, genre, reading level) live behind the Filters button.
+const openFilters = async (user: ReturnType<typeof userEvent.setup>) => { if (!screen.queryByLabelText('Class')) await user.click(screen.getByRole('button', { name: /^Filters/ })); };
 // Baseline timestamp before any 2026+ 48h batch releaseAt, keeping the 228 legacy public-shelf assertions deterministic forever.
 const LEGACY_PUBLIC_NOW_MS = 1_700_000_000_000;
 
@@ -31,6 +33,7 @@ describe('LibraryDashboard (real preview data)', () => {
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
+    await openFilters(user);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
     await waitFor(() => expect(titles().sort()).toEqual([
       'Abena Buys a Piece of a Company',
@@ -206,6 +209,7 @@ describe('LibraryDashboard (real preview data)', () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await openFilters(user);
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
     await waitFor(() => expect(screen.getByTestId('empty')).toBeTruthy());
@@ -312,7 +316,7 @@ describe('LibraryDashboard (real preview data)', () => {
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(237));
     expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (1)');
 
-    await user.click(screen.getByTestId('under-review-tab'));
+    await user.selectOptions(screen.getByLabelText('Collection'), 'under-review');
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(1));
     expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
     expect(screen.getByTestId('quarantine-badge').textContent).toMatch(/Under Review • 48h left/);
@@ -357,5 +361,91 @@ describe('LibraryDashboard (real preview data)', () => {
 
     render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterQuarantineMs} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(262));
+  }, 15000);
+  it('keeps the top panel to one tidy row: dropdowns and search first, detailed filters only on request', async () => {
+    const user = userEvent.setup();
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    const toolbar = screen.getByTestId('library-toolbar');
+    // Collection and stage are dropdowns, not rows of tabs.
+    expect(within(toolbar).getByLabelText('Collection').tagName).toBe('SELECT');
+    expect(within(toolbar).getByLabelText('Stage').tagName).toBe('SELECT');
+    expect(within(toolbar).queryByRole('button', { name: /Ananse & Folktales/ })).toBeNull();
+    // Every collection from the old tab row is still reachable from the dropdown.
+    const options = within(screen.getByLabelText('Collection')).getAllByRole('option').map((o) => o.textContent ?? '');
+    for (const wanted of ['All Collections', 'Continue Reading', 'My Favourites', 'Finished Books', 'Ananse & Folktales', 'Young Scientists & Tech', 'Mysteries & Heritage', 'Big Adventures', 'Smart Money & Makers', 'Poetry & Rhymes', 'Bedtime & Early Years']) {
+      expect(options.some((o) => o.includes(wanted)), wanted).toBe(true);
+    }
+    const stages = within(screen.getByLabelText('Stage')).getAllByRole('option').map((o) => o.textContent ?? '');
+    for (const wanted of ['All Stories', 'Nursery & KG', 'Primary 1–3', 'Primary 4–6', 'JHS 1–3']) expect(stages.some((o) => o.includes(wanted)), wanted).toBe(true);
+    // Detailed filters are tucked away until asked for.
+    expect(screen.queryByLabelText('Genre')).toBeNull();
+    await user.click(screen.getByRole('button', { name: /^Filters/ }));
+    expect(screen.getByLabelText('Genre')).toBeTruthy();
+  }, 15000);
+
+  it('shows selected filters as removable chips and clears them all at once', async () => {
+    const user = userEvent.setup();
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    expect(screen.queryByTestId('active-filters')).toBeNull();
+    await user.selectOptions(screen.getByLabelText('Stage'), 'jhs');
+    const chips = await screen.findByTestId('active-filters');
+    expect(chips.textContent).toContain('JHS 1–3');
+    await user.click(within(chips).getByRole('button', { name: 'Remove JHS 1–3' }));
+    await waitFor(() => expect(screen.queryByTestId('active-filters')).toBeNull());
+    await user.type(screen.getByLabelText('Search stories'), 'efua');
+    await user.click(within(await screen.findByTestId('active-filters')).getByRole('button', { name: 'Clear all' }));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    expect((screen.getByLabelText('Search stories') as HTMLInputElement).value).toBe('');
+  }, 15000);
+
+  it('opens a collection from the dropdown (My Favourites)', async () => {
+    const user = userEvent.setup();
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await user.click(within(screen.getAllByTestId('story-card')[0]).getByRole('button', { name: /Save .* to favourites/i }));
+    await user.selectOptions(screen.getByLabelText('Collection'), 'favourites');
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(1));
+    expect(screen.getByTestId('collection-banner').textContent).toMatch(/My Favourites/);
+  }, 15000);
+
+  it('asks what the reader likes, then shows a Read next shelf that fits their class and leaves cards uncounted', async () => {
+    const user = userEvent.setup();
+    render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    // First visit: interest chips, no suggestions yet.
+    const chips = screen.getByTestId('interest-chips');
+    expect(screen.queryAllByTestId('rec-card')).toHaveLength(0);
+    await user.click(within(chips).getByRole('button', { name: /Science & nature/ }));
+    await waitFor(() => expect(screen.getAllByTestId('rec-card').length).toBeGreaterThan(0));
+    expect(screen.getAllByTestId('rec-card').length).toBeLessThanOrEqual(6);
+    // Shelf cards are extra: the main grid count is unchanged.
+    expect(screen.getAllByTestId('story-card')).toHaveLength(236);
+    expect(screen.getAllByTestId('rec-card')[0].textContent).toMatch(/Because you like science & nature|Something new|Like stories|good next step/i);
+    // Choice is remembered on this device.
+    expect(localStorage.getItem('story-spark-preview:interests')).toContain('science');
+    // Choosing a class keeps suggestions inside that class.
+    await user.selectOptions(screen.getByLabelText('Stage'), 'early-years');
+    await waitFor(() => {
+      for (const c of screen.queryAllByTestId('rec-card')) {
+        const key = c.getAttribute('data-story')!;
+        expect(screen.queryByTestId('story-grid')!.querySelector(`[data-story="${key}"]`)).not.toBeNull();
+      }
+    });
+  }, 15000);
+
+  it('brings forward a teacher-focused NaCCA standard on the Read next shelf', async () => {
+    // NaCCA codes are on the newer stories, which are public once their 48-hour review has passed.
+    const rawCat = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
+    expect(rawCat.entries.some((e: any) => e.nacca?.length)).toBe(true);
+    const afterReview = Math.max(...rawCat.entries.filter((e: any) => e.releaseAt).map((e: any) => e.releaseAt)) + 60_000;
+    render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterReview} focusNacca={['B3']} focusLabel="Plants, water and health" />);
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(262));
+    await waitFor(() => expect(screen.getAllByTestId('rec-card').length).toBeGreaterThan(0));
+    const keys = screen.getAllByTestId('rec-card').map((c) => c.getAttribute('data-story'));
+    const withB3 = new Set(rawCat.entries.filter((e: any) => (e.nacca ?? []).some((c: string) => c.startsWith('B3.'))).map((e: any) => e.storyKey));
+    expect(withB3.has(keys[0]!)).toBe(true);
+    expect(screen.getAllByTestId('rec-card')[0].textContent).toContain('Your class is studying: Plants, water and health');
   }, 15000);
 });

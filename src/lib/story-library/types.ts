@@ -79,6 +79,8 @@ export interface CatalogueEntry {
   readingLevel?: string;
   difficulty?: number;
   genres?: string[];
+  /** NaCCA curriculum codes this story supports (for example B4.2.2.1.1), taken from its teacher-guide subject links. */
+  nacca?: string[];
   ghanaianContext?: string;
   /** catalogueVersion at which this entry last changed. Delta refresh asks for entries with changedInVersion > the cached version. */
   changedInVersion?: number;

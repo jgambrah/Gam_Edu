@@ -15,8 +15,12 @@ import {
   saveLocalReviewOverrides,
   type StoryQuarantineStatus,
 } from '@/lib/story-library/quarantine';
+import { loadInterests, subscribeInterestChanges, toggleInterest } from '@/lib/story-library/interests';
+import { recommendReadNext } from '@/lib/story-library/recommendations';
 import { PlaceholderArt } from './PlaceholderArt';
 import { StorybookReader } from './StorybookReader';
+import { LibraryToolbar, type ShelfGroup, type ToolbarChip } from './LibraryToolbar';
+import { ReadNextShelf } from './ReadNextShelf';
 
 const label = (list: readonly { id: string; label: string }[], id?: string) => list.find((x) => x.id === id)?.label ?? id ?? '';
 const minutes = (s?: number) => (s ? `${Math.max(1, Math.round(s / 60))} min` : '');
@@ -51,6 +55,8 @@ const STAGE_GROUPS: { id: StageFilterId; label: string; classes: readonly string
 interface CollectionShelf {
   id: CollectionShelfId;
   label: string;
+  /** Which group of the Collection dropdown the shelf sits under. */
+  group: ShelfGroup;
   blurb: string;
   developerOnly?: boolean;
   match: (e: CatalogueEntry, ctx: { favs: Set<string>; inProgress: Set<string>; completed: Set<string>; quarantined: Set<string> }) => boolean;
@@ -59,12 +65,14 @@ interface CollectionShelf {
 const COLLECTION_SHELVES: CollectionShelf[] = [
   {
     id: 'all',
+    group: 'browse',
     label: '✨ All Collections',
     blurb: 'Explore the complete GAM EDU Story Spark library across all subjects and ages.',
     match: () => true,
   },
   {
     id: 'under-review',
+    group: 'review',
     label: '🛡️ Under Review (48h)',
     blurb: 'Developer quarantine inbox (jamesgambrah@gmail.com only): newly seeded stories stay private here for 48 hours before auto-promoting to schools and readers, unless held.',
     developerOnly: true,
@@ -72,30 +80,35 @@ const COLLECTION_SHELVES: CollectionShelf[] = [
   },
   {
     id: 'continue',
+    group: 'mine',
     label: '▶️ Continue Reading',
     blurb: 'Pick up right where you left off in stories you have already started.',
     match: (e, ctx) => ctx.inProgress.has(e.storyKey),
   },
   {
     id: 'favourites',
+    group: 'mine',
     label: '❤️ My Favourites',
     blurb: 'Your personal bookshelf of saved favourite stories and poems.',
     match: (e, ctx) => ctx.favs.has(e.storyKey),
   },
   {
     id: 'completed',
+    group: 'mine',
     label: '🏆 Finished Books',
     blurb: 'Stories and poems you have read all the way to the end.',
     match: (e, ctx) => ctx.completed.has(e.storyKey),
   },
   {
     id: 'folktales',
+    group: 'topics',
     label: '🕷️ Ananse & Folktales',
     blurb: 'Beloved Ghanaian folktales, proverbs, and cultural wisdom retold for today’s learners.',
     match: (e) => (e.genres ?? []).includes('folktale') || (e.categories ?? []).includes('folktale') || /ananse/i.test(e.title),
   },
   {
     id: 'stem',
+    group: 'topics',
     label: '🔬 Young Scientists & Tech',
     blurb: 'Hands-on science, nature investigations, space, drones, coding, and discovery.',
     match: (e) =>
@@ -104,6 +117,7 @@ const COLLECTION_SHELVES: CollectionShelf[] = [
   },
   {
     id: 'mysteries',
+    group: 'topics',
     label: '🕵️ Mysteries & Heritage',
     blurb: 'Spooky science, historical mysteries, and deep-time detective stories from Ghana and the world.',
     match: (e) =>
@@ -112,26 +126,30 @@ const COLLECTION_SHELVES: CollectionShelf[] = [
   },
   {
     id: 'adventure',
+    group: 'topics',
     label: '🧭 Big Adventures',
     blurb: 'Rainforests, deep oceans, craters, and brave journeys where thinking saves the day.',
     match: (e) => (e.genres ?? []).includes('adventure'),
   },
   {
     id: 'money',
+    group: 'topics',
     label: '💰 Smart Money & Makers',
     blurb: 'Financial literacy, honest business, saving, entrepreneurship, and leadership.',
     match: (e) =>
-      (e.themes ?? []).some((t) => t === 'money-and-work' || t === 'leadership') ||
+      (e.themes ?? []).some((t) => t === 'money-and-work' || t === 'money-and-enterprise' || t === 'leadership') ||
       (e.objectives ?? []).includes('financial-literacy'),
   },
   {
     id: 'poetry',
+    group: 'topics',
     label: '🎭 Poetry & Rhymes',
     blurb: 'Nursery action rhymes, Ghanaian performance poems, and BECE literature practice.',
     match: (e) => (e.genres ?? []).includes('poetry') || /\((a poem|a rhyme)\)/i.test(e.title),
   },
   {
     id: 'bedtime',
+    group: 'topics',
     label: '🌙 Bedtime & Early Years',
     blurb: 'Gentle, soothing read-alouds and animal stories for our youngest listeners.',
     match: (e) => (e.genres ?? []).some((g) => g === 'bedtime' || g === 'animal') && (e.ageMin ?? 99) <= 7,
@@ -148,6 +166,8 @@ export function LibraryDashboard({
   onToggleHoldStory,
   onApproveStoryEarly,
   nowMs,
+  focusNacca,
+  focusLabel,
 }: {
   createSource?: () => Promise<LibrarySource>;
   defaultStage?: StageFilterId;
@@ -158,6 +178,10 @@ export function LibraryDashboard({
   onToggleHoldStory?: (storyKey: string, nextHold: boolean) => void;
   onApproveStoryEarly?: (storyKey: string) => void;
   nowMs?: number;
+  /** NaCCA codes or prefixes a teacher wants brought forward on the Read next shelf, for example ['B4.2']. */
+  focusNacca?: readonly string[];
+  /** Plain-words name of that focus, shown to children, for example 'Plants and seeds'. */
+  focusLabel?: string;
 }) {
   const [source, setSource] = useState<LibrarySource | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -173,9 +197,15 @@ export function LibraryDashboard({
   const [opening, setOpening] = useState<string | null>(null);
   const [tick, setTick] = useState(0); // refresh stats after actions
   const [cachedEmail, setCachedEmail] = useState<string | null>(null);
+  const [interests, setInterests] = useState<string[]>([]);
   const [localOverrides, setLocalOverrides] = useState(() => loadLocalReviewOverrides());
   const feed = useRef<FilteredFeed | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setInterests(loadInterests());
+    return subscribeInterestChanges(() => setInterests(loadInterests()));
+  }, []);
 
   useEffect(() => {
     setCachedEmail(loadCachedViewerEmail());
@@ -368,6 +398,25 @@ export function LibraryDashboard({
   );
   const hasMoreToShow = windowedEntries.length < visibleEntries.length || !exhausted;
 
+  // "Read next": fit (class, age) first, then interests, reading history, a gentle difficulty step and any teacher focus.
+  const readNext = useMemo(() => {
+    const byKey = new Map(audienceEntries.map((e) => [e.storyKey, e]));
+    const stageDef = STAGE_GROUPS.find((g) => g.id === stage);
+    const classIds = sel.classId ? [sel.classId] : stageDef && stageDef.id !== 'all' ? stageDef.classes : [];
+    const pick = (keys: Iterable<string>) => [...keys].map((k) => byKey.get(k)).filter((e): e is CatalogueEntry => !!e);
+    const finished = pick(progressSnapshot.completed);
+    const candidates = audienceEntries.filter((e) => !quarantineMap.quarantinedSet.has(e.storyKey));
+    return recommendReadNext(candidates, {
+      interests,
+      classIds,
+      ageYears: sel.ageYears,
+      excludeKeys: new Set([...progressSnapshot.completed, ...progressSnapshot.inProgress]),
+      history: [...finished, ...pick(progressSnapshot.favs)],
+      finished,
+      focusNacca,
+    });
+  }, [audienceEntries, interests, stage, sel.classId, sel.ageYears, progressSnapshot, quarantineMap.quarantinedSet, focusNacca]);
+
   // Progressive infinite scroll as the learner scrolls near the bottom of the shelf
   useEffect(() => {
     const el = sentinelRef.current;
@@ -405,6 +454,15 @@ export function LibraryDashboard({
   };
   const active = Object.values(sel).some((v) => v !== undefined) || stage !== 'all' || shelf !== 'all' || search.trim() !== '';
   const activeShelf = availableShelves.find((c) => c.id === shelf) ?? availableShelves[0];
+  const clearAll = () => { setSel({}); setStage('all'); setShelf('all'); setSearch(''); };
+  const chips: ToolbarChip[] = [];
+  if (shelf !== 'all') chips.push({ key: 'shelf', text: activeShelf.label.replace(/^\S+\s/, ''), onRemove: () => setShelf('all') });
+  if (stage !== 'all') chips.push({ key: 'stage', text: STAGE_GROUPS.find((g) => g.id === stage)?.label.replace(/^\S+\s/, '') ?? stage, onRemove: () => setStage('all') });
+  if (sel.classId) chips.push({ key: 'class', text: label(CLASS_REGISTRY, sel.classId), onRemove: () => sc('classId', '') });
+  if (sel.ageYears !== undefined) chips.push({ key: 'age', text: `${sel.ageYears} years`, onRemove: () => sc('ageYears', undefined) });
+  if (sel.genre) chips.push({ key: 'genre', text: label(GENRES, sel.genre), onRemove: () => sc('genre', '') });
+  if (sel.readingLevel) chips.push({ key: 'level', text: label(READING_LEVELS, sel.readingLevel), onRemove: () => sc('readingLevel', '') });
+  if (search.trim()) chips.push({ key: 'search', text: `“${search.trim()}”`, onRemove: () => setSearch('') });
   const hiddenQuarantinedCount = isDeveloper ? 0 : quarantineMap.quarantinedSet.size;
   const rawTotal = source.catalogue.totalPublished ?? entries.length;
   const totalBooksCount = Math.max(0, rawTotal - hiddenQuarantinedCount);
@@ -474,32 +532,38 @@ export function LibraryDashboard({
       </section>
       {source.notice && <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200" role="note">{source.notice}</p>}
 
-      {/* Curated Collection Shelves (Epic!-inspired) */}
-      <div className="mb-3 flex flex-wrap items-center gap-2 pb-1.5" role="group" aria-label="Curated story collections">
-        {availableShelves.map((c) => {
-          const isSelected = shelf === c.id;
-          const pillLabel = c.id === 'under-review' ? `${c.label} (${underReviewCount})` : c.label;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              data-testid={c.id === 'under-review' ? 'under-review-tab' : undefined}
-              onClick={() => setShelf(isSelected && c.id !== 'all' ? 'all' : c.id)}
-              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-extrabold transition ${
-                isSelected
-                  ? c.id === 'under-review'
-                    ? 'bg-amber-600 text-white shadow-sm ring-2 ring-amber-300'
-                    : 'bg-violet-700 text-white shadow-sm ring-2 ring-violet-300'
-                  : c.id === 'under-review'
-                    ? 'bg-amber-50 text-amber-950 ring-1 ring-amber-300 hover:bg-amber-100'
-                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-violet-50'
-              }`}
-            >
-              {pillLabel}
-            </button>
-          );
-        })}
-      </div>
+      <LibraryToolbar
+        shelves={availableShelves}
+        shelf={shelf}
+        onShelf={(id) => setShelf(id as CollectionShelfId)}
+        shelfSuffix={{
+          'under-review': ` (${underReviewCount})`,
+          continue: ` (${progressSnapshot.inProgress.size})`,
+          favourites: ` (${progressSnapshot.favs.size})`,
+          completed: ` (${progressSnapshot.completed.size})`,
+        }}
+        stages={STAGE_GROUPS}
+        stage={stage}
+        onStage={(id) => { setStage(id as StageFilterId); if (id !== 'all') setSel((s) => ({ ...s, classId: undefined })); }}
+        search={search}
+        onSearch={setSearch}
+        filtersCount={[sel.classId, sel.ageYears, sel.genre, sel.readingLevel].filter((v) => v !== undefined).length}
+        chips={chips}
+        onClearAll={clearAll}
+        active={active}
+      >
+        <form className="grid gap-3 rounded-2xl bg-white p-4 shadow ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-5" aria-label="Filter stories" onSubmit={(e) => e.preventDefault()}>
+          <Field label="Class"><select aria-label="Class" value={sel.classId ?? ''} onChange={(e) => sc('classId', e.target.value)} className={selectCls}>
+            <option value="">All classes</option>{CLASS_REGISTRY.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select></Field>
+          <Field label="Age"><select aria-label="Age" value={sel.ageYears ?? ''} onChange={(e) => sc('ageYears', e.target.value === '' ? undefined : Number(e.target.value))} className={selectCls}>
+            <option value="">Any age</option>{Array.from({ length: 14 }, (_, i) => i + 2).map((a) => <option key={a} value={a}>{a} years</option>)}</select></Field>
+          <Field label="Genre"><select aria-label="Genre" value={sel.genre ?? ''} onChange={(e) => sc('genre', e.target.value)} className={selectCls}>
+            <option value="">All genres</option>{GENRES.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}</select></Field>
+          <Field label="Reading level"><select aria-label="Reading level" value={sel.readingLevel ?? ''} onChange={(e) => sc('readingLevel', e.target.value)} className={selectCls}>
+            <option value="">All levels</option>{READING_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}</select></Field>
+          <div className="flex items-end"><button type="button" disabled={!active} onClick={clearAll} className="w-full rounded-xl border-2 border-slate-300 px-4 py-2 font-bold text-slate-800 disabled:opacity-40">Clear filters</button></div>
+        </form>
+      </LibraryToolbar>
 
       {shelf !== 'all' && (
         <div className="mb-3 flex items-center justify-between rounded-2xl bg-violet-50 px-4 py-2.5 text-sm text-violet-950 ring-1 ring-violet-200" data-testid="collection-banner">
@@ -513,50 +577,20 @@ export function LibraryDashboard({
         </div>
       )}
 
-      {/* Stage filter + Instant search bar */}
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2" role="group" aria-label="School stage filter">
-          {STAGE_GROUPS.map((g) => {
-            const isActive = stage === g.id;
-            return (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => { setStage(g.id); if (g.id !== 'all') setSel((s) => ({ ...s, classId: undefined })); }}
-                className={`rounded-full px-4 py-1.5 text-sm font-extrabold transition ${
-                  isActive
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'bg-white text-slate-700 ring-1 ring-slate-200 hover:bg-indigo-50'
-                }`}
-              >
-                {g.label}
-              </button>
-            );
-          })}
-        </div>
-        <div className="relative min-w-[240px] flex-1 sm:max-w-xs">
-          <input
-            type="search"
-            aria-label="Search stories"
-            placeholder="🔍 Search title, topic, or character…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-full border-2 border-slate-200 bg-white px-4 py-1.5 text-sm font-semibold text-slate-800 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <form className="mb-5 grid gap-3 rounded-2xl bg-white p-4 shadow ring-1 ring-slate-200 sm:grid-cols-2 lg:grid-cols-5" aria-label="Filter stories" onSubmit={(e) => e.preventDefault()}>
-        <Field label="Class"><select aria-label="Class" value={sel.classId ?? ''} onChange={(e) => sc('classId', e.target.value)} className={selectCls}>
-          <option value="">All classes</option>{CLASS_REGISTRY.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}</select></Field>
-        <Field label="Age"><select aria-label="Age" value={sel.ageYears ?? ''} onChange={(e) => sc('ageYears', e.target.value === '' ? undefined : Number(e.target.value))} className={selectCls}>
-          <option value="">Any age</option>{Array.from({ length: 14 }, (_, i) => i + 2).map((a) => <option key={a} value={a}>{a} years</option>)}</select></Field>
-        <Field label="Genre"><select aria-label="Genre" value={sel.genre ?? ''} onChange={(e) => sc('genre', e.target.value)} className={selectCls}>
-          <option value="">All genres</option>{GENRES.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}</select></Field>
-        <Field label="Reading level"><select aria-label="Reading level" value={sel.readingLevel ?? ''} onChange={(e) => sc('readingLevel', e.target.value)} className={selectCls}>
-          <option value="">All levels</option>{READING_LEVELS.map((l) => <option key={l.id} value={l.id}>{l.label}</option>)}</select></Field>
-        <div className="flex items-end"><button type="button" disabled={!active} onClick={() => { setSel({}); setStage('all'); setShelf('all'); setSearch(''); }} className="w-full rounded-xl border-2 border-slate-300 px-4 py-2 font-bold text-slate-800 disabled:opacity-40">Clear filters</button></div>
-      </form>
+      {shelf === 'all' && search.trim() === '' && (
+        <ReadNextShelf
+          recs={readNext}
+          interests={interests}
+          onToggleInterest={(id) => { toggleInterest(id); }}
+          onOpen={openStory}
+          busyKey={opening}
+          focusLabel={focusLabel}
+          coverFor={(e) => {
+            const info = source.info(e.storyKey);
+            return { motif: e.coverMotif ?? info?.pages?.[0]?.motif ?? '📖', palette: e.palette ?? info?.palette ?? ['#e2e8f0', '#94a3b8'], alt: e.cover?.alt ?? `Cover for ${e.title}`, src: resolveCoverUrl(e, source) };
+          }}
+        />
+      )}
 
       <p className="mb-3 text-sm font-semibold text-slate-600" aria-live="polite" data-testid="result-count">
         {loading && !visibleEntries.length ? 'Loading stories…' : `${visibleEntries.length} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
