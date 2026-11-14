@@ -1586,7 +1586,7 @@
     "definition": "Tasks or regular positions of work."
   },
   "work": {
-    "definition": "Effort done to make, fix, study, or achieve something."
+    "definition": "Force multiplied by the distance moved in the direction of the force; measured in joules."
   },
   "worked": {
     "definition": "Put in effort to do a task or job."
@@ -1604,7 +1604,7 @@
     "definition": "Instruments like hammers, hoes, rulers, or magnifying glasses used to do work."
   },
   "machine": {
-    "definition": "A tool that makes work easier."
+    "definition": "Simple machine: a device such as a lever, pulley, or inclined plane that lets a smaller force do a job."
   },
   "machines": {
     "definition": "Devices with moving parts that help people weave, build, print, or farm."
@@ -1634,7 +1634,7 @@
     "definition": "Operating by or relating to electricity."
   },
   "power": {
-    "definition": "The rate at which electrical energy is transferred by an appliance, measured in watts (W) or kilowatts (kW), where P = V × I."
+    "definition": "The rate of doing work; work done divided by time taken."
   },
   "powerful": {
     "definition": "Having great strength, energy, or influence."
@@ -1769,13 +1769,13 @@
     "definition": "Metric units of weight or mass, each equal to 1,000 grams."
   },
   "weight": {
-    "definition": "How heavy something is."
+    "definition": "The force of gravity on an object, measured in newtons."
   },
   "weights": {
     "definition": "Objects of known mass — such as Akan brass goldweights — used to weigh things on a scale."
   },
   "distance": {
-    "definition": "How far it is from one place or point to another."
+    "definition": "How far something travels, measured in metres or kilometres."
   },
   "balance": {
     "definition": "A healthy, steady state in which each part of an ecosystem supports the others."
@@ -1907,7 +1907,7 @@
     "definition": "Occasions when something happens, or multiplied by in mathematics."
   },
   "moment": {
-    "definition": "A very short period of time."
+    "definition": "The turning effect of a force: force × distance from the pivot."
   },
   "minute": {
     "definition": "A unit of time equal to 60 seconds; or extremely tiny."
@@ -3005,7 +3005,7 @@
     "definition": "Has a particular meaning, or a way of doing something."
   },
   "matter": {
-    "definition": "To be important, or the physical substance that everything in the universe is made of."
+    "definition": "State of matter: one of the forms in which matter exists (solid, liquid, or gas)."
   },
   "matters": {
     "definition": "Is important, or subjects being discussed."
@@ -4116,7 +4116,7 @@
     "definition": "Living or growing in nature without being tamed or farmed by people."
   },
   "greenhouse": {
-    "definition": "A building with glass or clear plastic walls that traps warmth for growing plants, or the warming effect of gases in Earth’s atmosphere."
+    "definition": "Greenhouse effect: the trapping of heat in the atmosphere by gases such as carbon dioxide."
   },
   "move": {
     "definition": "To change position or go from one place to another."
@@ -4344,7 +4344,7 @@
     "definition": "To do something and take action, or to play a part in a story."
   },
   "mass": {
-    "definition": "The amount of matter in an object, measured in grams or kilograms."
+    "definition": "The amount of matter in an object, measured in kilograms."
   },
   "event": {
     "definition": "Something important that happens, such as a festival, storm, or school gathering."
@@ -5489,7 +5489,7 @@
     "definition": "An extremely tiny piece of matter, such as a speck of dust, an atom, or a water droplet."
   },
   "particles": {
-    "definition": "Tiny specks or bits of matter."
+    "definition": "The tiny pieces that all matter is made of."
   },
   "hydrogen": {
     "definition": "The lightest and most abundant chemical element in the universe, which fuels the stars and forms part of water (H₂O)."
@@ -5543,7 +5543,7 @@
     "definition": "All the people or animals of a species living in a particular area or country."
   },
   "resistance": {
-    "definition": "The ability to withstand force, illness, or difficulty without giving in."
+    "definition": "Air resistance: a force that opposes the motion of an object through air."
   },
   "diagram": {
     "definition": "A clear drawing with labels that explains how something is put together or how it works."
@@ -5624,7 +5624,7 @@
     "definition": "An official financial plan showing expected public revenue and how money will be spent on services and projects"
   },
   "crater": {
-    "definition": "A bowl-shaped hole in the ground, often made by something hitting it."
+    "definition": "A bowl-shaped hollow made by an impact or an explosion."
   },
   "bioluminescence": {
     "definition": "Light made by living things."
@@ -5765,7 +5765,7 @@
     "definition": "Spreading out to many places."
   },
   "asteroid": {
-    "definition": "A rocky object that travels around the Sun."
+    "definition": "A rocky object, smaller than a planet, that orbits the Sun."
   },
   "insects": {
     "definition": "Small animals with six legs."
@@ -6027,7 +6027,7 @@
     "definition": "A fast shaking movement back and forth."
   },
   "melt": {
-    "definition": "To change from a solid to a liquid when warmed."
+    "definition": "To change from a solid to a liquid."
   },
   "mixture": {
     "definition": "Two or more things together that are not joined."
@@ -6084,7 +6084,7 @@
     "definition": "A reaction between an acid and a base. With some bases, such as carbonates, carbon dioxide is also released."
   },
   "friction": {
-    "definition": "The force opposing motion between two surfaces in contact; grooved tyre treads preserve friction on wet roads."
+    "definition": "A force that opposes motion when two surfaces rub together."
   },
   "heredity": {
     "definition": "The transmission of genetic traits (such as blood group or haemoglobin genotype) from parents to offspring."
@@ -6121,6 +6121,24 @@
   },
   "exoplanet": {
     "definition": "A planet that orbits a star other than the Sun."
+  },
+  "average speed": {
+    "definition": "The total distance travelled divided by the total time taken."
+  },
+  "pivot": {
+    "definition": "The fixed point about which a lever turns; also called the fulcrum."
+  },
+  "elastic potential energy": {
+    "definition": "Energy stored in an object that has been stretched, squashed, or bent."
+  },
+  "condense": {
+    "definition": "To change from a gas to a liquid."
+  },
+  "ellipse": {
+    "definition": "A stretched oval shape."
+  },
+  "non-renewable": {
+    "definition": "Describing an energy source that is used up, such as gas, oil, or uranium."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6183,7 +6201,7 @@
     "definition": "To grow larger or stretch out over a wider space."
   },
   "gravity": {
-    "definition": "A force that pulls objects towards each other; more mass means a stronger pull."
+    "definition": "The force that pulls objects towards each other."
   },
   "redshift": {
     "definition": "The stretching of light waves toward the red end of the spectrum as space expands."
@@ -6265,7 +6283,7 @@
     "definition": "Microscopic plant-like organisms drifting in sunlit surface water that make food by photosynthesis."
   },
   "pressure": {
-    "definition": "The perpendicular force acting per unit area of a surface (P = F ÷ A), measured in pascals (Pa) or newtons per square metre (N/m²)."
+    "definition": "A measure of how strongly a force squeezes or presses on a surface."
   },
   "luciferin": {
     "definition": "A light-emitting compound found in organisms that produce bioluminescence."
@@ -6310,7 +6328,7 @@
     "definition": "Rainwater that flows over roofs or the ground instead of soaking in."
   },
   "average": {
-    "definition": "A central value found by adding quantities together and dividing by how many there are."
+    "definition": "Average speed: total distance divided by total time, including stops."
   },
   "treasure": {
     "definition": "Something precious and valued."
@@ -8057,6 +8075,81 @@
   },
   "biosignatures": {
     "definition": "Chemicals or patterns that living things could produce."
+  },
+  "speed": {
+    "definition": "The distance travelled in each unit of time."
+  },
+  "orbits": {
+    "definition": "Travels round a planet or star along a curved path."
+  },
+  "circular": {
+    "definition": "Circular economy: a way of making and using things so that they are repaired, reused, and recycled instead of thrown away."
+  },
+  "streamlined": {
+    "definition": "Shaped so that air or water flows past easily."
+  },
+  "repel": {
+    "definition": "To push away; like magnetic poles repel each other."
+  },
+  "maglev": {
+    "definition": "Magnetic levitation: using magnets to lift a vehicle above its track."
+  },
+  "joules": {
+    "definition": "The unit of work and energy; one newton moved through one metre."
+  },
+  "watts": {
+    "definition": "The unit of power; one joule per second."
+  },
+  "horsepower": {
+    "definition": "An older unit of power, about 750 watts."
+  },
+  "lever": {
+    "definition": "A stiff bar that turns about a fixed point."
+  },
+  "effort": {
+    "definition": "The force applied to a lever."
+  },
+  "potential": {
+    "definition": "Gravitational potential energy: energy stored in an object because it has been raised above the ground."
+  },
+  "kinetic": {
+    "definition": "Kinetic energy: the energy an object has because it is moving."
+  },
+  "elastic": {
+    "definition": "Elastic potential energy: energy stored in an object that has been stretched, squashed, or bent."
+  },
+  "newtons": {
+    "definition": "The unit of force; on Earth, 1 kg weighs about 10 newtons."
+  },
+  "biomimicry": {
+    "definition": "Designing things by copying ideas from living organisms."
+  },
+  "condenses": {
+    "definition": "Changes from a gas to a liquid."
+  },
+  "magma": {
+    "definition": "Molten rock beneath the Earth’s surface."
+  },
+  "comet": {
+    "definition": "A lump of ice, dust, and rock that grows a tail when it comes near the Sun."
+  },
+  "renewable": {
+    "definition": "Describing an energy source that nature replaces, such as sunlight or falling water."
+  },
+  "nucleus": {
+    "definition": "The tiny centre of an atom."
+  },
+  "fission": {
+    "definition": "Nuclear fission: the splitting of a heavy nucleus, releasing heat."
+  },
+  "reaction": {
+    "definition": "Chain reaction: a reaction in which each step sets off the next."
+  },
+  "radioactive": {
+    "definition": "Giving out harmful radiation."
+  },
+  "reactor": {
+    "definition": "The part of a nuclear power station where the chain reaction is controlled."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
