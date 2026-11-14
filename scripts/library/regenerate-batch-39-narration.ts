@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import https from 'node:https';
 import path from 'node:path';
 import { BATCH_39_STORIES } from '../../src/lib/story-library/pilot/batch-39-stories';
@@ -93,43 +93,9 @@ async function callTTS(text: string): Promise<Buffer> {
   throw new Error('All candidate TTS models failed');
 }
 
-export function buildTiming(text: string, durationSec: number) {
-  const durationMs = Math.round(durationSec * 1000);
-  const words = text.trim() ? text.trim().split(/\s+/) : [];
-  const chars = words.map((w) => Math.max(1, w.replace(/[^a-zA-Z0-9]/g, '').length));
-  const totalChars = chars.reduce((a, b) => a + b, 0) || 1;
-
-  const wordMarks: Array<[number, number]> = [];
-  let curMs = 0;
-  for (let i = 0; i < words.length; i++) {
-    const frac = chars[i] / totalChars;
-    const dur = Math.max(150, Math.round(frac * durationMs));
-    const end = i === words.length - 1 ? durationMs : Math.min(durationMs, curMs + dur);
-    wordMarks.push([curMs, end]);
-    curMs = end;
-  }
-
-  const sents: Array<[number, number]> = [];
-  const sParts = text.split(/(?<=[.!?])\s+/).filter((s) => s.trim().length > 0);
-  let wIdx = 0;
-  for (const sp of sParts) {
-    const cnt = sp.trim().split(/\s+/).length;
-    const startW = wIdx;
-    const endW = Math.min(words.length - 1, wIdx + cnt - 1);
-    if (wordMarks[startW] && wordMarks[endW]) {
-      sents.push([wordMarks[startW][0], wordMarks[endW][1]]);
-    }
-    wIdx += cnt;
-  }
-
-  return { durationMs, wordMarks, sentenceMarks: sents };
-}
-
 export async function run() {
   if (!apiKey) {
-    console.error('ERROR: GEMINI_API_KEY is not set.');
-    console.error('Please add your Gemini API key to C:\\Users\\DELL\\Documents\\GitHub\\Gam_Edu\\.env.local:');
-    console.error('  GEMINI_API_KEY=your_key_here');
+    console.error('ERROR: GEMINI_API_KEY is not set in .env.local.');
     process.exit(1);
   }
 
@@ -151,49 +117,41 @@ export async function run() {
       const pageNo = i + 1;
       const page = story.pages[i];
       pageCount++;
-      console.log(`[${pageCount}/30] Generating page ${pageNo} (${page.text.slice(0, 45)}...)...`);
+      const id = `tts-Kore-page${pageNo}`;
+      const mp3Pub = path.join(pubDir, `${id}.mp3`);
+      const durPub = path.join(pubDir, `${id}.dur.txt`);
+      const pcmPath = path.join(pubDir, `${id}.pcm`);
+
+      console.log(`[${pageCount}/30] Generating ${story.key}/${id} ("${page.text.slice(0, 45)}...")...`);
 
       // Pure text to speak:
       const cleanText = page.text.trim();
-      const rawAudio = await callTTS(cleanText);
+      const pcm = await callTTS(cleanText);
+      const durationMs = Math.round((pcm.length / 48000) * 1000);
 
-      // Convert to MP3
-      const tmpIn = path.join(pubDir, `temp-${pageNo}.bin`);
-      const mp3Out = path.join(pubDir, `page${pageNo}.mp3`);
-      const durTxt = path.join(pubDir, `page${pageNo}.dur.txt`);
-      writeFileSync(tmpIn, rawAudio);
+      writeFileSync(durPub, String(durationMs));
+      writeFileSync(pcmPath, pcm);
 
       try {
-        execFileSync(ffmpegPath, ['-y', '-i', tmpIn, '-c:a', 'libmp3lame', '-b:a', '64k', mp3Out], { stdio: 'pipe' });
+        execFileSync(ffmpegPath, ['-y', '-f', 's16le', '-ar', '24000', '-ac', '1', '-i', pcmPath, mp3Pub], { stdio: 'ignore' });
       } finally {
-        if (existsSync(tmpIn)) unlinkSync(tmpIn);
+        if (existsSync(pcmPath)) unlinkSync(pcmPath);
       }
-
-      // Calculate exact duration
-      const probeOut = execFileSync(ffmpegPath, ['-i', mp3Out], { stdio: 'pipe' }).toString();
-      const durMatch = /Duration:\s*(\d+):(\d+):(\d+\.\d+)/.exec(probeOut);
-      let durationSec = 10;
-      if (durMatch) {
-        durationSec = parseInt(durMatch[1], 10) * 3600 + parseInt(durMatch[2], 10) * 60 + parseFloat(durMatch[3]);
-      }
-      writeFileSync(durTxt, durationSec.toFixed(2), 'utf8');
 
       // Copy hashed audio to public audio folder
-      const mp3Buf = readFileSync(mp3Out);
+      const mp3Buf = readFileSync(mp3Pub);
       const audioHash = sha(mp3Buf);
       const audioFileName = `${audioHash.slice(0, 12)}.mp3`;
-      copyFileSync(mp3Out, path.join(previewOut, 'audio', audioFileName));
+      copyFileSync(mp3Pub, path.join(previewOut, 'audio', audioFileName));
 
-      console.log(`  -> Page ${pageNo} done: ${durationSec.toFixed(1)}s, ${audioFileName}`);
+      console.log(`  -> Page ${pageNo} OK: ${(durationMs / 1000).toFixed(1)}s, ${audioFileName}`);
       await sleep(1000);
     }
   }
 
-  console.log('\nAll 30 audio clips generated! Rebuilding packages and sidecars...');
-  // Execute package update script
+  console.log('\nAll 30 audio clips generated! Rebuilding packages, sidecars, and catalogue...');
   const finalizePath = 'C:/Users/DELL/.gemini/antigravity/brain/c229576f-28ea-43b0-b4c2-466e9ffcd1e3/scratch/finalize-batch-39.ts';
   if (existsSync(finalizePath)) {
-    const { execSync } = await import('node:child_process');
     execSync(`npx tsx ${finalizePath}`, { cwd: repoRoot, stdio: 'inherit' });
   }
 
