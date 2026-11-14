@@ -675,19 +675,35 @@ export function StorybookReader({
       )}
 
       {page && (
-        <div key={`page-${page.n}`} className={`grid gap-4 animate-in fade-in slide-in-from-right-4 duration-500 ${largeImageLayout ? 'md:grid-cols-2' : presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
-          <div className={!largeImageLayout && presentation.layout === 'text-first' ? 'order-2 md:order-2' : 'order-1'}>
+        <div
+          key={`page-${page.n}`}
+          className={`grid items-center gap-6 animate-in fade-in slide-in-from-right-4 duration-500 ${
+            presentation.layout === 'text-first'
+              ? largeImageLayout
+                ? 'md:grid-cols-[0.85fr_1.15fr]'
+                : 'md:grid-cols-2'
+              : presentation.layout === 'picture-first'
+                ? ''
+                : 'md:grid-cols-2'
+          }`}
+        >
+          <div className={presentation.layout === 'text-first' ? 'order-2 md:order-2' : 'order-1'}>
             <PlaceholderArt
               motif={art?.motif ?? (page.n === 1 ? entry?.coverMotif : undefined) ?? '📖'}
               palette={[c0, c1]}
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
-              compact={!largeImageLayout && presentation.layout === 'text-first'}
+              compact={presentation.layout === 'text-first'}
               imageSrc={cachedImageUrl ?? resolveMediaUrl(`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
               onZoom={() => setIsImageZoomed(true)}
             />
           </div>
-          <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="order-2 flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
+          <article
+            aria-label={`Page ${page.n} of ${pkg.pages.length}`}
+            className={`${
+              presentation.layout === 'text-first' ? 'order-1 md:order-1' : 'order-2'
+            } flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8`}
+          >
             <p className="text-lg leading-[1.9] text-slate-900" style={{ fontSize, fontFamily: 'Andika, Nunito, system-ui, sans-serif' }} data-testid="page-text">
               {words!.tokens.map((t, i) => {
                 const active = hl.level === 'word' ? hl.word === i : hl.level === 'sentence' ? words!.sentenceOfToken[i] === hl.sentence : false;

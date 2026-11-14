@@ -1,9 +1,11 @@
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs';
-import { execFileSync, execSync } from 'node:child_process';
-import https from 'node:https';
+import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync, unlinkSync } from 'node:fs';
+import { execFile, execFileSync, execSync } from 'node:child_process';
+import { promisify } from 'node:util';
 import path from 'node:path';
 import { BATCH_39_STORIES } from '../../src/lib/story-library/pilot/batch-39-stories';
+
+const execFileAsync = promisify(execFile);
 
 const repoRoot = path.resolve(__dirname, '../..');
 const envPath = path.join(repoRoot, '.env.local');
@@ -20,77 +22,69 @@ if (!apiKey && existsSync(envPath)) {
 const sha = (b: Buffer | string) => createHash('sha256').update(b).digest('hex');
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-const candidateModels = [
-  'gemini-2.5-pro-preview-tts',
-  'gemini-3.8-flash-tts',
-  'gemini-3.1-flash-tts-preview',
-];
+// Exact model used across all earlier Ghanaian English stories in Story Spark:
+const ttsModel = 'gemini-3.1-flash-tts-preview';
 
-function fetchPureTTS(model: string, textToSpeak: string): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    // Pure text only - absolutely NO meta-instructions or prompt prefixes!
-    const payload = JSON.stringify({
-      contents: [{ parts: [{ text: textToSpeak }] }],
-      generationConfig: {
-        responseModalities: ['AUDIO'],
-        speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
-      },
-    });
+async function fetchGhanaianKoreTTS(text: string, tempDir: string, tag: string): Promise<Buffer> {
+  // Exact director prompt used in Batches 1–29 and verified on Page 1 sample:
+  const prompt = `Read the following paragraph aloud in warm, natural Ghanaian English, speaking ONLY the exact words below with no introduction:\n\n${text}`;
+  const payload = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: {
+      responseModalities: ['AUDIO'],
+      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
+    },
+  });
 
-    const req = https.request(
-      {
-        hostname: 'generativelanguage.googleapis.com',
-        path: `/v1beta/models/${model}:generateContent?key=${apiKey}`,
-        method: 'POST',
-        family: 4,
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(payload),
-        },
-        timeout: 45000,
-      },
-      (res) => {
-        let raw = '';
-        res.on('data', (c) => (raw += c));
-        res.on('end', () => {
-          if (res.statusCode !== 200) {
-            return reject(new Error(`HTTP ${res.statusCode}: ${raw.slice(0, 180)}`));
-          }
-          try {
-            const data = JSON.parse(raw);
-            const b64 = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-            if (!b64) return reject(new Error('No inline audio data returned'));
-            resolve(Buffer.from(b64, 'base64'));
-          } catch (e: any) {
-            reject(new Error(`Parse error: ${e.message}`));
-          }
-        });
-      }
+  const reqFile = path.join(tempDir, `tts-req-${tag}.json`);
+  const resFile = path.join(tempDir, `tts-res-${tag}.json`);
+  writeFileSync(reqFile, payload, 'utf8');
+
+  try {
+    await execFileAsync(
+      'curl.exe',
+      [
+        '-4',
+        '-sS',
+        '--compressed',
+        '--max-time',
+        '210',
+        '-X',
+        'POST',
+        `https://generativelanguage.googleapis.com/v1beta/models/${ttsModel}:generateContent?key=${apiKey}`,
+        '-H',
+        'Content-Type: application/json',
+        '-d',
+        `@${reqFile}`,
+        '-o',
+        resFile,
+      ],
+      { maxBuffer: 10 * 1024 * 1024 }
     );
 
-    req.on('timeout', () => {
-      req.destroy();
-      reject(new Error('Request timed out'));
-    });
-
-    req.on('error', (e) => reject(e));
-    req.write(payload);
-    req.end();
-  });
+    const raw = readFileSync(resFile, 'utf8');
+    const data = JSON.parse(raw);
+    if (data.error) {
+      throw new Error(`API Error ${data.error.code}: ${data.error.message}`);
+    }
+    const b64 = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!b64) throw new Error(`No inline audio data returned: ${raw.slice(0, 200)}`);
+    return Buffer.from(b64, 'base64');
+  } finally {
+    if (existsSync(reqFile)) unlinkSync(reqFile);
+    if (existsSync(resFile)) unlinkSync(resFile);
+  }
 }
 
-async function callTTS(text: string): Promise<Buffer> {
-  for (const model of candidateModels) {
-    for (let attempt = 1; attempt <= 3; attempt++) {
-      try {
-        return await fetchPureTTS(model, text);
-      } catch (err: any) {
-        console.warn(`[${model} attempt ${attempt}] error: ${err.message}`);
-        await sleep(2000 * attempt);
-      }
+async function runPool<T>(items: T[], concurrency: number, worker: (item: T) => Promise<void>) {
+  const queue = [...items];
+  const runners = Array.from({ length: concurrency }, async () => {
+    while (queue.length > 0) {
+      const next = queue.shift();
+      if (next !== undefined) await worker(next);
     }
-  }
-  throw new Error('All candidate TTS models failed');
+  });
+  await Promise.all(runners);
 }
 
 export async function run() {
@@ -103,50 +97,105 @@ export async function run() {
 
   mkdirSync(path.join(previewOut, 'audio'), { recursive: true });
 
-  console.log(`Starting clean narration regeneration for Batch 39 (30 pages total)...`);
-  console.log(`Voice: Kore (natural Ghanaian English)`);
-  console.log(`Purity check: ZERO prompt prefixes or meta-instructions will be spoken.`);
+  console.log(`=== Generating Ghanaian English Kore TTS (${ttsModel}) for Batch 39 ===`);
 
-  let pageCount = 0;
+  interface Job {
+    idx: number;
+    story: (typeof BATCH_39_STORIES)[number];
+    pageNo: number;
+    text: string;
+    pubDir: string;
+  }
+
+  const jobs: Job[] = [];
+  let counter = 0;
   for (const story of BATCH_39_STORIES) {
-    console.log(`\n=== Story: ${story.title} (${story.key}) ===`);
     const pubDir = path.join(repoRoot, 'public/story-spark-preview/candidates', story.key);
     mkdirSync(pubDir, { recursive: true });
-
     for (let i = 0; i < story.pages.length; i++) {
-      const pageNo = i + 1;
-      const page = story.pages[i];
-      pageCount++;
-      const id = `tts-Kore-page${pageNo}`;
-      const mp3Pub = path.join(pubDir, `${id}.mp3`);
-      const durPub = path.join(pubDir, `${id}.dur.txt`);
-      const pcmPath = path.join(pubDir, `${id}.pcm`);
-
-      console.log(`[${pageCount}/30] Generating ${story.key}/${id} ("${page.text.slice(0, 45)}...")...`);
-
-      // Pure text to speak:
-      const cleanText = page.text.trim();
-      const pcm = await callTTS(cleanText);
-      const durationMs = Math.round((pcm.length / 48000) * 1000);
-
-      writeFileSync(durPub, String(durationMs));
-      writeFileSync(pcmPath, pcm);
-
-      try {
-        execFileSync(ffmpegPath, ['-y', '-f', 's16le', '-ar', '24000', '-ac', '1', '-i', pcmPath, mp3Pub], { stdio: 'ignore' });
-      } finally {
-        if (existsSync(pcmPath)) unlinkSync(pcmPath);
-      }
-
-      // Copy hashed audio to public audio folder
-      const mp3Buf = readFileSync(mp3Pub);
-      const audioHash = sha(mp3Buf);
-      const audioFileName = `${audioHash.slice(0, 12)}.mp3`;
-      copyFileSync(mp3Pub, path.join(previewOut, 'audio', audioFileName));
-
-      console.log(`  -> Page ${pageNo} OK: ${(durationMs / 1000).toFixed(1)}s, ${audioFileName}`);
-      await sleep(1000);
+      counter++;
+      jobs.push({
+        idx: counter,
+        story,
+        pageNo: i + 1,
+        text: story.pages[i].text.trim(),
+        pubDir,
+      });
     }
+  }
+
+  // Mark already-verified sample (how-far-is-far-measuring-space page 1)
+  const sampleMp3 = path.join(repoRoot, 'public/story-spark-preview/candidates/how-far-is-far-measuring-space/tts-Kore-page1.mp3');
+  const sampleMarker = path.join(repoRoot, 'public/story-spark-preview/candidates/how-far-is-far-measuring-space/tts-Kore-page1.gh-v31.ok');
+  if (existsSync(sampleMp3) && sha(readFileSync(sampleMp3)).slice(0, 12) === 'dc1483fe4128') {
+    writeFileSync(sampleMarker, 'dc1483fe4128', 'utf8');
+  }
+
+  let completed = 0;
+
+  await runPool(jobs, 2, async (job) => {
+    const { idx, story, pageNo, text, pubDir } = job;
+    const id = `tts-Kore-page${pageNo}`;
+    const mp3Pub = path.join(pubDir, `${id}.mp3`);
+    const durPub = path.join(pubDir, `${id}.dur.txt`);
+    const pcmPath = path.join(pubDir, `${id}.pcm`);
+    const okMarker = path.join(pubDir, `${id}.gh-v31.ok`);
+
+    if (existsSync(okMarker) && existsSync(mp3Pub) && existsSync(durPub)) {
+      const mp3Buf = readFileSync(mp3Pub);
+      const audioFileName = `${sha(mp3Buf).slice(0, 12)}.mp3`;
+      const dest = path.join(previewOut, 'audio', audioFileName);
+      if (!existsSync(dest)) copyFileSync(mp3Pub, dest);
+      completed++;
+      console.log(`[${completed}/30 SKIP verified] ${story.key}/${id} (${audioFileName})`);
+      return;
+    }
+
+    const wordCount = text.split(/\s+/).length;
+    console.log(`[Job ${idx}/30] Generating ${story.key}/${id} (${wordCount} words)...`);
+
+    let attempts = 0;
+    while (attempts < 4) {
+      attempts++;
+      try {
+        const t0 = Date.now();
+        const pcm = await fetchGhanaianKoreTTS(text, pubDir, `${story.key}-p${pageNo}`);
+        const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+        const durationMs = Math.round((pcm.length / 48000) * 1000);
+        const wps = wordCount / (durationMs / 1000);
+        if (wps < 1.35 && attempts < 3) {
+          throw new Error(`Low WPS (${wps.toFixed(2)} w/s, ${(durationMs / 1000).toFixed(1)}s for ${wordCount}w) — retrying`);
+        }
+
+        writeFileSync(durPub, String(durationMs));
+        writeFileSync(pcmPath, pcm);
+        try {
+          execFileSync(ffmpegPath, ['-y', '-f', 's16le', '-ar', '24000', '-ac', '1', '-i', pcmPath, mp3Pub], { stdio: 'ignore' });
+        } finally {
+          if (existsSync(pcmPath)) unlinkSync(pcmPath);
+        }
+
+        const mp3Buf = readFileSync(mp3Pub);
+        const audioHash = sha(mp3Buf);
+        const audioFileName = `${audioHash.slice(0, 12)}.mp3`;
+        copyFileSync(mp3Pub, path.join(previewOut, 'audio', audioFileName));
+        writeFileSync(okMarker, audioFileName, 'utf8');
+
+        completed++;
+        console.log(`[${completed}/30 OK in ${elapsed}s] ${story.key}/${id} -> ${(durationMs / 1000).toFixed(1)}s (${wps.toFixed(2)} w/s), ${audioFileName}`);
+        break;
+      } catch (err: any) {
+        console.warn(`  [Attempt ${attempts}/4] ${story.key}/${id}: ${err.message}`);
+        if (attempts >= 4) throw err;
+        await sleep(4000 * attempts);
+      }
+    }
+  });
+
+  // Clean up temporary .gh-v31.ok markers
+  for (const job of jobs) {
+    const okMarker = path.join(job.pubDir, `tts-Kore-page${job.pageNo}.gh-v31.ok`);
+    if (existsSync(okMarker)) unlinkSync(okMarker);
   }
 
   console.log('\nAll 30 audio clips generated! Rebuilding packages, sidecars, and catalogue...');
@@ -155,7 +204,7 @@ export async function run() {
     execSync(`npx tsx ${finalizePath}`, { cwd: repoRoot, stdio: 'inherit' });
   }
 
-  console.log('\nSUCCESS! Batch 39 narration has been completely regenerated with pure Kore voice.');
+  console.log('\nSUCCESS! Batch 39 narration has been completely regenerated with authentic Ghanaian English Kore voice.');
 }
 
 if (require.main === module || process.argv[1]?.endsWith('regenerate-batch-39-narration.ts')) {
