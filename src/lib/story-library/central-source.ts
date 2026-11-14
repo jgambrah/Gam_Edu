@@ -23,7 +23,7 @@ import {
   type Firestore,
   type QueryConstraint,
 } from 'firebase/firestore';
-import { CatalogueClient, type CatalogueBackend } from './catalogue-client';
+import { CatalogueClient, loadWholeCatalogue, type CatalogueBackend } from './catalogue-client';
 import type { CatalogueFilter } from './classification';
 import { BrowserAssetCache } from './browser-cache';
 import { MemoryAssetStore, StoryLoader } from './lazy-loader';
@@ -124,6 +124,29 @@ export async function createCentralSource(opts: CentralSourceOptions): Promise<L
 
   const infoCache = new Map<string, StoryPreviewInfo>();
   const infoInflight = new Map<string, Promise<StoryPreviewInfo | undefined>>();
+  let allEntriesPromise: Promise<CatalogueEntry[]> | null = null;
+
+  const getAllEntries = (): Promise<CatalogueEntry[]> => {
+    if (!allEntriesPromise) {
+      allEntriesPromise = (async () => {
+        try {
+          const res = await fetchFn(resolveMediaUrl(`/${PUBLISHED_PREFIX}catalogue.json`));
+          if (res.ok) {
+            const data = (await res.json()) as { entries?: CatalogueEntry[] };
+            if (Array.isArray(data.entries)) {
+              return [...data.entries]
+                .filter((e) => e.status === 'published')
+                .sort((a, b) => (a.storyKey < b.storyKey ? -1 : 1));
+            }
+          }
+        } catch {
+          // Fall back to paginated Firestore drain when CDN index is absent
+        }
+        return loadWholeCatalogue(backend);
+      })();
+    }
+    return allEntriesPromise;
+  };
 
   const loadInfo = async (storyKey: string): Promise<StoryPreviewInfo | undefined> => {
     const hit = infoCache.get(storyKey);
@@ -155,8 +178,10 @@ export async function createCentralSource(opts: CentralSourceOptions): Promise<L
     counters: () => ({ catalogue: { ...backend.counters } }),
     info: (k) => infoCache.get(k),
     loadInfo,
+    getAllEntries,
     resolveMediaUrl,
     async clearDeviceCache() {
+      allEntriesPromise = null;
       infoCache.clear();
       kv.clear();
       await kv.flush?.();

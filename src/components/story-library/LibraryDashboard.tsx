@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PUBLISHED_PREFIX, type CatalogueEntry, type StoryPackage } from '@/lib/story-library/types';
 import { createPreviewSource, type LibrarySource } from '@/lib/story-library/library-source';
 import { CLASS_REGISTRY, GENRES, READING_LEVELS, presentationFor } from '@/lib/story-library/classification';
+import { matchesFilter } from '@/lib/story-library/catalogue-client';
 import { FilteredFeed, planQuery, type Selection } from '@/lib/story-library/dashboard-query';
 import { loadProgressSnapshot, subscribeProgressChanges, toggleFavourite, type LocalProgress } from '@/lib/story-library/progress-store';
 import {
@@ -25,9 +26,7 @@ import { ReadNextShelf } from './ReadNextShelf';
 const label = (list: readonly { id: string; label: string }[], id?: string) => list.find((x) => x.id === id)?.label ?? id ?? '';
 const minutes = (s?: number) => (s ? `${Math.max(1, Math.round(s / 60))} min` : '');
 
-const INITIAL_FEED_BATCH = 300;
-const INITIAL_RENDER_WINDOW = 300;
-const RENDER_WINDOW_STEP = 60;
+export const STORY_BATCH_SIZE = 100;
 
 export type StageFilterId = 'all' | 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
 export type CollectionShelfId =
@@ -190,8 +189,9 @@ export function LibraryDashboard({
   const [shelf, setShelf] = useState<CollectionShelfId>('all');
   const [search, setSearch] = useState<string>('');
   const [entries, setEntries] = useState<CatalogueEntry[]>([]);
+  const [hasFullIndex, setHasFullIndex] = useState(false);
   const [exhausted, setExhausted] = useState(false);
-  const [renderLimit, setRenderLimit] = useState(INITIAL_RENDER_WINDOW);
+  const [renderLimit, setRenderLimit] = useState(STORY_BATCH_SIZE);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<{ pkg: StoryPackage; entry: CatalogueEntry } | null>(null);
   const [opening, setOpening] = useState<string | null>(null);
@@ -282,25 +282,70 @@ export function LibraryDashboard({
     return () => { live = false; };
   }, [createSource]);
 
+  useEffect(() => {
+    setRenderLimit(STORY_BATCH_SIZE);
+  }, [sel, stage, shelf, search]);
+
   const run = useCallback(async (s: LibrarySource, selection: Selection) => {
     setLoading(true);
-    setRenderLimit(INITIAL_RENDER_WINDOW);
+    setRenderLimit(STORY_BATCH_SIZE);
     try {
-      const f = new FilteredFeed(s.catalogue, planQuery(selection), 50, 6);
+      if (s.getAllEntries) {
+        const all = await s.getAllEntries();
+        feed.current = null;
+        setHasFullIndex(true);
+        setEntries(all);
+        setExhausted(true);
+        return;
+      }
+      setHasFullIndex(false);
+      const f = new FilteredFeed(s.catalogue, planQuery(selection), 50, 10);
       feed.current = f;
-      await f.loadMore(INITIAL_FEED_BATCH);
+      await f.loadMore(STORY_BATCH_SIZE);
       if (feed.current === f) { setEntries([...f.entries]); setExhausted(f.exhausted); }
     } catch (e: any) { setError(String(e?.message ?? e)); } finally { setLoading(false); setTick((t) => t + 1); }
   }, []);
 
-  useEffect(() => { if (source) run(source, sel); }, [source, sel, run]);
+  useEffect(() => {
+    if (!source) return;
+    if (source.getAllEntries && hasFullIndex) return;
+    void run(source, sel);
+  }, [source, sel, hasFullIndex, run]);
+
+  // Ensure cursor-only backends also search/filter across the full repository when search, stage, or shelf is active
+  useEffect(() => {
+    if (!source || hasFullIndex || !feed.current || feed.current.exhausted) return;
+    if (search.trim() === '' && stage === 'all' && shelf === 'all') return;
+    let cancelled = false;
+    const f = feed.current;
+    (async () => {
+      setLoading(true);
+      try {
+        while (!cancelled && feed.current === f && !f.exhausted) {
+          await f.loadMore(200);
+          if (!cancelled && feed.current === f) {
+            setEntries([...f.entries]);
+            setExhausted(f.exhausted);
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          setTick((t) => t + 1);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [source, hasFullIndex, search, stage, shelf]);
 
   const more = useCallback(async () => {
-    setRenderLimit((prev) => prev + RENDER_WINDOW_STEP);
+    setRenderLimit((prev) => prev + STORY_BATCH_SIZE);
     if (!feed.current || !source || feed.current.exhausted || loading) return;
     setLoading(true);
     try {
-      await feed.current.loadMore(RENDER_WINDOW_STEP);
+      await feed.current.loadMore(STORY_BATCH_SIZE);
       setEntries([...feed.current.entries]);
       setExhausted(feed.current.exhausted);
     } finally {
@@ -366,22 +411,27 @@ export function LibraryDashboard({
     [isDeveloper],
   );
 
+  const activePlan = useMemo(() => planQuery(sel), [sel]);
+
   const visibleEntries = useMemo(() => {
     const stageDef = STAGE_GROUPS.find((g) => g.id === stage);
     const shelfDef = availableShelves.find((c) => c.id === shelf);
-    const q = search.trim().toLowerCase();
+    const searchTerms = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
     const shelfCtx = { ...progressSnapshot, quarantined: quarantineMap.quarantinedSet };
 
     const filtered = audienceEntries.filter((e) => {
+      if (hasFullIndex && (!matchesFilter(e, activePlan.key) || !activePlan.refine(e))) {
+        return false;
+      }
       if (stageDef && stageDef.id !== 'all' && !(e.classIds ?? []).some((c) => stageDef.classes.includes(c))) {
         return false;
       }
       if (shelfDef && shelfDef.id !== 'all' && !shelfDef.match(e, shelfCtx)) {
         return false;
       }
-      if (q) {
-        const hay = `${e.title} ${e.summary ?? ''} ${(e.genres ?? []).join(' ')} ${(e.themes ?? []).join(' ')} ${e.storyKey}`.toLowerCase();
-        if (!hay.includes(q)) return false;
+      if (searchTerms.length > 0) {
+        const hay = `${e.title} ${e.summary ?? ''} ${(e.genres ?? []).join(' ')} ${(e.themes ?? []).join(' ')} ${(e.objectives ?? []).join(' ')} ${(e.nacca ?? []).join(' ')} ${(e.classIds ?? []).join(' ')} ${e.storyKey}`.toLowerCase();
+        if (!searchTerms.every((term) => hay.includes(term))) return false;
       }
       return true;
     });
@@ -390,7 +440,7 @@ export function LibraryDashboard({
       return [...filtered].sort((a, b) => (a.ageMin ?? 99) - (b.ageMin ?? 99));
     }
     return filtered;
-  }, [audienceEntries, stage, shelf, availableShelves, search, progressSnapshot, quarantineMap.quarantinedSet, activeAgeTier, sel.classId]);
+  }, [audienceEntries, hasFullIndex, activePlan, stage, shelf, availableShelves, search, progressSnapshot, quarantineMap.quarantinedSet, activeAgeTier, sel.classId]);
 
   const windowedEntries = useMemo(
     () => visibleEntries.slice(0, renderLimit),
@@ -417,7 +467,7 @@ export function LibraryDashboard({
     });
   }, [audienceEntries, interests, stage, sel.classId, sel.ageYears, progressSnapshot, quarantineMap.quarantinedSet, focusNacca]);
 
-  // Progressive infinite scroll as the learner scrolls near the bottom of the shelf
+  // Progressive infinite scroll: reveals the next 100 stories as the learner scrolls near the bottom
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || !hasMoreToShow || typeof IntersectionObserver === 'undefined') return;
@@ -431,7 +481,7 @@ export function LibraryDashboard({
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [hasMoreToShow, more]);
+  }, [hasMoreToShow, more, windowedEntries.length]);
 
   if (error && !source) return <div role="alert" className="mx-auto max-w-xl rounded-2xl bg-red-50 p-6 text-red-900 ring-1 ring-red-200">The library could not be loaded: {error}</div>;
   if (!source) return <div className="p-10 text-center text-lg font-semibold text-slate-600" role="status">Opening the library…</div>;
@@ -593,7 +643,11 @@ export function LibraryDashboard({
       )}
 
       <p className="mb-3 text-sm font-semibold text-slate-600" aria-live="polite" data-testid="result-count">
-        {loading && !visibleEntries.length ? 'Loading stories…' : `${visibleEntries.length} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
+        {loading && !visibleEntries.length
+          ? 'Loading stories…'
+          : windowedEntries.length < visibleEntries.length
+            ? `Showing ${windowedEntries.length} of ${visibleEntries.length}${exhausted ? '' : '+'} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' matching your filters' : ''}`
+            : `${visibleEntries.length} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
       </p>
 
       {!loading && visibleEntries.length === 0 && (
@@ -625,9 +679,22 @@ export function LibraryDashboard({
         ))}
       </ul>
       {hasMoreToShow && visibleEntries.length > 0 && (
-        <div ref={sentinelRef} className="mt-6 text-center">
-          <button type="button" onClick={more} disabled={loading} className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white disabled:opacity-50">
-            {loading ? 'Loading more…' : 'Show more stories'}
+        <div ref={sentinelRef} className="mt-6 flex flex-col items-center gap-2 text-center" data-testid="scroll-more-footer">
+          <p className="text-xs font-bold text-slate-500">
+            Showing {windowedEntries.length} of {visibleEntries.length}{exhausted ? '' : '+'} stories • Scroll down or click to load more
+          </p>
+          <button
+            type="button"
+            data-testid="load-more-stories"
+            onClick={more}
+            disabled={loading}
+            className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white shadow hover:bg-indigo-700 disabled:opacity-50"
+          >
+            {loading
+              ? 'Loading more…'
+              : exhausted && visibleEntries.length - windowedEntries.length < STORY_BATCH_SIZE
+                ? `Show remaining ${visibleEntries.length - windowedEntries.length} ${visibleEntries.length - windowedEntries.length === 1 ? 'story' : 'stories'}`
+                : `Show next ${STORY_BATCH_SIZE} stories`}
           </button>
         </div>
       )}

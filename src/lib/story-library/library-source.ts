@@ -52,6 +52,8 @@ export interface LibrarySource {
   info(storyKey: string): StoryPreviewInfo | undefined;
   /** Lazy per-story fetch (~9 KB) invoked only when opening a book; never downloads the whole library upfront. */
   loadInfo?(storyKey: string): Promise<StoryPreviewInfo | undefined>;
+  /** Full compact catalogue index for instant repository-wide search and filtering across 10,000+ stories. */
+  getAllEntries?(): Promise<import('./types').CatalogueEntry[]>;
   /** Resolves a media or asset path against the configured CDN / Storage base when present. */
   resolveMediaUrl?(path: string): string;
   clearDeviceCache(): Promise<void>;
@@ -87,6 +89,9 @@ export async function createPreviewSource(
   const catalogueData = (await catalogueRes.json()) as StaticCatalogueData;
 
   const backend: CatalogueBackend & { counters: Record<string, number> } = new StaticCatalogueBackend(catalogueData);
+  const sortedPublished = [...catalogueData.entries]
+    .filter((e) => e.status === 'published')
+    .sort((a, b) => (a.storyKey < b.storyKey ? -1 : 1));
   const kv = await openPersistentKV('story-spark-preview-catalogue');
   const sig = `${catalogueData.catalogueVersion}:${catalogueData.totalPublished ?? catalogueData.entries.length}`;
   if (kv.get<string>('meta:sig') !== sig) {
@@ -147,6 +152,7 @@ export async function createPreviewSource(
     counters: () => ({ catalogue: { ...backend.counters } }),
     info: (k) => infoCache.get(k),
     loadInfo,
+    getAllEntries: async () => sortedPublished,
     resolveMediaUrl,
     async clearDeviceCache() {
       infoCache.clear();
