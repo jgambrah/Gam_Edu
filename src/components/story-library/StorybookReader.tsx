@@ -67,6 +67,9 @@ export function StorybookReader({
   const [customDurationScale, setCustomDurationScale] = useState<boolean>(true);
   const [cachedImageUrl, setCachedImageUrl] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isImageZoomed, setIsImageZoomed] = useState<boolean>(false);
+  const [zoomScale, setZoomScale] = useState<number>(1);
+  const [largeImageLayout, setLargeImageLayout] = useState<boolean>(false);
   const readerContainerRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const pianoRef = useRef<Piano | null>(null);
@@ -263,6 +266,29 @@ export function StorybookReader({
     })();
     return () => { cancelled = true; };
   }, [page, pkg, source.assets]);
+
+  // Reset zoom scale on page turn
+  useEffect(() => {
+    setZoomScale(1);
+  }, [step]);
+
+  // Keyboard controls for zoom modal (Esc, +, -, 0)
+  useEffect(() => {
+    if (!isImageZoomed) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsImageZoomed(false);
+      } else if (e.key === '+' || e.key === '=') {
+        setZoomScale((s) => Math.min(2.5, +(s + 0.25).toFixed(2)));
+      } else if (e.key === '-' || e.key === '_') {
+        setZoomScale((s) => Math.max(0.75, +(s - 0.25).toFixed(2)));
+      } else if (e.key === '0') {
+        setZoomScale(1);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isImageZoomed]);
 
   // ---- load narration for the page and (optionally) start it
   useEffect(() => {
@@ -612,6 +638,15 @@ export function StorybookReader({
         >
           {isFullscreen ? '🗗 Exit Fullscreen' : '⛶ Classroom View'}
         </button>
+        <button
+          type="button"
+          onClick={() => setLargeImageLayout((v) => !v)}
+          aria-pressed={largeImageLayout}
+          className={`rounded-full px-3 py-1.5 text-xs font-bold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${largeImageLayout ? 'bg-indigo-100 text-indigo-900 ring-1 ring-indigo-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+          title="Toggle larger illustration layout for closer visual connection"
+        >
+          {largeImageLayout ? '🖼️ Picture: Large' : '🖼️ Picture: Standard'}
+        </button>
       </header>
 
       {source.notice && <p className="mb-3 rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900 ring-1 ring-amber-200">{source.notice}</p>}
@@ -640,18 +675,19 @@ export function StorybookReader({
       )}
 
       {page && (
-        <div key={`page-${page.n}`} className={`grid gap-4 animate-in fade-in slide-in-from-right-4 duration-500 ${presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
-          <div className={presentation.layout === 'text-first' ? 'order-2 md:order-2' : ''}>
+        <div key={`page-${page.n}`} className={`grid gap-4 animate-in fade-in slide-in-from-right-4 duration-500 ${largeImageLayout ? 'md:grid-cols-2' : presentation.layout === 'text-first' ? 'md:grid-cols-[1fr_320px]' : presentation.layout === 'picture-first' ? '' : 'md:grid-cols-2'}`}>
+          <div className={!largeImageLayout && presentation.layout === 'text-first' ? 'order-2 md:order-2' : 'order-1'}>
             <PlaceholderArt
               motif={art?.motif ?? (page.n === 1 ? entry?.coverMotif : undefined) ?? '📖'}
               palette={[c0, c1]}
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
-              compact={presentation.layout === 'text-first'}
+              compact={!largeImageLayout && presentation.layout === 'text-first'}
               imageSrc={cachedImageUrl ?? resolveMediaUrl(`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
+              onZoom={() => setIsImageZoomed(true)}
             />
           </div>
-          <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
+          <article aria-label={`Page ${page.n} of ${pkg.pages.length}`} className="order-2 flex flex-col justify-center rounded-3xl bg-white p-5 shadow-lg ring-1 ring-slate-200 md:p-8">
             <p className="text-lg leading-[1.9] text-slate-900" style={{ fontSize, fontFamily: 'Andika, Nunito, system-ui, sans-serif' }} data-testid="page-text">
               {words!.tokens.map((t, i) => {
                 const active = hl.level === 'word' ? hl.word === i : hl.level === 'sentence' ? words!.sentenceOfToken[i] === hl.sentence : false;
@@ -708,6 +744,155 @@ export function StorybookReader({
         </p>
         <p className="text-center text-[11px] text-slate-500">{m.blurb}</p>
       </footer>
+
+      {isImageZoomed && page && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Enlarged illustration with narrative"
+          className="fixed inset-0 z-50 flex flex-col bg-slate-950/95 p-3 backdrop-blur-md animate-in fade-in duration-200 md:p-6 text-white overflow-y-auto"
+          onClick={() => setIsImageZoomed(false)}
+        >
+          <div
+            className="mx-auto flex w-full max-w-5xl flex-1 flex-col overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header with Title & Zoom controls */}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 bg-slate-950/80 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="rounded-full bg-indigo-600/30 px-2.5 py-1 text-xs font-bold text-indigo-300 ring-1 ring-indigo-500/40">
+                  Page {pageNo} of {pkg.pages.length}
+                </span>
+                <h3 className="text-sm font-bold text-slate-200 truncate max-w-[200px] md:max-w-md">{pkg.title}</h3>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setZoomScale((s) => Math.max(0.75, +(s - 0.25).toFixed(2)))}
+                  disabled={zoomScale <= 0.75}
+                  className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-bold hover:bg-slate-700 disabled:opacity-40"
+                  title="Zoom out (-)"
+                >
+                  ➖
+                </button>
+                <span className="min-w-[3.5rem] text-center text-xs font-semibold text-slate-300">
+                  {Math.round(zoomScale * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setZoomScale((s) => Math.min(2.5, +(s + 0.25).toFixed(2)))}
+                  disabled={zoomScale >= 2.5}
+                  className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-bold hover:bg-slate-700 disabled:opacity-40"
+                  title="Zoom in (+)"
+                >
+                  ➕
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setZoomScale(1)}
+                  className="rounded-lg bg-slate-800 px-2.5 py-1 text-xs font-bold hover:bg-slate-700"
+                  title="Reset zoom to 100%"
+                >
+                  ↺ Fit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsImageZoomed(false)}
+                  className="ml-2 rounded-full bg-rose-600/80 px-3 py-1 text-xs font-bold text-white hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-400"
+                  aria-label="Close zoom modal"
+                >
+                  ✕ Close
+                </button>
+              </div>
+            </div>
+
+            {/* Image viewport */}
+            <div className="relative flex flex-1 items-center justify-center overflow-auto p-4 bg-slate-950/40 min-h-[300px]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={cachedImageUrl ?? resolveMediaUrl(`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
+                alt={page.alt ?? 'Illustration'}
+                style={{
+                  transform: `scale(${zoomScale})`,
+                  transformOrigin: 'center center',
+                  transition: 'transform 0.15s ease-out',
+                  maxHeight: '52vh',
+                  maxWidth: '100%',
+                  objectFit: 'contain',
+                }}
+                className="rounded-xl shadow-2xl ring-1 ring-white/10"
+              />
+            </div>
+
+            {/* Narrative & Audio Sync Bar */}
+            <div className="border-t border-slate-800 bg-slate-900/95 p-4">
+              <p className="text-base leading-relaxed text-slate-100" style={{ fontFamily: 'Andika, Nunito, system-ui, sans-serif' }}>
+                {words!.tokens.map((t, i) => {
+                  const active = hl.level === 'word' ? hl.word === i : hl.level === 'sentence' ? words!.sentenceOfToken[i] === hl.sentence : false;
+                  const inSentence = hl.level === 'word' && words!.sentenceOfToken[i] === hl.sentence;
+                  return (
+                    <span key={i}>
+                      <button
+                        type="button"
+                        onClick={() => tapWord(t)}
+                        aria-label={`${t} (tap for help)`}
+                        data-active={active ? 'true' : undefined}
+                        className={`rounded-md px-1 py-0.5 text-inherit transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 ${active && hl.level === 'word' ? 'bg-yellow-400 text-slate-950 font-bold shadow' : active ? 'bg-yellow-300 text-slate-950 font-semibold' : inSentence ? 'bg-yellow-950/60 text-yellow-100' : 'hover:bg-slate-800'}`}
+                      >
+                        {t}
+                      </button>{' '}
+                      {lineBreaks?.has(i) ? <br /> : null}
+                    </span>
+                  );
+                })}
+              </p>
+
+              {/* Modal Narration and Navigation controls */}
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => go(-1)}
+                    disabled={step === 0}
+                    className="rounded-full bg-slate-800 px-3.5 py-1.5 text-sm font-bold disabled:opacity-40 hover:bg-slate-700"
+                  >
+                    ◀ Back
+                  </button>
+                  {m.narration && page.audio && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={toggle}
+                        className="rounded-full bg-indigo-600 px-4 py-1.5 text-sm font-bold text-white hover:bg-indigo-500"
+                      >
+                        {playing ? '⏸ Pause' : '▶ Listen'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={replay}
+                        className="rounded-full bg-slate-800 px-3 py-1.5 text-sm font-bold hover:bg-slate-700"
+                      >
+                        ↺ Again
+                      </button>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => go(1)}
+                    disabled={step === flow.length - 1}
+                    className="rounded-full bg-emerald-600 px-3.5 py-1.5 text-sm font-bold text-white hover:bg-emerald-500 disabled:opacity-40"
+                  >
+                    Next ▶
+                  </button>
+                </div>
+                <span className="text-xs text-slate-400">
+                  Tip: Press Esc to exit, +/- to zoom
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <StoryNotes info={info} />
     </div>
   );
