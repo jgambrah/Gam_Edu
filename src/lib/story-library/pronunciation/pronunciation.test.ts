@@ -87,8 +87,8 @@ describe('spoken script', () => {
     expect(b.map((x) => x.entryId).sort()).toEqual(['efua', 'kwame']);
   });
   it('finds proper nouns missing from the dictionary', () => {
-    const found = unknownProperNouns(['She met Kwame and Boateng at Tema.'], DICT, new Set(['she']));
-    expect(found).toEqual(['Boateng', 'Tema']);
+    const found = unknownProperNouns(['She met Kwame and Quartey at Tema.'], DICT, new Set(['she']));
+    expect(found).toEqual(['Quartey', 'Tema']);
   });
 });
 

@@ -22,16 +22,16 @@ const openFilters = async (user: ReturnType<typeof userEvent.setup>) => { if (!s
 const LEGACY_PUBLIC_NOW_MS = 1_700_000_000_000;
 
 describe('LibraryDashboard (real preview data)', () => {
-  it('lists the two hundred and thirty-six stories with clean production badges', async () => {
+  it('lists the two hundred and twenty-eight stories with clean production badges', async () => {
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
   });
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     const titles = () => screen.getAllByTestId('story-card').map((c) => within(c).getByRole('heading').textContent);
     await openFilters(user);
     await user.selectOptions(screen.getByLabelText('Class'), 'jhs-1');
@@ -133,7 +133,7 @@ describe('LibraryDashboard (real preview data)', () => {
       'Yaa and the Mystery of Changing Life',
     ]));
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-2');
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(20));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(18));
     await waitFor(() => expect(titles().sort()).toEqual([
       'Ama and the Lost Little Goat',
       'Brush, Brush, Brush (a tooth-brushing chant)',
@@ -142,7 +142,6 @@ describe('LibraryDashboard (real preview data)', () => {
       'Dede and the Puddle',
       'Five Ripe Mangoes (a counting rhyme)',
       'Goodnight, Little Compound',
-      'Hide and Seek, Safe and Sound (a game rhyme)',
       'Kente Colours (a rhyme)',
       'Little Hen’s Big Sneeze',
       'Little Turtle’s Big Swim',
@@ -150,7 +149,6 @@ describe('LibraryDashboard (real preview data)', () => {
       'My Busy Body (an action rhyme)',
       'Stop, Look, Listen!',
       'Ten Little Fingers (a counting rhyme)',
-      'The Ball That Rolled Away (a safety rhyme)',
       'The Little Star That Loved to Shine',
       'Wash, Wash, Wash!',
       'Who Says What? (an animal sounds rhyme)',
@@ -208,7 +206,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows a friendly empty state when nothing matches', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await openFilters(user);
     await user.selectOptions(screen.getByLabelText('Class'), 'nursery-1');
     await user.selectOptions(screen.getByLabelText('Genre'), 'mystery');
@@ -218,7 +216,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('opens a story into the reader with the three reading modes and the right default for the age group', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('reader')).toBeTruthy());
     expect(screen.getByTestId('reader').getAttribute('data-presentation')).toBe('jhs');
@@ -230,7 +228,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('Efua and every Batch 1–35 story render their teacher’s guide without errors', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await user.click(screen.getByLabelText('Open Efua’s Honest Business'));
     await waitFor(() => expect(screen.getByTestId('story-notes')).toBeTruthy());
     expect(screen.getByTestId('teacher-guide').textContent).toMatch(/Reflection: use it in real life/);
@@ -246,9 +244,9 @@ describe('LibraryDashboard (real preview data)', () => {
   it('updates In Progress, Finished, and Favourites counters accurately', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     const stats = () => screen.getByTestId('hero-stats').textContent ?? '';
-    expect(stats()).toContain('236');
+    expect(stats()).toContain('228');
 
     // Toggle a favourite heart on the first story card
     const firstCard = screen.getAllByTestId('story-card')[0];
@@ -299,21 +297,21 @@ describe('LibraryDashboard (real preview data)', () => {
 
     const makeWithQuarantine = () => createPreviewSource('/story-spark-preview', quarantineFetch);
 
-    // 1. Non-developer viewer: sees 236 public stories, hides quarantined story & hides Under Review tab
+    // 1. Non-developer viewer: sees 228 public stories, hides quarantined story & hides Under Review tab
     const { unmount } = render(
       <LibraryDashboard createSource={makeWithQuarantine} viewerEmail="teacher@school.edu.gh" nowMs={fixedNow + 60_000} />,
     );
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     expect(screen.queryByText('Quarantined Batch Preview Story')).toBeNull();
     expect(screen.queryByTestId('under-review-tab')).toBeNull();
-    expect(screen.getByTestId('hero-stats').textContent).toContain('236');
+    expect(screen.getByTestId('hero-stats').textContent).toContain('228');
     unmount();
 
     // 2. Developer viewer (jamesgambrah@gmail.com): sees all 229 stories, Under Review (48h) tab, countdown badge, and Hold button
     const { unmount: unmountDev } = render(
       <LibraryDashboard createSource={makeWithQuarantine} viewerEmail="jamesgambrah@gmail.com" nowMs={fixedNow + 60_000} />,
     );
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(237));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(229));
     expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (1)');
 
     await user.selectOptions(screen.getByLabelText('Collection'), 'under-review');
@@ -335,37 +333,37 @@ describe('LibraryDashboard (real preview data)', () => {
         nowMs={fixedNow + 49 * 60 * 60 * 1000}
       />,
     );
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(237));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(229));
     expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
   }, 15000);
 
-  it('exposes all 277 real catalogue stories (including Quarantined Batches 33–38) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
+  it('exposes all 282 real catalogue stories (including Quarantined Batches 33–39) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
     const rawCat = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
     const newEntries = rawCat.entries.filter((e: any) => e.sortKey > 228 && e.releaseAt);
-    expect(newEntries).toHaveLength(49);
+    expect(newEntries).toHaveLength(54);
     const duringQuarantineMs = Math.max(...newEntries.map((e: any) => e.publishedAt)) + 60_000;
     const afterQuarantineMs = Math.max(...newEntries.map((e: any) => e.releaseAt)) + 60_000;
 
     const { unmount: unmountPublic } = render(
       <LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={duringQuarantineMs} />,
     );
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     unmountPublic();
 
     const { unmount: unmountDev } = render(
       <LibraryDashboard createSource={make} viewerEmail="jamesgambrah@gmail.com" nowMs={duringQuarantineMs} />,
     );
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(277));
-    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (49)');
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(282));
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (54)');
     unmountDev();
 
     render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterQuarantineMs} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(277));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(282));
   }, 15000);
   it('keeps the top panel to one tidy row: dropdowns and search first, detailed filters only on request', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     const toolbar = screen.getByTestId('library-toolbar');
     // Collection and stage are dropdowns, not rows of tabs.
     expect(within(toolbar).getByLabelText('Collection').tagName).toBe('SELECT');
@@ -387,7 +385,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('shows selected filters as removable chips and clears them all at once', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     expect(screen.queryByTestId('active-filters')).toBeNull();
     await user.selectOptions(screen.getByLabelText('Stage'), 'jhs');
     const chips = await screen.findByTestId('active-filters');
@@ -396,14 +394,14 @@ describe('LibraryDashboard (real preview data)', () => {
     await waitFor(() => expect(screen.queryByTestId('active-filters')).toBeNull());
     await user.type(screen.getByLabelText('Search stories'), 'efua');
     await user.click(within(await screen.findByTestId('active-filters')).getByRole('button', { name: 'Clear all' }));
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     expect((screen.getByLabelText('Search stories') as HTMLInputElement).value).toBe('');
   }, 15000);
 
   it('opens a collection from the dropdown (My Favourites)', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     await user.click(within(screen.getAllByTestId('story-card')[0]).getByRole('button', { name: /Save .* to favourites/i }));
     await user.selectOptions(screen.getByLabelText('Collection'), 'favourites');
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(1));
@@ -413,7 +411,7 @@ describe('LibraryDashboard (real preview data)', () => {
   it('asks what the reader likes, then shows a Read next shelf that fits their class and leaves cards uncounted', async () => {
     const user = userEvent.setup();
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(236));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     // First visit: interest chips, no suggestions yet.
     const chips = screen.getByTestId('interest-chips');
     expect(screen.queryAllByTestId('rec-card')).toHaveLength(0);
@@ -421,7 +419,7 @@ describe('LibraryDashboard (real preview data)', () => {
     await waitFor(() => expect(screen.getAllByTestId('rec-card').length).toBeGreaterThan(0));
     expect(screen.getAllByTestId('rec-card').length).toBeLessThanOrEqual(6);
     // Shelf cards are extra: the main grid count is unchanged.
-    expect(screen.getAllByTestId('story-card')).toHaveLength(236);
+    expect(screen.getAllByTestId('story-card')).toHaveLength(228);
     expect(screen.getAllByTestId('rec-card')[0].textContent).toMatch(/Because you like science & nature|Something new|Like stories|good next step/i);
     // Choice is remembered on this device.
     expect(localStorage.getItem('story-spark-preview:interests')).toContain('science');
@@ -441,7 +439,7 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(rawCat.entries.some((e: any) => e.nacca?.length)).toBe(true);
     const afterReview = Math.max(...rawCat.entries.filter((e: any) => e.releaseAt).map((e: any) => e.releaseAt)) + 60_000;
     render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterReview} focusNacca={['B3']} focusLabel="Plants, water and health" />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(277));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(282));
     await waitFor(() => expect(screen.getAllByTestId('rec-card').length).toBeGreaterThan(0));
     const keys = screen.getAllByTestId('rec-card').map((c) => c.getAttribute('data-story'));
     const withB3 = new Set(rawCat.entries.filter((e: any) => (e.nacca ?? []).some((c: string) => c.startsWith('B3.'))).map((e: any) => e.storyKey));

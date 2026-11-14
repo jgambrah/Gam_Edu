@@ -625,7 +625,7 @@
     "definition": "The Earth and all the people, places, and living things upon it."
   },
   "universe": {
-    "definition": "All of space and everything in it, including stars, planets, and galaxies."
+    "definition": "Everything that exists: all space, time, matter, and energy."
   },
   "space": {
     "definition": "Room that a thing takes up."
@@ -730,7 +730,7 @@
     "definition": "Lamps, bulbs, or lanterns that shine to brighten a place."
   },
   "dark": {
-    "definition": "Having little or no light."
+    "definition": "Dark energy: the unknown cause of the speeding-up of the universe’s expansion."
   },
   "shadow": {
     "definition": "A dark shape made when something blocks the light."
@@ -4161,7 +4161,7 @@
     "definition": "A recording of moving pictures and sound."
   },
   "radio": {
-    "definition": "A device that receives broadcast sound signals, or invisible electromagnetic waves travelling through space."
+    "definition": "A radio telescope collects radio waves from space instead of visible light."
   },
   "type": {
     "definition": "A kind or category of thing, or to write letters using keys on a keyboard."
@@ -5474,7 +5474,7 @@
     "definition": "Round layered bulb vegetables that give rich flavour to stews and soups."
   },
   "bang": {
-    "definition": "A sudden loud, sharp sound."
+    "definition": "The Big Bang: the hot, dense beginning of the universe, about 13.8 billion years ago."
   },
   "raisin": {
     "definition": "A dried sweet grape used in baking buns and cakes."
@@ -6066,7 +6066,7 @@
     "definition": "The useful parts of food that pass into the blood to nourish the body."
   },
   "orbit": {
-    "definition": "The curved path a planet or moon follows around a larger body in space."
+    "definition": "The curved path of one object around another."
   },
   "meter": {
     "definition": "An instrument measuring total electrical energy consumed in kilowatt-hours (kWh)."
@@ -6109,6 +6109,18 @@
   },
   "thermoplastic": {
     "definition": "A plastic polymer that softens when heated and hardens when cooled, allowing reshaping."
+  },
+  "astronomical unit": {
+    "definition": "The average distance between Earth and the Sun, about 150 million kilometres."
+  },
+  "heliosphere": {
+    "definition": "The bubble around the Solar System created by the solar wind."
+  },
+  "galaxy": {
+    "definition": "An enormous collection of stars, gas, dust, and dark matter held together by gravity."
+  },
+  "exoplanet": {
+    "definition": "A planet that orbits a star other than the Sun."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6171,7 +6183,7 @@
     "definition": "To grow larger or stretch out over a wider space."
   },
   "gravity": {
-    "definition": "The single point through which the entire weight of a body appears to act; keeping it low and over a wide base increases stability."
+    "definition": "A force that pulls objects towards each other; more mass means a stronger pull."
   },
   "redshift": {
     "definition": "The stretching of light waves toward the red end of the spectrum as space expands."
@@ -6599,9 +6611,6 @@
   },
   "telescope": {
     "definition": "An optical instrument that gathers light to make distant objects in space appear closer and clearer."
-  },
-  "galaxy": {
-    "definition": "A vast system of stars, gas and dust held together by gravity."
   },
   "gravitational": {
     "definition": "Relating to gravity, the force of attraction between masses in the universe."
@@ -7862,7 +7871,7 @@
     "definition": "A long tube below the stomach where nutrients and water are absorbed and waste forms."
   },
   "satellite": {
-    "definition": "A body in space that travels around a planet; the Moon is Earth’s natural satellite."
+    "definition": "An object that orbits a planet; a moon is a natural satellite."
   },
   "rash": {
     "definition": "Many small red spots or patches appearing on the skin."
@@ -7916,7 +7925,7 @@
     "definition": "The product of a vehicle mass and velocity, determining the force required to bring it to a stop."
   },
   "boasetɔ": {
-    "definition": "An Akan virtue meaning patience, restraint, and calm self-mastery—vital for safe driving and peaceful civic life. (Akan moral value of patience, calm self-control, and restraint.)",
+    "definition": "An Akan virtue meaning patience, restraint, and calm self-mastery, which is vital for safe driving and peaceful civic life. (Akan moral value of patience, calm self-control, and restraint.)",
     "phonetic": "bwah-seh-taw"
   },
   "haemoglobin": {
@@ -8002,13 +8011,52 @@
     "definition": "A rough edge or ridge remaining on metal or plastic after cutting or punching."
   },
   "html": {
-    "definition": "HyperText Markup Language—the standard language using tags to structure content on webpages."
+    "definition": "HyperText Markup Language, the standard language using tags to structure content on webpages."
   },
   "multimedia": {
     "definition": "Using more than one medium of expression or communication, such as text, images, and slides."
   },
   "invoice": {
     "definition": "A commercial document issued by a seller listing goods provided and the amount payable."
+  },
+  "au": {
+    "definition": "Short for astronomical unit: the average Earth to Sun distance, about 150 million km."
+  },
+  "light-year": {
+    "definition": "The distance light travels in one year, about 9.5 trillion km."
+  },
+  "fusion": {
+    "definition": "Nuclear fusion: light nuclei, such as hydrogen, join to form heavier ones and release energy."
+  },
+  "kuiper": {
+    "definition": "The Kuiper Belt: a wide ring of icy objects beyond Neptune, from about 30 to 50 AU."
+  },
+  "heliopause": {
+    "definition": "The outer edge of the heliosphere, about 120 AU from the Sun."
+  },
+  "interstellar": {
+    "definition": "Interstellar space: the space between the stars, outside the heliosphere."
+  },
+  "oort": {
+    "definition": "The Oort Cloud: a predicted shell of icy bodies far beyond the planets; the source of many comets."
+  },
+  "spiral": {
+    "definition": "A spiral galaxy is shaped like a flat disc with curved arms of stars."
+  },
+  "supermassive": {
+    "definition": "A supermassive black hole: matter squeezed so tightly that nothing escapes, not even light."
+  },
+  "andromeda": {
+    "definition": "The large spiral galaxy about 2.5 million light-years away, in the Local Group."
+  },
+  "infrared": {
+    "definition": "Light with a longer wavelength than the eye can see."
+  },
+  "habitable": {
+    "definition": "The habitable zone: distances from a star where liquid water could exist on a planet."
+  },
+  "biosignatures": {
+    "definition": "Chemicals or patterns that living things could produce."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
