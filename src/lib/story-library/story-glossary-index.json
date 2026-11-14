@@ -745,7 +745,7 @@
     "definition": "Made a sound or seemed a certain way when heard."
   },
   "echo": {
-    "definition": "A sound that bounces back to your ears after hitting a wall, cliff, or tall trees."
+    "definition": "A sound heard again after it bounces off a surface."
   },
   "water": {
     "definition": "The clear liquid that falls as rain, fills rivers and lakes, and keeps all living things alive."
@@ -773,7 +773,7 @@
     "definition": "The large ocean between Africa and the Americas."
   },
   "wave": {
-    "definition": "A ridge of moving water on the sea or a lake, or a friendly movement of the hand."
+    "definition": "A disturbance that carries energy from place to place without carrying matter."
   },
   "waves": {
     "definition": "Moving ridges of water rolling across the sea or a lake."
@@ -4344,7 +4344,7 @@
     "definition": "To do something and take action, or to play a part in a story."
   },
   "mass": {
-    "definition": "The amount of matter in an object, measured in kilograms."
+    "definition": "The amount of matter in an object, measured in grams or kilograms."
   },
   "event": {
     "definition": "Something important that happens, such as a festival, storm, or school gathering."
@@ -5489,7 +5489,7 @@
     "definition": "An extremely tiny piece of matter, such as a speck of dust, an atom, or a water droplet."
   },
   "particles": {
-    "definition": "The tiny pieces that all matter is made of."
+    "definition": "The tiny moving pieces that all matter is made of."
   },
   "hydrogen": {
     "definition": "The lightest and most abundant chemical element in the universe, which fuels the stars and forms part of water (H₂O)."
@@ -5501,7 +5501,7 @@
     "definition": "The part of a scene or picture farthest from the viewer, or the history behind an event."
   },
   "expansion": {
-    "definition": "The process of growing larger or spreading out over a wider space."
+    "definition": "An increase in size when a substance is heated."
   },
   "truly": {
     "definition": "In a truthful way; really and genuinely."
@@ -5771,7 +5771,7 @@
     "definition": "Small animals with six legs."
   },
   "compass": {
-    "definition": "A tool that shows which way is north."
+    "definition": "An instrument with a magnetised needle that lines up north to south."
   },
   "canopy": {
     "definition": "A cover that gives shade or shelter."
@@ -6024,7 +6024,7 @@
     "definition": "When liquid water turns into a gas and goes into the air."
   },
   "vibration": {
-    "definition": "A fast shaking movement back and forth."
+    "definition": "A quick, repeated movement to and fro."
   },
   "melt": {
     "definition": "To change from a solid to a liquid."
@@ -6139,6 +6139,27 @@
   },
   "non-renewable": {
     "definition": "Describing an energy source that is used up, such as gas, oil, or uranium."
+  },
+  "tectonic plate": {
+    "definition": "A huge slab of Earth’s outer shell that moves very slowly."
+  },
+  "insulator": {
+    "definition": "A material that does not let thermal energy pass through it easily."
+  },
+  "frequency": {
+    "definition": "The number of waves that pass a point each second, measured in hertz."
+  },
+  "refraction": {
+    "definition": "The bending of light when it passes from one clear material into another."
+  },
+  "electromagnetic spectrum": {
+    "definition": "The whole family of waves, from radio waves to gamma rays, that travel at the speed of light."
+  },
+  "density": {
+    "definition": "The mass in each unit of volume of a substance."
+  },
+  "medium": {
+    "definition": "A material that a sound wave travels through."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6300,9 +6321,6 @@
   "corridor": {
     "definition": "A safe natural pathway that wildlife use to travel between habitats."
   },
-  "density": {
-    "definition": "How much mass is packed into a given volume of space."
-  },
   "velocity": {
     "definition": "Speed in a given direction; escape velocity is the speed needed to break free from gravity."
   },
@@ -6316,7 +6334,7 @@
     "definition": "A cool place out of the sun."
   },
   "evaporates": {
-    "definition": "Turns from liquid water into invisible water vapour in the air, which cools the surface."
+    "definition": "Changes from a liquid into a gas, carrying thermal energy away."
   },
   "saplings": {
     "definition": "Young, small trees that are growing."
@@ -6631,7 +6649,7 @@
     "definition": "An optical instrument that gathers light to make distant objects in space appear closer and clearer."
   },
   "gravitational": {
-    "definition": "Relating to gravity, the force of attraction between masses in the universe."
+    "definition": "Gravitational wave: a ripple in space made when very heavy objects move or collide."
   },
   "extraterrestrial": {
     "definition": "Originating or existing outside Earth and its atmosphere."
@@ -7796,7 +7814,7 @@
     "definition": "The soft coloured outer parts of a flower."
   },
   "volume": {
-    "definition": "The amount of three-dimensional space enclosed inside a closed solid or container."
+    "definition": "The amount of space an object takes up."
   },
   "porridge": {
     "definition": "A smooth, warm breakfast dish cooked from grains such as maize or millet."
@@ -8068,7 +8086,7 @@
     "definition": "The large spiral galaxy about 2.5 million light-years away, in the Local Group."
   },
   "infrared": {
-    "definition": "Light with a longer wavelength than the eye can see."
+    "definition": "Invisible rays given out by warm objects; we feel them as heat."
   },
   "habitable": {
     "definition": "The habitable zone: distances from a star where liquid water could exist on a planet."
@@ -8128,7 +8146,7 @@
     "definition": "Changes from a gas to a liquid."
   },
   "magma": {
-    "definition": "Molten rock beneath the Earth’s surface."
+    "definition": "Hot liquid rock from inside Earth."
   },
   "comet": {
     "definition": "A lump of ice, dust, and rock that grows a tail when it comes near the Sun."
@@ -8150,6 +8168,90 @@
   },
   "reactor": {
     "definition": "The part of a nuclear power station where the chain reaction is controlled."
+  },
+  "magnetic": {
+    "definition": "Magnetic field: the region around a magnet where its force can be felt."
+  },
+  "core": {
+    "definition": "Outer core: the layer of liquid iron and nickel deep inside Earth."
+  },
+  "tectonic": {
+    "definition": "Tectonic plate: a huge slab of Earth’s outer shell that moves very slowly."
+  },
+  "reversal": {
+    "definition": "Magnetic reversal: a change in which Earth’s magnetic north and south swap places."
+  },
+  "thermal": {
+    "definition": "Thermal energy: the energy a substance has because of the movement of its particles; we feel its transfer as heat."
+  },
+  "conduction": {
+    "definition": "The transfer of thermal energy through a material, from particle to particle."
+  },
+  "convection": {
+    "definition": "The transfer of thermal energy by the movement of a heated liquid or gas."
+  },
+  "radiation": {
+    "definition": "The transfer of thermal energy by rays that can cross empty space."
+  },
+  "insulators": {
+    "definition": "Materials that do not let thermal energy pass through them easily."
+  },
+  "wavelength": {
+    "definition": "The distance from one wave crest to the next."
+  },
+  "amplitude": {
+    "definition": "The size of a vibration; it sets the loudness."
+  },
+  "transverse": {
+    "definition": "Transverse wave: a wave in which the movement is at right angles to the direction the wave travels."
+  },
+  "longitudinal": {
+    "definition": "Longitudinal wave: a wave in which the movement is along the direction the wave travels."
+  },
+  "rays": {
+    "definition": "The straight lines along which light travels."
+  },
+  "reflection": {
+    "definition": "The bouncing of light off a surface."
+  },
+  "convex": {
+    "definition": "Convex lens: a lens that is thicker in the middle than at the edges and bends rays inwards."
+  },
+  "focus": {
+    "definition": "The point where rays of light meet after passing through a lens."
+  },
+  "retina": {
+    "definition": "The light-sensitive layer at the back of the eye."
+  },
+  "spectrum": {
+    "definition": "Electromagnetic spectrum: the whole family of waves, from radio waves to gamma rays, that travel at the speed of light."
+  },
+  "ultraviolet": {
+    "definition": "Invisible rays from the Sun that can burn the skin."
+  },
+  "melanin": {
+    "definition": "A natural substance in skin that absorbs ultraviolet rays."
+  },
+  "radiotherapy": {
+    "definition": "The treatment of cancer with carefully aimed high-energy rays."
+  },
+  "pulsar": {
+    "definition": "The spinning remains of an exploded star, which sends out a sweeping beam of radio waves."
+  },
+  "contraction": {
+    "definition": "A decrease in size when a substance is cooled."
+  },
+  "vacuum": {
+    "definition": "A space with no particles in it."
+  },
+  "pitch": {
+    "definition": "How high or low a sound is; it depends on frequency."
+  },
+  "decibels": {
+    "definition": "The unit used to measure loudness (dB)."
+  },
+  "noise": {
+    "definition": "Sound that is unwanted or harmful."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",

@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { PUBLISHED_PREFIX, type CatalogueEntry, type StoryPackage } from '@/lib/story-library/types';
 import { createPreviewSource, type LibrarySource } from '@/lib/story-library/library-source';
 import { CLASS_REGISTRY, GENRES, READING_LEVELS, presentationFor } from '@/lib/story-library/classification';
@@ -467,20 +467,32 @@ export function LibraryDashboard({
     });
   }, [audienceEntries, interests, stage, sel.classId, sel.ageYears, progressSnapshot, quarantineMap.quarantinedSet, focusNacca]);
 
-  // Progressive infinite scroll: reveals the next 100 stories as the learner scrolls near the bottom
+  // Progressive scroll: reveals the next 100 stories once the learner actually reaches the bottom banner
+  const [scrollRevealing, setScrollRevealing] = useState(false);
   useEffect(() => {
     const el = sentinelRef.current;
     if (!el || !hasMoreToShow || typeof IntersectionObserver === 'undefined') return;
+    let timer: ReturnType<typeof setTimeout> | null = null;
     const obs = new IntersectionObserver(
       (records) => {
         if (records.some((r) => r.isIntersecting)) {
-          void more();
+          if (timer) return;
+          setScrollRevealing(true);
+          timer = setTimeout(() => {
+            setScrollRevealing(false);
+            timer = null;
+            void more();
+          }, 320);
         }
       },
-      { rootMargin: '400px' },
+      { rootMargin: '0px', threshold: 0.35 },
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      if (timer) clearTimeout(timer);
+      setScrollRevealing(false);
+    };
   }, [hasMoreToShow, more, windowedEntries.length]);
 
   if (error && !source) return <div role="alert" className="mx-auto max-w-xl rounded-2xl bg-red-50 p-6 text-red-900 ring-1 ring-red-200">The library could not be loaded: {error}</div>;
@@ -642,13 +654,37 @@ export function LibraryDashboard({
         />
       )}
 
-      <p className="mb-3 text-sm font-semibold text-slate-600" aria-live="polite" data-testid="result-count">
-        {loading && !visibleEntries.length
-          ? 'Loading stories…'
-          : windowedEntries.length < visibleEntries.length
-            ? `Showing ${windowedEntries.length} of ${visibleEntries.length}${exhausted ? '' : '+'} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' matching your filters' : ''}`
-            : `${visibleEntries.length} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
-      </p>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-indigo-50/90 px-4 py-2.5 ring-1 ring-indigo-200/80">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <p className="text-sm font-extrabold text-indigo-950" aria-live="polite" data-testid="result-count">
+            {loading && !visibleEntries.length
+              ? 'Loading stories…'
+              : windowedEntries.length < visibleEntries.length
+                ? `Showing ${windowedEntries.length} of ${visibleEntries.length}${exhausted ? '' : '+'} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' matching your filters' : ''}`
+                : `${visibleEntries.length} ${visibleEntries.length === 1 ? 'story' : 'stories'}${active ? ' match your filters' : ''}${exhausted ? '' : ' so far'}`}
+          </p>
+          {visibleEntries.length > STORY_BATCH_SIZE && (
+            <span
+              data-testid="batch-indicator"
+              className="rounded-full bg-indigo-600 px-3 py-0.5 text-xs font-bold text-white shadow-sm"
+            >
+              {windowedEntries.length < visibleEntries.length
+                ? `1–${windowedEntries.length} (${STORY_BATCH_SIZE} per shelf) • Scroll for next ${Math.min(STORY_BATCH_SIZE, visibleEntries.length - windowedEntries.length)}`
+                : `All ${Math.ceil(visibleEntries.length / STORY_BATCH_SIZE)} shelves open (1–${visibleEntries.length})`}
+            </span>
+          )}
+        </div>
+        {windowedEntries.length > STORY_BATCH_SIZE && (
+          <button
+            type="button"
+            data-testid="collapse-to-first-batch"
+            onClick={() => setRenderLimit(STORY_BATCH_SIZE)}
+            className="rounded-full bg-white px-3 py-1 text-xs font-bold text-indigo-800 ring-1 ring-indigo-200 hover:bg-indigo-100"
+          >
+            Back to first {STORY_BATCH_SIZE}
+          </button>
+        )}
+      </div>
 
       {!loading && visibleEntries.length === 0 && (
         <div className="rounded-2xl bg-white p-8 text-center shadow ring-1 ring-slate-200" data-testid="empty">
@@ -659,29 +695,51 @@ export function LibraryDashboard({
       )}
 
       <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-testid="story-grid">
-        {windowedEntries.map((e) => (
-          <StoryCard
-            key={e.storyKey}
-            entry={e}
-            source={source}
-            busy={opening === e.storyKey}
-            isFav={progressSnapshot.favs.has(e.storyKey)}
-            progress={progressSnapshot.byStory.get(e.storyKey)}
-            isDeveloper={isDeveloper}
-            quarantine={quarantineMap.byKey.get(e.storyKey)}
-            onToggleHold={(nextHold) => handleToggleHold(e.storyKey, nextHold)}
-            onApproveEarly={() => handleApproveEarly(e.storyKey)}
-            onToggleFav={() => {
-              toggleFavourite(e.storyKey);
-            }}
-            onOpen={() => openStory(e)}
-          />
+        {windowedEntries.map((e, idx) => (
+          <Fragment key={e.storyKey}>
+            {idx > 0 && idx % STORY_BATCH_SIZE === 0 && (
+              <li
+                data-testid="story-batch-divider"
+                className="col-span-full my-2 flex items-center gap-3"
+              >
+                <div className="h-px flex-1 bg-indigo-200" aria-hidden />
+                <span className="rounded-full bg-indigo-100 px-4 py-1.5 text-xs font-extrabold tracking-wide text-indigo-900 ring-1 ring-indigo-200">
+                  📚 Shelf {Math.floor(idx / STORY_BATCH_SIZE) + 1} • Stories {idx + 1}–{Math.min(idx + STORY_BATCH_SIZE, visibleEntries.length)} of {visibleEntries.length}
+                </span>
+                <div className="h-px flex-1 bg-indigo-200" aria-hidden />
+              </li>
+            )}
+            <StoryCard
+              entry={e}
+              source={source}
+              busy={opening === e.storyKey}
+              isFav={progressSnapshot.favs.has(e.storyKey)}
+              progress={progressSnapshot.byStory.get(e.storyKey)}
+              isDeveloper={isDeveloper}
+              quarantine={quarantineMap.byKey.get(e.storyKey)}
+              onToggleHold={(nextHold) => handleToggleHold(e.storyKey, nextHold)}
+              onApproveEarly={() => handleApproveEarly(e.storyKey)}
+              onToggleFav={() => {
+                toggleFavourite(e.storyKey);
+              }}
+              onOpen={() => openStory(e)}
+            />
+          </Fragment>
         ))}
       </ul>
       {hasMoreToShow && visibleEntries.length > 0 && (
-        <div ref={sentinelRef} className="mt-6 flex flex-col items-center gap-2 text-center" data-testid="scroll-more-footer">
-          <p className="text-xs font-bold text-slate-500">
-            Showing {windowedEntries.length} of {visibleEntries.length}{exhausted ? '' : '+'} stories • Scroll down or click to load more
+        <div
+          ref={sentinelRef}
+          className="mt-8 flex flex-col items-center gap-2.5 rounded-3xl bg-indigo-50/80 p-6 text-center ring-1 ring-indigo-200"
+          data-testid="scroll-more-footer"
+        >
+          <p className="text-sm font-extrabold text-indigo-950">
+            Showing 1–{windowedEntries.length} of {visibleEntries.length}{exhausted ? '' : '+'} stories
+          </p>
+          <p className="text-xs font-semibold text-indigo-700">
+            {scrollRevealing
+              ? `Opening stories ${windowedEntries.length + 1}–${Math.min(windowedEntries.length + STORY_BATCH_SIZE, visibleEntries.length)}…`
+              : 'Scroll down here or tap below for the next 100 stories — or use Search above to find any story instantly'}
           </p>
           <button
             type="button"
@@ -690,7 +748,7 @@ export function LibraryDashboard({
             disabled={loading}
             className="rounded-full bg-indigo-600 px-6 py-3 font-bold text-white shadow hover:bg-indigo-700 disabled:opacity-50"
           >
-            {loading
+            {loading || scrollRevealing
               ? 'Loading more…'
               : exhausted && visibleEntries.length - windowedEntries.length < STORY_BATCH_SIZE
                 ? `Show remaining ${visibleEntries.length - windowedEntries.length} ${visibleEntries.length - windowedEntries.length === 1 ? 'story' : 'stories'}`

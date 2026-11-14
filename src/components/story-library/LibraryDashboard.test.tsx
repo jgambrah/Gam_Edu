@@ -28,16 +28,26 @@ describe('LibraryDashboard (real preview data)', () => {
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(STORY_BATCH_SIZE));
     expect(screen.getByTestId('hero-stats').textContent).toContain('228');
     expect(screen.getByTestId('result-count').textContent).toBe('Showing 100 of 228 stories');
+    expect(screen.getByTestId('batch-indicator').textContent).toContain('1–100 (100 per shelf)');
+    expect(screen.queryAllByTestId('story-batch-divider')).toHaveLength(0);
 
     await user.click(screen.getByTestId('load-more-stories'));
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(200));
     expect(screen.getByTestId('result-count').textContent).toBe('Showing 200 of 228 stories');
+    expect(screen.getAllByTestId('story-batch-divider')).toHaveLength(1);
+    expect(screen.getByTestId('story-batch-divider').textContent).toContain('Shelf 2 • Stories 101–200 of 228');
 
     await user.click(screen.getByTestId('load-more-stories'));
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     expect(screen.getByTestId('result-count').textContent).toBe('228 stories');
+    expect(screen.getAllByTestId('story-batch-divider')).toHaveLength(2);
+    expect(screen.getAllByTestId('story-batch-divider')[1].textContent).toContain('Shelf 3 • Stories 201–228 of 228');
     expect(screen.queryByTestId('load-more-stories')).toBeNull();
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
+
+    await user.click(screen.getByTestId('collapse-to-first-batch'));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(STORY_BATCH_SIZE));
+    expect(screen.getByTestId('result-count').textContent).toBe('Showing 100 of 228 stories');
   }, 15000);
 
   it('searches across the entire repository at once even when only the first 100 stories are rendered on screen', async () => {
