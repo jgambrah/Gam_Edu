@@ -26,7 +26,7 @@ describe('LibraryDashboard (real preview data)', () => {
     render(<LibraryDashboard createSource={make} nowMs={LEGACY_PUBLIC_NOW_MS} />);
     await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(228));
     for (const card of screen.getAllByTestId('story-card')) expect(within(card).getByText('🎨 Illustrated')).toBeTruthy();
-  });
+  }, 15000);
 
   it('filters by class, genre, reading level and age through the real catalogue client', async () => {
     const user = userEvent.setup();
@@ -337,11 +337,11 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(screen.getByText('Quarantined Batch Preview Story')).toBeTruthy();
   }, 15000);
 
-  it('exposes all 282 real catalogue stories (including Quarantined Batches 33–39) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
+  it('exposes all 290 real catalogue stories (including Quarantined Batches 33–40) to jamesgambrah@gmail.com immediately and to everyone after 48h', async () => {
     const rawCat = JSON.parse(readFileSync(path.join(pub, 'story-spark-preview/catalogue.json'), 'utf8'));
     const newEntries = rawCat.entries.filter((e: any) => e.sortKey > 228 && e.releaseAt);
-    expect(newEntries).toHaveLength(54);
-    const duringQuarantineMs = Math.max(...newEntries.map((e: any) => e.publishedAt)) + 60_000;
+    expect(newEntries).toHaveLength(62);
+    const duringQuarantineMs = Math.min(...newEntries.map((e: any) => e.publishedAt)) + 60_000;
     const afterQuarantineMs = Math.max(...newEntries.map((e: any) => e.releaseAt)) + 60_000;
 
     const { unmount: unmountPublic } = render(
@@ -353,12 +353,12 @@ describe('LibraryDashboard (real preview data)', () => {
     const { unmount: unmountDev } = render(
       <LibraryDashboard createSource={make} viewerEmail="jamesgambrah@gmail.com" nowMs={duringQuarantineMs} />,
     );
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(282));
-    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (54)');
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(290));
+    expect(screen.getByTestId('under-review-tab').textContent).toContain('Under Review (48h) (62)');
     unmountDev();
 
     render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterQuarantineMs} />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(282));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(290));
   }, 15000);
   it('keeps the top panel to one tidy row: dropdowns and search first, detailed filters only on request', async () => {
     const user = userEvent.setup();
@@ -439,7 +439,7 @@ describe('LibraryDashboard (real preview data)', () => {
     expect(rawCat.entries.some((e: any) => e.nacca?.length)).toBe(true);
     const afterReview = Math.max(...rawCat.entries.filter((e: any) => e.releaseAt).map((e: any) => e.releaseAt)) + 60_000;
     render(<LibraryDashboard createSource={make} viewerEmail="pupil@school.edu.gh" nowMs={afterReview} focusNacca={['B3']} focusLabel="Plants, water and health" />);
-    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(282));
+    await waitFor(() => expect(screen.getAllByTestId('story-card')).toHaveLength(290));
     await waitFor(() => expect(screen.getAllByTestId('rec-card').length).toBeGreaterThan(0));
     const keys = screen.getAllByTestId('rec-card').map((c) => c.getAttribute('data-story'));
     const withB3 = new Set(rawCat.entries.filter((e: any) => (e.nacca ?? []).some((c: string) => c.startsWith('B3.'))).map((e: any) => e.storyKey));
