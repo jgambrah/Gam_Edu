@@ -1,0 +1,2854 @@
+{
+  "schemaVersion": 1,
+  "storyId": "the-honeyguides-revenge",
+  "version": 1,
+  "title": "The Honeyguide’s Revenge",
+  "ageTiers": [
+    "9-10"
+  ],
+  "language": "en",
+  "narrationLocale": "en-GH",
+  "pages": [
+    {
+      "n": 1,
+      "text": "A young hunter named Gingile was walking through the bush one morning when he heard a call. Chitik-chitik-chitik! He looked up. On a branch sat a small brown bird, fluttering its wings. Gingile smiled. Every hunter knew that bird. It was Ngede, the honeyguide. The honeyguide knows where the wild bees keep their honey, but it is too small to break into the nest. So it finds a person, calls until it is noticed, and leads the way. Gingile licked his lips. “Lead on, little friend,” he said. “I am right behind you.”",
+      "sentences": [
+        "A young hunter named Gingile was walking through the bush one morning when he heard a call.",
+        "Chitik-chitik-chitik!",
+        "He looked up.",
+        "On a branch sat a small brown bird, fluttering its wings.",
+        "Gingile smiled.",
+        "Every hunter knew that bird.",
+        "It was Ngede, the honeyguide.",
+        "The honeyguide knows where the wild bees keep their honey, but it is too small to break into the nest.",
+        "So it finds a person, calls until it is noticed, and leads the way.",
+        "Gingile licked his lips.",
+        "“Lead on, little friend,” he said.",
+        "“I am right behind you.”"
+      ],
+      "alt": "A small brown bird calling from a branch while a young hunter with a spear looks up, smiling.",
+      "image": {
+        "hash": "sha256:76be306b3dcd57c79e58d11912775b165c4b866951463f36c60827ca55315eec",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:e817461b3d0fc3aeda1e40224266f0c29674538b4d5c3c64e8fbb3dbf3610f57",
+        "durationMs": 41960,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6438
+            ],
+            [
+              6438,
+              8584
+            ],
+            [
+              8584,
+              10138
+            ],
+            [
+              10138,
+              14800
+            ],
+            [
+              14800,
+              16576
+            ],
+            [
+              16576,
+              19092
+            ],
+            [
+              19092,
+              21978
+            ],
+            [
+              21978,
+              29156
+            ],
+            [
+              29156,
+              34558
+            ],
+            [
+              34558,
+              36852
+            ],
+            [
+              36852,
+              40182
+            ],
+            [
+              40182,
+              41960
+            ]
+          ],
+          "words": [
+            [
+              0,
+              148
+            ],
+            [
+              148,
+              518
+            ],
+            [
+              518,
+              962
+            ],
+            [
+              962,
+              1332
+            ],
+            [
+              1332,
+              1850
+            ],
+            [
+              1850,
+              2072
+            ],
+            [
+              2072,
+              2590
+            ],
+            [
+              2590,
+              3108
+            ],
+            [
+              3108,
+              3330
+            ],
+            [
+              3330,
+              3626
+            ],
+            [
+              3626,
+              3848
+            ],
+            [
+              3848,
+              4366
+            ],
+            [
+              4366,
+              4662
+            ],
+            [
+              4662,
+              4810
+            ],
+            [
+              4810,
+              5180
+            ],
+            [
+              5180,
+              5328
+            ],
+            [
+              5328,
+              6438
+            ],
+            [
+              6438,
+              8584
+            ],
+            [
+              8584,
+              8732
+            ],
+            [
+              8732,
+              9176
+            ],
+            [
+              9176,
+              10138
+            ],
+            [
+              10138,
+              10286
+            ],
+            [
+              10286,
+              10434
+            ],
+            [
+              10434,
+              10878
+            ],
+            [
+              10878,
+              11100
+            ],
+            [
+              11100,
+              11248
+            ],
+            [
+              11248,
+              11618
+            ],
+            [
+              11618,
+              11988
+            ],
+            [
+              11988,
+              12654
+            ],
+            [
+              12654,
+              13394
+            ],
+            [
+              13394,
+              13616
+            ],
+            [
+              13616,
+              14800
+            ],
+            [
+              14800,
+              15318
+            ],
+            [
+              15318,
+              16576
+            ],
+            [
+              16576,
+              16946
+            ],
+            [
+              16946,
+              17390
+            ],
+            [
+              17390,
+              17686
+            ],
+            [
+              17686,
+              17982
+            ],
+            [
+              17982,
+              19092
+            ],
+            [
+              19092,
+              19240
+            ],
+            [
+              19240,
+              19462
+            ],
+            [
+              19462,
+              20202
+            ],
+            [
+              20202,
+              20424
+            ],
+            [
+              20424,
+              21978
+            ],
+            [
+              21978,
+              22200
+            ],
+            [
+              22200,
+              22940
+            ],
+            [
+              22940,
+              23310
+            ],
+            [
+              23310,
+              23680
+            ],
+            [
+              23680,
+              23902
+            ],
+            [
+              23902,
+              24198
+            ],
+            [
+              24198,
+              24494
+            ],
+            [
+              24494,
+              24790
+            ],
+            [
+              24790,
+              25160
+            ],
+            [
+              25160,
+              25900
+            ],
+            [
+              25900,
+              26122
+            ],
+            [
+              26122,
+              26270
+            ],
+            [
+              26270,
+              26418
+            ],
+            [
+              26418,
+              26640
+            ],
+            [
+              26640,
+              27010
+            ],
+            [
+              27010,
+              27158
+            ],
+            [
+              27158,
+              27528
+            ],
+            [
+              27528,
+              27824
+            ],
+            [
+              27824,
+              28046
+            ],
+            [
+              28046,
+              29156
+            ],
+            [
+              29156,
+              29304
+            ],
+            [
+              29304,
+              29452
+            ],
+            [
+              29452,
+              29822
+            ],
+            [
+              29822,
+              29970
+            ],
+            [
+              29970,
+              30784
+            ],
+            [
+              30784,
+              31154
+            ],
+            [
+              31154,
+              31524
+            ],
+            [
+              31524,
+              31672
+            ],
+            [
+              31672,
+              31820
+            ],
+            [
+              31820,
+              32708
+            ],
+            [
+              32708,
+              32930
+            ],
+            [
+              32930,
+              33300
+            ],
+            [
+              33300,
+              33522
+            ],
+            [
+              33522,
+              34558
+            ],
+            [
+              34558,
+              35076
+            ],
+            [
+              35076,
+              35520
+            ],
+            [
+              35520,
+              35742
+            ],
+            [
+              35742,
+              36852
+            ],
+            [
+              36852,
+              37148
+            ],
+            [
+              37148,
+              37666
+            ],
+            [
+              37666,
+              38110
+            ],
+            [
+              38110,
+              38924
+            ],
+            [
+              38924,
+              39072
+            ],
+            [
+              39072,
+              40182
+            ],
+            [
+              40182,
+              40330
+            ],
+            [
+              40330,
+              40478
+            ],
+            [
+              40478,
+              40848
+            ],
+            [
+              40848,
+              41292
+            ],
+            [
+              41292,
+              41960
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 2,
+      "text": "Ngede flew from tree to tree, calling all the time and waiting for the man to catch up. At last the bird stopped in a great fig tree and fell silent. Gingile looked up and saw bees going in and out of a hole in the trunk. He put down his spear. He gathered dry grass, lit it, and climbed with the smoking bundle between his teeth. He pushed the smoke into the hole, and the bees, made sleepy, flew off. Then he reached in and pulled out the comb, heavy and golden with honey.",
+      "sentences": [
+        "Ngede flew from tree to tree, calling all the time and waiting for the man to catch up.",
+        "At last the bird stopped in a great fig tree and fell silent.",
+        "Gingile looked up and saw bees going in and out of a hole in the trunk.",
+        "He put down his spear.",
+        "He gathered dry grass, lit it, and climbed with the smoking bundle between his teeth.",
+        "He pushed the smoke into the hole, and the bees, made sleepy, flew off.",
+        "Then he reached in and pulled out the comb, heavy and golden with honey."
+      ],
+      "alt": "A hunter climbing a fig tree with a bundle of smoking grass, bees streaming from a hole in the trunk.",
+      "image": {
+        "hash": "sha256:4bf952b408143b61771868b6990aa54df2e64d794be13ea0ba137054907dcc1b",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:cb1f55d96d8f9f6b62d1b87f58e76ad29e7dc25cac27ab0dcf101f5d6b4df63b",
+        "durationMs": 41280,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              7284
+            ],
+            [
+              7284,
+              12486
+            ],
+            [
+              12486,
+              18294
+            ],
+            [
+              18294,
+              20722
+            ],
+            [
+              20722,
+              28439
+            ],
+            [
+              28439,
+              35377
+            ],
+            [
+              35377,
+              41280
+            ]
+          ],
+          "words": [
+            [
+              0,
+              434
+            ],
+            [
+              434,
+              781
+            ],
+            [
+              781,
+              1128
+            ],
+            [
+              1128,
+              1475
+            ],
+            [
+              1475,
+              1648
+            ],
+            [
+              1648,
+              2429
+            ],
+            [
+              2429,
+              3036
+            ],
+            [
+              3036,
+              3296
+            ],
+            [
+              3296,
+              3556
+            ],
+            [
+              3556,
+              3903
+            ],
+            [
+              3903,
+              4163
+            ],
+            [
+              4163,
+              4770
+            ],
+            [
+              4770,
+              5030
+            ],
+            [
+              5030,
+              5290
+            ],
+            [
+              5290,
+              5550
+            ],
+            [
+              5550,
+              5723
+            ],
+            [
+              5723,
+              6157
+            ],
+            [
+              6157,
+              7284
+            ],
+            [
+              7284,
+              7457
+            ],
+            [
+              7457,
+              7804
+            ],
+            [
+              7804,
+              8064
+            ],
+            [
+              8064,
+              8411
+            ],
+            [
+              8411,
+              9018
+            ],
+            [
+              9018,
+              9191
+            ],
+            [
+              9191,
+              9364
+            ],
+            [
+              9364,
+              9798
+            ],
+            [
+              9798,
+              10058
+            ],
+            [
+              10058,
+              10405
+            ],
+            [
+              10405,
+              10665
+            ],
+            [
+              10665,
+              11012
+            ],
+            [
+              11012,
+              12486
+            ],
+            [
+              12486,
+              13093
+            ],
+            [
+              13093,
+              13613
+            ],
+            [
+              13613,
+              13786
+            ],
+            [
+              13786,
+              14046
+            ],
+            [
+              14046,
+              14306
+            ],
+            [
+              14306,
+              14653
+            ],
+            [
+              14653,
+              15087
+            ],
+            [
+              15087,
+              15260
+            ],
+            [
+              15260,
+              15520
+            ],
+            [
+              15520,
+              15780
+            ],
+            [
+              15780,
+              15953
+            ],
+            [
+              15953,
+              16126
+            ],
+            [
+              16126,
+              16473
+            ],
+            [
+              16473,
+              16646
+            ],
+            [
+              16646,
+              16906
+            ],
+            [
+              16906,
+              18294
+            ],
+            [
+              18294,
+              18467
+            ],
+            [
+              18467,
+              18727
+            ],
+            [
+              18727,
+              19074
+            ],
+            [
+              19074,
+              19334
+            ],
+            [
+              19334,
+              20722
+            ],
+            [
+              20722,
+              20895
+            ],
+            [
+              20895,
+              21589
+            ],
+            [
+              21589,
+              21849
+            ],
+            [
+              21849,
+              22716
+            ],
+            [
+              22716,
+              22976
+            ],
+            [
+              22976,
+              23583
+            ],
+            [
+              23583,
+              23843
+            ],
+            [
+              23843,
+              24450
+            ],
+            [
+              24450,
+              24797
+            ],
+            [
+              24797,
+              25057
+            ],
+            [
+              25057,
+              25664
+            ],
+            [
+              25664,
+              26184
+            ],
+            [
+              26184,
+              26791
+            ],
+            [
+              26791,
+              27051
+            ],
+            [
+              27051,
+              28439
+            ],
+            [
+              28439,
+              28612
+            ],
+            [
+              28612,
+              29132
+            ],
+            [
+              29132,
+              29392
+            ],
+            [
+              29392,
+              29826
+            ],
+            [
+              29826,
+              30173
+            ],
+            [
+              30173,
+              30433
+            ],
+            [
+              30433,
+              31214
+            ],
+            [
+              31214,
+              31474
+            ],
+            [
+              31474,
+              31734
+            ],
+            [
+              31734,
+              32515
+            ],
+            [
+              32515,
+              32862
+            ],
+            [
+              32862,
+              33816
+            ],
+            [
+              33816,
+              34163
+            ],
+            [
+              34163,
+              35377
+            ],
+            [
+              35377,
+              35724
+            ],
+            [
+              35724,
+              35897
+            ],
+            [
+              35897,
+              36504
+            ],
+            [
+              36504,
+              36677
+            ],
+            [
+              36677,
+              36937
+            ],
+            [
+              36937,
+              37457
+            ],
+            [
+              37457,
+              37717
+            ],
+            [
+              37717,
+              37977
+            ],
+            [
+              37977,
+              38758
+            ],
+            [
+              38758,
+              39192
+            ],
+            [
+              39192,
+              39452
+            ],
+            [
+              39452,
+              39972
+            ],
+            [
+              39972,
+              40319
+            ],
+            [
+              40319,
+              41280
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "text": "Gingile slid down the tree with his bag full. Ngede hopped along a low branch, chattering. The bird was waiting for its share, for that is the custom. Since the days of the first ancestors, whoever takes honey with the help of a honeyguide leaves a good piece of the comb on the ground as thanks. But Gingile looked at the bird and laughed. “Why should I share with you? I climbed the tree. I was stung. You only showed the way.” He ate until he was full and carried the rest home.",
+      "sentences": [
+        "Gingile slid down the tree with his bag full.",
+        "Ngede hopped along a low branch, chattering.",
+        "The bird was waiting for its share, for that is the custom.",
+        "Since the days of the first ancestors, whoever takes honey with the help of a honeyguide leaves a good piece of the comb on the ground as thanks.",
+        "But Gingile looked at the bird and laughed.",
+        "“Why should I share with you?",
+        "I climbed the tree.",
+        "I was stung.",
+        "You only showed the way.” He ate until he was full and carried the rest home."
+      ],
+      "alt": "A hunter walking away with a bulging bag, eating honeycomb, while a small bird hops angrily on a branch.",
+      "image": {
+        "hash": "sha256:42530997ec253a4029368dc0b087d8a3e4e39d781e0315854719595529effa2a",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:159721bacd75395d83a709eb4a70dc1f5c72506077d0743285d309ec99f6a78b",
+        "durationMs": 34760,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3269
+            ],
+            [
+              3269,
+              6955
+            ],
+            [
+              6955,
+              11268
+            ],
+            [
+              11268,
+              20587
+            ],
+            [
+              20587,
+              23786
+            ],
+            [
+              23786,
+              26150
+            ],
+            [
+              26150,
+              28028
+            ],
+            [
+              28028,
+              29488
+            ],
+            [
+              29488,
+              34760
+            ]
+          ],
+          "words": [
+            [
+              0,
+              487
+            ],
+            [
+              487,
+              765
+            ],
+            [
+              765,
+              1043
+            ],
+            [
+              1043,
+              1252
+            ],
+            [
+              1252,
+              1530
+            ],
+            [
+              1530,
+              1808
+            ],
+            [
+              1808,
+              2017
+            ],
+            [
+              2017,
+              2226
+            ],
+            [
+              2226,
+              3269
+            ],
+            [
+              3269,
+              3617
+            ],
+            [
+              3617,
+              4034
+            ],
+            [
+              4034,
+              4382
+            ],
+            [
+              4382,
+              4521
+            ],
+            [
+              4521,
+              4730
+            ],
+            [
+              4730,
+              5495
+            ],
+            [
+              5495,
+              6955
+            ],
+            [
+              6955,
+              7164
+            ],
+            [
+              7164,
+              7442
+            ],
+            [
+              7442,
+              7651
+            ],
+            [
+              7651,
+              8138
+            ],
+            [
+              8138,
+              8347
+            ],
+            [
+              8347,
+              8556
+            ],
+            [
+              8556,
+              9251
+            ],
+            [
+              9251,
+              9460
+            ],
+            [
+              9460,
+              9738
+            ],
+            [
+              9738,
+              9877
+            ],
+            [
+              9877,
+              10086
+            ],
+            [
+              10086,
+              11268
+            ],
+            [
+              11268,
+              11616
+            ],
+            [
+              11616,
+              11825
+            ],
+            [
+              11825,
+              12103
+            ],
+            [
+              12103,
+              12242
+            ],
+            [
+              12242,
+              12451
+            ],
+            [
+              12451,
+              12799
+            ],
+            [
+              12799,
+              13772
+            ],
+            [
+              13772,
+              14259
+            ],
+            [
+              14259,
+              14607
+            ],
+            [
+              14607,
+              14955
+            ],
+            [
+              14955,
+              15233
+            ],
+            [
+              15233,
+              15442
+            ],
+            [
+              15442,
+              15720
+            ],
+            [
+              15720,
+              15859
+            ],
+            [
+              15859,
+              15998
+            ],
+            [
+              15998,
+              16693
+            ],
+            [
+              16693,
+              17110
+            ],
+            [
+              17110,
+              17249
+            ],
+            [
+              17249,
+              17527
+            ],
+            [
+              17527,
+              17875
+            ],
+            [
+              17875,
+              18014
+            ],
+            [
+              18014,
+              18223
+            ],
+            [
+              18223,
+              18501
+            ],
+            [
+              18501,
+              18640
+            ],
+            [
+              18640,
+              18849
+            ],
+            [
+              18849,
+              19266
+            ],
+            [
+              19266,
+              19405
+            ],
+            [
+              19405,
+              20587
+            ],
+            [
+              20587,
+              20796
+            ],
+            [
+              20796,
+              21283
+            ],
+            [
+              21283,
+              21700
+            ],
+            [
+              21700,
+              21839
+            ],
+            [
+              21839,
+              22048
+            ],
+            [
+              22048,
+              22326
+            ],
+            [
+              22326,
+              22535
+            ],
+            [
+              22535,
+              23786
+            ],
+            [
+              23786,
+              23995
+            ],
+            [
+              23995,
+              24412
+            ],
+            [
+              24412,
+              24551
+            ],
+            [
+              24551,
+              24899
+            ],
+            [
+              24899,
+              25177
+            ],
+            [
+              25177,
+              26150
+            ],
+            [
+              26150,
+              26289
+            ],
+            [
+              26289,
+              26776
+            ],
+            [
+              26776,
+              26985
+            ],
+            [
+              26985,
+              28028
+            ],
+            [
+              28028,
+              28167
+            ],
+            [
+              28167,
+              28376
+            ],
+            [
+              28376,
+              29488
+            ],
+            [
+              29488,
+              29697
+            ],
+            [
+              29697,
+              29975
+            ],
+            [
+              29975,
+              30392
+            ],
+            [
+              30392,
+              30601
+            ],
+            [
+              30601,
+              31574
+            ],
+            [
+              31574,
+              31713
+            ],
+            [
+              31713,
+              31922
+            ],
+            [
+              31922,
+              32270
+            ],
+            [
+              32270,
+              32409
+            ],
+            [
+              32409,
+              32618
+            ],
+            [
+              32618,
+              32896
+            ],
+            [
+              32896,
+              33105
+            ],
+            [
+              33105,
+              33592
+            ],
+            [
+              33592,
+              33801
+            ],
+            [
+              33801,
+              34079
+            ],
+            [
+              34079,
+              34760
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "text": "Ngede sat on the branch for a long time. Not a crumb of comb had been left. The little bird was angry, but it said nothing more that day. Weeks went by. The honey was finished, and Gingile began to think about it again. One morning he heard the call. Chitik-chitik-chitik! There was Ngede, fluttering as before. “Ah,” said Gingile, “my foolish little friend has forgotten.” He took his bag and followed. The bird led him a long way, to a tall umbrella thorn tree, and settled in its branches.",
+      "sentences": [
+        "Ngede sat on the branch for a long time.",
+        "Not a crumb of comb had been left.",
+        "The little bird was angry, but it said nothing more that day.",
+        "Weeks went by.",
+        "The honey was finished, and Gingile began to think about it again.",
+        "One morning he heard the call.",
+        "Chitik-chitik-chitik!",
+        "There was Ngede, fluttering as before.",
+        "“Ah,” said Gingile, “my foolish little friend has forgotten.” He took his bag and followed.",
+        "The bird led him a long way, to a tall umbrella thorn tree, and settled in its branches."
+      ],
+      "alt": "A hunter following a small bird across open bush towards a wide, flat-topped thorn tree.",
+      "image": {
+        "hash": "sha256:efc0f5a950f9143f7bd850505cd7bd27e0753defca47390745afff60065b598c",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:0d81d4911a5a9550b3d996bb7f4f331a826a7d68d33cc957e52f44c694484556",
+        "durationMs": 39840,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3208
+            ],
+            [
+              3208,
+              6042
+            ],
+            [
+              6042,
+              10815
+            ],
+            [
+              10815,
+              12456
+            ],
+            [
+              12456,
+              17604
+            ],
+            [
+              17604,
+              20215
+            ],
+            [
+              20215,
+              22379
+            ],
+            [
+              22379,
+              25885
+            ],
+            [
+              25885,
+              33420
+            ],
+            [
+              33420,
+              39840
+            ]
+          ],
+          "words": [
+            [
+              0,
+              373
+            ],
+            [
+              373,
+              597
+            ],
+            [
+              597,
+              746
+            ],
+            [
+              746,
+              970
+            ],
+            [
+              970,
+              1418
+            ],
+            [
+              1418,
+              1642
+            ],
+            [
+              1642,
+              1791
+            ],
+            [
+              1791,
+              2089
+            ],
+            [
+              2089,
+              3208
+            ],
+            [
+              3208,
+              3432
+            ],
+            [
+              3432,
+              3581
+            ],
+            [
+              3581,
+              3954
+            ],
+            [
+              3954,
+              4103
+            ],
+            [
+              4103,
+              4401
+            ],
+            [
+              4401,
+              4625
+            ],
+            [
+              4625,
+              4923
+            ],
+            [
+              4923,
+              6042
+            ],
+            [
+              6042,
+              6266
+            ],
+            [
+              6266,
+              6714
+            ],
+            [
+              6714,
+              7012
+            ],
+            [
+              7012,
+              7236
+            ],
+            [
+              7236,
+              7982
+            ],
+            [
+              7982,
+              8206
+            ],
+            [
+              8206,
+              8355
+            ],
+            [
+              8355,
+              8653
+            ],
+            [
+              8653,
+              9175
+            ],
+            [
+              9175,
+              9473
+            ],
+            [
+              9473,
+              9771
+            ],
+            [
+              9771,
+              10815
+            ],
+            [
+              10815,
+              11188
+            ],
+            [
+              11188,
+              11486
+            ],
+            [
+              11486,
+              12456
+            ],
+            [
+              12456,
+              12680
+            ],
+            [
+              12680,
+              13053
+            ],
+            [
+              13053,
+              13277
+            ],
+            [
+              13277,
+              14247
+            ],
+            [
+              14247,
+              14471
+            ],
+            [
+              14471,
+              14993
+            ],
+            [
+              14993,
+              15366
+            ],
+            [
+              15366,
+              15515
+            ],
+            [
+              15515,
+              15888
+            ],
+            [
+              15888,
+              16261
+            ],
+            [
+              16261,
+              16410
+            ],
+            [
+              16410,
+              17604
+            ],
+            [
+              17604,
+              17828
+            ],
+            [
+              17828,
+              18350
+            ],
+            [
+              18350,
+              18499
+            ],
+            [
+              18499,
+              18872
+            ],
+            [
+              18872,
+              19096
+            ],
+            [
+              19096,
+              20215
+            ],
+            [
+              20215,
+              22379
+            ],
+            [
+              22379,
+              22752
+            ],
+            [
+              22752,
+              22976
+            ],
+            [
+              22976,
+              23722
+            ],
+            [
+              23722,
+              24468
+            ],
+            [
+              24468,
+              24617
+            ],
+            [
+              24617,
+              25885
+            ],
+            [
+              25885,
+              26407
+            ],
+            [
+              26407,
+              26705
+            ],
+            [
+              26705,
+              27600
+            ],
+            [
+              27600,
+              27749
+            ],
+            [
+              27749,
+              28271
+            ],
+            [
+              28271,
+              28719
+            ],
+            [
+              28719,
+              29167
+            ],
+            [
+              29167,
+              29391
+            ],
+            [
+              29391,
+              30883
+            ],
+            [
+              30883,
+              31032
+            ],
+            [
+              31032,
+              31330
+            ],
+            [
+              31330,
+              31554
+            ],
+            [
+              31554,
+              31778
+            ],
+            [
+              31778,
+              32002
+            ],
+            [
+              32002,
+              33420
+            ],
+            [
+              33420,
+              33644
+            ],
+            [
+              33644,
+              33942
+            ],
+            [
+              33942,
+              34166
+            ],
+            [
+              34166,
+              34390
+            ],
+            [
+              34390,
+              34539
+            ],
+            [
+              34539,
+              34837
+            ],
+            [
+              34837,
+              35434
+            ],
+            [
+              35434,
+              35583
+            ],
+            [
+              35583,
+              35732
+            ],
+            [
+              35732,
+              36030
+            ],
+            [
+              36030,
+              36627
+            ],
+            [
+              36627,
+              37000
+            ],
+            [
+              37000,
+              37671
+            ],
+            [
+              37671,
+              37895
+            ],
+            [
+              37895,
+              38417
+            ],
+            [
+              38417,
+              38566
+            ],
+            [
+              38566,
+              38790
+            ],
+            [
+              38790,
+              39840
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "text": "Gingile could not see any bees, but he trusted the bird. He lit his grass, put it between his teeth, and climbed. Higher and higher he went, peering through the smoke for the nest. He reached the branch where Ngede was sitting. Something lay along it. It was not a bees’ nest. It was a leopard, fast asleep in the heat of the day. The smoke drifted into her nose. She opened her yellow eyes, and with one paw she struck at the thing that had woken her. Ngede flew away without a sound.",
+      "sentences": [
+        "Gingile could not see any bees, but he trusted the bird.",
+        "He lit his grass, put it between his teeth, and climbed.",
+        "Higher and higher he went, peering through the smoke for the nest.",
+        "He reached the branch where Ngede was sitting.",
+        "Something lay along it.",
+        "It was not a bees’ nest.",
+        "It was a leopard, fast asleep in the heat of the day.",
+        "The smoke drifted into her nose.",
+        "She opened her yellow eyes, and with one paw she struck at the thing that had woken her.",
+        "Ngede flew away without a sound."
+      ],
+      "alt": "A hunter high in a thorn tree, face to face with a leopard waking on a branch.",
+      "image": {
+        "hash": "sha256:600949bc241a9ac03598a6bbc0699172f0a2df5e6078f6671394697bdc9dd5f6",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:be2850a33bab979f578fe5601f82ac30fd8141a048ef320a5eef9999d8d45ac3",
+        "durationMs": 39520,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              4621
+            ],
+            [
+              4621,
+              9550
+            ],
+            [
+              9550,
+              14864
+            ],
+            [
+              14864,
+              18638
+            ],
+            [
+              18638,
+              20948
+            ],
+            [
+              20948,
+              23182
+            ],
+            [
+              23182,
+              27572
+            ],
+            [
+              27572,
+              30422
+            ],
+            [
+              30422,
+              36968
+            ],
+            [
+              36968,
+              39520
+            ]
+          ],
+          "words": [
+            [
+              0,
+              539
+            ],
+            [
+              539,
+              924
+            ],
+            [
+              924,
+              1155
+            ],
+            [
+              1155,
+              1386
+            ],
+            [
+              1386,
+              1617
+            ],
+            [
+              1617,
+              2310
+            ],
+            [
+              2310,
+              2541
+            ],
+            [
+              2541,
+              2695
+            ],
+            [
+              2695,
+              3234
+            ],
+            [
+              3234,
+              3465
+            ],
+            [
+              3465,
+              4621
+            ],
+            [
+              4621,
+              4775
+            ],
+            [
+              4775,
+              5006
+            ],
+            [
+              5006,
+              5237
+            ],
+            [
+              5237,
+              6007
+            ],
+            [
+              6007,
+              6238
+            ],
+            [
+              6238,
+              6392
+            ],
+            [
+              6392,
+              6931
+            ],
+            [
+              6931,
+              7162
+            ],
+            [
+              7162,
+              7932
+            ],
+            [
+              7932,
+              8163
+            ],
+            [
+              8163,
+              9550
+            ],
+            [
+              9550,
+              10012
+            ],
+            [
+              10012,
+              10243
+            ],
+            [
+              10243,
+              10705
+            ],
+            [
+              10705,
+              10859
+            ],
+            [
+              10859,
+              11552
+            ],
+            [
+              11552,
+              12091
+            ],
+            [
+              12091,
+              12630
+            ],
+            [
+              12630,
+              12861
+            ],
+            [
+              12861,
+              13246
+            ],
+            [
+              13246,
+              13477
+            ],
+            [
+              13477,
+              13708
+            ],
+            [
+              13708,
+              14864
+            ],
+            [
+              14864,
+              15018
+            ],
+            [
+              15018,
+              15557
+            ],
+            [
+              15557,
+              15788
+            ],
+            [
+              15788,
+              16250
+            ],
+            [
+              16250,
+              16635
+            ],
+            [
+              16635,
+              17020
+            ],
+            [
+              17020,
+              17251
+            ],
+            [
+              17251,
+              18638
+            ],
+            [
+              18638,
+              19331
+            ],
+            [
+              19331,
+              19562
+            ],
+            [
+              19562,
+              19947
+            ],
+            [
+              19947,
+              20948
+            ],
+            [
+              20948,
+              21102
+            ],
+            [
+              21102,
+              21333
+            ],
+            [
+              21333,
+              21564
+            ],
+            [
+              21564,
+              21718
+            ],
+            [
+              21718,
+              22026
+            ],
+            [
+              22026,
+              23182
+            ],
+            [
+              23182,
+              23336
+            ],
+            [
+              23336,
+              23567
+            ],
+            [
+              23567,
+              23721
+            ],
+            [
+              23721,
+              24645
+            ],
+            [
+              24645,
+              24953
+            ],
+            [
+              24953,
+              25415
+            ],
+            [
+              25415,
+              25569
+            ],
+            [
+              25569,
+              25800
+            ],
+            [
+              25800,
+              26108
+            ],
+            [
+              26108,
+              26262
+            ],
+            [
+              26262,
+              26493
+            ],
+            [
+              26493,
+              27572
+            ],
+            [
+              27572,
+              27803
+            ],
+            [
+              27803,
+              28188
+            ],
+            [
+              28188,
+              28727
+            ],
+            [
+              28727,
+              29035
+            ],
+            [
+              29035,
+              29266
+            ],
+            [
+              29266,
+              30422
+            ],
+            [
+              30422,
+              30653
+            ],
+            [
+              30653,
+              31115
+            ],
+            [
+              31115,
+              31346
+            ],
+            [
+              31346,
+              31808
+            ],
+            [
+              31808,
+              32501
+            ],
+            [
+              32501,
+              32732
+            ],
+            [
+              32732,
+              33040
+            ],
+            [
+              33040,
+              33271
+            ],
+            [
+              33271,
+              33502
+            ],
+            [
+              33502,
+              33733
+            ],
+            [
+              33733,
+              34195
+            ],
+            [
+              34195,
+              34349
+            ],
+            [
+              34349,
+              34580
+            ],
+            [
+              34580,
+              34965
+            ],
+            [
+              34965,
+              35273
+            ],
+            [
+              35273,
+              35504
+            ],
+            [
+              35504,
+              35889
+            ],
+            [
+              35889,
+              36968
+            ],
+            [
+              36968,
+              37353
+            ],
+            [
+              37353,
+              37661
+            ],
+            [
+              37661,
+              37969
+            ],
+            [
+              37969,
+              38508
+            ],
+            [
+              38508,
+              38662
+            ],
+            [
+              38662,
+              39520
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "text": "Gingile fell from the tree, crashing through the branches, and landed hard. He was lucky that the leopard was too sleepy to follow. He crawled home with a broken leg and deep scratches, and he walked with a limp for the rest of his life. He never followed a honeyguide again. But he told the story to his children, and they told it to theirs. And so, to this day, when people in southern Africa take honey with the help of the little bird, they leave the best piece of the comb for Ngede.",
+      "sentences": [
+        "Gingile fell from the tree, crashing through the branches, and landed hard.",
+        "He was lucky that the leopard was too sleepy to follow.",
+        "He crawled home with a broken leg and deep scratches, and he walked with a limp for the rest of his life.",
+        "He never followed a honeyguide again.",
+        "But he told the story to his children, and they told it to theirs.",
+        "And so, to this day, when people in southern Africa take honey with the help of the little bird, they leave the best piece of the comb for Ngede."
+      ],
+      "alt": "A man with a walking stick placing a piece of honeycomb on a flat stone as a small bird watches.",
+      "image": {
+        "hash": "sha256:a7a6d1654d22a124705f7d70367c3c8701af83c03a92ad625517bf2b7c47daac",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:6f77b628985bae16eec316cc3590a795fe2e7afea499838dbffada481ada2f4a",
+        "durationMs": 36840,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6281
+            ],
+            [
+              6281,
+              10494
+            ],
+            [
+              10494,
+              18152
+            ],
+            [
+              18152,
+              21445
+            ],
+            [
+              21445,
+              26576
+            ],
+            [
+              26576,
+              36840
+            ]
+          ],
+          "words": [
+            [
+              0,
+              536
+            ],
+            [
+              536,
+              842
+            ],
+            [
+              842,
+              1148
+            ],
+            [
+              1148,
+              1378
+            ],
+            [
+              1378,
+              2067
+            ],
+            [
+              2067,
+              2680
+            ],
+            [
+              2680,
+              3216
+            ],
+            [
+              3216,
+              3446
+            ],
+            [
+              3446,
+              4442
+            ],
+            [
+              4442,
+              4672
+            ],
+            [
+              4672,
+              5132
+            ],
+            [
+              5132,
+              6281
+            ],
+            [
+              6281,
+              6434
+            ],
+            [
+              6434,
+              6664
+            ],
+            [
+              6664,
+              7047
+            ],
+            [
+              7047,
+              7353
+            ],
+            [
+              7353,
+              7583
+            ],
+            [
+              7583,
+              8119
+            ],
+            [
+              8119,
+              8349
+            ],
+            [
+              8349,
+              8579
+            ],
+            [
+              8579,
+              9039
+            ],
+            [
+              9039,
+              9192
+            ],
+            [
+              9192,
+              10494
+            ],
+            [
+              10494,
+              10647
+            ],
+            [
+              10647,
+              11183
+            ],
+            [
+              11183,
+              11489
+            ],
+            [
+              11489,
+              11795
+            ],
+            [
+              11795,
+              11948
+            ],
+            [
+              11948,
+              12408
+            ],
+            [
+              12408,
+              12638
+            ],
+            [
+              12638,
+              12868
+            ],
+            [
+              12868,
+              13174
+            ],
+            [
+              13174,
+              14246
+            ],
+            [
+              14246,
+              14476
+            ],
+            [
+              14476,
+              14629
+            ],
+            [
+              14629,
+              15089
+            ],
+            [
+              15089,
+              15395
+            ],
+            [
+              15395,
+              15548
+            ],
+            [
+              15548,
+              15854
+            ],
+            [
+              15854,
+              16084
+            ],
+            [
+              16084,
+              16314
+            ],
+            [
+              16314,
+              16620
+            ],
+            [
+              16620,
+              16773
+            ],
+            [
+              16773,
+              17003
+            ],
+            [
+              17003,
+              18152
+            ],
+            [
+              18152,
+              18305
+            ],
+            [
+              18305,
+              18688
+            ],
+            [
+              18688,
+              19301
+            ],
+            [
+              19301,
+              19454
+            ],
+            [
+              19454,
+              20220
+            ],
+            [
+              20220,
+              21445
+            ],
+            [
+              21445,
+              21675
+            ],
+            [
+              21675,
+              21828
+            ],
+            [
+              21828,
+              22134
+            ],
+            [
+              22134,
+              22364
+            ],
+            [
+              22364,
+              22747
+            ],
+            [
+              22747,
+              22900
+            ],
+            [
+              22900,
+              23130
+            ],
+            [
+              23130,
+              24126
+            ],
+            [
+              24126,
+              24356
+            ],
+            [
+              24356,
+              24662
+            ],
+            [
+              24662,
+              24968
+            ],
+            [
+              24968,
+              25121
+            ],
+            [
+              25121,
+              25274
+            ],
+            [
+              25274,
+              26576
+            ],
+            [
+              26576,
+              26806
+            ],
+            [
+              26806,
+              27342
+            ],
+            [
+              27342,
+              27495
+            ],
+            [
+              27495,
+              27801
+            ],
+            [
+              27801,
+              28414
+            ],
+            [
+              28414,
+              28720
+            ],
+            [
+              28720,
+              29180
+            ],
+            [
+              29180,
+              29333
+            ],
+            [
+              29333,
+              29946
+            ],
+            [
+              29946,
+              30406
+            ],
+            [
+              30406,
+              30712
+            ],
+            [
+              30712,
+              31095
+            ],
+            [
+              31095,
+              31401
+            ],
+            [
+              31401,
+              31631
+            ],
+            [
+              31631,
+              31937
+            ],
+            [
+              31937,
+              32090
+            ],
+            [
+              32090,
+              32320
+            ],
+            [
+              32320,
+              32780
+            ],
+            [
+              32780,
+              33469
+            ],
+            [
+              33469,
+              33775
+            ],
+            [
+              33775,
+              34158
+            ],
+            [
+              34158,
+              34388
+            ],
+            [
+              34388,
+              34694
+            ],
+            [
+              34694,
+              35077
+            ],
+            [
+              35077,
+              35230
+            ],
+            [
+              35230,
+              35460
+            ],
+            [
+              35460,
+              35766
+            ],
+            [
+              35766,
+              35996
+            ],
+            [
+              35996,
+              36840
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "activities": [
+    {
+      "id": "hg-c1",
+      "type": "comprehension",
+      "afterPage": 1,
+      "question": "Why does the honeyguide lead people to bees’ nests?",
+      "options": [
+        "It knows where the honey is but is too small to break into the nest",
+        "It is afraid of people",
+        "It wants to be caught"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "hg-c2",
+      "type": "comprehension",
+      "afterPage": 3,
+      "question": "What is the custom when a honeyguide has helped?",
+      "options": [
+        "Catch the bird and keep it",
+        "Burn the tree",
+        "Leave a good piece of the comb for the bird"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "hg-c3",
+      "type": "comprehension",
+      "afterPage": 5,
+      "question": "What did Ngede lead Gingile to the second time?",
+      "options": [
+        "A bigger bees’ nest",
+        "A sleeping leopard",
+        "His own village"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "hg-c4",
+      "type": "comprehension",
+      "afterPage": 6,
+      "question": "Apply it: A classmate helps you to revise, and you pass the test. According to the tale, what should you do?",
+      "options": [
+        "Say that you did it alone",
+        "Thank the classmate and help in return when you can",
+        "Ask for more help without a word of thanks"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "hg-s1",
+      "type": "sequencing",
+      "prompt": "Put the events of the story in order.",
+      "items": [
+        "Ngede calls to Gingile and leads him to a fig tree",
+        "Gingile smokes out the bees and takes the honey",
+        "He refuses to leave any comb for the bird",
+        "Ngede leads him to a thorn tree",
+        "Gingile meets the leopard and falls"
+      ]
+    },
+    {
+      "id": "hg-voc",
+      "type": "vocabulary",
+      "afterPage": 3,
+      "word": "custom",
+      "definition": "The accepted way of doing things in a community.",
+      "distractors": [
+        "A tree where bees live",
+        "A bag for carrying honey"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "word": "honeyguide",
+      "definition": "A small African bird that leads people to wild bees’ nests.",
+      "pages": [
+        1,
+        3,
+        6
+      ]
+    },
+    {
+      "word": "comb",
+      "definition": "The wax structure in which bees store honey.",
+      "pages": [
+        2,
+        3,
+        4,
+        6
+      ]
+    },
+    {
+      "word": "custom",
+      "definition": "The accepted way of doing things in a community.",
+      "pages": [
+        3
+      ]
+    },
+    {
+      "word": "ancestors",
+      "definition": "Family members who lived long ago.",
+      "pages": [
+        3
+      ]
+    },
+    {
+      "word": "peering",
+      "definition": "Looking closely or with difficulty.",
+      "pages": [
+        5
+      ]
+    },
+    {
+      "word": "limp",
+      "definition": "An uneven way of walking because of an injured leg.",
+      "pages": [
+        6
+      ]
+    }
+  ],
+  "assets": {
+    "sha256:e817461b3d0fc3aeda1e40224266f0c29674538b4d5c3c64e8fbb3dbf3610f57": {
+      "path": "/story-spark-preview/audio/e817461b3d0f.mp3",
+      "bytes": 168333,
+      "type": "audio/mpeg"
+    },
+    "sha256:76be306b3dcd57c79e58d11912775b165c4b866951463f36c60827ca55315eec": {
+      "path": "/story-spark-preview/candidates/the-honeyguides-revenge/page1-1.webp",
+      "bytes": 86806,
+      "type": "image/webp"
+    },
+    "sha256:cb1f55d96d8f9f6b62d1b87f58e76ad29e7dc25cac27ab0dcf101f5d6b4df63b": {
+      "path": "/story-spark-preview/audio/cb1f55d96d8f.mp3",
+      "bytes": 165549,
+      "type": "audio/mpeg"
+    },
+    "sha256:4bf952b408143b61771868b6990aa54df2e64d794be13ea0ba137054907dcc1b": {
+      "path": "/story-spark-preview/candidates/the-honeyguides-revenge/page2-1.webp",
+      "bytes": 86674,
+      "type": "image/webp"
+    },
+    "sha256:159721bacd75395d83a709eb4a70dc1f5c72506077d0743285d309ec99f6a78b": {
+      "path": "/story-spark-preview/audio/159721bacd75.mp3",
+      "bytes": 139533,
+      "type": "audio/mpeg"
+    },
+    "sha256:42530997ec253a4029368dc0b087d8a3e4e39d781e0315854719595529effa2a": {
+      "path": "/story-spark-preview/candidates/the-honeyguides-revenge/page3-1.webp",
+      "bytes": 75178,
+      "type": "image/webp"
+    },
+    "sha256:0d81d4911a5a9550b3d996bb7f4f331a826a7d68d33cc957e52f44c694484556": {
+      "path": "/story-spark-preview/audio/0d81d4911a5a.mp3",
+      "bytes": 159789,
+      "type": "audio/mpeg"
+    },
+    "sha256:efc0f5a950f9143f7bd850505cd7bd27e0753defca47390745afff60065b598c": {
+      "path": "/story-spark-preview/candidates/the-honeyguides-revenge/page4-1.webp",
+      "bytes": 84824,
+      "type": "image/webp"
+    },
+    "sha256:be2850a33bab979f578fe5601f82ac30fd8141a048ef320a5eef9999d8d45ac3": {
+      "path": "/story-spark-preview/audio/be2850a33bab.mp3",
+      "bytes": 158541,
+      "type": "audio/mpeg"
+    },
+    "sha256:600949bc241a9ac03598a6bbc0699172f0a2df5e6078f6671394697bdc9dd5f6": {
+      "path": "/story-spark-preview/candidates/the-honeyguides-revenge/page5-1.webp",
+      "bytes": 75696,
+      "type": "image/webp"
+    },
+    "sha256:6f77b628985bae16eec316cc3590a795fe2e7afea499838dbffada481ada2f4a": {
+      "path": "/story-spark-preview/audio/6f77b628985b.mp3",
+      "bytes": 147789,
+      "type": "audio/mpeg"
+    },
+    "sha256:a7a6d1654d22a124705f7d70367c3c8701af83c03a92ad625517bf2b7c47daac": {
+      "path": "/story-spark-preview/candidates/the-honeyguides-revenge/page6-1.webp",
+      "bytes": 84722,
+      "type": "image/webp"
+    }
+  },
+  "contentHash": "sha256:d7e6bb9b940f411357dd8fc47328a082da5bb135a0a9067d75027608a2088e50"
+}

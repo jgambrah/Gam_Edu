@@ -547,7 +547,7 @@
     "definition": "Matching the real facts; not false or made up."
   },
   "honest": {
-    "definition": "Truthful and fair; not keeping what belongs to someone else."
+    "definition": "Truthful and fair."
   },
   "honestly": {
     "definition": "In a truthful, fair, and open way."
@@ -703,7 +703,7 @@
     "definition": "The state of the atmosphere at a particular place and time from day to day."
   },
   "season": {
-    "definition": "A part of the year with its own kind of weather."
+    "definition": "Dry season: the part of the year when little or no rain falls."
   },
   "heat": {
     "definition": "Energy of warmth that moves from warmer things to cooler things."
@@ -2102,7 +2102,7 @@
     "definition": "Gave a reply to a question."
   },
   "reply": {
-    "definition": "To answer someone in words or writing."
+    "definition": "An answer."
   },
   "replied": {
     "definition": "Past tense of reply: answered what someone said."
@@ -6242,6 +6242,30 @@
   "wits": {
     "definition": "The ability to think quickly and cleverly."
   },
+  "boasted": {
+    "definition": "Spoke too proudly about oneself or one’s things."
+  },
+  "debt": {
+    "definition": "Something that is owed to another person."
+  },
+  "repaid": {
+    "definition": "Given something in return for what was done."
+  },
+  "despair": {
+    "definition": "The feeling that there is no hope."
+  },
+  "custom": {
+    "definition": "The accepted way of doing things in a community."
+  },
+  "justice": {
+    "definition": "Fair treatment according to what is right."
+  },
+  "despise": {
+    "definition": "To look down on someone as worthless."
+  },
+  "griot": {
+    "definition": "A West African musician and storyteller who keeps the history of a people."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -7120,7 +7144,7 @@
     "definition": "An area surrounded by a wall or fence."
   },
   "festival": {
-    "definition": "A special celebration, often held each year."
+    "definition": "A special day or time of celebration."
   },
   "sown": {
     "definition": "Planted by scattering seeds in the soil."
@@ -7961,7 +7985,7 @@
     "definition": "Animals with hair or fur whose mothers feed their babies milk."
   },
   "scales": {
-    "definition": "Small, hard, thin plates that cover the skin of reptiles."
+    "definition": "An instrument for weighing; a sign of fair judgement."
   },
   "boiling": {
     "definition": "Heating water until bubbles rise briskly, which kills germs."
@@ -8491,9 +8515,6 @@
   "feast": {
     "definition": "A large, special meal for many people."
   },
-  "custom": {
-    "definition": "The accepted way of doing things in a community."
-  },
   "scraps": {
     "definition": "Small pieces of food left over."
   },
@@ -8571,6 +8592,99 @@
   },
   "panting": {
     "definition": "Breathing fast after running."
+  },
+  "longed": {
+    "definition": "Wanted very much."
+  },
+  "reward": {
+    "definition": "Something given in return for a good deed."
+  },
+  "snarled": {
+    "definition": "Growled angrily, showing the teeth."
+  },
+  "doubtful": {
+    "definition": "Not sure that something is true."
+  },
+  "muffled": {
+    "definition": "Made quieter and less clear."
+  },
+  "hesitated": {
+    "definition": "Paused before deciding, because of doubt."
+  },
+  "sweepings": {
+    "definition": "Dust and rubbish collected with a broom."
+  },
+  "valued": {
+    "definition": "Thought of as important or precious."
+  },
+  "circled": {
+    "definition": "Moved round and round in the air."
+  },
+  "pity": {
+    "definition": "Sorrow for someone who is suffering."
+  },
+  "waded": {
+    "definition": "Walked through water."
+  },
+  "judge": {
+    "definition": "To decide what is right in a disagreement."
+  },
+  "fit": {
+    "definition": "Suitable; good enough."
+  },
+  "dew": {
+    "definition": "Small drops of water that form on the ground in the night."
+  },
+  "herds": {
+    "definition": "Large groups of cattle."
+  },
+  "sorrow": {
+    "definition": "Deep sadness."
+  },
+  "honeyguide": {
+    "definition": "A small African bird that leads people to wild bees’ nests."
+  },
+  "comb": {
+    "definition": "The wax structure in which bees store honey."
+  },
+  "peering": {
+    "definition": "Looking closely or with difficulty."
+  },
+  "limp": {
+    "definition": "An uneven way of walking because of an injured leg."
+  },
+  "oasis": {
+    "definition": "A place in the desert where there is water and plants grow."
+  },
+  "barley": {
+    "definition": "A grain crop grown for food."
+  },
+  "scribes": {
+    "definition": "People whose work was to write and keep records."
+  },
+  "scrolls": {
+    "definition": "Long rolls of writing material."
+  },
+  "affair": {
+    "definition": "A matter that concerns a particular person."
+  },
+  "jugs": {
+    "definition": "Containers for carrying water."
+  },
+  "bridegroom": {
+    "definition": "A man who is about to be married."
+  },
+  "mocked": {
+    "definition": "Laughed at unkindly."
+  },
+  "wrestler": {
+    "definition": "A person who fights by gripping and throwing an opponent."
+  },
+  "baobab": {
+    "definition": "A large African tree with a very thick trunk; its leaves are used in cooking."
+  },
+  "blacksmith": {
+    "definition": "A person who makes things from iron."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
