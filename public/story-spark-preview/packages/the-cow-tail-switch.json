@@ -1,0 +1,2899 @@
+{
+  "schemaVersion": 1,
+  "storyId": "the-cow-tail-switch",
+  "version": 1,
+  "title": "The Cow-Tail Switch",
+  "ageTiers": [
+    "9-10"
+  ],
+  "language": "en",
+  "narrationLocale": "en-GH",
+  "pages": [
+    {
+      "n": 1,
+      "text": "At the edge of the great forest, near a river, stood a village of rice farmers. In it lived a hunter named Flomo, with his wife and his sons. One morning, Flomo took his spear and went into the forest to hunt. Evening came, and he did not return. The next day came and went, and the next. At first the family watched the path. Then weeks passed, and months. The sons worked on the farm, and life went on. After a time, nobody spoke of Flomo any more. It was as if he had never lived.",
+      "sentences": [
+        "At the edge of the great forest, near a river, stood a village of rice farmers.",
+        "In it lived a hunter named Flomo, with his wife and his sons.",
+        "One morning, Flomo took his spear and went into the forest to hunt.",
+        "Evening came, and he did not return.",
+        "The next day came and went, and the next.",
+        "At first the family watched the path.",
+        "Then weeks passed, and months.",
+        "The sons worked on the farm, and life went on.",
+        "After a time, nobody spoke of Flomo any more.",
+        "It was as if he had never lived."
+      ],
+      "alt": "A hunter with a spear walking into tall forest, watched from a village doorway by his wife and sons.",
+      "image": {
+        "hash": "sha256:f7924dceaf8eca8298bc3237cbb404e7253faef1da448dd4a280810b3806d36d",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:ae95c648bd2ddfa53ac79f3af9eb1a4066a11ffafeeb71d35254019e2643cb83",
+        "durationMs": 41480,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6674
+            ],
+            [
+              6674,
+              11759
+            ],
+            [
+              11759,
+              17241
+            ],
+            [
+              17241,
+              20736
+            ],
+            [
+              20736,
+              24469
+            ],
+            [
+              24469,
+              27726
+            ],
+            [
+              27726,
+              30904
+            ],
+            [
+              30904,
+              34956
+            ],
+            [
+              34956,
+              39087
+            ],
+            [
+              39087,
+              41480
+            ]
+          ],
+          "words": [
+            [
+              0,
+              159
+            ],
+            [
+              159,
+              397
+            ],
+            [
+              397,
+              715
+            ],
+            [
+              715,
+              874
+            ],
+            [
+              874,
+              1112
+            ],
+            [
+              1112,
+              1509
+            ],
+            [
+              1509,
+              2383
+            ],
+            [
+              2383,
+              2701
+            ],
+            [
+              2701,
+              2860
+            ],
+            [
+              2860,
+              3655
+            ],
+            [
+              3655,
+              4052
+            ],
+            [
+              4052,
+              4211
+            ],
+            [
+              4211,
+              4767
+            ],
+            [
+              4767,
+              4926
+            ],
+            [
+              4926,
+              5244
+            ],
+            [
+              5244,
+              6674
+            ],
+            [
+              6674,
+              6833
+            ],
+            [
+              6833,
+              6992
+            ],
+            [
+              6992,
+              7389
+            ],
+            [
+              7389,
+              7548
+            ],
+            [
+              7548,
+              8025
+            ],
+            [
+              8025,
+              8422
+            ],
+            [
+              8422,
+              9217
+            ],
+            [
+              9217,
+              9535
+            ],
+            [
+              9535,
+              9773
+            ],
+            [
+              9773,
+              10091
+            ],
+            [
+              10091,
+              10329
+            ],
+            [
+              10329,
+              10567
+            ],
+            [
+              10567,
+              11759
+            ],
+            [
+              11759,
+              11997
+            ],
+            [
+              11997,
+              12951
+            ],
+            [
+              12951,
+              13348
+            ],
+            [
+              13348,
+              13666
+            ],
+            [
+              13666,
+              13904
+            ],
+            [
+              13904,
+              14301
+            ],
+            [
+              14301,
+              14539
+            ],
+            [
+              14539,
+              14857
+            ],
+            [
+              14857,
+              15175
+            ],
+            [
+              15175,
+              15413
+            ],
+            [
+              15413,
+              15890
+            ],
+            [
+              15890,
+              16049
+            ],
+            [
+              16049,
+              17241
+            ],
+            [
+              17241,
+              17797
+            ],
+            [
+              17797,
+              18512
+            ],
+            [
+              18512,
+              18750
+            ],
+            [
+              18750,
+              18909
+            ],
+            [
+              18909,
+              19147
+            ],
+            [
+              19147,
+              19385
+            ],
+            [
+              19385,
+              20736
+            ],
+            [
+              20736,
+              20974
+            ],
+            [
+              20974,
+              21292
+            ],
+            [
+              21292,
+              21530
+            ],
+            [
+              21530,
+              21848
+            ],
+            [
+              21848,
+              22086
+            ],
+            [
+              22086,
+              22801
+            ],
+            [
+              22801,
+              23039
+            ],
+            [
+              23039,
+              23277
+            ],
+            [
+              23277,
+              24469
+            ],
+            [
+              24469,
+              24628
+            ],
+            [
+              24628,
+              25025
+            ],
+            [
+              25025,
+              25263
+            ],
+            [
+              25263,
+              25740
+            ],
+            [
+              25740,
+              26296
+            ],
+            [
+              26296,
+              26534
+            ],
+            [
+              26534,
+              27726
+            ],
+            [
+              27726,
+              28044
+            ],
+            [
+              28044,
+              28441
+            ],
+            [
+              28441,
+              29315
+            ],
+            [
+              29315,
+              29553
+            ],
+            [
+              29553,
+              30904
+            ],
+            [
+              30904,
+              31142
+            ],
+            [
+              31142,
+              31460
+            ],
+            [
+              31460,
+              31937
+            ],
+            [
+              31937,
+              32096
+            ],
+            [
+              32096,
+              32334
+            ],
+            [
+              32334,
+              33049
+            ],
+            [
+              33049,
+              33287
+            ],
+            [
+              33287,
+              33605
+            ],
+            [
+              33605,
+              33923
+            ],
+            [
+              33923,
+              34956
+            ],
+            [
+              34956,
+              35353
+            ],
+            [
+              35353,
+              35512
+            ],
+            [
+              35512,
+              36227
+            ],
+            [
+              36227,
+              36704
+            ],
+            [
+              36704,
+              37101
+            ],
+            [
+              37101,
+              37260
+            ],
+            [
+              37260,
+              37657
+            ],
+            [
+              37657,
+              37895
+            ],
+            [
+              37895,
+              39087
+            ],
+            [
+              39087,
+              39246
+            ],
+            [
+              39246,
+              39484
+            ],
+            [
+              39484,
+              39643
+            ],
+            [
+              39643,
+              39802
+            ],
+            [
+              39802,
+              39961
+            ],
+            [
+              39961,
+              40199
+            ],
+            [
+              40199,
+              40596
+            ],
+            [
+              40596,
+              41480
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 2,
+      "text": "Some months after Flomo left, his wife gave birth to another son. They named him Saye. He grew, and he learned to crawl, and to walk, and then to talk. One evening, as the family sat eating rice, the child looked round at his brothers and at his mother. Then he said his first full sentence. “Where is my father?” Everyone stopped eating. The brothers looked at one another. “Yes,” said the eldest slowly. “Where is our father? He went to hunt, and he never came back. We should go and look for him.”",
+      "sentences": [
+        "Some months after Flomo left, his wife gave birth to another son.",
+        "They named him Saye.",
+        "He grew, and he learned to crawl, and to walk, and then to talk.",
+        "One evening, as the family sat eating rice, the child looked round at his brothers and at his mother.",
+        "Then he said his first full sentence.",
+        "“Where is my father?” Everyone stopped eating.",
+        "The brothers looked at one another.",
+        "“Yes,” said the eldest slowly.",
+        "“Where is our father?",
+        "He went to hunt, and he never came back.",
+        "We should go and look for him.”"
+      ],
+      "alt": "A small child seated among his older brothers at an evening meal, looking up and asking a question.",
+      "image": {
+        "hash": "sha256:6bbb1c672d30ec688f07894f25e010cd04dc70665f8981fa696d558b63747855",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:985028d7547dfea46403bb1ffb0b867ac3712248eeed9be53ca430983f17b572",
+        "durationMs": 42240,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              5239
+            ],
+            [
+              5239,
+              7319
+            ],
+            [
+              7319,
+              12945
+            ],
+            [
+              12945,
+              20726
+            ],
+            [
+              20726,
+              23885
+            ],
+            [
+              23885,
+              28355
+            ],
+            [
+              28355,
+              31437
+            ],
+            [
+              31437,
+              34365
+            ],
+            [
+              34365,
+              36445
+            ],
+            [
+              36445,
+              39989
+            ],
+            [
+              39989,
+              42240
+            ]
+          ],
+          "words": [
+            [
+              0,
+              308
+            ],
+            [
+              308,
+              770
+            ],
+            [
+              770,
+              1155
+            ],
+            [
+              1155,
+              1540
+            ],
+            [
+              1540,
+              2234
+            ],
+            [
+              2234,
+              2465
+            ],
+            [
+              2465,
+              2773
+            ],
+            [
+              2773,
+              3081
+            ],
+            [
+              3081,
+              3466
+            ],
+            [
+              3466,
+              3620
+            ],
+            [
+              3620,
+              4160
+            ],
+            [
+              4160,
+              5239
+            ],
+            [
+              5239,
+              5547
+            ],
+            [
+              5547,
+              5932
+            ],
+            [
+              5932,
+              6163
+            ],
+            [
+              6163,
+              7319
+            ],
+            [
+              7319,
+              7473
+            ],
+            [
+              7473,
+              8167
+            ],
+            [
+              8167,
+              8398
+            ],
+            [
+              8398,
+              8552
+            ],
+            [
+              8552,
+              9092
+            ],
+            [
+              9092,
+              9246
+            ],
+            [
+              9246,
+              10017
+            ],
+            [
+              10017,
+              10248
+            ],
+            [
+              10248,
+              10402
+            ],
+            [
+              10402,
+              11096
+            ],
+            [
+              11096,
+              11327
+            ],
+            [
+              11327,
+              11635
+            ],
+            [
+              11635,
+              11789
+            ],
+            [
+              11789,
+              12945
+            ],
+            [
+              12945,
+              13176
+            ],
+            [
+              13176,
+              14101
+            ],
+            [
+              14101,
+              14255
+            ],
+            [
+              14255,
+              14486
+            ],
+            [
+              14486,
+              14948
+            ],
+            [
+              14948,
+              15179
+            ],
+            [
+              15179,
+              15641
+            ],
+            [
+              15641,
+              16335
+            ],
+            [
+              16335,
+              16566
+            ],
+            [
+              16566,
+              16951
+            ],
+            [
+              16951,
+              17413
+            ],
+            [
+              17413,
+              17798
+            ],
+            [
+              17798,
+              17952
+            ],
+            [
+              17952,
+              18183
+            ],
+            [
+              18183,
+              18800
+            ],
+            [
+              18800,
+              19031
+            ],
+            [
+              19031,
+              19185
+            ],
+            [
+              19185,
+              19416
+            ],
+            [
+              19416,
+              20726
+            ],
+            [
+              20726,
+              21034
+            ],
+            [
+              21034,
+              21188
+            ],
+            [
+              21188,
+              21496
+            ],
+            [
+              21496,
+              21727
+            ],
+            [
+              21727,
+              22112
+            ],
+            [
+              22112,
+              22420
+            ],
+            [
+              22420,
+              23885
+            ],
+            [
+              23885,
+              24270
+            ],
+            [
+              24270,
+              24424
+            ],
+            [
+              24424,
+              24578
+            ],
+            [
+              24578,
+              25888
+            ],
+            [
+              25888,
+              26505
+            ],
+            [
+              26505,
+              27045
+            ],
+            [
+              27045,
+              28355
+            ],
+            [
+              28355,
+              28586
+            ],
+            [
+              28586,
+              29203
+            ],
+            [
+              29203,
+              29665
+            ],
+            [
+              29665,
+              29819
+            ],
+            [
+              29819,
+              30050
+            ],
+            [
+              30050,
+              31437
+            ],
+            [
+              31437,
+              32054
+            ],
+            [
+              32054,
+              32362
+            ],
+            [
+              32362,
+              32593
+            ],
+            [
+              32593,
+              33055
+            ],
+            [
+              33055,
+              34365
+            ],
+            [
+              34365,
+              34750
+            ],
+            [
+              34750,
+              34904
+            ],
+            [
+              34904,
+              35135
+            ],
+            [
+              35135,
+              36445
+            ],
+            [
+              36445,
+              36599
+            ],
+            [
+              36599,
+              36907
+            ],
+            [
+              36907,
+              37061
+            ],
+            [
+              37061,
+              37755
+            ],
+            [
+              37755,
+              37986
+            ],
+            [
+              37986,
+              38140
+            ],
+            [
+              38140,
+              38525
+            ],
+            [
+              38525,
+              38833
+            ],
+            [
+              38833,
+              39989
+            ],
+            [
+              39989,
+              40143
+            ],
+            [
+              40143,
+              40605
+            ],
+            [
+              40605,
+              40759
+            ],
+            [
+              40759,
+              40990
+            ],
+            [
+              40990,
+              41298
+            ],
+            [
+              41298,
+              41529
+            ],
+            [
+              41529,
+              42240
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "text": "The next morning, the sons set off. The forest was thick, but the first son had the gift of finding a trail, however old. He led them for many days, until they came to a clearing. There on the ground lay their father’s spear, and beside it a scatter of bones. A leopard had killed him long ago. Grass had grown through the shaft of the spear. The brothers stood in silence. Then the second son said, “I know how to put bones together.” He knelt and laid every bone in its right place.",
+      "sentences": [
+        "The next morning, the sons set off.",
+        "The forest was thick, but the first son had the gift of finding a trail, however old.",
+        "He led them for many days, until they came to a clearing.",
+        "There on the ground lay their father’s spear, and beside it a scatter of bones.",
+        "A leopard had killed him long ago.",
+        "Grass had grown through the shaft of the spear.",
+        "The brothers stood in silence.",
+        "Then the second son said, “I know how to put bones together.” He knelt and laid every bone in its right place."
+      ],
+      "alt": "Young men standing in a forest clearing looking down at a rusted spear lying in the grass.",
+      "image": {
+        "hash": "sha256:aa5e1101e19f3e59dca1e4484f2b55f906911835e869fc17fd3c7a1cfb3eaf97",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:7c8000b75c681e544fb827b09155aab676a788520c13491dc5fc703819650df4",
+        "durationMs": 39320,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3368
+            ],
+            [
+              3368,
+              10261
+            ],
+            [
+              10261,
+              15039
+            ],
+            [
+              15039,
+              21228
+            ],
+            [
+              21228,
+              24283
+            ],
+            [
+              24283,
+              28122
+            ],
+            [
+              28122,
+              30943
+            ],
+            [
+              30943,
+              39320
+            ]
+          ],
+          "words": [
+            [
+              0,
+              235
+            ],
+            [
+              235,
+              548
+            ],
+            [
+              548,
+              1488
+            ],
+            [
+              1488,
+              1723
+            ],
+            [
+              1723,
+              2036
+            ],
+            [
+              2036,
+              2271
+            ],
+            [
+              2271,
+              3368
+            ],
+            [
+              3368,
+              3603
+            ],
+            [
+              3603,
+              4073
+            ],
+            [
+              4073,
+              4308
+            ],
+            [
+              4308,
+              5091
+            ],
+            [
+              5091,
+              5326
+            ],
+            [
+              5326,
+              5561
+            ],
+            [
+              5561,
+              5953
+            ],
+            [
+              5953,
+              6188
+            ],
+            [
+              6188,
+              6423
+            ],
+            [
+              6423,
+              6658
+            ],
+            [
+              6658,
+              6971
+            ],
+            [
+              6971,
+              7128
+            ],
+            [
+              7128,
+              7676
+            ],
+            [
+              7676,
+              7833
+            ],
+            [
+              7833,
+              8616
+            ],
+            [
+              8616,
+              9164
+            ],
+            [
+              9164,
+              10261
+            ],
+            [
+              10261,
+              10418
+            ],
+            [
+              10418,
+              10653
+            ],
+            [
+              10653,
+              10966
+            ],
+            [
+              10966,
+              11201
+            ],
+            [
+              11201,
+              11514
+            ],
+            [
+              11514,
+              12219
+            ],
+            [
+              12219,
+              12611
+            ],
+            [
+              12611,
+              12924
+            ],
+            [
+              12924,
+              13237
+            ],
+            [
+              13237,
+              13394
+            ],
+            [
+              13394,
+              13551
+            ],
+            [
+              13551,
+              15039
+            ],
+            [
+              15039,
+              15431
+            ],
+            [
+              15431,
+              15588
+            ],
+            [
+              15588,
+              15823
+            ],
+            [
+              15823,
+              16293
+            ],
+            [
+              16293,
+              16528
+            ],
+            [
+              16528,
+              16920
+            ],
+            [
+              16920,
+              17468
+            ],
+            [
+              17468,
+              18251
+            ],
+            [
+              18251,
+              18486
+            ],
+            [
+              18486,
+              18956
+            ],
+            [
+              18956,
+              19113
+            ],
+            [
+              19113,
+              19270
+            ],
+            [
+              19270,
+              19818
+            ],
+            [
+              19818,
+              19975
+            ],
+            [
+              19975,
+              21228
+            ],
+            [
+              21228,
+              21385
+            ],
+            [
+              21385,
+              21933
+            ],
+            [
+              21933,
+              22168
+            ],
+            [
+              22168,
+              22638
+            ],
+            [
+              22638,
+              22873
+            ],
+            [
+              22873,
+              23186
+            ],
+            [
+              23186,
+              24283
+            ],
+            [
+              24283,
+              24675
+            ],
+            [
+              24675,
+              24910
+            ],
+            [
+              24910,
+              25302
+            ],
+            [
+              25302,
+              25850
+            ],
+            [
+              25850,
+              26085
+            ],
+            [
+              26085,
+              26477
+            ],
+            [
+              26477,
+              26634
+            ],
+            [
+              26634,
+              26869
+            ],
+            [
+              26869,
+              28122
+            ],
+            [
+              28122,
+              28357
+            ],
+            [
+              28357,
+              28984
+            ],
+            [
+              28984,
+              29376
+            ],
+            [
+              29376,
+              29533
+            ],
+            [
+              29533,
+              30943
+            ],
+            [
+              30943,
+              31256
+            ],
+            [
+              31256,
+              31491
+            ],
+            [
+              31491,
+              31961
+            ],
+            [
+              31961,
+              32196
+            ],
+            [
+              32196,
+              32901
+            ],
+            [
+              32901,
+              33058
+            ],
+            [
+              33058,
+              33371
+            ],
+            [
+              33371,
+              33606
+            ],
+            [
+              33606,
+              33763
+            ],
+            [
+              33763,
+              33998
+            ],
+            [
+              33998,
+              34390
+            ],
+            [
+              34390,
+              35878
+            ],
+            [
+              35878,
+              36035
+            ],
+            [
+              36035,
+              36427
+            ],
+            [
+              36427,
+              36662
+            ],
+            [
+              36662,
+              36975
+            ],
+            [
+              36975,
+              37367
+            ],
+            [
+              37367,
+              37680
+            ],
+            [
+              37680,
+              37837
+            ],
+            [
+              37837,
+              38072
+            ],
+            [
+              38072,
+              38464
+            ],
+            [
+              38464,
+              39320
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "text": "“I know how to cover bones with muscle and skin,” said the third son, and he did so. “I know how to put blood into the body,” said the fourth, and he did so. “I can give it breath,” said the fifth, and the chest began to rise and fall. “I can give it the power to move and speak,” said the sixth. Flomo opened his eyes. He sat up and looked at his sons. “Where is my spear?” he asked. They gave it to him, and together they walked home to the village.",
+      "sentences": [
+        "“I know how to cover bones with muscle and skin,” said the third son, and he did so.",
+        "“I know how to put blood into the body,” said the fourth, and he did so.",
+        "“I can give it breath,” said the fifth, and the chest began to rise and fall.",
+        "“I can give it the power to move and speak,” said the sixth.",
+        "Flomo opened his eyes.",
+        "He sat up and looked at his sons.",
+        "“Where is my spear?” he asked.",
+        "They gave it to him, and together they walked home to the village."
+      ],
+      "alt": "Six young men kneeling in a circle in a clearing as their father sits up and opens his eyes.",
+      "image": {
+        "hash": "sha256:a51a7398924e6dc4c0ab7cd8137bbc0abd362f622c32c21ebf44920ad281918f",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:48f33f8df559fa76c4554e0affa229a3d84b9cec5a95a951f2f414d0f2f6ef89",
+        "durationMs": 33720,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6041
+            ],
+            [
+              6041,
+              11365
+            ],
+            [
+              11365,
+              17047
+            ],
+            [
+              17047,
+              21435
+            ],
+            [
+              21435,
+              23519
+            ],
+            [
+              23519,
+              26108
+            ],
+            [
+              26108,
+              29199
+            ],
+            [
+              29199,
+              33720
+            ]
+          ],
+          "words": [
+            [
+              0,
+              144
+            ],
+            [
+              144,
+              432
+            ],
+            [
+              432,
+              648
+            ],
+            [
+              648,
+              792
+            ],
+            [
+              792,
+              1151
+            ],
+            [
+              1151,
+              1510
+            ],
+            [
+              1510,
+              1798
+            ],
+            [
+              1798,
+              2229
+            ],
+            [
+              2229,
+              2445
+            ],
+            [
+              2445,
+              3092
+            ],
+            [
+              3092,
+              3380
+            ],
+            [
+              3380,
+              3596
+            ],
+            [
+              3596,
+              3955
+            ],
+            [
+              3955,
+              4530
+            ],
+            [
+              4530,
+              4746
+            ],
+            [
+              4746,
+              4890
+            ],
+            [
+              4890,
+              5106
+            ],
+            [
+              5106,
+              6041
+            ],
+            [
+              6041,
+              6185
+            ],
+            [
+              6185,
+              6473
+            ],
+            [
+              6473,
+              6689
+            ],
+            [
+              6689,
+              6833
+            ],
+            [
+              6833,
+              7049
+            ],
+            [
+              7049,
+              7408
+            ],
+            [
+              7408,
+              7696
+            ],
+            [
+              7696,
+              7912
+            ],
+            [
+              7912,
+              8559
+            ],
+            [
+              8559,
+              8847
+            ],
+            [
+              8847,
+              9063
+            ],
+            [
+              9063,
+              9854
+            ],
+            [
+              9854,
+              10070
+            ],
+            [
+              10070,
+              10214
+            ],
+            [
+              10214,
+              10430
+            ],
+            [
+              10430,
+              11365
+            ],
+            [
+              11365,
+              11509
+            ],
+            [
+              11509,
+              11725
+            ],
+            [
+              11725,
+              12013
+            ],
+            [
+              12013,
+              12157
+            ],
+            [
+              12157,
+              12948
+            ],
+            [
+              12948,
+              13236
+            ],
+            [
+              13236,
+              13452
+            ],
+            [
+              13452,
+              14171
+            ],
+            [
+              14171,
+              14387
+            ],
+            [
+              14387,
+              14603
+            ],
+            [
+              14603,
+              14962
+            ],
+            [
+              14962,
+              15321
+            ],
+            [
+              15321,
+              15465
+            ],
+            [
+              15465,
+              15753
+            ],
+            [
+              15753,
+              15969
+            ],
+            [
+              15969,
+              17047
+            ],
+            [
+              17047,
+              17191
+            ],
+            [
+              17191,
+              17407
+            ],
+            [
+              17407,
+              17695
+            ],
+            [
+              17695,
+              17839
+            ],
+            [
+              17839,
+              18055
+            ],
+            [
+              18055,
+              18414
+            ],
+            [
+              18414,
+              18558
+            ],
+            [
+              18558,
+              18846
+            ],
+            [
+              18846,
+              19062
+            ],
+            [
+              19062,
+              19781
+            ],
+            [
+              19781,
+              20069
+            ],
+            [
+              20069,
+              20285
+            ],
+            [
+              20285,
+              21435
+            ],
+            [
+              21435,
+              21794
+            ],
+            [
+              21794,
+              22225
+            ],
+            [
+              22225,
+              22441
+            ],
+            [
+              22441,
+              23519
+            ],
+            [
+              23519,
+              23663
+            ],
+            [
+              23663,
+              23879
+            ],
+            [
+              23879,
+              24023
+            ],
+            [
+              24023,
+              24239
+            ],
+            [
+              24239,
+              24670
+            ],
+            [
+              24670,
+              24814
+            ],
+            [
+              24814,
+              25030
+            ],
+            [
+              25030,
+              26108
+            ],
+            [
+              26108,
+              26467
+            ],
+            [
+              26467,
+              26611
+            ],
+            [
+              26611,
+              26755
+            ],
+            [
+              26755,
+              27905
+            ],
+            [
+              27905,
+              28049
+            ],
+            [
+              28049,
+              29199
+            ],
+            [
+              29199,
+              29487
+            ],
+            [
+              29487,
+              29775
+            ],
+            [
+              29775,
+              29919
+            ],
+            [
+              29919,
+              30063
+            ],
+            [
+              30063,
+              30638
+            ],
+            [
+              30638,
+              30854
+            ],
+            [
+              30854,
+              31429
+            ],
+            [
+              31429,
+              31717
+            ],
+            [
+              31717,
+              32148
+            ],
+            [
+              32148,
+              32436
+            ],
+            [
+              32436,
+              32580
+            ],
+            [
+              32580,
+              32796
+            ],
+            [
+              32796,
+              33720
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "text": "There was great joy. Flomo rested for some days. Then he killed a cow for a feast and invited the whole village. From the cow’s tail he made a switch, a kind of fly-whisk, and decorated it with beads and cowrie shells. It was the most beautiful that anyone had seen. At the feast he stood up. “I shall give this switch to the son who did the most to bring me home,” he said. At once the brothers began to argue. “I found the trail!” “I joined the bones!” “I gave him breath!”",
+      "sentences": [
+        "There was great joy.",
+        "Flomo rested for some days.",
+        "Then he killed a cow for a feast and invited the whole village.",
+        "From the cow’s tail he made a switch, a kind of fly-whisk, and decorated it with beads and cowrie shells.",
+        "It was the most beautiful that anyone had seen.",
+        "At the feast he stood up.",
+        "“I shall give this switch to the son who did the most to bring me home,” he said.",
+        "At once the brothers began to argue.",
+        "“I found the trail!” “I joined the bones!” “I gave him breath!”"
+      ],
+      "alt": "A father holding up a beaded cow-tail switch before a feasting crowd while his sons argue.",
+      "image": {
+        "hash": "sha256:a45d4445f3b8a2534ba81ee520b725bd25473c7e6b2195b9274ee1751cb1bcd1",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:4a283e65bdf6f6dabb4ebedbc2aa242d74eb5312f510d04d8cc524bfbcc2bf48",
+        "durationMs": 41720,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              2267
+            ],
+            [
+              2267,
+              5038
+            ],
+            [
+              5038,
+              10329
+            ],
+            [
+              10329,
+              19061
+            ],
+            [
+              19061,
+              23175
+            ],
+            [
+              23175,
+              25694
+            ],
+            [
+              25694,
+              32160
+            ],
+            [
+              32160,
+              35519
+            ],
+            [
+              35519,
+              41720
+            ]
+          ],
+          "words": [
+            [
+              0,
+              420
+            ],
+            [
+              420,
+              672
+            ],
+            [
+              672,
+              1092
+            ],
+            [
+              1092,
+              2267
+            ],
+            [
+              2267,
+              2687
+            ],
+            [
+              2687,
+              3191
+            ],
+            [
+              3191,
+              3443
+            ],
+            [
+              3443,
+              3779
+            ],
+            [
+              3779,
+              5038
+            ],
+            [
+              5038,
+              5374
+            ],
+            [
+              5374,
+              5542
+            ],
+            [
+              5542,
+              6046
+            ],
+            [
+              6046,
+              6214
+            ],
+            [
+              6214,
+              6466
+            ],
+            [
+              6466,
+              6718
+            ],
+            [
+              6718,
+              6886
+            ],
+            [
+              6886,
+              7306
+            ],
+            [
+              7306,
+              7558
+            ],
+            [
+              7558,
+              8146
+            ],
+            [
+              8146,
+              8398
+            ],
+            [
+              8398,
+              8818
+            ],
+            [
+              8818,
+              10329
+            ],
+            [
+              10329,
+              10665
+            ],
+            [
+              10665,
+              10917
+            ],
+            [
+              10917,
+              11253
+            ],
+            [
+              11253,
+              11589
+            ],
+            [
+              11589,
+              11757
+            ],
+            [
+              11757,
+              12093
+            ],
+            [
+              12093,
+              12261
+            ],
+            [
+              12261,
+              13184
+            ],
+            [
+              13184,
+              13352
+            ],
+            [
+              13352,
+              13688
+            ],
+            [
+              13688,
+              13856
+            ],
+            [
+              13856,
+              14947
+            ],
+            [
+              14947,
+              15199
+            ],
+            [
+              15199,
+              15954
+            ],
+            [
+              15954,
+              16122
+            ],
+            [
+              16122,
+              16458
+            ],
+            [
+              16458,
+              16878
+            ],
+            [
+              16878,
+              17130
+            ],
+            [
+              17130,
+              17634
+            ],
+            [
+              17634,
+              19061
+            ],
+            [
+              19061,
+              19229
+            ],
+            [
+              19229,
+              19481
+            ],
+            [
+              19481,
+              19733
+            ],
+            [
+              19733,
+              20069
+            ],
+            [
+              20069,
+              20824
+            ],
+            [
+              20824,
+              21160
+            ],
+            [
+              21160,
+              21664
+            ],
+            [
+              21664,
+              21916
+            ],
+            [
+              21916,
+              23175
+            ],
+            [
+              23175,
+              23343
+            ],
+            [
+              23343,
+              23595
+            ],
+            [
+              23595,
+              24015
+            ],
+            [
+              24015,
+              24183
+            ],
+            [
+              24183,
+              24603
+            ],
+            [
+              24603,
+              25694
+            ],
+            [
+              25694,
+              25862
+            ],
+            [
+              25862,
+              26282
+            ],
+            [
+              26282,
+              26618
+            ],
+            [
+              26618,
+              26954
+            ],
+            [
+              26954,
+              27458
+            ],
+            [
+              27458,
+              27626
+            ],
+            [
+              27626,
+              27878
+            ],
+            [
+              27878,
+              28130
+            ],
+            [
+              28130,
+              28382
+            ],
+            [
+              28382,
+              28634
+            ],
+            [
+              28634,
+              28886
+            ],
+            [
+              28886,
+              29222
+            ],
+            [
+              29222,
+              29390
+            ],
+            [
+              29390,
+              29810
+            ],
+            [
+              29810,
+              29978
+            ],
+            [
+              29978,
+              30733
+            ],
+            [
+              30733,
+              30901
+            ],
+            [
+              30901,
+              32160
+            ],
+            [
+              32160,
+              32328
+            ],
+            [
+              32328,
+              32664
+            ],
+            [
+              32664,
+              32916
+            ],
+            [
+              32916,
+              33588
+            ],
+            [
+              33588,
+              34008
+            ],
+            [
+              34008,
+              34176
+            ],
+            [
+              34176,
+              35519
+            ],
+            [
+              35519,
+              35687
+            ],
+            [
+              35687,
+              36107
+            ],
+            [
+              36107,
+              36359
+            ],
+            [
+              36359,
+              37702
+            ],
+            [
+              37702,
+              37870
+            ],
+            [
+              37870,
+              38374
+            ],
+            [
+              38374,
+              38626
+            ],
+            [
+              38626,
+              39969
+            ],
+            [
+              39969,
+              40137
+            ],
+            [
+              40137,
+              40473
+            ],
+            [
+              40473,
+              40725
+            ],
+            [
+              40725,
+              41720
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "text": "Flomo listened until they were quiet. Then he walked past all of them and bent down to his youngest child. He put the cow-tail switch into Saye’s small hands. “Each of you has a great gift,” he said to the others, “and I thank you. But for a long time you had those gifts and did nothing, because you had forgotten me. This child asked, Where is my father? Without that question, I would be bones in the forest still.” The people nodded. For they have a saying: a person is not truly dead until he is forgotten.",
+      "sentences": [
+        "Flomo listened until they were quiet.",
+        "Then he walked past all of them and bent down to his youngest child.",
+        "He put the cow-tail switch into Saye’s small hands.",
+        "“Each of you has a great gift,” he said to the others, “and I thank you.",
+        "But for a long time you had those gifts and did nothing, because you had forgotten me.",
+        "This child asked, Where is my father?",
+        "Without that question, I would be bones in the forest still.” The people nodded.",
+        "For they have a saying: a person is not truly dead until he is forgotten."
+      ],
+      "alt": "A father bending to place a decorated switch in the hands of a small boy, with the village looking on.",
+      "image": {
+        "hash": "sha256:847377465427e8c6c126a958e7d36c2d53581ad082c2737bf7e8a1557d6495f9",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:762d32301c4abcf04080bac25a089e9bf3ed4ca9ff6de772f6b78b10af03a16e",
+        "durationMs": 41960,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3370
+            ],
+            [
+              3370,
+              8585
+            ],
+            [
+              8585,
+              12677
+            ],
+            [
+              12677,
+              18613
+            ],
+            [
+              18613,
+              25435
+            ],
+            [
+              25435,
+              29044
+            ],
+            [
+              29044,
+              36344
+            ],
+            [
+              36344,
+              41960
+            ]
+          ],
+          "words": [
+            [
+              0,
+              401
+            ],
+            [
+              401,
+              1043
+            ],
+            [
+              1043,
+              1444
+            ],
+            [
+              1444,
+              1765
+            ],
+            [
+              1765,
+              2086
+            ],
+            [
+              2086,
+              3370
+            ],
+            [
+              3370,
+              3691
+            ],
+            [
+              3691,
+              3851
+            ],
+            [
+              3851,
+              4332
+            ],
+            [
+              4332,
+              4653
+            ],
+            [
+              4653,
+              4894
+            ],
+            [
+              4894,
+              5054
+            ],
+            [
+              5054,
+              5375
+            ],
+            [
+              5375,
+              5616
+            ],
+            [
+              5616,
+              5937
+            ],
+            [
+              5937,
+              6258
+            ],
+            [
+              6258,
+              6418
+            ],
+            [
+              6418,
+              6659
+            ],
+            [
+              6659,
+              7301
+            ],
+            [
+              7301,
+              8585
+            ],
+            [
+              8585,
+              8745
+            ],
+            [
+              8745,
+              8986
+            ],
+            [
+              8986,
+              9227
+            ],
+            [
+              9227,
+              9789
+            ],
+            [
+              9789,
+              10270
+            ],
+            [
+              10270,
+              10591
+            ],
+            [
+              10591,
+              10992
+            ],
+            [
+              10992,
+              11393
+            ],
+            [
+              11393,
+              12677
+            ],
+            [
+              12677,
+              12998
+            ],
+            [
+              12998,
+              13158
+            ],
+            [
+              13158,
+              13399
+            ],
+            [
+              13399,
+              13640
+            ],
+            [
+              13640,
+              13800
+            ],
+            [
+              13800,
+              14201
+            ],
+            [
+              14201,
+              14923
+            ],
+            [
+              14923,
+              15083
+            ],
+            [
+              15083,
+              15404
+            ],
+            [
+              15404,
+              15564
+            ],
+            [
+              15564,
+              15805
+            ],
+            [
+              15805,
+              16688
+            ],
+            [
+              16688,
+              16929
+            ],
+            [
+              16929,
+              17089
+            ],
+            [
+              17089,
+              17490
+            ],
+            [
+              17490,
+              18613
+            ],
+            [
+              18613,
+              18854
+            ],
+            [
+              18854,
+              19095
+            ],
+            [
+              19095,
+              19255
+            ],
+            [
+              19255,
+              19576
+            ],
+            [
+              19576,
+              19897
+            ],
+            [
+              19897,
+              20138
+            ],
+            [
+              20138,
+              20379
+            ],
+            [
+              20379,
+              20780
+            ],
+            [
+              20780,
+              21181
+            ],
+            [
+              21181,
+              21422
+            ],
+            [
+              21422,
+              21663
+            ],
+            [
+              21663,
+              22626
+            ],
+            [
+              22626,
+              23188
+            ],
+            [
+              23188,
+              23429
+            ],
+            [
+              23429,
+              23670
+            ],
+            [
+              23670,
+              24392
+            ],
+            [
+              24392,
+              25435
+            ],
+            [
+              25435,
+              25756
+            ],
+            [
+              25756,
+              26157
+            ],
+            [
+              26157,
+              26959
+            ],
+            [
+              26959,
+              27360
+            ],
+            [
+              27360,
+              27520
+            ],
+            [
+              27520,
+              27680
+            ],
+            [
+              27680,
+              29044
+            ],
+            [
+              29044,
+              29606
+            ],
+            [
+              29606,
+              29927
+            ],
+            [
+              29927,
+              30970
+            ],
+            [
+              30970,
+              31130
+            ],
+            [
+              31130,
+              31531
+            ],
+            [
+              31531,
+              31691
+            ],
+            [
+              31691,
+              32092
+            ],
+            [
+              32092,
+              32252
+            ],
+            [
+              32252,
+              32493
+            ],
+            [
+              32493,
+              32974
+            ],
+            [
+              32974,
+              34258
+            ],
+            [
+              34258,
+              34499
+            ],
+            [
+              34499,
+              34980
+            ],
+            [
+              34980,
+              36344
+            ],
+            [
+              36344,
+              36585
+            ],
+            [
+              36585,
+              36906
+            ],
+            [
+              36906,
+              37227
+            ],
+            [
+              37227,
+              37387
+            ],
+            [
+              37387,
+              38270
+            ],
+            [
+              38270,
+              38430
+            ],
+            [
+              38430,
+              38911
+            ],
+            [
+              38911,
+              39071
+            ],
+            [
+              39071,
+              39312
+            ],
+            [
+              39312,
+              39713
+            ],
+            [
+              39713,
+              40034
+            ],
+            [
+              40034,
+              40435
+            ],
+            [
+              40435,
+              40595
+            ],
+            [
+              40595,
+              40755
+            ],
+            [
+              40755,
+              41960
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "activities": [
+    {
+      "id": "cs-c1",
+      "type": "comprehension",
+      "afterPage": 1,
+      "question": "What happened after Flomo failed to return?",
+      "options": [
+        "His sons searched for him at once",
+        "After a time, nobody spoke of him any more",
+        "The village moved away"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "cs-c2",
+      "type": "comprehension",
+      "afterPage": 2,
+      "question": "What were Saye’s first words?",
+      "options": [
+        "“Where is my father?”",
+        "“I am hungry.”",
+        "“Give me the spear.”"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "cs-c3",
+      "type": "comprehension",
+      "afterPage": 5,
+      "question": "What did Flomo promise to do with the cow-tail switch?",
+      "options": [
+        "Sell it at the market",
+        "Keep it for himself",
+        "Give it to the son who had done the most to bring him home"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "cs-c4",
+      "type": "comprehension",
+      "afterPage": 6,
+      "question": "Apply it: A community group has skilled members, but nothing gets done until one person asks, “Why has the borehole been broken for a year?” According to the tale, what was that person’s contribution?",
+      "options": [
+        "None, because she repaired nothing",
+        "The most important one, because her question started the work",
+        "A small one, because talking is easy"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "cs-s1",
+      "type": "sequencing",
+      "prompt": "Put the events of the story in order.",
+      "items": [
+        "Flomo goes hunting and does not return",
+        "Saye asks, “Where is my father?”",
+        "The first son finds the trail to the clearing",
+        "The brothers bring their father back to life",
+        "Flomo gives the cow-tail switch to Saye"
+      ]
+    },
+    {
+      "id": "cs-voc",
+      "type": "vocabulary",
+      "afterPage": 5,
+      "word": "switch",
+      "definition": "A fly-whisk made from an animal’s tail, carried as a sign of honour.",
+      "distractors": [
+        "A button that turns on a light",
+        "A path through the forest"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "word": "trail",
+      "definition": "The marks left by someone who has passed.",
+      "pages": [
+        3,
+        5
+      ]
+    },
+    {
+      "word": "clearing",
+      "definition": "An open space in a forest.",
+      "pages": [
+        3
+      ]
+    },
+    {
+      "word": "feast",
+      "definition": "A large, special meal for many people.",
+      "pages": [
+        5
+      ]
+    },
+    {
+      "word": "switch",
+      "definition": "A fly-whisk made from an animal’s tail, carried as a sign of honour.",
+      "pages": [
+        5,
+        6
+      ]
+    },
+    {
+      "word": "cowrie",
+      "definition": "Cowrie shells: small, shiny sea shells once used as money and decoration.",
+      "pages": [
+        5
+      ]
+    },
+    {
+      "word": "forgotten",
+      "definition": "No longer remembered.",
+      "pages": [
+        6
+      ]
+    }
+  ],
+  "assets": {
+    "sha256:ae95c648bd2ddfa53ac79f3af9eb1a4066a11ffafeeb71d35254019e2643cb83": {
+      "path": "/story-spark-preview/audio/ae95c648bd2d.mp3",
+      "bytes": 166413,
+      "type": "audio/mpeg"
+    },
+    "sha256:f7924dceaf8eca8298bc3237cbb404e7253faef1da448dd4a280810b3806d36d": {
+      "path": "/story-spark-preview/candidates/the-cow-tail-switch/page1-1.webp",
+      "bytes": 88900,
+      "type": "image/webp"
+    },
+    "sha256:985028d7547dfea46403bb1ffb0b867ac3712248eeed9be53ca430983f17b572": {
+      "path": "/story-spark-preview/audio/985028d7547d.mp3",
+      "bytes": 169389,
+      "type": "audio/mpeg"
+    },
+    "sha256:6bbb1c672d30ec688f07894f25e010cd04dc70665f8981fa696d558b63747855": {
+      "path": "/story-spark-preview/candidates/the-cow-tail-switch/page2-1.webp",
+      "bytes": 74078,
+      "type": "image/webp"
+    },
+    "sha256:7c8000b75c681e544fb827b09155aab676a788520c13491dc5fc703819650df4": {
+      "path": "/story-spark-preview/audio/7c8000b75c68.mp3",
+      "bytes": 157773,
+      "type": "audio/mpeg"
+    },
+    "sha256:aa5e1101e19f3e59dca1e4484f2b55f906911835e869fc17fd3c7a1cfb3eaf97": {
+      "path": "/story-spark-preview/candidates/the-cow-tail-switch/page3-1.webp",
+      "bytes": 88452,
+      "type": "image/webp"
+    },
+    "sha256:48f33f8df559fa76c4554e0affa229a3d84b9cec5a95a951f2f414d0f2f6ef89": {
+      "path": "/story-spark-preview/audio/48f33f8df559.mp3",
+      "bytes": 135309,
+      "type": "audio/mpeg"
+    },
+    "sha256:a51a7398924e6dc4c0ab7cd8137bbc0abd362f622c32c21ebf44920ad281918f": {
+      "path": "/story-spark-preview/candidates/the-cow-tail-switch/page4-1.webp",
+      "bytes": 81680,
+      "type": "image/webp"
+    },
+    "sha256:4a283e65bdf6f6dabb4ebedbc2aa242d74eb5312f510d04d8cc524bfbcc2bf48": {
+      "path": "/story-spark-preview/audio/4a283e65bdf6.mp3",
+      "bytes": 167373,
+      "type": "audio/mpeg"
+    },
+    "sha256:a45d4445f3b8a2534ba81ee520b725bd25473c7e6b2195b9274ee1751cb1bcd1": {
+      "path": "/story-spark-preview/candidates/the-cow-tail-switch/page5-1.webp",
+      "bytes": 85882,
+      "type": "image/webp"
+    },
+    "sha256:762d32301c4abcf04080bac25a089e9bf3ed4ca9ff6de772f6b78b10af03a16e": {
+      "path": "/story-spark-preview/audio/762d32301c4a.mp3",
+      "bytes": 168333,
+      "type": "audio/mpeg"
+    },
+    "sha256:847377465427e8c6c126a958e7d36c2d53581ad082c2737bf7e8a1557d6495f9": {
+      "path": "/story-spark-preview/candidates/the-cow-tail-switch/page6-1.webp",
+      "bytes": 74686,
+      "type": "image/webp"
+    }
+  },
+  "contentHash": "sha256:16928ee0c9c78e2055372d76bfb9a07209b288e07eda233e940515623413ad9c"
+}

@@ -779,7 +779,7 @@
     "definition": "Moving ridges of water rolling across the sea or a lake."
   },
   "coast": {
-    "definition": "The land right beside the sea."
+    "definition": "The land beside the sea."
   },
   "coastal": {
     "definition": "Located on or near the coast by the sea."
@@ -830,7 +830,7 @@
     "definition": "The work of growing crops and raising animals on the land."
   },
   "harvest": {
-    "definition": "The time when the crops are gathered."
+    "definition": "The gathering of crops when they are ripe; also the crops gathered."
   },
   "garden": {
     "definition": "A plot of land near a home or school where flowers, vegetables, or herbs are grown."
@@ -4569,7 +4569,7 @@
     "definition": "Written down in a list."
   },
   "council": {
-    "definition": "A group of people who meet to make decisions."
+    "definition": "A meeting of people who come together to discuss and decide."
   },
   "row": {
     "definition": "A neat line of things, people, or seats side by side; or to move a boat with paddles."
@@ -5201,7 +5201,7 @@
     "definition": "The very first one made, not a copy; fresh and creative."
   },
   "partner": {
-    "definition": "A person you work or play closely with as a pair."
+    "definition": "Someone who shares work and its rewards with another."
   },
   "teamwork": {
     "definition": "Working together helpfully and respectfully as a group to achieve a goal."
@@ -5606,7 +5606,7 @@
     "definition": "The financial gain when total selling price exceeds total cost price."
   },
   "trust": {
-    "definition": "Confidence that someone is honest and reliable."
+    "definition": "The belief that someone will not harm or cheat you."
   },
   "blocked": {
     "definition": "Stopped from moving or passing through."
@@ -5729,7 +5729,7 @@
     "definition": "Feeling angry or annoyed."
   },
   "wisdom": {
-    "definition": "Good judgement and understanding about how to live well."
+    "definition": "Good sense and understanding that come from knowledge and experience."
   },
   "classmate": {
     "definition": "A child who is in the same class as you."
@@ -6105,7 +6105,7 @@
     "definition": "Fraudulent attempts via fake links or calls to steal credentials or money."
   },
   "switch": {
-    "definition": "A part that opens or closes a gap in a circuit."
+    "definition": "A fly-whisk made from an animal’s tail, carried as a sign of honour."
   },
   "thermoplastic": {
     "definition": "A plastic polymer that softens when heated and hardens when cooled, allowing reshaping."
@@ -6198,7 +6198,7 @@
     "definition": "The written rules that say how a state or group is to be governed."
   },
   "famine": {
-    "definition": "A time when there is very little food and many people go hungry."
+    "definition": "A time when there is very little food and many go hungry."
   },
   "lagoon": {
     "definition": "A stretch of shallow water separated from the sea by a strip of land."
@@ -6229,6 +6229,18 @@
   },
   "alliance": {
     "definition": "An agreement between states or groups to help one another."
+  },
+  "patient": {
+    "definition": "Able to wait calmly without becoming angry or giving up."
+  },
+  "grief": {
+    "definition": "Deep sadness, especially after a loss."
+  },
+  "respect": {
+    "definition": "Treating someone as important and deserving of good treatment."
+  },
+  "wits": {
+    "definition": "The ability to think quickly and cleverly."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6769,7 +6781,7 @@
     "definition": "A living animal or being."
   },
   "advice": {
-    "definition": "Helpful ideas about what to do."
+    "definition": "An opinion about what someone should do."
   },
   "lent": {
     "definition": "Let someone use something for a while."
@@ -6902,9 +6914,6 @@
   },
   "hollow": {
     "definition": "An empty space inside something, like a tree trunk."
-  },
-  "respect": {
-    "definition": "To treat someone or something with care and honour."
   },
   "kente": {
     "definition": "A colourful woven cloth from Ghana. (Traditional Ghanaian hand-woven strip cloth.)",
@@ -7468,7 +7477,7 @@
     "definition": "Large pictures painted on walls."
   },
   "generous": {
-    "definition": "Willing to share and give."
+    "definition": "Willing to give and share."
   },
   "zongo": {
     "definition": "A neighbourhood in many Ghanaian towns that grew from traders and settlers from many places, often with a large Muslim population. (Historic multi-ethnic neighbourhood in Ghanaian towns originally settled by northern and West African traders.)",
@@ -7837,7 +7846,7 @@
     "definition": "A medical condition in which a person’s bones grow differently, making them much shorter than average."
   },
   "ashamed": {
-    "definition": "Feeling sorry and uncomfortable about something wrong you did."
+    "definition": "Feeling bad because of something one has done."
   },
   "interrupting": {
     "definition": "Speaking over someone before they have finished talking."
@@ -8472,6 +8481,96 @@
   },
   "border": {
     "definition": "The line that divides one country from another."
+  },
+  "silk-cotton": {
+    "definition": "Silk-cotton tree: a very tall forest tree with a straight trunk."
+  },
+  "muttering": {
+    "definition": "Speaking in a low, complaining voice."
+  },
+  "feast": {
+    "definition": "A large, special meal for many people."
+  },
+  "custom": {
+    "definition": "The accepted way of doing things in a community."
+  },
+  "scraps": {
+    "definition": "Small pieces of food left over."
+  },
+  "healer": {
+    "definition": "A person who treats the sick and gives advice."
+  },
+  "greedy": {
+    "definition": "Wanting more than one’s fair share."
+  },
+  "stepson": {
+    "definition": "The son of one’s husband or wife from an earlier marriage."
+  },
+  "whisker": {
+    "definition": "One of the long, stiff hairs on an animal’s face."
+  },
+  "mane": {
+    "definition": "The long hair round a lion’s head and neck."
+  },
+  "trusted": {
+    "definition": "Believed that someone would do no harm."
+  },
+  "tracking": {
+    "definition": "Following the marks left by an animal."
+  },
+  "springbok": {
+    "definition": "A small, fast antelope of southern Africa."
+  },
+  "tamed": {
+    "definition": "Made gentle and used to living with people."
+  },
+  "shameful": {
+    "definition": "Deserving blame; bringing dishonour."
+  },
+  "burrow": {
+    "definition": "A hole in the ground where an animal lives."
+  },
+  "vines": {
+    "definition": "Long, climbing plants with tough stems."
+  },
+  "tug": {
+    "definition": "A sudden, hard pull."
+  },
+  "trembling": {
+    "definition": "Shaking, from tiredness or fear."
+  },
+  "giants": {
+    "definition": "Very large and powerful creatures."
+  },
+  "trail": {
+    "definition": "The marks left by someone who has passed."
+  },
+  "clearing": {
+    "definition": "An open space in a forest."
+  },
+  "cowrie": {
+    "definition": "Cowrie shells: small, shiny sea shells once used as money and decoration."
+  },
+  "forgotten": {
+    "definition": "No longer remembered."
+  },
+  "sultan": {
+    "definition": "A ruler."
+  },
+  "journey": {
+    "definition": "A trip from one place to another."
+  },
+  "sowed": {
+    "definition": "Put seed in the ground to grow."
+  },
+  "strolling": {
+    "definition": "Walking slowly and lazily."
+  },
+  "furious": {
+    "definition": "Extremely angry."
+  },
+  "panting": {
+    "definition": "Breathing fast after running."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",

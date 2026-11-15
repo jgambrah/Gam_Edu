@@ -1,0 +1,2892 @@
+{
+  "schemaVersion": 1,
+  "storyId": "the-lions-whisker",
+  "version": 1,
+  "title": "The Lion’s Whisker",
+  "ageTiers": [
+    "9-10"
+  ],
+  "language": "en",
+  "narrationLocale": "en-GH",
+  "pages": [
+    {
+      "n": 1,
+      "text": "In the high hills of Ethiopia, there lived a woman named Almaz. She married a man whose first wife had died and who had a small son called Dawit. Almaz had always wanted a child, and she was ready to love the boy with her whole heart. She cooked his favourite food. She sewed him a new shirt. She tried to hold his hand. But Dawit would not eat, would not wear the shirt, and pulled his hand away. “You are not my mother,” he said, and ran out to sit alone among the goats.",
+      "sentences": [
+        "In the high hills of Ethiopia, there lived a woman named Almaz.",
+        "She married a man whose first wife had died and who had a small son called Dawit.",
+        "Almaz had always wanted a child, and she was ready to love the boy with her whole heart.",
+        "She cooked his favourite food.",
+        "She sewed him a new shirt.",
+        "She tried to hold his hand.",
+        "But Dawit would not eat, would not wear the shirt, and pulled his hand away.",
+        "“You are not my mother,” he said, and ran out to sit alone among the goats."
+      ],
+      "alt": "A woman in a white dress holding out a bowl of food to a small boy who is turning away, on a hillside with goats.",
+      "image": {
+        "hash": "sha256:a90deedcc9af14a6c77507bc103c413623f8c5c350fab55de68efb24fc93a435",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:8504c43521018f7e0c1fcfca5ef104615f8361287d2600aa50d55fabcd6f4df4",
+        "durationMs": 36840,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              5131
+            ],
+            [
+              5131,
+              11029
+            ],
+            [
+              11029,
+              17617
+            ],
+            [
+              17617,
+              20375
+            ],
+            [
+              20375,
+              22826
+            ],
+            [
+              22826,
+              25277
+            ],
+            [
+              25277,
+              31406
+            ],
+            [
+              31406,
+              36840
+            ]
+          ],
+          "words": [
+            [
+              0,
+              153
+            ],
+            [
+              153,
+              383
+            ],
+            [
+              383,
+              689
+            ],
+            [
+              689,
+              1072
+            ],
+            [
+              1072,
+              1225
+            ],
+            [
+              1225,
+              2221
+            ],
+            [
+              2221,
+              2604
+            ],
+            [
+              2604,
+              2987
+            ],
+            [
+              2987,
+              3140
+            ],
+            [
+              3140,
+              3523
+            ],
+            [
+              3523,
+              3906
+            ],
+            [
+              3906,
+              5131
+            ],
+            [
+              5131,
+              5361
+            ],
+            [
+              5361,
+              5897
+            ],
+            [
+              5897,
+              6050
+            ],
+            [
+              6050,
+              6280
+            ],
+            [
+              6280,
+              6663
+            ],
+            [
+              6663,
+              7046
+            ],
+            [
+              7046,
+              7352
+            ],
+            [
+              7352,
+              7582
+            ],
+            [
+              7582,
+              7888
+            ],
+            [
+              7888,
+              8118
+            ],
+            [
+              8118,
+              8348
+            ],
+            [
+              8348,
+              8578
+            ],
+            [
+              8578,
+              8731
+            ],
+            [
+              8731,
+              9114
+            ],
+            [
+              9114,
+              9344
+            ],
+            [
+              9344,
+              9804
+            ],
+            [
+              9804,
+              11029
+            ],
+            [
+              11029,
+              11412
+            ],
+            [
+              11412,
+              11642
+            ],
+            [
+              11642,
+              12102
+            ],
+            [
+              12102,
+              12562
+            ],
+            [
+              12562,
+              12715
+            ],
+            [
+              12715,
+              13481
+            ],
+            [
+              13481,
+              13711
+            ],
+            [
+              13711,
+              13941
+            ],
+            [
+              13941,
+              14171
+            ],
+            [
+              14171,
+              14554
+            ],
+            [
+              14554,
+              14707
+            ],
+            [
+              14707,
+              15013
+            ],
+            [
+              15013,
+              15243
+            ],
+            [
+              15243,
+              15473
+            ],
+            [
+              15473,
+              15779
+            ],
+            [
+              15779,
+              16009
+            ],
+            [
+              16009,
+              16392
+            ],
+            [
+              16392,
+              17617
+            ],
+            [
+              17617,
+              17847
+            ],
+            [
+              17847,
+              18307
+            ],
+            [
+              18307,
+              18537
+            ],
+            [
+              18537,
+              19226
+            ],
+            [
+              19226,
+              20375
+            ],
+            [
+              20375,
+              20605
+            ],
+            [
+              20605,
+              20988
+            ],
+            [
+              20988,
+              21218
+            ],
+            [
+              21218,
+              21371
+            ],
+            [
+              21371,
+              21601
+            ],
+            [
+              21601,
+              22826
+            ],
+            [
+              22826,
+              23056
+            ],
+            [
+              23056,
+              23439
+            ],
+            [
+              23439,
+              23592
+            ],
+            [
+              23592,
+              23898
+            ],
+            [
+              23898,
+              24128
+            ],
+            [
+              24128,
+              25277
+            ],
+            [
+              25277,
+              25507
+            ],
+            [
+              25507,
+              25890
+            ],
+            [
+              25890,
+              26273
+            ],
+            [
+              26273,
+              26503
+            ],
+            [
+              26503,
+              27116
+            ],
+            [
+              27116,
+              27499
+            ],
+            [
+              27499,
+              27729
+            ],
+            [
+              27729,
+              28035
+            ],
+            [
+              28035,
+              28265
+            ],
+            [
+              28265,
+              29031
+            ],
+            [
+              29031,
+              29261
+            ],
+            [
+              29261,
+              29721
+            ],
+            [
+              29721,
+              29951
+            ],
+            [
+              29951,
+              30257
+            ],
+            [
+              30257,
+              31406
+            ],
+            [
+              31406,
+              31636
+            ],
+            [
+              31636,
+              31866
+            ],
+            [
+              31866,
+              32096
+            ],
+            [
+              32096,
+              32249
+            ],
+            [
+              32249,
+              33091
+            ],
+            [
+              33091,
+              33244
+            ],
+            [
+              33244,
+              33933
+            ],
+            [
+              33933,
+              34163
+            ],
+            [
+              34163,
+              34393
+            ],
+            [
+              34393,
+              34623
+            ],
+            [
+              34623,
+              34776
+            ],
+            [
+              34776,
+              35006
+            ],
+            [
+              35006,
+              35389
+            ],
+            [
+              35389,
+              35772
+            ],
+            [
+              35772,
+              36002
+            ],
+            [
+              36002,
+              36840
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 2,
+      "text": "Weeks passed, and nothing changed. Almaz wept at night. At last she walked over the hill to the hut of an old healer who was known for his wisdom. “Please,” she said, “make me a medicine that will make my stepson love me.” The old man was silent for a while. “I can make it,” he said. “But I need one thing: a whisker from the chin of a living lion. Bring me that, and you shall have what you ask.” Almaz stared at him. “A lion will kill me!” The healer shrugged. “That is what the medicine needs.”",
+      "sentences": [
+        "Weeks passed, and nothing changed.",
+        "Almaz wept at night.",
+        "At last she walked over the hill to the hut of an old healer who was known for his wisdom.",
+        "“Please,” she said, “make me a medicine that will make my stepson love me.” The old man was silent for a while.",
+        "“I can make it,” he said.",
+        "“But I need one thing: a whisker from the chin of a living lion.",
+        "Bring me that, and you shall have what you ask.” Almaz stared at him.",
+        "“A lion will kill me!” The healer shrugged.",
+        "“That is what the medicine needs.”"
+      ],
+      "alt": "A woman kneeling before a white-bearded old man seated outside a round stone hut.",
+      "image": {
+        "hash": "sha256:6b30da8c10c7c2c6cba1bc69005f1fce3bdef5acb780ad1028f158fe9ea2555c",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:c7764394767dd94f364e7ec090604a4c2275eb13d0023da363438d8f71448b5d",
+        "durationMs": 43160,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3556
+            ],
+            [
+              3556,
+              5738
+            ],
+            [
+              5738,
+              12281
+            ],
+            [
+              12281,
+              21654
+            ],
+            [
+              21654,
+              24321
+            ],
+            [
+              24321,
+              29735
+            ],
+            [
+              29735,
+              36119
+            ],
+            [
+              36119,
+              40564
+            ],
+            [
+              40564,
+              43160
+            ]
+          ],
+          "words": [
+            [
+              0,
+              404
+            ],
+            [
+              404,
+              1293
+            ],
+            [
+              1293,
+              1535
+            ],
+            [
+              1535,
+              2101
+            ],
+            [
+              2101,
+              3556
+            ],
+            [
+              3556,
+              3960
+            ],
+            [
+              3960,
+              4283
+            ],
+            [
+              4283,
+              4445
+            ],
+            [
+              4445,
+              5738
+            ],
+            [
+              5738,
+              5900
+            ],
+            [
+              5900,
+              6223
+            ],
+            [
+              6223,
+              6465
+            ],
+            [
+              6465,
+              6950
+            ],
+            [
+              6950,
+              7273
+            ],
+            [
+              7273,
+              7515
+            ],
+            [
+              7515,
+              7838
+            ],
+            [
+              7838,
+              8000
+            ],
+            [
+              8000,
+              8242
+            ],
+            [
+              8242,
+              8484
+            ],
+            [
+              8484,
+              8646
+            ],
+            [
+              8646,
+              8808
+            ],
+            [
+              8808,
+              9050
+            ],
+            [
+              9050,
+              9535
+            ],
+            [
+              9535,
+              9777
+            ],
+            [
+              9777,
+              10019
+            ],
+            [
+              10019,
+              10423
+            ],
+            [
+              10423,
+              10665
+            ],
+            [
+              10665,
+              10907
+            ],
+            [
+              10907,
+              12281
+            ],
+            [
+              12281,
+              13170
+            ],
+            [
+              13170,
+              13412
+            ],
+            [
+              13412,
+              14139
+            ],
+            [
+              14139,
+              14462
+            ],
+            [
+              14462,
+              14624
+            ],
+            [
+              14624,
+              14786
+            ],
+            [
+              14786,
+              15433
+            ],
+            [
+              15433,
+              15756
+            ],
+            [
+              15756,
+              16079
+            ],
+            [
+              16079,
+              16402
+            ],
+            [
+              16402,
+              16564
+            ],
+            [
+              16564,
+              17130
+            ],
+            [
+              17130,
+              17453
+            ],
+            [
+              17453,
+              18504
+            ],
+            [
+              18504,
+              18746
+            ],
+            [
+              18746,
+              18988
+            ],
+            [
+              18988,
+              19230
+            ],
+            [
+              19230,
+              19472
+            ],
+            [
+              19472,
+              19957
+            ],
+            [
+              19957,
+              20199
+            ],
+            [
+              20199,
+              20361
+            ],
+            [
+              20361,
+              21654
+            ],
+            [
+              21654,
+              21816
+            ],
+            [
+              21816,
+              22058
+            ],
+            [
+              22058,
+              22381
+            ],
+            [
+              22381,
+              22947
+            ],
+            [
+              22947,
+              23109
+            ],
+            [
+              23109,
+              24321
+            ],
+            [
+              24321,
+              24563
+            ],
+            [
+              24563,
+              24725
+            ],
+            [
+              24725,
+              25048
+            ],
+            [
+              25048,
+              25290
+            ],
+            [
+              25290,
+              26098
+            ],
+            [
+              26098,
+              26260
+            ],
+            [
+              26260,
+              26826
+            ],
+            [
+              26826,
+              27149
+            ],
+            [
+              27149,
+              27391
+            ],
+            [
+              27391,
+              27714
+            ],
+            [
+              27714,
+              27876
+            ],
+            [
+              27876,
+              28038
+            ],
+            [
+              28038,
+              28523
+            ],
+            [
+              28523,
+              29735
+            ],
+            [
+              29735,
+              30139
+            ],
+            [
+              30139,
+              30301
+            ],
+            [
+              30301,
+              31028
+            ],
+            [
+              31028,
+              31270
+            ],
+            [
+              31270,
+              31512
+            ],
+            [
+              31512,
+              31916
+            ],
+            [
+              31916,
+              32239
+            ],
+            [
+              32239,
+              32562
+            ],
+            [
+              32562,
+              32804
+            ],
+            [
+              32804,
+              33936
+            ],
+            [
+              33936,
+              34340
+            ],
+            [
+              34340,
+              34825
+            ],
+            [
+              34825,
+              34987
+            ],
+            [
+              34987,
+              36119
+            ],
+            [
+              36119,
+              36281
+            ],
+            [
+              36281,
+              36604
+            ],
+            [
+              36604,
+              36927
+            ],
+            [
+              36927,
+              37250
+            ],
+            [
+              37250,
+              38301
+            ],
+            [
+              38301,
+              38543
+            ],
+            [
+              38543,
+              39028
+            ],
+            [
+              39028,
+              40564
+            ],
+            [
+              40564,
+              40887
+            ],
+            [
+              40887,
+              41049
+            ],
+            [
+              41049,
+              41372
+            ],
+            [
+              41372,
+              41614
+            ],
+            [
+              41614,
+              42261
+            ],
+            [
+              42261,
+              43160
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "text": "Almaz knew of a lion that came each evening to drink at the river. The next day, she took a piece of meat and went there. When the lion appeared, she was so afraid that her legs shook. She put the meat on the ground a long way off and ran. The next evening she came again and put the meat a little nearer. The lion looked at her, ate, and went away. Day after day she came. Each time she stood a few steps closer, and each time she stayed a little longer.",
+      "sentences": [
+        "Almaz knew of a lion that came each evening to drink at the river.",
+        "The next day, she took a piece of meat and went there.",
+        "When the lion appeared, she was so afraid that her legs shook.",
+        "She put the meat on the ground a long way off and ran.",
+        "The next evening she came again and put the meat a little nearer.",
+        "The lion looked at her, ate, and went away.",
+        "Day after day she came.",
+        "Each time she stood a few steps closer, and each time she stayed a little longer."
+      ],
+      "alt": "A woman placing a piece of meat on the ground far from a large lion drinking at a river at dusk.",
+      "image": {
+        "hash": "sha256:0554bff585d7d21bac17046a337ab2a278ca151194050b656cd9fa521b1d53b5",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:4e6ad2c9ae2a44d3eb841f22f92312dc24fa8892b14d93d18ba20e98ba3ff87f",
+        "durationMs": 41320,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              5710
+            ],
+            [
+              5710,
+              10886
+            ],
+            [
+              10886,
+              16687
+            ],
+            [
+              16687,
+              21417
+            ],
+            [
+              21417,
+              27129
+            ],
+            [
+              27129,
+              31859
+            ],
+            [
+              31859,
+              34448
+            ],
+            [
+              34448,
+              41320
+            ]
+          ],
+          "words": [
+            [
+              0,
+              446
+            ],
+            [
+              446,
+              803
+            ],
+            [
+              803,
+              981
+            ],
+            [
+              981,
+              1159
+            ],
+            [
+              1159,
+              1516
+            ],
+            [
+              1516,
+              1873
+            ],
+            [
+              1873,
+              2230
+            ],
+            [
+              2230,
+              2587
+            ],
+            [
+              2587,
+              3212
+            ],
+            [
+              3212,
+              3390
+            ],
+            [
+              3390,
+              3836
+            ],
+            [
+              3836,
+              4014
+            ],
+            [
+              4014,
+              4282
+            ],
+            [
+              4282,
+              5710
+            ],
+            [
+              5710,
+              5978
+            ],
+            [
+              5978,
+              6335
+            ],
+            [
+              6335,
+              7049
+            ],
+            [
+              7049,
+              7317
+            ],
+            [
+              7317,
+              7674
+            ],
+            [
+              7674,
+              7852
+            ],
+            [
+              7852,
+              8298
+            ],
+            [
+              8298,
+              8476
+            ],
+            [
+              8476,
+              8833
+            ],
+            [
+              8833,
+              9101
+            ],
+            [
+              9101,
+              9458
+            ],
+            [
+              9458,
+              10886
+            ],
+            [
+              10886,
+              11243
+            ],
+            [
+              11243,
+              11511
+            ],
+            [
+              11511,
+              11868
+            ],
+            [
+              11868,
+              13028
+            ],
+            [
+              13028,
+              13296
+            ],
+            [
+              13296,
+              13564
+            ],
+            [
+              13564,
+              13742
+            ],
+            [
+              13742,
+              14277
+            ],
+            [
+              14277,
+              14634
+            ],
+            [
+              14634,
+              14902
+            ],
+            [
+              14902,
+              15259
+            ],
+            [
+              15259,
+              16687
+            ],
+            [
+              16687,
+              16955
+            ],
+            [
+              16955,
+              17223
+            ],
+            [
+              17223,
+              17491
+            ],
+            [
+              17491,
+              17848
+            ],
+            [
+              17848,
+              18026
+            ],
+            [
+              18026,
+              18294
+            ],
+            [
+              18294,
+              18829
+            ],
+            [
+              18829,
+              19007
+            ],
+            [
+              19007,
+              19364
+            ],
+            [
+              19364,
+              19632
+            ],
+            [
+              19632,
+              19900
+            ],
+            [
+              19900,
+              20168
+            ],
+            [
+              20168,
+              21417
+            ],
+            [
+              21417,
+              21685
+            ],
+            [
+              21685,
+              22042
+            ],
+            [
+              22042,
+              22667
+            ],
+            [
+              22667,
+              22935
+            ],
+            [
+              22935,
+              23292
+            ],
+            [
+              23292,
+              23738
+            ],
+            [
+              23738,
+              24006
+            ],
+            [
+              24006,
+              24274
+            ],
+            [
+              24274,
+              24542
+            ],
+            [
+              24542,
+              24899
+            ],
+            [
+              24899,
+              25077
+            ],
+            [
+              25077,
+              25612
+            ],
+            [
+              25612,
+              27129
+            ],
+            [
+              27129,
+              27397
+            ],
+            [
+              27397,
+              27754
+            ],
+            [
+              27754,
+              28289
+            ],
+            [
+              28289,
+              28467
+            ],
+            [
+              28467,
+              29181
+            ],
+            [
+              29181,
+              29895
+            ],
+            [
+              29895,
+              30163
+            ],
+            [
+              30163,
+              30520
+            ],
+            [
+              30520,
+              31859
+            ],
+            [
+              31859,
+              32127
+            ],
+            [
+              32127,
+              32573
+            ],
+            [
+              32573,
+              32841
+            ],
+            [
+              32841,
+              33109
+            ],
+            [
+              33109,
+              34448
+            ],
+            [
+              34448,
+              34805
+            ],
+            [
+              34805,
+              35162
+            ],
+            [
+              35162,
+              35430
+            ],
+            [
+              35430,
+              35876
+            ],
+            [
+              35876,
+              36054
+            ],
+            [
+              36054,
+              36322
+            ],
+            [
+              36322,
+              36768
+            ],
+            [
+              36768,
+              37750
+            ],
+            [
+              37750,
+              38018
+            ],
+            [
+              38018,
+              38375
+            ],
+            [
+              38375,
+              38732
+            ],
+            [
+              38732,
+              39000
+            ],
+            [
+              39000,
+              39535
+            ],
+            [
+              39535,
+              39713
+            ],
+            [
+              39713,
+              40248
+            ],
+            [
+              40248,
+              41320
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "text": "Months went by. The rains came and passed. Now the lion waited for Almaz each evening and watched for her on the path. She no longer ran. She sat on a rock while he ate, and she spoke to him softly. One evening he lay down near her feet and purred like a great cat. Very slowly, Almaz put out her hand and touched his mane. He did not move. With her heart beating hard, she took hold of one long whisker on his chin and gently pulled it out. The lion only blinked.",
+      "sentences": [
+        "Months went by.",
+        "The rains came and passed.",
+        "Now the lion waited for Almaz each evening and watched for her on the path.",
+        "She no longer ran.",
+        "She sat on a rock while he ate, and she spoke to him softly.",
+        "One evening he lay down near her feet and purred like a great cat.",
+        "Very slowly, Almaz put out her hand and touched his mane.",
+        "He did not move.",
+        "With her heart beating hard, she took hold of one long whisker on his chin and gently pulled it out.",
+        "The lion only blinked."
+      ],
+      "alt": "A woman sitting calmly on a rock beside a resting lion, reaching towards his chin.",
+      "image": {
+        "hash": "sha256:8cfa6382d09b11e3d198e39118658183d3e09a16b0335db480fc328413455f24",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:352cdb467aace42db7c031e9879ec7f9168ae8670d3f2dd70f3423ce2fdb0797",
+        "durationMs": 42720,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              2047
+            ],
+            [
+              2047,
+              4895
+            ],
+            [
+              4895,
+              11214
+            ],
+            [
+              11214,
+              13439
+            ],
+            [
+              13439,
+              18957
+            ],
+            [
+              18957,
+              24653
+            ],
+            [
+              24653,
+              30082
+            ],
+            [
+              30082,
+              32129
+            ],
+            [
+              32129,
+              40584
+            ],
+            [
+              40584,
+              42720
+            ]
+          ],
+          "words": [
+            [
+              0,
+              534
+            ],
+            [
+              534,
+              890
+            ],
+            [
+              890,
+              2047
+            ],
+            [
+              2047,
+              2314
+            ],
+            [
+              2314,
+              2759
+            ],
+            [
+              2759,
+              3115
+            ],
+            [
+              3115,
+              3382
+            ],
+            [
+              3382,
+              4895
+            ],
+            [
+              4895,
+              5162
+            ],
+            [
+              5162,
+              5429
+            ],
+            [
+              5429,
+              5785
+            ],
+            [
+              5785,
+              6319
+            ],
+            [
+              6319,
+              6586
+            ],
+            [
+              6586,
+              7031
+            ],
+            [
+              7031,
+              7387
+            ],
+            [
+              7387,
+              8010
+            ],
+            [
+              8010,
+              8277
+            ],
+            [
+              8277,
+              8900
+            ],
+            [
+              8900,
+              9167
+            ],
+            [
+              9167,
+              9434
+            ],
+            [
+              9434,
+              9612
+            ],
+            [
+              9612,
+              9879
+            ],
+            [
+              9879,
+              11214
+            ],
+            [
+              11214,
+              11481
+            ],
+            [
+              11481,
+              11659
+            ],
+            [
+              11659,
+              12193
+            ],
+            [
+              12193,
+              13439
+            ],
+            [
+              13439,
+              13706
+            ],
+            [
+              13706,
+              13973
+            ],
+            [
+              13973,
+              14151
+            ],
+            [
+              14151,
+              14329
+            ],
+            [
+              14329,
+              14685
+            ],
+            [
+              14685,
+              15130
+            ],
+            [
+              15130,
+              15308
+            ],
+            [
+              15308,
+              16020
+            ],
+            [
+              16020,
+              16287
+            ],
+            [
+              16287,
+              16554
+            ],
+            [
+              16554,
+              16999
+            ],
+            [
+              16999,
+              17177
+            ],
+            [
+              17177,
+              17444
+            ],
+            [
+              17444,
+              18957
+            ],
+            [
+              18957,
+              19224
+            ],
+            [
+              19224,
+              19847
+            ],
+            [
+              19847,
+              20025
+            ],
+            [
+              20025,
+              20292
+            ],
+            [
+              20292,
+              20648
+            ],
+            [
+              20648,
+              21004
+            ],
+            [
+              21004,
+              21271
+            ],
+            [
+              21271,
+              21627
+            ],
+            [
+              21627,
+              21894
+            ],
+            [
+              21894,
+              22428
+            ],
+            [
+              22428,
+              22784
+            ],
+            [
+              22784,
+              22962
+            ],
+            [
+              22962,
+              23407
+            ],
+            [
+              23407,
+              24653
+            ],
+            [
+              24653,
+              25009
+            ],
+            [
+              25009,
+              25988
+            ],
+            [
+              25988,
+              26433
+            ],
+            [
+              26433,
+              26700
+            ],
+            [
+              26700,
+              26967
+            ],
+            [
+              26967,
+              27234
+            ],
+            [
+              27234,
+              27590
+            ],
+            [
+              27590,
+              27857
+            ],
+            [
+              27857,
+              28480
+            ],
+            [
+              28480,
+              28747
+            ],
+            [
+              28747,
+              30082
+            ],
+            [
+              30082,
+              30260
+            ],
+            [
+              30260,
+              30527
+            ],
+            [
+              30527,
+              30794
+            ],
+            [
+              30794,
+              32129
+            ],
+            [
+              32129,
+              32485
+            ],
+            [
+              32485,
+              32752
+            ],
+            [
+              32752,
+              33197
+            ],
+            [
+              33197,
+              33820
+            ],
+            [
+              33820,
+              34621
+            ],
+            [
+              34621,
+              34888
+            ],
+            [
+              34888,
+              35244
+            ],
+            [
+              35244,
+              35600
+            ],
+            [
+              35600,
+              35778
+            ],
+            [
+              35778,
+              36045
+            ],
+            [
+              36045,
+              36401
+            ],
+            [
+              36401,
+              37024
+            ],
+            [
+              37024,
+              37202
+            ],
+            [
+              37202,
+              37469
+            ],
+            [
+              37469,
+              37825
+            ],
+            [
+              37825,
+              38092
+            ],
+            [
+              38092,
+              38626
+            ],
+            [
+              38626,
+              39160
+            ],
+            [
+              39160,
+              39338
+            ],
+            [
+              39338,
+              40584
+            ],
+            [
+              40584,
+              40851
+            ],
+            [
+              40851,
+              41207
+            ],
+            [
+              41207,
+              41563
+            ],
+            [
+              41563,
+              42720
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "text": "Almaz ran all the way to the healer’s hut. “I have it!” she cried, holding out the whisker. The old man took it, looked at it closely, and smiled. Then he dropped it into the fire. Almaz cried out. “What have you done? I risked my life for that!” “Tell me,” said the healer, “how did you get it?” She told him: how she had gone every day, how she had kept her distance, how she had waited and never hurried, until the lion trusted her. The old man nodded at every word.",
+      "sentences": [
+        "Almaz ran all the way to the healer’s hut.",
+        "“I have it!” she cried, holding out the whisker.",
+        "The old man took it, looked at it closely, and smiled.",
+        "Then he dropped it into the fire.",
+        "Almaz cried out.",
+        "“What have you done?",
+        "I risked my life for that!” “Tell me,” said the healer, “how did you get it?” She told him: how she had gone every day, how she had kept her distance, how she had waited and never hurried, until the lion trusted her.",
+        "The old man nodded at every word."
+      ],
+      "alt": "An old man dropping a single whisker into a small fire while a woman reaches out in dismay.",
+      "image": {
+        "hash": "sha256:3b5b225af9f07f1bd75a309132d6db1cea24f21c90f5cab7793df8ead1cd8d9a",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:e41e6ab53b187bcf6cbbcc37330e8d0a811800a0895299245fbdeb904b56a9a0",
+        "durationMs": 43800,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3685
+            ],
+            [
+              3685,
+              9084
+            ],
+            [
+              9084,
+              14397
+            ],
+            [
+              14397,
+              17568
+            ],
+            [
+              17568,
+              19626
+            ],
+            [
+              19626,
+              21855
+            ],
+            [
+              21855,
+              41054
+            ],
+            [
+              41054,
+              43800
+            ]
+          ],
+          "words": [
+            [
+              0,
+              429
+            ],
+            [
+              429,
+              686
+            ],
+            [
+              686,
+              943
+            ],
+            [
+              943,
+              1200
+            ],
+            [
+              1200,
+              1457
+            ],
+            [
+              1457,
+              1628
+            ],
+            [
+              1628,
+              1885
+            ],
+            [
+              1885,
+              2485
+            ],
+            [
+              2485,
+              3685
+            ],
+            [
+              3685,
+              3856
+            ],
+            [
+              3856,
+              4199
+            ],
+            [
+              4199,
+              5313
+            ],
+            [
+              5313,
+              5570
+            ],
+            [
+              5570,
+              6427
+            ],
+            [
+              6427,
+              7027
+            ],
+            [
+              7027,
+              7284
+            ],
+            [
+              7284,
+              7541
+            ],
+            [
+              7541,
+              9084
+            ],
+            [
+              9084,
+              9341
+            ],
+            [
+              9341,
+              9598
+            ],
+            [
+              9598,
+              9855
+            ],
+            [
+              9855,
+              10198
+            ],
+            [
+              10198,
+              10798
+            ],
+            [
+              10798,
+              11312
+            ],
+            [
+              11312,
+              11483
+            ],
+            [
+              11483,
+              11654
+            ],
+            [
+              11654,
+              12683
+            ],
+            [
+              12683,
+              12940
+            ],
+            [
+              12940,
+              14397
+            ],
+            [
+              14397,
+              14740
+            ],
+            [
+              14740,
+              14911
+            ],
+            [
+              14911,
+              15511
+            ],
+            [
+              15511,
+              15682
+            ],
+            [
+              15682,
+              16025
+            ],
+            [
+              16025,
+              16282
+            ],
+            [
+              16282,
+              17568
+            ],
+            [
+              17568,
+              17997
+            ],
+            [
+              17997,
+              18426
+            ],
+            [
+              18426,
+              19626
+            ],
+            [
+              19626,
+              19969
+            ],
+            [
+              19969,
+              20312
+            ],
+            [
+              20312,
+              20569
+            ],
+            [
+              20569,
+              21855
+            ],
+            [
+              21855,
+              22026
+            ],
+            [
+              22026,
+              22540
+            ],
+            [
+              22540,
+              22711
+            ],
+            [
+              22711,
+              23054
+            ],
+            [
+              23054,
+              23311
+            ],
+            [
+              23311,
+              24597
+            ],
+            [
+              24597,
+              24940
+            ],
+            [
+              24940,
+              25540
+            ],
+            [
+              25540,
+              25883
+            ],
+            [
+              25883,
+              26140
+            ],
+            [
+              26140,
+              27083
+            ],
+            [
+              27083,
+              27340
+            ],
+            [
+              27340,
+              27597
+            ],
+            [
+              27597,
+              27854
+            ],
+            [
+              27854,
+              28111
+            ],
+            [
+              28111,
+              29225
+            ],
+            [
+              29225,
+              29482
+            ],
+            [
+              29482,
+              29825
+            ],
+            [
+              29825,
+              30511
+            ],
+            [
+              30511,
+              30768
+            ],
+            [
+              30768,
+              31025
+            ],
+            [
+              31025,
+              31282
+            ],
+            [
+              31282,
+              31625
+            ],
+            [
+              31625,
+              32054
+            ],
+            [
+              32054,
+              32740
+            ],
+            [
+              32740,
+              32997
+            ],
+            [
+              32997,
+              33254
+            ],
+            [
+              33254,
+              33511
+            ],
+            [
+              33511,
+              33854
+            ],
+            [
+              33854,
+              34111
+            ],
+            [
+              34111,
+              35225
+            ],
+            [
+              35225,
+              35482
+            ],
+            [
+              35482,
+              35739
+            ],
+            [
+              35739,
+              35996
+            ],
+            [
+              35996,
+              36510
+            ],
+            [
+              36510,
+              36767
+            ],
+            [
+              36767,
+              37196
+            ],
+            [
+              37196,
+              38225
+            ],
+            [
+              38225,
+              38654
+            ],
+            [
+              38654,
+              38911
+            ],
+            [
+              38911,
+              39254
+            ],
+            [
+              39254,
+              39854
+            ],
+            [
+              39854,
+              41054
+            ],
+            [
+              41054,
+              41311
+            ],
+            [
+              41311,
+              41568
+            ],
+            [
+              41568,
+              41825
+            ],
+            [
+              41825,
+              42339
+            ],
+            [
+              42339,
+              42510
+            ],
+            [
+              42510,
+              42939
+            ],
+            [
+              42939,
+              43800
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "text": "“Then you need no medicine,” said the old man. “Is a boy who has lost his mother more dangerous than a lion? Go to him as you went to the lion. Be near him every day. Ask for nothing. Do not hurry. Let him come to you.” Almaz went home and did as he said. She was there each day, kind and patient, and she did not press the boy. Slowly, Dawit began to sit beside her. One evening he took her hand of his own accord. And after that, he called her Mother.",
+      "sentences": [
+        "“Then you need no medicine,” said the old man.",
+        "“Is a boy who has lost his mother more dangerous than a lion?",
+        "Go to him as you went to the lion.",
+        "Be near him every day.",
+        "Ask for nothing.",
+        "Do not hurry.",
+        "Let him come to you.” Almaz went home and did as he said.",
+        "She was there each day, kind and patient, and she did not press the boy.",
+        "Slowly, Dawit began to sit beside her.",
+        "One evening he took her hand of his own accord.",
+        "And after that, he called her Mother."
+      ],
+      "alt": "A woman and a small boy sitting side by side at a doorway at evening, the boy’s hand in hers.",
+      "image": {
+        "hash": "sha256:b528a8078e6932b55f041b2bbd865e51b21e1a9b00f0ee0bebf21645997f6bd8",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:915f09b694666b5dbb40c557f2c6618f94325852a9b9ce3d1436ab39241005d7",
+        "durationMs": 40240,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              4080
+            ],
+            [
+              4080,
+              8976
+            ],
+            [
+              8976,
+              11913
+            ],
+            [
+              11913,
+              14198
+            ],
+            [
+              14198,
+              16157
+            ],
+            [
+              16157,
+              17871
+            ],
+            [
+              17871,
+              23093
+            ],
+            [
+              23093,
+              29296
+            ],
+            [
+              29296,
+              33051
+            ],
+            [
+              33051,
+              36968
+            ],
+            [
+              36968,
+              40240
+            ]
+          ],
+          "words": [
+            [
+              0,
+              326
+            ],
+            [
+              326,
+              571
+            ],
+            [
+              571,
+              897
+            ],
+            [
+              897,
+              1060
+            ],
+            [
+              1060,
+              2121
+            ],
+            [
+              2121,
+              2447
+            ],
+            [
+              2447,
+              2692
+            ],
+            [
+              2692,
+              2937
+            ],
+            [
+              2937,
+              4080
+            ],
+            [
+              4080,
+              4243
+            ],
+            [
+              4243,
+              4406
+            ],
+            [
+              4406,
+              4651
+            ],
+            [
+              4651,
+              4896
+            ],
+            [
+              4896,
+              5141
+            ],
+            [
+              5141,
+              5467
+            ],
+            [
+              5467,
+              5712
+            ],
+            [
+              5712,
+              6202
+            ],
+            [
+              6202,
+              6528
+            ],
+            [
+              6528,
+              7263
+            ],
+            [
+              7263,
+              7589
+            ],
+            [
+              7589,
+              7752
+            ],
+            [
+              7752,
+              8976
+            ],
+            [
+              8976,
+              9139
+            ],
+            [
+              9139,
+              9302
+            ],
+            [
+              9302,
+              9547
+            ],
+            [
+              9547,
+              9710
+            ],
+            [
+              9710,
+              9955
+            ],
+            [
+              9955,
+              10281
+            ],
+            [
+              10281,
+              10444
+            ],
+            [
+              10444,
+              10689
+            ],
+            [
+              10689,
+              11913
+            ],
+            [
+              11913,
+              12076
+            ],
+            [
+              12076,
+              12402
+            ],
+            [
+              12402,
+              12647
+            ],
+            [
+              12647,
+              13055
+            ],
+            [
+              13055,
+              14198
+            ],
+            [
+              14198,
+              14443
+            ],
+            [
+              14443,
+              14688
+            ],
+            [
+              14688,
+              16157
+            ],
+            [
+              16157,
+              16320
+            ],
+            [
+              16320,
+              16565
+            ],
+            [
+              16565,
+              17871
+            ],
+            [
+              17871,
+              18116
+            ],
+            [
+              18116,
+              18361
+            ],
+            [
+              18361,
+              18687
+            ],
+            [
+              18687,
+              18850
+            ],
+            [
+              18850,
+              19993
+            ],
+            [
+              19993,
+              20401
+            ],
+            [
+              20401,
+              20727
+            ],
+            [
+              20727,
+              21053
+            ],
+            [
+              21053,
+              21298
+            ],
+            [
+              21298,
+              21543
+            ],
+            [
+              21543,
+              21706
+            ],
+            [
+              21706,
+              21869
+            ],
+            [
+              21869,
+              23093
+            ],
+            [
+              23093,
+              23338
+            ],
+            [
+              23338,
+              23583
+            ],
+            [
+              23583,
+              23991
+            ],
+            [
+              23991,
+              24317
+            ],
+            [
+              24317,
+              24970
+            ],
+            [
+              24970,
+              25296
+            ],
+            [
+              25296,
+              25541
+            ],
+            [
+              25541,
+              26520
+            ],
+            [
+              26520,
+              26765
+            ],
+            [
+              26765,
+              27010
+            ],
+            [
+              27010,
+              27255
+            ],
+            [
+              27255,
+              27500
+            ],
+            [
+              27500,
+              27908
+            ],
+            [
+              27908,
+              28153
+            ],
+            [
+              28153,
+              29296
+            ],
+            [
+              29296,
+              30194
+            ],
+            [
+              30194,
+              30602
+            ],
+            [
+              30602,
+              31010
+            ],
+            [
+              31010,
+              31173
+            ],
+            [
+              31173,
+              31418
+            ],
+            [
+              31418,
+              31908
+            ],
+            [
+              31908,
+              33051
+            ],
+            [
+              33051,
+              33296
+            ],
+            [
+              33296,
+              33867
+            ],
+            [
+              33867,
+              34030
+            ],
+            [
+              34030,
+              34356
+            ],
+            [
+              34356,
+              34601
+            ],
+            [
+              34601,
+              34927
+            ],
+            [
+              34927,
+              35090
+            ],
+            [
+              35090,
+              35335
+            ],
+            [
+              35335,
+              35580
+            ],
+            [
+              35580,
+              36968
+            ],
+            [
+              36968,
+              37213
+            ],
+            [
+              37213,
+              37621
+            ],
+            [
+              37621,
+              38356
+            ],
+            [
+              38356,
+              38519
+            ],
+            [
+              38519,
+              39009
+            ],
+            [
+              39009,
+              39254
+            ],
+            [
+              39254,
+              40240
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "activities": [
+    {
+      "id": "lw-c1",
+      "type": "comprehension",
+      "afterPage": 1,
+      "question": "Why was Almaz unhappy?",
+      "options": [
+        "Her husband had left her",
+        "Her stepson would not accept her love",
+        "She had lost her goats"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "lw-c2",
+      "type": "comprehension",
+      "afterPage": 3,
+      "question": "How did Almaz get close to the lion?",
+      "options": [
+        "She came every day, a little nearer each time, and never hurried",
+        "She trapped him in a net",
+        "She gave him medicine to make him sleep"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "lw-c3",
+      "type": "comprehension",
+      "afterPage": 5,
+      "question": "Why did the healer throw the whisker into the fire?",
+      "options": [
+        "He was angry with Almaz",
+        "The whisker was the wrong kind",
+        "The medicine was never needed; the lesson was in how she won the lion’s trust"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "lw-c4",
+      "type": "comprehension",
+      "afterPage": 6,
+      "question": "Apply it: A new pupil joins your class and will not speak to anyone. Using the tale, what is the best thing to do?",
+      "options": [
+        "Demand that she join your game at once",
+        "Be friendly each day without pressing her, and give her time",
+        "Ignore her completely"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "lw-s1",
+      "type": "sequencing",
+      "prompt": "Put the events of the story in order.",
+      "items": [
+        "Dawit pushes Almaz away",
+        "The healer asks for a whisker from a living lion",
+        "Almaz feeds the lion day after day",
+        "She gently pulls out a whisker",
+        "She wins Dawit’s trust in the same patient way"
+      ]
+    },
+    {
+      "id": "lw-voc",
+      "type": "vocabulary",
+      "afterPage": 6,
+      "word": "patient",
+      "definition": "Able to wait calmly without becoming angry or giving up.",
+      "distractors": [
+        "Quick to take what one wants",
+        "Afraid of wild animals"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "word": "stepson",
+      "definition": "The son of one’s husband or wife from an earlier marriage.",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "word": "healer",
+      "definition": "A person who treats the sick and gives advice.",
+      "pages": [
+        2,
+        5
+      ]
+    },
+    {
+      "word": "whisker",
+      "definition": "One of the long, stiff hairs on an animal’s face.",
+      "pages": [
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "word": "mane",
+      "definition": "The long hair round a lion’s head and neck.",
+      "pages": [
+        4
+      ]
+    },
+    {
+      "word": "trusted",
+      "definition": "Believed that someone would do no harm.",
+      "pages": [
+        5
+      ]
+    },
+    {
+      "word": "patient",
+      "definition": "Able to wait calmly without becoming angry or giving up.",
+      "pages": [
+        6
+      ]
+    }
+  ],
+  "assets": {
+    "sha256:8504c43521018f7e0c1fcfca5ef104615f8361287d2600aa50d55fabcd6f4df4": {
+      "path": "/story-spark-preview/audio/8504c4352101.mp3",
+      "bytes": 147789,
+      "type": "audio/mpeg"
+    },
+    "sha256:a90deedcc9af14a6c77507bc103c413623f8c5c350fab55de68efb24fc93a435": {
+      "path": "/story-spark-preview/candidates/the-lions-whisker/page1-1.webp",
+      "bytes": 71112,
+      "type": "image/webp"
+    },
+    "sha256:c7764394767dd94f364e7ec090604a4c2275eb13d0023da363438d8f71448b5d": {
+      "path": "/story-spark-preview/audio/c7764394767d.mp3",
+      "bytes": 173133,
+      "type": "audio/mpeg"
+    },
+    "sha256:6b30da8c10c7c2c6cba1bc69005f1fce3bdef5acb780ad1028f158fe9ea2555c": {
+      "path": "/story-spark-preview/candidates/the-lions-whisker/page2-1.webp",
+      "bytes": 85218,
+      "type": "image/webp"
+    },
+    "sha256:4e6ad2c9ae2a44d3eb841f22f92312dc24fa8892b14d93d18ba20e98ba3ff87f": {
+      "path": "/story-spark-preview/audio/4e6ad2c9ae2a.mp3",
+      "bytes": 165741,
+      "type": "audio/mpeg"
+    },
+    "sha256:0554bff585d7d21bac17046a337ab2a278ca151194050b656cd9fa521b1d53b5": {
+      "path": "/story-spark-preview/candidates/the-lions-whisker/page3-1.webp",
+      "bytes": 65600,
+      "type": "image/webp"
+    },
+    "sha256:352cdb467aace42db7c031e9879ec7f9168ae8670d3f2dd70f3423ce2fdb0797": {
+      "path": "/story-spark-preview/audio/352cdb467aac.mp3",
+      "bytes": 171309,
+      "type": "audio/mpeg"
+    },
+    "sha256:8cfa6382d09b11e3d198e39118658183d3e09a16b0335db480fc328413455f24": {
+      "path": "/story-spark-preview/candidates/the-lions-whisker/page4-1.webp",
+      "bytes": 82838,
+      "type": "image/webp"
+    },
+    "sha256:e41e6ab53b187bcf6cbbcc37330e8d0a811800a0895299245fbdeb904b56a9a0": {
+      "path": "/story-spark-preview/audio/e41e6ab53b18.mp3",
+      "bytes": 175629,
+      "type": "audio/mpeg"
+    },
+    "sha256:3b5b225af9f07f1bd75a309132d6db1cea24f21c90f5cab7793df8ead1cd8d9a": {
+      "path": "/story-spark-preview/candidates/the-lions-whisker/page5-1.webp",
+      "bytes": 82572,
+      "type": "image/webp"
+    },
+    "sha256:915f09b694666b5dbb40c557f2c6618f94325852a9b9ce3d1436ab39241005d7": {
+      "path": "/story-spark-preview/audio/915f09b69466.mp3",
+      "bytes": 161421,
+      "type": "audio/mpeg"
+    },
+    "sha256:b528a8078e6932b55f041b2bbd865e51b21e1a9b00f0ee0bebf21645997f6bd8": {
+      "path": "/story-spark-preview/candidates/the-lions-whisker/page6-1.webp",
+      "bytes": 58510,
+      "type": "image/webp"
+    }
+  },
+  "contentHash": "sha256:3d6a1b27abe908bce01676f7bce173b4d1d723793d48020b2d6cb1f7b345a278"
+}
