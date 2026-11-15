@@ -73,6 +73,8 @@ interface CliOptions {
   pruneOldHashes: boolean;
   confirmDelete: boolean;
   patchCandidatesCache: boolean;
+  allowShrink: boolean;
+  rebuildStaging: boolean;
 }
 
 function parseCliOptions(argv: string[]): CliOptions {
@@ -88,6 +90,8 @@ function parseCliOptions(argv: string[]): CliOptions {
     pruneOldHashes: false,
     confirmDelete: false,
     patchCandidatesCache: false,
+    allowShrink: false,
+    rebuildStaging: false,
   };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -96,11 +100,46 @@ function parseCliOptions(argv: string[]): CliOptions {
     else if (a === '--prune-old-hashes') opts.pruneOldHashes = true;
     else if (a === '--confirm') opts.confirmDelete = true;
     else if (a === '--patch-candidates-cache') opts.patchCandidatesCache = true;
+    else if (a === '--allow-shrink') opts.allowShrink = true;
+    else if (a === '--rebuild-staging') opts.rebuildStaging = true;
     else if (a === '--bucket' && argv[i + 1]) opts.bucket = argv[++i];
     else if (a === '--prefix' && argv[i + 1]) opts.prefix = argv[++i].replace(/^\/+|\/+$/g, '');
     else if (a === '--concurrency' && argv[i + 1]) opts.concurrency = Math.max(1, Number(argv[++i]) || 20);
   }
   return opts;
+}
+
+export function verifyCatalogueSafetyAgainstRemote(
+  remoteEntries: ReadonlyArray<{ storyKey: string }> | undefined,
+  newEntries: ReadonlyArray<{ storyKey: string }>,
+  allowShrink = false,
+): { ok: true } | { ok: false; reason: string; missingKeys: string[]; remoteCount: number; newCount: number } {
+  const live = remoteEntries ?? [];
+  if (live.length === 0) return { ok: true };
+  const newKeySet = new Set(newEntries.map((e) => e.storyKey));
+  const missingKeys = live.map((e) => e.storyKey).filter((k) => !newKeySet.has(k));
+  const countShrank = newEntries.length < live.length;
+
+  if ((countShrank || missingKeys.length > 0) && !allowShrink) {
+    const parts: string[] = [];
+    if (countShrank) {
+      parts.push(`new catalogue entry count (${newEntries.length}) is lower than live Storage count (${live.length})`);
+    }
+    if (missingKeys.length > 0) {
+      const sample = missingKeys.slice(0, 10).join(', ');
+      parts.push(
+        `${missingKeys.length} existing storyKey(s) missing (${sample}${missingKeys.length > 10 ? ', ...' : ''})`,
+      );
+    }
+    return {
+      ok: false,
+      reason: `Safety guard blocked catalogue.json upload: ${parts.join('; ')}. Pass --allow-shrink to override intentionally.`,
+      missingKeys,
+      remoteCount: live.length,
+      newCount: newEntries.length,
+    };
+  }
+  return { ok: true };
 }
 
 const sha256Hex = (bufOrStr: Buffer | string) => createHash('sha256').update(bufOrStr).digest('hex');
@@ -557,10 +596,29 @@ async function buildStagedBundle(opts: CliOptions, remoteCatalogue: { catalogueV
     const remoteEntry = remoteEntryByKey.get(s.key);
     const priorEntry = remoteEntry ?? baseEntry;
 
+    const stagedPkgFromRemote =
+      typeof remoteEntry?.packagePath === 'string'
+        ? path.join(STAGE_DIR, 'packages', path.basename(remoteEntry.packagePath))
+        : '';
     const basePkgFile = path.join(BASELINE_DIR, 'packages', `${s.key}.json`);
-    const basePkg = fs.existsSync(basePkgFile) ? (JSON.parse(fs.readFileSync(basePkgFile, 'utf8')) as Record<string, any>) : null;
+    const resolvedPkgFile = fs.existsSync(basePkgFile)
+      ? basePkgFile
+      : stagedPkgFromRemote && fs.existsSync(stagedPkgFromRemote)
+        ? stagedPkgFromRemote
+        : '';
+    const basePkg = resolvedPkgFile ? (JSON.parse(fs.readFileSync(resolvedPkgFile, 'utf8')) as Record<string, any>) : null;
+
+    const stagedInfoFromRemote =
+      typeof remoteEntry?.infoPath === 'string'
+        ? path.join(STAGE_DIR, 'info', path.basename(remoteEntry.infoPath))
+        : '';
     const baseInfoFile = path.join(BASELINE_DIR, 'info', `${s.key}.json`);
-    const baseInfo = fs.existsSync(baseInfoFile) ? (JSON.parse(fs.readFileSync(baseInfoFile, 'utf8')) as Record<string, any>) : null;
+    const resolvedInfoFile = fs.existsSync(baseInfoFile)
+      ? baseInfoFile
+      : stagedInfoFromRemote && fs.existsSync(stagedInfoFromRemote)
+        ? stagedInfoFromRemote
+        : '';
+    const baseInfo = resolvedInfoFile ? (JSON.parse(fs.readFileSync(resolvedInfoFile, 'utf8')) as Record<string, any>) : null;
 
     const pkgAssets: Record<string, { path: string; bytes: number; type: string }> = {};
     const pkgPages: any[] = [];
@@ -1051,20 +1109,74 @@ async function main() {
     }
   }
 
-  // Read live remote catalogue.json (if present) so catalogueVersion increments monotonically
-  let remoteCatalogue: { catalogueVersion?: number; entries?: any[] } | null = null;
+  // Read live remote catalogue.json (if present) so catalogueVersion increments monotonically & shrink guard runs
+  let remoteCatalogue: { catalogueVersion?: number; entries?: Array<Record<string, any> & { storyKey: string }> } | null = null;
   if (remoteMap.has(`${opts.prefix}/catalogue.json`)) {
     const liveCatRes = await fetchPublicStorageUrl(opts.bucket, `${opts.prefix}/catalogue.json`);
-    if (liveCatRes.statusCode === 200) {
-      try {
-        remoteCatalogue = JSON.parse(liveCatRes.body.toString('utf8'));
-      } catch {
-        remoteCatalogue = null;
+    if (liveCatRes.statusCode !== 200) {
+      throw new Error(
+        `Could not read live ${opts.prefix}/catalogue.json from Storage (HTTP ${liveCatRes.statusCode}); refusing to proceed without safety comparison.`,
+      );
+    }
+    remoteCatalogue = JSON.parse(liveCatRes.body.toString('utf8'));
+  }
+
+  // Optional recovery flag (3c): rebuild .story-spark-build/story-spark-preview/ directly from live Firebase Storage
+  if (opts.rebuildStaging) {
+    if (!remoteCatalogue?.entries?.length) {
+      throw new Error(`Cannot --rebuild-staging: no entries found in live ${opts.prefix}/catalogue.json.`);
+    }
+    for (const sub of ['audio', 'images', 'packages', 'info']) {
+      fs.mkdirSync(path.join(STAGE_DIR, sub), { recursive: true });
+    }
+    fs.writeFileSync(path.join(STAGE_DIR, 'catalogue.json'), JSON.stringify(remoteCatalogue));
+    const toDownload = new Set<string>();
+    for (const e of remoteCatalogue.entries) {
+      if (typeof e.packagePath === 'string') toDownload.add(e.packagePath.replace(/^\/+/, ''));
+      if (typeof e.infoPath === 'string') toDownload.add(e.infoPath.replace(/^\/+/, ''));
+    }
+    const downloadPool = async (remotes: string[]) => {
+      let idx = 0;
+      await Promise.all(
+        Array.from({ length: Math.min(opts.concurrency, remotes.length || 1) }, async () => {
+          while (idx < remotes.length) {
+            const relRemote = remotes[idx++];
+            const subRel = relRemote.slice(`${opts.prefix}/`.length);
+            const dest = path.join(STAGE_DIR, subRel);
+            if (fs.existsSync(dest)) continue;
+            fs.mkdirSync(path.dirname(dest), { recursive: true });
+            const res = await fetchPublicStorageUrl(opts.bucket, relRemote);
+            if (res.statusCode !== 200) throw new Error(`Failed downloading ${relRemote}: HTTP ${res.statusCode}`);
+            fs.writeFileSync(dest, res.body);
+          }
+        }),
+      );
+    };
+    console.log(`[story:publish] Rebuilding staging packages & info for ${remoteCatalogue.entries.length} stories from Storage...`);
+    await downloadPool([...toDownload]);
+
+    const mediaRemotes = new Set<string>();
+    for (const e of remoteCatalogue.entries) {
+      const pkgLocal = path.join(STAGE_DIR, String(e.packagePath).replace(/^\/+/, '').slice(`${opts.prefix}/`.length));
+      const pkg = JSON.parse(fs.readFileSync(pkgLocal, 'utf8')) as { assets?: Record<string, { path?: string }> };
+      for (const a of Object.values(pkg.assets ?? {})) {
+        if (typeof a?.path === 'string') mediaRemotes.add(a.path.replace(/^\/+/, ''));
       }
     }
+    console.log(`[story:publish] Downloading ${mediaRemotes.size} referenced audio & image assets into .story-spark-build/...`);
+    await downloadPool([...mediaRemotes]);
+    console.log(`[story:publish] Staging folder rebuilt cleanly at ${STAGE_DIR}.`);
+    return;
   }
 
   const { cataloguePayload, catalogueUpload, assetUploads, activeRemoteSet } = await buildStagedBundle(opts, remoteCatalogue);
+
+  // Safety guard (3b): refuse to shrink catalogue entry count or drop any existing live storyKey unless --allow-shrink is passed
+  const safety = verifyCatalogueSafetyAgainstRemote(remoteCatalogue?.entries, cataloguePayload.entries, opts.allowShrink);
+  if (!safety.ok) {
+    console.error(`\n[story:publish] ABORTED: ${safety.reason}`);
+    process.exit(1);
+  }
 
   // Determine which hashed assets are new or changed vs Storage
   const pendingAssets: UploadItem[] = [];
