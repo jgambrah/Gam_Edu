@@ -1634,7 +1634,7 @@
     "definition": "Operating by or relating to electricity."
   },
   "power": {
-    "definition": "The rate of doing work; work done divided by time taken."
+    "definition": "The rate at which energy is transferred, measured in watts."
   },
   "powerful": {
     "definition": "Having great strength, energy, or influence."
@@ -5498,7 +5498,7 @@
     "definition": "To discover or notice the presence of something faint or hidden using senses or instruments."
   },
   "background": {
-    "definition": "The part of a scene or picture farthest from the viewer, or the history behind an event."
+    "definition": "Background radiation: the low level of radiation that is always around us from natural sources."
   },
   "expansion": {
     "definition": "An increase in size when a substance is heated."
@@ -5693,7 +5693,7 @@
     "definition": "A sensor switch that keeps temperature steady inside an oven or dryer"
   },
   "turbine": {
-    "definition": "A rotary machine whose curved blades are spun by fast-flowing water, steam or wind"
+    "definition": "A wheel with blades that is spun by moving water, steam, gas, or wind."
   },
   "bias": {
     "definition": "Systematic errors in AI predictions caused by incomplete or unrepresentative training data."
@@ -6036,7 +6036,7 @@
     "definition": "Happening again and again."
   },
   "battery": {
-    "definition": "A container that stores electrical energy."
+    "definition": "Two or more cells joined together."
   },
   "scrub": {
     "definition": "To rub hard to clean something."
@@ -6105,7 +6105,7 @@
     "definition": "Fraudulent attempts via fake links or calls to steal credentials or money."
   },
   "switch": {
-    "definition": "A central LAN device that connects nodes and forwards frames using MAC addresses."
+    "definition": "A part that opens or closes a gap in a circuit."
   },
   "thermoplastic": {
     "definition": "A plastic polymer that softens when heated and hardens when cooled, allowing reshaping."
@@ -6160,6 +6160,30 @@
   },
   "medium": {
     "definition": "A material that a sound wave travels through."
+  },
+  "circuit": {
+    "definition": "A complete loop that an electric current can flow around."
+  },
+  "static": {
+    "definition": "Static electricity: electric charge that builds up in one place until it suddenly escapes."
+  },
+  "transistor": {
+    "definition": "A tiny switch with no moving parts, worked by a small electric signal."
+  },
+  "induction": {
+    "definition": "Electromagnetic induction: the production of a voltage in a coil when the magnetic field through it changes."
+  },
+  "electromagnet": {
+    "definition": "A magnet made by passing a current through a coil of wire."
+  },
+  "transformer": {
+    "definition": "A device that raises or lowers voltage."
+  },
+  "nucleus": {
+    "definition": "The tiny, heavy centre of an atom."
+  },
+  "radiation": {
+    "definition": "Energy sent out as rays or fast particles."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6526,7 +6550,7 @@
     "definition": "Large enclosed steel pipes that channel rushing water from a reservoir down to the hydroelectric turbines"
   },
   "generator": {
-    "definition": "A machine that makes electricity."
+    "definition": "A machine that produces electricity when its shaft is turned."
   },
   "megawatts": {
     "definition": "Units of electrical power equal to one million watts, used to measure the output of power stations"
@@ -6852,9 +6876,6 @@
   },
   "landing": {
     "definition": "A place where boats come ashore."
-  },
-  "static": {
-    "definition": "A build-up of electric charge on things that are rubbed together, often in dry air."
   },
   "column": {
     "definition": "A tall, thin shape like a pillar."
@@ -7454,7 +7475,7 @@
     "definition": "A very sad and serious event."
   },
   "conductor": {
-    "definition": "The person on a bus who collects fares."
+    "definition": "Lightning conductor: a metal rod on a building, joined to the ground, that gives lightning a safe path."
   },
   "hawker": {
     "definition": "A person who sells goods by carrying them around."
@@ -7977,7 +7998,7 @@
     "definition": "Unfair social disapproval, shame, or discrimination directed at someone because of a health condition or difference."
   },
   "current": {
-    "definition": "Electric current (DC) in which charges flow steadily in one direction, as produced by solar cells and batteries."
+    "definition": "The flow of electric charge."
   },
   "inverter": {
     "definition": "An electronic device that converts direct current (DC) from solar panels or batteries into alternating current (AC) for standard appliances."
@@ -8107,7 +8128,7 @@
     "definition": "Shaped so that air or water flows past easily."
   },
   "repel": {
-    "definition": "To push away; like magnetic poles repel each other."
+    "definition": "To push away."
   },
   "maglev": {
     "definition": "Magnetic levitation: using magnets to lift a vehicle above its track."
@@ -8131,7 +8152,7 @@
     "definition": "Gravitational potential energy: energy stored in an object because it has been raised above the ground."
   },
   "kinetic": {
-    "definition": "Kinetic energy: the energy an object has because it is moving."
+    "definition": "Kinetic energy: the energy of movement."
   },
   "elastic": {
     "definition": "Elastic potential energy: energy stored in an object that has been stretched, squashed, or bent."
@@ -8154,14 +8175,11 @@
   "renewable": {
     "definition": "Describing an energy source that nature replaces, such as sunlight or falling water."
   },
-  "nucleus": {
-    "definition": "The tiny centre of an atom."
-  },
   "fission": {
-    "definition": "Nuclear fission: the splitting of a heavy nucleus, releasing heat."
+    "definition": "Nuclear fission: the splitting of a heavy nucleus into two smaller ones, releasing energy."
   },
   "reaction": {
-    "definition": "Chain reaction: a reaction in which each step sets off the next."
+    "definition": "Chain reaction: a process in which each splitting nucleus causes more nuclei to split."
   },
   "radioactive": {
     "definition": "Giving out harmful radiation."
@@ -8189,9 +8207,6 @@
   },
   "convection": {
     "definition": "The transfer of thermal energy by the movement of a heated liquid or gas."
-  },
-  "radiation": {
-    "definition": "The transfer of thermal energy by rays that can cross empty space."
   },
   "insulators": {
     "definition": "Materials that do not let thermal energy pass through them easily."
@@ -8252,6 +8267,75 @@
   },
   "noise": {
     "definition": "Sound that is unwanted or harmful."
+  },
+  "cell": {
+    "definition": "A device that pushes electric charge around a circuit; several joined together make a battery."
+  },
+  "series": {
+    "definition": "Joined end to end, so that the voltages add together."
+  },
+  "voltage": {
+    "definition": "The push that drives electric charge along, measured in volts."
+  },
+  "charge": {
+    "definition": "A property of matter that can be positive or negative."
+  },
+  "electrons": {
+    "definition": "Very light, negatively charged particles that move around the nucleus."
+  },
+  "attract": {
+    "definition": "To pull towards."
+  },
+  "semiconductor": {
+    "definition": "A material, such as silicon, that can be made to conduct or to block electric current."
+  },
+  "sensor": {
+    "definition": "A part that responds to light, heat, sound, or movement."
+  },
+  "automation": {
+    "definition": "The use of machines that follow built-in rules without a person controlling each step."
+  },
+  "intelligence": {
+    "definition": "Artificial intelligence: computer programs that learn patterns from many examples and use them to do tasks."
+  },
+  "amplifier": {
+    "definition": "A device that makes a larger copy of a small electrical signal."
+  },
+  "coil": {
+    "definition": "Wire wound into many turns."
+  },
+  "pickup": {
+    "definition": "The part of an electric guitar, made of magnets and coils, that turns string movement into electric current."
+  },
+  "motor": {
+    "definition": "A machine that turns electrical energy into movement."
+  },
+  "pylons": {
+    "definition": "Tall steel towers that carry high-voltage cables."
+  },
+  "grid": {
+    "definition": "National grid: the network of power stations, lines, and transformers that supplies a country."
+  },
+  "substation": {
+    "definition": "A place where transformers change the voltage of the supply."
+  },
+  "atom": {
+    "definition": "The smallest particle of an element."
+  },
+  "protons": {
+    "definition": "Positively charged particles in the nucleus."
+  },
+  "neutrons": {
+    "definition": "Particles in the nucleus that have no charge."
+  },
+  "radium": {
+    "definition": "A radioactive metal that glows faintly in the dark."
+  },
+  "radioactivity": {
+    "definition": "The giving out of radiation by unstable nuclei."
+  },
+  "shielding": {
+    "definition": "Material such as lead or concrete placed between a person and a source of radiation."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
