@@ -36,7 +36,7 @@
     "definition": "A short, wise traditional saying that teaches a truth about life."
   },
   "proverbs": {
-    "definition": "Short sayings that carry old wisdom."
+    "definition": "Short, wise sayings."
   },
   "legend": {
     "definition": "An old, famous story passed down over generations that may mix history with wonder."
@@ -223,7 +223,7 @@
     "definition": "An older person in the community respected for wisdom and experience."
   },
   "elders": {
-    "definition": "Older members of a community respected for their experience and wisdom."
+    "definition": "Older, respected members of a community."
   },
   "chief": {
     "definition": "A traditional leader who guides and serves a town, village, or community."
@@ -232,7 +232,7 @@
     "definition": "Traditional leaders who guide communities and protect cultural heritage."
   },
   "queen": {
-    "definition": "A female royal leader, or in Ghana a queenmother (Obaahemaa) who advises and leads alongside a chief."
+    "definition": "Queen mother: the senior woman of a royal family, who advises the chief and helps to choose him."
   },
   "friend": {
     "definition": "Someone you know well, trust, and enjoy spending time with."
@@ -379,7 +379,7 @@
     "definition": "Something learned or taught in class or through an experience."
   },
   "assembly": {
-    "definition": "The local government that looks after a town or district."
+    "definition": "A group of people chosen to meet and make laws or decisions."
   },
   "homework": {
     "definition": "Schoolwork that a pupil does at home after classes."
@@ -4569,7 +4569,7 @@
     "definition": "Written down in a list."
   },
   "council": {
-    "definition": "A group of leaders or elders who meet to advise, make rules, or govern a town."
+    "definition": "A group of people who meet to make decisions."
   },
   "row": {
     "definition": "A neat line of things, people, or seats side by side; or to move a boat with paddles."
@@ -5822,7 +5822,7 @@
     "definition": "The readable message before it is turned into a code."
   },
   "tradition": {
-    "definition": "A story or custom passed down over many years."
+    "definition": "Beliefs, stories, and customs passed down from older people to younger ones."
   },
   "adobe": {
     "definition": "A building material made of mud and clay."
@@ -5858,7 +5858,7 @@
     "definition": "The office or rule of a chief."
   },
   "archaeologists": {
-    "definition": "Scientists who study the past by digging up and examining old remains."
+    "definition": "People who study the past by digging up and examining what earlier people left behind."
   },
   "symbol": {
     "definition": "A picture or sign that stands for an idea."
@@ -6185,6 +6185,30 @@
   "radiation": {
     "definition": "Energy sent out as rays or fast particles."
   },
+  "caravans": {
+    "definition": "Groups of traders travelling together with loaded animals."
+  },
+  "tribute": {
+    "definition": "Payment that a weaker state must give to a stronger one."
+  },
+  "allies": {
+    "definition": "People or states that join together to help one another."
+  },
+  "constitution": {
+    "definition": "The written rules that say how a state or group is to be governed."
+  },
+  "famine": {
+    "definition": "A time when there is very little food and many people go hungry."
+  },
+  "lagoon": {
+    "definition": "A stretch of shallow water separated from the sea by a strip of land."
+  },
+  "enskinned": {
+    "definition": "Made a chief in northern Ghana, where a chief sits on animal skins."
+  },
+  "rotates": {
+    "definition": "Passes from one to the next in turn."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6439,7 +6463,7 @@
     "definition": "To grow a business system so it can serve many more customers reliably"
   },
   "capital": {
-    "definition": "The main town where a ruler or government is based."
+    "definition": "The chief town of a kingdom or country."
   },
   "valuation": {
     "definition": "The estimated total economic worth of a company (total shares multiplied by share price), not cash in a founder’s pocket"
@@ -6923,7 +6947,7 @@
     "definition": "Tall posts that hold a building above the ground or water."
   },
   "empire": {
-    "definition": "A large area of land and people ruled by one powerful ruler or government."
+    "definition": "A large state that rules over many peoples and lands."
   },
   "independence": {
     "definition": "Freedom from the control of another country."
@@ -6975,7 +6999,7 @@
     "definition": "A place that keeps important documents and records."
   },
   "asantehene": {
-    "definition": "The king of the Asante people. (King of the Asante people and kingdom.)",
+    "definition": "The king of Asante. (King of the Asante people and kingdom.)",
     "phonetic": "ah-sahn-teh-heh-neh"
   },
   "buttresses": {
@@ -7048,13 +7072,13 @@
     "definition": "The sweet taste or quality of something."
   },
   "fort": {
-    "definition": "A strong building with thick walls, used for defence."
+    "definition": "A strong building made for defence and trade."
   },
   "enslaved": {
     "definition": "Forced to work for others without freedom or pay."
   },
   "descendants": {
-    "definition": "People who come from the same family line, later in time."
+    "definition": "The children, grandchildren, and later family of a person or people."
   },
   "restored": {
     "definition": "Repaired and brought back to a good condition."
@@ -7079,7 +7103,7 @@
     "definition": "Two children born to the same mother at the same time."
   },
   "conquered": {
-    "definition": "Took control of a place or people by force."
+    "definition": "Defeated and taken over by force."
   },
   "decisive": {
     "definition": "Settling the matter; deciding who wins."
@@ -7104,9 +7128,6 @@
   },
   "anthem": {
     "definition": "The official song of a country."
-  },
-  "lagoon": {
-    "definition": "A shallow body of water near the sea."
   },
   "disaster": {
     "definition": "An event that causes great harm or loss."
@@ -7203,7 +7224,7 @@
     "definition": "A group of farmers who work together and share the benefits."
   },
   "durbar": {
-    "definition": "A public gathering where chiefs and the people meet."
+    "definition": "A grand public gathering of chiefs and people."
   },
   "bylaw": {
     "definition": "A local rule made by a community or council."
@@ -8337,6 +8358,40 @@
   "shielding": {
     "definition": "Material such as lead or concrete placed between a person and a source of radiation."
   },
+  "savanna": {
+    "definition": "Open grassland with scattered trees."
+  },
+  "republic": {
+    "definition": "A country whose head of state is elected, not a king or queen."
+  },
+  "taxing": {
+    "definition": "Making people pay money to the state."
+  },
+  "governor": {
+    "definition": "A person who rules a place on behalf of a government."
+  },
+  "unite": {
+    "definition": "To join together as one."
+  },
+  "colony": {
+    "definition": "A land ruled by another country."
+  },
+  "lunsi": {
+    "definition": "The drummers of Dagbon, who keep and recite its history. (Hereditary royal talking-drummers and oral historians of Dagbon.)",
+    "phonetic": "loon-see"
+  },
+  "smock": {
+    "definition": "A loose garment sewn from strips of hand-woven cotton."
+  },
+  "scholars": {
+    "definition": "People who have studied deeply and can read and write well."
+  },
+  "division": {
+    "definition": "One of the parts into which a kingdom is split, each with its own chief."
+  },
+  "chronicle": {
+    "definition": "A written record of events in the order they happened."
+  },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
     "phonetic": "eh-foo-ah"
@@ -9364,10 +9419,6 @@
   "yendi": {
     "definition": "Traditional capital of the Kingdom of Dagbon in northern Ghana, seat of the Ya-Na.",
     "phonetic": "yen-dee"
-  },
-  "lunsi": {
-    "definition": "Hereditary royal talking-drummers and oral historians of Dagbon.",
-    "phonetic": "loon-see"
   },
   "tohazie": {
     "definition": "Legendary \"Red Hunter\" ancestor in the oral traditions of Dagbon, Mamprugu and Nanung.",
