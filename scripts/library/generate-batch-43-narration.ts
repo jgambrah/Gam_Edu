@@ -13,21 +13,24 @@ const previewOut = path.join(repoRoot, 'public/story-spark-preview');
 const ffmpegPath = 'C:/Users/DELL/.gemini/antigravity/brain/ab432cb2-3465-4ebb-a6a5-9020b86bd570/scratch/node_modules/ffmpeg-static/ffmpeg.exe';
 
 const apiKeys: string[] = [];
+const addKey = (k?: string) => {
+  const trimmed = k?.trim();
+  if (trimmed && !apiKeys.includes(trimmed)) apiKeys.push(trimmed);
+};
 if (process.env.GEMINI_API_KEYS) {
-  apiKeys.push(...process.env.GEMINI_API_KEYS.split(',').map((k) => k.trim()).filter(Boolean));
+  process.env.GEMINI_API_KEYS.split(',').forEach(addKey);
 }
-if (process.env.GEMINI_API_KEY) {
-  apiKeys.push(process.env.GEMINI_API_KEY.trim());
+for (const [k, v] of Object.entries(process.env)) {
+  if (/^GEMINI_API_KEY(_\d+)?$/.test(k)) addKey(v);
 }
-if (apiKeys.length === 0 && existsSync(envPath)) {
+if (existsSync(envPath)) {
   const content = readFileSync(envPath, 'utf8');
   const multi = /^\s*GEMINI_API_KEYS\s*=\s*["']?([^"'\r\n]+?)["']?\s*$/m.exec(content);
-  if (multi) {
-    apiKeys.push(...multi[1].split(',').map((k) => k.trim()).filter(Boolean));
-  }
-  const single = /^\s*GEMINI_API_KEY\s*=\s*["']?([^"'\r\n]+?)["']?\s*$/m.exec(content);
-  if (single && !apiKeys.includes(single[1].trim())) {
-    apiKeys.push(single[1].trim());
+  if (multi) multi[1].split(',').forEach(addKey);
+  const lineRe = /^\s*GEMINI_API_KEY(?:_\d+)?\s*=\s*["']?([^"'\r\n#]+?)["']?\s*$/gm;
+  let m: RegExpExecArray | null;
+  while ((m = lineRe.exec(content)) !== null) {
+    addKey(m[1]);
   }
 }
 

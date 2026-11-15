@@ -1,0 +1,2803 @@
+{
+  "schemaVersion": 1,
+  "storyId": "gyaman-the-kingdom-cut-in-two",
+  "version": 1,
+  "title": "Gyaman: The Kingdom Cut in Two",
+  "ageTiers": [
+    "9-10"
+  ],
+  "language": "en",
+  "narrationLocale": "en-GH",
+  "pages": [
+    {
+      "n": 1,
+      "text": "At a funeral in almost any town in southern Ghana, you will see cloth stamped with small black signs. One looks like a heart. One is a ladder. One, a pattern of curves, is known everywhere as Gye Nyame, meaning except God. The signs are printed on school crests, church walls, taxis, and even the seats in Parliament. They are called adinkra symbols. Ask where the name comes from, and many people will tell you a story about a king, a war, and a kingdom that most Ghanaians have never heard of. Its name was Gyaman.",
+      "sentences": [
+        "At a funeral in almost any town in southern Ghana, you will see cloth stamped with small black signs.",
+        "One looks like a heart.",
+        "One is a ladder.",
+        "One, a pattern of curves, is known everywhere as Gye Nyame, meaning except God.",
+        "The signs are printed on school crests, church walls, taxis, and even the seats in Parliament.",
+        "They are called adinkra symbols.",
+        "Ask where the name comes from, and many people will tell you a story about a king, a war, and a kingdom that most Ghanaians have never heard of.",
+        "Its name was Gyaman."
+      ],
+      "alt": "A length of cloth stamped with rows of black symbols, hanging to dry beside carved calabash stamps.",
+      "image": {
+        "hash": "sha256:7eefa178bd57b9f61c88d273b3ccea455660537c2e38af7bbbac9fedb129c6e4",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:1be114c2ab8a71a362e025687f91a0a85ff6600cd1838d795c2786378bc77975",
+        "durationMs": 44600,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              8036
+            ],
+            [
+              8036,
+              10496
+            ],
+            [
+              10496,
+              12464
+            ],
+            [
+              12464,
+              19762
+            ],
+            [
+              19762,
+              28044
+            ],
+            [
+              28044,
+              31160
+            ],
+            [
+              31160,
+              42804
+            ],
+            [
+              42804,
+              44600
+            ]
+          ],
+          "words": [
+            [
+              0,
+              164
+            ],
+            [
+              164,
+              328
+            ],
+            [
+              328,
+              902
+            ],
+            [
+              902,
+              1066
+            ],
+            [
+              1066,
+              1558
+            ],
+            [
+              1558,
+              1804
+            ],
+            [
+              1804,
+              2132
+            ],
+            [
+              2132,
+              2296
+            ],
+            [
+              2296,
+              2952
+            ],
+            [
+              2952,
+              3772
+            ],
+            [
+              3772,
+              4018
+            ],
+            [
+              4018,
+              4346
+            ],
+            [
+              4346,
+              4592
+            ],
+            [
+              4592,
+              5002
+            ],
+            [
+              5002,
+              5576
+            ],
+            [
+              5576,
+              5904
+            ],
+            [
+              5904,
+              6314
+            ],
+            [
+              6314,
+              6724
+            ],
+            [
+              6724,
+              8036
+            ],
+            [
+              8036,
+              8282
+            ],
+            [
+              8282,
+              8692
+            ],
+            [
+              8692,
+              9020
+            ],
+            [
+              9020,
+              9184
+            ],
+            [
+              9184,
+              10496
+            ],
+            [
+              10496,
+              10742
+            ],
+            [
+              10742,
+              10906
+            ],
+            [
+              10906,
+              11070
+            ],
+            [
+              11070,
+              12464
+            ],
+            [
+              12464,
+              13120
+            ],
+            [
+              13120,
+              13284
+            ],
+            [
+              13284,
+              13858
+            ],
+            [
+              13858,
+              14022
+            ],
+            [
+              14022,
+              14924
+            ],
+            [
+              14924,
+              15088
+            ],
+            [
+              15088,
+              15498
+            ],
+            [
+              15498,
+              16318
+            ],
+            [
+              16318,
+              16482
+            ],
+            [
+              16482,
+              16728
+            ],
+            [
+              16728,
+              17548
+            ],
+            [
+              17548,
+              18122
+            ],
+            [
+              18122,
+              18614
+            ],
+            [
+              18614,
+              19762
+            ],
+            [
+              19762,
+              20008
+            ],
+            [
+              20008,
+              20418
+            ],
+            [
+              20418,
+              20664
+            ],
+            [
+              20664,
+              21238
+            ],
+            [
+              21238,
+              21402
+            ],
+            [
+              21402,
+              21894
+            ],
+            [
+              21894,
+              22796
+            ],
+            [
+              22796,
+              23288
+            ],
+            [
+              23288,
+              24108
+            ],
+            [
+              24108,
+              24928
+            ],
+            [
+              24928,
+              25174
+            ],
+            [
+              25174,
+              25502
+            ],
+            [
+              25502,
+              25748
+            ],
+            [
+              25748,
+              26158
+            ],
+            [
+              26158,
+              26322
+            ],
+            [
+              26322,
+              28044
+            ],
+            [
+              28044,
+              28372
+            ],
+            [
+              28372,
+              28618
+            ],
+            [
+              28618,
+              29110
+            ],
+            [
+              29110,
+              29684
+            ],
+            [
+              29684,
+              31160
+            ],
+            [
+              31160,
+              31406
+            ],
+            [
+              31406,
+              31816
+            ],
+            [
+              31816,
+              32062
+            ],
+            [
+              32062,
+              32390
+            ],
+            [
+              32390,
+              32800
+            ],
+            [
+              32800,
+              33538
+            ],
+            [
+              33538,
+              33784
+            ],
+            [
+              33784,
+              34112
+            ],
+            [
+              34112,
+              34604
+            ],
+            [
+              34604,
+              34932
+            ],
+            [
+              34932,
+              35260
+            ],
+            [
+              35260,
+              35506
+            ],
+            [
+              35506,
+              35670
+            ],
+            [
+              35670,
+              36080
+            ],
+            [
+              36080,
+              36490
+            ],
+            [
+              36490,
+              36654
+            ],
+            [
+              36654,
+              37392
+            ],
+            [
+              37392,
+              37556
+            ],
+            [
+              37556,
+              38212
+            ],
+            [
+              38212,
+              38458
+            ],
+            [
+              38458,
+              38622
+            ],
+            [
+              38622,
+              39196
+            ],
+            [
+              39196,
+              39524
+            ],
+            [
+              39524,
+              39852
+            ],
+            [
+              39852,
+              40590
+            ],
+            [
+              40590,
+              40918
+            ],
+            [
+              40918,
+              41328
+            ],
+            [
+              41328,
+              41738
+            ],
+            [
+              41738,
+              42804
+            ],
+            [
+              42804,
+              43050
+            ],
+            [
+              43050,
+              43378
+            ],
+            [
+              43378,
+              43624
+            ],
+            [
+              43624,
+              44600
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 2,
+      "text": "Gyaman lay in the north-west of the Akan world, where the forest thins into savanna. It was founded in the late 1600s by an Akan group who moved west from the area of present-day Dormaa. They settled among peoples who were already living there, and they ruled together with them. The capital stood near the old trading town of Bonduku. Muslim merchants lived there, weavers produced fine cloth, and caravans passed through on their way between the forest and the River Niger. Gyaman grew rich on gold, cloth, and trade.",
+      "sentences": [
+        "Gyaman lay in the north-west of the Akan world, where the forest thins into savanna.",
+        "It was founded in the late 1600s by an Akan group who moved west from the area of present-day Dormaa.",
+        "They settled among peoples who were already living there, and they ruled together with them.",
+        "The capital stood near the old trading town of Bonduku.",
+        "Muslim merchants lived there, weavers produced fine cloth, and caravans passed through on their way between the forest and the River Niger.",
+        "Gyaman grew rich on gold, cloth, and trade."
+      ],
+      "alt": "A trading town of flat-roofed houses and a mud mosque, with weavers working at looms in the street.",
+      "image": {
+        "hash": "sha256:2f6078bf92996829a52f3ee2366bd60b2100a7d027ed76ddfdbf2eecebb37cc3",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:a96a847d2425371e6ea29307cf907827b54672b9720423f593d71687d8bae7d4",
+        "durationMs": 39000,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6388
+            ],
+            [
+              6388,
+              13392
+            ],
+            [
+              13392,
+              20470
+            ],
+            [
+              20470,
+              24779
+            ],
+            [
+              24779,
+              35242
+            ],
+            [
+              35242,
+              39000
+            ]
+          ],
+          "words": [
+            [
+              0,
+              462
+            ],
+            [
+              462,
+              693
+            ],
+            [
+              693,
+              847
+            ],
+            [
+              847,
+              1078
+            ],
+            [
+              1078,
+              1770
+            ],
+            [
+              1770,
+              1924
+            ],
+            [
+              1924,
+              2155
+            ],
+            [
+              2155,
+              2463
+            ],
+            [
+              2463,
+              3232
+            ],
+            [
+              3232,
+              3617
+            ],
+            [
+              3617,
+              3848
+            ],
+            [
+              3848,
+              4310
+            ],
+            [
+              4310,
+              4695
+            ],
+            [
+              4695,
+              5003
+            ],
+            [
+              5003,
+              6388
+            ],
+            [
+              6388,
+              6542
+            ],
+            [
+              6542,
+              6773
+            ],
+            [
+              6773,
+              7311
+            ],
+            [
+              7311,
+              7465
+            ],
+            [
+              7465,
+              7696
+            ],
+            [
+              7696,
+              8004
+            ],
+            [
+              8004,
+              8389
+            ],
+            [
+              8389,
+              8543
+            ],
+            [
+              8543,
+              8697
+            ],
+            [
+              8697,
+              9005
+            ],
+            [
+              9005,
+              9390
+            ],
+            [
+              9390,
+              9621
+            ],
+            [
+              9621,
+              10006
+            ],
+            [
+              10006,
+              10314
+            ],
+            [
+              10314,
+              10622
+            ],
+            [
+              10622,
+              10853
+            ],
+            [
+              10853,
+              11161
+            ],
+            [
+              11161,
+              11315
+            ],
+            [
+              11315,
+              12084
+            ],
+            [
+              12084,
+              13392
+            ],
+            [
+              13392,
+              13700
+            ],
+            [
+              13700,
+              14238
+            ],
+            [
+              14238,
+              14623
+            ],
+            [
+              14623,
+              15161
+            ],
+            [
+              15161,
+              15392
+            ],
+            [
+              15392,
+              15700
+            ],
+            [
+              15700,
+              16238
+            ],
+            [
+              16238,
+              16700
+            ],
+            [
+              16700,
+              17469
+            ],
+            [
+              17469,
+              17700
+            ],
+            [
+              17700,
+              18008
+            ],
+            [
+              18008,
+              18393
+            ],
+            [
+              18393,
+              19008
+            ],
+            [
+              19008,
+              19316
+            ],
+            [
+              19316,
+              20470
+            ],
+            [
+              20470,
+              20701
+            ],
+            [
+              20701,
+              21239
+            ],
+            [
+              21239,
+              21624
+            ],
+            [
+              21624,
+              21932
+            ],
+            [
+              21932,
+              22163
+            ],
+            [
+              22163,
+              22394
+            ],
+            [
+              22394,
+              22932
+            ],
+            [
+              22932,
+              23240
+            ],
+            [
+              23240,
+              23394
+            ],
+            [
+              23394,
+              24779
+            ],
+            [
+              24779,
+              25241
+            ],
+            [
+              25241,
+              25933
+            ],
+            [
+              25933,
+              26318
+            ],
+            [
+              26318,
+              27087
+            ],
+            [
+              27087,
+              27625
+            ],
+            [
+              27625,
+              28240
+            ],
+            [
+              28240,
+              28548
+            ],
+            [
+              28548,
+              29317
+            ],
+            [
+              29317,
+              29548
+            ],
+            [
+              29548,
+              30163
+            ],
+            [
+              30163,
+              30625
+            ],
+            [
+              30625,
+              31163
+            ],
+            [
+              31163,
+              31317
+            ],
+            [
+              31317,
+              31702
+            ],
+            [
+              31702,
+              31933
+            ],
+            [
+              31933,
+              32471
+            ],
+            [
+              32471,
+              32702
+            ],
+            [
+              32702,
+              33164
+            ],
+            [
+              33164,
+              33395
+            ],
+            [
+              33395,
+              33626
+            ],
+            [
+              33626,
+              34011
+            ],
+            [
+              34011,
+              35242
+            ],
+            [
+              35242,
+              35704
+            ],
+            [
+              35704,
+              36012
+            ],
+            [
+              36012,
+              36320
+            ],
+            [
+              36320,
+              36474
+            ],
+            [
+              36474,
+              37166
+            ],
+            [
+              37166,
+              37935
+            ],
+            [
+              37935,
+              38166
+            ],
+            [
+              38166,
+              39000
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 3,
+      "text": "Riches drew the attention of Asante. In 1740, an Asante army defeated Gyaman and made it pay tribute. Gyaman rose against this rule several times. In the early 1800s, its king was Kwadwo Adinkra. Tradition says that he had a golden stool made for himself, like the Golden Stool of Asante. The Asantehene took this as a great insult. In 1818, he led a large army north-west. After hard fighting, Gyaman was defeated and King Adinkra was killed. It was one of the last great victories of the Asante kingdom.",
+      "sentences": [
+        "Riches drew the attention of Asante.",
+        "In 1740, an Asante army defeated Gyaman and made it pay tribute.",
+        "Gyaman rose against this rule several times.",
+        "In the early 1800s, its king was Kwadwo Adinkra.",
+        "Tradition says that he had a golden stool made for himself, like the Golden Stool of Asante.",
+        "The Asantehene took this as a great insult.",
+        "In 1818, he led a large army north-west.",
+        "After hard fighting, Gyaman was defeated and King Adinkra was killed.",
+        "It was one of the last great victories of the Asante kingdom."
+      ],
+      "alt": "Two armies facing each other across open grassland, each with a royal umbrella at its centre.",
+      "image": {
+        "hash": "sha256:3057a75192a26b7330cfc3393ca1266a05a0254fe293256cc1150f8ad3c4aa7c",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:aa427769314f70d000a081a6a8756e72e0df0794c8bdfb30d2cfe5ce3992ca63",
+        "durationMs": 43680,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              3425
+            ],
+            [
+              3425,
+              9021
+            ],
+            [
+              9021,
+              13030
+            ],
+            [
+              13030,
+              17541
+            ],
+            [
+              17541,
+              25143
+            ],
+            [
+              25143,
+              29069
+            ],
+            [
+              29069,
+              32995
+            ],
+            [
+              32995,
+              39094
+            ],
+            [
+              39094,
+              43680
+            ]
+          ],
+          "words": [
+            [
+              0,
+              501
+            ],
+            [
+              501,
+              835
+            ],
+            [
+              835,
+              1086
+            ],
+            [
+              1086,
+              1838
+            ],
+            [
+              1838,
+              2005
+            ],
+            [
+              2005,
+              3425
+            ],
+            [
+              3425,
+              3592
+            ],
+            [
+              3592,
+              4344
+            ],
+            [
+              4344,
+              4511
+            ],
+            [
+              4511,
+              5012
+            ],
+            [
+              5012,
+              5346
+            ],
+            [
+              5346,
+              6014
+            ],
+            [
+              6014,
+              6515
+            ],
+            [
+              6515,
+              6766
+            ],
+            [
+              6766,
+              7100
+            ],
+            [
+              7100,
+              7267
+            ],
+            [
+              7267,
+              7518
+            ],
+            [
+              7518,
+              9021
+            ],
+            [
+              9021,
+              9522
+            ],
+            [
+              9522,
+              9856
+            ],
+            [
+              9856,
+              10441
+            ],
+            [
+              10441,
+              10775
+            ],
+            [
+              10775,
+              11109
+            ],
+            [
+              11109,
+              11694
+            ],
+            [
+              11694,
+              13030
+            ],
+            [
+              13030,
+              13197
+            ],
+            [
+              13197,
+              13448
+            ],
+            [
+              13448,
+              13866
+            ],
+            [
+              13866,
+              14701
+            ],
+            [
+              14701,
+              14952
+            ],
+            [
+              14952,
+              15286
+            ],
+            [
+              15286,
+              15537
+            ],
+            [
+              15537,
+              16038
+            ],
+            [
+              16038,
+              17541
+            ],
+            [
+              17541,
+              18293
+            ],
+            [
+              18293,
+              18627
+            ],
+            [
+              18627,
+              18961
+            ],
+            [
+              18961,
+              19128
+            ],
+            [
+              19128,
+              19379
+            ],
+            [
+              19379,
+              19546
+            ],
+            [
+              19546,
+              20047
+            ],
+            [
+              20047,
+              20465
+            ],
+            [
+              20465,
+              20799
+            ],
+            [
+              20799,
+              21050
+            ],
+            [
+              21050,
+              22052
+            ],
+            [
+              22052,
+              22386
+            ],
+            [
+              22386,
+              22637
+            ],
+            [
+              22637,
+              23138
+            ],
+            [
+              23138,
+              23556
+            ],
+            [
+              23556,
+              23723
+            ],
+            [
+              23723,
+              25143
+            ],
+            [
+              25143,
+              25394
+            ],
+            [
+              25394,
+              26229
+            ],
+            [
+              26229,
+              26563
+            ],
+            [
+              26563,
+              26897
+            ],
+            [
+              26897,
+              27064
+            ],
+            [
+              27064,
+              27231
+            ],
+            [
+              27231,
+              27649
+            ],
+            [
+              27649,
+              29069
+            ],
+            [
+              29069,
+              29236
+            ],
+            [
+              29236,
+              29988
+            ],
+            [
+              29988,
+              30155
+            ],
+            [
+              30155,
+              30406
+            ],
+            [
+              30406,
+              30573
+            ],
+            [
+              30573,
+              30991
+            ],
+            [
+              30991,
+              31325
+            ],
+            [
+              31325,
+              32995
+            ],
+            [
+              32995,
+              33413
+            ],
+            [
+              33413,
+              33747
+            ],
+            [
+              33747,
+              34833
+            ],
+            [
+              34833,
+              35334
+            ],
+            [
+              35334,
+              35585
+            ],
+            [
+              35585,
+              36253
+            ],
+            [
+              36253,
+              36504
+            ],
+            [
+              36504,
+              36838
+            ],
+            [
+              36838,
+              37423
+            ],
+            [
+              37423,
+              37674
+            ],
+            [
+              37674,
+              39094
+            ],
+            [
+              39094,
+              39261
+            ],
+            [
+              39261,
+              39512
+            ],
+            [
+              39512,
+              39763
+            ],
+            [
+              39763,
+              39930
+            ],
+            [
+              39930,
+              40181
+            ],
+            [
+              40181,
+              40515
+            ],
+            [
+              40515,
+              40933
+            ],
+            [
+              40933,
+              41685
+            ],
+            [
+              41685,
+              41852
+            ],
+            [
+              41852,
+              42103
+            ],
+            [
+              42103,
+              42604
+            ],
+            [
+              42604,
+              43680
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 4,
+      "text": "Now for the cloth. One tradition says that King Adinkra wore robes stamped with symbols, and that Gyaman craftsmen captured in the war taught the art to the Asante, who named it after him. Other people give a different explanation. In Twi, the words di nkra mean to say goodbye, and the cloth was made to be worn when saying farewell to the dead. Which is true? Historians are not certain. Stamped cloth may be older than the war. Perhaps both stories hold part of the truth. Good history means saying honestly when the evidence does not settle a question.",
+      "sentences": [
+        "Now for the cloth.",
+        "One tradition says that King Adinkra wore robes stamped with symbols, and that Gyaman craftsmen captured in the war taught the art to the Asante, who named it after him.",
+        "Other people give a different explanation.",
+        "In Twi, the words di nkra mean to say goodbye, and the cloth was made to be worn when saying farewell to the dead.",
+        "Which is true?",
+        "Historians are not certain.",
+        "Stamped cloth may be older than the war.",
+        "Perhaps both stories hold part of the truth.",
+        "Good history means saying honestly when the evidence does not settle a question."
+      ],
+      "alt": "A craftsman pressing a carved stamp dipped in black dye onto plain cloth stretched over a board.",
+      "image": {
+        "hash": "sha256:10c36d5d7e90b4d068004a6b382c18d32142348a0ea3f664e1a45ce5063f2b5f",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:e82119d92ad6694a949a7ef0565e161cc8cfb67239ffc27c8b46bbce5fa5ba0e",
+        "durationMs": 42600,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              1901
+            ],
+            [
+              1901,
+              13917
+            ],
+            [
+              13917,
+              17568
+            ],
+            [
+              17568,
+              25856
+            ],
+            [
+              25856,
+              27529
+            ],
+            [
+              27529,
+              30115
+            ],
+            [
+              30115,
+              33385
+            ],
+            [
+              33385,
+              36960
+            ],
+            [
+              36960,
+              42600
+            ]
+          ],
+          "words": [
+            [
+              0,
+              228
+            ],
+            [
+              228,
+              456
+            ],
+            [
+              456,
+              684
+            ],
+            [
+              684,
+              1901
+            ],
+            [
+              1901,
+              2129
+            ],
+            [
+              2129,
+              2814
+            ],
+            [
+              2814,
+              3118
+            ],
+            [
+              3118,
+              3422
+            ],
+            [
+              3422,
+              3726
+            ],
+            [
+              3726,
+              4259
+            ],
+            [
+              4259,
+              4563
+            ],
+            [
+              4563,
+              4943
+            ],
+            [
+              4943,
+              5476
+            ],
+            [
+              5476,
+              5780
+            ],
+            [
+              5780,
+              6693
+            ],
+            [
+              6693,
+              6921
+            ],
+            [
+              6921,
+              7225
+            ],
+            [
+              7225,
+              7681
+            ],
+            [
+              7681,
+              8366
+            ],
+            [
+              8366,
+              8975
+            ],
+            [
+              8975,
+              9127
+            ],
+            [
+              9127,
+              9355
+            ],
+            [
+              9355,
+              9583
+            ],
+            [
+              9583,
+              10039
+            ],
+            [
+              10039,
+              10267
+            ],
+            [
+              10267,
+              10495
+            ],
+            [
+              10495,
+              10647
+            ],
+            [
+              10647,
+              10875
+            ],
+            [
+              10875,
+              11712
+            ],
+            [
+              11712,
+              11940
+            ],
+            [
+              11940,
+              12320
+            ],
+            [
+              12320,
+              12472
+            ],
+            [
+              12472,
+              12852
+            ],
+            [
+              12852,
+              13917
+            ],
+            [
+              13917,
+              14297
+            ],
+            [
+              14297,
+              14753
+            ],
+            [
+              14753,
+              15057
+            ],
+            [
+              15057,
+              15209
+            ],
+            [
+              15209,
+              15894
+            ],
+            [
+              15894,
+              17568
+            ],
+            [
+              17568,
+              17720
+            ],
+            [
+              17720,
+              18329
+            ],
+            [
+              18329,
+              18557
+            ],
+            [
+              18557,
+              18937
+            ],
+            [
+              18937,
+              19089
+            ],
+            [
+              19089,
+              19393
+            ],
+            [
+              19393,
+              19697
+            ],
+            [
+              19697,
+              19849
+            ],
+            [
+              19849,
+              20077
+            ],
+            [
+              20077,
+              20990
+            ],
+            [
+              20990,
+              21218
+            ],
+            [
+              21218,
+              21446
+            ],
+            [
+              21446,
+              21826
+            ],
+            [
+              21826,
+              22054
+            ],
+            [
+              22054,
+              22358
+            ],
+            [
+              22358,
+              22510
+            ],
+            [
+              22510,
+              22662
+            ],
+            [
+              22662,
+              22966
+            ],
+            [
+              22966,
+              23270
+            ],
+            [
+              23270,
+              23726
+            ],
+            [
+              23726,
+              24335
+            ],
+            [
+              24335,
+              24487
+            ],
+            [
+              24487,
+              24715
+            ],
+            [
+              24715,
+              25856
+            ],
+            [
+              25856,
+              26236
+            ],
+            [
+              26236,
+              26388
+            ],
+            [
+              26388,
+              27529
+            ],
+            [
+              27529,
+              28290
+            ],
+            [
+              28290,
+              28518
+            ],
+            [
+              28518,
+              28746
+            ],
+            [
+              28746,
+              30115
+            ],
+            [
+              30115,
+              30648
+            ],
+            [
+              30648,
+              31028
+            ],
+            [
+              31028,
+              31256
+            ],
+            [
+              31256,
+              31408
+            ],
+            [
+              31408,
+              31788
+            ],
+            [
+              31788,
+              32092
+            ],
+            [
+              32092,
+              32320
+            ],
+            [
+              32320,
+              33385
+            ],
+            [
+              33385,
+              33918
+            ],
+            [
+              33918,
+              34222
+            ],
+            [
+              34222,
+              34755
+            ],
+            [
+              34755,
+              35059
+            ],
+            [
+              35059,
+              35363
+            ],
+            [
+              35363,
+              35515
+            ],
+            [
+              35515,
+              35743
+            ],
+            [
+              35743,
+              36960
+            ],
+            [
+              36960,
+              37264
+            ],
+            [
+              37264,
+              37797
+            ],
+            [
+              37797,
+              38177
+            ],
+            [
+              38177,
+              38633
+            ],
+            [
+              38633,
+              39242
+            ],
+            [
+              39242,
+              39546
+            ],
+            [
+              39546,
+              39774
+            ],
+            [
+              39774,
+              40383
+            ],
+            [
+              40383,
+              40687
+            ],
+            [
+              40687,
+              40915
+            ],
+            [
+              40915,
+              41371
+            ],
+            [
+              41371,
+              41523
+            ],
+            [
+              41523,
+              42600
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 5,
+      "text": "Gyaman survived its defeat, but a greater blow came later, and without a battle. In the 1880s and 1890s, Britain and France were dividing West Africa between them. Their officials drew a border on a map. It ran straight through Gyaman. The capital and the western half fell to France and are now in Côte d’Ivoire. The eastern half fell to Britain and is now in Ghana, around the towns of Sampa and Drobo. Nobody asked the people. A family could wake to find that its farm lay in another country.",
+      "sentences": [
+        "Gyaman survived its defeat, but a greater blow came later, and without a battle.",
+        "In the 1880s and 1890s, Britain and France were dividing West Africa between them.",
+        "Their officials drew a border on a map.",
+        "It ran straight through Gyaman.",
+        "The capital and the western half fell to France and are now in Côte d’Ivoire.",
+        "The eastern half fell to Britain and is now in Ghana, around the towns of Sampa and Drobo.",
+        "Nobody asked the people.",
+        "A family could wake to find that its farm lay in another country."
+      ],
+      "alt": "A hand drawing a straight line with a ruler across a map, cutting through a shaded kingdom.",
+      "image": {
+        "hash": "sha256:439365b621c497ed3d76053d853b199a424d9106a8ef03f7ab40163f663499dc",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:efa711768dac5cc7cad1815cd06f63d700cc79984857ea9e898df49d2d50aa39",
+        "durationMs": 39440,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6874
+            ],
+            [
+              6874,
+              13432
+            ],
+            [
+              13432,
+              16909
+            ],
+            [
+              16909,
+              19833
+            ],
+            [
+              19833,
+              25443
+            ],
+            [
+              25443,
+              32317
+            ],
+            [
+              32317,
+              34767
+            ],
+            [
+              34767,
+              39440
+            ]
+          ],
+          "words": [
+            [
+              0,
+              474
+            ],
+            [
+              474,
+              1106
+            ],
+            [
+              1106,
+              1343
+            ],
+            [
+              1343,
+              2212
+            ],
+            [
+              2212,
+              2449
+            ],
+            [
+              2449,
+              2607
+            ],
+            [
+              2607,
+              3160
+            ],
+            [
+              3160,
+              3476
+            ],
+            [
+              3476,
+              3792
+            ],
+            [
+              3792,
+              4582
+            ],
+            [
+              4582,
+              4819
+            ],
+            [
+              4819,
+              5372
+            ],
+            [
+              5372,
+              5530
+            ],
+            [
+              5530,
+              6874
+            ],
+            [
+              6874,
+              7032
+            ],
+            [
+              7032,
+              7269
+            ],
+            [
+              7269,
+              7664
+            ],
+            [
+              7664,
+              7901
+            ],
+            [
+              7901,
+              8691
+            ],
+            [
+              8691,
+              9244
+            ],
+            [
+              9244,
+              9481
+            ],
+            [
+              9481,
+              9955
+            ],
+            [
+              9955,
+              10271
+            ],
+            [
+              10271,
+              10903
+            ],
+            [
+              10903,
+              11219
+            ],
+            [
+              11219,
+              11693
+            ],
+            [
+              11693,
+              12246
+            ],
+            [
+              12246,
+              13432
+            ],
+            [
+              13432,
+              13827
+            ],
+            [
+              13827,
+              14538
+            ],
+            [
+              14538,
+              14854
+            ],
+            [
+              14854,
+              15012
+            ],
+            [
+              15012,
+              15486
+            ],
+            [
+              15486,
+              15644
+            ],
+            [
+              15644,
+              15802
+            ],
+            [
+              15802,
+              16909
+            ],
+            [
+              16909,
+              17067
+            ],
+            [
+              17067,
+              17304
+            ],
+            [
+              17304,
+              17936
+            ],
+            [
+              17936,
+              18489
+            ],
+            [
+              18489,
+              19833
+            ],
+            [
+              19833,
+              20070
+            ],
+            [
+              20070,
+              20623
+            ],
+            [
+              20623,
+              20860
+            ],
+            [
+              20860,
+              21097
+            ],
+            [
+              21097,
+              21650
+            ],
+            [
+              21650,
+              21966
+            ],
+            [
+              21966,
+              22282
+            ],
+            [
+              22282,
+              22440
+            ],
+            [
+              22440,
+              22914
+            ],
+            [
+              22914,
+              23151
+            ],
+            [
+              23151,
+              23388
+            ],
+            [
+              23388,
+              23625
+            ],
+            [
+              23625,
+              23783
+            ],
+            [
+              23783,
+              24020
+            ],
+            [
+              24020,
+              25443
+            ],
+            [
+              25443,
+              25680
+            ],
+            [
+              25680,
+              26233
+            ],
+            [
+              26233,
+              26549
+            ],
+            [
+              26549,
+              26865
+            ],
+            [
+              26865,
+              27023
+            ],
+            [
+              27023,
+              27576
+            ],
+            [
+              27576,
+              27813
+            ],
+            [
+              27813,
+              27971
+            ],
+            [
+              27971,
+              28208
+            ],
+            [
+              28208,
+              28366
+            ],
+            [
+              28366,
+              29156
+            ],
+            [
+              29156,
+              29630
+            ],
+            [
+              29630,
+              29867
+            ],
+            [
+              29867,
+              30262
+            ],
+            [
+              30262,
+              30420
+            ],
+            [
+              30420,
+              30815
+            ],
+            [
+              30815,
+              31052
+            ],
+            [
+              31052,
+              32317
+            ],
+            [
+              32317,
+              32791
+            ],
+            [
+              32791,
+              33186
+            ],
+            [
+              33186,
+              33423
+            ],
+            [
+              33423,
+              34767
+            ],
+            [
+              34767,
+              34925
+            ],
+            [
+              34925,
+              35399
+            ],
+            [
+              35399,
+              35794
+            ],
+            [
+              35794,
+              36110
+            ],
+            [
+              36110,
+              36268
+            ],
+            [
+              36268,
+              36584
+            ],
+            [
+              36584,
+              36900
+            ],
+            [
+              36900,
+              37137
+            ],
+            [
+              37137,
+              37453
+            ],
+            [
+              37453,
+              37690
+            ],
+            [
+              37690,
+              37848
+            ],
+            [
+              37848,
+              38401
+            ],
+            [
+              38401,
+              39440
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "n": 6,
+      "text": "Today the people on both sides still speak the same language and honour the same ancestors. They cross the border to trade cashew nuts and cloth, to marry, and to attend one another’s festivals and funerals. Two things are worth remembering from their story. Africa’s borders were drawn by outsiders, and living peacefully with them takes patience and friendship between neighbouring countries. And a kingdom that lost its wars and was cut in two still left its name on a cloth worn by millions. Culture can last longer than power.",
+      "sentences": [
+        "Today the people on both sides still speak the same language and honour the same ancestors.",
+        "They cross the border to trade cashew nuts and cloth, to marry, and to attend one another’s festivals and funerals.",
+        "Two things are worth remembering from their story.",
+        "Africa’s borders were drawn by outsiders, and living peacefully with them takes patience and friendship between neighbouring countries.",
+        "And a kingdom that lost its wars and was cut in two still left its name on a cloth worn by millions.",
+        "Culture can last longer than power."
+      ],
+      "alt": "Traders with sacks of cashew nuts passing through a border post, greeting one another.",
+      "image": {
+        "hash": "sha256:fe4a0312a5a7c8e6ac695560e35cc48965d19525e12850d90886762c73aa757d",
+        "width": 960,
+        "height": 717
+      },
+      "audio": {
+        "hash": "sha256:e4093d2c0657ca5ddacea92ac650ab91164e877929062fccf2203852f52d8e6d",
+        "durationMs": 38200,
+        "timing": {
+          "granularity": "word",
+          "method": "tts-marks",
+          "verified": true,
+          "sentences": [
+            [
+              0,
+              6451
+            ],
+            [
+              6451,
+              14927
+            ],
+            [
+              14927,
+              18904
+            ],
+            [
+              18904,
+              28732
+            ],
+            [
+              28732,
+              35558
+            ],
+            [
+              35558,
+              38200
+            ]
+          ],
+          "words": [
+            [
+              0,
+              375
+            ],
+            [
+              375,
+              600
+            ],
+            [
+              600,
+              1050
+            ],
+            [
+              1050,
+              1200
+            ],
+            [
+              1200,
+              1500
+            ],
+            [
+              1500,
+              1875
+            ],
+            [
+              1875,
+              2250
+            ],
+            [
+              2250,
+              2625
+            ],
+            [
+              2625,
+              2850
+            ],
+            [
+              2850,
+              3150
+            ],
+            [
+              3150,
+              3750
+            ],
+            [
+              3750,
+              3975
+            ],
+            [
+              3975,
+              4425
+            ],
+            [
+              4425,
+              4650
+            ],
+            [
+              4650,
+              4950
+            ],
+            [
+              4950,
+              6451
+            ],
+            [
+              6451,
+              6751
+            ],
+            [
+              6751,
+              7126
+            ],
+            [
+              7126,
+              7351
+            ],
+            [
+              7351,
+              7801
+            ],
+            [
+              7801,
+              7951
+            ],
+            [
+              7951,
+              8326
+            ],
+            [
+              8326,
+              8776
+            ],
+            [
+              8776,
+              9076
+            ],
+            [
+              9076,
+              9301
+            ],
+            [
+              9301,
+              10051
+            ],
+            [
+              10051,
+              10201
+            ],
+            [
+              10201,
+              10951
+            ],
+            [
+              10951,
+              11176
+            ],
+            [
+              11176,
+              11326
+            ],
+            [
+              11326,
+              11776
+            ],
+            [
+              11776,
+              12001
+            ],
+            [
+              12001,
+              12601
+            ],
+            [
+              12601,
+              13276
+            ],
+            [
+              13276,
+              13501
+            ],
+            [
+              13501,
+              14927
+            ],
+            [
+              14927,
+              15152
+            ],
+            [
+              15152,
+              15602
+            ],
+            [
+              15602,
+              15827
+            ],
+            [
+              15827,
+              16202
+            ],
+            [
+              16202,
+              17028
+            ],
+            [
+              17028,
+              17328
+            ],
+            [
+              17328,
+              17703
+            ],
+            [
+              17703,
+              18904
+            ],
+            [
+              18904,
+              19429
+            ],
+            [
+              19429,
+              19954
+            ],
+            [
+              19954,
+              20254
+            ],
+            [
+              20254,
+              20629
+            ],
+            [
+              20629,
+              20779
+            ],
+            [
+              20779,
+              21830
+            ],
+            [
+              21830,
+              22055
+            ],
+            [
+              22055,
+              22505
+            ],
+            [
+              22505,
+              23255
+            ],
+            [
+              23255,
+              23555
+            ],
+            [
+              23555,
+              23855
+            ],
+            [
+              23855,
+              24230
+            ],
+            [
+              24230,
+              24830
+            ],
+            [
+              24830,
+              25055
+            ],
+            [
+              25055,
+              25805
+            ],
+            [
+              25805,
+              26330
+            ],
+            [
+              26330,
+              27231
+            ],
+            [
+              27231,
+              28732
+            ],
+            [
+              28732,
+              28957
+            ],
+            [
+              28957,
+              29107
+            ],
+            [
+              29107,
+              29632
+            ],
+            [
+              29632,
+              29932
+            ],
+            [
+              29932,
+              30232
+            ],
+            [
+              30232,
+              30457
+            ],
+            [
+              30457,
+              30757
+            ],
+            [
+              30757,
+              30982
+            ],
+            [
+              30982,
+              31207
+            ],
+            [
+              31207,
+              31432
+            ],
+            [
+              31432,
+              31582
+            ],
+            [
+              31582,
+              31807
+            ],
+            [
+              31807,
+              32182
+            ],
+            [
+              32182,
+              32482
+            ],
+            [
+              32482,
+              32707
+            ],
+            [
+              32707,
+              33007
+            ],
+            [
+              33007,
+              33157
+            ],
+            [
+              33157,
+              33307
+            ],
+            [
+              33307,
+              33682
+            ],
+            [
+              33682,
+              33982
+            ],
+            [
+              33982,
+              34132
+            ],
+            [
+              34132,
+              35558
+            ],
+            [
+              35558,
+              36083
+            ],
+            [
+              36083,
+              36308
+            ],
+            [
+              36308,
+              36608
+            ],
+            [
+              36608,
+              37058
+            ],
+            [
+              37058,
+              37358
+            ],
+            [
+              37358,
+              38200
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "activities": [
+    {
+      "id": "gy-c1",
+      "type": "comprehension",
+      "afterPage": 2,
+      "question": "What made Gyaman rich?",
+      "options": [
+        "Fishing and salt",
+        "Gold, cloth, and trade through Bonduku",
+        "Cocoa and timber"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "gy-c2",
+      "type": "comprehension",
+      "afterPage": 3,
+      "question": "According to tradition, why did the Asantehene go to war in 1818?",
+      "options": [
+        "King Adinkra had a golden stool made for himself",
+        "Gyaman attacked Kumasi",
+        "The British asked him to"
+      ],
+      "correctIndex": 0
+    },
+    {
+      "id": "gy-c3",
+      "type": "comprehension",
+      "afterPage": 4,
+      "question": "What does the article say about the origin of the name adinkra?",
+      "options": [
+        "It certainly comes from the king",
+        "It certainly means goodbye",
+        "There are two explanations, and historians are not certain which is right"
+      ],
+      "correctIndex": 2
+    },
+    {
+      "id": "gy-c4",
+      "type": "comprehension",
+      "afterPage": 6,
+      "question": "Apply it: You read two different accounts of an event in your town’s history. What is the best way to handle them?",
+      "options": [
+        "Choose the one you like more",
+        "Report both, look for evidence, and say honestly what is not known",
+        "Ignore both"
+      ],
+      "correctIndex": 1
+    },
+    {
+      "id": "gy-s1",
+      "type": "sequencing",
+      "prompt": "Put these events in order, from earliest to latest.",
+      "items": [
+        "An Akan group moves west and founds Gyaman",
+        "Asante first defeats Gyaman",
+        "King Kwadwo Adinkra is killed in war with Asante",
+        "Britain and France draw a border through Gyaman",
+        "People on both sides still cross the border to trade and visit"
+      ]
+    },
+    {
+      "id": "gy-voc",
+      "type": "vocabulary",
+      "afterPage": 4,
+      "word": "evidence",
+      "definition": "Facts or objects that help to show whether something is true.",
+      "distractors": [
+        "A story told for fun",
+        "A rule made by a king"
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "word": "symbols",
+      "definition": "Signs that stand for ideas.",
+      "pages": [
+        1,
+        4
+      ]
+    },
+    {
+      "word": "savanna",
+      "definition": "Open grassland with scattered trees.",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "word": "caravans",
+      "definition": "Groups of traders travelling together with loaded animals.",
+      "pages": [
+        2
+      ]
+    },
+    {
+      "word": "tribute",
+      "definition": "Payment that a weaker state must give to a stronger one.",
+      "pages": [
+        3
+      ]
+    },
+    {
+      "word": "evidence",
+      "definition": "Facts or objects that help to show whether something is true.",
+      "pages": [
+        4
+      ]
+    },
+    {
+      "word": "border",
+      "definition": "The line that divides one country from another.",
+      "pages": [
+        5,
+        6
+      ]
+    }
+  ],
+  "assets": {
+    "sha256:1be114c2ab8a71a362e025687f91a0a85ff6600cd1838d795c2786378bc77975": {
+      "path": "/story-spark-preview/audio/1be114c2ab8a.mp3",
+      "bytes": 178893,
+      "type": "audio/mpeg"
+    },
+    "sha256:7eefa178bd57b9f61c88d273b3ccea455660537c2e38af7bbbac9fedb129c6e4": {
+      "path": "/story-spark-preview/candidates/gyaman-the-kingdom-cut-in-two/page1-1.webp",
+      "bytes": 83250,
+      "type": "image/webp"
+    },
+    "sha256:a96a847d2425371e6ea29307cf907827b54672b9720423f593d71687d8bae7d4": {
+      "path": "/story-spark-preview/audio/a96a847d2425.mp3",
+      "bytes": 156429,
+      "type": "audio/mpeg"
+    },
+    "sha256:2f6078bf92996829a52f3ee2366bd60b2100a7d027ed76ddfdbf2eecebb37cc3": {
+      "path": "/story-spark-preview/candidates/gyaman-the-kingdom-cut-in-two/page2-1.webp",
+      "bytes": 87914,
+      "type": "image/webp"
+    },
+    "sha256:aa427769314f70d000a081a6a8756e72e0df0794c8bdfb30d2cfe5ce3992ca63": {
+      "path": "/story-spark-preview/audio/aa427769314f.mp3",
+      "bytes": 175149,
+      "type": "audio/mpeg"
+    },
+    "sha256:3057a75192a26b7330cfc3393ca1266a05a0254fe293256cc1150f8ad3c4aa7c": {
+      "path": "/story-spark-preview/candidates/gyaman-the-kingdom-cut-in-two/page3-1.webp",
+      "bytes": 78360,
+      "type": "image/webp"
+    },
+    "sha256:e82119d92ad6694a949a7ef0565e161cc8cfb67239ffc27c8b46bbce5fa5ba0e": {
+      "path": "/story-spark-preview/audio/e82119d92ad6.mp3",
+      "bytes": 170829,
+      "type": "audio/mpeg"
+    },
+    "sha256:10c36d5d7e90b4d068004a6b382c18d32142348a0ea3f664e1a45ce5063f2b5f": {
+      "path": "/story-spark-preview/candidates/gyaman-the-kingdom-cut-in-two/page4-1.webp",
+      "bytes": 69870,
+      "type": "image/webp"
+    },
+    "sha256:efa711768dac5cc7cad1815cd06f63d700cc79984857ea9e898df49d2d50aa39": {
+      "path": "/story-spark-preview/audio/efa711768dac.mp3",
+      "bytes": 158253,
+      "type": "audio/mpeg"
+    },
+    "sha256:439365b621c497ed3d76053d853b199a424d9106a8ef03f7ab40163f663499dc": {
+      "path": "/story-spark-preview/candidates/gyaman-the-kingdom-cut-in-two/page5-1.webp",
+      "bytes": 71052,
+      "type": "image/webp"
+    },
+    "sha256:e4093d2c0657ca5ddacea92ac650ab91164e877929062fccf2203852f52d8e6d": {
+      "path": "/story-spark-preview/audio/e4093d2c0657.mp3",
+      "bytes": 153261,
+      "type": "audio/mpeg"
+    },
+    "sha256:fe4a0312a5a7c8e6ac695560e35cc48965d19525e12850d90886762c73aa757d": {
+      "path": "/story-spark-preview/candidates/gyaman-the-kingdom-cut-in-two/page6-1.webp",
+      "bytes": 82082,
+      "type": "image/webp"
+    }
+  },
+  "contentHash": "sha256:c4d06a5b9c470e724d407651f5ca0499f9c0946b01ad0b1589a213d45e9775f8"
+}

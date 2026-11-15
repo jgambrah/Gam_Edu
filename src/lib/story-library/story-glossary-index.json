@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts or information that show that something is true."
+    "definition": "Facts or objects that help to show whether something is true."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -5552,7 +5552,7 @@
     "definition": "Alike in some ways, though not completely identical."
   },
   "independent": {
-    "definition": "Free to govern oneself and make one’s own decisions (Ghana became independent on 6 March 1957)."
+    "definition": "Free to govern itself."
   },
   "bunch": {
     "definition": "Several things growing or tied together."
@@ -5849,7 +5849,7 @@
     "definition": "A dark underground room used for holding prisoners."
   },
   "libation": {
-    "definition": "A drink poured out as a prayer or offering."
+    "definition": "A drink poured out while calling on God and the ancestors."
   },
   "union": {
     "definition": "A group of states or people joined together for a shared purpose."
@@ -6209,6 +6209,27 @@
   "rotates": {
     "definition": "Passes from one to the next in turn."
   },
+  "kingmakers": {
+    "definition": "Elders who have the right to choose a new king."
+  },
+  "treaty": {
+    "definition": "A written agreement between states or peoples."
+  },
+  "raiding": {
+    "definition": "Attacking a place suddenly to seize people or goods."
+  },
+  "sustainability": {
+    "definition": "Using resources in a way that leaves enough for people in the future."
+  },
+  "wetland": {
+    "definition": "Land that is covered with shallow water for much of the year."
+  },
+  "huza": {
+    "definition": "The Krobo system in which families join together to buy and farm land in strips."
+  },
+  "alliance": {
+    "definition": "An agreement between states or groups to help one another."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6442,10 +6463,10 @@
     "definition": "An area of land protected by law."
   },
   "dignity": {
-    "definition": "The inherent worth and right of every human being to be treated with respect and freedom."
+    "definition": "The respect that every person deserves."
   },
   "fortress": {
-    "definition": "A large, heavily fortified stone building constructed for military defence and control."
+    "definition": "A place that is strongly protected against attack."
   },
   "dungeons": {
     "definition": "Dark underground chambers where captives were held inside the coastal castles."
@@ -6944,7 +6965,7 @@
     "definition": "An empty space inside something solid."
   },
   "stilts": {
-    "definition": "Tall posts that hold a building above the ground or water."
+    "definition": "Tall posts that hold a building above water or ground."
   },
   "empire": {
     "definition": "A large state that rules over many peoples and lands."
@@ -7003,7 +7024,7 @@
     "phonetic": "ah-sahn-teh-heh-neh"
   },
   "buttresses": {
-    "definition": "Supports built against a wall to make it stronger."
+    "definition": "Thick supports built against a wall to hold it up."
   },
   "termites": {
     "definition": "Small insects that eat wood."
@@ -7454,7 +7475,7 @@
     "phonetic": "zon-goh"
   },
   "imam": {
-    "definition": "A leader of prayers in a mosque."
+    "definition": "A leader of prayers in a Muslim community."
   },
   "modest": {
     "definition": "Not large or fancy; simple."
@@ -7565,7 +7586,7 @@
     "definition": "Care taken in advance to avoid a risk."
   },
   "rites": {
-    "definition": "Formal ceremonies or customs."
+    "definition": "Ceremonies carried out in a fixed, traditional way."
   },
   "conservation": {
     "definition": "Protecting nature and wildlife."
@@ -7580,7 +7601,7 @@
     "definition": "Advice and training for farmers from agricultural officers."
   },
   "bauxite": {
-    "definition": "A rock from which aluminium is made."
+    "definition": "The ore from which aluminium is made."
   },
   "discursive": {
     "definition": "Looking at several sides of a question."
@@ -8391,6 +8412,66 @@
   },
   "chronicle": {
     "definition": "A written record of events in the order they happened."
+  },
+  "escarpment": {
+    "definition": "A long, steep slope or line of cliffs."
+  },
+  "court": {
+    "definition": "The household and officials of a king."
+  },
+  "headquarters": {
+    "definition": "The main office from which a government or organisation works."
+  },
+  "priests": {
+    "definition": "Earth priests: leaders who look after the land and its shrines."
+  },
+  "gates": {
+    "definition": "Royal houses that take turns to provide the king."
+  },
+  "compounds": {
+    "definition": "Groups of houses joined together round shared yards."
+  },
+  "priest": {
+    "definition": "Earth priest: a leader who looks after the land and its shrines."
+  },
+  "retreated": {
+    "definition": "Moved back after losing a fight."
+  },
+  "conqueror": {
+    "definition": "A person who defeats and takes over a state."
+  },
+  "insult": {
+    "definition": "An act or word that shows deep disrespect."
+  },
+  "reign": {
+    "definition": "The period during which a king or queen rules."
+  },
+  "lagoons": {
+    "definition": "Stretches of shallow water separated from the sea by land."
+  },
+  "philosophy": {
+    "definition": "The study of deep questions about knowledge, truth, and how to live."
+  },
+  "mourning": {
+    "definition": "Showing sorrow for someone who has died."
+  },
+  "rebel": {
+    "definition": "A person who fights against those in power."
+  },
+  "fined": {
+    "definition": "Ordered to pay money as a punishment."
+  },
+  "missionary": {
+    "definition": "A person sent to another land to teach a religion."
+  },
+  "majority": {
+    "definition": "More than half of those who vote."
+  },
+  "symbols": {
+    "definition": "Signs that stand for ideas."
+  },
+  "border": {
+    "definition": "The line that divides one country from another."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
