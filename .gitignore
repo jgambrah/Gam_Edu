@@ -37,3 +37,10 @@ next-env.d.ts
 public/sw.js
 dist/
 scratch/membership-audit/
+
+# Story Spark Cloud Storage generated & staged assets
+/.story-spark-build/
+/public/story-spark-preview/images/*.webp
+/public/story-spark-preview/packages/*.*.json
+/public/story-spark-preview/info/*.*.json
+/public/story-spark-preview/candidates/

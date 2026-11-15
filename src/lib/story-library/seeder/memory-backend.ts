@@ -109,7 +109,7 @@ export class MemoryBackend implements SeedBackend {
   snapshot(opts: { ignoreRunFields?: boolean } = {}) {
     const strip = (p: string, d: Doc) => {
       if (!opts.ignoreRunFields) return d;
-      const { owner, claimExpiresAt, attempts, updatedAt, finishedAt, createdAt, startedAt, lastJobId, error, at, reseededAt, rolledBackAt, ...rest } = d;
+      const { owner, claimExpiresAt, attempts, updatedAt, finishedAt, createdAt, startedAt, approvedAt, lastJobId, error, at, reseededAt, rolledBackAt, ...rest } = d;
       if (/^library_seed_jobs\/job-[^/]+$/.test(p)) delete (rest as Doc).createdBy; // the job doc records which runner created it
       return rest;
     };

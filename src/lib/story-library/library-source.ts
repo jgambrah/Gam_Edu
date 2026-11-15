@@ -107,6 +107,12 @@ export async function createPreviewSource(
   const catalogue = new CatalogueClient(backend, kv, { pageSize: 50, refresh: 'refetch' });
   const loader = new StoryLoader(assets, new MemoryAssetStore(), { lookAhead: 1 });
 
+  const infoPathByKey = new Map<string, string>();
+  for (const e of catalogueData.entries) {
+    if (typeof e.infoPath === 'string' && e.infoPath) {
+      infoPathByKey.set(e.storyKey, e.infoPath);
+    }
+  }
   const infoCache = new Map<string, StoryPreviewInfo>();
   const infoInflight = new Map<string, Promise<StoryPreviewInfo | undefined>>();
   let legacyMonolithicFallback: Promise<Record<string, StoryPreviewInfo> | null> | null = null;
@@ -126,9 +132,10 @@ export async function createPreviewSource(
     const inflight = infoInflight.get(storyKey);
     if (inflight) return inflight;
 
+    const targetInfoPath = infoPathByKey.get(storyKey) || `${base}/info/${storyKey}.json`;
     const task = (async () => {
       try {
-        const res = await fetchFn(resolveMediaUrl(`${base}/info/${storyKey}.json`));
+        const res = await fetchFn(resolveMediaUrl(targetInfoPath));
         if (res.ok) {
           const parsed = (await res.json()) as StoryPreviewInfo;
           infoCache.set(storyKey, parsed);

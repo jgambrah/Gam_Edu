@@ -59,8 +59,11 @@ export function validateCatalogueEntry(storyId: string, e: unknown): Problem[] {
   for (const k of ['categories', 'themes', 'objectives'] as const) {
     if (k in e && !(Array.isArray(e[k]) && (e[k] as unknown[]).length <= 20)) bad(k, 'at most 20 entries');
   }
-  for (const k of ['packageHash', 'contentHash'] as const) {
+  for (const k of ['packageHash', 'contentHash', 'infoHash'] as const) {
     if (k in e && !(typeof e[k] === 'string' && HASH_RE.test(e[k] as string))) bad(k, 'must be sha256:<64 hex>');
+  }
+  if ('infoPath' in e && !(typeof e.infoPath === 'string' && e.infoPath.length >= 1 && e.infoPath.length <= 256)) {
+    bad('infoPath', '1-256 characters');
   }
   if (typeof e.packagePath === 'string' && STORY_ID_RE.test(storyId) && Number.isInteger(e.packageVersion)) {
     const expect = packagePathFor(storyId, e.packageVersion as number);

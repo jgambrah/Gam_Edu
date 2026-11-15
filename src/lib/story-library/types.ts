@@ -60,6 +60,9 @@ export interface CatalogueEntry {
   packagePath: string;
   packageHash: string;
   packageBytes?: number;
+  /** Content-hashed path to per-story educator/teacher-guide sidecar (`info/<storyKey>.<infoHash12>.json`). */
+  infoPath?: string;
+  infoHash?: string;
   contentHash: string;
   publishedAt?: unknown;
   /** Unix epoch ms when the 48-hour developer quarantine ends (`releaseAt <= Date.now()` => public). */
@@ -89,7 +92,7 @@ export interface CatalogueEntry {
 export const CATALOGUE_ALLOWED_KEYS: ReadonlyArray<keyof CatalogueEntry> = [
   'storyKey', 'version', 'packageVersion', 'status', 'title', 'summary', 'language', 'ageTiers', 'level', 'categories',
   'themes', 'objectives', 'pageCount', 'durationSec', 'cover', 'palette', 'coverMotif', 'hasNarration', 'hasActivities', 'packagePath',
-  'packageHash', 'packageBytes', 'contentHash', 'publishedAt', 'releaseAt', 'reviewHold', 'updatedAt', 'sortKey', 'attribution', 'publishedBy',
+  'packageHash', 'packageBytes', 'infoPath', 'infoHash', 'contentHash', 'publishedAt', 'releaseAt', 'reviewHold', 'updatedAt', 'sortKey', 'attribution', 'publishedBy',
   'classIds', 'classMin', 'classMax', 'ageMin', 'ageMax', 'readingLevel', 'difficulty', 'genres', 'nacca', 'ghanaianContext', 'changedInVersion',
 ];
 
