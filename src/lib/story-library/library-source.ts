@@ -64,8 +64,13 @@ export function resolveCdnMediaUrl(path: string, cdnBase?: string): string {
   if (/^(https?:|blob:|data:)/i.test(path)) return path;
   const trimmedBase = (cdnBase ?? defaultCdnBase()).replace(/\/+$/, '');
   if (!trimmedBase) return path;
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return `${trimmedBase}${normalizedPath}`;
+  const [pathname, query] = path.split('?', 2);
+  const cleanRel = pathname.replace(/^\/+/, '');
+  if (/^https:\/\/firebasestorage\.googleapis\.com\/v0\/b\/[^/]+\/o$/i.test(trimmedBase)) {
+    const suffix = query ? `?alt=media&${query}` : '?alt=media';
+    return `${trimmedBase}/${encodeURIComponent(cleanRel)}${suffix}`;
+  }
+  return `${trimmedBase}/${cleanRel}${query ? `?${query}` : ''}`;
 }
 
 function defaultCdnBase(): string {

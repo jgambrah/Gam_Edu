@@ -210,6 +210,14 @@ service firebase.storage {
       allow delete: if isStoryPublisher();
     }
 
+    // =================================================================== story-spark-preview/…  (Option A static CDN bundle)
+    // Public-read Story Spark catalogue, content-hashed packages, audio, images, and educator info.
+    // Evaluates `if true` directly (0 Firestore reads). Strictly no client/public writes; Admin SDK / CLI upload only.
+    match /story-spark-preview/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // =================================================================== signatures/{schoolId}/{userId}/…
     // Only the owner writes their own signature, and only into a school they belong to.
     match /signatures/{schoolId}/{userId}/{allPaths=**} {

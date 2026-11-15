@@ -10,6 +10,7 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 import { LEGACY_PUBLIC_MAX_SORT_KEY, REVIEW_QUARANTINE_MS } from '../src/lib/story-library/quarantine';
 import { CATALOGUE_ALLOWED_KEYS } from '../src/lib/story-library/types';
 
@@ -18,7 +19,11 @@ const PREVIEW_DIR = path.join(ROOT, 'public', 'story-spark-preview');
 const CATALOGUE_PATH = path.join(PREVIEW_DIR, 'catalogue.json');
 const PREVIEW_PATH = path.join(PREVIEW_DIR, 'preview.json');
 const PACKAGES_DIR = path.join(PREVIEW_DIR, 'packages');
+const IMAGES_DIR = path.join(PREVIEW_DIR, 'images');
+const AUDIO_DIR = path.join(PREVIEW_DIR, 'audio');
 const INFO_DIR = path.join(PREVIEW_DIR, 'info');
+
+const sha256Hex = (bufOrStr: Buffer | string) => createHash('sha256').update(bufOrStr).digest('hex');
 
 export function approvePreviewEntry(entry: Record<string, any>, pageCount: number): Record<string, any> {
   const n = pageCount || (Array.isArray(entry.pages) ? entry.pages.length : 8);
@@ -122,8 +127,77 @@ function main() {
   const nowMs = Date.now();
   let quarantinedCount = 0;
 
+  fs.mkdirSync(IMAGES_DIR, { recursive: true });
+  fs.mkdirSync(AUDIO_DIR, { recursive: true });
+
   const allowedSet = new Set<string>(CATALOGUE_ALLOWED_KEYS);
   const enrichedEntries = catalogue.entries.map((entry) => {
+    const basePkgPath = path.join(PACKAGES_DIR, `${entry.storyKey}.json`);
+    const pkg = JSON.parse(fs.readFileSync(basePkgPath, 'utf8')) as Record<string, any>;
+
+    // Ensure every audio & image asset in pkg.assets points to its content-addressed immutable path
+    const nextAssets: Record<string, any> = {};
+    for (const [assetHash, assetInfo] of Object.entries((pkg.assets ?? {}) as Record<string, any>)) {
+      if (assetHash.startsWith('sha256:') && typeof assetInfo?.type === 'string') {
+        const hex12 = assetHash.slice(7, 19);
+        if (assetInfo.type.startsWith('audio/')) {
+          const expectedRel = `/story-spark-preview/audio/${hex12}.mp3`;
+          const diskAudio = path.join(AUDIO_DIR, `${hex12}.mp3`);
+          if (!fs.existsSync(diskAudio)) {
+            const origDisk = path.join(ROOT, 'public', String(assetInfo.path).replace(/^\/+/, ''));
+            if (fs.existsSync(origDisk)) fs.copyFileSync(origDisk, diskAudio);
+          }
+          nextAssets[assetHash] = {
+            path: expectedRel,
+            bytes: fs.existsSync(diskAudio) ? fs.statSync(diskAudio).size : assetInfo.bytes,
+            type: assetInfo.type,
+          };
+          continue;
+        }
+        if (assetInfo.type.startsWith('image/')) {
+          const ext = path.extname(String(assetInfo.path || '')) || '.webp';
+          const expectedRel = `/story-spark-preview/images/${hex12}${ext}`;
+          const diskImg = path.join(IMAGES_DIR, `${hex12}${ext}`);
+          if (!fs.existsSync(diskImg)) {
+            const origDisk = path.join(ROOT, 'public', String(assetInfo.path).replace(/^\/+/, ''));
+            if (fs.existsSync(origDisk)) fs.copyFileSync(origDisk, diskImg);
+          }
+          nextAssets[assetHash] = {
+            path: expectedRel,
+            bytes: fs.existsSync(diskImg) ? fs.statSync(diskImg).size : assetInfo.bytes,
+            type: assetInfo.type,
+          };
+          continue;
+        }
+      }
+      nextAssets[assetHash] = assetInfo;
+    }
+
+    const { contentHash: _prevContentHash, ...pkgBase } = pkg;
+    pkgBase.assets = nextAssets;
+    const freshContentHex = sha256Hex(JSON.stringify(pkgBase));
+    const freshContentHash = `sha256:${freshContentHex}`;
+    const contentHex12 = freshContentHex.slice(0, 12);
+    const finalPkg = { ...pkgBase, contentHash: freshContentHash };
+    const finalPkgJson = JSON.stringify(finalPkg, null, 2);
+
+    const versionedPkgRel = `/story-spark-preview/packages/${entry.storyKey}.${contentHex12}.json`;
+    fs.writeFileSync(path.join(PACKAGES_DIR, `${entry.storyKey}.${contentHex12}.json`), finalPkgJson);
+    fs.writeFileSync(basePkgPath, finalPkgJson);
+
+    const page1 = finalPkg.pages?.[0];
+    const p1Img = page1?.image;
+    const p1Hash = typeof p1Img === 'string' ? p1Img : p1Img?.hash;
+    const cover =
+      typeof p1Hash === 'string' && p1Hash.startsWith('sha256:')
+        ? {
+            hash: p1Hash,
+            w: (typeof p1Img === 'object' && p1Img?.width) || 960,
+            h: (typeof p1Img === 'object' && p1Img?.height) || 717,
+            alt: String(page1?.alt || entry.title || 'Story cover').slice(0, 180),
+          }
+        : entry.cover;
+
     const info = preview[entry.storyKey];
     const palette =
       Array.isArray(info?.palette) && info.palette.length === 2 && info.palette.every((c: unknown) => typeof c === 'string')
@@ -163,6 +237,11 @@ function main() {
 
     const rawMerged: Record<string, unknown> = {
       ...entry,
+      packagePath: versionedPkgRel,
+      packageHash: `sha256:${sha256Hex(finalPkgJson)}`,
+      packageBytes: Buffer.byteLength(finalPkgJson, 'utf8'),
+      contentHash: freshContentHash,
+      ...(cover ? { cover } : {}),
       attribution,
       ...(palette ? { palette } : {}),
       ...(coverMotif ? { coverMotif } : {}),

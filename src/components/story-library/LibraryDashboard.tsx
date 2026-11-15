@@ -768,6 +768,9 @@ function resolveCoverUrl(entry: CatalogueEntry, source: LibrarySource): string {
   const resolve = source.resolveMediaUrl ?? ((p: string) => p);
   if (entry.cover?.hash?.startsWith('sha256:')) {
     const hex = entry.cover.hash.slice(7);
+    if (entry.packagePath?.startsWith('/story-spark-preview/')) {
+      return resolve(`/story-spark-preview/images/${hex.slice(0, 12)}.webp`);
+    }
     return resolve(`/${PUBLISHED_PREFIX}assets/${hex.slice(0, 2)}/${hex}.webp`);
   }
   return resolve(`/story-spark-preview/candidates/${entry.storyKey}/page1-1.webp`);

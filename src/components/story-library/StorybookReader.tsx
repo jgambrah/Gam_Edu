@@ -245,15 +245,21 @@ export function StorybookReader({
     }
   }, [page, speed, stopOfflineSpeech, m.autoAdvance, autoRoll, go]);
 
+  const pageImageHash = page
+    ? typeof page.image === 'string'
+      ? page.image
+      : (page.image as { hash?: string } | undefined)?.hash
+    : undefined;
+  const versionedPageImagePath = pageImageHash ? pkg.assets[pageImageHash]?.path : undefined;
+
   // Resolve cached illustration blob URL so page illustrations also work when offline
   useEffect(() => {
     let cancelled = false;
     setCachedImageUrl(null);
     if (!page) return;
-    const pkgImg = page.image ? pkg.assets[page.image]?.path : undefined;
     const candidateImg = `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`;
     (async () => {
-      for (const candidate of [pkgImg, candidateImg]) {
+      for (const candidate of [versionedPageImagePath, candidateImg]) {
         if (!candidate) continue;
         try {
           const blobUrl = await source.assets.objectUrl(candidate);
@@ -265,7 +271,7 @@ export function StorybookReader({
       }
     })();
     return () => { cancelled = true; };
-  }, [page, pkg, source.assets]);
+  }, [page, pkg, source.assets, versionedPageImagePath]);
 
   // Reset zoom scale on page turn
   useEffect(() => {
@@ -694,7 +700,7 @@ export function StorybookReader({
               alt={page.alt ?? 'Illustration'}
               brief={art?.brief}
               compact={presentation.layout === 'text-first'}
-              imageSrc={cachedImageUrl ?? resolveMediaUrl(`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
+              imageSrc={cachedImageUrl ?? resolveMediaUrl(versionedPageImagePath ?? `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
               onZoom={() => setIsImageZoomed(true)}
             />
           </div>
@@ -826,7 +832,7 @@ export function StorybookReader({
             <div className="relative flex flex-1 items-center justify-center overflow-auto p-4 bg-slate-950/40 min-h-[300px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={cachedImageUrl ?? resolveMediaUrl(`/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
+                src={cachedImageUrl ?? resolveMediaUrl(versionedPageImagePath ?? `/story-spark-preview/candidates/${pkg.storyId}/page${page.n}-1.webp`)}
                 alt={page.alt ?? 'Illustration'}
                 style={{
                   transform: `scale(${zoomScale})`,

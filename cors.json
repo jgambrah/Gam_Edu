@@ -1,8 +1,32 @@
 [
   {
-    "origin": ["*"],
-    "method": ["GET"],
-    "responseHeader": ["Content-Type"],
+    "origin": [
+      "https://gam-it-service.app",
+      "https://www.gam-it-service.app",
+      "https://*.gam-it-service.app",
+      "https://studio--gamedu-69888475-f5783.us-central1.hosted.app",
+      "https://*.hosted.app",
+      "https://gamedu-69888475-f5783.web.app",
+      "https://gamedu-69888475-f5783.firebaseapp.com",
+      "https://*.vercel.app",
+      "https://*.cloudworkstations.dev",
+      "http://localhost:3000",
+      "http://localhost:9002",
+      "http://127.0.0.1:3000"
+    ],
+    "method": [
+      "GET",
+      "HEAD",
+      "OPTIONS"
+    ],
+    "responseHeader": [
+      "Content-Type",
+      "Content-Length",
+      "Cache-Control",
+      "ETag",
+      "Accept-Ranges",
+      "Content-Range"
+    ],
     "maxAgeSeconds": 3600
   }
 ]
