@@ -356,10 +356,16 @@ async function main() {
   const sharp = repoRequire('sharp') as typeof import('sharp');
   const ffmpegBin = imagesOnly ? '' : resolvePortableFfmpeg();
   const exhaustedTtsKeys = new Set<string>();
-  const nextKey = () => {
+  const exhaustedImgKeys = new Set<string>();
+  const nextTtsKey = (attempt = 1) => {
     const active = apiKeys.filter((k) => !exhaustedTtsKeys.has(k));
     const pool = active.length > 0 ? active : apiKeys;
-    return pool[0];
+    return pool[(attempt - 1) % pool.length];
+  };
+  const nextImgKey = (attempt = 1) => {
+    const active = apiKeys.filter((k) => !exhaustedImgKeys.has(k));
+    const pool = active.length > 0 ? active : apiKeys;
+    return pool[(attempt - 1) % pool.length];
   };
 
   console.log(`[story:media] Generating candidate media for ${planned.length} story/stories into .story-spark-build/candidates/...`);
@@ -380,15 +386,15 @@ async function main() {
         let generated = false;
         const maxTtsAttempts = Math.max(6, apiKeys.length * 3);
         for (let attempt = 1; attempt <= maxTtsAttempts && !generated; attempt++) {
-          const key = nextKey();
+          const key = nextTtsKey(attempt);
           const spoken = buildSpokenScript(page.text, GHANAIAN_PRONUNCIATIONS, 'gemini-tts');
           const hintBlock = spoken.promptHints.length > 0 ? `\nPronunciation notes:\n- ${spoken.promptHints.join('\n- ')}` : '';
           const prompt =
             attempt <= 2
               ? `You are an authentic Ghanaian storyteller speaking in warm, natural Ghanaian English (en-GH) at a gentle, clear storytelling pace.\n` +
-                `Read the following paragraph aloud verbatim from start to finish, speaking ONLY the exact words below with no introduction.\n` +
-                `Important: Maintain your clear, natural Ghanaian English accent consistently throughout the entire reading, including all character dialogue and quotes. Do not switch to a British, American, or dramatic theatrical accent during quotes or dialogue:${hintBlock}\n\n` +
-                spoken.spoken
+              `Read the following paragraph aloud verbatim from start to finish, speaking ONLY the exact words below with no introduction.\n` +
+              `Important: Maintain your clear, natural Ghanaian English accent consistently throughout the entire reading, including all character dialogue and quotes. Do not switch to a British, American, or dramatic theatrical accent during quotes or dialogue:${hintBlock}\n\n` +
+              spoken.spoken
               : `Read the following paragraph aloud in warm, natural Ghanaian English, keeping a consistent Ghanaian accent across all quotes and speaking ONLY the exact words below with no introduction:\n\n${spoken.spoken}`;
           const res = await geminiPost(STRICT_TTS_MODEL, key, {
             contents: [{ parts: [{ text: prompt }] }],
@@ -430,7 +436,7 @@ async function main() {
           `Aspect ratio 4:3 landscape. Absolutely NO text, letters, numbers, captions, or watermarks anywhere in the image.`;
         let generated = false;
         for (let attempt = 1; attempt <= apiKeys.length * 2 && !generated; attempt++) {
-          const key = nextKey();
+          const key = nextImgKey(attempt);
           const res = await geminiPost(IMAGE_MODEL, key, {
             contents: [{ parts: [{ text: imgPrompt }] }],
             generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
@@ -438,6 +444,9 @@ async function main() {
           const parts: any[] = res?.candidates?.[0]?.content?.parts ?? [];
           const imgPart = parts.find((pt) => pt?.inlineData?.data);
           if (!imgPart) {
+            if (res?.error?.code === 429 || res?.error?.code === 400 || res?.error?.code === 403) {
+              exhaustedImgKeys.add(key);
+            }
             if (attempt === apiKeys.length * 2) {
               throw new Error(`Image generation failed for ${story.key} p${pageNo}: ${JSON.stringify(res?.error || res).slice(0, 220)}`);
             }

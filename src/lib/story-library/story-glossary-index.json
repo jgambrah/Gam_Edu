@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts or objects that help to show whether something is true."
+    "definition": "Facts or observations that show whether something is true."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -547,7 +547,7 @@
     "definition": "Matching the real facts; not false or made up."
   },
   "honest": {
-    "definition": "Truthful and fair."
+    "definition": "Truthful; not cheating or hiding things."
   },
   "honestly": {
     "definition": "In a truthful, fair, and open way."
@@ -574,7 +574,7 @@
     "definition": "A test done carefully to find something out."
   },
   "data": {
-    "definition": "Facts, numbers, and measurements collected carefully to help answer a question."
+    "definition": "The internet allowance on a phone or tablet."
   },
   "sample": {
     "definition": "A small piece or amount taken to test or show what the whole thing is like."
@@ -643,7 +643,7 @@
     "definition": "Warm, bright light from the sun when the sky is clear."
   },
   "solar": {
-    "definition": "Powered by the sun’s light and heat."
+    "definition": "Using the heat or light of the Sun."
   },
   "moon": {
     "definition": "The big round rock that goes around the Earth."
@@ -1445,7 +1445,7 @@
     "definition": "An illness or sickness that stops the body or a plant from working properly."
   },
   "malaria": {
-    "definition": "An illness that some mosquitoes can spread when they bite."
+    "definition": "A serious disease spread by the bite of some mosquitoes."
   },
   "fever": {
     "definition": "A sign of illness when the body’s temperature becomes hotter than normal."
@@ -1520,7 +1520,7 @@
     "definition": "The buying, selling, or exchanging of goods between people or towns, or a skilled craft."
   },
   "customer": {
-    "definition": "A person who buys goods or services from a shop or market trader."
+    "definition": "A person who buys goods or services."
   },
   "business": {
     "definition": "Work or trade where people make, buy, or sell goods and services."
@@ -1979,7 +1979,7 @@
     "definition": "Periods of ten years."
   },
   "generation": {
-    "definition": "All the people born and living at about the same time, such as children, parents, or grandparents."
+    "definition": "All the individuals born around the same time."
   },
   "past": {
     "definition": "The time before now that has already happened."
@@ -3737,7 +3737,7 @@
     "definition": "The point or part equally distant from the sides or ends; the centre."
   },
   "centre": {
-    "definition": "The middle point of a circle or place, or a building for a community activity."
+    "definition": "The middle point of something."
   },
   "side": {
     "definition": "A surface or edge on the left or right of something."
@@ -3962,7 +3962,8 @@
     "definition": "An exclamation of understanding, surprise, or relief."
   },
   "amina": {
-    "definition": "A West African girl’s name meaning \"trustworthy and faithful\"."
+    "definition": "A West African girl’s name meaning \"trustworthy and faithful\". (Ghanaian Muslim female personal name meaning trustworthy or faithful.)",
+    "phonetic": "ah-mee-nah"
   },
   "boateng": {
     "definition": "A well-known Ghanaian (Akan) family surname. (Widely used Akan personal and family surname.)",
@@ -4371,7 +4372,7 @@
     "definition": "Says clearly, or nations and governments."
   },
   "guarantee": {
-    "definition": "A firm promise that something will be done or meets a high standard."
+    "definition": "A promise to repair or replace a product if it fails."
   },
   "guaranteed": {
     "definition": "Firmly promised and backed up so you can rely on it."
@@ -4551,7 +4552,7 @@
     "definition": "A channel that carries rainwater away from buildings and roads."
   },
   "cylinder": {
-    "definition": "A solid or hollow tube shape with straight sides and circular ends."
+    "definition": "The metal container that holds cooking gas."
   },
   "agency": {
     "definition": "An official organisation that provides a public service or regulates safety."
@@ -4644,7 +4645,7 @@
     "definition": "A team of people who work together to operate a boat, aircraft, or project."
   },
   "solution": {
-    "definition": "The answer to a problem, or a liquid in which something is dissolved."
+    "definition": "An answer to a problem."
   },
   "shed": {
     "definition": "A simple roofed building used for storage or a workshop; or to drop leaves or tears."
@@ -4861,7 +4862,7 @@
     "definition": "To receive something — like a story, craft, or trait — passed down from parents or ancestors."
   },
   "inherited": {
-    "definition": "Received from parents, grandparents, or ancestors."
+    "definition": "Received from parents through their bodies."
   },
   "decide": {
     "definition": "To make a choice after thinking carefully."
@@ -4964,7 +4965,8 @@
     "phonetic": "soon-yah-nee"
   },
   "kuntunse": {
-    "definition": "The town near Accra where the Ghana Radio Astronomy Observatory satellite dish is located."
+    "definition": "The town near Accra where the Ghana Radio Astronomy Observatory satellite dish is located. (Town near Accra home to the Ghana Radio Astronomy Observatory.)",
+    "phonetic": "koon-toon-seh"
   },
   "morocco": {
     "definition": "A country in North Africa on the Atlantic and Mediterranean coasts, linked to West Africa by ancient trade routes."
@@ -6135,7 +6137,7 @@
     "definition": "To change from a gas to a liquid."
   },
   "ellipse": {
-    "definition": "A stretched oval shape."
+    "definition": "An oval shape, like a stretched circle."
   },
   "non-renewable": {
     "definition": "Describing an energy source that is used up, such as gas, oil, or uranium."
@@ -6267,7 +6269,7 @@
     "definition": "A West African musician and storyteller who keeps the history of a people."
   },
   "drought": {
-    "definition": "A long period with little or no rain."
+    "definition": "A long period without enough rain."
   },
   "content": {
     "definition": "Satisfied with what one has."
@@ -6307,6 +6309,21 @@
   },
   "pursues": {
     "definition": "Works steadily to reach something."
+  },
+  "rumours": {
+    "definition": "Stories passed around that may not be true."
+  },
+  "grievance": {
+    "definition": "A real cause for complaint."
+  },
+  "aim": {
+    "definition": "What you are trying to achieve."
+  },
+  "selection": {
+    "definition": "In biology, natural selection is the process by which individuals that survive and breed pass on their features."
+  },
+  "distraction": {
+    "definition": "Something that draws your attention away from what matters."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6535,7 +6552,7 @@
     "definition": "In business, fixed costs are regular expenses like stall rent that stay the same each week regardless of sales volume."
   },
   "credit": {
-    "definition": "An arrangement where a customer receives goods now and agrees to pay for them later."
+    "definition": "Praise or thanks for something achieved."
   },
   "reserve": {
     "definition": "An area of land protected by law."
@@ -6682,7 +6699,7 @@
     "definition": "The planned movement and rehousing of people whose homes and land are flooded or affected by a major project"
   },
   "artificial": {
-    "definition": "Made by humans rather than occurring naturally; artificial intelligence is software that performs tasks requiring pattern recognition or learning"
+    "definition": "Made by human skill rather than occurring naturally; artificial intelligence (AI) is computer software that learns from examples."
   },
   "consent": {
     "definition": "Permission given freely after a person has been clearly informed about what will happen and how their data will be used"
@@ -6793,7 +6810,7 @@
     "definition": "Able to be adjusted or modified to suit a particular user’s needs and preferences."
   },
   "telescope": {
-    "definition": "An optical instrument that gathers light to make distant objects in space appear closer and clearer."
+    "definition": "An instrument that makes distant objects look nearer."
   },
   "gravitational": {
     "definition": "Gravitational wave: a ripple in space made when very heavy objects move or collide."
@@ -7501,7 +7518,7 @@
     "definition": "To do with elections."
   },
   "scams": {
-    "definition": "Tricks that take people’s money dishonestly."
+    "definition": "Dishonest tricks used to cheat people of money."
   },
   "leak": {
     "definition": "To let secret information get out."
@@ -8744,7 +8761,7 @@
     "definition": "A climbing plant with long stems."
   },
   "restless": {
-    "definition": "Unable to stay still or be satisfied."
+    "definition": "Unable to stay still or calm."
   },
   "stake": {
     "definition": "A strong, pointed stick."
@@ -8862,6 +8879,54 @@
   },
   "capable": {
     "definition": "Able to do many things well."
+  },
+  "features": {
+    "definition": "Special parts or qualities of a product."
+  },
+  "wages": {
+    "definition": "Money paid to workers for their work."
+  },
+  "apprentice": {
+    "definition": "A young person learning a trade by working with an expert."
+  },
+  "figures": {
+    "definition": "Numbers, especially about money."
+  },
+  "formula": {
+    "definition": "A fixed set of steps that always gives the right answer."
+  },
+  "courage": {
+    "definition": "The strength to do something frightening."
+  },
+  "livelihood": {
+    "definition": "The work that a person earns a living from."
+  },
+  "dread": {
+    "definition": "Great fear about something that may happen."
+  },
+  "discoverers": {
+    "definition": "People who find out something new."
+  },
+  "decisions": {
+    "definition": "Choices about what to do."
+  },
+  "mouldy": {
+    "definition": "Covered with a furry growth that appears on food that has gone bad."
+  },
+  "glut": {
+    "definition": "A time when there is much more than people can use."
+  },
+  "barrier": {
+    "definition": "Something that blocks the way."
+  },
+  "businessman": {
+    "definition": "A man who earns his living in trade or business."
+  },
+  "moderation": {
+    "definition": "Using something in sensible amounts, not too much."
+  },
+  "entertainment": {
+    "definition": "Things that amuse or interest people."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11490,5 +11555,21 @@
   "abu": {
     "definition": "Ghanaian Muslim male personal name.",
     "phonetic": "ah-boo"
+  },
+  "sule": {
+    "definition": "Short form of Sulemana (Solomon) in northern Ghanaian communities.",
+    "phonetic": "soo-leh"
+  },
+  "ejura": {
+    "definition": "Agricultural market town in the Ashanti Region of Ghana.",
+    "phonetic": "eh-joo-rah"
+  },
+  "abomosu": {
+    "definition": "Farming town in the Atiwa West District of Ghana’s Eastern Region.",
+    "phonetic": "ah-boh-moh-soo"
+  },
+  "atiemo": {
+    "definition": "Ghanaian family surname.",
+    "phonetic": "ah-tyeh-moh"
   }
 }
