@@ -977,7 +977,7 @@
     "definition": "People who own or run shops and market stalls."
   },
   "market": {
-    "definition": "A place where people buy and sell food and goods."
+    "definition": "A place where people buy and sell goods."
   },
   "workshop": {
     "definition": "A room or building where a craftsperson, carpenter, weaver, or mechanic makes or repairs things."
@@ -2690,7 +2690,7 @@
     "definition": "Having a lid or cloth on top."
   },
   "hide": {
-    "definition": "To go where no one can see you."
+    "definition": "The skin of a large animal."
   },
   "hidden": {
     "definition": "Kept out of sight where it is hard to find."
@@ -4176,7 +4176,7 @@
     "definition": "Made a short sharp clicking sound, or pressed a switch."
   },
   "district": {
-    "definition": "An administrative area of local government within a region of Ghana."
+    "definition": "An area of a country with its own towns and villages."
   },
   "note": {
     "definition": "A short written reminder, a musical sound of a particular pitch, or a paper banknote."
@@ -5036,7 +5036,7 @@
     "definition": "A long straight piece of metal or wood, a block of soap or chocolate, or a column on a bar chart."
   },
   "divide": {
-    "definition": "To split into equal parts or share fairly."
+    "definition": "To separate into parts or shares."
   },
   "divided": {
     "definition": "Separated or shared into parts."
@@ -5240,7 +5240,7 @@
     "definition": "To think that something is likely true, or to imagine \"what if\"."
   },
   "condition": {
-    "definition": "The state something is in, or a requirement that must be met."
+    "definition": "Something that must be agreed to before something else is allowed."
   },
   "conditions": {
     "definition": "The weather, surroundings, or rules affecting how something works."
@@ -6216,7 +6216,7 @@
     "definition": "A written agreement between states or peoples."
   },
   "raiding": {
-    "definition": "Attacking a place suddenly to seize people or goods."
+    "definition": "Attacking a place suddenly to seize cattle or goods."
   },
   "sustainability": {
     "definition": "Using resources in a way that leaves enough for people in the future."
@@ -6237,7 +6237,7 @@
     "definition": "Deep sadness, especially after a loss."
   },
   "respect": {
-    "definition": "Treating someone as important and deserving of good treatment."
+    "definition": "Polite behaviour towards someone, especially an elder."
   },
   "wits": {
     "definition": "The ability to think quickly and cleverly."
@@ -6265,6 +6265,24 @@
   },
   "griot": {
     "definition": "A West African musician and storyteller who keeps the history of a people."
+  },
+  "drought": {
+    "definition": "A long period with little or no rain."
+  },
+  "content": {
+    "definition": "Satisfied with what one has."
+  },
+  "enclosure": {
+    "definition": "A piece of land with a fence round it."
+  },
+  "grumbled": {
+    "definition": "Complained in a low, unhappy voice."
+  },
+  "snatched": {
+    "definition": "Took quickly and suddenly."
+  },
+  "displeased": {
+    "definition": "Not happy or satisfied."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -7034,7 +7052,7 @@
     "definition": "Dug up carefully to study what lies buried."
   },
   "herders": {
-    "definition": "People who look after groups of animals such as cattle and goats."
+    "definition": "People who look after cattle, sheep, or goats."
   },
   "kenkey": {
     "definition": "A Ghanaian food made from fermented corn dough, wrapped and cooked. (A fermented maize dish.)",
@@ -7139,9 +7157,6 @@
   },
   "portuguese": {
     "definition": "From Portugal, a country in Europe."
-  },
-  "enclosure": {
-    "definition": "An area surrounded by a wall or fence."
   },
   "festival": {
     "definition": "A special day or time of celebration."
@@ -7848,7 +7863,7 @@
     "phonetic": "mm-maw-baw-raw"
   },
   "gourd": {
-    "definition": "A hard-shelled hollow fruit, such as a calabash, dried and used as a container."
+    "definition": "The dried shell of a fruit, used as a container."
   },
   "anansesɛm": {
     "definition": "Standard Twi word meaning “spider stories” (folktales). (Standard Twi word meaning \"spider stories\" (folktales).)",
@@ -7870,7 +7885,7 @@
     "definition": "A medical condition in which a person’s bones grow differently, making them much shorter than average."
   },
   "ashamed": {
-    "definition": "Feeling bad because of something one has done."
+    "definition": "Feeling embarrassed or bad about something or someone."
   },
   "interrupting": {
     "definition": "Speaking over someone before they have finished talking."
@@ -8621,7 +8636,7 @@
     "definition": "Moved round and round in the air."
   },
   "pity": {
-    "definition": "Sorrow for someone who is suffering."
+    "definition": "Sorrow for the suffering of a person or animal."
   },
   "waded": {
     "definition": "Walked through water."
@@ -8685,6 +8700,78 @@
   },
   "blacksmith": {
     "definition": "A person who makes things from iron."
+  },
+  "coiled": {
+    "definition": "Wound round and round in loops."
+  },
+  "beckoned": {
+    "definition": "Made a sign with the hand to call someone closer."
+  },
+  "fair-minded": {
+    "definition": "Wanting to treat everyone equally."
+  },
+  "limped": {
+    "definition": "Walked unevenly because of an injury."
+  },
+  "portion": {
+    "definition": "A part or share of something."
+  },
+  "vine": {
+    "definition": "A climbing plant with long stems."
+  },
+  "restless": {
+    "definition": "Unable to stay still or be satisfied."
+  },
+  "stake": {
+    "definition": "A strong, pointed stick."
+  },
+  "pasture": {
+    "definition": "Grassland where cattle feed."
+  },
+  "homestead": {
+    "definition": "A home with its land and buildings."
+  },
+  "guard": {
+    "definition": "Someone who watches over a place to protect it."
+  },
+  "gum": {
+    "definition": "A sticky substance from trees."
+  },
+  "butted": {
+    "definition": "Hit with the head."
+  },
+  "gatherers": {
+    "definition": "People who collect wild plants, fruits, and roots for food."
+  },
+  "drifting": {
+    "definition": "Moving slowly through the air."
+  },
+  "tucked": {
+    "definition": "Put into a small, safe place."
+  },
+  "wobble": {
+    "definition": "To move unsteadily from side to side."
+  },
+  "terrified": {
+    "definition": "Extremely frightened."
+  },
+  "barred": {
+    "definition": "Fastened shut with a bar."
+  },
+  "seized": {
+    "definition": "Took hold of suddenly and by force."
+  },
+  "spring": {
+    "definition": "A place where water comes up out of the ground."
+  },
+  "swarm": {
+    "definition": "A large group of bees flying together."
+  },
+  "hard-hearted": {
+    "definition": "Showing no kindness or pity."
+  },
+  "staggered": {
+    "definition": "Walked unsteadily, as if about to fall."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11229,5 +11316,53 @@
   "sobolo": {
     "definition": "Chilled spiced Ghanaian beverage brewed from dried roselle/hibiscus petals and ginger.",
     "phonetic": "soh-boh-loh"
+  },
+  "sebgugugu": {
+    "definition": "Traditional Rwandan folk-tale character name.",
+    "phonetic": "seb-goo-goo-goo"
+  },
+  "imana": {
+    "definition": "The Creator in Kinyarwanda tradition.",
+    "phonetic": "ee-mah-nah"
+  },
+  "maasinta": {
+    "definition": "First Maasai ancestor in Maasai origin tradition.",
+    "phonetic": "mah-sin-tah"
+  },
+  "enkai": {
+    "definition": "The Creator in Maasai tradition.",
+    "phonetic": "en-kai"
+  },
+  "dorobo": {
+    "definition": "Hunter-gatherer peoples neighbouring the Maasai.",
+    "phonetic": "doh-roh-boh"
+  },
+  "kilimanjaro": {
+    "definition": "Snow-capped mountain in Tanzania near the Kenyan border.",
+    "phonetic": "kih-lee-mahn-jah-roh"
+  },
+  "maasai": {
+    "definition": "Pastoralist people of Kenya and Tanzania.",
+    "phonetic": "mah-sai"
+  },
+  "kalulu": {
+    "definition": "Trickster hare in south-central African folk tales.",
+    "phonetic": "kah-loo-loo"
+  },
+  "tselane": {
+    "definition": "Basotho girl’s name in traditional Lesotho folk tale.",
+    "phonetic": "tseh-lah-neh"
+  },
+  "basotho": {
+    "definition": "The Sotho people of Lesotho and South Africa.",
+    "phonetic": "bah-soo-too"
+  },
+  "lesotho": {
+    "definition": "Mountain kingdom in southern Africa.",
+    "phonetic": "leh-soo-too"
+  },
+  "goha": {
+    "definition": "Beloved wise-fool folk character of Egypt, Sudan, and North Africa.",
+    "phonetic": "goh-hah"
   }
 }

@@ -24,6 +24,8 @@ import * as cp from 'node:child_process';
 import { createRequire } from 'node:module';
 import * as dotenv from 'dotenv';
 import { PILOT_STORIES, type PilotStory } from '../../src/lib/story-library/pilot/pilot-stories';
+import { GHANAIAN_PRONUNCIATIONS } from '../../src/lib/story-library/pronunciation/dictionary';
+import { buildSpokenScript } from '../../src/lib/story-library/pronunciation/apply';
 import { firebaseConfig } from '../../src/firebase/config';
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
@@ -198,6 +200,16 @@ function resolvePortableFfmpeg(): string {
   if (process.env.FFMPEG_PATH && fs.existsSync(process.env.FFMPEG_PATH)) {
     return process.env.FFMPEG_PATH;
   }
+  const webotsFfmpeg = 'C:\\Users\\LENOVO\\AppData\\Local\\Programs\\Webots\\msys64\\mingw64\\bin\\ffmpeg.exe';
+  if (fs.existsSync(webotsFfmpeg)) {
+    process.env.PATH = [
+      'C:\\Users\\LENOVO\\AppData\\Local\\Programs\\Webots\\msys64\\mingw64\\bin',
+      'C:\\Users\\LENOVO\\AppData\\Local\\Programs\\Webots\\msys64\\mingw64\\bin\\cpp',
+      'C:\\Users\\LENOVO\\AppData\\Local\\Programs\\Webots\\msys64\\usr\\bin',
+      process.env.PATH || '',
+    ].join(';');
+    return webotsFfmpeg;
+  }
   try {
     cp.execFileSync('ffmpeg', ['-version'], { stdio: 'ignore' });
     return 'ffmpeg';
@@ -360,9 +372,18 @@ async function main() {
       if (audioSet.has(pageNo)) {
         const outMp3 = path.join(storyDir, `tts-Kore-page${pageNo}.mp3`);
         let generated = false;
-        for (let attempt = 1; attempt <= apiKeys.length * 2 && !generated; attempt++) {
+        const maxTtsAttempts = Math.max(6, apiKeys.length * 3);
+        for (let attempt = 1; attempt <= maxTtsAttempts && !generated; attempt++) {
           const key = nextKey();
-          const prompt = `Read the following paragraph aloud in warm, natural Ghanaian English, speaking ONLY the exact words below with no introduction:\n\n${page.text}`;
+          const spoken = buildSpokenScript(page.text, GHANAIAN_PRONUNCIATIONS, 'gemini-tts');
+          const hintBlock = spoken.promptHints.length > 0 ? `\nPronunciation notes:\n- ${spoken.promptHints.join('\n- ')}` : '';
+          const prompt =
+            attempt <= 2
+              ? `You are an authentic Ghanaian storyteller speaking in warm, natural Ghanaian English (en-GH) at a gentle, clear storytelling pace.\n` +
+                `Read the following paragraph aloud verbatim from start to finish, speaking ONLY the exact words below with no introduction.\n` +
+                `Important: Maintain your clear, natural Ghanaian English accent consistently throughout the entire reading, including all character dialogue and quotes. Do not switch to a British, American, or dramatic theatrical accent during quotes or dialogue:${hintBlock}\n\n` +
+                spoken.spoken
+              : `Read the following paragraph aloud in warm, natural Ghanaian English, keeping a consistent Ghanaian accent across all quotes and speaking ONLY the exact words below with no introduction:\n\n${spoken.spoken}`;
           const res = await geminiPost(STRICT_TTS_MODEL, key, {
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
@@ -372,10 +393,10 @@ async function main() {
           });
           const b64 = res?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
           if (!b64) {
-            if (attempt === apiKeys.length * 2) {
+            if (attempt === maxTtsAttempts) {
               throw new Error(`TTS failed for ${story.key} p${pageNo}: ${JSON.stringify(res?.error || res).slice(0, 220)}`);
             }
-            await new Promise((r) => setTimeout(r, 1500));
+            await new Promise((r) => setTimeout(r, 1500 * Math.min(attempt, 3)));
             continue;
           }
           const pcm = Buffer.from(b64, 'base64');
