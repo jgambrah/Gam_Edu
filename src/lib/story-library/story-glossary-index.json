@@ -499,7 +499,7 @@
     "definition": "Recognised, familiar, or proven to be true."
   },
   "knowledge": {
-    "definition": "Understanding, facts, and skills gained through learning and experience."
+    "definition": "What is known and understood."
   },
   "understand": {
     "definition": "To grasp the meaning or cause of something."
@@ -532,7 +532,7 @@
     "definition": "A way to find out if something is true."
   },
   "tested": {
-    "definition": "Tried out carefully to see if something is true, safe, or working."
+    "definition": "Checked by observation or experiment."
   },
   "testing": {
     "definition": "Running careful trials to check how something works."
@@ -1559,7 +1559,7 @@
     "definition": "Received money or respect through honest work."
   },
   "interest": {
-    "definition": "The fee charged by a lender to a borrower for the use of borrowed money over time."
+    "definition": "Money earned on savings, or paid on a loan."
   },
   "investment": {
     "definition": "Money, time or effort put in for a future benefit."
@@ -1739,7 +1739,7 @@
     "definition": "Parts out of every hundred (%)."
   },
   "measure": {
-    "definition": "To find the exact size, weight, length, or temperature of something using a standard unit."
+    "definition": "To find out the size or amount of something."
   },
   "unit": {
     "definition": "A standard quantity used to measure things, such as a metre, kilogram, or cedi."
@@ -4143,7 +4143,7 @@
     "definition": "Able to move easily, or a handheld mobile phone."
   },
   "screen": {
-    "definition": "The flat display surface of a phone, computer, or tablet, or a fine mesh that keeps insects out."
+    "definition": "A fine mesh that lets water through and keeps solids out."
   },
   "tablet": {
     "definition": "A flat portable computer with a touchscreen, or a small round pill of medicine."
@@ -4671,7 +4671,7 @@
     "definition": "A metal tool that opens a lock, a button on a piano or keyboard, or an essential clue that unlocks a code."
   },
   "organise": {
-    "definition": "To arrange things or people in an orderly, working way."
+    "definition": "To arrange people so that they work well together."
   },
   "organised": {
     "definition": "Arranged neatly and carefully so everything works well."
@@ -4771,7 +4771,7 @@
     "definition": "A small sealed bag or packet, such as a pure-water sachet."
   },
   "sachets": {
-    "definition": "Small sealed packets used to hold drinking water, spices, or seeds."
+    "definition": "Small sealed packets."
   },
   "weekend": {
     "definition": "Saturday and Sunday — the two days at the end of the school week."
@@ -5327,7 +5327,7 @@
     "definition": "A large motor vehicle built to carry heavy loads of goods on roads."
   },
   "responsible": {
-    "definition": "Trusted to do the right thing and take care of a duty."
+    "definition": "Having the duty to answer for a decision."
   },
   "ripe": {
     "definition": "Ready to eat, soft and sweet."
@@ -5342,7 +5342,7 @@
     "definition": "Pictures and stories your mind makes while you sleep, or a big hope you work toward."
   },
   "standard": {
-    "definition": "The accepted, correct form of a language used in school and exams."
+    "definition": "A level of quality that is expected."
   },
   "standards": {
     "definition": "Agreed rules of quality, honesty, or measurement that everyone can trust."
@@ -5837,7 +5837,7 @@
     "definition": "A thin cloud of dust that makes the sky look pale."
   },
   "bargain": {
-    "definition": "To talk about a price to agree on one that is fair."
+    "definition": "To discuss a price in order to agree on it."
   },
   "beacon": {
     "definition": "A light or signal that guides or warns people."
@@ -6276,13 +6276,37 @@
     "definition": "A piece of land with a fence round it."
   },
   "grumbled": {
-    "definition": "Complained in a low, unhappy voice."
+    "definition": "Complained in a low voice."
   },
   "snatched": {
     "definition": "Took quickly and suddenly."
   },
   "displeased": {
     "definition": "Not happy or satisfied."
+  },
+  "explanation": {
+    "definition": "A statement that tells why something happens."
+  },
+  "anchoring": {
+    "definition": "Letting the first number you hear pull your judgement towards it."
+  },
+  "undercut": {
+    "definition": "To sell at a lower price than a competitor."
+  },
+  "adjusted": {
+    "definition": "Changed slightly to make better."
+  },
+  "bankrupt": {
+    "definition": "Unable to pay what is owed, and so forced to stop trading."
+  },
+  "purpose": {
+    "definition": "A reason for living and acting."
+  },
+  "criticises": {
+    "definition": "Points out faults, often unkindly."
+  },
+  "pursues": {
+    "definition": "Works steadily to reach something."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6318,7 +6342,7 @@
     "definition": "Not used or sold, and still there afterwards."
   },
   "customers": {
-    "definition": "People who buy things from a shop or seller."
+    "definition": "People who buy goods or services."
   },
   "label": {
     "definition": "A small piece of paper that tells you something about what it is stuck on."
@@ -7341,7 +7365,7 @@
     "definition": "What people generally think of someone or something."
   },
   "habit": {
-    "definition": "Something you do so often that it becomes automatic."
+    "definition": "Something done so often that it happens without thought."
   },
   "charity": {
     "definition": "Help given freely to people in need."
@@ -7532,7 +7556,7 @@
     "definition": "Written records of money coming in and going out."
   },
   "hardship": {
-    "definition": "A time of great difficulty, especially with money."
+    "definition": "Suffering and difficulty."
   },
   "persuasive": {
     "definition": "Good at making someone agree."
@@ -7949,7 +7973,7 @@
     "definition": "Shared so every group receives the exact same amount."
   },
   "borehole": {
-    "definition": "A deep, narrow well fitted with a pump that brings up clean underground water."
+    "definition": "A deep, narrow well drilled into the ground."
   },
   "precious": {
     "definition": "Very valuable and worthy of careful protection, never to be wasted."
@@ -8236,7 +8260,7 @@
     "definition": "A stiff bar that turns about a fixed point."
   },
   "effort": {
-    "definition": "The force applied to a lever."
+    "definition": "Hard use of the mind or body."
   },
   "potential": {
     "definition": "Gravitational potential energy: energy stored in an object because it has been raised above the ground."
@@ -8386,7 +8410,7 @@
     "definition": "The use of machines that follow built-in rules without a person controlling each step."
   },
   "intelligence": {
-    "definition": "Artificial intelligence: computer programs that learn patterns from many examples and use them to do tasks."
+    "definition": "The ability to learn, understand, and solve problems; artificial intelligence (AI) is computer software designed to do such tasks."
   },
   "amplifier": {
     "definition": "A device that makes a larger copy of a small electrical signal."
@@ -8772,6 +8796,72 @@
   },
   "staggered": {
     "definition": "Walked unsteadily, as if about to fall."
+  },
+  "seals": {
+    "definition": "Rings, often of rubber, that stop water leaking past a moving part."
+  },
+  "dramatic": {
+    "definition": "Exciting or shocking, and so easily remembered."
+  },
+  "judgement": {
+    "definition": "The ability to decide well."
+  },
+  "provision": {
+    "definition": "Everyday food and household goods such as milk, sugar, and soap."
+  },
+  "repaired": {
+    "definition": "Mended; made to work again."
+  },
+  "kiosk": {
+    "definition": "A very small shop or stall."
+  },
+  "providing": {
+    "definition": "Supplying what is needed."
+  },
+  "lend": {
+    "definition": "To give money that must be paid back."
+  },
+  "owe": {
+    "definition": "To have to pay money back to someone."
+  },
+  "encouraging": {
+    "definition": "Giving hope."
+  },
+  "minimum": {
+    "definition": "The smallest amount allowed, such as the minimum balance required in a bank account."
+  },
+  "agent": {
+    "definition": "A person who provides a service on behalf of a company."
+  },
+  "wallets": {
+    "definition": "Accounts on a phone in which mobile money is kept."
+  },
+  "managers": {
+    "definition": "People who run a business or part of one."
+  },
+  "innocent": {
+    "definition": "Having done nothing wrong."
+  },
+  "exhaustion": {
+    "definition": "Extreme tiredness."
+  },
+  "survived": {
+    "definition": "Stayed alive through great danger."
+  },
+  "expecting": {
+    "definition": "Looking for something to be done."
+  },
+  "miserable": {
+    "definition": "Very unhappy."
+  },
+  "control": {
+    "definition": "To have power over what happens."
+  },
+  "instruction": {
+    "definition": "A statement telling someone what to do."
+  },
+  "capable": {
+    "definition": "Able to do many things well."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11364,5 +11454,41 @@
   "goha": {
     "definition": "Beloved wise-fool folk character of Egypt, Sudan, and North Africa.",
     "phonetic": "goh-hah"
+  },
+  "asuoyaa": {
+    "definition": "Town in the Eastern Region of Ghana.",
+    "phonetic": "ah-soo-oh-yaah"
+  },
+  "fuseina": {
+    "definition": "Ghanaian Muslim female personal name (feminine of Fuseini).",
+    "phonetic": "foo-say-nah"
+  },
+  "addo": {
+    "definition": "Ghanaian personal and family surname.",
+    "phonetic": "ah-doh"
+  },
+  "shito": {
+    "definition": "Rich dark Ghanaian hot pepper and seafood/meat sauce.",
+    "phonetic": "shih-toh"
+  },
+  "wa": {
+    "definition": "Capital city of the Upper West Region of Ghana.",
+    "phonetic": "wah"
+  },
+  "teshie": {
+    "definition": "Coastal Ga town in Greater Accra.",
+    "phonetic": "teh-shee"
+  },
+  "dei": {
+    "definition": "Ga female birth-order name (as in Naa Dei).",
+    "phonetic": "day"
+  },
+  "anyaa": {
+    "definition": "Suburb of Greater Accra, Ghana.",
+    "phonetic": "ahn-yaah"
+  },
+  "abu": {
+    "definition": "Ghanaian Muslim male personal name.",
+    "phonetic": "ah-boo"
   }
 }

@@ -193,7 +193,9 @@ function collectGeminiKeys(): string[] {
   for (const [k, v] of Object.entries(process.env)) {
     if (/^GEMINI_API_KEY(_\d+)?$/.test(k)) add(v);
   }
-  return keys;
+  const ultraKeys = keys.filter((k) => k.startsWith('AQ.'));
+  const paidKeys = keys.filter((k) => !k.startsWith('AQ.'));
+  return [...ultraKeys, ...paidKeys];
 }
 
 function resolvePortableFfmpeg(): string {
@@ -353,8 +355,12 @@ async function main() {
   const repoRequire = createRequire(path.join(REPO_ROOT, 'package.json'));
   const sharp = repoRequire('sharp') as typeof import('sharp');
   const ffmpegBin = imagesOnly ? '' : resolvePortableFfmpeg();
-  let keyCursor = 0;
-  const nextKey = () => apiKeys[keyCursor++ % apiKeys.length];
+  const exhaustedTtsKeys = new Set<string>();
+  const nextKey = () => {
+    const active = apiKeys.filter((k) => !exhaustedTtsKeys.has(k));
+    const pool = active.length > 0 ? active : apiKeys;
+    return pool[0];
+  };
 
   console.log(`[story:media] Generating candidate media for ${planned.length} story/stories into .story-spark-build/candidates/...`);
 
@@ -393,6 +399,9 @@ async function main() {
           });
           const b64 = res?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
           if (!b64) {
+            if (res?.error?.code === 429) {
+              exhaustedTtsKeys.add(key);
+            }
             if (attempt === maxTtsAttempts) {
               throw new Error(`TTS failed for ${story.key} p${pageNo}: ${JSON.stringify(res?.error || res).slice(0, 220)}`);
             }
