@@ -147,7 +147,7 @@
     "definition": "A group of people who belong together and care for one another, such as parents, children, and grandparents."
   },
   "families": {
-    "definition": "Groups of parents, children, and relatives who live together or care for one another."
+    "definition": "Parents, guardians, and the relatives they live with."
   },
   "mother": {
     "definition": "A female parent who cares for and raises her children."
@@ -529,7 +529,7 @@
     "definition": "Inspected or verified something carefully."
   },
   "test": {
-    "definition": "A way to find out if something is true."
+    "definition": "A try-out to see whether something works."
   },
   "tested": {
     "definition": "Checked by observation or experiment."
@@ -586,7 +586,7 @@
     "definition": "A written note, measurement, or account kept so facts are not forgotten."
   },
   "records": {
-    "definition": "Written documents, measurements, or accounts kept safe over time."
+    "definition": "Written notes of what has happened."
   },
   "recorded": {
     "definition": "Wrote down or captured measurements, sounds, or events so they can be checked later."
@@ -688,10 +688,11 @@
     "definition": "The blanket of air and gases surrounding planet Earth."
   },
   "dust": {
-    "definition": "Tiny dry particles of soil or sand carried in the air or resting on surfaces."
+    "definition": "Tiny dry particles of earth or sand."
   },
   "harmattan": {
-    "definition": "A dry, dusty wind from the Sahara that blows across West Africa in the dry season."
+    "definition": "A dry, dusty wind from the Sahara that blows across West Africa in the dry season. (Dry, dusty north-easterly trade wind blowing from the Sahara over West Africa between late November and March.)",
+    "phonetic": "har-mah-tahn"
   },
   "fog": {
     "definition": "A thick cloud close to the ground or water."
@@ -3023,7 +3024,7 @@
     "definition": "A warm wish and trust that something good will happen."
   },
   "promise": {
-    "definition": "A firm word that you will definitely do what you said."
+    "definition": "A firm statement that you will do something."
   },
   "promised": {
     "definition": "Gave a firm word to do something."
@@ -5593,7 +5594,8 @@
     "definition": "A boy’s name in the Story Spark stories."
   },
   "salifu": {
-    "definition": "A northern Ghanaian boy’s/family name in the Story Spark stories."
+    "definition": "A northern Ghanaian boy’s/family name in the Story Spark stories. (Northern Ghanaian Muslim male personal and family name.)",
+    "phonetic": "sah-lee-foo"
   },
   "abdul-rahman": {
     "definition": "A boy’s name in the Story Spark stories."
@@ -5836,7 +5838,7 @@
     "definition": "A metal made by mixing two or more metals."
   },
   "haze": {
-    "definition": "A thin cloud of dust that makes the sky look pale."
+    "definition": "A thin cloud of dust or smoke in the air."
   },
   "bargain": {
     "definition": "To discuss a price in order to agree on it."
@@ -6128,7 +6130,7 @@
     "definition": "The total distance travelled divided by the total time taken."
   },
   "pivot": {
-    "definition": "The fixed point about which a lever turns; also called the fulcrum."
+    "definition": "A change of direction based on what you have learned."
   },
   "elastic potential energy": {
     "definition": "Energy stored in an object that has been stretched, squashed, or bent."
@@ -6324,6 +6326,15 @@
   },
   "distraction": {
     "definition": "Something that draws your attention away from what matters."
+  },
+  "predictions": {
+    "definition": "Statements about what will happen in the future."
+  },
+  "cushion": {
+    "definition": "Extra time or money kept in reserve in case of problems."
+  },
+  "serve": {
+    "definition": "To provide what someone needs."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6969,7 +6980,7 @@
     "definition": "Left behind, with nobody living or working there."
   },
   "permission": {
-    "definition": "Clear agreement allowing someone to do something."
+    "definition": "Agreement that allows someone to do something."
   },
   "fireflies": {
     "definition": "Small beetles that make flashes of light at night."
@@ -7370,7 +7381,7 @@
     "definition": "A newspaper article that gives the paper’s own opinion."
   },
   "prefect": {
-    "definition": "A senior student who helps keep order in a school."
+    "definition": "A senior pupil chosen to help keep order."
   },
   "punctuality": {
     "definition": "Arriving on time."
@@ -8590,7 +8601,7 @@
     "definition": "The long hair round a lion’s head and neck."
   },
   "trusted": {
-    "definition": "Believed that someone would do no harm."
+    "definition": "Believed to be honest and reliable."
   },
   "tracking": {
     "definition": "Following the marks left by an animal."
@@ -8927,6 +8938,36 @@
   },
   "entertainment": {
     "definition": "Things that amuse or interest people."
+  },
+  "visibility": {
+    "definition": "How far you can see."
+  },
+  "asthma": {
+    "definition": "A condition that makes breathing difficult."
+  },
+  "hopeful": {
+    "definition": "Expecting good things to happen."
+  },
+  "carpenter": {
+    "definition": "A person who makes and repairs things made of wood."
+  },
+  "schedule": {
+    "definition": "A plan that shows when things will be done."
+  },
+  "newsletter": {
+    "definition": "A short report of news sent regularly to a group of people."
+  },
+  "accuracy": {
+    "definition": "Being correct and true."
+  },
+  "laundry": {
+    "definition": "Clothes that need washing, or a business that washes clothes."
+  },
+  "boarders": {
+    "definition": "Pupils who live at a school or in a house away from home."
+  },
+  "complaint": {
+    "definition": "A statement that something is wrong or unsatisfactory."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11571,5 +11612,13 @@
   "atiemo": {
     "definition": "Ghanaian family surname.",
     "phonetic": "ah-tyeh-moh"
+  },
+  "abdul": {
+    "definition": "Muslim male personal name.",
+    "phonetic": "ahb-dool"
+  },
+  "sakasaka": {
+    "definition": "Well-known residential and school neighbourhood in Tamale, Northern Region.",
+    "phonetic": "sah-kah-sah-kah"
   }
 }

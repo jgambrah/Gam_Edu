@@ -1404,5 +1404,13 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "ah-boh-MOH-soo".', respell: 'ah-boh-moh-soo', hint: 'Abomosu is an Eastern Region town in Ghana; say "ah-boh-MOH-soo".', reviewerNotes: ['Confirm stress.'] }),
     entry({ id: 'atiemo', written: 'Atiemo', kind: 'personal-name', language: 'Akan (Akuapem / Akyem)', meaning: 'Ghanaian family surname',
       guidance: 'Candidate: "ah-TYEH-moh".', respell: 'ah-tyeh-moh', hint: 'Atiemo is a Ghanaian surname; say "ah-TYEH-moh".', reviewerNotes: ['Confirm palatalization of ti.'] }),
+    entry({ id: 'harmattan', written: 'harmattan', kind: 'word', language: 'West African / Twi (Haramata)', meaning: 'Dry, dusty north-easterly trade wind blowing from the Sahara over West Africa between late November and March',
+      guidance: 'Candidate: "har-mah-TAHN".', respell: 'har-mah-tahn', hint: '"Harmattan" is the West African dry dusty wind season; say "har-mah-TAHN" with clear Ghanaian English stress.', reviewerNotes: ['Confirm stress.'] }),
+    entry({ id: 'salifu', written: 'Salifu', kind: 'personal-name', language: 'Dagbani / Hausa (Ghanaian Muslim)', meaning: 'Northern Ghanaian Muslim male personal and family name',
+      guidance: 'Candidate: "sah-LEE-foo".', respell: 'sah-lee-foo', hint: 'Salifu is a northern Ghanaian name; say "sah-LEE-foo".', reviewerNotes: ['Confirm stress on second syllable.'] }),
+    entry({ id: 'abdul', written: 'Abdul', kind: 'personal-name', language: 'Arabic / Ghanaian Muslim', meaning: 'Muslim male personal name',
+      guidance: 'Candidate: "ahb-DOOL".', respell: 'ahb-dool', hint: 'Abdul is a Ghanaian Muslim male name; say "ahb-DOOL".', reviewerNotes: ['Confirm stress.'] }),
+    entry({ id: 'sakasaka', written: 'Sakasaka', kind: 'place-or-people', language: 'Dagbani (Tamale)', meaning: 'Well-known residential and school neighbourhood in Tamale, Northern Region',
+      guidance: 'Candidate: "sah-kah-SAH-kah".', respell: 'sah-kah-sah-kah', hint: 'Sakasaka is a well-known neighbourhood in Tamale; say "sah-kah-SAH-kah".', reviewerNotes: ['Confirm rhythm.'] }),
   ],
 };
