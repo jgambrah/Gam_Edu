@@ -38,9 +38,10 @@ public/sw.js
 dist/
 scratch/membership-audit/
 
-# Story Spark Cloud Storage generated & staged assets
+# Story Spark Cloud Storage generated & staged assets (binary media served from Firebase Storage CDN)
 /.story-spark-build/
-/public/story-spark-preview/images/*.webp
+/public/story-spark-preview/audio/
+/public/story-spark-preview/images/
+/public/story-spark-preview/candidates/
 /public/story-spark-preview/packages/*.*.json
 /public/story-spark-preview/info/*.*.json
-/public/story-spark-preview/candidates/
