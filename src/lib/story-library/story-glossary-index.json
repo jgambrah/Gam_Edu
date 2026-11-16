@@ -244,7 +244,7 @@
     "definition": "A person who lives near you."
   },
   "neighbours": {
-    "definition": "People who live near you."
+    "definition": "People who live near one another."
   },
   "people": {
     "definition": "Men, women, and children living in a place or community."
@@ -547,7 +547,7 @@
     "definition": "Matching the real facts; not false or made up."
   },
   "honest": {
-    "definition": "Truthful; not cheating or hiding things."
+    "definition": "Truthful."
   },
   "honestly": {
     "definition": "In a truthful, fair, and open way."
@@ -704,7 +704,7 @@
     "definition": "The state of the atmosphere at a particular place and time from day to day."
   },
   "season": {
-    "definition": "Dry season: the part of the year when little or no rain falls."
+    "definition": "One of the main parts of the year, such as the dry or rainy time."
   },
   "heat": {
     "definition": "Energy of warmth that moves from warmer things to cooler things."
@@ -954,7 +954,7 @@
     "definition": "A building where a family lives."
   },
   "compound": {
-    "definition": "The yard and buildings of a school or home."
+    "definition": "A group of buildings and yards enclosed by a wall."
   },
   "veranda": {
     "definition": "A roofed porch along the outside of a house where people sit in the shade."
@@ -1575,7 +1575,7 @@
     "definition": "How much something is worth, or an important principle we live by."
   },
   "fair": {
-    "definition": "Done properly by changing only one thing and keeping everything else equal."
+    "definition": "Treating everyone justly."
   },
   "risk": {
     "definition": "The chance that something dangerous or unwanted might happen."
@@ -2199,7 +2199,7 @@
     "definition": "Shouted with joy, pride, and encouragement."
   },
   "welcome": {
-    "definition": "To greet someone warmly and gladly when they arrive."
+    "definition": "Gladly received as a guest."
   },
   "welcomed": {
     "definition": "Greeted someone warmly upon arrival."
@@ -5108,7 +5108,7 @@
     "definition": "Asked politely to come or take part."
   },
   "flood": {
-    "definition": "An overflow of a large amount of water onto land that is usually dry."
+    "definition": "A great flow of water over land that is usually dry."
   },
   "flooded": {
     "definition": "Covered or filled with overflowing water."
@@ -5132,7 +5132,7 @@
     "definition": "Complete quiet with no sound at all."
   },
   "silent": {
-    "definition": "Making no sound; completely quiet."
+    "definition": "Saying nothing."
   },
   "force": {
     "definition": "A push or pull that makes something move, stop, or change shape; or strength."
@@ -6336,6 +6336,27 @@
   "serve": {
     "definition": "To provide what someone needs."
   },
+  "disgrace": {
+    "definition": "The loss of respect because of something one has done."
+  },
+  "suitors": {
+    "definition": "Men who wish to marry a particular woman."
+  },
+  "wager": {
+    "definition": "An agreement in which one side wins something if a thing happens."
+  },
+  "mocked": {
+    "definition": "Laughed at unkindly."
+  },
+  "intended": {
+    "definition": "Planned; meant to happen."
+  },
+  "accusation": {
+    "definition": "A statement that someone has done something wrong."
+  },
+  "flattered": {
+    "definition": "Pleased by praise or attention."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6767,7 +6788,7 @@
     "definition": "Guiding, helping and taking responsibility for a group or community."
   },
   "generations": {
-    "definition": "Groups of people born and living at different periods of time in history."
+    "definition": "The successive groups of people born over a long time."
   },
   "expenses": {
     "definition": "Money a business spends on goods, transport and running costs."
@@ -7184,7 +7205,7 @@
     "definition": "Something that protects."
   },
   "stubborn": {
-    "definition": "Determined and not willing to give up."
+    "definition": "Refusing to change one’s mind."
   },
   "glisten": {
     "definition": "To shine with a wet or sparkling light."
@@ -7809,7 +7830,7 @@
     "definition": "To use something again instead of throwing it away."
   },
   "rumbled": {
-    "definition": "Made a low, rolling sound."
+    "definition": "Spoke in a deep, low voice."
   },
   "crumpled": {
     "definition": "Squeezed into a small, rough ball."
@@ -8625,7 +8646,7 @@
     "definition": "A sudden, hard pull."
   },
   "trembling": {
-    "definition": "Shaking, from tiredness or fear."
+    "definition": "Shaking with fear."
   },
   "giants": {
     "definition": "Very large and powerful creatures."
@@ -8740,9 +8761,6 @@
   },
   "bridegroom": {
     "definition": "A man who is about to be married."
-  },
-  "mocked": {
-    "definition": "Laughed at unkindly."
   },
   "wrestler": {
     "definition": "A person who fights by gripping and throwing an opponent."
@@ -8968,6 +8986,72 @@
   },
   "complaint": {
     "definition": "A statement that something is wrong or unsatisfactory."
+  },
+  "begged": {
+    "definition": "Asked very earnestly."
+  },
+  "troop": {
+    "definition": "A group of soldiers, especially on horseback."
+  },
+  "wither": {
+    "definition": "To dry up and die."
+  },
+  "bolted": {
+    "definition": "Ran away suddenly, out of control."
+  },
+  "founded": {
+    "definition": "Started or established."
+  },
+  "polite": {
+    "definition": "Having good manners."
+  },
+  "peak": {
+    "definition": "The pointed top of a mountain."
+  },
+  "witnesses": {
+    "definition": "People who see an event and can say what happened."
+  },
+  "numb": {
+    "definition": "Unable to feel anything."
+  },
+  "ruled": {
+    "definition": "Gave an official decision."
+  },
+  "scrabbled": {
+    "definition": "Scratched and struggled to hold on."
+  },
+  "soot": {
+    "definition": "The black powder left by burning."
+  },
+  "host": {
+    "definition": "A person who receives guests."
+  },
+  "admire": {
+    "definition": "To look at with pleasure and respect."
+  },
+  "sharpened": {
+    "definition": "Made the edge of a blade keen."
+  },
+  "starving": {
+    "definition": "Suffering from great hunger."
+  },
+  "calabash": {
+    "definition": "A large, hard-shelled fruit; also a container made from its shell."
+  },
+  "blame": {
+    "definition": "To say that someone is responsible for something bad."
+  },
+  "bore": {
+    "definition": "To make a hole through something."
+  },
+  "accused": {
+    "definition": "Said to have done something wrong."
+  },
+  "champion": {
+    "definition": "The best fighter, who leads the others."
+  },
+  "retreat": {
+    "definition": "To move back from a fight."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11620,5 +11704,85 @@
   "sakasaka": {
     "definition": "Well-known residential and school neighbourhood in Tamale, Northern Region.",
     "phonetic": "sah-kah-sah-kah"
+  },
+  "gambaga": {
+    "definition": "Historic royal town of Mamprugu in northern Ghana.",
+    "phonetic": "gahm-bah-gah"
+  },
+  "yennenga": {
+    "definition": "Legendary warrior princess and mother of the Mossi people.",
+    "phonetic": "yeh-nen-gah"
+  },
+  "riale": {
+    "definition": "Hunter husband of Princess Yennenga in the Mossi founding legend.",
+    "phonetic": "ree-ah-leh"
+  },
+  "ouedraogo": {
+    "definition": "Son of Yennenga and Riale; Moore name meaning \"stallion\".",
+    "phonetic": "weh-drah-oh-goh"
+  },
+  "tenkodogo": {
+    "definition": "Earliest Mossi kingdom town in Burkina Faso.",
+    "phonetic": "ten-koh-doh-goh"
+  },
+  "mossi": {
+    "definition": "Major ethnic group of Burkina Faso closely related to the Mamprusi and Dagomba of Ghana.",
+    "phonetic": "moh-see"
+  },
+  "efik": {
+    "definition": "People and language of the Cross River region of south-eastern Nigeria.",
+    "phonetic": "eh-fik"
+  },
+  "desta": {
+    "definition": "Ethiopian personal name meaning \"joy\".",
+    "phonetic": "des-tah"
+  },
+  "girma": {
+    "definition": "Ethiopian male personal name meaning \"majesty\" or \"dignity\".",
+    "phonetic": "geer-mah"
+  },
+  "kebede": {
+    "definition": "Ethiopian male personal name meaning \"honoured\" or \"weighty\".",
+    "phonetic": "keh-beh-deh"
+  },
+  "shona": {
+    "definition": "People and language of Zimbabwe.",
+    "phonetic": "shoh-nah"
+  },
+  "unanana": {
+    "definition": "Fearless mother heroine in traditional Zulu folk tale.",
+    "phonetic": "oo-nah-nah-nah"
+  },
+  "zulu": {
+    "definition": "People and language of South Africa.",
+    "phonetic": "zoo-loo"
+  },
+  "mwalimu": {
+    "definition": "Respected Kiswahili title and word for \"teacher\".",
+    "phonetic": "mwah-lee-moo"
+  },
+  "goso": {
+    "definition": "Name of the teacher in the traditional Zanzibar chain tale.",
+    "phonetic": "goh-soh"
+  },
+  "zanzibar": {
+    "definition": "Historic island archipelago off the Swahili coast of Tanzania.",
+    "phonetic": "zahn-zih-bar"
+  },
+  "lwanda": {
+    "definition": "First name of Lwanda Magere, meaning \"rock\" in Dholuo.",
+    "phonetic": "lwahn-dah"
+  },
+  "magere": {
+    "definition": "Second name of the legendary Luo warrior Lwanda Magere.",
+    "phonetic": "mah-geh-reh"
+  },
+  "luo": {
+    "definition": "Nilotic ethnic group living beside Lake Victoria in western Kenya.",
+    "phonetic": "loo-oh"
+  },
+  "sidho": {
+    "definition": "Site in the Kano plains of western Kenya associated with Lwanda Magere.",
+    "phonetic": "see-doh"
   }
 }

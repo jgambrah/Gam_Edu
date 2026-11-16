@@ -396,13 +396,18 @@ async function main() {
               `Important: Maintain your clear, natural Ghanaian English accent consistently throughout the entire reading, including all character dialogue and quotes. Do not switch to a British, American, or dramatic theatrical accent during quotes or dialogue:${hintBlock}\n\n` +
               spoken.spoken
               : `Read the following paragraph aloud in warm, natural Ghanaian English, keeping a consistent Ghanaian accent across all quotes and speaking ONLY the exact words below with no introduction:\n\n${spoken.spoken}`;
-          const res = await geminiPost(STRICT_TTS_MODEL, key, {
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              responseModalities: ['AUDIO'],
-              speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
-            },
-          });
+          let res: any;
+          try {
+            res = await geminiPost(STRICT_TTS_MODEL, key, {
+              contents: [{ parts: [{ text: prompt }] }],
+              generationConfig: {
+                responseModalities: ['AUDIO'],
+                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
+              },
+            });
+          } catch (netErr: any) {
+            res = { error: { message: netErr?.message || String(netErr) } };
+          }
           const b64 = res?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
           if (!b64) {
             if (res?.error?.code === 429) {
@@ -437,10 +442,15 @@ async function main() {
         let generated = false;
         for (let attempt = 1; attempt <= apiKeys.length * 2 && !generated; attempt++) {
           const key = nextImgKey(attempt);
-          const res = await geminiPost(IMAGE_MODEL, key, {
-            contents: [{ parts: [{ text: imgPrompt }] }],
-            generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
-          });
+          let res: any;
+          try {
+            res = await geminiPost(IMAGE_MODEL, key, {
+              contents: [{ parts: [{ text: imgPrompt }] }],
+              generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
+            });
+          } catch (netErr: any) {
+            res = { error: { message: netErr?.message || String(netErr) } };
+          }
           const parts: any[] = res?.candidates?.[0]?.content?.parts ?? [];
           const imgPart = parts.find((pt) => pt?.inlineData?.data);
           if (!imgPart) {
