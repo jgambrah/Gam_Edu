@@ -547,7 +547,7 @@
     "definition": "Matching the real facts; not false or made up."
   },
   "honest": {
-    "definition": "Truthful."
+    "definition": "Truthful; not cheating or hiding things."
   },
   "honestly": {
     "definition": "In a truthful, fair, and open way."
@@ -1560,7 +1560,7 @@
     "definition": "Received money or respect through honest work."
   },
   "interest": {
-    "definition": "Money earned on savings, or paid on a loan."
+    "definition": "Extra money paid to a lender for borrowing money."
   },
   "investment": {
     "definition": "Money, time or effort put in for a future benefit."
@@ -1641,7 +1641,7 @@
     "definition": "Having great strength, energy, or influence."
   },
   "energy": {
-    "definition": "The strength and power needed to do work, move, or produce light and heat."
+    "definition": "The strength and effort to do things."
   },
   "repair": {
     "definition": "To fix something that is broken or damaged so it works safely again."
@@ -1704,7 +1704,7 @@
     "definition": "Slowly, paying attention to details."
   },
   "emergency": {
-    "definition": "A sudden, serious situation that needs quick, calm help from adults or trained services."
+    "definition": "A sudden serious event that needs quick action."
   },
   "number": {
     "definition": "A mathematical value used for counting, measuring, and comparing."
@@ -2031,7 +2031,7 @@
     "definition": "Continuing up to this time."
   },
   "yet": {
-    "definition": "Up until now."
+    "definition": "Up to now; used to show that something may still change."
   },
   "ago": {
     "definition": "In the past; back from now in time."
@@ -3231,7 +3231,7 @@
     "definition": "Very soft, dim, or barely noticeable."
   },
   "invisible": {
-    "definition": "Too small or clear to be seen."
+    "definition": "Not able to be seen."
   },
   "pale": {
     "definition": "Light in colour or shade."
@@ -4178,7 +4178,7 @@
     "definition": "Made a short sharp clicking sound, or pressed a switch."
   },
   "district": {
-    "definition": "An area of a country with its own towns and villages."
+    "definition": "An area of a region with its own local government."
   },
   "note": {
     "definition": "A short written reminder, a musical sound of a particular pitch, or a paper banknote."
@@ -4265,7 +4265,7 @@
     "definition": "Physical activity that keeps the body strong, or a practice task in a schoolbook."
   },
   "mark": {
-    "definition": "A visible line, spot, or sign written or stamped on a surface."
+    "definition": "A score given for work."
   },
   "marked": {
     "definition": "Put a clear sign, line, or label on something."
@@ -5601,7 +5601,7 @@
     "definition": "A boy’s name in the Story Spark stories."
   },
   "patience": {
-    "definition": "Waiting calmly without giving up."
+    "definition": "The ability to wait calmly."
   },
   "nervous": {
     "definition": "A little afraid or worried."
@@ -5733,7 +5733,7 @@
     "definition": "Feeling angry or annoyed."
   },
   "wisdom": {
-    "definition": "Good sense and understanding that come from knowledge and experience."
+    "definition": "Good judgement based on experience."
   },
   "classmate": {
     "definition": "A child who is in the same class as you."
@@ -6022,7 +6022,7 @@
     "definition": "To mix completely into a liquid until you can no longer see it."
   },
   "savings": {
-    "definition": "Money kept safely aside for later."
+    "definition": "Money kept for later."
   },
   "evaporation": {
     "definition": "When liquid water turns into a gas and goes into the air."
@@ -6274,7 +6274,7 @@
     "definition": "A long period without enough rain."
   },
   "content": {
-    "definition": "Satisfied with what one has."
+    "definition": "Happy with what one has."
   },
   "enclosure": {
     "definition": "A piece of land with a fence round it."
@@ -6356,6 +6356,18 @@
   },
   "flattered": {
     "definition": "Pleased by praise or attention."
+  },
+  "responsibility": {
+    "definition": "The ability to choose your own actions and answer for them."
+  },
+  "grit": {
+    "definition": "Lasting interest and patient effort towards a long goal."
+  },
+  "feedback": {
+    "definition": "Comments about how well someone has done something."
+  },
+  "wealth": {
+    "definition": "Money and valuable things that a person has and keeps."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6857,7 +6869,7 @@
     "definition": "Said numbers in order to find out how many."
   },
   "tin": {
-    "definition": "A metal container that can make a loud sound when you tap it."
+    "definition": "A metal container with a lid."
   },
   "spoons": {
     "definition": "Tools with a small bowl on a handle, used for eating or stirring."
@@ -7198,9 +7210,6 @@
   "unfold": {
     "definition": "To open out slowly and be revealed."
   },
-  "wealth": {
-    "definition": "A large amount of valuable things."
-  },
   "shield": {
     "definition": "Something that protects."
   },
@@ -7414,7 +7423,7 @@
     "definition": "What people generally think of someone or something."
   },
   "habit": {
-    "definition": "Something done so often that it happens without thought."
+    "definition": "Something you do so often that it becomes automatic."
   },
   "charity": {
     "definition": "Help given freely to people in need."
@@ -7989,7 +7998,7 @@
     "phonetic": "see-deez"
   },
   "goal": {
-    "definition": "Something specific you plan and work toward achieving."
+    "definition": "Something you are working to achieve."
   },
   "disagree": {
     "definition": "To hold a different idea or wish from someone else."
@@ -8309,7 +8318,7 @@
     "definition": "A stiff bar that turns about a fixed point."
   },
   "effort": {
-    "definition": "Hard use of the mind or body."
+    "definition": "Hard work towards a goal."
   },
   "potential": {
     "definition": "Gravitational potential energy: energy stored in an object because it has been raised above the ground."
@@ -8685,7 +8694,7 @@
     "definition": "Wanted very much."
   },
   "reward": {
-    "definition": "Something given in return for a good deed."
+    "definition": "Something pleasant given or taken after effort."
   },
   "snarled": {
     "definition": "Growled angrily, showing the teeth."
@@ -9053,6 +9062,64 @@
   "retreat": {
     "definition": "To move back from a fight."
   },
+  "excuses": {
+    "definition": "Reasons given to avoid blame."
+  },
+  "revise": {
+    "definition": "To go over work again in order to learn it."
+  },
+  "surroundings": {
+    "definition": "The things and places around you."
+  },
+  "identity": {
+    "definition": "Your sense of who you are."
+  },
+  "motivation": {
+    "definition": "The feeling that makes you want to act."
+  },
+  "run-up": {
+    "definition": "The run taken before a jump."
+  },
+  "progress": {
+    "definition": "Improvement over time."
+  },
+  "sprained": {
+    "definition": "Injured by a sudden twist of a joint."
+  },
+  "bronze": {
+    "definition": "A brownish metal; a bronze medal is the third prize."
+  },
+  "penalty": {
+    "definition": "A free kick at goal as a punishment for a foul."
+  },
+  "columns": {
+    "definition": "Vertical sections of a table or page."
+  },
+  "principles": {
+    "definition": "Rules or beliefs that guide how you act."
+  },
+  "fractions": {
+    "definition": "Numbers that show parts of a whole."
+  },
+  "mistakes": {
+    "definition": "Things done wrongly."
+  },
+  "strategies": {
+    "definition": "Plans for achieving something."
+  },
+  "struggle": {
+    "definition": "To try hard against difficulty."
+  },
+  "behaviour": {
+    "definition": "The way a person acts."
+  },
+  "susu": {
+    "definition": "A traditional way of saving in which members contribute regularly and take turns to receive the pool. (Traditional rotating or box-based regular savings practice in Ghana.)",
+    "phonetic": "soo-soo"
+  },
+  "airtime": {
+    "definition": "Credit used to make phone calls."
+  },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
     "phonetic": "eh-foo-ah"
@@ -9140,10 +9207,6 @@
   "atumpan": {
     "definition": "Akan pair of talking drums played with curved sticks.",
     "phonetic": "ah-toom-pahn"
-  },
-  "susu": {
-    "definition": "Traditional rotating or box-based regular savings practice in Ghana.",
-    "phonetic": "soo-soo"
   },
   "bosomtwe": {
     "definition": "Sacred meteorite crater lake in the Ashanti Region of Ghana.",

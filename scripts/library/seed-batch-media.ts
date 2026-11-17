@@ -410,7 +410,7 @@ async function main() {
           }
           const b64 = res?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
           if (!b64) {
-            if (res?.error?.code === 429) {
+            if (res?.error?.code === 429 || res?.error?.code === 402 || res?.error?.code === 400 || res?.error?.code === 403) {
               exhaustedTtsKeys.add(key);
             }
             if (attempt === maxTtsAttempts) {
@@ -454,7 +454,7 @@ async function main() {
           const parts: any[] = res?.candidates?.[0]?.content?.parts ?? [];
           const imgPart = parts.find((pt) => pt?.inlineData?.data);
           if (!imgPart) {
-            if (res?.error?.code === 429 || res?.error?.code === 400 || res?.error?.code === 403) {
+            if (res?.error?.code === 429 || res?.error?.code === 402 || res?.error?.code === 400 || res?.error?.code === 403) {
               exhaustedImgKeys.add(key);
             }
             if (attempt === apiKeys.length * 2) {
