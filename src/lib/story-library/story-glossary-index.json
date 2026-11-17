@@ -57,7 +57,7 @@
     "definition": "Facts that show whether something is true."
   },
   "fact": {
-    "definition": "Something that can be checked and proven to be true."
+    "definition": "Something that is known to be true."
   },
   "facts": {
     "definition": "Things that can be checked and proven to be true."
@@ -831,7 +831,7 @@
     "definition": "The work of growing crops and raising animals on the land."
   },
   "harvest": {
-    "definition": "The gathering of crops when they are ripe; also the crops gathered."
+    "definition": "The gathering of a crop when it is ready."
   },
   "garden": {
     "definition": "A plot of land near a home or school where flowers, vegetables, or herbs are grown."
@@ -4541,7 +4541,7 @@
     "definition": "Involving most people or things rather than just one detail."
   },
   "information": {
-    "definition": "Facts and details learned or provided about something."
+    "definition": "Knowledge or news about something."
   },
   "declare": {
     "definition": "To announce something clearly and officially."
@@ -4985,7 +4985,7 @@
     "definition": "An unexpected event, or the feeling of wonder when something unexpected happens."
   },
   "drift": {
-    "definition": "To be carried slowly and gently by air or water currents."
+    "definition": "To move along without direction or choice."
   },
   "drifted": {
     "definition": "Floated or moved slowly on the wind or water."
@@ -5549,7 +5549,7 @@
     "definition": "Air resistance: a force that opposes the motion of an object through air."
   },
   "diagram": {
-    "definition": "A clear drawing with labels that explains how something is put together or how it works."
+    "definition": "A simple drawing that shows how something works."
   },
   "similar": {
     "definition": "Alike in some ways, though not completely identical."
@@ -5790,7 +5790,7 @@
     "definition": "A person who looks for clues to find out the truth."
   },
   "fault": {
-    "definition": "A problem with a wire or machine that makes it unsafe."
+    "definition": "A part that is wrong or broken."
   },
   "tentacle": {
     "definition": "A long, flexible arm-like limb of some sea animals."
@@ -6067,7 +6067,7 @@
     "definition": "The part of a plant that holds it upright and carries water."
   },
   "nutrients": {
-    "definition": "The useful parts of food that pass into the blood to nourish the body."
+    "definition": "Substances in soil that plants need to grow."
   },
   "orbit": {
     "definition": "The curved path of one object around another."
@@ -6399,6 +6399,9 @@
   "replace": {
     "definition": "To put something in the place of another."
   },
+  "margin": {
+    "definition": "Extra room or allowance left for things going wrong."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6611,7 +6614,7 @@
     "definition": "Time set aside by a family or person for prayer, worship and gratitude to God."
   },
   "gratitude": {
-    "definition": "A warm feeling of thankfulness and appreciation."
+    "definition": "The feeling of being thankful."
   },
   "denominators": {
     "definition": "The bottom numbers in fractions that show how many equal parts a whole is divided into."
@@ -6677,7 +6680,7 @@
     "definition": "The combined collection of investments held by a person or institution"
   },
   "insurance": {
-    "definition": "An arrangement in which many people contribute to a regulated pool that pays for specified sudden losses"
+    "definition": "Protection against loss or harm."
   },
   "deductible": {
     "definition": "The small initial portion of a covered repair cost that the policyholder pays before the insurer pays the rest"
@@ -6704,7 +6707,7 @@
     "definition": "An important stage or achievement reached after sustained effort"
   },
   "apprentices": {
-    "definition": "Young learners training under a skilled craftsperson or technician to master a trade"
+    "definition": "Young people learning a trade by working with an expert."
   },
   "ballot": {
     "definition": "A secret vote on paper."
@@ -6756,9 +6759,6 @@
   },
   "wholesale": {
     "definition": "Selling goods in large amounts, usually to shops or traders."
-  },
-  "margin": {
-    "definition": "The percentage of revenue left as profit after paying production costs"
   },
   "penstocks": {
     "definition": "Large enclosed steel pipes that channel rushing water from a reservoir down to the hydroelectric turbines"
@@ -6938,7 +6938,7 @@
     "definition": "A living animal or being."
   },
   "advice": {
-    "definition": "An opinion about what someone should do."
+    "definition": "A suggestion about what someone should do."
   },
   "lent": {
     "definition": "Let someone use something for a while."
@@ -7311,7 +7311,7 @@
     "definition": "The official song of a country."
   },
   "disaster": {
-    "definition": "An event that causes great harm or loss."
+    "definition": "A sudden event that causes great harm or trouble."
   },
   "estimates": {
     "definition": "Careful guesses about a number when the exact figure is not known."
@@ -7450,7 +7450,7 @@
     "definition": "A teacher in charge of a school house or boarding group."
   },
   "reputation": {
-    "definition": "What people generally think of someone or something."
+    "definition": "What people generally think of your character and work."
   },
   "habit": {
     "definition": "Something you do so often that it becomes automatic."
@@ -7520,7 +7520,7 @@
     "definition": "Making fun of someone in an unkind way."
   },
   "counsellor": {
-    "definition": "A person trained to listen and help with problems."
+    "definition": "A person trained to give advice and support."
   },
   "unkind": {
     "definition": "Not caring or friendly; hurting someone’s feelings."
@@ -7716,7 +7716,7 @@
     "definition": "Describing something so that the reader can picture it."
   },
   "reserves": {
-    "definition": "Areas of land set aside and protected by law."
+    "definition": "Extra supplies kept for later."
   },
   "doctorate": {
     "definition": "The highest university degree."
@@ -9260,6 +9260,51 @@
   },
   "strategy": {
     "definition": "A plan for achieving something."
+  },
+  "confidently": {
+    "definition": "In a way that shows you feel sure."
+  },
+  "experience": {
+    "definition": "Knowledge gained from doing something over time."
+  },
+  "disagreed": {
+    "definition": "Had a different opinion."
+  },
+  "flustered": {
+    "definition": "Nervous and confused because of hurry."
+  },
+  "granaries": {
+    "definition": "Buildings or containers for storing grain."
+  },
+  "diagrams": {
+    "definition": "Simple drawings that show how something works."
+  },
+  "supervision": {
+    "definition": "Being watched and guided by someone experienced."
+  },
+  "licenses": {
+    "definition": "Gives official permission to do a job."
+  },
+  "valuable": {
+    "definition": "Worth a lot; very useful."
+  },
+  "shortcuts": {
+    "definition": "Quicker ways of doing something that may be less safe or good."
+  },
+  "infinite": {
+    "definition": "Without end."
+  },
+  "subtract": {
+    "definition": "To take one number away from another."
+  },
+  "regretted": {
+    "definition": "Wished that it had not happened."
+  },
+  "communal": {
+    "definition": "Shared by a group or community."
+  },
+  "anxious": {
+    "definition": "Worried and uneasy."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12000,5 +12045,9 @@
   "serwa": {
     "definition": "Akan female personal name (variant spelling of Serwaa).",
     "phonetic": "seh-rwah"
+  },
+  "quartey": {
+    "definition": "Well-known Ga family surname in Greater Accra.",
+    "phonetic": "kwar-tay"
   }
 }

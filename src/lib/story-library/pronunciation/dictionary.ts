@@ -1458,5 +1458,7 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "ah-ZAH-rah".', respell: 'ah-zah-rah', hint: 'Azara is a northern Ghanaian woman’s name; say "ah-ZAH-rah".', reviewerNotes: ['Confirm stress on second syllable.'] }),
     entry({ id: 'serwa', written: 'Serwa', kind: 'personal-name', language: AKAN, meaning: 'Akan female personal name (variant spelling of Serwaa)',
       guidance: 'Candidate: "SEH-rwah".', respell: 'seh-rwah', hint: 'Serwa is a Ghanaian (Akan) woman’s name; say "SEH-rwah".', reviewerNotes: ['Confirm vowel length.'] }),
+    entry({ id: 'quartey', written: 'Quartey', kind: 'personal-name', language: 'Ga', meaning: 'Well-known Ga family surname in Greater Accra',
+      guidance: 'Candidate: "KWAR-tay".', respell: 'kwar-tay', hint: 'Quartey is a Ghanaian (Ga) family surname; say "KWAR-tay".', reviewerNotes: ['Confirm stress.'] }),
   ],
 };
