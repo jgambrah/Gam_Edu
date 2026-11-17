@@ -48,7 +48,7 @@
     "definition": "Puzzling things or unsolved questions that people investigate with clues and evidence."
   },
   "clue": {
-    "definition": "A small piece of information that helps solve a puzzle or mystery."
+    "definition": "A small sign that helps you find the answer."
   },
   "clues": {
     "definition": "Small pieces of information that help solve a mystery."
@@ -244,7 +244,7 @@
     "definition": "A person who lives near you."
   },
   "neighbours": {
-    "definition": "People who live near one another."
+    "definition": "People who live near you."
   },
   "people": {
     "definition": "Men, women, and children living in a place or community."
@@ -280,7 +280,7 @@
     "definition": "Someone who comes to see a person or place for a short time."
   },
   "visitors": {
-    "definition": "People who come to a place from elsewhere."
+    "definition": "People who come to see a place."
   },
   "guest": {
     "definition": "A person who is invited or welcomed into a home or event."
@@ -472,7 +472,7 @@
     "definition": "To gain new knowledge or skill by studying, practising, or listening."
   },
   "learned": {
-    "definition": "Gained knowledge or skill through study or experience."
+    "definition": "Gained knowledge or skill."
   },
   "learning": {
     "definition": "Gaining new knowledge, understanding, or skills."
@@ -547,7 +547,7 @@
     "definition": "Matching the real facts; not false or made up."
   },
   "honest": {
-    "definition": "Truthful; not cheating or hiding things."
+    "definition": "Truthful and fair."
   },
   "honestly": {
     "definition": "In a truthful, fair, and open way."
@@ -643,7 +643,7 @@
     "definition": "Warm, bright light from the sun when the sky is clear."
   },
   "solar": {
-    "definition": "Using the heat or light of the Sun."
+    "definition": "Using the sun’s light or heat."
   },
   "moon": {
     "definition": "The big round rock that goes around the Earth."
@@ -722,7 +722,7 @@
     "definition": "Heat and bright flames produced when something burns."
   },
   "smoke": {
-    "definition": "The grey cloud that comes from something burning."
+    "definition": "The grey cloud that comes from burning something."
   },
   "light": {
     "definition": "What lets us see. It comes from the sun, a bulb and a torch."
@@ -978,7 +978,7 @@
     "definition": "People who own or run shops and market stalls."
   },
   "market": {
-    "definition": "A place where people buy and sell goods."
+    "definition": "A place where people buy and sell."
   },
   "workshop": {
     "definition": "A room or building where a craftsperson, carpenter, weaver, or mechanic makes or repairs things."
@@ -1062,7 +1062,7 @@
     "definition": "A folding canopy on a stick held over the head to shelter from rain or hot sun."
   },
   "lantern": {
-    "definition": "A lamp with a handle that gives light."
+    "definition": "A lamp with a handle that you can carry."
   },
   "torch": {
     "definition": "A small light you hold in your hand."
@@ -1158,7 +1158,7 @@
     "definition": "Woven fabric made from cotton, silk, or other threads, used for clothing and kente."
   },
   "pocket": {
-    "definition": "A small pouch sewn into clothing for carrying small items or money."
+    "definition": "A small pouch in clothes; pocket money is a child’s spending money."
   },
   "gift": {
     "definition": "Something given willingly to someone without payment to show love, thanks, or respect."
@@ -1185,7 +1185,7 @@
     "definition": "The part of a plant that grows down into the soil and takes in water."
   },
   "roots": {
-    "definition": "The parts of a plant that hold it in the soil and take in water."
+    "definition": "The parts of a plant that grow in the soil."
   },
   "leaf": {
     "definition": "A flat, usually green part of a plant that uses sunlight to make food."
@@ -1332,7 +1332,7 @@
     "definition": "Huge, intelligent mammals with long trunks found in reserves like Mole National Park."
   },
   "bats": {
-    "definition": "Flying nocturnal mammals that roost in trees or caves and help pollinate baobab flowers and scatter seeds."
+    "definition": "Small animals that fly at night."
   },
   "fish": {
     "definition": "A cold-blooded animal with fins and gills that lives and swims in water."
@@ -1374,7 +1374,7 @@
     "definition": "A prehistoric reptile that lived on Earth millions of years ago."
   },
   "footprints": {
-    "definition": "Marks left in soft ground, sand, or mud by feet or paws."
+    "definition": "Marks left by feet."
   },
   "head": {
     "definition": "The top part of the body that holds the brain, eyes, ears, nose, and mouth."
@@ -1698,10 +1698,10 @@
     "definition": "Close attention, kindness, and protection given to someone or something."
   },
   "careful": {
-    "definition": "Thinking about danger and being safe."
+    "definition": "Taking time to avoid mistakes."
   },
   "carefully": {
-    "definition": "Slowly, paying attention to details."
+    "definition": "Taking time to avoid mistakes."
   },
   "emergency": {
     "definition": "A sudden serious event that needs quick action."
@@ -2247,10 +2247,10 @@
     "definition": "Looked steadily at something in wonder or concentration."
   },
   "notice": {
-    "definition": "To become aware of something by seeing, hearing, or feeling it."
+    "definition": "To see or become aware of something."
   },
   "noticed": {
-    "definition": "Spotted or paid attention to an important detail."
+    "definition": "Saw or became aware of something."
   },
   "find": {
     "definition": "To discover or locate something you were looking for."
@@ -2268,7 +2268,7 @@
     "definition": "To pay attention to what someone is saying."
   },
   "listened": {
-    "definition": "Paid close attention with the ears."
+    "definition": "Paid attention to what someone said."
   },
   "hear": {
     "definition": "To take in sounds through your ears."
@@ -2832,7 +2832,7 @@
     "definition": "To make something clean using water and soap."
   },
   "dry": {
-    "definition": "Having no water or moisture; or to remove water from something."
+    "definition": "Without water or rain."
   },
   "wet": {
     "definition": "Covered or soaked with water or another liquid."
@@ -2967,7 +2967,7 @@
     "definition": "Wished for something."
   },
   "try": {
-    "definition": "To make an effort to do something."
+    "definition": "To test something to see how it works."
   },
   "tried": {
     "definition": "Made an effort to do something."
@@ -2976,7 +2976,7 @@
     "definition": "To pick one thing from two or more possibilities."
   },
   "change": {
-    "definition": "The money you get back when you pay with more money than the items cost."
+    "definition": "Money given back after you pay more than the price."
   },
   "changed": {
     "definition": "Became different."
@@ -4472,7 +4472,7 @@
     "definition": "Suddenly understood or noticed that something was true."
   },
   "batch": {
-    "definition": "A group of things baked, made, or packed together at one time."
+    "definition": "A group of things made at the same time."
   },
   "astronomy": {
     "definition": "The scientific study of stars, planets, moons, and everything in space."
@@ -4903,7 +4903,7 @@
     "definition": "Held or fastened firmly so it cannot slip."
   },
   "sign": {
-    "definition": "A board, symbol, or gesture that gives information or a warning; or to write your name officially."
+    "definition": "A board with words to tell people something."
   },
   "signed": {
     "definition": "Wrote one’s name on a document to make it official."
@@ -5162,7 +5162,7 @@
     "definition": "Closed tightly and securely."
   },
   "panel": {
-    "definition": "A flat board or section, such as a solar panel that turns sunlight into electricity."
+    "definition": "A flat part that takes light from the sun."
   },
   "panels": {
     "definition": "Flat sections, especially solar panels that capture sunlight to make electricity."
@@ -5288,7 +5288,7 @@
     "definition": "Supplied or gave what was needed."
   },
   "cause": {
-    "definition": "The reason why something happens, or to make something happen."
+    "definition": "The reason why something happens."
   },
   "caused": {
     "definition": "Made something happen."
@@ -5333,7 +5333,7 @@
     "definition": "Having the duty to answer for a decision."
   },
   "ripe": {
-    "definition": "Ready to eat, soft and sweet."
+    "definition": "Ready to eat."
   },
   "crisps": {
     "definition": "Thin slices of plantain, yam, or potato fried until crunchy."
@@ -6402,6 +6402,15 @@
   "margin": {
     "definition": "Extra room or allowance left for things going wrong."
   },
+  "seedling": {
+    "definition": "A very young plant."
+  },
+  "habit": {
+    "definition": "Something you do so often that it becomes automatic."
+  },
+  "clearly": {
+    "definition": "In a way that is easy to understand."
+  },
   "well": {
     "definition": "A deep hole in the ground where people get water."
   },
@@ -6445,7 +6454,7 @@
     "definition": "A channel that carries water away."
   },
   "plastic": {
-    "definition": "A light, strong material that is used to make bottles and bags."
+    "definition": "A light material used to make bags and bottles."
   },
   "rubbish": {
     "definition": "Things we throw away."
@@ -7271,7 +7280,7 @@
     "definition": "From Portugal, a country in Europe."
   },
   "festival": {
-    "definition": "A special day or time of celebration."
+    "definition": "A special celebration, often with food and music."
   },
   "sown": {
     "definition": "Planted by scattering seeds in the soil."
@@ -7398,9 +7407,6 @@
   "hectares": {
     "definition": "Units of land area; one hectare is about the size of a football pitch and a half."
   },
-  "seedling": {
-    "definition": "A young plant that has just grown from a seed."
-  },
   "co-operative": {
     "definition": "A group of farmers who work together and share the benefits."
   },
@@ -7441,7 +7447,7 @@
     "definition": "A newspaper article that gives the paper’s own opinion."
   },
   "prefect": {
-    "definition": "A senior pupil chosen to help keep order."
+    "definition": "A pupil chosen to help keep order."
   },
   "punctuality": {
     "definition": "Arriving on time."
@@ -7451,9 +7457,6 @@
   },
   "reputation": {
     "definition": "What people generally think of your character and work."
-  },
-  "habit": {
-    "definition": "Something you do so often that it becomes automatic."
   },
   "charity": {
     "definition": "Help given freely to people in need."
@@ -8715,7 +8718,7 @@
     "definition": "Extremely angry."
   },
   "panting": {
-    "definition": "Breathing fast after running."
+    "definition": "Breathing quickly because of heat or effort."
   },
   "longed": {
     "definition": "Wanted very much."
@@ -9072,7 +9075,7 @@
     "definition": "Suffering from great hunger."
   },
   "calabash": {
-    "definition": "A large, hard-shelled fruit; also a container made from its shell."
+    "definition": "A large dry gourd used as a bowl or container."
   },
   "blame": {
     "definition": "To say that someone is responsible for something bad."
@@ -9305,6 +9308,27 @@
   },
   "anxious": {
     "definition": "Worried and uneasy."
+  },
+  "puzzled": {
+    "definition": "Confused because something is not clear."
+  },
+  "reason": {
+    "definition": "A cause or purpose for doing something."
+  },
+  "prize": {
+    "definition": "A reward for doing well."
+  },
+  "tidy": {
+    "definition": "Neat and in order."
+  },
+  "pleasant": {
+    "definition": "Nice and enjoyable."
+  },
+  "delighted": {
+    "definition": "Very happy."
+  },
+  "instructions": {
+    "definition": "Words that tell you what to do."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12049,5 +12073,9 @@
   "quartey": {
     "definition": "Well-known Ga family surname in Greater Accra.",
     "phonetic": "kwar-tay"
+  },
+  "suya": {
+    "definition": "Spiced grilled skewered meat popular across Ghana and West Africa.",
+    "phonetic": "soo-yah"
   }
 }
