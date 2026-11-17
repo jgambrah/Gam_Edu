@@ -215,6 +215,14 @@ async function resolveParentPhonesForStudent(db: any, schoolId: string, studentI
   };
 }
 
+/** Which kind of payment this is, from its bill description ("Canteen - Nov 3rd", "Transport Fee (Daily)", "Tuition"…). */
+function paymentSmsCategory(feeType: string): 'canteen' | 'transport' | 'other' {
+  const t = String(feeType || '').toLowerCase();
+  if (/canteen|feeding/.test(t)) return 'canteen';
+  if (/transport|\bbus\b/.test(t)) return 'transport';
+  return 'other';
+}
+
 export type SendPaymentSMSParams = {
   schoolId: string;
   studentId: string;
@@ -268,6 +276,15 @@ export async function sendPaymentSMSNotificationAction(params: SendPaymentSMSPar
     if (!smsConfig.isEnabled || !smsConfig.apiKey || !smsConfig.senderId) {
       console.warn(`[Payment SMS] Skipped for school ${schoolId}: SMS not enabled or missing credentials.`);
       return { success: false, skipped: true, error: 'SMS API is not enabled or credentials are missing.' };
+    }
+
+    // 1.5 Per-school preference: daily canteen / transport payments can be switched off (default: on).
+    const category = paymentSmsCategory(feeType);
+    if (category === 'canteen' && smsConfig.rawSettings?.smsOnCanteenPayments === false) {
+      return { success: false, skipped: true, error: 'Canteen payment SMS is turned off for this school.' };
+    }
+    if (category === 'transport' && smsConfig.rawSettings?.smsOnTransportPayments === false) {
+      return { success: false, skipped: true, error: 'Transport payment SMS is turned off for this school.' };
     }
 
     // 2. Resolve parent phone numbers

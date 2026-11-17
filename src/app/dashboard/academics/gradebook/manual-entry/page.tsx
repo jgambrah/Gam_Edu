@@ -813,6 +813,8 @@ export default function GradebookPage() {
         setIsSaving(true);
         try {
             const writer = new ChunkedWriter(firestore);
+            // Timeline entries are secondary: kept in their own batch so a timeline permission problem can never block the marks.
+            const timelineWriter = new ChunkedWriter(firestore);
             const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
             const className = selectedClass?.name || 'Class';
             const termId = buildTermId(academicYear, term);
@@ -898,7 +900,7 @@ export default function GradebookPage() {
 
                 if (studentChanged) {
                     updatedStudentIds.push(s.uid);
-                    TimelineService.logEventBatch(firestore, writer, {
+                    TimelineService.logEventBatch(firestore, timelineWriter, {
                         studentId: s.uid,
                         title: `Graded: Terminal Matrix (${subjectName})`,
                         description: `SBA & Exam recorded. Exam: ${row.exam !== '' ? row.exam + '/' + matrixMaxScores.exam : 'N/A'}. Remark: "${row.remark || 'Good'}"`,
@@ -937,6 +939,7 @@ export default function GradebookPage() {
             }
 
             await writer.commit();
+            await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
 
@@ -1026,6 +1029,7 @@ export default function GradebookPage() {
         setIsSaving(true);
         try {
             const writer = new ChunkedWriter(firestore);
+            const timelineWriter = new ChunkedWriter(firestore); // secondary; never blocks the marks
             const targetName = assessmentName || assessmentType;
             const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
             const className = selectedClass?.name || null;
@@ -1093,7 +1097,7 @@ export default function GradebookPage() {
                     upserts[ref.id] = { ...fields, createdAt: new Date(), assessmentDate: new Date() };
                     created++;
                 }
-                TimelineService.logEventBatch(firestore, writer, {
+                TimelineService.logEventBatch(firestore, timelineWriter, {
                     studentId,
                     title: `Graded: ${assessmentType}`,
                     description: `Scored ${score}/${parsedMaxScore} in ${subjectName}.${remark ? ' Remark: "' + remark + '"' : ''}`,
@@ -1128,6 +1132,7 @@ export default function GradebookPage() {
             }
 
             if (writer.size > 0) await writer.commit();
+            if (timelineWriter.size > 0) await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
 

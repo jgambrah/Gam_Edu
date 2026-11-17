@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { 
   Building2, Save, Loader2, Phone, Mail, Globe, 
   Upload, CheckCircle2, AlertCircle, GraduationCap,
@@ -124,6 +125,9 @@ export default function SchoolProfilePage() {
 
   // SMS Automation States
   const [enableSms, setEnableSms] = useState(false);
+  // Payment-receipt SMS preferences (on unless the school switches them off).
+  const [smsOnCanteen, setSmsOnCanteen] = useState(true);
+  const [smsOnTransport, setSmsOnTransport] = useState(true);
   const [smsProvider, setSmsProvider] = useState<'arkesel' | 'hubtel'>('arkesel');
   const [smsApiKey, setSmsApiKey] = useState('');
   const [smsSenderId, setSmsSenderId] = useState('');
@@ -215,6 +219,8 @@ export default function SchoolProfilePage() {
         setEnableWhatsApp(profile.enableWhatsApp === true);
 
         setEnableSms(profile.enableSms === true);
+        setSmsOnCanteen(profile.smsOnCanteenPayments !== false);
+        setSmsOnTransport(profile.smsOnTransportPayments !== false);
         setSmsProvider(profile.smsProvider || 'arkesel');
         setSmsSenderId(profile.smsSenderId || '');
 
@@ -381,6 +387,8 @@ export default function SchoolProfilePage() {
             vacationMode,
             enableWhatsApp,
             enableSms,
+            smsOnCanteenPayments: smsOnCanteen,
+            smsOnTransportPayments: smsOnTransport,
             smsProvider,
             smsSenderId,
             paystackPubKey,
@@ -431,6 +439,22 @@ export default function SchoolProfilePage() {
         toast({ variant: 'destructive', title: "Error", description: "Could not save profile." });
     } finally {
         setIsSaving(false);
+    }
+  };
+
+  // One-click save for the payment-SMS switches (no need to press the page's Save button).
+  const savePaymentSmsPref = async (field: 'smsOnCanteenPayments' | 'smsOnTransportPayments', value: boolean) => {
+    const setLocal = field === 'smsOnCanteenPayments' ? setSmsOnCanteen : setSmsOnTransport;
+    if (!firestore || !schoolId) return;
+    setLocal(value);
+    try {
+      await setDoc(doc(firestore, 'schools', schoolId), { [field]: value }, { merge: true });
+      await setDoc(doc(firestore, 'schoolSettings', schoolId), { [field]: value }, { merge: true });
+      toast({ title: value ? 'SMS turned on' : 'SMS turned off', description: `${field === 'smsOnCanteenPayments' ? 'Canteen' : 'Transport'} payment SMS to parents is now ${value ? 'ON' : 'OFF'}.` });
+    } catch (err) {
+      console.error(err);
+      setLocal(!value);
+      toast({ variant: 'destructive', title: 'Not saved', description: 'Could not update the SMS preference. Please try again.' });
     }
   };
 
@@ -825,6 +849,21 @@ export default function SchoolProfilePage() {
                                           maxLength={11} 
                                           className="border-2 bg-white rounded-xl h-11 max-w-[200px] font-black uppercase" 
                                         />
+                                    </div>
+
+                                    <div className="space-y-3 p-4 bg-white rounded-xl border-2 border-blue-100">
+                                        <div>
+                                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">Payment SMS to parents</Label>
+                                            <p className="text-[11px] text-slate-500">School fees and other payments always send an SMS receipt. Choose whether the daily Canteen and Transport payments should too. Changes save instantly.</p>
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-bold text-slate-700">Send SMS for Canteen payments</span>
+                                            <Switch checked={smsOnCanteen} onCheckedChange={(v) => savePaymentSmsPref('smsOnCanteenPayments', v)} />
+                                        </div>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-bold text-slate-700">Send SMS for Transport payments</span>
+                                            <Switch checked={smsOnTransport} onCheckedChange={(v) => savePaymentSmsPref('smsOnTransportPayments', v)} />
+                                        </div>
                                     </div>
 
                                     <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-xs text-blue-800 space-y-1">
