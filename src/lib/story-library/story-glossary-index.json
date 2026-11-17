@@ -280,7 +280,7 @@
     "definition": "Someone who comes to see a person or place for a short time."
   },
   "visitors": {
-    "definition": "People who come to visit a home, town, museum, or sanctuary."
+    "definition": "People who come to a place from elsewhere."
   },
   "guest": {
     "definition": "A person who is invited or welcomed into a home or event."
@@ -1449,7 +1449,7 @@
     "definition": "A serious disease spread by the bite of some mosquitoes."
   },
   "fever": {
-    "definition": "A sign of illness when the body’s temperature becomes hotter than normal."
+    "definition": "A body temperature higher than normal."
   },
   "sleep": {
     "definition": "The quiet rest at night when the body and brain recover and grow."
@@ -2199,7 +2199,7 @@
     "definition": "Shouted with joy, pride, and encouragement."
   },
   "welcome": {
-    "definition": "Gladly received as a guest."
+    "definition": "Received warmly and gladly."
   },
   "welcomed": {
     "definition": "Greeted someone warmly upon arrival."
@@ -2265,7 +2265,7 @@
     "definition": "Found or learned about something for the first time."
   },
   "listen": {
-    "definition": "To pay quiet, careful attention to what someone is saying."
+    "definition": "To pay attention to what someone is saying."
   },
   "listened": {
     "definition": "Paid close attention with the ears."
@@ -5610,7 +5610,7 @@
     "definition": "The financial gain when total selling price exceeds total cost price."
   },
   "trust": {
-    "definition": "The belief that someone will not harm or cheat you."
+    "definition": "The belief that someone is honest and reliable."
   },
   "blocked": {
     "definition": "Stopped from moving or passing through."
@@ -6368,6 +6368,21 @@
   },
   "wealth": {
     "definition": "Money and valuable things that a person has and keeps."
+  },
+  "concentration": {
+    "definition": "The ability to keep your mind on one thing."
+  },
+  "culvert": {
+    "definition": "A pipe or channel that carries water under a road or path."
+  },
+  "tease": {
+    "definition": "To make fun of someone, often unkindly."
+  },
+  "flattery": {
+    "definition": "Empty praise given to get something."
+  },
+  "calling": {
+    "definition": "Work or a path in life that you feel strongly drawn to."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -7442,7 +7457,7 @@
     "definition": "A very rich and powerful business person."
   },
   "captain": {
-    "definition": "The leader of a team."
+    "definition": "The leader of a sports team."
   },
   "relay": {
     "definition": "A race in which team members take turns to run part of the distance."
@@ -7574,7 +7589,7 @@
     "definition": "A picture of what is on a screen."
   },
   "sincere": {
-    "definition": "Honest and meant from the heart."
+    "definition": "Honest and genuine."
   },
   "heading": {
     "definition": "A title that tells the reader what a letter is about."
@@ -9119,6 +9134,72 @@
   },
   "airtime": {
     "definition": "Credit used to make phone calls."
+  },
+  "emperor": {
+    "definition": "A ruler of a large empire."
+  },
+  "plagues": {
+    "definition": "Serious diseases that spread quickly and kill many people."
+  },
+  "ignorance": {
+    "definition": "Lack of knowledge or understanding."
+  },
+  "vast": {
+    "definition": "Extremely large."
+  },
+  "duty": {
+    "definition": "Something you should do because it is right."
+  },
+  "gloves": {
+    "definition": "Coverings for the hands that protect them."
+  },
+  "channel": {
+    "definition": "A narrow ditch that carries water away."
+  },
+  "frustrating": {
+    "definition": "Making you feel annoyed because you cannot do something."
+  },
+  "accept": {
+    "definition": "To agree that something cannot be changed."
+  },
+  "setbacks": {
+    "definition": "Events that delay or block progress."
+  },
+  "seamstress": {
+    "definition": "A woman who sews clothes for a living."
+  },
+  "apologised": {
+    "definition": "Said sorry for something wrong."
+  },
+  "teased": {
+    "definition": "Made fun of someone, often unkindly."
+  },
+  "startled": {
+    "definition": "Surprised suddenly."
+  },
+  "greet": {
+    "definition": "To say hello or welcome to someone."
+  },
+  "respected": {
+    "definition": "Treated with honour and care."
+  },
+  "criticise": {
+    "definition": "To point out faults in someone or something."
+  },
+  "millet": {
+    "definition": "A cereal grain grown in dry regions."
+  },
+  "sketched": {
+    "definition": "Drew quickly without much detail."
+  },
+  "disappointed": {
+    "definition": "Sad because something did not happen as hoped."
+  },
+  "crooked": {
+    "definition": "Not straight."
+  },
+  "orders": {
+    "definition": "Requests to make or supply goods."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11847,5 +11928,13 @@
   "sidho": {
     "definition": "Site in the Kano plains of western Kenya associated with Lwanda Magere.",
     "phonetic": "see-doh"
+  },
+  "frimpong": {
+    "definition": "Well-known Akan family surname and personal name.",
+    "phonetic": "frim-pong"
+  },
+  "azara": {
+    "definition": "Northern Ghanaian female personal name.",
+    "phonetic": "ah-zah-rah"
   }
 }

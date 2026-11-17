@@ -1452,5 +1452,9 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "loo-OH".', respell: 'loo-oh', hint: 'Luo is pronounced "loo-OH".', reviewerNotes: ['Confirm two syllables.'] }),
     entry({ id: 'sidho', written: 'Sidho', kind: 'place-or-people', language: 'Dholuo (Western Kenya)', meaning: 'Site in the Kano plains of western Kenya associated with Lwanda Magere',
       guidance: 'Candidate: "SEE-doh".', respell: 'see-doh', hint: 'Sidho is a place in western Kenya; say "SEE-doh".', reviewerNotes: ['Confirm dental dh.'] }),
+    entry({ id: 'frimpong', written: 'Frimpong', kind: 'personal-name', language: AKAN, meaning: 'Well-known Akan family surname and personal name',
+      guidance: 'Candidate: "FRIM-pong".', respell: 'frim-pong', hint: 'Frimpong is a Ghanaian (Akan) surname; say "FRIM-pong".', reviewerNotes: ['Confirm stress.'] }),
+    entry({ id: 'azara', written: 'Azara', kind: 'personal-name', language: 'Hausa / Dagbani (Ghanaian Muslim)', meaning: 'Northern Ghanaian female personal name',
+      guidance: 'Candidate: "ah-ZAH-rah".', respell: 'ah-zah-rah', hint: 'Azara is a northern Ghanaian woman’s name; say "ah-ZAH-rah".', reviewerNotes: ['Confirm stress on second syllable.'] }),
   ],
 };
