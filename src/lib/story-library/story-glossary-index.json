@@ -21,7 +21,7 @@
     "definition": "Having words that end with the same sound."
   },
   "rhythm": {
-    "definition": "A pattern of sounds and silences in music."
+    "definition": "A repeated pattern of sounds or beats."
   },
   "couplet": {
     "definition": "Two lines of poetry next to each other that usually rhyme and complete a thought."
@@ -36,7 +36,7 @@
     "definition": "A short, wise traditional saying that teaches a truth about life."
   },
   "proverbs": {
-    "definition": "Short, wise sayings."
+    "definition": "Short wise sayings handed down in a community."
   },
   "legend": {
     "definition": "An old, famous story passed down over generations that may mix history with wonder."
@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts or observations that show whether something is true."
+    "definition": "Facts that show whether something is true."
   },
   "fact": {
     "definition": "Something that can be checked and proven to be true."
@@ -957,7 +957,7 @@
     "definition": "A group of buildings and yards enclosed by a wall."
   },
   "veranda": {
-    "definition": "A roofed porch along the outside of a house where people sit in the shade."
+    "definition": "A roofed open space along the side of a house."
   },
   "yard": {
     "definition": "An open space of ground around a house, compound, or school."
@@ -1641,7 +1641,7 @@
     "definition": "Having great strength, energy, or influence."
   },
   "energy": {
-    "definition": "The strength and effort to do things."
+    "definition": "The strength and power to do things."
   },
   "repair": {
     "definition": "To fix something that is broken or damaged so it works safely again."
@@ -1674,7 +1674,7 @@
     "definition": "Work done to help other people."
   },
   "support": {
-    "definition": "To hold up, help, or encourage someone or something."
+    "definition": "Help or encouragement."
   },
   "safety": {
     "definition": "Being protected from danger, harm, or injury."
@@ -1779,7 +1779,7 @@
     "definition": "How far something travels, measured in metres or kilometres."
   },
   "balance": {
-    "definition": "A healthy, steady state in which each part of an ecosystem supports the others."
+    "definition": "A steady state in which no part is too big or too small."
   },
   "equal": {
     "definition": "Being the same in amount, size, value, or rights."
@@ -6238,7 +6238,7 @@
     "definition": "Able to wait calmly without becoming angry or giving up."
   },
   "grief": {
-    "definition": "Deep sadness, especially after a loss."
+    "definition": "Deep sadness after losing someone."
   },
   "respect": {
     "definition": "Polite behaviour towards someone, especially an elder."
@@ -6364,10 +6364,10 @@
     "definition": "Lasting interest and patient effort towards a long goal."
   },
   "feedback": {
-    "definition": "Comments about how well someone has done something."
+    "definition": "Comments on how well someone is doing."
   },
   "wealth": {
-    "definition": "Money and valuable things that a person has and keeps."
+    "definition": "Valuable things, not only money, that a person has."
   },
   "concentration": {
     "definition": "The ability to keep your mind on one thing."
@@ -6383,6 +6383,21 @@
   },
   "calling": {
     "definition": "Work or a path in life that you feel strongly drawn to."
+  },
+  "forgive": {
+    "definition": "To stop being angry with someone who has wronged you."
+  },
+  "rota": {
+    "definition": "A list that shows whose turn it is to do something."
+  },
+  "specific": {
+    "definition": "Clear and exact, not vague."
+  },
+  "blunt": {
+    "definition": "Not sharp."
+  },
+  "replace": {
+    "definition": "To put something in the place of another."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -7229,7 +7244,7 @@
     "definition": "Something that protects."
   },
   "stubborn": {
-    "definition": "Refusing to change one’s mind."
+    "definition": "Unwilling to change your mind."
   },
   "glisten": {
     "definition": "To shine with a wet or sparkling light."
@@ -7457,7 +7472,7 @@
     "definition": "A very rich and powerful business person."
   },
   "captain": {
-    "definition": "The leader of a sports team."
+    "definition": "The leader of a team or group."
   },
   "relay": {
     "definition": "A race in which team members take turns to run part of the distance."
@@ -7481,7 +7496,7 @@
     "definition": "Going over what you have learned to prepare for a test."
   },
   "timetable": {
-    "definition": "A plan that shows what to do at what time."
+    "definition": "A list showing when things will happen."
   },
   "mock": {
     "definition": "A practice version of a real exam."
@@ -7714,9 +7729,6 @@
   },
   "sustainable": {
     "definition": "Able to continue without using up or damaging resources."
-  },
-  "rota": {
-    "definition": "A list of people taking turns to do a job."
   },
   "diabetes": {
     "definition": "A condition in which the body cannot control the sugar in the blood properly."
@@ -8414,7 +8426,7 @@
     "definition": "The straight lines along which light travels."
   },
   "reflection": {
-    "definition": "The bouncing of light off a surface."
+    "definition": "Quiet thought about something."
   },
   "convex": {
     "definition": "Convex lens: a lens that is thicker in the middle than at the edges and bends rays inwards."
@@ -9200,6 +9212,54 @@
   },
   "orders": {
     "definition": "Requests to make or supply goods."
+  },
+  "programme": {
+    "definition": "A planned set of activities."
+  },
+  "funeral": {
+    "definition": "A ceremony held after someone dies."
+  },
+  "rehearse": {
+    "definition": "To practise a performance before showing it."
+  },
+  "entrances": {
+    "definition": "The moments when actors come onto the stage."
+  },
+  "sopranos": {
+    "definition": "Singers who sing the highest parts."
+  },
+  "partnership": {
+    "definition": "A relationship in which people work together."
+  },
+  "uncomfortable": {
+    "definition": "Not easy or pleasant."
+  },
+  "attention": {
+    "definition": "Careful focus of the mind."
+  },
+  "repetition": {
+    "definition": "Doing something again and again."
+  },
+  "recover": {
+    "definition": "To get back strength or health."
+  },
+  "regularly": {
+    "definition": "Often and at similar intervals."
+  },
+  "stale": {
+    "definition": "No longer fresh or interesting."
+  },
+  "relationships": {
+    "definition": "Connections between people."
+  },
+  "abilities": {
+    "definition": "The skills and powers a person has."
+  },
+  "verdict": {
+    "definition": "A final judgement."
+  },
+  "strategy": {
+    "definition": "A plan for achieving something."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -11936,5 +11996,9 @@
   "azara": {
     "definition": "Northern Ghanaian female personal name.",
     "phonetic": "ah-zah-rah"
+  },
+  "serwa": {
+    "definition": "Akan female personal name (variant spelling of Serwaa).",
+    "phonetic": "seh-rwah"
   }
 }

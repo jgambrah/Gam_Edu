@@ -1456,5 +1456,7 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "FRIM-pong".', respell: 'frim-pong', hint: 'Frimpong is a Ghanaian (Akan) surname; say "FRIM-pong".', reviewerNotes: ['Confirm stress.'] }),
     entry({ id: 'azara', written: 'Azara', kind: 'personal-name', language: 'Hausa / Dagbani (Ghanaian Muslim)', meaning: 'Northern Ghanaian female personal name',
       guidance: 'Candidate: "ah-ZAH-rah".', respell: 'ah-zah-rah', hint: 'Azara is a northern Ghanaian woman’s name; say "ah-ZAH-rah".', reviewerNotes: ['Confirm stress on second syllable.'] }),
+    entry({ id: 'serwa', written: 'Serwa', kind: 'personal-name', language: AKAN, meaning: 'Akan female personal name (variant spelling of Serwaa)',
+      guidance: 'Candidate: "SEH-rwah".', respell: 'seh-rwah', hint: 'Serwa is a Ghanaian (Akan) woman’s name; say "SEH-rwah".', reviewerNotes: ['Confirm vowel length.'] }),
   ],
 };
