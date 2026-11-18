@@ -1462,5 +1462,7 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "KWAR-tay".', respell: 'kwar-tay', hint: 'Quartey is a Ghanaian (Ga) family surname; say "KWAR-tay".', reviewerNotes: ['Confirm stress.'] }),
     entry({ id: 'suya', written: 'suya', kind: 'word', language: 'Hausa / West African English', meaning: 'Spiced grilled skewered meat popular across Ghana and West Africa',
       guidance: 'Candidate: "SOO-yah".', respell: 'soo-yah', hint: 'Suya is spiced grilled meat in West Africa; say "SOO-yah".', reviewerNotes: ['Confirm vowel length.'] }),
+    entry({ id: 'quarshie', written: 'Quarshie', kind: 'personal-name', language: 'Ga / Akan', meaning: 'Well-known Ghanaian surname (variant of Kwasi)',
+      guidance: 'Candidate: "KWAR-shee".', respell: 'kwar-shee', hint: 'Quarshie is a Ghanaian surname; say "KWAR-shee".', reviewerNotes: ['Confirm stress.'] }),
   ],
 };

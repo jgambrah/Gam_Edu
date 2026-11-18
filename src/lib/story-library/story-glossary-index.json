@@ -1740,7 +1740,7 @@
     "definition": "Parts out of every hundred (%)."
   },
   "measure": {
-    "definition": "To find out the size or amount of something."
+    "definition": "To find the size or amount of something."
   },
   "unit": {
     "definition": "A standard quantity used to measure things, such as a metre, kilogram, or cedi."
@@ -4178,7 +4178,7 @@
     "definition": "Made a short sharp clicking sound, or pressed a switch."
   },
   "district": {
-    "definition": "An area of a region with its own local government."
+    "definition": "A part of a region with its own local government."
   },
   "note": {
     "definition": "A short written reminder, a musical sound of a particular pitch, or a paper banknote."
@@ -4304,7 +4304,7 @@
     "definition": "A long, narrow piece of cloth, paper, wood, or land (like a woven kente strip)."
   },
   "source": {
-    "definition": "The place, person, or document where a river, light, or piece of information comes from."
+    "definition": "The place or person that information comes from."
   },
   "sunny": {
     "definition": "Bright with warm sunlight and few clouds."
@@ -5429,7 +5429,7 @@
     "definition": "Explained in words what something looked, sounded, or acted like."
   },
   "expert": {
-    "definition": "A person with deep knowledge and long experience in a subject."
+    "definition": "A person with special knowledge of a subject."
   },
   "experts": {
     "definition": "Specialists who have studied and practised a subject deeply."
@@ -5922,7 +5922,7 @@
     "definition": "To give your part to a shared task."
   },
   "cram": {
-    "definition": "To try to learn a lot in a very short time."
+    "definition": "To study a lot of material in a short time."
   },
   "code-switching": {
     "definition": "Changing the way you speak or write to suit the situation."
@@ -6385,7 +6385,7 @@
     "definition": "Work or a path in life that you feel strongly drawn to."
   },
   "forgive": {
-    "definition": "To stop being angry with someone who has wronged you."
+    "definition": "To stop being angry at someone who has wronged you."
   },
   "rota": {
     "definition": "A list that shows whose turn it is to do something."
@@ -6428,6 +6428,21 @@
   },
   "spare": {
     "definition": "Extra, kept in case it is needed."
+  },
+  "dynamo": {
+    "definition": "A machine that makes electricity when it is turned."
+  },
+  "permission": {
+    "definition": "Agreement that you may do something."
+  },
+  "dignity": {
+    "definition": "A calm, respectful way of behaving that shows self-respect."
+  },
+  "progress": {
+    "definition": "Movement towards something better."
+  },
+  "familiar": {
+    "definition": "Well known because you have seen or heard it before."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6660,9 +6675,6 @@
   },
   "reserve": {
     "definition": "An area of land protected by law."
-  },
-  "dignity": {
-    "definition": "The respect that every person deserves."
   },
   "fortress": {
     "definition": "A place that is strongly protected against attack."
@@ -7068,9 +7080,6 @@
   },
   "abandoned": {
     "definition": "Left behind, with nobody living or working there."
-  },
-  "permission": {
-    "definition": "Agreement that allows someone to do something."
   },
   "fireflies": {
     "definition": "Small beetles that make flashes of light at night."
@@ -8215,7 +8224,7 @@
     "definition": "Unfair social disapproval, shame, or discrimination directed at someone because of a health condition or difference."
   },
   "current": {
-    "definition": "The flow of electric charge."
+    "definition": "A flow of electricity."
   },
   "inverter": {
     "definition": "An electronic device that converts direct current (DC) from solar panels or batteries into alternating current (AC) for standard appliances."
@@ -9122,9 +9131,6 @@
   "run-up": {
     "definition": "The run taken before a jump."
   },
-  "progress": {
-    "definition": "Improvement over time."
-  },
   "sprained": {
     "definition": "Injured by a sudden twist of a joint."
   },
@@ -9223,7 +9229,7 @@
     "definition": "Sad because something did not happen as hoped."
   },
   "crooked": {
-    "definition": "Not straight."
+    "definition": "Not straight, or not true to how things are."
   },
   "orders": {
     "definition": "Requests to make or supply goods."
@@ -9383,6 +9389,48 @@
   },
   "favourite": {
     "definition": "Liked best."
+  },
+  "kerosene": {
+    "definition": "A fuel oil burned in some lamps."
+  },
+  "mains": {
+    "definition": "The main electricity supply to buildings, which is dangerous."
+  },
+  "flicker": {
+    "definition": "To shine unsteadily, going on and off quickly."
+  },
+  "crumbling": {
+    "definition": "Breaking into small pieces and falling away."
+  },
+  "withered": {
+    "definition": "Became dry and weak."
+  },
+  "skilful": {
+    "definition": "Very good at doing something."
+  },
+  "stunned": {
+    "definition": "So shocked that you cannot speak or move."
+  },
+  "gloat": {
+    "definition": "To show pleasure that someone else has failed."
+  },
+  "apologise": {
+    "definition": "To say sorry."
+  },
+  "vaccinated": {
+    "definition": "Given medicine that protects the body against a disease."
+  },
+  "optimist": {
+    "definition": "A person who expects good things to happen."
+  },
+  "highlight": {
+    "definition": "To mark important words with a bright pen."
+  },
+  "memory": {
+    "definition": "The ability to remember things."
+  },
+  "discouraged": {
+    "definition": "Having lost confidence or hope."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12131,5 +12179,9 @@
   "suya": {
     "definition": "Spiced grilled skewered meat popular across Ghana and West Africa.",
     "phonetic": "soo-yah"
+  },
+  "quarshie": {
+    "definition": "Well-known Ghanaian surname (variant of Kwasi).",
+    "phonetic": "kwar-shee"
   }
 }
