@@ -26,6 +26,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import ReportCardTemplate from '../report-cards/components/ReportCardTemplate';
+import { getReportCardSeriesKey, getReportCardSeriesLabel } from '@/lib/academic-series';
 
 export default function MyReportsPage() {
     const { user } = useUser();
@@ -130,7 +131,8 @@ export default function MyReportsPage() {
             const pdfWidth = pdf.internal.pageSize.getWidth();
             
             pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, 297);
-            pdf.save(`${selectedReport.student?.firstName || 'Student'}_Report_${selectedReport.term}.pdf`);
+            const seriesSlug = getReportCardSeriesLabel(selectedReport).replace(/\s+/g, '_');
+            pdf.save(`${selectedReport.student?.firstName || 'Student'}_${seriesSlug}_Report_${selectedReport.term}.pdf`);
             
             toast({ title: "Success", description: "Report card downloaded." });
         } catch (error) {
@@ -267,9 +269,20 @@ export default function MyReportsPage() {
                                 <button key={report.id} onClick={() => setSelectedReport(report)}
                                     className="w-full text-left flex items-center gap-4 px-6 py-4 border-t border-slate-100 hover:bg-indigo-50/40 transition-colors">
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-black text-slate-800">{report.term} <span className="text-slate-400 font-bold">· {report.academicYear}</span></p>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <p className="text-sm font-black text-slate-800">{report.term} <span className="text-slate-400 font-bold">· {report.academicYear}</span></p>
+                                            <Badge className={cn("border text-[9px] font-black uppercase px-2 py-0.2",
+                                                getReportCardSeriesKey(report).startsWith('mock_')
+                                                    ? "bg-amber-100 text-amber-900 border-amber-300"
+                                                    : getReportCardSeriesKey(report) === 'mid_term'
+                                                        ? "bg-purple-100 text-purple-900 border-purple-300"
+                                                        : "bg-indigo-50 text-indigo-800 border-indigo-200"
+                                            )}>
+                                                {getReportCardSeriesLabel(report)}
+                                            </Badge>
+                                        </div>
                                         <p className="text-[11px] font-semibold text-slate-500 mt-0.5">
-                                            {report.className ? `${report.className} · ` : ''}{showPos ? `Position ${report.classPosition}${size ? ` of ${size}` : ''} · ` : ''}{published ? `Released ${published}` : ''}
+                                            {report.className ? `${report.className} · ` : ''}{showPos ? `Position ${report.classPosition}${size ? ` of ${size}` : ''} · ` : ''}{report.beceAggregate ? `BECE Agg. ${report.beceAggregate} · ` : ''}{published ? `Released ${published}` : ''}
                                         </p>
                                         {report.promotionDecision ? (
                                             <Badge className={cn("mt-1.5 border-none text-[9px] font-black uppercase",

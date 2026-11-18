@@ -56,7 +56,7 @@ const getStatusBadge = (score: number) => {
  * 5. BS 7 / JHS 1 through BS 9 / JHS 3 (Rank 70, 80, 90)
  * 6. SHS / Secondary / Unmatched (Rank 100+)
  */
-export const getAcademicClassRank = (className?: string): number => {
+const getAcademicClassRank = (className?: string): number => {
     if (!className) return 999;
     const name = className.trim().toUpperCase();
 
@@ -122,7 +122,7 @@ export const getAcademicClassRank = (className?: string): number => {
     return 500;
 };
 
-export const compareAcademicClasses = (a: Class, b: Class): number => {
+const compareAcademicClasses = (a: Class, b: Class): number => {
     const rankA = getAcademicClassRank(a?.name);
     const rankB = getAcademicClassRank(b?.name);
     if (rankA !== rankB) {
@@ -135,19 +135,33 @@ export const compareAcademicClasses = (a: Class, b: Class): number => {
  * Resolves a reliable canonical identifier for a student document:
  * Prioritizes id (Firestore doc ID), uid, studentId (admission ID), admissionNumber, or indexNumber.
  */
-export const getStudentId = (student: any): string => {
+const getStudentId = (student: any): string => {
     if (!student) return '';
     return String(student.id || student.uid || student.studentId || student.admissionNumber || student.indexNumber || '').trim();
 };
 
 import { normalizeYear, isYearMatch, normalizeTerm, isTermMatch } from '@/lib/academic-match';
-export { normalizeYear, isYearMatch, normalizeTerm, isTermMatch };
+import {
+    buildAcademicSnapshotDocId,
+    buildAllAcademicSeriesOptions,
+    computeBeceAggregate,
+    formatSeriesLabelFromId,
+    getReportCardSeriesKey,
+    getSeriesGradeFromScore,
+    isJhsOrBeceClass,
+    isMidTermAssessment,
+    isMockAssessment,
+    resolveMockSeriesFromAssessment,
+    type AcademicSeriesId,
+} from '@/lib/academic-series';
 
 interface AcademicReportSnapshotDoc {
     id: string;
     schoolId: string;
     academicYear: string;
     term: string;
+    reportSeries?: string;
+    reportSeriesLabel?: string;
     classId: string;
     className: string;
     isArchived: boolean;
@@ -193,6 +207,7 @@ export default function AcademicReportsPage() {
     const [selectedSubjectId, setSelectedSubjectId] = useState<string>('all');
     const [selectedYear, setSelectedYear] = useState<string>('');
     const [selectedTerm, setSelectedTerm] = useState<string>('');
+    const [selectedSeries, setSelectedSeries] = useState<AcademicSeriesId>('end_of_term');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isReportRequested, setIsReportRequested] = useState<boolean>(false);
     const [viewMode, setViewMode] = useState<'dashboard' | 'master_report'>('dashboard');
@@ -493,7 +508,8 @@ export default function AcademicReportsPage() {
             rcArray.forEach((rc: any) => {
                 const sId = rc.studentId || rc.studentDocId || rc.studentRef || rc.studentUid || rc.uid;
                 if (!rc || !sId) return;
-                const summaries = rc.subjectSummaries || rc.subjects || rc.grades || rc.marks;
+                const rcSeries = getReportCardSeriesKey(rc);
+                const summaries = rc.subjectSummaries || rc.subjects || rc.grades || rc.marks || rc.rows;
                 if (Array.isArray(summaries)) {
                     summaries.forEach((sub: any) => {
                         if (Array.isArray(sub.assessments) && sub.assessments.length > 0) {
@@ -506,6 +522,7 @@ export default function AcademicReportsPage() {
                                     term: a.term || rc.term || rc.termId,
                                     subjectId: a.subjectId || sub.subjectId,
                                     subjectName: a.subjectName || sub.subjectName,
+                                    _reportSeries: rcSeries,
                                     _source: `${sourceLabel}-nested`
                                 });
                             });
@@ -527,7 +544,9 @@ export default function AcademicReportsPage() {
                                 totalScore: sub.percentage ?? sub.finalScore ?? sub.score ?? sub.total,
                                 score: sub.percentage ?? sub.finalScore ?? sub.score ?? sub.total,
                                 maxScore: 100,
-                                assessmentType: 'Terminal Report Summary',
+                                assessmentType: rcSeries === 'end_of_term' ? 'Terminal Report Summary' : (rc.reportSeriesLabel || formatSeriesLabelFromId(rcSeries)),
+                                mockSeries: rcSeries.startsWith('mock_') ? rcSeries : undefined,
+                                _reportSeries: rcSeries,
                                 isArchived: rc.isArchived === true,
                                 _source: sourceLabel
                             });
@@ -657,7 +676,81 @@ export default function AcademicReportsPage() {
         return Array.from(termCounts.values()).sort((a, b) => b.count - a.count);
     }, [candidateRecords, selectedClassId, selectedClass, selectedYear, resolveStudentForMark]);
 
-    // Distinct subjects compiled from registered subjects and candidate assessments
+    // Available Report Series options (End of Term, Mid-Term, Mock 1..5 + custom & discovered Mocks)
+    const availableSeriesOptions = useMemo(() => {
+        return buildAllAcademicSeriesOptions({
+            assessments: classAssessments.length > 0 ? classAssessments : candidateRecords,
+            classDoc: selectedClass,
+            schoolSettings: schoolProfile,
+            reportCards: rawReportCards,
+        });
+    }, [classAssessments, candidateRecords, selectedClass, schoolProfile, rawReportCards]);
+
+    const activeSeriesOption = useMemo(() => {
+        return availableSeriesOptions.find(opt => opt.id === selectedSeries) || availableSeriesOptions[0];
+    }, [availableSeriesOptions, selectedSeries]);
+
+    const isMockSeries = selectedSeries.startsWith('mock_');
+    const isMidTermSeries = selectedSeries === 'mid_term';
+    const isSingleExamSeries = isMockSeries || isMidTermSeries;
+    const isBeceClass = isJhsOrBeceClass(selectedClass?.name);
+
+    // Discover which report series have marks in the currently selected Class + Term + Year
+    const availableSeriesInCurrentTerm = useMemo(() => {
+        const counts = new Map<AcademicSeriesId, { id: AcademicSeriesId; label: string; count: number }>();
+        classAssessments.forEach((a: any) => {
+            if (a._reportSeries && a._reportSeries !== 'end_of_term') {
+                const k = a._reportSeries as AcademicSeriesId;
+                const cur = counts.get(k) || { id: k, label: formatSeriesLabelFromId(k), count: 0 };
+                cur.count++;
+                counts.set(k, cur);
+                return;
+            }
+            const mockOpt = resolveMockSeriesFromAssessment(a);
+            if (mockOpt) {
+                const cur = counts.get(mockOpt.id) || { id: mockOpt.id, label: mockOpt.label, count: 0 };
+                cur.count++;
+                counts.set(mockOpt.id, cur);
+                return;
+            }
+            if (isMidTermAssessment(a) || a.midSem !== undefined || a.midTerm !== undefined) {
+                const curMid = counts.get('mid_term') || { id: 'mid_term', label: 'Mid-Term', count: 0 };
+                curMid.count++;
+                counts.set('mid_term', curMid);
+            }
+            const endCur = counts.get('end_of_term') || { id: 'end_of_term', label: 'End of Term', count: 0 };
+            endCur.count++;
+            counts.set('end_of_term', endCur);
+        });
+        return Array.from(counts.values());
+    }, [classAssessments]);
+
+    // Filter classAssessments strictly to the selected report series!
+    // - End of Term: NEVER contaminated by Mock Exam marks or non-terminal report cards
+    // - Mid-Term: ONLY Mid-Term assessments
+    // - Mock N: ONLY assessments belonging to that exact Mock N (legacy unnumbered mocks map cleanly to Mock 1)
+    const seriesAssessments = useMemo(() => {
+        if (!classAssessments || classAssessments.length === 0) return [];
+        return classAssessments.filter((a: any) => {
+            if (selectedSeries === 'end_of_term') {
+                if (a._reportSeries && a._reportSeries !== 'end_of_term') return false;
+                if (isMockAssessment(a)) return false;
+                return true;
+            }
+            if (selectedSeries === 'mid_term') {
+                if (a._reportSeries) return a._reportSeries === 'mid_term';
+                return isMidTermAssessment(a) || a.midSem !== undefined || a.midTerm !== undefined;
+            }
+            if (selectedSeries.startsWith('mock_')) {
+                if (a._reportSeries) return a._reportSeries === selectedSeries;
+                const resolved = resolveMockSeriesFromAssessment(a);
+                return resolved?.id === selectedSeries;
+            }
+            return true;
+        });
+    }, [classAssessments, selectedSeries]);
+
+    // Distinct subjects compiled from registered subjects and series assessments
     const rawDistinctSubjectsList = useMemo(() => {
         const map = new Map<string, { id: string; name: string }>();
 
@@ -666,8 +759,8 @@ export default function AcademicReportsPage() {
             map.set(s.id, { id: s.id, name: s.name });
         });
 
-        // 2. Discover subjects from classAssessments
-        classAssessments.forEach(a => {
+        // 2. Discover subjects from seriesAssessments
+        seriesAssessments.forEach(a => {
             const subId = a.subjectId;
             const subName = a.subjectName;
             if (subId && map.has(subId)) return;
@@ -685,7 +778,7 @@ export default function AcademicReportsPage() {
         });
 
         return Array.from(map.values());
-    }, [subjects, classAssessments]);
+    }, [subjects, seriesAssessments]);
 
     const distinctSubjectsList = activeSnapshot ? activeSnapshot.distinctSubjectsList : rawDistinctSubjectsList;
 
@@ -734,12 +827,21 @@ export default function AcademicReportsPage() {
         return () => clearTimeout(timer);
     }, [isLoadingSnapshot, isLoadingStudents, isLoadingAssessments, isLoadingGrades, isLoadingMarks, isLoadingReportCards]);
 
-    const handleGenerateAnalytics = useCallback(async (forceRefresh: boolean = false) => {
+    const handleGenerateAnalytics = useCallback(async (forceRefresh: boolean = false, seriesOverride?: AcademicSeriesId) => {
         if (!selectedClassId || !firestore || !schoolId) return;
 
-        const normalizedYear = (selectedYear || 'current').trim().replace(/\s+/g, '').replace(/[\/\\]/g, '-');
-        const normalizedTerm = (selectedTerm || 'current').trim().toLowerCase().replace(/\s+/g, '_');
-        const snapshotDocId = `${schoolId}_${normalizedYear}_${normalizedTerm}_${selectedClassId}`;
+        const targetSeries = seriesOverride || selectedSeries;
+        if (seriesOverride && seriesOverride !== selectedSeries) {
+            setSelectedSeries(seriesOverride);
+        }
+
+        const snapshotDocId = buildAcademicSnapshotDocId(
+            schoolId,
+            selectedYear || 'current',
+            selectedTerm || 'current',
+            selectedClassId,
+            targetSeries
+        );
 
         if (!forceRefresh) {
             setIsLoadingSnapshot(true);
@@ -770,7 +872,7 @@ export default function AcademicReportsPage() {
         refetchReportCards?.();
         refetchReportCardsAlt?.();
         refetchTermReportCards?.();
-    }, [selectedClassId, firestore, schoolId, selectedYear, selectedTerm, refetchStudents, refetchAssessments, refetchGrades, refetchMarks, refetchReportCards, refetchReportCardsAlt, refetchTermReportCards]);
+    }, [selectedClassId, firestore, schoolId, selectedYear, selectedTerm, selectedSeries, refetchStudents, refetchAssessments, refetchGrades, refetchMarks, refetchReportCards, refetchReportCardsAlt, refetchTermReportCards]);
 
     useEffect(() => {
         if (isReportRequested) {
@@ -807,6 +909,7 @@ export default function AcademicReportsPage() {
     // Data Aggregation Engine (Aggregates assessments by student & subject)
     const getCategoryKey = (type: string, name?: string) => {
         const t = `${type || ''} ${name || ''}`.toLowerCase();
+        if (t.includes('mock')) return 'mock';
         if (t.includes('mid')) return 'midSem';
         if (t.includes('exam') || t.includes('terminal') || t.includes('end of term') || t.includes('final')) return 'exam';
         if (t.includes('homework') || t.includes('h/w') || t.includes('assignment') || t.includes('hw')) return 'hw';
@@ -825,14 +928,12 @@ export default function AcademicReportsPage() {
         return Boolean(matchYear && matchTerm);
     }, [schoolProfile, selectedYear, selectedTerm]);
 
-    // Effective students for the selected class/session:
-    // In historical sessions (or when assessments exist), only include students who actually have assessment marks for that class/term
-    // In current sessions, also include current class roster to highlight students who haven't taken assessments yet
+    // Effective students for the selected class/session & report series:
     const effectiveStudents = useMemo(() => {
         const studentMap = new Map<string, any>();
 
-        // 1. First, collect all students who actually have assessment marks in this class for this year & term
-        classAssessments.forEach((a: any) => {
+        // 1. First, collect all students who actually have assessment marks in this class for this year, term & series
+        seriesAssessments.forEach((a: any) => {
             const matched = resolveStudentForMark(a);
             if (matched) {
                 const pid = getStudentId(matched);
@@ -853,9 +954,8 @@ export default function AcademicReportsPage() {
             }
         });
 
-        // 2. Only include current class roster students if it is the CURRENT active session (or if no assessments exist yet)
-        // For past/historical terms, do NOT add newly promoted students from lower grades who have zero marks!
-        if (isCurrentSession || classAssessments.length === 0) {
+        // 2. Include current class roster students if it is the CURRENT active session
+        if (isCurrentSession || seriesAssessments.length === 0) {
             (students || []).forEach(s => {
                 const pid = getStudentId(s);
                 if (pid && !studentMap.has(pid)) {
@@ -865,14 +965,200 @@ export default function AcademicReportsPage() {
         }
 
         return Array.from(studentMap.values());
-    }, [students, classAssessments, resolveStudentForMark, selectedClassId, isCurrentSession]);
+    }, [students, seriesAssessments, resolveStudentForMark, selectedClassId, isCurrentSession]);
 
-    // Data Aggregation Engine (Aggregates assessments by student & subject & category)
+    // Data Aggregation Engine (Aggregates assessments by student & subject & category/series)
     const rawAcademicData = useMemo(() => {
-        if (classAssessments.length === 0 && effectiveStudents.length === 0) return null;
+        if (seriesAssessments.length === 0) return null;
         if (effectiveStudents.length === 0 || distinctSubjectsList.length === 0) return null;
 
-        // Group assessments by student, subject, and category
+        // ---------------------------------------------------------------------------
+        // BRANCH A: PURE 100% STANDALONE SERIES (Mock 1, Mock 2, ... OR Mid-Term)
+        // ---------------------------------------------------------------------------
+        if (isSingleExamSeries) {
+            const singleGrouping: Record<string, Record<string, { score: number; maxScore: number; count: number }>> = {};
+
+            seriesAssessments.forEach((a: any) => {
+                const matched = resolveStudentForMark(a);
+                const primaryStudentId = matched ? getStudentId(matched) : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
+                if (!primaryStudentId) return;
+
+                const subjectKey = resolveSubjectKey(a);
+                if (!singleGrouping[primaryStudentId]) singleGrouping[primaryStudentId] = {};
+                if (!singleGrouping[primaryStudentId][subjectKey]) {
+                    singleGrouping[primaryStudentId][subjectKey] = { score: 0, maxScore: 0, count: 0 };
+                }
+
+                const directMid = isMidTermSeries ? (a.midSem ?? a.midTerm ?? a.midSemester ?? a.midterm) : undefined;
+                const scoreVal = directMid !== undefined && directMid !== null && directMid !== ''
+                    ? Number(directMid)
+                    : Number(a.score ?? a.totalScore ?? a.marks ?? a.mark ?? a.gradeScore ?? 0);
+                const maxVal = directMid !== undefined && directMid !== null && directMid !== ''
+                    ? Number(a.midSemMaxScore ?? a.midSemMax ?? a.maxScore ?? 40)
+                    : Number(a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100);
+
+                if (!isNaN(scoreVal) && maxVal > 0) {
+                    singleGrouping[primaryStudentId][subjectKey].score += scoreVal;
+                    singleGrouping[primaryStudentId][subjectKey].maxScore += maxVal;
+                    singleGrouping[primaryStudentId][subjectKey].count++;
+                }
+            });
+
+            const studentSubjectScores: Record<string, Record<string, number>> = {};
+            const studentAverages: Array<any> = [];
+
+            effectiveStudents.forEach(student => {
+                const primaryId = getStudentId(student);
+                const scoresMap: Record<string, number> = {};
+                const subScoresMap: Record<string, any> = {};
+                let sumPercentages = 0;
+                let testedSubjectsCount = 0;
+                let passCount = 0;
+                const beceInputs: Array<{ subjectName: string; score: number }> = [];
+
+                distinctSubjectsList.forEach(subject => {
+                    const cell = singleGrouping[primaryId]?.[subject.id];
+                    if (!cell || cell.count === 0 || cell.maxScore <= 0) return;
+
+                    const pct = Math.min(100, Math.round((cell.score / cell.maxScore) * 100));
+                    const gradeInfo = getSeriesGradeFromScore(pct, {
+                        isMock: isMockSeries,
+                        className: selectedClass?.name,
+                        schoolGradingSystem: schoolProfile?.gradingSystem || null,
+                    });
+
+                    scoresMap[subject.id] = pct;
+                    subScoresMap[subject.id] = {
+                        classEx: 0,
+                        hw: 0,
+                        midSem: isMidTermSeries ? parseFloat(cell.score.toFixed(1)) : 0,
+                        proj: 0,
+                        ca: 0,
+                        exam: isMockSeries ? parseFloat(cell.score.toFixed(1)) : 0,
+                        rawScore: parseFloat(cell.score.toFixed(1)),
+                        rawMax: parseFloat(cell.maxScore.toFixed(1)),
+                        total: pct,
+                        grade: gradeInfo.grade,
+                        isBeceGrade: gradeInfo.isBeceGrade,
+                        numericGrade: gradeInfo.numericGrade,
+                    };
+
+                    beceInputs.push({ subjectName: subject.name, score: pct });
+                    sumPercentages += pct;
+                    testedSubjectsCount++;
+                    if (pct >= 50) passCount++;
+                });
+
+                const overallAvg = testedSubjectsCount > 0 ? sumPercentages / testedSubjectsCount : 0;
+                const beceAgg = isMockSeries ? computeBeceAggregate(beceInputs) : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
+                studentSubjectScores[primaryId] = scoresMap;
+
+                studentAverages.push({
+                    studentId: primaryId,
+                    studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim() || (student as any).name || 'Student',
+                    average: Math.round(overallAvg),
+                    subjectScores: scoresMap,
+                    subjectSubScores: subScoresMap,
+                    passCount,
+                    totalTestedSubjects: testedSubjectsCount,
+                    beceAggregate: beceAgg.aggregate,
+                    beceSubjectsUsed: beceAgg.subjectsUsed,
+                    beceIsCompleteSix: beceAgg.isCompleteSix,
+                });
+            });
+
+            const subjectPerformance: Array<{
+                subjectId: string;
+                subjectName: string;
+                average: number;
+                passRate: number;
+                totalStudentsCount: number;
+            }> = [];
+
+            distinctSubjectsList.forEach(subject => {
+                let sumSubjectScores = 0;
+                let countStudentsInSubject = 0;
+                let passStudentsInSubject = 0;
+
+                effectiveStudents.forEach(student => {
+                    const primaryId = getStudentId(student);
+                    const score = studentSubjectScores[primaryId]?.[subject.id];
+                    if (score !== undefined) {
+                        sumSubjectScores += score;
+                        countStudentsInSubject++;
+                        if (score >= 50) passStudentsInSubject++;
+                    }
+                });
+
+                if (countStudentsInSubject > 0) {
+                    const avg = sumSubjectScores / countStudentsInSubject;
+                    const passRate = (passStudentsInSubject / countStudentsInSubject) * 100;
+                    subjectPerformance.push({
+                        subjectId: subject.id,
+                        subjectName: subject.name,
+                        average: parseFloat(avg.toFixed(1)),
+                        passRate: parseFloat(passRate.toFixed(1)),
+                        totalStudentsCount: countStudentsInSubject
+                    });
+                }
+            });
+
+            const validOverallStudents = studentAverages.filter(s => s.totalTestedSubjects > 0);
+            const classOverallAverage = validOverallStudents.length > 0
+                ? validOverallStudents.reduce((sum, s) => sum + s.average, 0) / validOverallStudents.length
+                : 0;
+
+            let totalTestedCombinations = 0;
+            let totalPassedCombinations = 0;
+            studentAverages.forEach(s => {
+                totalTestedCombinations += s.totalTestedSubjects;
+                totalPassedCombinations += s.passCount;
+            });
+            const classPassRate = totalTestedCombinations > 0
+                ? (totalPassedCombinations / totalTestedCombinations) * 100
+                : 0;
+
+            const atRiskStudents = studentAverages.filter(s => s.totalTestedSubjects > 0 && s.average < 50);
+            const topPerformer = validOverallStudents.length > 0
+                ? [...validOverallStudents].sort((a, b) => {
+                    const totalA = Object.values(a.subjectScores as Record<string, number>).reduce((sum, val) => sum + val, 0);
+                    const totalB = Object.values(b.subjectScores as Record<string, number>).reduce((sum, val) => sum + val, 0);
+                    if (totalB !== totalA) return totalB - totalA;
+                    return b.average - a.average;
+                })[0]
+                : null;
+
+            let excellentCount = 0, goodCount = 0, passTierCount = 0, failCount = 0;
+            validOverallStudents.forEach(s => {
+                if (s.average >= 80) excellentCount++;
+                else if (s.average >= 60) goodCount++;
+                else if (s.average >= 50) passTierCount++;
+                else failCount++;
+            });
+
+            const performanceTiers = [
+                { name: 'Excellent (80-100%)', value: excellentCount, color: '#10b981' },
+                { name: 'Good (60-79%)', value: goodCount, color: '#3b82f6' },
+                { name: 'Pass (50-59%)', value: passTierCount, color: '#f59e0b' },
+                { name: 'Needs Support (<50%)', value: failCount, color: '#ef4444' }
+            ].filter(tier => tier.value > 0);
+
+            return {
+                studentAverages,
+                studentSubjectScores,
+                subjectPerformance,
+                classOverallAverage: parseFloat(classOverallAverage.toFixed(1)),
+                classPassRate: parseFloat(classPassRate.toFixed(1)),
+                atRiskStudents,
+                topPerformer,
+                performanceTiers,
+                classAssessmentsCount: seriesAssessments.length
+            };
+        }
+
+        // ---------------------------------------------------------------------------
+        // BRANCH B: END OF TERM (SBA + Terminal Exam, strictly Mock-free!)
+        // ---------------------------------------------------------------------------
         interface SubGrouping {
             classEx: { score: number; maxScore: number; rawCount: number };
             hw: { score: number; maxScore: number; rawCount: number };
@@ -906,7 +1192,7 @@ export default function AcademicReportsPage() {
             });
         });
 
-        classAssessments.forEach((a: any) => {
+        seriesAssessments.forEach((a: any) => {
             const matched = resolveStudentForMark(a);
             const primaryStudentId = matched ? getStudentId(matched) : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
             if (!primaryStudentId) return;
@@ -1206,18 +1492,18 @@ export default function AcademicReportsPage() {
             atRiskStudents,
             topPerformer,
             performanceTiers,
-            classAssessmentsCount: classAssessments.length
+            classAssessmentsCount: seriesAssessments.length
         };
-    }, [effectiveStudents, classAssessments, distinctSubjectsList, resolveSubjectKey, currentCaWeight, currentExamWeight]);
+    }, [effectiveStudents, seriesAssessments, distinctSubjectsList, resolveSubjectKey, currentCaWeight, currentExamWeight, isSingleExamSeries, isMockSeries, isMidTermSeries, selectedClass, schoolProfile]);
 
     // Effective academicData (defaults to 1-read snapshot when loaded, else raw computation)
     const academicData = activeSnapshot ? activeSnapshot.academicData : rawAcademicData;
 
     // Reusable single-subject calculator (used for both real-time Subject Zoom and snapshot pre-compilation)
     const computeSubjectDetails = useCallback((subId: string) => {
-        if (!subId || subId === 'all' || !academicData || !effectiveStudents || classAssessments.length === 0) return null;
+        if (!subId || subId === 'all' || !academicData || !effectiveStudents || seriesAssessments.length === 0) return null;
 
-        const subAssessments = classAssessments.filter(a => a.subjectId === subId || resolveSubjectKey(a) === subId);
+        const subAssessments = seriesAssessments.filter(a => a.subjectId === subId || resolveSubjectKey(a) === subId);
 
         const studentAssessmentsMap: Record<string, any[]> = {};
         effectiveStudents.forEach(s => {
@@ -1248,7 +1534,7 @@ export default function AcademicReportsPage() {
                 if (a.examScore !== undefined) directExam = Number(a.examScore);
 
                 const category = getCategoryKey(a.assessmentType, a.assessmentName);
-                if (category === 'exam') {
+                if (isSingleExamSeries || category === 'exam' || category === 'mock') {
                     examScore += (Number(a.score) || 0);
                     examMax += (Number(a.maxScore) || 100);
                 } else {
@@ -1259,28 +1545,38 @@ export default function AcademicReportsPage() {
 
             let finalCA = 0;
             let finalExam = 0;
-            if (directCa !== undefined) {
-                finalCA = Math.round(Math.min(directCa, currentCaWeight));
-            } else if (caMax > 0) {
-                finalCA = Math.round(Math.min((caScore / caMax) * currentCaWeight, currentCaWeight));
-            }
+            if (isSingleExamSeries) {
+                finalCA = 0;
+                finalExam = examMax > 0 ? Math.round(Math.min((examScore / examMax) * 100, 100)) : score;
+            } else {
+                if (directCa !== undefined) {
+                    finalCA = Math.round(Math.min(directCa, currentCaWeight));
+                } else if (caMax > 0) {
+                    finalCA = Math.round(Math.min((caScore / caMax) * currentCaWeight, currentCaWeight));
+                }
 
-            if (directExam !== undefined) {
-                finalExam = Math.round(Math.min(directExam, currentExamWeight));
-            } else if (examMax > 0) {
-                finalExam = Math.round(Math.min((examScore / examMax) * currentExamWeight, currentExamWeight));
+                if (directExam !== undefined) {
+                    finalExam = Math.round(Math.min(directExam, currentExamWeight));
+                } else if (examMax > 0) {
+                    finalExam = Math.round(Math.min((examScore / examMax) * currentExamWeight, currentExamWeight));
+                }
             }
 
             const finalScore = score > 0 ? score : Math.min(finalCA + finalExam, 100);
+            const seriesGrade = getSeriesGradeFromScore(finalScore, {
+                isMock: isMockSeries,
+                className: selectedClass?.name,
+                schoolGradingSystem: schoolProfile?.gradingSystem || null,
+            });
 
             return {
                 studentId: primaryId,
                 studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim() || (student as any).name || 'Student',
                 score: finalScore,
-                grade: getGradeForScore(finalScore),
+                grade: seriesGrade.isBeceGrade ? `Grade ${seriesGrade.grade}` : getGradeForScore(finalScore),
                 weightedCA: finalCA,
                 weightedExam: finalExam,
-                caRaw: `${caScore}/${caMax}`,
+                caRaw: isSingleExamSeries ? '—' : `${caScore}/${caMax}`,
                 examRaw: `${examScore}/${examMax}`
             };
         });
@@ -1321,7 +1617,7 @@ export default function AcademicReportsPage() {
             lowestScore,
             passRate: parseFloat(passRate.toFixed(1))
         };
-    }, [academicData, effectiveStudents, classAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark]);
+    }, [academicData, effectiveStudents, seriesAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark, isSingleExamSeries, isMockSeries, selectedClass, schoolProfile]);
 
     // Single-Subject Detailed Deep Dive
     const rawSubjectDetails = useMemo(() => {
@@ -1457,9 +1753,13 @@ export default function AcademicReportsPage() {
             schoolId && 
             selectedClassId
         ) {
-            const normalizedYear = (selectedYear || 'current').trim().replace(/\s+/g, '').replace(/[\/\\]/g, '-');
-            const normalizedTerm = (selectedTerm || 'current').trim().toLowerCase().replace(/\s+/g, '_');
-            const snapshotDocId = `${schoolId}_${normalizedYear}_${normalizedTerm}_${selectedClassId}`;
+            const snapshotDocId = buildAcademicSnapshotDocId(
+                schoolId,
+                selectedYear || 'current',
+                selectedTerm || 'current',
+                selectedClassId,
+                selectedSeries
+            );
 
             // Pre-compile subjectDetailsMap for all class subjects
             const detailsMap: Record<string, any> = {};
@@ -1475,6 +1775,8 @@ export default function AcademicReportsPage() {
                 schoolId,
                 academicYear: selectedYear,
                 term: selectedTerm,
+                reportSeries: selectedSeries,
+                reportSeriesLabel: activeSeriesOption.shortLabel,
                 classId: selectedClassId,
                 className: selectedClass?.name || 'All Classes',
                 isArchived: rawIsTermArchived,
@@ -1516,6 +1818,8 @@ export default function AcademicReportsPage() {
         selectedClassId, 
         selectedYear, 
         selectedTerm, 
+        selectedSeries,
+        activeSeriesOption,
         selectedClass, 
         computeSubjectDetails
     ]);
@@ -1525,51 +1829,87 @@ export default function AcademicReportsPage() {
 
         let csvContent = "";
 
-        // Row 1 Header
-        const row1 = ["Position", "Student Name"];
-        activeSubjects.forEach(sub => {
-            row1.push(`"${sub.name}"`, "", "", "", "", "", "");
-        });
-        row1.push("Total Marks", "Average (%)");
-        csvContent += row1.join(",") + "\n";
-
-        // Row 2 Header
-        const row2 = ["", ""];
-        activeSubjects.forEach(sub => {
-            row2.push("\"Class Ex\"", "\"H/W\"", "\"Mid Sem\"", "\"Proj\"", `\"C.A. (${currentCaWeight}%)\"`, `\"Exams (${currentExamWeight}%)\"`, "\"Total\"");
-        });
-        row2.push("", "");
-        csvContent += row2.join(",") + "\n";
-
-        // Student Data Rows
-        rankedStudents.forEach(s => {
-            const rowData = [s.rank.toString(), `"${s.studentName}"`];
+        if (isSingleExamSeries) {
+            // Clean 100% Mock / Mid-Term Broadsheet CSV
+            const headerRow = ["Position", "Student Name"];
             activeSubjects.forEach(sub => {
-                const subScore = s.subjectSubScores?.[sub.id];
-                if (subScore) {
-                    const caTotal = subScore.ca !== undefined ? subScore.ca : parseFloat((subScore.classEx + subScore.hw + subScore.midSem + subScore.proj).toFixed(1));
-                    rowData.push(
-                        subScore.classEx > 0 ? subScore.classEx.toString() : "",
-                        subScore.hw > 0 ? subScore.hw.toString() : "",
-                        subScore.midSem > 0 ? subScore.midSem.toString() : "",
-                        subScore.proj > 0 ? subScore.proj.toString() : "",
-                        caTotal > 0 ? caTotal.toString() : (subScore.ca !== undefined && subScore.ca > 0 ? subScore.ca.toString() : ""),
-                        subScore.exam > 0 ? subScore.exam.toString() : "",
-                        subScore.total > 0 ? subScore.total.toString() : ""
-                    );
-                } else {
-                    rowData.push("", "", "", "", "", "", "");
-                }
+                headerRow.push(`"${sub.name} (%)"`, `"${sub.name} Grade"`);
             });
-            rowData.push(s.totalMarks.toString(), `${s.average}%`);
-            csvContent += rowData.join(",") + "\n";
-        });
+            headerRow.push("Subjects Tested", "Total Marks", "Average (%)");
+            if (isMockSeries && isBeceClass) {
+                headerRow.push("BECE Aggregate (Best 6)");
+            }
+            csvContent += headerRow.join(",") + "\n";
+
+            rankedStudents.forEach(s => {
+                const rowData = [s.rank.toString(), `"${s.studentName}"`];
+                activeSubjects.forEach(sub => {
+                    const subScore = s.subjectSubScores?.[sub.id];
+                    const score = s.subjectScores?.[sub.id];
+                    if (score !== undefined) {
+                        rowData.push(score.toString(), subScore?.grade ? `"${subScore.grade}"` : "");
+                    } else {
+                        rowData.push("", "");
+                    }
+                });
+                rowData.push(
+                    String(s.totalTestedSubjects ?? 0),
+                    s.totalMarks.toString(),
+                    `${s.average}%`
+                );
+                if (isMockSeries && isBeceClass) {
+                    rowData.push(s.beceAggregate !== null && s.beceAggregate !== undefined ? String(s.beceAggregate) : "");
+                }
+                csvContent += rowData.join(",") + "\n";
+            });
+        } else {
+            // Row 1 Header
+            const row1 = ["Position", "Student Name"];
+            activeSubjects.forEach(sub => {
+                row1.push(`"${sub.name}"`, "", "", "", "", "", "");
+            });
+            row1.push("Total Marks", "Average (%)");
+            csvContent += row1.join(",") + "\n";
+
+            // Row 2 Header
+            const row2 = ["", ""];
+            activeSubjects.forEach(sub => {
+                row2.push("\"Class Ex\"", "\"H/W\"", "\"Mid Sem\"", "\"Proj\"", `\"C.A. (${currentCaWeight}%)\"`, `\"Exams (${currentExamWeight}%)\"`, "\"Total\"");
+            });
+            row2.push("", "");
+            csvContent += row2.join(",") + "\n";
+
+            // Student Data Rows
+            rankedStudents.forEach(s => {
+                const rowData = [s.rank.toString(), `"${s.studentName}"`];
+                activeSubjects.forEach(sub => {
+                    const subScore = s.subjectSubScores?.[sub.id];
+                    if (subScore) {
+                        const caTotal = subScore.ca !== undefined ? subScore.ca : parseFloat((subScore.classEx + subScore.hw + subScore.midSem + subScore.proj).toFixed(1));
+                        rowData.push(
+                            subScore.classEx > 0 ? subScore.classEx.toString() : "",
+                            subScore.hw > 0 ? subScore.hw.toString() : "",
+                            subScore.midSem > 0 ? subScore.midSem.toString() : "",
+                            subScore.proj > 0 ? subScore.proj.toString() : "",
+                            caTotal > 0 ? caTotal.toString() : (subScore.ca !== undefined && subScore.ca > 0 ? subScore.ca.toString() : ""),
+                            subScore.exam > 0 ? subScore.exam.toString() : "",
+                            subScore.total > 0 ? subScore.total.toString() : ""
+                        );
+                    } else {
+                        rowData.push("", "", "", "", "", "", "");
+                    }
+                });
+                rowData.push(s.totalMarks.toString(), `${s.average}%`);
+                csvContent += rowData.join(",") + "\n";
+            });
+        }
 
         // Trigger file download
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        const filename = `${selectedClass?.name || 'School'}_Master_Report_${selectedTerm}_${selectedYear}.csv`.replace(/\s+/g, '_');
+        const seriesSlug = activeSeriesOption.shortLabel.replace(/\s+/g, '_');
+        const filename = `${selectedClass?.name || 'School'}_${seriesSlug}_Master_List_${selectedTerm}_${selectedYear}.csv`.replace(/\s+/g, '_');
         link.setAttribute("href", url);
         link.setAttribute("download", filename);
         link.style.visibility = 'hidden';
@@ -1681,13 +2021,41 @@ export default function AcademicReportsPage() {
             );
         }
 
+        const otherSeriesWithMarks = availableSeriesInCurrentTerm.filter(s => s.id !== selectedSeries && s.count > 0);
+
         return (
             <div className="text-center py-16 px-6 bg-white border border-slate-200 rounded-2xl shadow-sm max-w-2xl mx-auto space-y-5 my-8">
                 <AlertTriangle className="mx-auto h-12 w-12 text-amber-500 mb-1"/>
-                <h3 className="text-lg font-semibold text-slate-800">No Assessment Records Found</h3>
-                <p className="text-slate-500 text-sm max-w-sm mx-auto mt-1">
-                    No continuous assessments or terminal exam marks have been posted for this class in term: <strong className="text-slate-700">{selectedTerm}</strong> ({selectedYear}).
+                <h3 className="text-lg font-semibold text-slate-800">No {activeSeriesOption.shortLabel} Records Found</h3>
+                <p className="text-slate-500 text-sm max-w-md mx-auto mt-1">
+                    No marks have been posted yet for <strong className="text-indigo-700">{activeSeriesOption.shortLabel}</strong> in <strong className="text-slate-700">{selectedTerm}</strong> ({selectedYear}).
                 </p>
+
+                {otherSeriesWithMarks.length > 0 && (
+                    <div className="bg-gradient-to-br from-amber-50/80 to-orange-50/70 border-2 border-amber-300 rounded-2xl p-5 text-left space-y-3 shadow-sm my-3">
+                        <div className="flex items-center gap-2">
+                            <Award className="h-4 w-4 text-amber-600" />
+                            <h4 className="text-xs font-black uppercase tracking-wider text-amber-950">
+                                Marks Discovered in Other Exam Series for {selectedTerm}:
+                            </h4>
+                        </div>
+                        <p className="text-xs text-slate-700">
+                            This class has marks recorded under other exam series in this term. Click below to open &amp; print that Master List immediately:
+                        </p>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                            {otherSeriesWithMarks.map(item => (
+                                <Button
+                                    key={item.id}
+                                    size="sm"
+                                    className="bg-amber-600 hover:bg-amber-700 text-white font-black text-xs h-9 shadow-sm flex items-center gap-1.5"
+                                    onClick={() => handleGenerateAnalytics(false, item.id)}
+                                >
+                                    <span>🎯</span> Open {item.label} Master List • {item.count} marks
+                                </Button>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {availableTermsForClass.length > 0 && (
                     <div className="bg-gradient-to-br from-indigo-50/70 to-blue-50/70 border border-indigo-200 rounded-2xl p-5 text-left space-y-3 shadow-inner my-3">
@@ -1792,7 +2160,7 @@ export default function AcademicReportsPage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4">
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 items-end">
                         {/* Column 1: Academic Year */}
                         <div className="space-y-1.5">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Academic Year</label>
@@ -1811,7 +2179,34 @@ export default function AcademicReportsPage() {
                             </Select>
                         </div>
 
-                        {/* Column 3: Class */}
+                        {/* Column 3: Report Series (End of Term / Mid-Term / Mock 1 / Mock 2 ...) */}
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-black text-amber-700 uppercase mb-1">Report Type / Series</label>
+                            <Select
+                                value={selectedSeries}
+                                onValueChange={(val) => {
+                                    const nextSeries = val as AcademicSeriesId;
+                                    setSelectedSeries(nextSeries);
+                                    setActiveSnapshot(null);
+                                    if (isReportRequested && selectedClassId) {
+                                        handleGenerateAnalytics(false, nextSeries);
+                                    }
+                                }}
+                            >
+                                <SelectTrigger className="w-full bg-amber-50/50 border-2 border-amber-200 focus:ring-amber-500 font-bold text-slate-900 h-11">
+                                    <SelectValue placeholder="Select Report Series" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {availableSeriesOptions.map(opt => (
+                                        <SelectItem key={opt.id} value={opt.id} className="font-semibold">
+                                            {opt.kind === 'mock' ? `🎯 ${opt.label} (100%)` : opt.kind === 'mid_term' ? `📝 ${opt.label}` : `🎓 ${opt.label}`}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                        {/* Column 4: Class */}
                         <div className="space-y-1.5">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Class</label>
                             <Select value={selectedClassId || ''} onValueChange={(val) => { setSelectedClassId(val); setIsReportRequested(false); setActiveSnapshot(null); }}>
@@ -1825,7 +2220,7 @@ export default function AcademicReportsPage() {
                             </Select>
                         </div>
 
-                        {/* Column 4: Subject Zoom */}
+                        {/* Column 5: Subject Zoom */}
                         <div className="space-y-1.5">
                             <label className="block text-xs font-semibold text-slate-500 uppercase mb-1">Subject Zoom</label>
                             <Select value={selectedSubjectId} onValueChange={setSelectedSubjectId} disabled={!selectedClassId}>
@@ -1839,7 +2234,7 @@ export default function AcademicReportsPage() {
                             </Select>
                         </div>
 
-                        {/* Column 5: Generate Analytics Action */}
+                        {/* Column 6: Generate Analytics Action */}
                         <div className="space-y-1.5">
                             <label className="hidden md:block text-xs font-semibold text-transparent uppercase mb-1 select-none pointer-events-none">&nbsp;</label>
                             <Button 
@@ -1985,38 +2380,68 @@ export default function AcademicReportsPage() {
                     )}
 
                     {/* VIEW TOGGLE BAR */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-slate-50 border border-slate-200 p-3 rounded-xl shadow-sm print:hidden">
-                        <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-fit">
-                            <button
-                                onClick={() => setViewMode('dashboard')}
-                                className={cn(
-                                    "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-md transition-all",
-                                    viewMode === 'dashboard' 
-                                        ? "bg-white text-indigo-750 shadow-sm" 
-                                        : "text-slate-600 hover:text-slate-800"
-                                )}
-                            >
-                                <BarChart2 className="h-3.5 w-3.5" />
-                                Overview Dashboard
-                            </button>
-                            <button
-                                onClick={() => setViewMode('master_report')}
-                                className={cn(
-                                    "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-md transition-all",
-                                    viewMode === 'master_report' 
-                                        ? "bg-white text-indigo-750 shadow-sm" 
-                                        : "text-slate-600 hover:text-slate-800"
-                                )}
-                            >
-                                <FileSpreadsheet className="h-3.5 w-3.5" />
-                                Master Report Sheet
-                            </button>
+                    <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 bg-slate-50 border border-slate-200 p-3 rounded-xl shadow-sm print:hidden">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200 w-fit">
+                                <button
+                                    onClick={() => setViewMode('dashboard')}
+                                    className={cn(
+                                        "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                                        viewMode === 'dashboard' 
+                                            ? "bg-white text-indigo-750 shadow-sm" 
+                                            : "text-slate-600 hover:text-slate-800"
+                                    )}
+                                >
+                                    <BarChart2 className="h-3.5 w-3.5" />
+                                    Overview Dashboard
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('master_report')}
+                                    className={cn(
+                                        "flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                                        viewMode === 'master_report' 
+                                            ? "bg-white text-indigo-750 shadow-sm" 
+                                            : "text-slate-600 hover:text-slate-800"
+                                    )}
+                                >
+                                    <FileSpreadsheet className="h-3.5 w-3.5" />
+                                    Master List ({activeSeriesOption.shortLabel})
+                                </button>
+                            </div>
+
+                            {availableSeriesInCurrentTerm.length > 0 && (
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                    {availableSeriesInCurrentTerm.map(item => (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => handleGenerateAnalytics(false, item.id)}
+                                            className={cn(
+                                                "px-2.5 py-1 rounded-lg text-[11px] font-black border transition-all",
+                                                selectedSeries === item.id
+                                                    ? "bg-amber-600 text-white border-amber-600 shadow-xs"
+                                                    : "bg-white text-slate-700 border-slate-200 hover:border-amber-300"
+                                            )}
+                                        >
+                                            {item.label} ({item.count})
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                        {viewMode === 'master_report' && (
-                            <Button onClick={handleDownloadCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 shadow-sm border-0 flex items-center gap-1.5">
-                                <FileSpreadsheet className="h-4 w-4" /> Export Excel / CSV
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <Button
+                                onClick={() => window.print()}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
+                            >
+                                <Printer className="h-4 w-4" /> Print {activeSeriesOption.shortLabel} Master List
                             </Button>
-                        )}
+                            {viewMode === 'master_report' && (
+                                <Button onClick={handleDownloadCSV} className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs h-9 shadow-sm border-0 flex items-center gap-1.5">
+                                    <FileSpreadsheet className="h-4 w-4" /> Export Excel / CSV
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     {viewMode === 'dashboard' ? (
@@ -2272,19 +2697,119 @@ export default function AcademicReportsPage() {
                             <CardHeader className="border-b bg-slate-50/50 pb-4">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div>
-                                        <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                            <FileSpreadsheet className="h-5 w-5 text-indigo-600" /> Academic Master Report Sheet
+                                        <CardTitle className="text-lg font-bold text-slate-800 flex items-center gap-2 flex-wrap">
+                                            <FileSpreadsheet className="h-5 w-5 text-indigo-600" />
+                                            <span>
+                                                {isMockSeries
+                                                    ? `${activeSeriesOption.shortLabel} Examination Master List`
+                                                    : isMidTermSeries
+                                                        ? 'Mid-Term Examination Master List'
+                                                        : 'Academic Master Report Sheet (End of Term)'}
+                                            </span>
+                                            <Badge className={cn(
+                                                "font-black text-[10px] uppercase",
+                                                isMockSeries
+                                                    ? "bg-amber-100 text-amber-900 border-amber-300"
+                                                    : isMidTermSeries
+                                                        ? "bg-blue-100 text-blue-900 border-blue-300"
+                                                        : "bg-indigo-100 text-indigo-900 border-indigo-200"
+                                            )}>
+                                                {isSingleExamSeries ? '100% Standalone Series' : `${currentCaWeight}% CA + ${currentExamWeight}% Exam`}
+                                            </Badge>
                                         </CardTitle>
                                         <CardDescription>
-                                            Subject-by-subject weighted score log for {selectedClassId === 'all' ? 'Entire School' : selectedClass?.name || 'Class'}.
+                                            {isSingleExamSeries
+                                                ? `Official ${activeSeriesOption.shortLabel} broadsheet for ${selectedClassId === 'all' ? 'Entire School' : selectedClass?.name || 'Class'} (${selectedTerm}, ${selectedYear}). Ready for A4 Landscape printing.`
+                                                : `Subject-by-subject weighted score log for ${selectedClassId === 'all' ? 'Entire School' : selectedClass?.name || 'Class'}.`}
                                         </CardDescription>
                                     </div>
                                     <div className="flex items-center gap-2 print:hidden">
-                                        <span className="text-xs text-slate-400 font-semibold italic">Columns dynamically filter to active subjects.</span>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => window.print()}
+                                            className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold text-xs h-8"
+                                        >
+                                            <Printer className="h-3.5 w-3.5 mr-1.5" /> Print Broadsheet
+                                        </Button>
                                     </div>
                                 </div>
                             </CardHeader>
                             <CardContent className="p-0 overflow-x-auto animate-in fade-in duration-300">
+                                {isSingleExamSeries ? (
+                                    <Table className="border-collapse border border-slate-200">
+                                        <TableHeader>
+                                            <TableRow className="bg-slate-900 hover:bg-slate-900 border-b border-slate-800">
+                                                <TableHead className="w-14 text-center font-extrabold text-white border-r border-slate-700 uppercase text-xs">Pos</TableHead>
+                                                <TableHead className="min-w-[180px] font-extrabold text-white border-r border-slate-700 uppercase text-xs">Student Name</TableHead>
+                                                {activeSubjects.map(sub => (
+                                                    <TableHead key={sub.id} className="text-center font-extrabold text-amber-200 border-r border-slate-700 uppercase text-[11px] px-2 min-w-[82px]">
+                                                        <div>{sub.name}</div>
+                                                        <div className="text-[9px] text-slate-300 font-semibold normal-case">100% {isMockSeries && isBeceClass ? '• Grd' : ''}</div>
+                                                    </TableHead>
+                                                ))}
+                                                <TableHead className="text-center font-extrabold text-white w-20 border-r border-slate-700 uppercase text-xs">Subj.</TableHead>
+                                                <TableHead className="text-center font-extrabold text-white w-24 bg-slate-800 border-r border-slate-700 uppercase text-xs">Total</TableHead>
+                                                <TableHead className="text-center font-extrabold text-white w-24 border-r border-slate-700 uppercase text-xs">Avg (%)</TableHead>
+                                                {isMockSeries && isBeceClass && (
+                                                    <TableHead className="text-center font-extrabold text-amber-300 w-28 bg-slate-950 uppercase text-xs">BECE Agg.</TableHead>
+                                                )}
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {rankedStudents.map((s) => (
+                                                <TableRow key={s.studentId} className="hover:bg-amber-50/30 transition-colors border-b border-slate-200">
+                                                    <TableCell className="text-center font-black text-slate-600 border-r border-slate-200">{s.rank}</TableCell>
+                                                    <TableCell className="font-bold text-slate-800 border-r border-slate-200">{s.studentName}</TableCell>
+                                                    {activeSubjects.map(sub => {
+                                                        const score = s.subjectScores?.[sub.id];
+                                                        const subMeta = s.subjectSubScores?.[sub.id];
+                                                        return (
+                                                            <TableCell key={sub.id} className="text-center border-r border-slate-200 px-2 py-2">
+                                                                {score !== undefined ? (
+                                                                    <div className="flex items-center justify-center gap-1.5">
+                                                                        <span className={cn("font-black text-xs", score < 50 ? "text-rose-600" : "text-slate-900")}>
+                                                                            {score}
+                                                                        </span>
+                                                                        {subMeta?.grade && (
+                                                                            <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                                                                                {subMeta.grade}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                ) : (
+                                                                    <span className="text-slate-300">—</span>
+                                                                )}
+                                                            </TableCell>
+                                                        );
+                                                    })}
+                                                    <TableCell className="text-center text-xs font-bold text-slate-600 border-r border-slate-200">{s.totalTestedSubjects || 0}</TableCell>
+                                                    <TableCell className="text-center font-black text-slate-950 bg-slate-50 border-r border-slate-200">{s.totalMarks}</TableCell>
+                                                    <TableCell className="text-center font-black text-indigo-700 border-r border-slate-200">{s.average}%</TableCell>
+                                                    {isMockSeries && isBeceClass && (
+                                                        <TableCell className="text-center font-black bg-amber-50/50 text-amber-950">
+                                                            {s.beceAggregate !== null && s.beceAggregate !== undefined ? (
+                                                                <span className="inline-flex items-center gap-1 font-black">
+                                                                    {s.beceAggregate}
+                                                                    {!s.beceIsCompleteSix && (
+                                                                        <span className="text-[9px] text-amber-700 font-semibold">({s.beceSubjectsUsed}/6)</span>
+                                                                    )}
+                                                                </span>
+                                                            ) : '—'}
+                                                        </TableCell>
+                                                    )}
+                                                </TableRow>
+                                            ))}
+                                            {rankedStudents.length === 0 && (
+                                                <TableRow>
+                                                    <TableCell colSpan={activeSubjects.length + (isMockSeries && isBeceClass ? 6 : 5)} className="text-center py-10 text-slate-400 italic">
+                                                        No student records compiled for {activeSeriesOption.shortLabel}.
+                                                    </TableCell>
+                                                </TableRow>
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                ) : (
                                 <Table className="border-collapse border border-slate-200">
                                     <TableHeader>
                                         <TableRow className="bg-slate-100 hover:bg-slate-100 border-b border-slate-200">
@@ -2361,6 +2886,7 @@ export default function AcademicReportsPage() {
                                         )}
                                     </TableBody>
                                 </Table>
+                                )}
                             </CardContent>
                         </Card>
                     )}
@@ -2594,9 +3120,15 @@ export default function AcademicReportsPage() {
 
                     {/* Report Meta Header */}
                     <div className="text-center mb-4">
-                        <h2 className="text-[13pt] font-black uppercase tracking-widest text-slate-800">Academic Master Report Sheet</h2>
-                        <p className="text-[9.5pt] text-slate-500 mt-0.5 font-bold">
-                            Academic Year: {selectedYear} | Term: {selectedTerm} | Class: {selectedClassId === 'all' ? 'Entire School (All Classes)' : selectedClass?.name || 'Unassigned'}
+                        <h2 className="text-[13pt] font-black uppercase tracking-widest text-slate-800">
+                            {isMockSeries
+                                ? `${activeSeriesOption.shortLabel} Examination Master List`
+                                : isMidTermSeries
+                                    ? 'Mid-Term Examination Master List'
+                                    : 'Academic Master Report Sheet (End of Term)'}
+                        </h2>
+                        <p className="text-[9.5pt] text-slate-600 mt-0.5 font-bold">
+                            Academic Year: {selectedYear} &nbsp;|&nbsp; Term: {selectedTerm} &nbsp;|&nbsp; Series: {activeSeriesOption.shortLabel} &nbsp;|&nbsp; Class: {selectedClassId === 'all' ? 'Entire School (All Classes)' : selectedClass?.name || 'Unassigned'}
                         </p>
                     </div>
 
@@ -2604,13 +3136,19 @@ export default function AcademicReportsPage() {
                     <table className="w-full border-collapse text-[8.5pt]">
                         <thead>
                             <tr className="bg-[#1e293b] text-white">
-                                <th className="border border-slate-800 p-1.5 w-14 text-center font-bold">Pos</th>
-                                <th className="border border-slate-800 p-1.5 text-left min-w-[150px] font-bold">Student Name</th>
+                                <th className="border border-slate-800 p-1.5 w-12 text-center font-bold">Pos</th>
+                                <th className="border border-slate-800 p-1.5 text-left min-w-[145px] font-bold">Student Name</th>
                                 {activeSubjects.map(sub => (
-                                    <th key={sub.id} className="border border-slate-800 p-1.5 text-center font-bold">{sub.name}</th>
+                                    <th key={sub.id} className="border border-slate-800 p-1.5 text-center font-bold">
+                                        {sub.name}
+                                        {isMockSeries && isBeceClass ? <span className="block text-[6.5pt] font-normal opacity-80">Score (Grd)</span> : null}
+                                    </th>
                                 ))}
-                                <th className="border border-slate-800 p-1.5 w-24 text-center font-bold bg-[#334155]">Total Marks</th>
-                                <th className="border border-slate-800 p-1.5 w-20 text-center font-bold">Average (%)</th>
+                                <th className="border border-slate-800 p-1.5 w-20 text-center font-bold bg-[#334155]">Total</th>
+                                <th className="border border-slate-800 p-1.5 w-18 text-center font-bold">Avg (%)</th>
+                                {isMockSeries && isBeceClass && (
+                                    <th className="border border-slate-800 p-1.5 w-20 text-center font-bold bg-[#0f172a]">BECE Agg.</th>
+                                )}
                             </tr>
                         </thead>
                         <tbody>
@@ -2620,19 +3158,27 @@ export default function AcademicReportsPage() {
                                     <td className="border border-slate-300 p-1.5 font-bold text-slate-800">{s.studentName}</td>
                                     {activeSubjects.map(sub => {
                                         const score = s.subjectScores[sub.id];
+                                        const subMeta = s.subjectSubScores?.[sub.id];
                                         return (
                                             <td key={sub.id} className="border border-slate-300 p-1.5 text-center font-medium">
-                                                {score !== undefined ? score : '—'}
+                                                {score !== undefined
+                                                    ? (isMockSeries && isBeceClass && subMeta?.grade ? `${score} (${subMeta.grade})` : score)
+                                                    : '—'}
                                             </td>
                                         );
                                     })}
                                     <td className="border border-slate-300 p-1.5 text-center font-extrabold text-slate-900 bg-slate-100/50">{s.totalMarks}</td>
                                     <td className="border border-slate-300 p-1.5 text-center font-extrabold text-indigo-700">{s.average}%</td>
+                                    {isMockSeries && isBeceClass && (
+                                        <td className="border border-slate-300 p-1.5 text-center font-extrabold text-slate-950 bg-amber-50/40">
+                                            {s.beceAggregate !== null && s.beceAggregate !== undefined ? s.beceAggregate : '—'}
+                                        </td>
+                                    )}
                                 </tr>
                             ))}
                             {rankedStudents.length === 0 && (
                                 <tr>
-                                    <td colSpan={activeSubjects.length + 4} className="border border-slate-300 p-4 text-center text-slate-400 italic">
+                                    <td colSpan={activeSubjects.length + (isMockSeries && isBeceClass ? 5 : 4)} className="border border-slate-300 p-4 text-center text-slate-400 italic">
                                         No student records compiled for the selected term and filters.
                                     </td>
                                 </tr>

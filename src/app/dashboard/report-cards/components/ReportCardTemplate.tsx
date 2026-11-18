@@ -4,6 +4,7 @@ import React from 'react';
 import { ShieldCheck, User, Calendar, GraduationCap, Award, CheckCircle2, BookOpen } from 'lucide-react';
 import { format, parseISO, isValid } from 'date-fns';
 import { DEFAULT_GRADING_SYSTEM, type GradeBracket } from '@/lib/utils';
+import { getReportCardSeriesKey, getReportCardSeriesLabel, WAEC_BECE_GRADING_SCALE } from '@/lib/academic-series';
 
 interface ReportCardTemplateProps {
     data: any;
@@ -49,6 +50,17 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
     const displaySchoolName = rawSchoolName
         .replace(/\bACADMY\b/gi, 'ACADEMY')
         .replace(/SUNNY\s+SIDE\s+ACADMY/gi, 'SUNNY SIDE ACADEMY');
+
+    const seriesKey = getReportCardSeriesKey(data);
+    const seriesLabel = getReportCardSeriesLabel(data);
+    const isMockReport = seriesKey.startsWith('mock_');
+    const isMidTermReport = seriesKey === 'mid_term';
+    const isSingleExamReport = isMockReport || isMidTermReport;
+    const transcriptHeading = isMockReport
+        ? `Official ${seriesLabel} Examination Report`
+        : isMidTermReport
+            ? 'Official Mid-Term Assessment Report'
+            : 'Official Terminal Transcript';
 
     return (
         <div
@@ -103,7 +115,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         className="text-xs font-black uppercase tracking-[0.25em] px-6 py-1.5 border-y-2 text-center"
                         style={{ color: primaryTheme, borderColor: `${primaryTheme}30` }}
                     >
-                        Official Terminal Transcript
+                        {transcriptHeading}
                     </div>
                 </div>
 
@@ -122,7 +134,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
                             <Calendar className="h-3 w-3 text-slate-800" /> Academic Term
                         </span>
-                        <span className="font-black text-black">{data.term}</span>
+                        <span className="font-black text-black">{data.term}{isSingleExamReport ? ` • ${seriesLabel}` : ''}</span>
                     </div>
                     <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
                         <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
@@ -136,12 +148,27 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         </span>
                         <span className="font-black text-black">{data.academicYear}</span>
                     </div>
-                    <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
-                        <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3 w-3 text-slate-800" /> Attendance
-                        </span>
-                        <span className="font-black text-black">{data.studentPresentDays || 0} / {data.totalClassDays || 0} Days</span>
-                    </div>
+                    {isMockReport && data.beceAggregate !== null && data.beceAggregate !== undefined ? (
+                        <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                            <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                                <Award className="h-3 w-3 text-slate-800" /> BECE Aggregate (Best 6)
+                            </span>
+                            <span className="font-black text-black bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300">
+                                Aggregate {data.beceAggregate}
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
+                            <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
+                                <CheckCircle2 className="h-3 w-3 text-slate-800" /> {isSingleExamReport && !data.totalClassDays ? 'Overall Average' : 'Attendance'}
+                            </span>
+                            <span className="font-black text-black">
+                                {isSingleExamReport && !data.totalClassDays
+                                    ? `${data.overallAverage || 0}%`
+                                    : `${data.studentPresentDays || 0} / ${data.totalClassDays || 0} Days`}
+                            </span>
+                        </div>
+                    )}
                     {(data.reportCardPositionMode || 'both') === 'both' && (
                         <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
                             <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
@@ -152,7 +179,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             </span>
                         </div>
                     )}
-                    {(data.term === 'Third Term' || data.term === 'Term 3' || data.term === '3' || data.term === 'third term') && data.promotionDecision && (
+                    {!isSingleExamReport && (data.term === 'Third Term' || data.term === 'Term 3' || data.term === '3' || data.term === 'third term') && data.promotionDecision && (
                         <div className="flex justify-between items-center border-b border-slate-300 pb-2 col-span-2 px-1">
                             <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
                                 <GraduationCap className="h-3.5 w-3.5 text-slate-800" /> Promotion Status
@@ -181,28 +208,39 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 {/* ── ACADEMIC TRANSCRIPT TABLE ── */}
                 {(() => {
                     const showSubjectPosition = (data.reportCardPositionMode || 'both') !== 'none';
-                    const subjectWidth = showSubjectPosition ? 'w-[34%]' : 'w-[40%]';
+                    const subjectWidth = isSingleExamReport
+                        ? (showSubjectPosition ? 'w-[38%]' : 'w-[44%]')
+                        : (showSubjectPosition ? 'w-[34%]' : 'w-[40%]');
                     return (
                         <table className="w-full text-[11.5px] mb-4 border-collapse rounded-xl overflow-hidden shadow-sm" style={{ border: `1.5px solid ${secondaryTheme}` }}>
                             <thead>
                                 <tr style={{ backgroundColor: secondaryTheme, color: '#ffffff' }}>
                                     <th className={`p-2 text-left ${subjectWidth} uppercase font-black text-[10.5px] tracking-widest`}>Subject</th>
-                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">CA ({caWeight})</th>
-                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Exam ({examWeight})</th>
-                                    <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider bg-black/10">Total</th>
+                                    {isSingleExamReport ? (
+                                        <>
+                                            <th className="p-2 text-center w-[11%] uppercase font-black text-[10px] tracking-wider">Raw Score</th>
+                                            <th className="p-2 text-center w-[11%] uppercase font-black text-[10px] tracking-wider bg-black/10">Score (100%)</th>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">CA ({caWeight})</th>
+                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Exam ({examWeight})</th>
+                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider bg-black/10">Total</th>
+                                        </>
+                                    )}
                                     <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Class Avg</th>
                                     {showSubjectPosition && (
                                         <th className="p-2 text-center w-[6%] uppercase font-black text-[10px] tracking-wider">Pos</th>
                                     )}
                                     <th className="p-2 text-center w-[6%] uppercase font-black text-[10px] tracking-wider">Grade</th>
-                                    <th className={`p-2 text-left ${showSubjectPosition ? 'w-[20%]' : 'w-[20%]'} uppercase font-black text-[10.5px] tracking-widest`}>Remarks</th>
+                                    <th className="p-2 text-left w-[20%] uppercase font-black text-[10.5px] tracking-widest">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.rows?.map((row: any, i: number) => {
-                                    const gradeVal = (row.grade || '').toUpperCase();
-                                    const isFail = gradeVal.includes('F') || gradeVal.includes('E');
-                                    const isExcellent = gradeVal.includes('A') || gradeVal.includes('*');
+                                    const gradeVal = String(row.grade || '').toUpperCase();
+                                    const isFail = gradeVal.includes('F') || gradeVal.includes('E') || gradeVal === '9' || gradeVal === '8';
+                                    const isExcellent = gradeVal.includes('A') || gradeVal.includes('*') || gradeVal === '1' || gradeVal === '2';
                                     const nameLen = (row.subjectName || '').length;
                                     
                                     return (
@@ -221,9 +259,22 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="py-1.5 px-2 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
-                                            <td className="py-1.5 px-2 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
-                                            <td className="py-1.5 px-2 text-center font-black bg-slate-100/50 border-r text-black text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
+                                            {isSingleExamReport ? (
+                                                <>
+                                                    <td className="py-1.5 px-2 text-center border-r text-slate-700 font-bold text-[11px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>
+                                                        {row.rawDisplay || `${row.exam ?? row.total}/100`}
+                                                    </td>
+                                                    <td className="py-1.5 px-2 text-center font-black bg-slate-100/50 border-r text-black text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>
+                                                        {row.total}%
+                                                    </td>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <td className="py-1.5 px-2 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.ca}</td>
+                                                    <td className="py-1.5 px-2 text-center border-r text-black font-bold text-[12px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.exam}</td>
+                                                    <td className="py-1.5 px-2 text-center font-black bg-slate-100/50 border-r text-black text-[12.5px]" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.total}</td>
+                                                </>
+                                            )}
                                             <td className="py-1.5 px-2 text-center text-slate-900 border-r font-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.classAverage}</td>
                                             {showSubjectPosition && (
                                                 <td className="py-1.5 px-2 text-center font-black border-r text-black text-[10.5px] font-mono" style={{ borderRightColor: `${secondaryTheme}35` }}>{row.position}</td>
@@ -244,33 +295,35 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
 
                 {/* ── OFFICIAL GRADING SYSTEM SCALE KEY ── */}
                 {(() => {
-                    const gradingScale: GradeBracket[] = (Array.isArray(data?.gradingSystem) && data.gradingSystem.length > 0)
-                        ? data.gradingSystem
-                        : DEFAULT_GRADING_SYSTEM;
+                    const gradingScale: GradeBracket[] = data?.usesBeceGrading
+                        ? WAEC_BECE_GRADING_SCALE
+                        : (Array.isArray(data?.gradingSystem) && data.gradingSystem.length > 0)
+                            ? data.gradingSystem
+                            : DEFAULT_GRADING_SYSTEM;
                     const sortedScale = [...gradingScale].sort((a, b) => b.minScore - a.minScore);
                     
                     const getGradeColorClass = (grade: string) => {
-                        const g = grade.toUpperCase();
-                        if (g.includes('A') || g.includes('*')) return 'text-emerald-700';
-                        if (g.includes('B')) return 'text-indigo-650';
-                        if (g.includes('C')) return 'text-amber-650';
-                        if (g.includes('D')) return 'text-orange-500';
-                        if (g.includes('E')) return 'text-slate-500';
-                        if (g.includes('F')) return 'text-rose-600';
+                        const g = String(grade).toUpperCase();
+                        if (g.includes('A') || g.includes('*') || g === '1' || g === '2') return 'text-emerald-700';
+                        if (g.includes('B') || g === '3' || g === '4') return 'text-indigo-650';
+                        if (g.includes('C') || g === '5' || g === '6') return 'text-amber-650';
+                        if (g.includes('D') || g === '7') return 'text-orange-500';
+                        if (g.includes('E') || g === '8') return 'text-slate-500';
+                        if (g.includes('F') || g === '9') return 'text-rose-600';
                         return 'text-slate-650';
                     };
                     
                     return (
                         <div className="mb-3">
                             <h4 className="text-[9px] font-black uppercase mb-1 border-b border-slate-200 w-max pr-4" style={{ color: secondaryTheme }}>
-                                Official Grading System Key
+                                {data?.usesBeceGrading ? 'Official WAEC BECE Grading Scale (1 – 9)' : 'Official Grading System Key'}
                             </h4>
                             <div 
                                 className="grid border border-slate-200 bg-slate-50/50 divide-x divide-slate-200 text-[8px] rounded-lg overflow-hidden"
                                 style={{ gridTemplateColumns: `repeat(${sortedScale.length}, minmax(0, 1fr))` }}
                             >
                                 {sortedScale.map((bracket, index) => {
-                                    const isFail = bracket.grade.toUpperCase().includes('F');
+                                    const isFail = String(bracket.grade).toUpperCase().includes('F') || bracket.grade === '9';
                                     return (
                                         <div key={index} className={`p-1.5 text-center flex flex-col justify-center ${isFail ? 'bg-rose-50/20' : ''}`}>
                                             <span className="font-black text-slate-950">{bracket.minScore} - {bracket.maxScore}%</span>
@@ -285,15 +338,17 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                 })()}
 
                 {/* ── NEXT TERM REOPENING DETAILS BANNER ── */}
-                <div className="my-2 py-1.5 px-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 shadow-sm flex items-center justify-center gap-2.5">
-                    <div className="flex items-center gap-1.5 font-black text-[9.5px] uppercase tracking-wider text-amber-800 shrink-0">
-                        <Calendar className="h-3.5 w-3.5 text-amber-600 shrink-0" />
-                        <span>Next Term Reopening Date:</span>
+                {(!isSingleExamReport || nextTermDate) && (
+                    <div className="my-2 py-1.5 px-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-900 shadow-sm flex items-center justify-center gap-2.5">
+                        <div className="flex items-center gap-1.5 font-black text-[9.5px] uppercase tracking-wider text-amber-800 shrink-0">
+                            <Calendar className="h-3.5 w-3.5 text-amber-600 shrink-0" />
+                            <span>Next Term Reopening Date:</span>
+                        </div>
+                        <span className="text-xs font-black tracking-wide text-amber-950 underline decoration-amber-400 decoration-2 underline-offset-2">
+                            {nextTermReopening}
+                        </span>
                     </div>
-                    <span className="text-xs font-black tracking-wide text-amber-950 underline decoration-amber-400 decoration-2 underline-offset-2">
-                        {nextTermReopening}
-                    </span>
-                </div>
+                )}
 
                 {/* ── COMMENTS & REMARKS CARD PANELS ── */}
                 <div className="grid grid-cols-2 gap-4 mb-6">

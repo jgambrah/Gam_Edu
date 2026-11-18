@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, getDocs } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, setDoc, getDocs } from 'firebase/firestore';
 import { useOnceQuery, invalidateOnceCache } from '@/lib/firestore-once';
 import { buildTermId } from '@/lib/term';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
     Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, 
     Sparkles, AlertCircle, Edit3, Sliders, CheckCheck, 
-    Wand2, Grid3X3, ListFilter, Plus, X
+    Wand2, Grid3X3, ListFilter, Plus, X, Award, ShieldCheck
 } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -41,6 +41,13 @@ import { SectionHeroBanner } from '@/components/common/SectionHeroBanner';
 import { DEFAULT_GRADING_SYSTEM, getGradeFromScale } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { isTermMatch, isYearMatch, academicYearVariants } from '@/lib/academic-match';
+import {
+    discoverMockSeriesOptions,
+    normalizeMockSeriesInput,
+    resolveMockSeriesFromAssessment,
+    getSeriesGradeFromScore,
+    type AcademicSeriesId,
+} from '@/lib/academic-series';
 
 const ASSESSMENT_TYPES = [
     'Mock Exam (100%)',
@@ -132,8 +139,18 @@ export default function GradebookPage() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { toast } = useToast();
 
-    // Mode Toggle: 'matrix' (Full SBA Terminal Matrix) vs 'single' (Single Assessment Batch)
-    const [entryMode, setEntryMode] = useState<'matrix' | 'single'>('matrix');
+    // Mode Toggle: 'matrix' (Full SBA Terminal Matrix) vs 'mock' (Dedicated Multi-Mock Exams) vs 'single' (Single Assessment Batch)
+    const [entryMode, setEntryMode] = useState<'matrix' | 'mock' | 'single'>('matrix');
+
+    // Dedicated Mock Exam Series State (Mock 1, Mock 2, Mock 3, ... + custom school/class mocks)
+    const [selectedMockSeries, setSelectedMockSeries] = useState<AcademicSeriesId>('mock_1');
+    const [mockMaxScore, setMockMaxScore] = useState<number>(100);
+    const [mockScores, setMockScores] = useState<Record<string, number | ''>>({});
+    const [mockRemarks, setMockRemarks] = useState<Record<string, string>>({});
+    const [localCustomMocks, setLocalCustomMocks] = useState<Array<{ id: string; label: string }>>([]);
+    const [isCreateMockModalOpen, setIsCreateMockModalOpen] = useState(false);
+    const [newMockTitleInput, setNewMockTitleInput] = useState('');
+    const [isCreatingMock, setIsCreatingMock] = useState(false);
 
     // Filtering State
     const [classId, setClassId] = useState('');
@@ -215,7 +232,7 @@ export default function GradebookPage() {
         const snap = await getDocs(q);
         return snap.docs.map((d: any) => ({ ...(d.data() as any), id: d.id }));
     }, []);
-    const { data: classes, isLoading: isLoadingClasses } = useOnceQuery<any>(
+    const { data: classes, isLoading: isLoadingClasses, setData: setClassesCache } = useOnceQuery<any>(
         (firestore && schoolId) ? `gb:classes:${schoolId}` : null,
         () => readAll(query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId)))
     );
@@ -420,13 +437,96 @@ export default function GradebookPage() {
         .includes(String(role || '').toLowerCase());
     const termLocked = !isAdminRole && rawAssessments.some((a: any) => a.isArchived === true);
 
-    // Group assessments by type
+    // Discover all available Mock Exam series (Mock 1..5 + custom class/school mocks + existing assessment mocks)
+    const availableMockSeries = useMemo(() => {
+        return discoverMockSeriesOptions({
+            assessments: allClassAssessments,
+            classDoc: selectedClass,
+            schoolSettings,
+            extraCustomMocks: localCustomMocks,
+        });
+    }, [allClassAssessments, selectedClass, schoolSettings, localCustomMocks]);
+
+    // Count how many saved marks exist in the current term/subject for each Mock series
+    const mockSeriesCounts = useMemo(() => {
+        const counts: Record<string, number> = {};
+        (rawAssessments || []).forEach((a: any) => {
+            const resolved = resolveMockSeriesFromAssessment(a);
+            if (resolved) {
+                counts[resolved.id] = (counts[resolved.id] || 0) + 1;
+            }
+        });
+        return counts;
+    }, [rawAssessments]);
+
+    const activeMockOption = useMemo(() => {
+        return availableMockSeries.find(m => m.id === selectedMockSeries) || availableMockSeries[0] || {
+            id: 'mock_1' as AcademicSeriesId,
+            label: 'Mock 1',
+            shortLabel: 'Mock 1',
+            kind: 'mock' as const,
+            mockNumber: 1,
+        };
+    }, [availableMockSeries, selectedMockSeries]);
+
+    // Populate Mock Exam tab fields whenever rawAssessments or selectedMockSeries changes.
+    // Legacy unnumbered "Mock Exam (100%)" / "Mock Exam" records resolve cleanly to `mock_1`.
+    useEffect(() => {
+        if (!rawAssessments || rawAssessments.length === 0) {
+            setMockScores({});
+            setMockRemarks({});
+            setMockMaxScore(100);
+            return;
+        }
+
+        const matchingDocs = rawAssessments.filter((a: any) => {
+            const resolved = resolveMockSeriesFromAssessment(a);
+            return resolved?.id === selectedMockSeries;
+        });
+
+        if (matchingDocs.length > 0) {
+            const loadedScores: Record<string, number | ''> = {};
+            const loadedRemarks: Record<string, string> = {};
+            let loadedMax = 100;
+
+            matchingDocs.forEach((a: any) => {
+                if (a.studentId) {
+                    loadedScores[a.studentId] = a.score !== undefined && a.score !== null && a.score !== '' ? Number(a.score) : '';
+                    if (a.teacherRemark) {
+                        loadedRemarks[a.studentId] = a.teacherRemark;
+                    }
+                }
+                if (a.maxScore) {
+                    loadedMax = Number(a.maxScore);
+                }
+            });
+
+            setMockScores(loadedScores);
+            setMockRemarks(loadedRemarks);
+            setMockMaxScore(loadedMax || 100);
+        } else {
+            setMockScores({});
+            setMockRemarks({});
+            setMockMaxScore(100);
+        }
+    }, [rawAssessments, selectedMockSeries]);
+
+    // Group assessments distinctly (separating Mock 1, Mock 2, Test 1, Test 2, etc. so batches never collide!)
     const groupedAssessments = useMemo(() => {
         if (!rawAssessments) return {};
         const groups: Record<string, any[]> = {};
         rawAssessments.forEach(a => {
-            if (!groups[a.assessmentType]) groups[a.assessmentType] = [];
-            groups[a.assessmentType].push(a);
+            const mockInfo = resolveMockSeriesFromAssessment(a);
+            let groupKey: string;
+            if (mockInfo) {
+                groupKey = `${mockInfo.label} (100% Mock)`;
+            } else if (a.assessmentName && a.assessmentType && a.assessmentName !== a.assessmentType) {
+                groupKey = `${a.assessmentType} • ${a.assessmentName}`;
+            } else {
+                groupKey = a.assessmentType || a.assessmentName || 'Assessment';
+            }
+            if (!groups[groupKey]) groups[groupKey] = [];
+            groups[groupKey].push(a);
         });
         return groups;
     }, [rawAssessments]);
@@ -1157,6 +1257,272 @@ export default function GradebookPage() {
         }
     };
 
+    // CREATE NEW MOCK EXAM SERIES (Persists on class doc so all subject teachers share it immediately!)
+    const handleCreateNewMock = async () => {
+        const nextNum = availableMockSeries.reduce((max, m) => Math.max(max, m.mockNumber || 0), 0) + 1;
+        const rawTitle = newMockTitleInput.trim() || `Mock ${nextNum}`;
+        const parsed = normalizeMockSeriesInput(rawTitle);
+        if (!parsed) {
+            toast({ variant: 'destructive', title: 'Invalid Mock Name', description: 'Please enter a valid Mock Exam name (e.g., Mock 6 or District Mock).' });
+            return;
+        }
+
+        setIsCreatingMock(true);
+        try {
+            setLocalCustomMocks(prev => {
+                if (prev.some(m => m.id === parsed.id)) return prev;
+                return [...prev, { id: parsed.id, label: parsed.label }];
+            });
+            setSelectedMockSeries(parsed.id);
+            setEntryMode('mock');
+
+            if (firestore && schoolId && classId) {
+                const existingClassCustom = Array.isArray(selectedClass?.customMockSeries) ? selectedClass.customMockSeries : [];
+                const mergedCustom = [...existingClassCustom];
+                if (!mergedCustom.some((m: any) => m?.id === parsed.id)) {
+                    mergedCustom.push({ id: parsed.id, label: parsed.label });
+                    await updateDoc(doc(firestore, 'classes', classId), {
+                        schoolId,
+                        customMockSeries: mergedCustom,
+                    }).catch(err => console.warn('Class customMockSeries save skipped:', err));
+                    setClassesCache((prev: any[]) =>
+                        (prev || []).map((c: any) => c.id === classId ? { ...c, customMockSeries: mergedCustom } : c)
+                    );
+                }
+            }
+
+            if (firestore && schoolId && isAdminRole) {
+                const existingSchoolCustom = Array.isArray(schoolSettings?.customMockSeries) ? schoolSettings.customMockSeries : [];
+                if (!existingSchoolCustom.some((m: any) => m?.id === parsed.id)) {
+                    await setDoc(doc(firestore, 'schoolSettings', schoolId), {
+                        customMockSeries: [...existingSchoolCustom, { id: parsed.id, label: parsed.label }],
+                    }, { merge: true }).catch(err => console.warn('School customMockSeries save skipped:', err));
+                }
+            }
+
+            setNewMockTitleInput('');
+            setIsCreateMockModalOpen(false);
+            toast({
+                title: `${parsed.label} Ready 🎯`,
+                description: `You can now enter 100% ${parsed.label} marks safely without affecting any earlier Mock or SBA records.`,
+            });
+        } finally {
+            setIsCreatingMock(false);
+        }
+    };
+
+    const handleAutoFillMockRemarks = () => {
+        if (!students || students.length === 0) return;
+        const parsedMax = Number(mockMaxScore) || 100;
+        let count = 0;
+        setMockRemarks(prev => {
+            const next = { ...prev };
+            students.forEach((s: any) => {
+                const raw = mockScores[s.uid];
+                if (raw !== '' && raw !== undefined && raw !== null && !isNaN(Number(raw)) && !next[s.uid]) {
+                    const pct = parsedMax > 0 ? Math.min(100, Math.round((Number(raw) / parsedMax) * 100)) : 0;
+                    const { autoRemark } = getSeriesGradeFromScore(pct, {
+                        isMock: true,
+                        className: selectedClass?.name,
+                        schoolGradingSystem: schoolSettings?.gradingSystem || DEFAULT_GRADING_SYSTEM,
+                    });
+                    if (autoRemark) {
+                        next[s.uid] = autoRemark;
+                        count++;
+                    }
+                }
+            });
+            return next;
+        });
+        toast({
+            title: 'Mock Remarks Generated ✨',
+            description: `Populated remarks for ${count} student(s) based on ${activeMockOption.label} scores.`,
+        });
+    };
+
+    // SAVE DEDICATED MOCK EXAM SERIES (Updates existing Mock 1 records in-place; keeps Mock 2, Mock 3... strictly separate!)
+    const handleSaveMockBatch = async () => {
+        if (!firestore || !user || !schoolId || !classId || !subjectId) return;
+
+        if (termLocked) {
+            toast({ variant: 'destructive', title: "Term Closed", description: "This term has been closed, so its marks are locked. Ask an administrator to make corrections." });
+            return;
+        }
+
+        const parsedMaxScore = Number(mockMaxScore);
+        if (isNaN(parsedMaxScore) || parsedMaxScore <= 0) {
+            toast({ variant: 'destructive', title: "Invalid Max Score", description: "Please enter a valid Maximum Score greater than 0." });
+            return;
+        }
+
+        const invalidEntry = Object.entries(mockScores).find(([_, score]) =>
+            score !== '' && score !== null && !isNaN(Number(score)) && (Number(score) > parsedMaxScore || Number(score) < 0)
+        );
+        if (invalidEntry) {
+            const invalidStudent = students?.find((s: any) => s.uid === invalidEntry[0]);
+            const studentName = invalidStudent ? `${invalidStudent.firstName} ${invalidStudent.lastName}`.trim() : 'A student';
+            toast({
+                variant: 'destructive',
+                title: "Invalid Score",
+                description: Number(invalidEntry[1]) < 0
+                    ? `${studentName}'s score cannot be negative.`
+                    : `${studentName}'s score (${invalidEntry[1]}) exceeds the Maximum Score (${parsedMaxScore}).`
+            });
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const writer = new ChunkedWriter(firestore);
+            const timelineWriter = new ChunkedWriter(firestore);
+            const seriesId = activeMockOption.id;
+            const seriesLabel = activeMockOption.label;
+            const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
+            const className = selectedClass?.name || null;
+            const termId = buildTermId(academicYear, term);
+            const upserts: Record<string, any> = {};
+            const toDelete: string[] = [];
+            const updatedStudentIds: string[] = [];
+            const notifyIds: string[] = [];
+            let created = 0, changed = 0;
+
+            // Match ONLY records belonging to THIS exact Mock series (e.g. legacy "Mock Exam (100%)" -> mock_1, "Mock 2" -> mock_2)
+            const existingByStudent: Record<string, any[]> = {};
+            rawAssessments
+                .filter((a: any) => a.studentId && resolveMockSeriesFromAssessment(a)?.id === seriesId)
+                .forEach((a: any) => {
+                    if (!existingByStudent[a.studentId]) existingByStudent[a.studentId] = [];
+                    existingByStudent[a.studentId].push(a);
+                });
+
+            const studentIds = new Set<string>([...Object.keys(mockScores), ...Object.keys(existingByStudent)]);
+            studentIds.forEach((studentId) => {
+                const raw = mockScores[studentId];
+                const docs = existingByStudent[studentId] || [];
+                const keep = docs.length > 0 ? docs[docs.length - 1] : undefined;
+                docs.slice(0, -1).forEach((d: any) => toDelete.push(d.id));
+
+                const hasValue = raw !== '' && raw !== null && raw !== undefined && !isNaN(Number(raw));
+                if (!hasValue) {
+                    if (keep && studentId in mockScores) {
+                        toDelete.push(keep.id);
+                        updatedStudentIds.push(studentId);
+                    }
+                    return;
+                }
+
+                const score = Number(raw);
+                const remark = mockRemarks[studentId] || '';
+                if (
+                    keep &&
+                    Number(keep.score) === score &&
+                    Number(keep.maxScore) === parsedMaxScore &&
+                    (keep.teacherRemark || '') === remark &&
+                    keep.mockSeries === seriesId
+                ) {
+                    return;
+                }
+
+                const student = students?.find((s: any) => s.uid === studentId);
+                const studentName = student
+                    ? `${student.firstName || ''} ${student.lastName || ''}`.trim()
+                    : (keep?.studentName || '');
+
+                const fields: any = {
+                    studentId,
+                    studentName,
+                    classId,
+                    subjectId,
+                    schoolId,
+                    teacherId: user.uid,
+                    term,
+                    academicYear,
+                    assessmentType: 'Mock Exam (100%)',
+                    assessmentName: seriesLabel,
+                    mockSeries: seriesId,
+                    mockSeriesLabel: seriesLabel,
+                    score,
+                    maxScore: parsedMaxScore,
+                    teacherRemark: remark,
+                };
+                if (termId) fields.termId = termId;
+
+                if (keep) {
+                    writer.set(doc(firestore, 'assessments', keep.id), { ...fields, updatedAt: serverTimestamp() }, { merge: true });
+                    upserts[keep.id] = { ...keep, ...fields, updatedAt: new Date() };
+                    changed++;
+                } else {
+                    const ref = doc(collection(firestore, 'assessments'));
+                    writer.set(ref, { ...fields, createdAt: serverTimestamp(), assessmentDate: serverTimestamp() });
+                    upserts[ref.id] = { ...fields, createdAt: new Date(), assessmentDate: new Date() };
+                    created++;
+                }
+
+                TimelineService.logEventBatch(firestore, timelineWriter, {
+                    studentId,
+                    title: `Graded: ${seriesLabel}`,
+                    description: `Scored ${score}/${parsedMaxScore} in ${subjectName} (${seriesLabel}).${remark ? ' Remark: "' + remark + '"' : ''}`,
+                    category: 'academic',
+                    academicYear,
+                    term,
+                    classId,
+                    className,
+                    schoolId,
+                    recordedBy: user.displayName || 'Teacher',
+                    recordedById: user.uid,
+                    metadata: {
+                        score,
+                        maxScore: parsedMaxScore,
+                        subjectId,
+                        subjectName,
+                        assessmentType: 'Mock Exam (100%)',
+                        mockSeries: seriesId,
+                        mockSeriesLabel: seriesLabel,
+                        remark,
+                    },
+                    date: new Date(),
+                });
+                updatedStudentIds.push(studentId);
+                notifyIds.push(studentId);
+            });
+
+            if (writer.size === 0 && toDelete.length === 0) {
+                const anyScores = Object.values(mockScores).some(v => v !== '' && v !== null && !isNaN(Number(v)));
+                toast(anyScores
+                    ? { title: "Nothing to Save", description: `All ${seriesLabel} marks are already up to date.` }
+                    : { variant: 'destructive', title: "No Data", description: `Please enter at least one student score for ${seriesLabel}.` });
+                return;
+            }
+
+            if (writer.size > 0) await writer.commit();
+            if (timelineWriter.size > 0) await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
+            const deleted = await commitDeletes(toDelete);
+            applyLocalChanges(upserts, deleted.ok ? toDelete : []);
+
+            toast({
+                title: `${seriesLabel} Scores Saved! 🎯`,
+                description: `${created} new mark(s), ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} removed` : ''} in ${subjectName}.`,
+            });
+            if (!deleted.ok) {
+                toast({ variant: 'destructive', title: "Some Marks Not Removed", description: deleted.message });
+            }
+
+            if (notifyIds.length > 0) {
+                notifyParents(
+                    notifyIds,
+                    `${seriesLabel} Results Posted 📊`,
+                    `${seriesLabel} marks for ${subjectName} have been recorded.`,
+                    "/dashboard/my-grades"
+                ).catch(err => console.error("Notification failed silently:", err));
+            }
+        } catch (error: any) {
+            console.error("Save Mock Batch Error:", error);
+            toast({ variant: 'destructive', title: "Database Error", description: friendlySaveError(error) });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const handleDeleteBatch = async (typeToDelete: string) => {
         if (!firestore) return;
         if (termLocked) {
@@ -1214,12 +1580,17 @@ export default function GradebookPage() {
                         score: totalPct
                     };
                 }) || [])
+                : entryMode === 'mock'
+                ? (students?.map((s: any) => ({
+                    studentName: `${s.firstName} ${s.lastName}`,
+                    score: mockScores[s.uid] ?? ''
+                })) || [])
                 : (students?.map((s: any) => ({
                     studentName: `${s.firstName} ${s.lastName}`,
                     score: singleScores[s.uid] ?? ''
                 })) || []);
 
-            const effectiveMax = entryMode === 'matrix' ? 100 : maxScore;
+            const effectiveMax = entryMode === 'matrix' ? 100 : entryMode === 'mock' ? mockMaxScore : maxScore;
             const res = await generateClassInsightsAction(schoolId, className, subjectName, scoresData, effectiveMax);
             
             if (res.success && res.text) {
@@ -1268,39 +1639,70 @@ export default function GradebookPage() {
             />
 
             {/* Entry Mode Switcher */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-4 rounded-[1.8rem] border border-slate-200 shadow-sm">
-                <Tabs value={entryMode} onValueChange={(val: any) => setEntryMode(val)} className="w-full sm:w-auto">
-                    <TabsList className="bg-slate-100 p-1 rounded-2xl h-11">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-white p-4 rounded-[1.8rem] border border-slate-200 shadow-sm">
+                <Tabs value={entryMode} onValueChange={(val: any) => setEntryMode(val)} className="w-full lg:w-auto">
+                    <TabsList className="bg-slate-100 p-1 rounded-2xl h-auto flex flex-wrap sm:flex-nowrap gap-1">
                         <TabsTrigger 
                             value="matrix" 
-                            className="rounded-xl font-black text-xs px-4 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center gap-2"
+                            className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center gap-2"
                         >
-                            <Grid3X3 className="h-4 w-4" /> SBA Terminal Matrix (Multi-Column)
+                            <Grid3X3 className="h-4 w-4" /> SBA Terminal Matrix
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            value="mock" 
+                            className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all flex items-center gap-2"
+                        >
+                            <Award className="h-4 w-4" /> Mock Exams (Mock 1, Mock 2…)
                         </TabsTrigger>
                         <TabsTrigger 
                             value="single" 
-                            className="rounded-xl font-black text-xs px-4 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center gap-2"
+                            className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center gap-2"
                         >
-                            <ListFilter className="h-4 w-4" /> Single Assessment Mode
+                            <ListFilter className="h-4 w-4" /> Single Assessment
                         </TabsTrigger>
                     </TabsList>
                 </Tabs>
 
                 {/* Proportions Indicator & Config Button */}
                 <div className="flex items-center gap-2 flex-wrap">
-                    <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-900 font-bold text-xs shadow-xs">
-                        <span className="text-indigo-600">Proportion:</span>
-                        <span className="font-black text-indigo-950">{caWeight}% CA / {examWeight}% Exam</span>
-                    </div>
-                    <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setIsWeightModalOpen(true)}
-                        className="rounded-xl text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100 h-9"
-                    >
-                        <Sliders className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
-                        Configure Proportions
-                    </Button>
+                    {entryMode === 'mock' ? (
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-bold text-xs shadow-xs">
+                                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                                <span>Isolated Series:</span>
+                                <span className="font-black text-amber-950">{activeMockOption.label} (100%)</span>
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={() => {
+                                    const nextNum = availableMockSeries.reduce((max, m) => Math.max(max, m.mockNumber || 0), 0) + 1;
+                                    setNewMockTitleInput(`Mock ${nextNum}`);
+                                    setIsCreateMockModalOpen(true);
+                                }}
+                                className="rounded-xl text-xs font-black bg-amber-600 hover:bg-amber-700 text-white h-9 px-3.5 shadow-sm"
+                            >
+                                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                                Create New Mock
+                            </Button>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-900 font-bold text-xs shadow-xs">
+                                <span className="text-indigo-600">Proportion:</span>
+                                <span className="font-black text-indigo-950">{caWeight}% CA / {examWeight}% Exam</span>
+                            </div>
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => setIsWeightModalOpen(true)}
+                                className="rounded-xl text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100 h-9"
+                            >
+                                <Sliders className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
+                                Configure Proportions
+                            </Button>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -1310,7 +1712,7 @@ export default function GradebookPage() {
                     <CardTitle className="text-lg font-black text-slate-800">Roster Filters</CardTitle>
                     <CardDescription className="text-slate-400">Specify details to retrieve the classroom grading sheet.</CardDescription>
                 </CardHeader>
-                <CardContent className={`grid gap-4 p-6 bg-white ${entryMode === 'matrix' ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-7'}`}>
+                <CardContent className={`grid gap-4 p-6 bg-white ${entryMode === 'matrix' ? 'grid-cols-2 md:grid-cols-4' : entryMode === 'mock' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-7'}`}>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear} disabled={role === 'Teacher'}>
@@ -1361,6 +1763,54 @@ export default function GradebookPage() {
                             </SelectContent>
                         </Select>
                     </div>
+
+                    {/* Dedicated Mock Exam Mode Specific Inputs */}
+                    {entryMode === 'mock' && (
+                        <>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-black text-amber-700 uppercase tracking-wider">Mock Exam Series</Label>
+                                <Select
+                                    value={selectedMockSeries}
+                                    onValueChange={(val) => {
+                                        if (val === '__create_new__') {
+                                            const nextNum = availableMockSeries.reduce((max, m) => Math.max(max, m.mockNumber || 0), 0) + 1;
+                                            setNewMockTitleInput(`Mock ${nextNum}`);
+                                            setIsCreateMockModalOpen(true);
+                                            return;
+                                        }
+                                        setSelectedMockSeries(val as AcademicSeriesId);
+                                    }}
+                                >
+                                    <SelectTrigger className="bg-amber-50/50 border-2 border-amber-200 rounded-xl h-11 focus:ring-amber-500 shadow-sm font-black text-amber-950">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {availableMockSeries.map(m => {
+                                            const cnt = mockSeriesCounts[m.id] || 0;
+                                            return (
+                                                <SelectItem key={m.id} value={m.id} className="font-bold">
+                                                    {m.label} {cnt > 0 ? `• ${cnt} saved` : '• Empty'}
+                                                </SelectItem>
+                                            );
+                                        })}
+                                        <SelectItem value="__create_new__" className="font-black text-amber-700">
+                                            ➕ Create New Mock Exam…
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Mock Max Score</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={mockMaxScore}
+                                    onChange={e => setMockMaxScore(e.target.value === '' ? 100 : Math.max(1, Number(e.target.value)))}
+                                    className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-amber-500 shadow-sm font-black text-center"
+                                />
+                            </div>
+                        </>
+                    )}
 
                     {/* Single Assessment Mode Specific Inputs */}
                     {entryMode === 'single' && (
@@ -1845,6 +2295,231 @@ export default function GradebookPage() {
                                 )}
                             </CardContent>
                         </Card>
+                    ) : entryMode === 'mock' ? (
+                        /* -------------------- ENTRY MODE M: DEDICATED MULTI-MOCK EXAMS -------------------- */
+                        <Card className="shadow-lg border-2 border-amber-100 rounded-[2.2rem] overflow-hidden bg-white">
+                            <CardHeader className="border-b border-amber-100/80 bg-gradient-to-r from-amber-50/60 via-white to-indigo-50/40 p-6 space-y-4">
+                                <div className="flex flex-row items-center justify-between flex-wrap gap-4">
+                                    <div>
+                                        <div className="flex items-center gap-2.5 flex-wrap">
+                                            <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
+                                                <Award className="h-5 w-5 text-amber-600" />
+                                                {activeMockOption.label} Examination Sheet
+                                            </CardTitle>
+                                            <Badge className="bg-amber-100 text-amber-900 border-amber-300 font-black text-xs">
+                                                100% Standalone Series
+                                            </Badge>
+                                            {(mockSeriesCounts[selectedMockSeries] || 0) > 0 && (
+                                                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 font-black text-xs flex items-center gap-1">
+                                                    <ShieldCheck className="h-3.5 w-3.5" />
+                                                    {mockSeriesCounts[selectedMockSeries]} Saved Marks Secured
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <CardDescription className="text-slate-500 mt-1 text-xs font-medium">
+                                            Each Mock series is stored and printed independently. Entering marks in <strong>{activeMockOption.label}</strong> never overwrites or alters earlier Mock or End-of-Term SBA entries.
+                                        </CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                const nextNum = availableMockSeries.reduce((max, m) => Math.max(max, m.mockNumber || 0), 0) + 1;
+                                                setNewMockTitleInput(`Mock ${nextNum}`);
+                                                setIsCreateMockModalOpen(true);
+                                            }}
+                                            className="rounded-xl border-amber-300 text-amber-900 bg-amber-50 hover:bg-amber-100 text-xs font-black h-10 px-3.5"
+                                        >
+                                            <Plus className="h-4 w-4 mr-1 text-amber-700" /> New Mock
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAutoFillMockRemarks}
+                                            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold h-10 px-3"
+                                        >
+                                            <Wand2 className="h-4 w-4 mr-1.5 text-amber-600" /> Auto-Fill Remarks
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100/70 rounded-xl font-bold text-xs h-10"
+                                            onClick={handleGenerateClassInsights}
+                                            disabled={isSaving || isGeneratingInsights}
+                                        >
+                                            <Sparkles className="mr-1.5 h-4 w-4 text-purple-600" /> AI Insights (5 credits)
+                                        </Button>
+                                        <Button
+                                            onClick={handleSaveMockBatch}
+                                            disabled={isSaving || isGlobalLoading}
+                                            className="bg-amber-600 hover:bg-amber-700 font-black rounded-xl text-white shadow-md transition-all h-10 px-6 text-sm"
+                                        >
+                                            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+                                            {isGlobalLoading ? 'Authenticating...' : `Save ${activeMockOption.label} Marks`}
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                {/* Quick Mock Series Pills */}
+                                <div className="flex items-center gap-2 flex-wrap pt-1">
+                                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 mr-1">Switch Mock:</span>
+                                    {availableMockSeries.map(m => {
+                                        const isActive = m.id === selectedMockSeries;
+                                        const cnt = mockSeriesCounts[m.id] || 0;
+                                        return (
+                                            <button
+                                                key={m.id}
+                                                type="button"
+                                                onClick={() => setSelectedMockSeries(m.id)}
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border ${
+                                                    isActive
+                                                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-amber-300 hover:bg-amber-50/40'
+                                                }`}
+                                            >
+                                                <span>{m.label}</span>
+                                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                                                    isActive
+                                                        ? 'bg-amber-500 text-slate-950'
+                                                        : cnt > 0
+                                                            ? 'bg-emerald-100 text-emerald-800'
+                                                            : 'bg-slate-100 text-slate-500'
+                                                }`}>
+                                                    {cnt > 0 ? `${cnt}` : '0'}
+                                                </span>
+                                            </button>
+                                        );
+                                    })}
+                                    <Link
+                                        href="/dashboard/reports/academics"
+                                        className="ml-auto text-xs font-black text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
+                                    >
+                                        Open Printable Mock Master List →
+                                    </Link>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="pt-6 px-6 pb-20">
+                                {loadingStudents ? (
+                                    <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
+                                        <Loader2 className="animate-spin h-10 w-10 text-amber-600" />
+                                        <p className="font-semibold text-sm">Loading roster...</p>
+                                    </div>
+                                ) : (
+                                    <div className="pb-20">
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 border-b border-slate-200">
+                                                    <TableHead className="font-bold text-slate-700 w-[260px] min-w-[200px]">Student Name</TableHead>
+                                                    <TableHead className="w-[140px] min-w-[120px] text-center font-bold text-slate-700">Raw Score (/{mockMaxScore})</TableHead>
+                                                    <TableHead className="w-[100px] text-center font-black text-slate-800 bg-amber-50/60">Scaled %</TableHead>
+                                                    <TableHead className="w-[90px] text-center font-black text-slate-800">Grade</TableHead>
+                                                    <TableHead className="font-bold text-slate-700 pr-8">Teacher Remark</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {students?.length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={5} className="text-center py-10 italic text-slate-400">
+                                                            No active students enrolled in this class.
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                                {students?.map((s: any, idx: number) => {
+                                                    const currentScore = mockScores[s.uid];
+                                                    const hasVal = currentScore !== undefined && currentScore !== '' && !isNaN(Number(currentScore));
+                                                    const isOverLimit = hasVal && Number(currentScore) > mockMaxScore;
+                                                    const pct = hasVal && mockMaxScore > 0 ? Math.min(100, Math.round((Number(currentScore) / mockMaxScore) * 100)) : 0;
+                                                    const { grade, autoRemark, isBeceGrade } = getSeriesGradeFromScore(pct, {
+                                                        isMock: true,
+                                                        className: selectedClass?.name,
+                                                        schoolGradingSystem: gradingScale,
+                                                    });
+                                                    const initials = `${s.firstName?.[0] || ''}${s.lastName?.[0] || ''}`.toUpperCase();
+
+                                                    return (
+                                                        <TableRow key={s.uid} className="hover:bg-amber-50/20 transition-colors border-b border-slate-100">
+                                                            <TableCell className="font-semibold text-slate-800">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-800 text-xs font-black border border-amber-200 shadow-xs">
+                                                                        {initials}
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="whitespace-normal break-words leading-snug font-bold text-slate-800">{s.firstName} {s.lastName}</p>
+                                                                        {s.studentId && <p className="text-[10px] text-slate-400 font-mono">{s.studentId}</p>}
+                                                                    </div>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="text-center">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max={mockMaxScore}
+                                                                    value={mockScores[s.uid] ?? ''}
+                                                                    onChange={e => {
+                                                                        const val = e.target.value;
+                                                                        setMockScores(prev => ({ ...prev, [s.uid]: val === '' ? '' : Number(val) }));
+                                                                    }}
+                                                                    onKeyDown={e => {
+                                                                        if (e.key === 'Enter' || e.key === 'ArrowDown') {
+                                                                            e.preventDefault();
+                                                                            const next = document.querySelector<HTMLInputElement>(`input[data-mock-row="${idx + 1}"]`);
+                                                                            if (next) { next.focus(); next.select(); }
+                                                                        } else if (e.key === 'ArrowUp') {
+                                                                            e.preventDefault();
+                                                                            const prevEl = document.querySelector<HTMLInputElement>(`input[data-mock-row="${idx - 1}"]`);
+                                                                            if (prevEl) { prevEl.focus(); prevEl.select(); }
+                                                                        }
+                                                                    }}
+                                                                    data-mock-row={idx}
+                                                                    className={`font-black w-28 mx-auto text-center h-10 rounded-xl shadow-xs ${
+                                                                        isOverLimit ? 'border-rose-500 ring-1 ring-rose-500 text-rose-600' : 'border-slate-200'
+                                                                    }`}
+                                                                />
+                                                                {isOverLimit && (
+                                                                    <p className="text-[10px] text-rose-600 font-bold mt-1 flex items-center justify-center gap-1">
+                                                                        <AlertCircle className="h-3 w-3" /> Max {mockMaxScore}
+                                                                    </p>
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell className="text-center bg-amber-50/30">
+                                                                {hasVal ? (
+                                                                    <Badge className="bg-slate-900 text-white font-black text-xs px-2.5 py-0.5">
+                                                                        {pct}%
+                                                                    </Badge>
+                                                                ) : (
+                                                                    <span className="text-slate-300 font-mono text-xs">—</span>
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell className="text-center">
+                                                                {hasVal ? (
+                                                                    <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg border font-black text-xs bg-indigo-50 text-indigo-800 border-indigo-200">
+                                                                        {isBeceGrade ? `Grade ${grade}` : grade}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-slate-300 font-mono text-xs">—</span>
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell className="pr-8">
+                                                                <Input
+                                                                    type="text"
+                                                                    placeholder={hasVal && autoRemark ? autoRemark : `Optional remark for ${activeMockOption.label}`}
+                                                                    value={mockRemarks[s.uid] ?? ''}
+                                                                    onChange={e => setMockRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
+                                                                    className="rounded-xl border border-slate-200 focus-visible:ring-amber-500 h-10 shadow-xs text-sm text-slate-700"
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
                     ) : (
                         /* -------------------- ENTRY MODE B: SINGLE ASSESSMENT BATCH (Classic) -------------------- */
                         <Card className="shadow-lg border border-slate-100 rounded-[2.2rem] overflow-hidden bg-white">
@@ -2021,9 +2696,21 @@ export default function GradebookPage() {
                                                         disabled={isSaving}
                                                         className="flex-1 rounded-xl font-bold border-blue-200 text-blue-700 bg-white hover:bg-blue-50 transition-colors shadow-sm text-xs h-9"
                                                         onClick={() => {
+                                                            const firstDoc = records[0];
+                                                            const mockInfo = resolveMockSeriesFromAssessment(firstDoc);
+                                                            if (mockInfo) {
+                                                                setEntryMode('mock');
+                                                                setSelectedMockSeries(mockInfo.id);
+                                                                window.scrollTo({ top: 350, behavior: 'smooth' });
+                                                                toast({
+                                                                    title: `Loaded ${mockInfo.label}`,
+                                                                    description: `Switched to Mock Exams mode (${mockInfo.label}). Edit marks above and save.`
+                                                                });
+                                                                return;
+                                                            }
                                                             setEntryMode('single');
-                                                            setAssessmentType(type);
-                                                            setAssessmentName(type);
+                                                            setAssessmentType(firstDoc?.assessmentType || type);
+                                                            setAssessmentName(firstDoc?.assessmentName || firstDoc?.assessmentType || type);
                                                             window.scrollTo({ top: 350, behavior: 'smooth' });
                                                             toast({
                                                                 title: `Loaded ${type}`,
@@ -2430,6 +3117,71 @@ export default function GradebookPage() {
                             </div>
                         )}
                     </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Create New Mock Exam Series Modal */}
+            <Dialog open={isCreateMockModalOpen} onOpenChange={setIsCreateMockModalOpen}>
+                <DialogContent className="sm:max-w-[440px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
+                    <DialogHeader className="border-b border-slate-100 pb-4">
+                        <DialogTitle className="flex items-center gap-2 text-slate-900 font-black text-xl">
+                            <Award className="h-5 w-5 text-amber-600" /> Create New Mock Exam
+                        </DialogTitle>
+                        <DialogDescription className="text-slate-500 text-xs">
+                            Create a dedicated Mock Examination series (e.g. <strong>Mock 2</strong>, <strong>Mock 3</strong>, <strong>District Mock</strong>). All subject teachers in this class will see it immediately, and all earlier Mock entries remain untouched.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-3">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-black text-slate-700 uppercase tracking-wider">Mock Exam Name</Label>
+                            <Input
+                                type="text"
+                                placeholder="e.g. Mock 2, Mock 6, Pre-BECE Mock"
+                                value={newMockTitleInput}
+                                onChange={e => setNewMockTitleInput(e.target.value)}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleCreateNewMock();
+                                    }
+                                }}
+                                className="h-11 rounded-xl font-bold border-slate-200"
+                            />
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            {['Mock 2', 'Mock 3', 'Mock 4', 'District Mock', 'Pre-BECE Mock'].map(preset => (
+                                <button
+                                    key={preset}
+                                    type="button"
+                                    onClick={() => setNewMockTitleInput(preset)}
+                                    className="text-[11px] font-bold px-2.5 py-1 rounded-lg border border-amber-200 bg-amber-50/70 text-amber-900 hover:bg-amber-100 transition-colors"
+                                >
+                                    {preset}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <DialogFooter className="gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsCreateMockModalOpen(false)}
+                            className="rounded-xl border-slate-200 text-slate-600 font-bold h-10"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleCreateNewMock}
+                            disabled={isCreatingMock}
+                            className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-black h-10 px-5"
+                        >
+                            {isCreatingMock ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-1.5" />}
+                            Create & Switch
+                        </Button>
+                    </DialogFooter>
                 </DialogContent>
             </Dialog>
         </div>

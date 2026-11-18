@@ -24,7 +24,9 @@ import { Suspense } from 'react';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { getReportCardSeriesKey, getReportCardSeriesLabel } from '@/lib/academic-series';
 
 function ReportListForStudent({ student }: { student: Student }) {
     const firestore = useFirestore();
@@ -84,9 +86,20 @@ function ReportListForStudent({ student }: { student: Student }) {
                                     Released {report.publishedAt ? format((report.publishedAt as any).toDate(), 'dd MMM yyyy') : ''}
                                 </span>
                             </div>
-                            <h3 className="font-black text-slate-800 text-lg leading-tight group-hover:text-indigo-600 transition-colors">
-                                {report.term}
-                            </h3>
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-black text-slate-800 text-lg leading-tight group-hover:text-indigo-600 transition-colors">
+                                    {report.term}
+                                </h3>
+                                <Badge className={`text-[10px] font-black uppercase ${
+                                    getReportCardSeriesKey(report).startsWith('mock_')
+                                        ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                        : getReportCardSeriesKey(report) === 'mid_term'
+                                            ? 'bg-purple-100 text-purple-900 border-purple-300'
+                                            : 'bg-indigo-50 text-indigo-800 border-indigo-200'
+                                }`}>
+                                    {getReportCardSeriesLabel(report)}
+                                </Badge>
+                            </div>
                             
                             <div className="flex items-center gap-4 text-xs font-semibold text-slate-500 mt-2">
                                 <div className="flex items-center gap-1">

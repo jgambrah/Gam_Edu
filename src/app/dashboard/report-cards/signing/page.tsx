@@ -14,6 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getReportCardSeriesKey, getReportCardSeriesLabel } from '@/lib/academic-series';
 
 export default function ReportSigningPortal() {
   const { user } = useUser();
@@ -111,7 +112,18 @@ export default function ReportSigningPortal() {
                    {report.student?.firstName?.[0] || 'S'}
                 </div>
                 <div>
-                   <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{report.className} • {report.term}</p>
+                   <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">{report.className} • {report.term}</p>
+                      <Badge className={`text-[9px] font-black uppercase px-2 py-0.5 ${
+                          getReportCardSeriesKey(report).startsWith('mock_')
+                              ? 'bg-amber-100 text-amber-900 border-amber-300'
+                              : getReportCardSeriesKey(report) === 'mid_term'
+                                  ? 'bg-purple-100 text-purple-900 border-purple-300'
+                                  : 'bg-slate-100 text-slate-700 border-slate-200'
+                      }`}>
+                          {getReportCardSeriesLabel(report)}
+                      </Badge>
+                   </div>
                    <h3 className="text-2xl font-black uppercase text-black">{report.student?.firstName} {report.student?.lastName}</h3>
                    <div className="flex items-center gap-2 mt-1">
                       <div className="bg-green-100 p-1 rounded-full"><CheckCircle2 size={10} className="text-green-600" /></div>
