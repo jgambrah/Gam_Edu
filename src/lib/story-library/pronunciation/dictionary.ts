@@ -1474,5 +1474,7 @@ export const GHANAIAN_PRONUNCIATIONS: PronunciationDictionary = {
       guidance: 'Candidate: "goo-REH-neh".', respell: 'goo-reh-neh', hint: 'Gurene is a language of northern Ghana; say "goo-REH-neh".', reviewerNotes: ['Confirm stress and vowels.'] }),
     entry({ id: 'dagbani', written: 'Dagbani', kind: 'place-or-people', language: 'Dagbani (Northern Region)', meaning: 'Major Gur language spoken in the Northern Region of Ghana',
       guidance: 'Candidate: "dahg-BAH-nee".', respell: 'dahg-bah-nee', hint: 'Dagbani is a major language of northern Ghana; say "dahg-BAH-nee".', reviewerNotes: ['Confirm stress.'] }),
+    entry({ id: 'fosua', written: 'Fosua', kind: 'personal-name', language: AKAN, meaning: 'Akan female personal name (feminine counterpart of Fosu)',
+      guidance: 'Candidate: "foh-SOO-ah".', respell: 'foh-soo-ah', hint: 'Fosua is a Ghanaian (Akan) girl’s name; say "foh-SOO-ah".', reviewerNotes: ['Confirm three syllables.'] }),
   ],
 };

@@ -1620,7 +1620,7 @@
     "definition": "Skilled workers who install, test, and repair machines or electrical systems."
   },
   "engineer": {
-    "definition": "A trained specialist who designs, builds, or maintains engines, bridges, power systems, or machines."
+    "definition": "A person who designs and builds things such as bridges and machines."
   },
   "engineers": {
     "definition": "Specialists who use science and maths to design and maintain safe buildings, power, and machines."
@@ -1779,7 +1779,7 @@
     "definition": "How far something travels, measured in metres or kilometres."
   },
   "balance": {
-    "definition": "A steady state in which no part is too big or too small."
+    "definition": "A state in which things are in the right amounts."
   },
   "equal": {
     "definition": "Being the same in amount, size, value, or rights."
@@ -4592,7 +4592,7 @@
     "definition": "To get something ready in advance."
   },
   "prepared": {
-    "definition": "Made ready beforehand."
+    "definition": "Got ready in advance."
   },
   "exchange": {
     "definition": "Giving one thing and receiving another in return."
@@ -6406,7 +6406,7 @@
     "definition": "A very young plant."
   },
   "habit": {
-    "definition": "Something you do regularly, often without thinking."
+    "definition": "Something you do so often that it becomes natural."
   },
   "clearly": {
     "definition": "In a way that is easy to understand."
@@ -6452,6 +6452,15 @@
   },
   "hopeless": {
     "definition": "Feeling that nothing good will happen."
+  },
+  "pride": {
+    "definition": "A feeling of being too sure of oneself."
+  },
+  "obstacle": {
+    "definition": "Something that blocks the way or makes progress difficult."
+  },
+  "prefect": {
+    "definition": "A senior pupil who helps to keep order at school."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -7277,7 +7286,7 @@
     "definition": "Languages."
   },
   "guarded": {
-    "definition": "Kept safe and looked after."
+    "definition": "Kept safe and did not share."
   },
   "toil": {
     "definition": "Hard work."
@@ -7482,9 +7491,6 @@
   "editorial": {
     "definition": "A newspaper article that gives the paper’s own opinion."
   },
-  "prefect": {
-    "definition": "A pupil chosen to help keep order."
-  },
   "punctuality": {
     "definition": "Arriving on time."
   },
@@ -7514,7 +7520,7 @@
     "definition": "The leader of a team or group."
   },
   "relay": {
-    "definition": "A race in which team members take turns to run part of the distance."
+    "definition": "A race in which a team passes a baton from one runner to the next."
   },
   "scoreboard": {
     "definition": "A board that shows the points in a game."
@@ -8952,7 +8958,7 @@
     "definition": "People who run a business or part of one."
   },
   "innocent": {
-    "definition": "Having done nothing wrong."
+    "definition": "Not guilty of doing wrong."
   },
   "exhaustion": {
     "definition": "Extreme tiredness."
@@ -8979,7 +8985,7 @@
     "definition": "Special parts or qualities of a product."
   },
   "wages": {
-    "definition": "Money paid to workers for their work."
+    "definition": "Money paid for work."
   },
   "apprentice": {
     "definition": "A young person learning a trade by working with an expert."
@@ -8991,7 +8997,7 @@
     "definition": "A fixed set of steps that always gives the right answer."
   },
   "courage": {
-    "definition": "The strength to do something difficult."
+    "definition": "The strength to do something frightening."
   },
   "livelihood": {
     "definition": "The work that a person earns a living from."
@@ -9208,7 +9214,7 @@
     "definition": "A woman who sews clothes for a living."
   },
   "apologised": {
-    "definition": "Said sorry for something wrong."
+    "definition": "Said sorry."
   },
   "teased": {
     "definition": "Made fun of someone, often unkindly."
@@ -9473,6 +9479,48 @@
   },
   "clumsy": {
     "definition": "Awkward or not skilful."
+  },
+  "uneasy": {
+    "definition": "Worried or uncomfortable."
+  },
+  "unfairly": {
+    "definition": "In a way that is not just or equal."
+  },
+  "tides": {
+    "definition": "The regular rises and falls of the sea."
+  },
+  "forecast": {
+    "definition": "A statement of what the weather will probably be."
+  },
+  "towed": {
+    "definition": "Pulled along behind a boat."
+  },
+  "customs": {
+    "definition": "Traditional ways of doing things."
+  },
+  "careless": {
+    "definition": "Not careful enough."
+  },
+  "practise": {
+    "definition": "To do something again and again to get better."
+  },
+  "retiring": {
+    "definition": "Stopping work because of age."
+  },
+  "grateful": {
+    "definition": "Feeling thankful."
+  },
+  "equipment": {
+    "definition": "Tools and machines needed for a job."
+  },
+  "conflict": {
+    "definition": "A serious disagreement or fight."
+  },
+  "signatures": {
+    "definition": "People’s names written by themselves."
+  },
+  "avoidable": {
+    "definition": "Able to be prevented."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12245,5 +12293,9 @@
   "dagbani": {
     "definition": "Major Gur language spoken in the Northern Region of Ghana.",
     "phonetic": "dahg-bah-nee"
+  },
+  "fosua": {
+    "definition": "Akan female personal name (feminine counterpart of Fosu).",
+    "phonetic": "foh-soo-ah"
   }
 }
