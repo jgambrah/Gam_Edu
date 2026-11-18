@@ -885,7 +885,7 @@
     "definition": "A narrow track for walking."
   },
   "bridge": {
-    "definition": "A structure built over a river, road, or valley so people and vehicles can cross safely."
+    "definition": "Something that connects two sides."
   },
   "village": {
     "definition": "A small place in the countryside where families live close together."
@@ -954,7 +954,7 @@
     "definition": "A building where a family lives."
   },
   "compound": {
-    "definition": "A group of buildings and yards enclosed by a wall."
+    "definition": "An area of buildings and open ground shared by a family."
   },
   "veranda": {
     "definition": "A covered area along the front of a house."
@@ -4103,7 +4103,7 @@
     "definition": "The inner life, courage, and character of a person or community."
   },
   "belief": {
-    "definition": "Something that people hold to be true, even when it cannot be proven."
+    "definition": "Something that a person accepts as true."
   },
   "honour": {
     "definition": "Fairness and truthfulness in how you behave."
@@ -4241,7 +4241,7 @@
     "definition": "Strips placed inside books to keep a reader’s place."
   },
   "pattern": {
-    "definition": "A repeated decorative design (like in kente cloth) or a regular way something happens."
+    "definition": "A regular, repeated way that things happen."
   },
   "patterns": {
     "definition": "Repeated designs, shapes, or regular arrangements."
@@ -6241,7 +6241,7 @@
     "definition": "Deep sadness after losing someone."
   },
   "respect": {
-    "definition": "Polite behaviour towards someone, especially an elder."
+    "definition": "A feeling of admiration and care for someone."
   },
   "wits": {
     "definition": "The ability to think quickly and cleverly."
@@ -6304,7 +6304,7 @@
     "definition": "Unable to pay what is owed, and so forced to stop trading."
   },
   "purpose": {
-    "definition": "A reason for living and acting."
+    "definition": "A reason for doing something."
   },
   "criticises": {
     "definition": "Points out faults, often unkindly."
@@ -6406,7 +6406,7 @@
     "definition": "A very young plant."
   },
   "habit": {
-    "definition": "Something you do so often that it becomes automatic."
+    "definition": "Something you do regularly, often without thinking."
   },
   "clearly": {
     "definition": "In a way that is easy to understand."
@@ -6443,6 +6443,15 @@
   },
   "familiar": {
     "definition": "Well known because you have seen or heard it before."
+  },
+  "routine": {
+    "definition": "A usual set of actions that you do regularly."
+  },
+  "memory": {
+    "definition": "Something you remember from the past."
+  },
+  "hopeless": {
+    "definition": "Feeling that nothing good will happen."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6541,7 +6550,7 @@
     "definition": "In science, a well-tested explanation supported by many lines of evidence."
   },
   "stall": {
-    "definition": "A small table or shop in a market or street for selling."
+    "definition": "A small open shop in a market."
   },
   "mistake": {
     "definition": "Something done wrong by accident, without meaning to."
@@ -6731,7 +6740,7 @@
     "definition": "A long-term fund built during a person’s working years to provide regular income during retirement"
   },
   "retired": {
-    "definition": "Having stepped back from full-time employment in older age after years of work"
+    "definition": "No longer working because of age."
   },
   "mandatory": {
     "definition": "Required by law for eligible workers and employers"
@@ -7550,7 +7559,7 @@
     "definition": "Making fun of someone in an unkind way."
   },
   "counsellor": {
-    "definition": "A person trained to give advice and support."
+    "definition": "A person trained to listen and help with problems."
   },
   "unkind": {
     "definition": "Not caring or friendly; hurting someone’s feelings."
@@ -7646,7 +7655,7 @@
     "definition": "A formal test of what you have learned."
   },
   "relief": {
-    "definition": "A feeling of comfort after worry."
+    "definition": "A feeling of comfort after worry or stress."
   },
   "misty": {
     "definition": "Filled with tears."
@@ -8040,9 +8049,6 @@
   },
   "yawned": {
     "definition": "Opened the mouth wide and breathed in deeply because of tiredness."
-  },
-  "routine": {
-    "definition": "Helpful steps we follow in the same order each day."
   },
   "repeating": {
     "definition": "Doing an investigation again in the exact same way to check the result."
@@ -8748,7 +8754,7 @@
     "definition": "Wanted very much."
   },
   "reward": {
-    "definition": "Something pleasant given or taken after effort."
+    "definition": "Something good that you get for doing something."
   },
   "snarled": {
     "definition": "Growled angrily, showing the teeth."
@@ -9229,7 +9235,7 @@
     "definition": "Sad because something did not happen as hoped."
   },
   "crooked": {
-    "definition": "Not straight, or not true to how things are."
+    "definition": "Not straight."
   },
   "orders": {
     "definition": "Requests to make or supply goods."
@@ -9426,11 +9432,47 @@
   "highlight": {
     "definition": "To mark important words with a bright pen."
   },
-  "memory": {
-    "definition": "The ability to remember things."
-  },
   "discouraged": {
     "definition": "Having lost confidence or hope."
+  },
+  "debater": {
+    "definition": "A person who argues a case against another in a formal discussion."
+  },
+  "exceptions": {
+    "definition": "Cases that do not follow the general rule."
+  },
+  "assigned": {
+    "definition": "Given as a task or role."
+  },
+  "opponent": {
+    "definition": "A person who argues or plays against you."
+  },
+  "willpower": {
+    "definition": "The strength to control what you do."
+  },
+  "grand": {
+    "definition": "Large and impressive."
+  },
+  "embarrassment": {
+    "definition": "A feeling of shame in front of others."
+  },
+  "suspected": {
+    "definition": "Thought something was true without being sure."
+  },
+  "rebuild": {
+    "definition": "To build again."
+  },
+  "posted": {
+    "definition": "Sent to work in a particular place."
+  },
+  "accents": {
+    "definition": "Ways of pronouncing words that show where people come from."
+  },
+  "humour": {
+    "definition": "The quality of being funny."
+  },
+  "clumsy": {
+    "definition": "Awkward or not skilful."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12183,5 +12225,25 @@
   "quarshie": {
     "definition": "Well-known Ghanaian surname (variant of Kwasi).",
     "phonetic": "kwar-shee"
+  },
+  "fufu": {
+    "definition": "Traditional Ghanaian staple dish made by pounding boiled cassava and plantain or yam.",
+    "phonetic": "foo-foo"
+  },
+  "dasiba": {
+    "definition": "Dagbani morning greeting (\"Good morning\").",
+    "phonetic": "dah-see-bah"
+  },
+  "ndi": {
+    "definition": "Ewe morning greeting (\"Good morning\").",
+    "phonetic": "n-dee"
+  },
+  "gurene": {
+    "definition": "Gur language spoken in the Upper East Region of Ghana.",
+    "phonetic": "goo-reh-neh"
+  },
+  "dagbani": {
+    "definition": "Major Gur language spoken in the Northern Region of Ghana.",
+    "phonetic": "dahg-bah-nee"
   }
 }
