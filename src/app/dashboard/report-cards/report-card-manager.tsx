@@ -46,6 +46,8 @@ import {
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
     isMidTermAssessment,
+    isStandaloneMidTermAssessment,
+    selectMidTermRecordsForSubject,
     isMockAssessment,
     matchesReportSeries,
     resolveMockSeriesFromAssessment,
@@ -111,7 +113,7 @@ function computeSubjectScore(
     }
 
     if (reportSeries === 'mid_term') {
-        const midItems = items.filter(a => isMidTermAssessment(a));
+        const midItems = selectMidTermRecordsForSubject(items);
         if (midItems.length === 0) return null;
         const obtained = midItems.reduce((sum, a) => sum + num(a.score, 0), 0);
         const max = midItems.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
@@ -122,8 +124,8 @@ function computeSubjectScore(
         return { ca: 0, exam: cleanObt, total: pct, rawDisplay: `${cleanObt}/${cleanMax}` };
     }
 
-    // End of Term: strictly exclude Mock assessments
-    const nonMockItems = items.filter(a => !isMockAssessment(a));
+    // End of Term: strictly exclude Mock assessments AND Standalone 100% Mid-Term exams!
+    const nonMockItems = items.filter(a => !isMockAssessment(a) && !isStandaloneMidTermAssessment(a));
     if (nonMockItems.length === 0) return null;
 
     const typeOf = (a: any) => String(a.assessmentType || '').toLowerCase();

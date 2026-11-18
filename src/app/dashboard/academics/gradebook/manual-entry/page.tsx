@@ -45,14 +45,16 @@ import {
     discoverMockSeriesOptions,
     normalizeMockSeriesInput,
     resolveMockSeriesFromAssessment,
+    isStandaloneMidTermAssessment,
     getSeriesGradeFromScore,
     type AcademicSeriesId,
+    type AcademicSeriesOption,
 } from '@/lib/academic-series';
 
 const ASSESSMENT_TYPES = [
     'Mock Exam (100%)',
-    'Mock Exam',
-'Class Exercise (CA)', 
+    'Mid-Term Exam (100% - Standalone)',
+    'Class Exercise (CA)', 
     'Homework (CA)', 
     'Project (CA)', 
     'Mid-Term (CA)', 
@@ -105,8 +107,8 @@ class ChunkedWriter {
 /** Which matrix column a saved mark belongs to (same rules the screen uses to display it). */
 function matrixSlotOf(a: any): string {
     const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
-    // Mock exams are not part of the terminal SBA matrix: never shown in, or overwritten by, the Exam column.
-    if (combined.includes('mock')) return 'other';
+    // Mock exams and 100% Standalone Mid-Term exams are NOT part of the terminal SBA matrix or CA!
+    if (combined.includes('mock') || isStandaloneMidTermAssessment(a)) return 'other';
     if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) return 'ex';
     if (combined.includes('mid')) return 'mt';
     if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) return 'project';
@@ -437,20 +439,33 @@ export default function GradebookPage() {
         .includes(String(role || '').toLowerCase());
     const termLocked = !isAdminRole && rawAssessments.some((a: any) => a.isArchived === true);
 
-    // Discover all available Mock Exam series (Mock 1..5 + custom class/school mocks + existing assessment mocks)
-    const availableMockSeries = useMemo(() => {
-        return discoverMockSeriesOptions({
+    // Discover all standalone Exam series: Standalone Mid-Term (100% - Not in CA) + Mock 1..5 + custom mocks
+    const availableMockSeries = useMemo<AcademicSeriesOption[]>(() => {
+        const mocks = discoverMockSeriesOptions({
             assessments: allClassAssessments,
             classDoc: selectedClass,
             schoolSettings,
             extraCustomMocks: localCustomMocks,
         });
+        return [
+            {
+                id: 'mid_term',
+                label: 'Mid-Term Exam (Not in CA)',
+                shortLabel: 'Mid-Term Exam',
+                kind: 'mid_term',
+            },
+            ...mocks,
+        ];
     }, [allClassAssessments, selectedClass, schoolSettings, localCustomMocks]);
 
-    // Count how many saved marks exist in the current term/subject for each Mock series
+    // Count how many saved marks exist in the current term/subject for Standalone Mid-Term and each Mock series
     const mockSeriesCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         (rawAssessments || []).forEach((a: any) => {
+            if (isStandaloneMidTermAssessment(a)) {
+                counts['mid_term'] = (counts['mid_term'] || 0) + 1;
+                return;
+            }
             const resolved = resolveMockSeriesFromAssessment(a);
             if (resolved) {
                 counts[resolved.id] = (counts[resolved.id] || 0) + 1;
@@ -460,7 +475,7 @@ export default function GradebookPage() {
     }, [rawAssessments]);
 
     const activeMockOption = useMemo(() => {
-        return availableMockSeries.find(m => m.id === selectedMockSeries) || availableMockSeries[0] || {
+        return availableMockSeries.find(m => m.id === selectedMockSeries) || availableMockSeries[1] || availableMockSeries[0] || {
             id: 'mock_1' as AcademicSeriesId,
             label: 'Mock 1',
             shortLabel: 'Mock 1',
@@ -469,8 +484,7 @@ export default function GradebookPage() {
         };
     }, [availableMockSeries, selectedMockSeries]);
 
-    // Populate Mock Exam tab fields whenever rawAssessments or selectedMockSeries changes.
-    // Legacy unnumbered "Mock Exam (100%)" / "Mock Exam" records resolve cleanly to `mock_1`.
+    // Populate Standalone Mid-Term / Mock Exam tab fields whenever rawAssessments or selectedMockSeries changes.
     useEffect(() => {
         if (!rawAssessments || rawAssessments.length === 0) {
             setMockScores({});
@@ -480,6 +494,9 @@ export default function GradebookPage() {
         }
 
         const matchingDocs = rawAssessments.filter((a: any) => {
+            if (selectedMockSeries === 'mid_term') {
+                return isStandaloneMidTermAssessment(a);
+            }
             const resolved = resolveMockSeriesFromAssessment(a);
             return resolved?.id === selectedMockSeries;
         });
@@ -511,14 +528,16 @@ export default function GradebookPage() {
         }
     }, [rawAssessments, selectedMockSeries]);
 
-    // Group assessments distinctly (separating Mock 1, Mock 2, Test 1, Test 2, etc. so batches never collide!)
+    // Group assessments distinctly (separating Standalone Mid-Term, SBA Mid-Term, Mock 1, Mock 2, Test 1, Test 2, etc.)
     const groupedAssessments = useMemo(() => {
         if (!rawAssessments) return {};
         const groups: Record<string, any[]> = {};
         rawAssessments.forEach(a => {
             const mockInfo = resolveMockSeriesFromAssessment(a);
             let groupKey: string;
-            if (mockInfo) {
+            if (isStandaloneMidTermAssessment(a)) {
+                groupKey = 'Mid-Term Exam (100% • Not in CA)';
+            } else if (mockInfo) {
                 groupKey = `${mockInfo.label} (100% Mock)`;
             } else if (a.assessmentName && a.assessmentType && a.assessmentName !== a.assessmentType) {
                 groupKey = `${a.assessmentType} • ${a.assessmentName}`;
@@ -1171,6 +1190,7 @@ export default function GradebookPage() {
                 const studentName = student
                     ? `${student.firstName || ''} ${student.lastName || ''}`.trim()
                     : (keep?.studentName || '');
+                const isStandaloneMid = isStandaloneMidTermAssessment({ assessmentType, assessmentName: targetName });
                 const fields: any = {
                     studentId,
                     studentName,
@@ -1182,6 +1202,7 @@ export default function GradebookPage() {
                     academicYear,
                     assessmentType,
                     assessmentName: targetName,
+                    ...(isStandaloneMid ? { standaloneMidTerm: true, excludeFromCa: true, mockSeries: 'mid_term' } : {}),
                     score,
                     maxScore: parsedMaxScore,
                     teacherRemark: remark,
@@ -1376,7 +1397,8 @@ export default function GradebookPage() {
             const writer = new ChunkedWriter(firestore);
             const timelineWriter = new ChunkedWriter(firestore);
             const seriesId = activeMockOption.id;
-            const seriesLabel = activeMockOption.label;
+            const isMidTermStandalone = seriesId === 'mid_term';
+            const seriesLabel = isMidTermStandalone ? 'Mid-Term Exam' : activeMockOption.label;
             const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
             const className = selectedClass?.name || null;
             const termId = buildTermId(academicYear, term);
@@ -1386,10 +1408,14 @@ export default function GradebookPage() {
             const notifyIds: string[] = [];
             let created = 0, changed = 0;
 
-            // Match ONLY records belonging to THIS exact Mock series (e.g. legacy "Mock Exam (100%)" -> mock_1, "Mock 2" -> mock_2)
+            // Match ONLY records belonging to THIS exact standalone series
             const existingByStudent: Record<string, any[]> = {};
             rawAssessments
-                .filter((a: any) => a.studentId && resolveMockSeriesFromAssessment(a)?.id === seriesId)
+                .filter((a: any) => {
+                    if (!a.studentId) return false;
+                    if (isMidTermStandalone) return isStandaloneMidTermAssessment(a);
+                    return resolveMockSeriesFromAssessment(a)?.id === seriesId;
+                })
                 .forEach((a: any) => {
                     if (!existingByStudent[a.studentId]) existingByStudent[a.studentId] = [];
                     existingByStudent[a.studentId].push(a);
@@ -1437,10 +1463,11 @@ export default function GradebookPage() {
                     teacherId: user.uid,
                     term,
                     academicYear,
-                    assessmentType: 'Mock Exam (100%)',
-                    assessmentName: seriesLabel,
+                    assessmentType: isMidTermStandalone ? 'Mid-Term Exam (100% - Standalone)' : 'Mock Exam (100%)',
+                    assessmentName: isMidTermStandalone ? 'Mid-Term Exam (100%)' : seriesLabel,
                     mockSeries: seriesId,
                     mockSeriesLabel: seriesLabel,
+                    ...(isMidTermStandalone ? { standaloneMidTerm: true, excludeFromCa: true } : {}),
                     score,
                     maxScore: parsedMaxScore,
                     teacherRemark: remark,
@@ -1652,7 +1679,7 @@ export default function GradebookPage() {
                             value="mock" 
                             className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all flex items-center gap-2"
                         >
-                            <Award className="h-4 w-4" /> Mock Exams (Mock 1, Mock 2…)
+                            <Award className="h-4 w-4" /> Mid-Term &amp; Mock Exams (100%)
                         </TabsTrigger>
                         <TabsTrigger 
                             value="single" 
@@ -2317,7 +2344,9 @@ export default function GradebookPage() {
                                             )}
                                         </div>
                                         <CardDescription className="text-slate-500 mt-1 text-xs font-medium">
-                                            Each Mock series is stored and printed independently. Entering marks in <strong>{activeMockOption.label}</strong> never overwrites or alters earlier Mock or End-of-Term SBA entries.
+                                            {selectedMockSeries === 'mid_term'
+                                                ? 'Standalone 100% Mid-Term Exam: Powers your Mid-Term Master List & Mid-Term Report Cards ONLY — strictly excluded from End-of-Term Continuous Assessment (CA)!'
+                                                : `Each Mock series is stored and printed independently. Entering marks in ${activeMockOption.label} never overwrites or alters earlier Mock or End-of-Term SBA entries.`}
                                         </CardDescription>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
@@ -2433,7 +2462,7 @@ export default function GradebookPage() {
                                                     const isOverLimit = hasVal && Number(currentScore) > mockMaxScore;
                                                     const pct = hasVal && mockMaxScore > 0 ? Math.min(100, Math.round((Number(currentScore) / mockMaxScore) * 100)) : 0;
                                                     const { grade, autoRemark, isBeceGrade } = getSeriesGradeFromScore(pct, {
-                                                        isMock: true,
+                                                        isMock: selectedMockSeries !== 'mid_term',
                                                         className: selectedClass?.name,
                                                         schoolGradingSystem: gradingScale,
                                                     });
@@ -2697,6 +2726,16 @@ export default function GradebookPage() {
                                                         className="flex-1 rounded-xl font-bold border-blue-200 text-blue-700 bg-white hover:bg-blue-50 transition-colors shadow-sm text-xs h-9"
                                                         onClick={() => {
                                                             const firstDoc = records[0];
+                                                            if (isStandaloneMidTermAssessment(firstDoc)) {
+                                                                setEntryMode('mock');
+                                                                setSelectedMockSeries('mid_term');
+                                                                window.scrollTo({ top: 350, behavior: 'smooth' });
+                                                                toast({
+                                                                    title: 'Loaded Standalone Mid-Term Exam',
+                                                                    description: 'Switched to Mid-Term & Mock Exams (100% — Not in CA). Edit marks above and save.'
+                                                                });
+                                                                return;
+                                                            }
                                                             const mockInfo = resolveMockSeriesFromAssessment(firstDoc);
                                                             if (mockInfo) {
                                                                 setEntryMode('mock');

@@ -169,8 +169,37 @@ export function isMockAssessment(a: any): boolean {
     return resolveMockSeriesFromAssessment(a) !== null;
 }
 
+/**
+ * Returns true when a Mid-Term assessment was entered as a 100% Standalone Mid-Term Exam
+ * (NOT part of End-of-Term Continuous Assessment / SBA).
+ * These records power the Mid-Term Master List & Mid-Term Report Card ONLY and are strictly excluded from End-of-Term CA!
+ */
+export function isStandaloneMidTermAssessment(a: any): boolean {
+    if (!a || isMockAssessment(a)) return false;
+    if (a.standaloneMidTerm === true || a.excludeFromCa === true || a.mockSeries === 'mid_term') {
+        return true;
+    }
+    const typeLower = String(a.assessmentType || '').toLowerCase();
+    const nameLower = String(a.assessmentName || '').toLowerCase();
+    const combined = `${typeLower} ${nameLower}`;
+    const hasMid =
+        combined.includes('mid-term') ||
+        combined.includes('mid term') ||
+        combined.includes('midterm') ||
+        combined.includes('mid-sem') ||
+        combined.includes('mid sem') ||
+        combined.includes('midsemester');
+    if (!hasMid) return false;
+    // Explicitly marked standalone / 100% exam (whereas SBA Mid-Term has "(CA)" and no "standalone"/"100%")
+    if (combined.includes('standalone') || combined.includes('100%') || typeLower === 'mid-term exam') {
+        return true;
+    }
+    return false;
+}
+
 export function isMidTermAssessment(a: any): boolean {
     if (!a || isMockAssessment(a)) return false;
+    if (isStandaloneMidTermAssessment(a)) return true;
     const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
     return (
         combined.includes('mid-term') ||
@@ -180,6 +209,18 @@ export function isMidTermAssessment(a: any): boolean {
         combined.includes('mid sem') ||
         combined.includes('midsemester')
     );
+}
+
+/**
+ * Given a student's assessments in one subject, selects the Mid-Term records for a Mid-Term report/master list:
+ * Prioritizes Standalone 100% Mid-Term Exam records if present (so SBA Mid-Term and Standalone Mid-Term never double-sum),
+ * otherwise falls back to SBA Mid-Term (CA) records.
+ */
+export function selectMidTermRecordsForSubject<T = any>(items: T[]): T[] {
+    if (!items || items.length === 0) return [];
+    const standalone = items.filter(a => isStandaloneMidTermAssessment(a));
+    if (standalone.length > 0) return standalone;
+    return items.filter(a => isMidTermAssessment(a));
 }
 
 export function formatSeriesLabelFromId(seriesId?: string | null): string {

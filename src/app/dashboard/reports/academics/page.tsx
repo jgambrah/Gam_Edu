@@ -150,6 +150,7 @@ import {
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
     isMidTermAssessment,
+    isStandaloneMidTermAssessment,
     isMockAssessment,
     resolveMockSeriesFromAssessment,
     type AcademicSeriesId,
@@ -713,6 +714,12 @@ export default function AcademicReportsPage() {
                 counts.set(mockOpt.id, cur);
                 return;
             }
+            if (isStandaloneMidTermAssessment(a)) {
+                const curMid = counts.get('mid_term') || { id: 'mid_term', label: 'Mid-Term', count: 0 };
+                curMid.count++;
+                counts.set('mid_term', curMid);
+                return;
+            }
             if (isMidTermAssessment(a) || a.midSem !== undefined || a.midTerm !== undefined) {
                 const curMid = counts.get('mid_term') || { id: 'mid_term', label: 'Mid-Term', count: 0 };
                 curMid.count++;
@@ -726,15 +733,15 @@ export default function AcademicReportsPage() {
     }, [classAssessments]);
 
     // Filter classAssessments strictly to the selected report series!
-    // - End of Term: NEVER contaminated by Mock Exam marks or non-terminal report cards
-    // - Mid-Term: ONLY Mid-Term assessments
+    // - End of Term: NEVER contaminated by Mock Exam marks, Standalone 100% Mid-Term marks, or non-terminal report cards
+    // - Mid-Term: ONLY Mid-Term assessments (prioritizing Standalone 100% Mid-Term Exam per student+subject)
     // - Mock N: ONLY assessments belonging to that exact Mock N (legacy unnumbered mocks map cleanly to Mock 1)
     const seriesAssessments = useMemo(() => {
         if (!classAssessments || classAssessments.length === 0) return [];
         return classAssessments.filter((a: any) => {
             if (selectedSeries === 'end_of_term') {
                 if (a._reportSeries && a._reportSeries !== 'end_of_term') return false;
-                if (isMockAssessment(a)) return false;
+                if (isMockAssessment(a) || isStandaloneMidTermAssessment(a)) return false;
                 return true;
             }
             if (selectedSeries === 'mid_term') {
@@ -976,7 +983,7 @@ export default function AcademicReportsPage() {
         // BRANCH A: PURE 100% STANDALONE SERIES (Mock 1, Mock 2, ... OR Mid-Term)
         // ---------------------------------------------------------------------------
         if (isSingleExamSeries) {
-            const singleGrouping: Record<string, Record<string, { score: number; maxScore: number; count: number }>> = {};
+            const singleGrouping: Record<string, Record<string, { score: number; maxScore: number; count: number; hasStandalone?: boolean }>> = {};
 
             seriesAssessments.forEach((a: any) => {
                 const matched = resolveStudentForMark(a);
@@ -986,10 +993,24 @@ export default function AcademicReportsPage() {
                 const subjectKey = resolveSubjectKey(a);
                 if (!singleGrouping[primaryStudentId]) singleGrouping[primaryStudentId] = {};
                 if (!singleGrouping[primaryStudentId][subjectKey]) {
-                    singleGrouping[primaryStudentId][subjectKey] = { score: 0, maxScore: 0, count: 0 };
+                    singleGrouping[primaryStudentId][subjectKey] = { score: 0, maxScore: 0, count: 0, hasStandalone: false };
                 }
 
-                const directMid = isMidTermSeries ? (a.midSem ?? a.midTerm ?? a.midSemester ?? a.midterm) : undefined;
+                const cell = singleGrouping[primaryStudentId][subjectKey];
+                const recordIsStandaloneMid = isMidTermSeries && isStandaloneMidTermAssessment(a);
+
+                // If Standalone 100% Mid-Term exists for this student+subject, ignore any SBA Mid-Term (CA) so they never double-sum!
+                if (isMidTermSeries && cell.hasStandalone && !recordIsStandaloneMid) {
+                    return;
+                }
+                if (recordIsStandaloneMid && !cell.hasStandalone) {
+                    cell.score = 0;
+                    cell.maxScore = 0;
+                    cell.count = 0;
+                    cell.hasStandalone = true;
+                }
+
+                const directMid = isMidTermSeries && !recordIsStandaloneMid ? (a.midSem ?? a.midTerm ?? a.midSemester ?? a.midterm) : undefined;
                 const scoreVal = directMid !== undefined && directMid !== null && directMid !== ''
                     ? Number(directMid)
                     : Number(a.score ?? a.totalScore ?? a.marks ?? a.mark ?? a.gradeScore ?? 0);
@@ -998,9 +1019,9 @@ export default function AcademicReportsPage() {
                     : Number(a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100);
 
                 if (!isNaN(scoreVal) && maxVal > 0) {
-                    singleGrouping[primaryStudentId][subjectKey].score += scoreVal;
-                    singleGrouping[primaryStudentId][subjectKey].maxScore += maxVal;
-                    singleGrouping[primaryStudentId][subjectKey].count++;
+                    cell.score += scoreVal;
+                    cell.maxScore += maxVal;
+                    cell.count++;
                 }
             });
 
