@@ -529,7 +529,7 @@
     "definition": "Inspected or verified something carefully."
   },
   "test": {
-    "definition": "A try-out to see whether something works."
+    "definition": "To try something to see how it works."
   },
   "tested": {
     "definition": "Checked by observation or experiment."
@@ -879,7 +879,7 @@
     "definition": "A public road in a town or city with houses and shops along it."
   },
   "lane": {
-    "definition": "A narrow road or path between houses, farms, or trees."
+    "definition": "A narrow road or path between houses."
   },
   "path": {
     "definition": "A narrow track for walking."
@@ -957,7 +957,7 @@
     "definition": "A group of buildings and yards enclosed by a wall."
   },
   "veranda": {
-    "definition": "A roofed open space along the side of a house."
+    "definition": "A covered area along the front of a house."
   },
   "yard": {
     "definition": "An open space of ground around a house, compound, or school."
@@ -4052,7 +4052,7 @@
     "definition": "Long narrow marks, rows, or verses of a poem."
   },
   "plan": {
-    "definition": "A way of doing something that you think about first."
+    "definition": "A list of steps for doing something."
   },
   "plans": {
     "definition": "Careful arrangements or drawings for what to do or build."
@@ -5342,7 +5342,7 @@
     "definition": "To take something away or off from where it was."
   },
   "dream": {
-    "definition": "Pictures and stories your mind makes while you sleep, or a big hope you work toward."
+    "definition": "A big wish or hope for the future."
   },
   "standard": {
     "definition": "A level of quality that is expected."
@@ -5420,7 +5420,7 @@
     "definition": "An imaginary scary creature in a story or legend."
   },
   "method": {
-    "definition": "A careful, orderly way of doing or testing something."
+    "definition": "A way of doing something."
   },
   "describe": {
     "definition": "To say or write what someone or something is like."
@@ -6022,7 +6022,7 @@
     "definition": "To mix completely into a liquid until you can no longer see it."
   },
   "savings": {
-    "definition": "Money kept for later."
+    "definition": "Money kept to use later."
   },
   "evaporation": {
     "definition": "When liquid water turns into a gas and goes into the air."
@@ -6289,7 +6289,7 @@
     "definition": "Not happy or satisfied."
   },
   "explanation": {
-    "definition": "A statement that tells why something happens."
+    "definition": "A reason that tells why something happens."
   },
   "anchoring": {
     "definition": "Letting the first number you hear pull your judgement towards it."
@@ -6364,7 +6364,7 @@
     "definition": "Lasting interest and patient effort towards a long goal."
   },
   "feedback": {
-    "definition": "Comments on how well someone is doing."
+    "definition": "What people say to help you improve something."
   },
   "wealth": {
     "definition": "Valuable things, not only money, that a person has."
@@ -6422,6 +6422,12 @@
   },
   "restless": {
     "definition": "Unable to stay still or calm."
+  },
+  "steam": {
+    "definition": "Hot water in the form of a gas."
+  },
+  "spare": {
+    "definition": "Extra, kept in case it is needed."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -7131,7 +7137,7 @@
     "definition": "A hole that forms when the ground collapses."
   },
   "proof": {
-    "definition": "Evidence that shows something is true."
+    "definition": "Something that shows a thing is true."
   },
   "sarsens": {
     "definition": "The large, hard sandstone blocks of Stonehenge."
@@ -9012,7 +9018,7 @@
     "definition": "Expecting good things to happen."
   },
   "carpenter": {
-    "definition": "A person who makes and repairs things made of wood."
+    "definition": "A person who makes things from wood."
   },
   "schedule": {
     "definition": "A plan that shows when things will be done."
@@ -9359,6 +9365,24 @@
   },
   "storyteller": {
     "definition": "A person who tells stories."
+  },
+  "rattle": {
+    "definition": "To make quick, short knocking sounds."
+  },
+  "expect": {
+    "definition": "To think something will happen."
+  },
+  "plank": {
+    "definition": "A long flat piece of wood."
+  },
+  "oven": {
+    "definition": "A closed box for baking food."
+  },
+  "delivered": {
+    "definition": "Brought something to someone."
+  },
+  "favourite": {
+    "definition": "Liked best."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
