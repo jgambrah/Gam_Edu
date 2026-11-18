@@ -60,7 +60,7 @@
     "definition": "Something that is known to be true."
   },
   "facts": {
-    "definition": "Things that can be checked and proven to be true."
+    "definition": "Things that are known to be true."
   },
   "claim": {
     "definition": "A formal request asking an insurance company to pay for a loss covered by the policy"
@@ -99,7 +99,7 @@
     "definition": "A group of words that expresses a complete thought and starts with a capital letter."
   },
   "notebook": {
-    "definition": "A small book with blank or lined pages for writing notes, sums, and observations."
+    "definition": "A small book for writing notes."
   },
   "notebooks": {
     "definition": "Small books with lined or blank pages where pupils or scientists write notes."
@@ -550,7 +550,7 @@
     "definition": "Truthful and fair."
   },
   "honestly": {
-    "definition": "In a truthful, fair, and open way."
+    "definition": "In a truthful way."
   },
   "wise": {
     "definition": "Using knowledge, experience, and kindness to make good choices."
@@ -658,7 +658,7 @@
     "definition": "Remote internet-connected servers used to back up, synchronise, and share files safely."
   },
   "clouds": {
-    "definition": "Masses of tiny water droplets floating in the sky that can bring shade or rain."
+    "definition": "White or grey shapes in the sky made of tiny drops of water."
   },
   "rain": {
     "definition": "Water that falls in drops from clouds in the sky to water the earth."
@@ -1368,7 +1368,7 @@
     "definition": "A tiny flying insect that bites."
   },
   "mosquitoes": {
-    "definition": "Small flying insects that bite and can spread illness."
+    "definition": "Small flying insects that bite."
   },
   "dinosaur": {
     "definition": "A prehistoric reptile that lived on Earth millions of years ago."
@@ -1521,7 +1521,7 @@
     "definition": "The buying, selling, or exchanging of goods between people or towns, or a skilled craft."
   },
   "customer": {
-    "definition": "A person who buys goods or services."
+    "definition": "A person who buys things."
   },
   "business": {
     "definition": "Work or trade where people make, buy, or sell goods and services."
@@ -1677,7 +1677,7 @@
     "definition": "Help or encouragement."
   },
   "safety": {
-    "definition": "Being protected from danger, harm, or injury."
+    "definition": "Being free from danger."
   },
   "safe": {
     "definition": "Protected from harm or danger."
@@ -1980,7 +1980,7 @@
     "definition": "Periods of ten years."
   },
   "generation": {
-    "definition": "All the individuals born around the same time."
+    "definition": "All the young born at about the same time."
   },
   "past": {
     "definition": "The time before now that has already happened."
@@ -3417,7 +3417,7 @@
     "definition": "Feeling pleased and honoured about a good achievement or heritage."
   },
   "proudly": {
-    "definition": "With a warm feeling of pride and honour."
+    "definition": "With a feeling of pleasure in what you have done or know."
   },
   "happy": {
     "definition": "Feeling glad and pleased."
@@ -4052,7 +4052,7 @@
     "definition": "Long narrow marks, rows, or verses of a poem."
   },
   "plan": {
-    "definition": "A careful set of steps decided in advance to achieve a goal."
+    "definition": "A way of doing something that you think about first."
   },
   "plans": {
     "definition": "Careful arrangements or drawings for what to do or build."
@@ -4487,7 +4487,7 @@
     "definition": "A perfectly round flat shape where every point on the edge is the same distance from the centre."
   },
   "square": {
-    "definition": "A flat shape with four equal straight sides and four right-angle corners."
+    "definition": "An open space in the middle of a village or town."
   },
   "geometry": {
     "definition": "The branch of mathematics that studies shapes, sizes, angles, and patterns."
@@ -4833,7 +4833,7 @@
     "definition": "A group of objects or stories gathered together carefully."
   },
   "survive": {
-    "definition": "To stay alive and keep going through difficult conditions."
+    "definition": "To stay alive."
   },
   "walkway": {
     "definition": "A raised path or bridge built for people to walk along safely (such as the Kakum canopy walkway)."
@@ -4878,7 +4878,7 @@
     "definition": "A series of steps taken in order to make or achieve something."
   },
   "medicine": {
-    "definition": "Something that helps the body get better when you use it correctly."
+    "definition": "A substance used to treat or prevent illness."
   },
   "everyday": {
     "definition": "Happening or used each ordinary day."
@@ -4894,7 +4894,7 @@
     "definition": "A smooth, thick liquid pressed from palm fruits, groundnuts, coconut, or shea nuts."
   },
   "worry": {
-    "definition": "To feel uneasy or anxious about something that might happen."
+    "definition": "A feeling that something bad may happen."
   },
   "worried": {
     "definition": "Feeling uneasy or concerned about someone or something."
@@ -5132,7 +5132,7 @@
     "definition": "Complete quiet with no sound at all."
   },
   "silent": {
-    "definition": "Saying nothing."
+    "definition": "Without any sound."
   },
   "force": {
     "definition": "A push or pull that makes something move, stop, or change shape; or strength."
@@ -5435,7 +5435,7 @@
     "definition": "Specialists who have studied and practised a subject deeply."
   },
   "wonder": {
-    "definition": "A feeling of amazement and curiosity, or to ask yourself a question."
+    "definition": "A feeling of surprise and delight."
   },
   "wondered": {
     "definition": "Asked oneself curiouly about how or why something happened."
@@ -6319,7 +6319,7 @@
     "definition": "A real cause for complaint."
   },
   "aim": {
-    "definition": "What you are trying to achieve."
+    "definition": "What you are trying to do."
   },
   "selection": {
     "definition": "In biology, natural selection is the process by which individuals that survive and breed pass on their features."
@@ -6410,6 +6410,18 @@
   },
   "clearly": {
     "definition": "In a way that is easy to understand."
+  },
+  "comfortable": {
+    "definition": "Pleasant and easy to wear or use."
+  },
+  "treasurer": {
+    "definition": "The person who looks after a group’s money."
+  },
+  "gain": {
+    "definition": "To get something good."
+  },
+  "restless": {
+    "definition": "Unable to stay still or calm."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6773,7 +6785,7 @@
     "definition": "Large enclosed steel pipes that channel rushing water from a reservoir down to the hydroelectric turbines"
   },
   "generator": {
-    "definition": "A machine that produces electricity when its shaft is turned."
+    "definition": "A machine that makes electricity."
   },
   "megawatts": {
     "definition": "Units of electrical power equal to one million watts, used to measure the output of power stations"
@@ -6908,7 +6920,7 @@
     "definition": "Said numbers in order to find out how many."
   },
   "tin": {
-    "definition": "A metal container with a lid."
+    "definition": "A small metal box with a lid."
   },
   "spoons": {
     "definition": "Tools with a small bowl on a handle, used for eating or stirring."
@@ -7769,9 +7781,6 @@
   "gazette": {
     "definition": "The official government notice in which new rules and applications are published."
   },
-  "treasurer": {
-    "definition": "The person who keeps a group’s money and records."
-  },
   "artisanal": {
     "definition": "Done by hand or with simple tools, usually by small groups."
   },
@@ -7923,7 +7932,7 @@
     "definition": "Shining with small, quick flashes of light."
   },
   "cosy": {
-    "definition": "Warm, comfortable and safe."
+    "definition": "Warm and comfortable."
   },
   "scared": {
     "definition": "Feeling afraid."
@@ -8076,7 +8085,7 @@
     "definition": "Something that flows and takes the shape of its container, such as water."
   },
   "sieve": {
-    "definition": "A tool with small holes that lets small things pass through."
+    "definition": "A tool with small holes for separating things."
   },
   "wheelbarrow": {
     "definition": "A small cart with one wheel and two handles for carrying loads."
@@ -8661,7 +8670,7 @@
     "definition": "The long hair round a lion’s head and neck."
   },
   "trusted": {
-    "definition": "Believed to be honest and reliable."
+    "definition": "Believed to be honest."
   },
   "tracking": {
     "definition": "Following the marks left by an animal."
@@ -8828,9 +8837,6 @@
   "vine": {
     "definition": "A climbing plant with long stems."
   },
-  "restless": {
-    "definition": "Unable to stay still or calm."
-  },
   "stake": {
     "definition": "A strong, pointed stick."
   },
@@ -8964,7 +8970,7 @@
     "definition": "A fixed set of steps that always gives the right answer."
   },
   "courage": {
-    "definition": "The strength to do something frightening."
+    "definition": "The strength to do something difficult."
   },
   "livelihood": {
     "definition": "The work that a person earns a living from."
@@ -9329,6 +9335,30 @@
   },
   "instructions": {
     "definition": "Words that tell you what to do."
+  },
+  "limping": {
+    "definition": "Walking with difficulty because of pain."
+  },
+  "sole": {
+    "definition": "The bottom part of a shoe or sandal."
+  },
+  "mill": {
+    "definition": "A machine for grinding grain or roots."
+  },
+  "gains": {
+    "definition": "Gets something good."
+  },
+  "argue": {
+    "definition": "To speak angrily about something you disagree on."
+  },
+  "shelf": {
+    "definition": "A flat board fixed to a wall for holding things."
+  },
+  "comfort": {
+    "definition": "A state of being relaxed and free from worry."
+  },
+  "storyteller": {
+    "definition": "A person who tells stories."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
