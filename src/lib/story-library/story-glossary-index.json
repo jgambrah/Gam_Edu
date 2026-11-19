@@ -54,7 +54,7 @@
     "definition": "Small pieces of information that help solve a mystery."
   },
   "evidence": {
-    "definition": "Facts that show whether something is true."
+    "definition": "Facts or signs that help show whether something is true."
   },
   "fact": {
     "definition": "Something that is known to be true."
@@ -598,7 +598,7 @@
     "definition": "A person who studies the past."
   },
   "historians": {
-    "definition": "People who study the past from written records and other evidence."
+    "definition": "People who study the past."
   },
   "history": {
     "definition": "The study of past events, people, and societies."
@@ -4304,7 +4304,7 @@
     "definition": "A long, narrow piece of cloth, paper, wood, or land (like a woven kente strip)."
   },
   "source": {
-    "definition": "The place or person that information comes from."
+    "definition": "A record, writing, or person that gives us information."
   },
   "sunny": {
     "definition": "Bright with warm sunlight and few clouds."
@@ -4667,7 +4667,7 @@
     "definition": "Right and appropriate for a particular purpose or situation."
   },
   "accurate": {
-    "definition": "Correct, exact, and free from mistakes."
+    "definition": "Correct and true in every detail."
   },
   "key": {
     "definition": "A metal tool that opens a lock, a button on a piano or keyboard, or an essential clue that unlocks a code."
@@ -5733,7 +5733,7 @@
     "definition": "Feeling angry or annoyed."
   },
   "wisdom": {
-    "definition": "Good judgement based on experience."
+    "definition": "Good judgement based on knowledge and experience."
   },
   "classmate": {
     "definition": "A child who is in the same class as you."
@@ -5826,7 +5826,7 @@
     "definition": "The readable message before it is turned into a code."
   },
   "tradition": {
-    "definition": "History that is spoken and remembered, not written."
+    "definition": "A story or custom handed down through the generations."
   },
   "adobe": {
     "definition": "A building material made of mud and clay."
@@ -5862,7 +5862,7 @@
     "definition": "The office or rule of a chief."
   },
   "archaeologists": {
-    "definition": "People who study the past by digging up and examining what earlier people left behind."
+    "definition": "Scientists who study the past by digging up what is left."
   },
   "symbol": {
     "definition": "A picture or sign that stands for an idea."
@@ -6193,10 +6193,10 @@
     "definition": "Groups of traders travelling together with loaded animals."
   },
   "tribute": {
-    "definition": "Payment that a weaker state must give to a stronger one."
+    "definition": "Goods or payment given to a stronger ruler."
   },
   "allies": {
-    "definition": "People or states that join together to help one another."
+    "definition": "People or groups who join together to help each other."
   },
   "constitution": {
     "definition": "The written rules that say how a state or group is to be governed."
@@ -6217,7 +6217,7 @@
     "definition": "Elders who have the duty of choosing a new ruler."
   },
   "treaty": {
-    "definition": "A written agreement between states or peoples."
+    "definition": "A formal written agreement between two groups or countries."
   },
   "raiding": {
     "definition": "Attacking a place suddenly to seize cattle or goods."
@@ -6268,7 +6268,7 @@
     "definition": "To look down on someone as worthless."
   },
   "griot": {
-    "definition": "A West African musician and storyteller who keeps the history of a people."
+    "definition": "A West African keeper of history who tells stories and remembers family lines."
   },
   "drought": {
     "definition": "A long period without enough rain."
@@ -6476,6 +6476,19 @@
   },
   "rotating": {
     "definition": "Taking turns in a fixed order, one after another."
+  },
+  "negotiated": {
+    "definition": "Talked with others to reach an agreement."
+  },
+  "caravan": {
+    "definition": "A group of travellers and animals journeying together."
+  },
+  "ibutho": {
+    "definition": "An age-based regiment, a group of young people who worked and trained together. (isiZulu word for an age-regiment (singular of amabutho).)",
+    "phonetic": "ee-boo-toh"
+  },
+  "pilgrimage": {
+    "definition": "A journey made to a holy place for religious reasons."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6728,7 +6741,7 @@
     "definition": "To grow a business system so it can serve many more customers reliably"
   },
   "capital": {
-    "definition": "The chief town of a kingdom or country."
+    "definition": "The main city where a country or kingdom is governed."
   },
   "valuation": {
     "definition": "The estimated total economic worth of a company (total shares multiplied by share price), not cash in a founder’s pocket"
@@ -8616,7 +8629,7 @@
     "definition": "A loose garment sewn from strips of hand-woven cotton."
   },
   "scholars": {
-    "definition": "People who study and teach, often through reading and writing."
+    "definition": "People who study and teach, with deep knowledge."
   },
   "division": {
     "definition": "One of the parts into which a kingdom is split, each with its own chief."
@@ -9150,7 +9163,7 @@
     "definition": "The things and places around you."
   },
   "identity": {
-    "definition": "Your sense of who you are."
+    "definition": "The things that make a person or group who they are."
   },
   "motivation": {
     "definition": "The feeling that makes you want to act."
@@ -9578,6 +9591,48 @@
   },
   "successors": {
     "definition": "People who come after and take over a role."
+  },
+  "proclaimed": {
+    "definition": "Announced publicly and officially."
+  },
+  "charter": {
+    "definition": "A written or spoken set of shared rules."
+  },
+  "baptised": {
+    "definition": "Welcomed into the Christian faith in a ceremony."
+  },
+  "resisted": {
+    "definition": "Held out against something instead of giving in."
+  },
+  "alliances": {
+    "definition": "Agreements to support one another."
+  },
+  "merchant": {
+    "definition": "A person who buys and sells goods."
+  },
+  "dynasty": {
+    "definition": "A line of rulers from the same family."
+  },
+  "dispute": {
+    "definition": "To disagree about whether something is true."
+  },
+  "regiment": {
+    "definition": "A group of people organised to work or train together under a leader."
+  },
+  "endurance": {
+    "definition": "The ability to keep going when something is difficult."
+  },
+  "usurper": {
+    "definition": "Someone who takes power that is not rightfully theirs."
+  },
+  "ledger": {
+    "definition": "A book that records what comes in and what goes out."
+  },
+  "tributes": {
+    "definition": "Goods or payments given to a stronger ruler."
+  },
+  "auditing": {
+    "definition": "Checking records carefully to see whether they are correct."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12502,5 +12557,189 @@
   "brumasi": {
     "definition": "Historic site associated with the death of Sumaila Ndewura Jakpa.",
     "phonetic": "broo-mah-see"
+  },
+  "kemo": {
+    "definition": "West African Mande male personal name.",
+    "phonetic": "keh-moh"
+  },
+  "djeli": {
+    "definition": "Mande title and word for a griot (oral historian and praise-singer).",
+    "phonetic": "jeh-lee"
+  },
+  "sidiki": {
+    "definition": "West African male personal name (from Arabic Siddiq, truthful).",
+    "phonetic": "sih-dee-kee"
+  },
+  "kangaba": {
+    "definition": "Historic Manden town in southern Mali famous for griot traditions.",
+    "phonetic": "kahn-gah-bah"
+  },
+  "sundiata": {
+    "definition": "Founder of the Mali Empire (Mansa Sundiata Keita).",
+    "phonetic": "soon-jah-tah"
+  },
+  "keita": {
+    "definition": "Royal Mande clan name of Mansa Sundiata Keita.",
+    "phonetic": "kay-tah"
+  },
+  "fanta": {
+    "definition": "Traditional Mande female name.",
+    "phonetic": "fahn-tah"
+  },
+  "sogolon": {
+    "definition": "Mother of Mansa Sundiata Keita in the Manden epic tradition.",
+    "phonetic": "soh-goh-lohn"
+  },
+  "manden": {
+    "definition": "Historic heartland of the Mande people and the Mali Empire.",
+    "phonetic": "mahn-den"
+  },
+  "sosso": {
+    "definition": "Early West African kingdom ruled by King Soumaoro Kanté.",
+    "phonetic": "soh-soh"
+  },
+  "soumaoro": {
+    "definition": "King of the Sosso in the Sundiata epic (Soumaoro Kanté).",
+    "phonetic": "soo-mah-oh-roh"
+  },
+  "kanté": {
+    "definition": "Mande clan surname associated with blacksmiths and King Soumaoro Kanté.",
+    "phonetic": "kahn-tay"
+  },
+  "kante": {
+    "definition": "Mande clan surname associated with blacksmiths and King Soumaoro Kanté.",
+    "phonetic": "kahn-tay"
+  },
+  "kirina": {
+    "definition": "Site of the historic battle (c. 1235) in the founding of the Mali Empire.",
+    "phonetic": "kee-ree-nah"
+  },
+  "kouroukan": {
+    "definition": "First word of Kouroukan Fouga, clearing near Kangaba where the Manden Charter was proclaimed.",
+    "phonetic": "koo-roo-kahn"
+  },
+  "fouga": {
+    "definition": "Second word of Kouroukan Fouga, clearing near Kangaba.",
+    "phonetic": "foo-gah"
+  },
+  "kankan": {
+    "definition": "Major Mande city in eastern Guinea.",
+    "phonetic": "kahn-kahn"
+  },
+  "nzinga": {
+    "definition": "17th-century Queen of Ndongo and Matamba in present-day Angola.",
+    "phonetic": "n-zin-gah"
+  },
+  "ndongo": {
+    "definition": "Historic Mbundu kingdom in present-day Angola.",
+    "phonetic": "n-dohn-goh"
+  },
+  "matamba": {
+    "definition": "Historic kingdom in present-day Angola ruled by Queen Nzinga.",
+    "phonetic": "mah-tahm-bah"
+  },
+  "mbande": {
+    "definition": "Ruler of Ndongo and brother of Queen Nzinga.",
+    "phonetic": "m-bahn-deh"
+  },
+  "luanda": {
+    "definition": "Coastal capital city of Angola.",
+    "phonetic": "loo-ahn-dah"
+  },
+  "nuri": {
+    "definition": "Personal name meaning light or brightness.",
+    "phonetic": "noo-ree"
+  },
+  "makeda": {
+    "definition": "Ethiopian name of the Queen of Sheba in the Kebra Nagast.",
+    "phonetic": "mah-keh-dah"
+  },
+  "selam": {
+    "definition": "Ethiopian personal name meaning peace.",
+    "phonetic": "seh-lahm"
+  },
+  "tamrin": {
+    "definition": "Merchant of Queen Makeda in the Kebra Nagast.",
+    "phonetic": "tahm-rin"
+  },
+  "kebra": {
+    "definition": "First word of Kebra Nagast (\"The Glory of the Kings\").",
+    "phonetic": "keh-brah"
+  },
+  "nagast": {
+    "definition": "Second word of Kebra Nagast (\"The Glory of the Kings\").",
+    "phonetic": "nah-gahst"
+  },
+  "menelik": {
+    "definition": "Son of Queen Makeda and King Solomon in Ethiopian tradition (Menelik I).",
+    "phonetic": "meh-neh-lik"
+  },
+  "zazzau": {
+    "definition": "Historic Hausa city-state (modern Zaria) associated with Queen Amina.",
+    "phonetic": "zah-zow"
+  },
+  "zaria": {
+    "definition": "Major city in northern Nigeria, seat of the Zazzau emirate.",
+    "phonetic": "zah-ree-ah"
+  },
+  "ganuwar": {
+    "definition": "Hausa word meaning defensive wall or rampart of (as in ganuwar Amina).",
+    "phonetic": "gah-noo-wahr"
+  },
+  "kano": {
+    "definition": "Historic Hausa city and kingdom in northern Nigeria.",
+    "phonetic": "kah-noh"
+  },
+  "sokoto": {
+    "definition": "Historic city and seat of the Sokoto Caliphate in north-western Nigeria.",
+    "phonetic": "soh-koh-toh"
+  },
+  "katsina": {
+    "definition": "Historic Hausa city-state in northern Nigeria.",
+    "phonetic": "kaht-see-nah"
+  },
+  "shaka": {
+    "definition": "Founder and ruler of the Zulu Kingdom (King Shaka kaSenzangakhona).",
+    "phonetic": "shah-kah"
+  },
+  "kasenzangakhona": {
+    "definition": "Zulu patronymic meaning son of Senzangakhona.",
+    "phonetic": "kah-sen-zahn-gah-koh-nah"
+  },
+  "inkosi": {
+    "definition": "isiZulu title for a chief or king.",
+    "phonetic": "in-koh-see"
+  },
+  "dingiswayo": {
+    "definition": "Chief of the Mthethwa who mentored young Shaka (Inkosi Dingiswayo).",
+    "phonetic": "din-gee-swah-yoh"
+  },
+  "mthethwa": {
+    "definition": "Paramountcy in southern Africa led by Inkosi Dingiswayo.",
+    "phonetic": "m-teh-twah"
+  },
+  "amabutho": {
+    "definition": "isiZulu word for age-regiments (plural of ibutho).",
+    "phonetic": "ah-mah-boo-toh"
+  },
+  "hajji": {
+    "definition": "Honorific title for a Muslim who has completed the pilgrimage (Hajj) to Mecca.",
+    "phonetic": "hah-jee"
+  },
+  "timbuktu": {
+    "definition": "Historic city and centre of Islamic scholarship in Mali.",
+    "phonetic": "tim-buk-too"
+  },
+  "djinguereber": {
+    "definition": "Historic 14th-century great mosque in Timbuktu associated with Mansa Musa.",
+    "phonetic": "jin-geh-reh-behr"
+  },
+  "gao": {
+    "definition": "Historic city on the Niger River in eastern Mali.",
+    "phonetic": "gow"
+  },
+  "niani": {
+    "definition": "Traditional royal capital of the Mali Empire.",
+    "phonetic": "nee-ah-nee"
   }
 }
