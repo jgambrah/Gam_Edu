@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
     Loader2, Save, FileSpreadsheet, Trash2, ArrowLeft, History, 
     Sparkles, AlertCircle, Edit3, Sliders, CheckCheck, 
-    Wand2, Grid3X3, ListFilter, Plus, X, Award, ShieldCheck
+    Wand2, Grid3X3, ListFilter, Plus, X, Award, ShieldCheck, BookOpen
 } from 'lucide-react';
 import { notifyParents } from '@/app/actions/notifications';
 import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
@@ -45,20 +45,21 @@ import {
     discoverMockSeriesOptions,
     normalizeMockSeriesInput,
     resolveMockSeriesFromAssessment,
+    isMidTermReportScopeAssessment,
     isStandaloneMidTermAssessment,
+    resolveMidTermSlot,
     getSeriesGradeFromScore,
     type AcademicSeriesId,
     type AcademicSeriesOption,
 } from '@/lib/academic-series';
 
 const ASSESSMENT_TYPES = [
-    'Mock Exam (100%)',
-    'Mid-Term Exam (100% - Standalone)',
     'Class Exercise (CA)', 
     'Homework (CA)', 
     'Project (CA)', 
     'Mid-Term (CA)', 
-    'End of Term Exam (Exam)'
+    'End of Term Exam (Exam)',
+    'Mock Exam (100%)',
 ];
 
 interface TestColumnDef {
@@ -75,7 +76,16 @@ interface MatrixStudentRow {
     remark: string;
 }
 
+interface MidTermStudentRow {
+    tests: Record<string, number | ''>;
+    homework: number | '';
+    project: number | '';
+    exam: number | '';
+    remark: string;
+}
+
 interface FillTarget {
+    scope?: 'matrix' | 'midterm';
     type: 'test' | 'homework' | 'project' | 'midTerm' | 'exam';
     colId?: string;
     label: string;
@@ -141,8 +151,8 @@ export default function GradebookPage() {
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     const { toast } = useToast();
 
-    // Mode Toggle: 'matrix' (Full SBA Terminal Matrix) vs 'mock' (Dedicated Multi-Mock Exams) vs 'single' (Single Assessment Batch)
-    const [entryMode, setEntryMode] = useState<'matrix' | 'mock' | 'single'>('matrix');
+    // Mode Toggle: 'matrix' (End of Term SBA Matrix) vs 'midterm' (Mid-Term Report Sheet) vs 'mock' (Multi-Mock Exams) vs 'single' (Single Assessment)
+    const [entryMode, setEntryMode] = useState<'matrix' | 'midterm' | 'mock' | 'single'>('matrix');
 
     // Dedicated Mock Exam Series State (Mock 1, Mock 2, Mock 3, ... + custom school/class mocks)
     const [selectedMockSeries, setSelectedMockSeries] = useState<AcademicSeriesId>('mock_1');
@@ -160,9 +170,11 @@ export default function GradebookPage() {
     const [term, setTerm] = useState(MOCK_TERMS[0] || 'First Term');
     const [academicYear, setAcademicYear] = useState(MOCK_ACADEMIC_YEARS[4] || '2024-2025'); 
 
-    // Proportions State (CA Weight vs Exam Weight)
+    // Proportions State (End of Term CA Weight vs Exam Weight, plus Dedicated Mid-Term CA Weight vs Mid-Term Exam Weight)
     const [caWeight, setCaWeight] = useState<number>(30);
     const [examWeight, setExamWeight] = useState<number>(70);
+    const [midTermCaWeight, setMidTermCaWeight] = useState<number>(30);
+    const [midTermExamWeight, setMidTermExamWeight] = useState<number>(70);
     const [isWeightModalOpen, setIsWeightModalOpen] = useState(false);
     const [customCaInput, setCustomCaInput] = useState<number>(30);
     const [customExamInput, setCustomExamInput] = useState<number>(70);
@@ -172,6 +184,18 @@ export default function GradebookPage() {
     const [testColumns, setTestColumns] = useState<TestColumnDef[]>([
         { id: 'test_1', name: 'Test 1' }
     ]);
+
+    // Dedicated Mid-Term Sheet State (Mid-Term CA + Mid-Term Exam)
+    const [midTermTestColumns, setMidTermTestColumns] = useState<TestColumnDef[]>([
+        { id: 'mt_test_1', name: 'Test 1' }
+    ]);
+    const [midTermMaxScores, setMidTermMaxScores] = useState({
+        classTest: 20,
+        homework: 20,
+        project: 20,
+        exam: 100
+    });
+    const [midTermScores, setMidTermScores] = useState<Record<string, MidTermStudentRow>>({});
 
     // Matrix Column Max Scores (Customizable by teachers/schools)
     const [matrixMaxScores, setMatrixMaxScores] = useState({
@@ -243,29 +267,42 @@ export default function GradebookPage() {
         return classes?.find((c: any) => c.id === classId);
     }, [classes, classId]);
 
-    // Set dynamic school / class assessment proportions
+    // Set dynamic school / class assessment proportions (both End of Term and Dedicated Mid-Term)
     useEffect(() => {
         const classCa = selectedClass?.caWeight;
         const classExam = selectedClass?.examWeight;
         const schoolCa = schoolSettings?.caWeight;
         const schoolExam = schoolSettings?.examWeight;
 
-        if (typeof classCa === 'number' && classCa > 0) {
-            setCaWeight(classCa);
-            setExamWeight(typeof classExam === 'number' ? classExam : 100 - classCa);
-            setCustomCaInput(classCa);
-            setCustomExamInput(typeof classExam === 'number' ? classExam : 100 - classCa);
+        let resolvedTermCa = 30;
+        let resolvedTermExam = 70;
+
+        if (typeof classCa === 'number' && classCa >= 0 && typeof classExam === 'number' && classCa + classExam === 100) {
+            resolvedTermCa = classCa;
+            resolvedTermExam = classExam;
+        } else if (typeof classCa === 'number' && classCa > 0) {
+            resolvedTermCa = classCa;
+            resolvedTermExam = typeof classExam === 'number' ? classExam : 100 - classCa;
         } else if (typeof schoolCa === 'number' && schoolCa > 0) {
-            setCaWeight(schoolCa);
-            setExamWeight(typeof schoolExam === 'number' ? schoolExam : 100 - schoolCa);
-            setCustomCaInput(schoolCa);
-            setCustomExamInput(typeof schoolExam === 'number' ? schoolExam : 100 - schoolCa);
-        } else {
-            setCaWeight(30);
-            setExamWeight(70);
-            setCustomCaInput(30);
-            setCustomExamInput(70);
+            resolvedTermCa = schoolCa;
+            resolvedTermExam = typeof schoolExam === 'number' ? schoolExam : 100 - schoolCa;
         }
+
+        setCaWeight(resolvedTermCa);
+        setExamWeight(resolvedTermExam);
+
+        const mtClassCa = selectedClass?.midTermCaWeight;
+        const mtClassExam = selectedClass?.midTermExamWeight;
+        if (typeof mtClassCa === 'number' && mtClassCa >= 0 && typeof mtClassExam === 'number' && mtClassCa + mtClassExam === 100) {
+            setMidTermCaWeight(mtClassCa);
+            setMidTermExamWeight(mtClassExam);
+        } else {
+            setMidTermCaWeight(resolvedTermCa);
+            setMidTermExamWeight(resolvedTermExam);
+        }
+
+        setCustomCaInput(resolvedTermCa);
+        setCustomExamInput(resolvedTermExam);
     }, [selectedClass, schoolSettings]);
 
     // Timetable slots are only used to work out a TEACHER's classes/subjects, so only a teacher reads them,
@@ -439,33 +476,20 @@ export default function GradebookPage() {
         .includes(String(role || '').toLowerCase());
     const termLocked = !isAdminRole && rawAssessments.some((a: any) => a.isArchived === true);
 
-    // Discover all standalone Exam series: Standalone Mid-Term (100% - Not in CA) + Mock 1..5 + custom mocks
+    // Discover all Mock Exam series: Mock 1..5 + custom mocks
     const availableMockSeries = useMemo<AcademicSeriesOption[]>(() => {
-        const mocks = discoverMockSeriesOptions({
+        return discoverMockSeriesOptions({
             assessments: allClassAssessments,
             classDoc: selectedClass,
             schoolSettings,
             extraCustomMocks: localCustomMocks,
         });
-        return [
-            {
-                id: 'mid_term',
-                label: 'Mid-Term Exam (Not in CA)',
-                shortLabel: 'Mid-Term Exam',
-                kind: 'mid_term',
-            },
-            ...mocks,
-        ];
     }, [allClassAssessments, selectedClass, schoolSettings, localCustomMocks]);
 
-    // Count how many saved marks exist in the current term/subject for Standalone Mid-Term and each Mock series
+    // Count how many saved marks exist in the current term/subject for each Mock series
     const mockSeriesCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         (rawAssessments || []).forEach((a: any) => {
-            if (isStandaloneMidTermAssessment(a)) {
-                counts['mid_term'] = (counts['mid_term'] || 0) + 1;
-                return;
-            }
             const resolved = resolveMockSeriesFromAssessment(a);
             if (resolved) {
                 counts[resolved.id] = (counts[resolved.id] || 0) + 1;
@@ -474,8 +498,19 @@ export default function GradebookPage() {
         return counts;
     }, [rawAssessments]);
 
+    // Count distinct students graded in the Dedicated Mid-Term workspace for the current term/subject
+    const midTermSavedStudentCount = useMemo(() => {
+        const ids = new Set<string>();
+        (rawAssessments || []).forEach((a: any) => {
+            if (isMidTermReportScopeAssessment(a) && a.studentId) {
+                ids.add(a.studentId);
+            }
+        });
+        return ids.size;
+    }, [rawAssessments]);
+
     const activeMockOption = useMemo(() => {
-        return availableMockSeries.find(m => m.id === selectedMockSeries) || availableMockSeries[1] || availableMockSeries[0] || {
+        return availableMockSeries.find(m => m.id === selectedMockSeries) || availableMockSeries[0] || {
             id: 'mock_1' as AcademicSeriesId,
             label: 'Mock 1',
             shortLabel: 'Mock 1',
@@ -484,7 +519,69 @@ export default function GradebookPage() {
         };
     }, [availableMockSeries, selectedMockSeries]);
 
-    // Populate Standalone Mid-Term / Mock Exam tab fields whenever rawAssessments or selectedMockSeries changes.
+    // Populate Dedicated Mid-Term Sheet (`midTermScores`) whenever rawAssessments changes
+    useEffect(() => {
+        const midDocs = (rawAssessments || []).filter((a: any) => isMidTermReportScopeAssessment(a));
+        if (midDocs.length === 0) {
+            setMidTermScores({});
+            return;
+        }
+
+        const testNames = new Map<string, string>();
+        midDocs.forEach((a: any) => {
+            if (resolveMidTermSlot(a) === 'test') {
+                const name = a.assessmentName || 'Test 1';
+                if (!testNames.has(name.toLowerCase())) testNames.set(name.toLowerCase(), name);
+            }
+        });
+        let activeCols = [...midTermTestColumns];
+        if (testNames.size > 0) {
+            const sortedNames = Array.from(testNames.values()).sort();
+            activeCols = sortedNames.map((name, idx) => ({ id: `mt_test_${idx + 1}`, name }));
+            setMidTermTestColumns(activeCols);
+        }
+
+        const nextMidMatrix: Record<string, MidTermStudentRow> = {};
+        const maxes: Partial<{ classTest: number; homework: number; project: number; exam: number }> = {};
+
+        midDocs.forEach((a: any) => {
+            if (!a.studentId) return;
+            if (!nextMidMatrix[a.studentId]) {
+                nextMidMatrix[a.studentId] = { tests: {}, homework: '', project: '', exam: '', remark: '' };
+            }
+            const row = nextMidMatrix[a.studentId];
+            const val: number | '' = a.score !== undefined && a.score !== null && a.score !== '' ? Number(a.score) : '';
+            const max = a.maxScore ? Number(a.maxScore) : 0;
+            const slot = resolveMidTermSlot(a);
+
+            if (slot === 'exam') {
+                row.exam = val;
+                if (a.teacherRemark) row.remark = a.teacherRemark;
+                if (max) maxes.exam = max;
+                return;
+            }
+            if (!row.remark && a.teacherRemark) row.remark = a.teacherRemark;
+            if (slot === 'hw') {
+                row.homework = val;
+                if (max) maxes.homework = max;
+            } else if (slot === 'project') {
+                row.project = val;
+                if (max) maxes.project = max;
+            } else {
+                const matchedCol = activeCols.find(c => c.name.toLowerCase() === (a.assessmentName || 'test 1').toLowerCase()) || activeCols[0];
+                row.tests[matchedCol?.id || 'mt_test_1'] = val;
+                if (max) maxes.classTest = max;
+            }
+        });
+
+        if (Object.keys(maxes).length > 0) {
+            setMidTermMaxScores(prev => ({ ...prev, ...maxes }));
+        }
+        setMidTermScores(nextMidMatrix);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [rawAssessments]);
+
+    // Populate Mock Exam tab fields whenever rawAssessments or selectedMockSeries changes.
     useEffect(() => {
         if (!rawAssessments || rawAssessments.length === 0) {
             setMockScores({});
@@ -494,9 +591,6 @@ export default function GradebookPage() {
         }
 
         const matchingDocs = rawAssessments.filter((a: any) => {
-            if (selectedMockSeries === 'mid_term') {
-                return isStandaloneMidTermAssessment(a);
-            }
             const resolved = resolveMockSeriesFromAssessment(a);
             return resolved?.id === selectedMockSeries;
         });
@@ -528,15 +622,15 @@ export default function GradebookPage() {
         }
     }, [rawAssessments, selectedMockSeries]);
 
-    // Group assessments distinctly (separating Standalone Mid-Term, SBA Mid-Term, Mock 1, Mock 2, Test 1, Test 2, etc.)
+    // Group assessments distinctly (separating Mid-Term Report items, Mock 1, Mock 2, End-of-Term items, etc.)
     const groupedAssessments = useMemo(() => {
         if (!rawAssessments) return {};
         const groups: Record<string, any[]> = {};
         rawAssessments.forEach(a => {
             const mockInfo = resolveMockSeriesFromAssessment(a);
             let groupKey: string;
-            if (isStandaloneMidTermAssessment(a)) {
-                groupKey = 'Mid-Term Exam (100% • Not in CA)';
+            if (isMidTermReportScopeAssessment(a)) {
+                groupKey = `Mid-Term Report • ${a.assessmentName || a.assessmentType || 'Mid-Term Exam'}`;
             } else if (mockInfo) {
                 groupKey = `${mockInfo.label} (100% Mock)`;
             } else if (a.assessmentName && a.assessmentType && a.assessmentName !== a.assessmentType) {
@@ -617,7 +711,7 @@ export default function GradebookPage() {
 
         const targetName = assessmentName || assessmentType;
         const matchingDocs = rawAssessments.filter((a: any) => 
-            (a.assessmentName || a.assessmentType) === targetName
+            !isMidTermReportScopeAssessment(a) && (a.assessmentName || a.assessmentType) === targetName
         );
 
         if (matchingDocs.length > 0) {
@@ -744,45 +838,202 @@ export default function GradebookPage() {
         }));
     };
 
-    // Fill all students in a specific matrix column
-    const handleExecuteFillColumn = () => {
-        if (!fillTarget || !students || students.length === 0) return;
-        const targetVal = fillColValue === '' ? '' : Number(fillColValue);
-        
-        let count = 0;
-        setMatrixScores(prev => {
+    // Dedicated Mid-Term Sheet Column & Input Helpers
+    const handleAddMidTermTestColumn = () => {
+        const nextNum = midTermTestColumns.length + 1;
+        const newId = `mt_test_${Date.now()}`;
+        const newName = `Test ${nextNum}`;
+        setMidTermTestColumns(prev => [...prev, { id: newId, name: newName }]);
+        toast({ title: "Mid-Term Test Column Added ➕", description: `Added "${newName}" to Mid-Term Continuous Assessment.` });
+    };
+
+    const handleRemoveMidTermTestColumn = (colId: string) => {
+        if (midTermTestColumns.length <= 1) return;
+        const targetCol = midTermTestColumns.find(c => c.id === colId);
+        setMidTermTestColumns(prev => prev.filter(c => c.id !== colId));
+        setMidTermScores(prev => {
             const updated = { ...prev };
-            students.forEach((s: any) => {
-                const current = updated[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
-                
-                if (fillTarget.type === 'test' && fillTarget.colId) {
-                    const curVal = current.tests?.[fillTarget.colId];
-                    const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
-                    if (shouldFill) {
-                        updated[s.uid] = {
-                            ...current,
-                            tests: {
-                                ...(current.tests || {}),
-                                [fillTarget.colId]: targetVal
-                            }
-                        };
-                        count++;
-                    }
-                } else if (fillTarget.type !== 'test') {
-                    const field = fillTarget.type;
-                    const curVal = current[field];
-                    const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
-                    if (shouldFill) {
-                        updated[s.uid] = {
-                            ...current,
-                            [field]: targetVal
-                        };
-                        count++;
-                    }
+            Object.keys(updated).forEach(uid => {
+                if (updated[uid]?.tests) {
+                    const nextTests = { ...updated[uid].tests };
+                    delete nextTests[colId];
+                    updated[uid] = { ...updated[uid], tests: nextTests };
                 }
             });
             return updated;
         });
+        toast({ title: "Column Removed", description: `Removed ${targetCol?.name || 'test column'} from Mid-Term view.` });
+    };
+
+    const handleMidTermKeyDown = (
+        e: React.KeyboardEvent<HTMLInputElement>,
+        rowIndex: number,
+        colKey: string
+    ) => {
+        if (e.key === 'Enter' || e.key === 'ArrowDown') {
+            e.preventDefault();
+            const nextTarget = document.querySelector<HTMLInputElement>(
+                `input[data-midterm-row="${rowIndex + 1}"][data-midterm-col="${colKey}"]`
+            );
+            if (nextTarget) {
+                nextTarget.focus();
+                nextTarget.select();
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            const prevTarget = document.querySelector<HTMLInputElement>(
+                `input[data-midterm-row="${rowIndex - 1}"][data-midterm-col="${colKey}"]`
+            );
+            if (prevTarget) {
+                prevTarget.focus();
+                prevTarget.select();
+            }
+        }
+    };
+
+    const handleMidTermTestScoreChange = (studentId: string, testId: string, val: string) => {
+        const num = val === '' ? '' : Number(val);
+        setMidTermScores(prev => ({
+            ...prev,
+            [studentId]: {
+                ...(prev[studentId] || { tests: {}, homework: '', project: '', exam: '', remark: '' }),
+                tests: {
+                    ...(prev[studentId]?.tests || {}),
+                    [testId]: num,
+                },
+            },
+        }));
+    };
+
+    const handleMidTermScoreChange = (
+        studentId: string,
+        field: 'homework' | 'project' | 'exam',
+        val: string
+    ) => {
+        const num = val === '' ? '' : Number(val);
+        setMidTermScores(prev => ({
+            ...prev,
+            [studentId]: {
+                ...(prev[studentId] || { tests: {}, homework: '', project: '', exam: '', remark: '' }),
+                [field]: num,
+            },
+        }));
+    };
+
+    const handleMidTermRemarkChange = (studentId: string, val: string) => {
+        setMidTermScores(prev => ({
+            ...prev,
+            [studentId]: {
+                ...(prev[studentId] || { tests: {}, homework: '', project: '', exam: '', remark: '' }),
+                remark: val,
+            },
+        }));
+    };
+
+    // Determine which Mid-Term CA columns actually have scores entered in the class so unused columns (e.g. Project left blank) don't penalize CA
+    const midTermActiveCaInfo = useMemo(() => {
+        let anyTest = false;
+        let anyHw = false;
+        let anyProj = false;
+        let anyExam = false;
+        const activeTestColIds = new Set<string>();
+
+        Object.values(midTermScores).forEach(row => {
+            if (!row) return;
+            midTermTestColumns.forEach(tc => {
+                const v = row.tests?.[tc.id];
+                if (v !== '' && v !== undefined && !isNaN(Number(v))) {
+                    anyTest = true;
+                    activeTestColIds.add(tc.id);
+                }
+            });
+            if (row.homework !== '' && row.homework !== undefined && !isNaN(Number(row.homework))) anyHw = true;
+            if (row.project !== '' && row.project !== undefined && !isNaN(Number(row.project))) anyProj = true;
+            if (row.exam !== '' && row.exam !== undefined && !isNaN(Number(row.exam))) anyExam = true;
+        });
+
+        const activeCaMax =
+            (anyTest ? midTermMaxScores.classTest : 0) +
+            (anyHw ? midTermMaxScores.homework : 0) +
+            (anyProj ? midTermMaxScores.project : 0);
+
+        return {
+            anyTest,
+            anyHw,
+            anyProj,
+            anyExam,
+            anyCa: anyTest || anyHw || anyProj,
+            activeTestCount: Math.max(activeTestColIds.size, 1),
+            activeCaMax,
+        };
+    }, [midTermScores, midTermTestColumns, midTermMaxScores]);
+
+    // Fill all students in a specific matrix or mid-term column
+    const handleExecuteFillColumn = () => {
+        if (!fillTarget || !students || students.length === 0) return;
+        const targetVal = fillColValue === '' ? '' : Number(fillColValue);
+        let count = 0;
+
+        if (fillTarget.scope === 'midterm') {
+            setMidTermScores(prev => {
+                const updated = { ...prev };
+                students.forEach((s: any) => {
+                    const current = updated[s.uid] || { tests: {}, homework: '', project: '', exam: '', remark: '' };
+                    if (fillTarget.type === 'test' && fillTarget.colId) {
+                        const curVal = current.tests?.[fillTarget.colId];
+                        const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
+                        if (shouldFill) {
+                            updated[s.uid] = {
+                                ...current,
+                                tests: { ...(current.tests || {}), [fillTarget.colId]: targetVal },
+                            };
+                            count++;
+                        }
+                    } else if (fillTarget.type === 'homework' || fillTarget.type === 'project' || fillTarget.type === 'exam') {
+                        const curVal = current[fillTarget.type];
+                        const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
+                        if (shouldFill) {
+                            updated[s.uid] = { ...current, [fillTarget.type]: targetVal };
+                            count++;
+                        }
+                    }
+                });
+                return updated;
+            });
+        } else {
+            setMatrixScores(prev => {
+                const updated = { ...prev };
+                students.forEach((s: any) => {
+                    const current = updated[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
+                    if (fillTarget.type === 'test' && fillTarget.colId) {
+                        const curVal = current.tests?.[fillTarget.colId];
+                        const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
+                        if (shouldFill) {
+                            updated[s.uid] = {
+                                ...current,
+                                tests: {
+                                    ...(current.tests || {}),
+                                    [fillTarget.colId]: targetVal
+                                }
+                            };
+                            count++;
+                        }
+                    } else if (fillTarget.type !== 'test') {
+                        const field = fillTarget.type;
+                        const curVal = current[field];
+                        const shouldFill = !fillOnlyEmpty || curVal === '' || curVal === undefined;
+                        if (shouldFill) {
+                            updated[s.uid] = {
+                                ...current,
+                                [field]: targetVal
+                            };
+                            count++;
+                        }
+                    }
+                });
+                return updated;
+            });
+        }
 
         toast({
             title: "Column Filled ⚡",
@@ -790,6 +1041,54 @@ export default function GradebookPage() {
         });
         setFillTarget(null);
         setFillColValue('');
+    };
+
+    // Auto-fill remarks for all students in Mid-Term Sheet
+    const handleAutoFillMidTermRemarks = () => {
+        if (!students || students.length === 0) return;
+        const gradingScale = schoolSettings?.gradingSystem || DEFAULT_GRADING_SYSTEM;
+        let filledCount = 0;
+
+        setMidTermScores(prev => {
+            const updated = { ...prev };
+            students.forEach((s: any) => {
+                const row = updated[s.uid] || { tests: {}, homework: '', project: '', exam: '', remark: '' };
+                const studentTests = row.tests || {};
+                const validTests = midTermTestColumns
+                    .map(tc => studentTests[tc.id])
+                    .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
+                const hasAnyTest = validTests.length > 0;
+                const hasMarks = hasAnyTest || row.homework !== '' || row.project !== '' || row.exam !== '';
+
+                if (hasMarks && !row.remark) {
+                    const ct = hasAnyTest ? (validTests.reduce((a, b) => a + b, 0) / midTermActiveCaInfo.activeTestCount) : 0;
+                    const hw = typeof row.homework === 'number' ? row.homework : 0;
+                    const pr = typeof row.project === 'number' ? row.project : 0;
+                    const ex = typeof row.exam === 'number' ? row.exam : 0;
+
+                    let totalPct = 0;
+                    if (midTermCaWeight <= 0 || !midTermActiveCaInfo.anyCa) {
+                        totalPct = midTermMaxScores.exam > 0 && row.exam !== '' ? Math.min(100, Math.round((ex / midTermMaxScores.exam) * 100)) : 0;
+                    } else {
+                        const caW = midTermActiveCaInfo.activeCaMax > 0 ? ((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight : 0;
+                        const exW = midTermMaxScores.exam > 0 && row.exam !== '' ? (ex / midTermMaxScores.exam) * midTermExamWeight : 0;
+                        totalPct = Math.min(100, Math.round((caW + exW) * 10) / 10);
+                    }
+
+                    const { autoRemark } = getGradeFromScale(totalPct, gradingScale);
+                    if (autoRemark) {
+                        updated[s.uid] = { ...row, remark: autoRemark };
+                        filledCount++;
+                    }
+                }
+            });
+            return updated;
+        });
+
+        toast({
+            title: "Mid-Term Remarks Generated ✨",
+            description: `Generated auto-remarks for ${filledCount} student(s) based on their Mid-Term scores.`
+        });
     };
 
     // Auto-fill remarks for all students with marks based on their calculated terminal grade
@@ -842,7 +1141,7 @@ export default function GradebookPage() {
         });
     };
 
-    // Save custom proportion to state and optionally save to class doc in Firestore
+    // Save custom proportion to state (for End of Term OR Mid-Term depending on active tab) and optionally save to class doc in Firestore
     const handleApplyProportions = async (saveAsClassDefault: boolean) => {
         if (customCaInput < 0 || customCaInput > 100 || customExamInput < 0 || customExamInput > 100) {
             toast({ variant: 'destructive', title: "Invalid Proportions", description: "Proportions must be between 0% and 100%." });
@@ -853,17 +1152,29 @@ export default function GradebookPage() {
             return;
         }
 
-        setCaWeight(customCaInput);
-        setExamWeight(customExamInput);
+        const isMidTermTab = entryMode === 'midterm';
+        if (isMidTermTab) {
+            setMidTermCaWeight(customCaInput);
+            setMidTermExamWeight(customExamInput);
+        } else {
+            setCaWeight(customCaInput);
+            setExamWeight(customExamInput);
+        }
 
         if (saveAsClassDefault && firestore && classId) {
             setIsSavingWeight(true);
             try {
-                await updateDoc(doc(firestore, 'classes', classId), {
-                    caWeight: customCaInput,
-                    examWeight: customExamInput
+                const payload = isMidTermTab
+                    ? { midTermCaWeight: customCaInput, midTermExamWeight: customExamInput }
+                    : { caWeight: customCaInput, examWeight: customExamInput };
+                await updateDoc(doc(firestore, 'classes', classId), payload);
+                setClassesCache((prev: any[]) =>
+                    (prev || []).map((c: any) => c.id === classId ? { ...c, ...payload } : c)
+                );
+                toast({
+                    title: "Class Proportions Saved 💾",
+                    description: `Updated ${selectedClass?.name || 'Class'} ${isMidTermTab ? 'Mid-Term' : 'End of Term'} default to ${customCaInput}% CA / ${customExamInput}% Exam.`
                 });
-                toast({ title: "Class Proportions Saved 💾", description: `Updated ${selectedClass?.name || 'Class'} default to ${customCaInput}% CA / ${customExamInput}% Exam.` });
             } catch (err: any) {
                 console.error(err);
                 toast({ variant: 'destructive', title: "Could Not Save to Class", description: err.message });
@@ -871,7 +1182,10 @@ export default function GradebookPage() {
                 setIsSavingWeight(false);
             }
         } else {
-            toast({ title: "Session Proportions Set ⚙️", description: `Active: ${customCaInput}% CA / ${customExamInput}% Exam.` });
+            toast({
+                title: "Session Proportions Set ⚙️",
+                description: `Active (${isMidTermTab ? 'Mid-Term' : 'End of Term'}): ${customCaInput}% CA / ${customExamInput}% Exam.`
+            });
         }
 
         setIsWeightModalOpen(false);
@@ -1162,7 +1476,7 @@ export default function GradebookPage() {
             // This term's existing records of this assessment, per student.
             const existingByStudent: Record<string, any[]> = {};
             rawAssessments
-                .filter((a: any) => (a.assessmentName || a.assessmentType) === targetName && a.studentId)
+                .filter((a: any) => !isMidTermReportScopeAssessment(a) && (a.assessmentName || a.assessmentType) === targetName && a.studentId)
                 .forEach((a: any) => {
                     if (!existingByStudent[a.studentId]) existingByStudent[a.studentId] = [];
                     existingByStudent[a.studentId].push(a);
@@ -1190,7 +1504,6 @@ export default function GradebookPage() {
                 const studentName = student
                     ? `${student.firstName || ''} ${student.lastName || ''}`.trim()
                     : (keep?.studentName || '');
-                const isStandaloneMid = isStandaloneMidTermAssessment({ assessmentType, assessmentName: targetName });
                 const fields: any = {
                     studentId,
                     studentName,
@@ -1202,7 +1515,6 @@ export default function GradebookPage() {
                     academicYear,
                     assessmentType,
                     assessmentName: targetName,
-                    ...(isStandaloneMid ? { standaloneMidTerm: true, excludeFromCa: true, mockSeries: 'mid_term' } : {}),
                     score,
                     maxScore: parsedMaxScore,
                     teacherRemark: remark,
@@ -1272,6 +1584,229 @@ export default function GradebookPage() {
             }
         } catch (error: any) {
             console.error("Save Batch Error:", error);
+            toast({ variant: 'destructive', title: "Database Error", description: friendlySaveError(error) });
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
+    // SAVE DEDICATED MID-TERM SHEET (Mid-Term CA + Mid-Term Exam -> feeds Mid-Term Report Card & Mid-Term Master List ONLY!)
+    const handleSaveMidTermMatrix = async () => {
+        if (!firestore || !user || !schoolId || !classId || !subjectId) return;
+
+        for (const s of students || []) {
+            const row = midTermScores[s.uid];
+            if (!row) continue;
+            const studentName = `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Student';
+
+            for (const tc of midTermTestColumns) {
+                const testScore = row.tests?.[tc.id];
+                if (testScore !== '' && typeof testScore === 'number' && testScore > midTermMaxScores.classTest) {
+                    toast({ variant: 'destructive', title: `${tc.name} Score Exceeds Max`, description: `${studentName}'s score (${testScore}) exceeds max (${midTermMaxScores.classTest}).` });
+                    return;
+                }
+            }
+            if (row.homework !== '' && typeof row.homework === 'number' && row.homework > midTermMaxScores.homework) {
+                toast({ variant: 'destructive', title: "Homework Score Exceeds Max", description: `${studentName}'s score (${row.homework}) exceeds max (${midTermMaxScores.homework}).` });
+                return;
+            }
+            if (row.project !== '' && typeof row.project === 'number' && row.project > midTermMaxScores.project) {
+                toast({ variant: 'destructive', title: "Project Score Exceeds Max", description: `${studentName}'s score (${row.project}) exceeds max (${midTermMaxScores.project}).` });
+                return;
+            }
+            if (row.exam !== '' && typeof row.exam === 'number' && row.exam > midTermMaxScores.exam) {
+                toast({ variant: 'destructive', title: "Mid-Term Exam Score Exceeds Max", description: `${studentName}'s score (${row.exam}) exceeds max (${midTermMaxScores.exam}).` });
+                return;
+            }
+        }
+
+        if (termLocked) {
+            toast({ variant: 'destructive', title: "Term Closed", description: "This term has been closed, so its marks are locked. Ask an administrator to make corrections." });
+            return;
+        }
+        const hasNegative = (students || []).some((s: any) => {
+            const row = midTermScores[s.uid];
+            if (!row) return false;
+            const vals = [...Object.values(row.tests || {}), row.homework, row.project, row.exam];
+            return vals.some(v => typeof v === 'number' && v < 0);
+        });
+        if (hasNegative) {
+            toast({ variant: 'destructive', title: "Invalid Score", description: "Scores cannot be negative." });
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const writer = new ChunkedWriter(firestore);
+            const timelineWriter = new ChunkedWriter(firestore);
+            const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
+            const className = selectedClass?.name || 'Class';
+            const termId = buildTermId(academicYear, term);
+            const updatedStudentIds: string[] = [];
+            const upserts: Record<string, any> = {};
+            const toDelete: string[] = [];
+            let created = 0, changed = 0;
+
+            const existingMid: Record<string, Record<string, any[]>> = {};
+            (rawAssessments || [])
+                .filter((a: any) => isMidTermReportScopeAssessment(a) && a.studentId)
+                .forEach((a: any) => {
+                    const slot = resolveMidTermSlot(a);
+                    const key = slot === 'test' ? `test:${String(a.assessmentName || 'test 1').toLowerCase()}` : slot;
+                    if (!existingMid[a.studentId]) existingMid[a.studentId] = {};
+                    if (!existingMid[a.studentId][key]) existingMid[a.studentId][key] = [];
+                    existingMid[a.studentId][key].push(a);
+                });
+
+            (students || []).forEach((s: any) => {
+                const row = midTermScores[s.uid];
+                if (!row) return;
+                const studentName = `${s.firstName || ''} ${s.lastName || ''}`.trim();
+                const remark = row.remark || '';
+                const mine = existingMid[s.uid] || {};
+                const testKeys = Object.keys(mine).filter(k => k.startsWith('test:'));
+
+                const slots: Array<{
+                    key: string;
+                    slotKind: 'test' | 'hw' | 'project' | 'exam';
+                    value: number | '';
+                    type: string;
+                    name: string;
+                    max: number;
+                }> = [];
+
+                midTermTestColumns.forEach((tc) => {
+                    let key = `test:${tc.name.toLowerCase()}`;
+                    if (!mine[key] && midTermTestColumns.length === 1 && testKeys.length > 0) key = testKeys[0];
+                    slots.push({
+                        key,
+                        slotKind: 'test',
+                        value: row.tests?.[tc.id] ?? '',
+                        type: 'Class Exercise (CA)',
+                        name: tc.name,
+                        max: midTermMaxScores.classTest,
+                    });
+                });
+                slots.push({ key: 'hw', slotKind: 'hw', value: row.homework, type: 'Homework (CA)', name: 'Homework', max: midTermMaxScores.homework });
+                slots.push({ key: 'project', slotKind: 'project', value: row.project, type: 'Project (CA)', name: 'Project', max: midTermMaxScores.project });
+                slots.push({ key: 'exam', slotKind: 'exam', value: row.exam, type: 'Mid-Term Exam (Exam)', name: 'Mid-Term Exam', max: midTermMaxScores.exam });
+
+                let studentChanged = false;
+                slots.forEach((slot) => {
+                    const docs = mine[slot.key] || [];
+                    const keep = docs.length > 0 ? docs[docs.length - 1] : undefined;
+                    docs.slice(0, -1).forEach((d: any) => toDelete.push(d.id));
+
+                    const hasValue = typeof slot.value === 'number' && !isNaN(slot.value);
+                    if (!hasValue) {
+                        if (keep) { toDelete.push(keep.id); studentChanged = true; }
+                        return;
+                    }
+                    const score = Number(slot.value);
+                    const maxScoreVal = Number(slot.max);
+                    if (
+                        keep &&
+                        Number(keep.score) === score &&
+                        Number(keep.maxScore) === maxScoreVal &&
+                        (keep.teacherRemark || '') === remark &&
+                        keep.reportScope === 'mid_term' &&
+                        keep.midTermSlot === slot.slotKind
+                    ) {
+                        return;
+                    }
+                    const fields: any = {
+                        studentId: s.uid,
+                        studentName,
+                        classId,
+                        subjectId,
+                        schoolId,
+                        teacherId: user.uid,
+                        term,
+                        academicYear,
+                        reportScope: 'mid_term',
+                        midTermSlot: slot.slotKind,
+                        assessmentType: slot.type,
+                        assessmentName: slot.name,
+                        score,
+                        maxScore: maxScoreVal,
+                        teacherRemark: remark,
+                    };
+                    if (termId) fields.termId = termId;
+
+                    if (keep) {
+                        writer.set(doc(firestore, 'assessments', keep.id), { ...fields, updatedAt: serverTimestamp() }, { merge: true });
+                        upserts[keep.id] = { ...keep, ...fields, updatedAt: new Date() };
+                        changed++;
+                    } else {
+                        const ref = doc(collection(firestore, 'assessments'));
+                        writer.set(ref, { ...fields, createdAt: serverTimestamp(), assessmentDate: serverTimestamp() });
+                        upserts[ref.id] = { ...fields, createdAt: new Date(), assessmentDate: new Date() };
+                        created++;
+                    }
+                    studentChanged = true;
+                });
+
+                if (studentChanged) {
+                    updatedStudentIds.push(s.uid);
+                    TimelineService.logEventBatch(firestore, timelineWriter, {
+                        studentId: s.uid,
+                        title: `Graded: Mid-Term (${subjectName})`,
+                        description: `Mid-Term CA & Exam recorded. Mid-Term Exam: ${row.exam !== '' ? row.exam + '/' + midTermMaxScores.exam : 'N/A'}. Remark: "${row.remark || 'Good'}"`,
+                        category: 'academic',
+                        academicYear,
+                        term,
+                        classId,
+                        className,
+                        schoolId,
+                        recordedBy: user.displayName || 'Teacher',
+                        recordedById: user.uid,
+                        metadata: {
+                            subjectId,
+                            subjectName,
+                            reportScope: 'mid_term',
+                            tests: row.tests,
+                            homework: row.homework,
+                            project: row.project,
+                            exam: row.exam,
+                            remark: row.remark,
+                        },
+                        date: new Date(),
+                    });
+                }
+            });
+
+            if (updatedStudentIds.length === 0) {
+                const anyMarks = (students || []).some((s: any) => {
+                    const row = midTermScores[s.uid];
+                    return row && (Object.values(row.tests || {}).some(v => typeof v === 'number') || [row.homework, row.project, row.exam].some(v => typeof v === 'number'));
+                });
+                toast(anyMarks
+                    ? { title: "Nothing to Save", description: "All Mid-Term marks are already saved — nothing has changed." }
+                    : { variant: 'destructive', title: "No Marks Entered", description: "Please enter at least one score on the Mid-Term sheet before saving." });
+                return;
+            }
+
+            await writer.commit();
+            await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
+            const deleted = await commitDeletes(toDelete);
+            applyLocalChanges(upserts, deleted.ok ? toDelete : []);
+
+            toast({
+                title: "Mid-Term Sheet Saved Successfully! 🎉",
+                description: `Saved Mid-Term marks for ${updatedStudentIds.length} student(s): ${created} new, ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} cleared` : ''}. Ready for Mid-Term Report Cards!`,
+            });
+            if (!deleted.ok) {
+                toast({ variant: 'destructive', title: "Cleared Marks Not Removed", description: deleted.message });
+            }
+
+            notifyParents(
+                updatedStudentIds,
+                "Mid-Term Grades Posted 📊",
+                `Mid-Term grades for ${subjectName} have been recorded.`,
+                "/dashboard/my-grades"
+            ).catch(err => console.error("Notification failed silently:", err));
+        } catch (error: any) {
+            console.error("Save Mid-Term Matrix Error:", error);
             toast({ variant: 'destructive', title: "Database Error", description: friendlySaveError(error) });
         } finally {
             setIsSaving(false);
@@ -1397,8 +1932,7 @@ export default function GradebookPage() {
             const writer = new ChunkedWriter(firestore);
             const timelineWriter = new ChunkedWriter(firestore);
             const seriesId = activeMockOption.id;
-            const isMidTermStandalone = seriesId === 'mid_term';
-            const seriesLabel = isMidTermStandalone ? 'Mid-Term Exam' : activeMockOption.label;
+            const seriesLabel = activeMockOption.label;
             const subjectName = subjects?.find((sub: any) => sub.id === subjectId)?.name || 'Subject';
             const className = selectedClass?.name || null;
             const termId = buildTermId(academicYear, term);
@@ -1408,14 +1942,10 @@ export default function GradebookPage() {
             const notifyIds: string[] = [];
             let created = 0, changed = 0;
 
-            // Match ONLY records belonging to THIS exact standalone series
+            // Match ONLY records belonging to THIS exact Mock series
             const existingByStudent: Record<string, any[]> = {};
             rawAssessments
-                .filter((a: any) => {
-                    if (!a.studentId) return false;
-                    if (isMidTermStandalone) return isStandaloneMidTermAssessment(a);
-                    return resolveMockSeriesFromAssessment(a)?.id === seriesId;
-                })
+                .filter((a: any) => a.studentId && resolveMockSeriesFromAssessment(a)?.id === seriesId)
                 .forEach((a: any) => {
                     if (!existingByStudent[a.studentId]) existingByStudent[a.studentId] = [];
                     existingByStudent[a.studentId].push(a);
@@ -1463,11 +1993,10 @@ export default function GradebookPage() {
                     teacherId: user.uid,
                     term,
                     academicYear,
-                    assessmentType: isMidTermStandalone ? 'Mid-Term Exam (100% - Standalone)' : 'Mock Exam (100%)',
-                    assessmentName: isMidTermStandalone ? 'Mid-Term Exam (100%)' : seriesLabel,
+                    assessmentType: 'Mock Exam (100%)',
+                    assessmentName: seriesLabel,
                     mockSeries: seriesId,
                     mockSeriesLabel: seriesLabel,
-                    ...(isMidTermStandalone ? { standaloneMidTerm: true, excludeFromCa: true } : {}),
                     score,
                     maxScore: parsedMaxScore,
                     teacherRemark: remark,
@@ -1607,6 +2136,30 @@ export default function GradebookPage() {
                         score: totalPct
                     };
                 }) || [])
+                : entryMode === 'midterm'
+                ? (students?.map((s: any) => {
+                    const row = midTermScores[s.uid];
+                    const studentTests = row?.tests || {};
+                    const validTests = midTermTestColumns
+                        .map(tc => studentTests[tc.id])
+                        .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
+                    const ct = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / midTermActiveCaInfo.activeTestCount) : 0;
+                    const hw = typeof row?.homework === 'number' ? row.homework : 0;
+                    const pr = typeof row?.project === 'number' ? row.project : 0;
+                    const ex = typeof row?.exam === 'number' ? row.exam : 0;
+                    let totalPct = 0;
+                    if (midTermCaWeight <= 0 || !midTermActiveCaInfo.anyCa) {
+                        totalPct = midTermMaxScores.exam > 0 && row?.exam !== '' ? Math.round((ex / midTermMaxScores.exam) * 100) : 0;
+                    } else {
+                        const caW = midTermActiveCaInfo.activeCaMax > 0 ? ((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight : 0;
+                        const exW = midTermMaxScores.exam > 0 && row?.exam !== '' ? (ex / midTermMaxScores.exam) * midTermExamWeight : 0;
+                        totalPct = Math.round((caW + exW) * 10) / 10;
+                    }
+                    return {
+                        studentName: `${s.firstName} ${s.lastName}`,
+                        score: totalPct
+                    };
+                }) || [])
                 : entryMode === 'mock'
                 ? (students?.map((s: any) => ({
                     studentName: `${s.firstName} ${s.lastName}`,
@@ -1617,7 +2170,7 @@ export default function GradebookPage() {
                     score: singleScores[s.uid] ?? ''
                 })) || []);
 
-            const effectiveMax = entryMode === 'matrix' ? 100 : entryMode === 'mock' ? mockMaxScore : maxScore;
+            const effectiveMax = (entryMode === 'matrix' || entryMode === 'midterm') ? 100 : entryMode === 'mock' ? mockMaxScore : maxScore;
             const res = await generateClassInsightsAction(schoolId, className, subjectName, scoresData, effectiveMax);
             
             if (res.success && res.text) {
@@ -1673,13 +2226,19 @@ export default function GradebookPage() {
                             value="matrix" 
                             className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center gap-2"
                         >
-                            <Grid3X3 className="h-4 w-4" /> SBA Terminal Matrix
+                            <Grid3X3 className="h-4 w-4" /> End of Term (SBA)
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            value="midterm" 
+                            className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-teal-600 data-[state=active]:text-white transition-all flex items-center gap-2"
+                        >
+                            <BookOpen className="h-4 w-4" /> Mid-Term
                         </TabsTrigger>
                         <TabsTrigger 
                             value="mock" 
                             className="rounded-xl font-black text-xs px-4 py-2 data-[state=active]:bg-amber-600 data-[state=active]:text-white transition-all flex items-center gap-2"
                         >
-                            <Award className="h-4 w-4" /> Mid-Term &amp; Mock Exams (100%)
+                            <Award className="h-4 w-4" /> Mock Exams
                         </TabsTrigger>
                         <TabsTrigger 
                             value="single" 
@@ -1696,7 +2255,7 @@ export default function GradebookPage() {
                         <div className="flex items-center gap-2 flex-wrap">
                             <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-bold text-xs shadow-xs">
                                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                                <span>Isolated Series:</span>
+                                <span>Mock Series:</span>
                                 <span className="font-black text-amber-950">{activeMockOption.label} (100%)</span>
                             </div>
                             <Button
@@ -1713,6 +2272,26 @@ export default function GradebookPage() {
                                 Create New Mock
                             </Button>
                         </div>
+                    ) : entryMode === 'midterm' ? (
+                        <>
+                            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 font-bold text-xs shadow-xs">
+                                <span className="text-teal-700">Mid-Term Proportion:</span>
+                                <span className="font-black text-teal-950">{midTermCaWeight}% CA / {midTermExamWeight}% Exam</span>
+                            </div>
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                    setCustomCaInput(midTermCaWeight);
+                                    setCustomExamInput(midTermExamWeight);
+                                    setIsWeightModalOpen(true);
+                                }}
+                                className="rounded-xl text-xs font-bold border-teal-200 text-teal-900 hover:bg-teal-50 h-9"
+                            >
+                                <Sliders className="h-3.5 w-3.5 mr-1.5 text-teal-600" />
+                                Configure Proportions
+                            </Button>
+                        </>
                     ) : (
                         <>
                             <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-900 font-bold text-xs shadow-xs">
@@ -1722,7 +2301,11 @@ export default function GradebookPage() {
                             <Button 
                                 variant="outline" 
                                 size="sm"
-                                onClick={() => setIsWeightModalOpen(true)}
+                                onClick={() => {
+                                    setCustomCaInput(caWeight);
+                                    setCustomExamInput(examWeight);
+                                    setIsWeightModalOpen(true);
+                                }}
                                 className="rounded-xl text-xs font-bold border-slate-200 text-slate-700 hover:bg-slate-100 h-9"
                             >
                                 <Sliders className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
@@ -1739,7 +2322,7 @@ export default function GradebookPage() {
                     <CardTitle className="text-lg font-black text-slate-800">Roster Filters</CardTitle>
                     <CardDescription className="text-slate-400">Specify details to retrieve the classroom grading sheet.</CardDescription>
                 </CardHeader>
-                <CardContent className={`grid gap-4 p-6 bg-white ${entryMode === 'matrix' ? 'grid-cols-2 md:grid-cols-4' : entryMode === 'mock' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-7'}`}>
+                <CardContent className={`grid gap-4 p-6 bg-white ${(entryMode === 'matrix' || entryMode === 'midterm') ? 'grid-cols-2 md:grid-cols-4' : entryMode === 'mock' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-7'}`}>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
                         <Select value={academicYear} onValueChange={setAcademicYear} disabled={role === 'Teacher'}>
@@ -2322,6 +2905,418 @@ export default function GradebookPage() {
                                 )}
                             </CardContent>
                         </Card>
+                    ) : entryMode === 'midterm' ? (
+                        /* -------------------- ENTRY MODE MT: DEDICATED MID-TERM REPORT SHEET -------------------- */
+                        <Card className="shadow-lg border-2 border-teal-100 rounded-[2.2rem] overflow-hidden bg-white">
+                            <CardHeader className="border-b border-teal-100/80 bg-gradient-to-r from-teal-50/60 via-white to-indigo-50/30 p-6 space-y-4">
+                                <div className="flex flex-row items-center justify-between flex-wrap gap-4">
+                                    <div>
+                                        <div className="flex items-center gap-2.5 flex-wrap">
+                                            <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-2">
+                                                <BookOpen className="h-5 w-5 text-teal-600" />
+                                                Mid-Term Assessment Sheet
+                                            </CardTitle>
+                                            <Badge className="bg-teal-100 text-teal-900 border-teal-300 font-black text-xs">
+                                                {midTermCaWeight > 0
+                                                    ? `${midTermCaWeight}% CA + ${midTermExamWeight}% Mid-Term Exam`
+                                                    : '100% Mid-Term Exam'}
+                                            </Badge>
+                                            {midTermSavedStudentCount > 0 && (
+                                                <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300 font-black text-xs flex items-center gap-1">
+                                                    <ShieldCheck className="h-3.5 w-3.5" />
+                                                    {midTermSavedStudentCount} Student{midTermSavedStudentCount === 1 ? '' : 's'} Saved
+                                                </Badge>
+                                            )}
+                                        </div>
+                                        <CardDescription className="text-slate-500 mt-1 text-xs font-medium">
+                                            Enter all scores to feature on the Mid-Term Report Card — Continuous Assessment (Class Exercises / Tests, Homework, Project) and the main Mid-Term Exam. Kept completely separate from End of Term.
+                                        </CardDescription>
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAddMidTermTestColumn}
+                                            className="rounded-xl border-teal-200 text-teal-800 bg-teal-50/60 hover:bg-teal-100 text-xs font-bold h-10 px-3"
+                                        >
+                                            <Plus className="h-4 w-4 mr-1 text-teal-700" /> Add Test
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setIsMaxScoresModalOpen(true)}
+                                            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold h-10 px-3"
+                                        >
+                                            <Sliders className="h-4 w-4 mr-1.5 text-teal-600" /> Max Scores
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleAutoFillMidTermRemarks}
+                                            className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-bold h-10 px-3"
+                                        >
+                                            <Wand2 className="h-4 w-4 mr-1.5 text-teal-600" /> Auto-Fill Remarks
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            className="border-purple-200 text-purple-700 bg-purple-50 hover:bg-purple-100/70 rounded-xl font-bold text-xs h-10"
+                                            onClick={handleGenerateClassInsights}
+                                            disabled={isSaving || isGeneratingInsights}
+                                        >
+                                            <Sparkles className="mr-1.5 h-4 w-4 text-purple-600" /> AI Insights (5 credits)
+                                        </Button>
+                                        <Button
+                                            onClick={handleSaveMidTermMatrix}
+                                            disabled={isSaving || isGlobalLoading}
+                                            className="bg-teal-600 hover:bg-teal-700 font-black rounded-xl text-white shadow-md transition-all h-10 px-6 text-sm"
+                                        >
+                                            {isSaving ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <Save className="mr-2 h-4 w-4" />}
+                                            {isGlobalLoading ? 'Authenticating...' : 'Save Mid-Term Marks'}
+                                        </Button>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-3 flex-wrap pt-1 text-xs">
+                                    <div className="text-slate-500 font-semibold">
+                                        {!midTermActiveCaInfo.anyCa && midTermActiveCaInfo.anyExam && midTermCaWeight > 0 ? (
+                                            <span className="text-teal-800 bg-teal-50 border border-teal-200 px-2.5 py-1 rounded-lg font-bold">
+                                                Tip: Only Mid-Term Exam marks entered so far — scaled to 100% automatically until CA marks are entered.
+                                            </span>
+                                        ) : (
+                                            <span>
+                                                Unused CA columns left blank for the whole class are ignored automatically so students are never penalized.
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-4 ml-auto">
+                                        <Link
+                                            href="/dashboard/reports/academics"
+                                            className="font-black text-teal-700 hover:text-teal-900 underline underline-offset-2"
+                                        >
+                                            Open Mid-Term Master List →
+                                        </Link>
+                                        <Link
+                                            href="/dashboard/report-cards"
+                                            className="font-black text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
+                                        >
+                                            Generate Mid-Term Report Cards →
+                                        </Link>
+                                    </div>
+                                </div>
+                            </CardHeader>
+
+                            <CardContent className="p-0">
+                                {loadingStudents ? (
+                                    <div className="p-16 flex flex-col items-center justify-center text-slate-400 gap-3">
+                                        <Loader2 className="animate-spin h-10 w-10 text-teal-600" />
+                                        <p className="font-semibold text-sm">Loading classroom roster...</p>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto pb-16">
+                                        <Table className="w-full border-collapse">
+                                            <TableHeader>
+                                                <TableRow className="bg-slate-50/90 hover:bg-slate-50/90 border-b-2 border-slate-200/80">
+                                                    <TableHead className="font-bold text-slate-700 min-w-[165px] max-w-[210px] pl-6 sticky left-0 bg-slate-50 z-10 text-xs">
+                                                        Student Name
+                                                    </TableHead>
+
+                                                    {midTermTestColumns.map((tc) => (
+                                                        <TableHead key={tc.id} className="text-center w-[58px] min-w-[54px] px-1">
+                                                            <div className="flex flex-col items-center gap-0.5">
+                                                                <div className="flex items-center gap-0.5">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={tc.name}
+                                                                        onChange={e => {
+                                                                            const val = e.target.value;
+                                                                            setMidTermTestColumns(prev => prev.map(c => c.id === tc.id ? { ...c, name: val } : c));
+                                                                        }}
+                                                                        className="font-bold text-slate-700 text-[11px] bg-transparent text-center w-14 border-b border-transparent hover:border-slate-300 focus:border-teal-500 focus:outline-none"
+                                                                    />
+                                                                    {midTermTestColumns.length > 1 && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleRemoveMidTermTestColumn(tc.id)}
+                                                                            className="text-slate-400 hover:text-rose-600"
+                                                                            title="Remove column"
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center gap-0.5">
+                                                                    <span className="text-[9px] font-black text-slate-400">/{midTermMaxScores.classTest}</span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => { setFillTarget({ scope: 'midterm', type: 'test', colId: tc.id, label: `Mid-Term ${tc.name}`, max: midTermMaxScores.classTest }); setFillColValue(''); }}
+                                                                        className="text-[8px] bg-slate-200/80 hover:bg-teal-100 hover:text-teal-800 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
+                                                                    >
+                                                                        Fill
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </TableHead>
+                                                    ))}
+
+                                                    <TableHead className="text-center w-[58px] min-w-[54px] px-1">
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <span className="font-bold text-slate-700 text-[11px]">Homework</span>
+                                                            <div className="flex items-center gap-0.5">
+                                                                <span className="text-[9px] font-black text-slate-400">/{midTermMaxScores.homework}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => { setFillTarget({ scope: 'midterm', type: 'homework', label: 'Mid-Term Homework', max: midTermMaxScores.homework }); setFillColValue(''); }}
+                                                                    className="text-[8px] bg-slate-200/80 hover:bg-teal-100 hover:text-teal-800 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
+                                                                >
+                                                                    Fill
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </TableHead>
+
+                                                    <TableHead className="text-center w-[58px] min-w-[54px] px-1">
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <span className="font-bold text-slate-700 text-[11px]">Project</span>
+                                                            <div className="flex items-center gap-0.5">
+                                                                <span className="text-[9px] font-black text-slate-400">/{midTermMaxScores.project}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => { setFillTarget({ scope: 'midterm', type: 'project', label: 'Mid-Term Project / CW', max: midTermMaxScores.project }); setFillColValue(''); }}
+                                                                    className="text-[8px] bg-slate-200/80 hover:bg-teal-100 hover:text-teal-800 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
+                                                                >
+                                                                    Fill
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </TableHead>
+
+                                                    <TableHead className="text-center w-[60px] min-w-[54px] px-1 bg-teal-50/60 border-x border-teal-100">
+                                                        <div className="flex flex-col items-center">
+                                                            <span className="font-black text-teal-950 text-[11px] leading-tight">CA Scaled</span>
+                                                            <span className="text-[9px] font-bold text-teal-700">({midTermCaWeight}%)</span>
+                                                        </div>
+                                                    </TableHead>
+
+                                                    <TableHead className="text-center w-[74px] min-w-[68px] px-1 bg-amber-50/40">
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <span className="font-black text-slate-900 text-[11px]">Mid-Term Exam</span>
+                                                            <div className="flex items-center gap-0.5">
+                                                                <span className="text-[9px] font-black text-slate-500">/{midTermMaxScores.exam}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => { setFillTarget({ scope: 'midterm', type: 'exam', label: 'Mid-Term Exam', max: midTermMaxScores.exam }); setFillColValue(''); }}
+                                                                    className="text-[8px] bg-slate-200/80 hover:bg-teal-100 hover:text-teal-800 px-1 py-0.2 rounded font-bold text-slate-600 transition-colors"
+                                                                >
+                                                                    Fill
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </TableHead>
+
+                                                    <TableHead className="text-center w-[60px] min-w-[54px] px-1 bg-slate-50 border-r border-slate-200/80">
+                                                        <div className="flex flex-col items-center">
+                                                            <span className="font-black text-slate-800 text-[11px] leading-tight">Ex Scaled</span>
+                                                            <span className="text-[9px] font-bold text-slate-500">({midTermExamWeight}%)</span>
+                                                        </div>
+                                                    </TableHead>
+
+                                                    <TableHead className="text-center w-[52px] min-w-[46px] px-1 bg-teal-900 text-white font-black text-[11px]">
+                                                        Total %
+                                                    </TableHead>
+
+                                                    <TableHead className="text-center w-[44px] min-w-[38px] px-1 font-black text-slate-700 text-[11px]">
+                                                        Grade
+                                                    </TableHead>
+
+                                                    <TableHead className="font-bold text-slate-700 min-w-[160px] px-2 pr-6 text-xs">
+                                                        Teacher Remark
+                                                    </TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {students?.length === 0 && (
+                                                    <TableRow>
+                                                        <TableCell colSpan={8 + midTermTestColumns.length} className="text-center py-10 italic text-slate-400">
+                                                            No active students enrolled in this class.
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )}
+                                                {students?.map((s: any, idx: number) => {
+                                                    const row = midTermScores[s.uid] || { tests: {}, homework: '', project: '', exam: '', remark: '' };
+                                                    const studentTests = row.tests || {};
+                                                    const validTests = midTermTestColumns
+                                                        .map(tc => studentTests[tc.id])
+                                                        .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
+                                                    const hasAnyTest = validTests.length > 0;
+                                                    const ct = hasAnyTest ? (validTests.reduce((a, b) => a + b, 0) / midTermActiveCaInfo.activeTestCount) : 0;
+                                                    const hw = typeof row.homework === 'number' ? row.homework : 0;
+                                                    const pr = typeof row.project === 'number' ? row.project : 0;
+                                                    const ex = typeof row.exam === 'number' ? row.exam : 0;
+
+                                                    const hasAnyScore = hasAnyTest || row.homework !== '' || row.project !== '' || row.exam !== '';
+                                                    const pureExamAuto = midTermCaWeight <= 0 || (!midTermActiveCaInfo.anyCa && midTermActiveCaInfo.anyExam);
+
+                                                    const caWeighted = !pureExamAuto && midTermActiveCaInfo.activeCaMax > 0
+                                                        ? ((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight
+                                                        : 0;
+                                                    const examWeighted = midTermMaxScores.exam > 0 && row.exam !== ''
+                                                        ? (ex / midTermMaxScores.exam) * (pureExamAuto ? 100 : midTermExamWeight)
+                                                        : 0;
+                                                    const totalPercent = hasAnyScore ? Math.min(100, Math.round((caWeighted + examWeighted) * 10) / 10) : 0;
+                                                    const { grade, autoRemark } = getGradeFromScale(totalPercent, gradingScale);
+
+                                                    const hwOver = row.homework !== '' && Number(row.homework) > midTermMaxScores.homework;
+                                                    const prOver = row.project !== '' && Number(row.project) > midTermMaxScores.project;
+                                                    const exOver = row.exam !== '' && Number(row.exam) > midTermMaxScores.exam;
+                                                    const initials = `${s.firstName?.[0] || ''}${s.lastName?.[0] || ''}`.toUpperCase();
+
+                                                    const gradeColor =
+                                                        grade === 'A' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' :
+                                                        grade === 'B' ? 'bg-blue-50 text-blue-700 border-blue-300' :
+                                                        grade === 'C' ? 'bg-amber-50 text-amber-700 border-amber-300' :
+                                                        grade === 'D' ? 'bg-orange-50 text-orange-700 border-orange-300' :
+                                                        grade === 'E' ? 'bg-purple-50 text-purple-700 border-purple-300' :
+                                                        'bg-rose-50 text-rose-700 border-rose-300';
+
+                                                    return (
+                                                        <TableRow key={s.uid} className="hover:bg-teal-50/20 transition-colors border-b border-slate-100">
+                                                            <TableCell className="font-semibold text-slate-800 pl-6 sticky left-0 bg-white z-10 py-2">
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-50 text-teal-800 text-[11px] font-black border border-teal-200">
+                                                                        {initials}
+                                                                    </div>
+                                                                    <span className="text-xs font-bold leading-snug">{s.firstName} {s.lastName}</span>
+                                                                </div>
+                                                            </TableCell>
+
+                                                            {midTermTestColumns.map((tc) => {
+                                                                const tVal = studentTests[tc.id] ?? '';
+                                                                const tOver = tVal !== '' && Number(tVal) > midTermMaxScores.classTest;
+                                                                return (
+                                                                    <TableCell key={tc.id} className="text-center px-1 py-1.5">
+                                                                        <Input
+                                                                            type="number"
+                                                                            min="0"
+                                                                            max={midTermMaxScores.classTest}
+                                                                            value={tVal}
+                                                                            onChange={e => handleMidTermTestScoreChange(s.uid, tc.id, e.target.value)}
+                                                                            onKeyDown={e => handleMidTermKeyDown(e, idx, tc.id)}
+                                                                            data-midterm-row={idx}
+                                                                            data-midterm-col={tc.id}
+                                                                            className={`h-8 w-14 mx-auto text-center font-bold text-xs px-1 rounded-lg ${
+                                                                                tOver ? 'border-rose-500 ring-1 ring-rose-500 text-rose-600' : 'border-slate-200'
+                                                                            }`}
+                                                                        />
+                                                                    </TableCell>
+                                                                );
+                                                            })}
+
+                                                            <TableCell className="text-center px-1 py-1.5">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max={midTermMaxScores.homework}
+                                                                    value={row.homework}
+                                                                    onChange={e => handleMidTermScoreChange(s.uid, 'homework', e.target.value)}
+                                                                    onKeyDown={e => handleMidTermKeyDown(e, idx, 'homework')}
+                                                                    data-midterm-row={idx}
+                                                                    data-midterm-col="homework"
+                                                                    className={`h-8 w-14 mx-auto text-center font-bold text-xs px-1 rounded-lg ${
+                                                                        hwOver ? 'border-rose-500 ring-1 ring-rose-500 text-rose-600' : 'border-slate-200'
+                                                                    }`}
+                                                                />
+                                                            </TableCell>
+
+                                                            <TableCell className="text-center px-1 py-1.5">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max={midTermMaxScores.project}
+                                                                    value={row.project}
+                                                                    onChange={e => handleMidTermScoreChange(s.uid, 'project', e.target.value)}
+                                                                    onKeyDown={e => handleMidTermKeyDown(e, idx, 'project')}
+                                                                    data-midterm-row={idx}
+                                                                    data-midterm-col="project"
+                                                                    className={`h-8 w-14 mx-auto text-center font-bold text-xs px-1 rounded-lg ${
+                                                                        prOver ? 'border-rose-500 ring-1 ring-rose-500 text-rose-600' : 'border-slate-200'
+                                                                    }`}
+                                                                />
+                                                            </TableCell>
+
+                                                            <TableCell className="text-center px-1 py-1.5 bg-teal-50/40 border-x border-teal-100/70 font-black text-xs text-teal-900">
+                                                                {hasAnyScore ? (pureExamAuto ? '—' : caWeighted.toFixed(1)) : '—'}
+                                                            </TableCell>
+
+                                                            <TableCell className="text-center px-1 py-1.5 bg-amber-50/20">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    max={midTermMaxScores.exam}
+                                                                    value={row.exam}
+                                                                    onChange={e => handleMidTermScoreChange(s.uid, 'exam', e.target.value)}
+                                                                    onKeyDown={e => handleMidTermKeyDown(e, idx, 'exam')}
+                                                                    data-midterm-row={idx}
+                                                                    data-midterm-col="exam"
+                                                                    className={`h-8 w-16 mx-auto text-center font-black text-xs px-1 rounded-lg ${
+                                                                        exOver ? 'border-rose-500 ring-1 ring-rose-500 text-rose-600' : 'border-amber-300 bg-white'
+                                                                    }`}
+                                                                />
+                                                            </TableCell>
+
+                                                            <TableCell className="text-center px-1 py-1.5 bg-slate-50/60 border-r border-slate-200/80 font-black text-xs text-slate-800">
+                                                                {row.exam !== '' ? examWeighted.toFixed(1) : '—'}
+                                                            </TableCell>
+
+                                                            <TableCell className="text-center px-1 py-1.5 bg-teal-950/5 font-black text-xs text-slate-950">
+                                                                {hasAnyScore ? `${Math.round(totalPercent)}%` : '—'}
+                                                            </TableCell>
+
+                                                            <TableCell className="text-center px-1 py-1.5">
+                                                                {hasAnyScore ? (
+                                                                    <span className={`inline-flex items-center justify-center w-7 h-6 rounded-md border font-black text-[11px] ${gradeColor}`}>
+                                                                        {grade}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-slate-300 text-xs">—</span>
+                                                                )}
+                                                            </TableCell>
+
+                                                            <TableCell className="px-2 pr-6 py-1.5">
+                                                                <div className="space-y-1">
+                                                                    <Input
+                                                                        type="text"
+                                                                        placeholder={hasAnyScore && autoRemark ? autoRemark : "Optional teacher remark"}
+                                                                        value={row.remark}
+                                                                        onChange={e => handleMidTermRemarkChange(s.uid, e.target.value)}
+                                                                        onKeyDown={e => handleMidTermKeyDown(e, idx, 'remark')}
+                                                                        data-midterm-row={idx}
+                                                                        data-midterm-col="remark"
+                                                                        className="h-8 text-xs rounded-lg border-slate-200 text-slate-700 shadow-xs"
+                                                                    />
+                                                                    {!row.remark && hasAnyScore && autoRemark && (
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => handleMidTermRemarkChange(s.uid, autoRemark)}
+                                                                            className="text-[9px] bg-teal-50 text-teal-800 border border-teal-200 hover:bg-teal-100 px-1.5 py-0.5 rounded font-bold transition-colors flex items-center gap-1"
+                                                                        >
+                                                                            <Wand2 className="h-2.5 w-2.5 text-teal-600" />
+                                                                            Use: &quot;{autoRemark}&quot;
+                                                                        </button>
+                                                                    )}
+                                                                </div>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    );
+                                                })}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
                     ) : entryMode === 'mock' ? (
                         /* -------------------- ENTRY MODE M: DEDICATED MULTI-MOCK EXAMS -------------------- */
                         <Card className="shadow-lg border-2 border-amber-100 rounded-[2.2rem] overflow-hidden bg-white">
@@ -2344,9 +3339,7 @@ export default function GradebookPage() {
                                             )}
                                         </div>
                                         <CardDescription className="text-slate-500 mt-1 text-xs font-medium">
-                                            {selectedMockSeries === 'mid_term'
-                                                ? 'Standalone 100% Mid-Term Exam: Powers your Mid-Term Master List & Mid-Term Report Cards ONLY — strictly excluded from End-of-Term Continuous Assessment (CA)!'
-                                                : `Each Mock series is stored and printed independently. Entering marks in ${activeMockOption.label} never overwrites or alters earlier Mock or End-of-Term SBA entries.`}
+                                            {`Each Mock series is stored and printed independently. Entering marks in ${activeMockOption.label} never overwrites or alters earlier Mock or End-of-Term SBA entries.`}
                                         </CardDescription>
                                     </div>
                                     <div className="flex items-center gap-2 flex-wrap">
@@ -2726,13 +3719,12 @@ export default function GradebookPage() {
                                                         className="flex-1 rounded-xl font-bold border-blue-200 text-blue-700 bg-white hover:bg-blue-50 transition-colors shadow-sm text-xs h-9"
                                                         onClick={() => {
                                                             const firstDoc = records[0];
-                                                            if (isStandaloneMidTermAssessment(firstDoc)) {
-                                                                setEntryMode('mock');
-                                                                setSelectedMockSeries('mid_term');
+                                                            if (isMidTermReportScopeAssessment(firstDoc)) {
+                                                                setEntryMode('midterm');
                                                                 window.scrollTo({ top: 350, behavior: 'smooth' });
                                                                 toast({
-                                                                    title: 'Loaded Standalone Mid-Term Exam',
-                                                                    description: 'Switched to Mid-Term & Mock Exams (100% — Not in CA). Edit marks above and save.'
+                                                                    title: 'Loaded Mid-Term Sheet',
+                                                                    description: 'Switched to the Mid-Term tab. Edit CA or Mid-Term Exam marks above and save.'
                                                                 });
                                                                 return;
                                                             }
@@ -2811,10 +3803,13 @@ export default function GradebookPage() {
                 <DialogContent className="sm:max-w-[640px] w-[95vw] rounded-[2rem] border-0 shadow-2xl p-7 bg-white">
                     <DialogHeader className="border-b border-slate-100 pb-4">
                         <DialogTitle className="flex items-center gap-2.5 text-slate-900 font-black text-xl">
-                            <Sliders className="h-5 w-5 text-indigo-600 shrink-0" /> Configure Assessment Proportions
+                            <Sliders className="h-5 w-5 text-indigo-600 shrink-0" />
+                            {entryMode === 'midterm' ? 'Configure Mid-Term Proportions' : 'Configure Assessment Proportions'}
                         </DialogTitle>
                         <DialogDescription className="text-slate-500 text-xs leading-relaxed">
-                            Define the ratio between Continuous Assessment (SBA) and End of Term Exam for this school/class.
+                            {entryMode === 'midterm'
+                                ? 'Define the ratio between Mid-Term Continuous Assessment (CA) and the main Mid-Term Exam for this class.'
+                                : 'Define the ratio between Continuous Assessment (SBA) and End of Term Exam for this school/class.'}
                         </DialogDescription>
                     </DialogHeader>
 
@@ -2833,7 +3828,7 @@ export default function GradebookPage() {
                                             : 'border-amber-300 bg-amber-50/60 text-amber-900 hover:bg-amber-100'
                                     }`}
                                 >
-                                    🎯 0% CA / 100% Mock
+                                    🎯 0% CA / 100% Exam
                                 </Button>
                                 <Button
                                     type="button"
@@ -2895,7 +3890,9 @@ export default function GradebookPage() {
                                 </div>
                             </div>
                             <div className="space-y-1.5">
-                                <Label className="text-xs font-bold text-slate-700">End of Term Exam (%)</Label>
+                                <Label className="text-xs font-bold text-slate-700">
+                                    {entryMode === 'midterm' ? 'Mid-Term Exam (%)' : 'End of Term Exam (%)'}
+                                </Label>
                                 <div className="relative">
                                     <Input 
                                         type="number"
@@ -2949,10 +3946,11 @@ export default function GradebookPage() {
                 <DialogContent className="sm:max-w-[620px] w-[95vw] rounded-[2rem] border-0 shadow-2xl p-7 bg-white">
                     <DialogHeader className="border-b border-slate-100 pb-4">
                         <DialogTitle className="flex items-center gap-2.5 text-slate-900 font-black text-xl">
-                            <Sliders className="h-5 w-5 text-indigo-600 shrink-0" /> Column Max Scores
+                            <Sliders className="h-5 w-5 text-indigo-600 shrink-0" />
+                            {entryMode === 'midterm' ? 'Mid-Term Column Max Scores' : 'Column Max Scores'}
                         </DialogTitle>
                         <DialogDescription className="text-slate-500 text-xs leading-relaxed">
-                            Configure the maximum achievable score for each assessment component. To record a pure 100% Mock Exam, you can set CA components to 0 and Terminal Exam to 100.
+                            Configure the maximum achievable score for each assessment component.
                         </DialogDescription>
                     </DialogHeader>
 
@@ -2964,104 +3962,177 @@ export default function GradebookPage() {
                                 type="button"
                                 variant="outline"
                                 onClick={() => {
-                                    setMatrixMaxScores({ classTest: 0, homework: 0, project: 0, midTerm: 0, exam: 100 });
-                                    setCaWeight(0);
-                                    setExamWeight(100);
-                                    setCustomCaInput(0);
-                                    setCustomExamInput(100);
-                                    toast({ title: "Mock Exam Mode Activated 🎯", description: "CA components set to 0 and Exam set to 100%." });
+                                    if (entryMode === 'midterm') {
+                                        setMidTermMaxScores({ classTest: 20, homework: 20, project: 20, exam: 100 });
+                                        setMidTermCaWeight(0);
+                                        setMidTermExamWeight(100);
+                                        toast({ title: "100% Mid-Term Exam Only 🎯", description: "Mid-Term set to 0% CA / 100% Mid-Term Exam." });
+                                    } else {
+                                        setMatrixMaxScores({ classTest: 0, homework: 0, project: 0, midTerm: 0, exam: 100 });
+                                        setCaWeight(0);
+                                        setExamWeight(100);
+                                        setCustomCaInput(0);
+                                        setCustomExamInput(100);
+                                        toast({ title: "100% Exam Only Activated 🎯", description: "CA components set to 0 and Exam set to 100%." });
+                                    }
                                 }}
                                 className="h-12 px-4 text-xs font-bold rounded-xl whitespace-normal justify-center border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
                             >
-                                🎯 100% Mock / Exam Only
+                                🎯 100% Exam Only (No CA)
                             </Button>
                             <Button
                                 type="button"
                                 variant="outline"
                                 onClick={() => {
-                                    setMatrixMaxScores({ classTest: 20, homework: 20, project: 20, midTerm: 40, exam: 100 });
-                                    toast({ title: "Standard Defaults Restored", description: "Set to 20 / 20 / 20 / 40 / 100." });
+                                    if (entryMode === 'midterm') {
+                                        setMidTermMaxScores({ classTest: 20, homework: 20, project: 20, exam: 100 });
+                                        toast({ title: "Mid-Term Defaults Restored", description: "Set to 20 / 20 / 20 / 100." });
+                                    } else {
+                                        setMatrixMaxScores({ classTest: 20, homework: 20, project: 20, midTerm: 40, exam: 100 });
+                                        toast({ title: "Standard Defaults Restored", description: "Set to 20 / 20 / 20 / 40 / 100." });
+                                    }
                                 }}
                                 className="h-12 px-4 text-xs font-bold rounded-xl whitespace-normal justify-center border-slate-200 text-slate-700 hover:bg-slate-100"
                             >
-                                🔄 Standard NaCCA (20/40/100)
+                                {entryMode === 'midterm' ? '🔄 Standard Mid-Term (20/20/20/100)' : '🔄 Standard NaCCA (20/40/100)'}
                             </Button>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-3">
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-bold text-slate-700">Class Test Max</Label>
-                            <Input 
-                                type="number" 
-                                min="0" 
-                                value={matrixMaxScores.classTest} 
-                                onChange={e => {
-                                    const v = e.target.value;
-                                    setMatrixMaxScores(prev => ({ ...prev, classTest: v === '' ? 0 : Math.max(0, Number(v)) }));
-                                }}
-                                className="h-10 rounded-xl font-bold text-center border-slate-200"
-                            />
+                    {entryMode === 'midterm' ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3">
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Class Test Max</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={midTermMaxScores.classTest}
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMidTermMaxScores(prev => ({ ...prev, classTest: v === '' ? 20 : Math.max(1, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Homework Max</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={midTermMaxScores.homework}
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMidTermMaxScores(prev => ({ ...prev, homework: v === '' ? 20 : Math.max(1, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Project / CW Max</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={midTermMaxScores.project}
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMidTermMaxScores(prev => ({ ...prev, project: v === '' ? 20 : Math.max(1, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Mid-Term Exam Max</Label>
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={midTermMaxScores.exam}
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMidTermMaxScores(prev => ({ ...prev, exam: v === '' ? 100 : Math.max(1, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-bold text-slate-700">Homework Max</Label>
-                            <Input 
-                                type="number" 
-                                min="0" 
-                                value={matrixMaxScores.homework} 
-                                onChange={e => {
-                                    const v = e.target.value;
-                                    setMatrixMaxScores(prev => ({ ...prev, homework: v === '' ? 0 : Math.max(0, Number(v)) }));
-                                }}
-                                className="h-10 rounded-xl font-bold text-center border-slate-200"
-                            />
+                    ) : (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 py-3">
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Class Test Max</Label>
+                                <Input 
+                                    type="number" 
+                                    min="0" 
+                                    value={matrixMaxScores.classTest} 
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMatrixMaxScores(prev => ({ ...prev, classTest: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Homework Max</Label>
+                                <Input 
+                                    type="number" 
+                                    min="0" 
+                                    value={matrixMaxScores.homework} 
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMatrixMaxScores(prev => ({ ...prev, homework: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Project / CW Max</Label>
+                                <Input 
+                                    type="number" 
+                                    min="0" 
+                                    value={matrixMaxScores.project} 
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMatrixMaxScores(prev => ({ ...prev, project: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Mid-Term Max</Label>
+                                <Input 
+                                    type="number" 
+                                    min="0" 
+                                    value={matrixMaxScores.midTerm} 
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMatrixMaxScores(prev => ({ ...prev, midTerm: v === '' ? 0 : Math.max(0, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-bold text-slate-700">Terminal Exam Max</Label>
+                                <Input 
+                                    type="number" 
+                                    min="1" 
+                                    value={matrixMaxScores.exam} 
+                                    onChange={e => {
+                                        const v = e.target.value;
+                                        setMatrixMaxScores(prev => ({ ...prev, exam: v === '' ? 100 : Math.max(1, Number(v)) }));
+                                    }}
+                                    className="h-10 rounded-xl font-bold text-center border-slate-200"
+                                />
+                            </div>
                         </div>
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-bold text-slate-700">Project / CW Max</Label>
-                            <Input 
-                                type="number" 
-                                min="0" 
-                                value={matrixMaxScores.project} 
-                                onChange={e => {
-                                    const v = e.target.value;
-                                    setMatrixMaxScores(prev => ({ ...prev, project: v === '' ? 0 : Math.max(0, Number(v)) }));
-                                }}
-                                className="h-10 rounded-xl font-bold text-center border-slate-200"
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-bold text-slate-700">Mid-Term Max</Label>
-                            <Input 
-                                type="number" 
-                                min="0" 
-                                value={matrixMaxScores.midTerm} 
-                                onChange={e => {
-                                    const v = e.target.value;
-                                    setMatrixMaxScores(prev => ({ ...prev, midTerm: v === '' ? 0 : Math.max(0, Number(v)) }));
-                                }}
-                                className="h-10 rounded-xl font-bold text-center border-slate-200"
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-bold text-slate-700">Terminal Exam Max</Label>
-                            <Input 
-                                type="number" 
-                                min="1" 
-                                value={matrixMaxScores.exam} 
-                                onChange={e => {
-                                    const v = e.target.value;
-                                    setMatrixMaxScores(prev => ({ ...prev, exam: v === '' ? 100 : Math.max(1, Number(v)) }));
-                                }}
-                                className="h-10 rounded-xl font-bold text-center border-slate-200"
-                            />
-                        </div>
-                    </div>
+                    )}
 
                     <DialogFooter>
                         <Button 
                             onClick={() => {
                                 setIsMaxScoresModalOpen(false);
-                                toast({ title: "Max Scores Updated ✅", description: `Exam Max: ${matrixMaxScores.exam}, CA Max: ${matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm}` });
+                                if (entryMode === 'midterm') {
+                                    toast({ title: "Mid-Term Max Scores Updated ✅", description: `Mid-Term Exam Max: ${midTermMaxScores.exam}` });
+                                } else {
+                                    toast({ title: "Max Scores Updated ✅", description: `Exam Max: ${matrixMaxScores.exam}, CA Max: ${matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm}` });
+                                }
                             }} 
                             className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold h-10 shadow-sm"
                         >

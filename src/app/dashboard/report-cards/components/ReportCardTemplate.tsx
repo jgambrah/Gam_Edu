@@ -55,7 +55,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
     const seriesLabel = getReportCardSeriesLabel(data);
     const isMockReport = seriesKey.startsWith('mock_');
     const isMidTermReport = seriesKey === 'mid_term';
-    const isSingleExamReport = isMockReport || isMidTermReport;
+    const isNonTerminalSeries = isMockReport || isMidTermReport;
+    const effectiveCaWeight = typeof data.caWeight === 'number' ? data.caWeight : caWeight;
+    const effectiveExamWeight = typeof data.examWeight === 'number' ? data.examWeight : examWeight;
+    const isSingleExamReport = isMockReport || (isMidTermReport && (effectiveCaWeight <= 0 || data.isSingleExamOnly === true));
     const transcriptHeading = isMockReport
         ? `Official ${seriesLabel} Examination Report`
         : isMidTermReport
@@ -134,7 +137,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                         <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
                             <Calendar className="h-3 w-3 text-slate-800" /> Academic Term
                         </span>
-                        <span className="font-black text-black">{data.term}{isSingleExamReport ? ` • ${seriesLabel}` : ''}</span>
+                        <span className="font-black text-black">{data.term}{isNonTerminalSeries ? ` • ${seriesLabel}` : ''}</span>
                     </div>
                     <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
                         <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
@@ -160,10 +163,10 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                     ) : (
                         <div className="flex justify-between items-center border-b border-slate-300 pb-1.5">
                             <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
-                                <CheckCircle2 className="h-3 w-3 text-slate-800" /> {isSingleExamReport && !data.totalClassDays ? 'Overall Average' : 'Attendance'}
+                                <CheckCircle2 className="h-3 w-3 text-slate-800" /> {isNonTerminalSeries && !data.totalClassDays ? 'Overall Average' : 'Attendance'}
                             </span>
                             <span className="font-black text-black">
-                                {isSingleExamReport && !data.totalClassDays
+                                {isNonTerminalSeries && !data.totalClassDays
                                     ? `${data.overallAverage || 0}%`
                                     : `${data.studentPresentDays || 0} / ${data.totalClassDays || 0} Days`}
                             </span>
@@ -179,7 +182,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             </span>
                         </div>
                     )}
-                    {!isSingleExamReport && (data.term === 'Third Term' || data.term === 'Term 3' || data.term === '3' || data.term === 'third term') && data.promotionDecision && (
+                    {!isNonTerminalSeries && (data.term === 'Third Term' || data.term === 'Term 3' || data.term === '3' || data.term === 'third term') && data.promotionDecision && (
                         <div className="flex justify-between items-center border-b border-slate-300 pb-2 col-span-2 px-1">
                             <span className="text-slate-955 font-black uppercase text-[9.5px] tracking-wider flex items-center gap-1.5">
                                 <GraduationCap className="h-3.5 w-3.5 text-slate-800" /> Promotion Status
@@ -223,8 +226,8 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                                         </>
                                     ) : (
                                         <>
-                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">CA ({caWeight})</th>
-                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Exam ({examWeight})</th>
+                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">CA ({effectiveCaWeight})</th>
+                                            <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider">Exam ({effectiveExamWeight})</th>
                                             <th className="p-2 text-center w-[8.5%] uppercase font-black text-[10px] tracking-wider bg-black/10">Total</th>
                                         </>
                                     )}

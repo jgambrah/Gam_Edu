@@ -132,6 +132,9 @@ export function normalizeMockSeriesInput(rawLabel: string): AcademicSeriesOption
  */
 export function resolveMockSeriesFromAssessment(a: any): AcademicSeriesOption | null {
     if (!a) return null;
+    if (a.reportScope === 'mid_term' || a.mockSeries === 'mid_term' || a.standaloneMidTerm === true) {
+        return null;
+    }
 
     // 1. Explicit mockSeries field if already stamped
     if (typeof a.mockSeries === 'string' && a.mockSeries.trim().startsWith('mock_')) {
@@ -170,13 +173,14 @@ export function isMockAssessment(a: any): boolean {
 }
 
 /**
- * Returns true when a Mid-Term assessment was entered as a 100% Standalone Mid-Term Exam
- * (NOT part of End-of-Term Continuous Assessment / SBA).
- * These records power the Mid-Term Master List & Mid-Term Report Card ONLY and are strictly excluded from End-of-Term CA!
+ * Returns true when an assessment record belongs to the dedicated Mid-Term Report workspace
+ * (`reportScope === 'mid_term'`, plus legacy `standaloneMidTerm` / `mockSeries === 'mid_term'`).
+ * Normal End-of-Term SBA Mid-Term column records (`Mid-Term (CA)` without `reportScope: 'mid_term'`)
+ * return FALSE here so End-of-Term SBA behaves 100% as it always did!
  */
-export function isStandaloneMidTermAssessment(a: any): boolean {
+export function isMidTermReportScopeAssessment(a: any): boolean {
     if (!a || isMockAssessment(a)) return false;
-    if (a.standaloneMidTerm === true || a.excludeFromCa === true || a.mockSeries === 'mid_term') {
+    if (a.reportScope === 'mid_term' || a.standaloneMidTerm === true || a.excludeFromCa === true || a.mockSeries === 'mid_term') {
         return true;
     }
     const typeLower = String(a.assessmentType || '').toLowerCase();
@@ -190,16 +194,18 @@ export function isStandaloneMidTermAssessment(a: any): boolean {
         combined.includes('mid sem') ||
         combined.includes('midsemester');
     if (!hasMid) return false;
-    // Explicitly marked standalone / 100% exam (whereas SBA Mid-Term has "(CA)" and no "standalone"/"100%")
     if (combined.includes('standalone') || combined.includes('100%') || typeLower === 'mid-term exam') {
         return true;
     }
     return false;
 }
 
+/** Alias kept for clean compatibility across pages. */
+export const isStandaloneMidTermAssessment = isMidTermReportScopeAssessment;
+
 export function isMidTermAssessment(a: any): boolean {
     if (!a || isMockAssessment(a)) return false;
-    if (isStandaloneMidTermAssessment(a)) return true;
+    if (isMidTermReportScopeAssessment(a)) return true;
     const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
     return (
         combined.includes('mid-term') ||
@@ -212,15 +218,142 @@ export function isMidTermAssessment(a: any): boolean {
 }
 
 /**
- * Given a student's assessments in one subject, selects the Mid-Term records for a Mid-Term report/master list:
- * Prioritizes Standalone 100% Mid-Term Exam records if present (so SBA Mid-Term and Standalone Mid-Term never double-sum),
- * otherwise falls back to SBA Mid-Term (CA) records.
+ * Resolves which slot inside the Mid-Term Report sheet a Mid-Term record belongs to:
+ * `'test'` (Class Exercise / Test), `'hw'` (Homework), `'project'` (Project / CW), or `'exam'` (Mid-Term Exam).
  */
-export function selectMidTermRecordsForSubject<T = any>(items: T[]): T[] {
+export function resolveMidTermSlot(a: any): 'test' | 'hw' | 'project' | 'exam' {
+    if (!a) return 'exam';
+    const explicit = String(a.midTermSlot || '').toLowerCase();
+    if (explicit === 'test' || explicit === 'hw' || explicit === 'project' || explicit === 'exam') {
+        return explicit;
+    }
+    if (a.standaloneMidTerm === true && !a.midTermSlot) {
+        return 'exam';
+    }
+    const stripped = `${a.assessmentType || ''} ${a.assessmentName || ''}`
+        .toLowerCase()
+        .replace(/mid[\s-]*term|mid[\s-]*sem(?:ester)?/g, ' ')
+        .trim();
+    if (stripped.includes('exam') || stripped === '' || stripped === '(ca)' || stripped === '(100%)') {
+        return 'exam';
+    }
+    if (stripped.includes('proj') || stripped.includes('group') || stripped.includes('practical')) {
+        return 'project';
+    }
+    if (stripped.includes('home') || stripped.includes('hw') || stripped.includes('assignment')) {
+        return 'hw';
+    }
+    return 'test';
+}
+
+/**
+ * Given all assessments in a class+subject, selects the records that feed the Mid-Term Report:
+ * - If ANY dedicated Mid-Term workspace records (`isMidTermReportScopeAssessment`) exist in the class for this subject,
+ *   ONLY those dedicated Mid-Term records are used (CA + Mid-Term Exam), keeping End-of-Term completely separate!
+ * - Otherwise (legacy fallback before dedicated Mid-Term tab), falls back to legacy Mid-Term records.
+ */
+export function selectMidTermRecordsForSubject<T = any>(items: T[], classSubjectItems?: T[]): T[] {
     if (!items || items.length === 0) return [];
-    const standalone = items.filter(a => isStandaloneMidTermAssessment(a));
-    if (standalone.length > 0) return standalone;
+    const pool = classSubjectItems && classSubjectItems.length > 0 ? classSubjectItems : items;
+    const classHasDedicatedMidTerm = pool.some(a => isMidTermReportScopeAssessment(a));
+    if (classHasDedicatedMidTerm) {
+        return items.filter(a => isMidTermReportScopeAssessment(a));
+    }
     return items.filter(a => isMidTermAssessment(a));
+}
+
+/**
+ * Computes a student's Mid-Term subject result (`CA + Mid-Term Exam = Total`), supporting BOTH:
+ * 1) Full Mid-Term SBA + Mid-Term Exam (Class Exercise/Tests + Homework + Project scaled to `caWeight`, plus Mid-Term Exam scaled to `examWeight`).
+ * 2) Pure 100% Mid-Term Exam (automatically when `caWeight === 0` OR when zero Mid-Term CA marks were entered across the class for this subject).
+ */
+export function computeMidTermSubjectScore(params: {
+    studentItems: any[];
+    classSubjectItems?: any[];
+    caWeight: number;
+    examWeight: number;
+}): {
+    ca: number;
+    exam: number;
+    total: number;
+    isSingleExamOnly: boolean;
+    rawDisplay?: string;
+} | null {
+    const num = (v: any, d: number) => {
+        const n = Number(v);
+        return isFinite(n) ? n : d;
+    };
+    const allSubItems = selectMidTermRecordsForSubject(
+        params.classSubjectItems && params.classSubjectItems.length > 0 ? params.classSubjectItems : params.studentItems,
+        params.classSubjectItems
+    );
+    const myItems = selectMidTermRecordsForSubject(params.studentItems, params.classSubjectItems);
+    if (!myItems || myItems.length === 0) return null;
+
+    // Inspect which CA slots actually exist across the class in this subject so unused columns (e.g. Project left blank for everyone) never penalize students
+    const classTestMaxes: number[] = [];
+    const distinctClassTests = new Set<string>();
+    let classHwMax = 0;
+    let classProjMax = 0;
+    allSubItems.forEach((a: any) => {
+        const slot = resolveMidTermSlot(a);
+        const m = num(a.maxScore, 20) || 20;
+        if (slot === 'test') {
+            classTestMaxes.push(m);
+            distinctClassTests.add(String(a.assessmentName || 'test 1').trim().toLowerCase());
+        } else if (slot === 'hw' && m > classHwMax) classHwMax = m;
+        else if (slot === 'project' && m > classProjMax) classProjMax = m;
+    });
+    const classTestMax = classTestMaxes.length > 0
+        ? classTestMaxes.reduce((s, v) => s + v, 0) / classTestMaxes.length
+        : 0;
+    const activeCaMax = classTestMax + classHwMax + classProjMax;
+
+    const myTests = myItems.filter(a => resolveMidTermSlot(a) === 'test');
+    const myHws = myItems.filter(a => resolveMidTermSlot(a) === 'hw');
+    const myProjs = myItems.filter(a => resolveMidTermSlot(a) === 'project');
+    const myExams = myItems.filter(a => resolveMidTermSlot(a) === 'exam');
+
+    // Pure 100% Mid-Term Exam mode (either explicit 0% CA weight OR no Mid-Term CA entered anywhere in this subject)
+    if (params.caWeight <= 0 || activeCaMax <= 0) {
+        if (myExams.length === 0) return null;
+        const obtained = myExams.reduce((sum, a) => sum + num(a.score, 0), 0);
+        const max = myExams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
+        if (max <= 0) return null;
+        const pct = Math.min(100, Math.round((obtained / max) * 100));
+        const cleanObt = Math.round(obtained * 10) / 10;
+        const cleanMax = Math.round(max * 10) / 10;
+        return {
+            ca: 0,
+            exam: cleanObt,
+            total: pct,
+            isSingleExamOnly: true,
+            rawDisplay: `${cleanObt}/${cleanMax}`,
+        };
+    }
+
+    const expectedTestCount = Math.max(distinctClassTests.size, myTests.length, 1);
+    const testObt = myTests.length > 0
+        ? myTests.reduce((sum, a) => sum + num(a.score, 0), 0) / expectedTestCount
+        : 0;
+    const hwObt = myHws.length > 0 ? num(myHws[myHws.length - 1].score, 0) : 0;
+    const projObt = myProjs.length > 0 ? num(myProjs[myProjs.length - 1].score, 0) : 0;
+    const caObt = testObt + hwObt + projObt;
+
+    const rawCA = activeCaMax > 0 ? Math.min((caObt / activeCaMax) * params.caWeight, params.caWeight) : 0;
+
+    const exObt = myExams.reduce((sum, a) => sum + num(a.score, 0), 0);
+    const exMax = myExams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
+    const rawExam = exMax > 0 ? Math.min((exObt / exMax) * params.examWeight, params.examWeight) : 0;
+
+    const ca = Math.round(rawCA);
+    const exam = Math.round(rawExam);
+    return {
+        ca,
+        exam,
+        total: Math.min(100, ca + exam),
+        isSingleExamOnly: false,
+    };
 }
 
 export function formatSeriesLabelFromId(seriesId?: string | null): string {

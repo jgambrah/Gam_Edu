@@ -43,11 +43,10 @@ import {
     buildAllAcademicSeriesOptions,
     buildReportCardDocId,
     computeBeceAggregate,
+    computeMidTermSubjectScore,
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
-    isMidTermAssessment,
-    isStandaloneMidTermAssessment,
-    selectMidTermRecordsForSubject,
+    isMidTermReportScopeAssessment,
     isMockAssessment,
     matchesReportSeries,
     resolveMockSeriesFromAssessment,
@@ -87,16 +86,17 @@ function commentsSayPromoted(text: string): boolean {
 
 /**
  * Computes one subject's score for one student for the selected report series:
- *   - `end_of_term`: SBA (CA) + End-of-Term Exam. Mock exams are strictly excluded so Mocks never contaminate terminal totals.
- *   - `mid_term`: 100% Mid-Term assessment scaled out of 100.
+ *   - `end_of_term`: SBA (CA) + End-of-Term Exam. Mock exams and Dedicated Mid-Term Report items are strictly excluded.
+ *   - `mid_term`: Dedicated Mid-Term CA + Mid-Term Exam (or 100% Mid-Term Exam if no Mid-Term CA exists in that subject).
  *   - `mock_1`, `mock_2`, ...: 100% standalone Mock score for that exact Mock series only.
  */
 function computeSubjectScore(
     items: any[],
     caWeight: number,
     examWeight: number,
-    reportSeries: AcademicSeriesId = 'end_of_term'
-): { ca: number; exam: number; total: number; rawDisplay?: string } | null {
+    reportSeries: AcademicSeriesId = 'end_of_term',
+    classSubjectItems?: any[]
+): { ca: number; exam: number; total: number; rawDisplay?: string; isSingleExamOnly?: boolean } | null {
     if (!items || items.length === 0) return null;
     const num = (v: any, d: number) => { const n = Number(v); return isFinite(n) ? n : d; };
 
@@ -109,23 +109,20 @@ function computeSubjectScore(
         const pct = Math.min(100, Math.round((obtained / max) * 100));
         const cleanObt = Math.round(obtained * 10) / 10;
         const cleanMax = Math.round(max * 10) / 10;
-        return { ca: 0, exam: cleanObt, total: pct, rawDisplay: `${cleanObt}/${cleanMax}` };
+        return { ca: 0, exam: cleanObt, total: pct, rawDisplay: `${cleanObt}/${cleanMax}`, isSingleExamOnly: true };
     }
 
     if (reportSeries === 'mid_term') {
-        const midItems = selectMidTermRecordsForSubject(items);
-        if (midItems.length === 0) return null;
-        const obtained = midItems.reduce((sum, a) => sum + num(a.score, 0), 0);
-        const max = midItems.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
-        if (max <= 0) return null;
-        const pct = Math.min(100, Math.round((obtained / max) * 100));
-        const cleanObt = Math.round(obtained * 10) / 10;
-        const cleanMax = Math.round(max * 10) / 10;
-        return { ca: 0, exam: cleanObt, total: pct, rawDisplay: `${cleanObt}/${cleanMax}` };
+        return computeMidTermSubjectScore({
+            studentItems: items,
+            classSubjectItems,
+            caWeight,
+            examWeight,
+        });
     }
 
-    // End of Term: strictly exclude Mock assessments AND Standalone 100% Mid-Term exams!
-    const nonMockItems = items.filter(a => !isMockAssessment(a) && !isStandaloneMidTermAssessment(a));
+    // End of Term: strictly exclude Mock assessments AND Dedicated Mid-Term Report workspace records!
+    const nonMockItems = items.filter(a => !isMockAssessment(a) && !isMidTermReportScopeAssessment(a));
     if (nonMockItems.length === 0) return null;
 
     const typeOf = (a: any) => String(a.assessmentType || '').toLowerCase();
@@ -743,8 +740,12 @@ export default function ReportCardManager() {
 
         try {
             const targetClass = classes?.find((c: any) => c.id === classId);
-            const currentCaWeight = targetClass?.caWeight ?? CA_WEIGHT;
-            const currentExamWeight = targetClass?.examWeight ?? EXAM_WEIGHT;
+            const currentCaWeight = isMidTermSeries && typeof targetClass?.midTermCaWeight === 'number'
+                ? targetClass.midTermCaWeight
+                : (targetClass?.caWeight ?? CA_WEIGHT);
+            const currentExamWeight = isMidTermSeries && typeof targetClass?.midTermExamWeight === 'number'
+                ? targetClass.midTermExamWeight
+                : (targetClass?.examWeight ?? EXAM_WEIGHT);
             const currentClassName = targetClass?.name || '';
             const usesBeceGrading = isMockSeries && isJhsOrBeceClass(currentClassName);
 
@@ -799,14 +800,18 @@ export default function ReportCardManager() {
             // 4. Grades Weighting & Position computation (strictly scoped to reportSeries!)
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
-            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+            const subjectAllMap: Record<string, any[]> = {};
+            subjects?.forEach((sub: any) => {
+                subjectStats[sub.id] = { totalScores: [], sum: 0 };
+                subjectAllMap[sub.id] = allAssessments.filter(a => a.subjectId === sub.id);
+            });
             
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
                     const scored = computeSubjectScore(
-                        allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id),
-                        currentCaWeight, currentExamWeight, reportSeries
+                        subjectAllMap[sub.id].filter(a => a.studentId === stu.uid),
+                        currentCaWeight, currentExamWeight, reportSeries, subjectAllMap[sub.id]
                     );
                     if (!scored) return;
                     grandTotal += scored.total;
@@ -828,8 +833,8 @@ export default function ReportCardManager() {
             let subjectsTaken = 0;
             subjects?.forEach((sub: any) => {
                 const scored = computeSubjectScore(
-                    allAssessments.filter(a => a.studentId === selectedStudentId && a.subjectId === sub.id),
-                    currentCaWeight, currentExamWeight, reportSeries
+                    subjectAllMap[sub.id].filter(a => a.studentId === selectedStudentId),
+                    currentCaWeight, currentExamWeight, reportSeries, subjectAllMap[sub.id]
                 );
                 if (!scored) return;
                 const finalCA = scored.ca;
@@ -849,6 +854,7 @@ export default function ReportCardManager() {
                     ca: finalCA,
                     exam: finalExam,
                     rawDisplay: scored.rawDisplay,
+                    isSingleExamOnly: scored.isSingleExamOnly === true,
                     total: total100, grade, autoRemark,
                     classAverage: subjectStats[sub.id].totalScores.length > 0
                         ? Math.round(subjectStats[sub.id].sum / subjectStats[sub.id].totalScores.length) : 0,
@@ -973,8 +979,9 @@ export default function ReportCardManager() {
                 term,
                 academicYear,
                 className: currentClassName,
-                caWeight: isSingleExamSeries ? 0 : currentCaWeight,
-                examWeight: isSingleExamSeries ? 100 : currentExamWeight,
+                isSingleExamOnly: isMockSeries || (isMidTermSeries && reportRows.every((r: any) => r.isSingleExamOnly === true)),
+                caWeight: (isMockSeries || (isMidTermSeries && reportRows.every((r: any) => r.isSingleExamOnly === true))) ? 0 : currentCaWeight,
+                examWeight: (isMockSeries || (isMidTermSeries && reportRows.every((r: any) => r.isSingleExamOnly === true))) ? 100 : currentExamWeight,
                 reportCardPositionMode: schoolProfile?.reportCardPositionMode || 'both',
                 gradingSystem: schoolProfile?.gradingSystem || null,
             });
@@ -997,8 +1004,12 @@ export default function ReportCardManager() {
         setIsCompilingAll(true);
         try {
             const targetClass = classes?.find((c: any) => c.id === classId);
-            const currentCaWeight = targetClass?.caWeight ?? CA_WEIGHT;
-            const currentExamWeight = targetClass?.examWeight ?? EXAM_WEIGHT;
+            const currentCaWeight = isMidTermSeries && typeof targetClass?.midTermCaWeight === 'number'
+                ? targetClass.midTermCaWeight
+                : (targetClass?.caWeight ?? CA_WEIGHT);
+            const currentExamWeight = isMidTermSeries && typeof targetClass?.midTermExamWeight === 'number'
+                ? targetClass.midTermExamWeight
+                : (targetClass?.examWeight ?? EXAM_WEIGHT);
             const currentClassName = targetClass?.name || '';
             const usesBeceGrading = isMockSeries && isJhsOrBeceClass(currentClassName);
 
@@ -1059,14 +1070,18 @@ export default function ReportCardManager() {
 
             const studentTotals: Record<string, number> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
-            subjects?.forEach((sub: any) => { subjectStats[sub.id] = { totalScores: [], sum: 0 }; });
+            const subjectAllMap: Record<string, any[]> = {};
+            subjects?.forEach((sub: any) => {
+                subjectStats[sub.id] = { totalScores: [], sum: 0 };
+                subjectAllMap[sub.id] = allAssessments.filter(a => a.subjectId === sub.id);
+            });
 
             activeStudents.forEach((stu: any) => {
                 let grandTotal = 0;
                 subjects?.forEach((sub: any) => {
                     const scored = computeSubjectScore(
-                        allAssessments.filter(a => a.studentId === stu.uid && a.subjectId === sub.id),
-                        currentCaWeight, currentExamWeight, reportSeries
+                        subjectAllMap[sub.id].filter(a => a.studentId === stu.uid),
+                        currentCaWeight, currentExamWeight, reportSeries, subjectAllMap[sub.id]
                     );
                     if (!scored) return;
                     grandTotal += scored.total;
@@ -1094,8 +1109,8 @@ export default function ReportCardManager() {
 
                 subjects?.forEach((sub: any) => {
                     const scored = computeSubjectScore(
-                        allAssessments.filter(a => a.studentId === stuId && a.subjectId === sub.id),
-                        currentCaWeight, currentExamWeight, reportSeries
+                        subjectAllMap[sub.id].filter(a => a.studentId === stuId),
+                        currentCaWeight, currentExamWeight, reportSeries, subjectAllMap[sub.id]
                     );
                     if (!scored) return;
                     myGrandTotal += scored.total;
@@ -1111,6 +1126,7 @@ export default function ReportCardManager() {
                         ca: scored.ca,
                         exam: scored.exam,
                         rawDisplay: scored.rawDisplay,
+                        isSingleExamOnly: scored.isSingleExamOnly === true,
                         total: scored.total,
                         grade,
                         autoRemark,
@@ -1128,6 +1144,7 @@ export default function ReportCardManager() {
                 const beceAgg = usesBeceGrading ? computeBeceAggregate(beceInputs) : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
                 const presentDays = allAttRecords.filter(r => r.studentId === stuId && (r.status === 'Present' || r.status === 'Late')).length;
                 const docId = buildReportCardDocId(stuId, academicYear, term, reportSeries);
+                const isCardSingleExamOnly = isMockSeries || (isMidTermSeries && reportRows.every((r: any) => r.isSingleExamOnly === true));
 
                 const autoTeacherComment = existingCard?.classTeacherComment
                     || (overallAverage >= 80 ? 'Outstanding performance. Keep up the excellence!'
@@ -1144,6 +1161,7 @@ export default function ReportCardManager() {
                     className: currentClassName,
                     reportSeries,
                     reportSeriesLabel: activeSeriesOption.shortLabel,
+                    isSingleExamOnly: isCardSingleExamOnly,
                     usesBeceGrading,
                     beceAggregate: beceAgg.aggregate,
                     beceSubjectsUsed: beceAgg.subjectsUsed,
@@ -1175,8 +1193,8 @@ export default function ReportCardManager() {
                     headmasterComment: existingCard?.headmasterComment || '',
                     term,
                     academicYear,
-                    caWeight: isSingleExamSeries ? 0 : currentCaWeight,
-                    examWeight: isSingleExamSeries ? 100 : currentExamWeight,
+                    caWeight: isCardSingleExamOnly ? 0 : currentCaWeight,
+                    examWeight: isCardSingleExamOnly ? 100 : currentExamWeight,
                     reportCardPositionMode: schoolProfile?.reportCardPositionMode || 'both',
                     gradingSystem: schoolProfile?.gradingSystem || null,
                     status: 'Draft',

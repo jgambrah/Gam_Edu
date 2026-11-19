@@ -150,7 +150,9 @@ import {
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
     isMidTermAssessment,
+    isMidTermReportScopeAssessment,
     isStandaloneMidTermAssessment,
+    resolveMidTermSlot,
     isMockAssessment,
     resolveMockSeriesFromAssessment,
     type AcademicSeriesId,
@@ -385,8 +387,12 @@ export default function AcademicReportsPage() {
     const CA_WEIGHT = schoolProfile?.caWeight ?? 50;
     const EXAM_WEIGHT = schoolProfile?.examWeight ?? 50;
 
-    const currentCaWeight = selectedClass?.caWeight ?? CA_WEIGHT;
-    const currentExamWeight = selectedClass?.examWeight ?? EXAM_WEIGHT;
+    const currentCaWeight = selectedSeries === 'mid_term' && typeof (selectedClass as any)?.midTermCaWeight === 'number'
+        ? (selectedClass as any).midTermCaWeight
+        : (selectedClass?.caWeight ?? CA_WEIGHT);
+    const currentExamWeight = selectedSeries === 'mid_term' && typeof (selectedClass as any)?.midTermExamWeight === 'number'
+        ? (selectedClass as any).midTermExamWeight
+        : (selectedClass?.examWeight ?? EXAM_WEIGHT);
 
     // Build comprehensive lookup index for students across all identifiers:
     // id (Firestore doc ID), uid, studentId (admission ID), admissionNumber, indexNumber, name
@@ -693,7 +699,6 @@ export default function AcademicReportsPage() {
 
     const isMockSeries = selectedSeries.startsWith('mock_');
     const isMidTermSeries = selectedSeries === 'mid_term';
-    const isSingleExamSeries = isMockSeries || isMidTermSeries;
     const isBeceClass = isJhsOrBeceClass(selectedClass?.name);
 
     // Discover which report series have marks in the currently selected Class + Term + Year
@@ -711,10 +716,10 @@ export default function AcademicReportsPage() {
             if (mockOpt) {
                 const cur = counts.get(mockOpt.id) || { id: mockOpt.id, label: mockOpt.label, count: 0 };
                 cur.count++;
-                counts.set(mockOpt.id, cur);
+                counts.set(kSafe(mockOpt.id), cur);
                 return;
             }
-            if (isStandaloneMidTermAssessment(a)) {
+            if (isMidTermReportScopeAssessment(a)) {
                 const curMid = counts.get('mid_term') || { id: 'mid_term', label: 'Mid-Term', count: 0 };
                 curMid.count++;
                 counts.set('mid_term', curMid);
@@ -729,23 +734,28 @@ export default function AcademicReportsPage() {
             endCur.count++;
             counts.set('end_of_term', endCur);
         });
+        function kSafe(id: AcademicSeriesId) { return id; }
         return Array.from(counts.values());
     }, [classAssessments]);
 
     // Filter classAssessments strictly to the selected report series!
-    // - End of Term: NEVER contaminated by Mock Exam marks, Standalone 100% Mid-Term marks, or non-terminal report cards
-    // - Mid-Term: ONLY Mid-Term assessments (prioritizing Standalone 100% Mid-Term Exam per student+subject)
+    // - End of Term: NEVER contaminated by Mock Exam marks, Dedicated Mid-Term workspace marks, or non-terminal report cards
+    // - Mid-Term: Dedicated Mid-Term workspace marks (CA + Mid-Term Exam) if present, else legacy Mid-Term marks
     // - Mock N: ONLY assessments belonging to that exact Mock N (legacy unnumbered mocks map cleanly to Mock 1)
     const seriesAssessments = useMemo(() => {
         if (!classAssessments || classAssessments.length === 0) return [];
+        const classHasDedicatedMidTerm = classAssessments.some((a: any) =>
+            a._reportSeries === 'mid_term' || isMidTermReportScopeAssessment(a)
+        );
         return classAssessments.filter((a: any) => {
             if (selectedSeries === 'end_of_term') {
                 if (a._reportSeries && a._reportSeries !== 'end_of_term') return false;
-                if (isMockAssessment(a) || isStandaloneMidTermAssessment(a)) return false;
+                if (isMockAssessment(a) || isMidTermReportScopeAssessment(a)) return false;
                 return true;
             }
             if (selectedSeries === 'mid_term') {
                 if (a._reportSeries) return a._reportSeries === 'mid_term';
+                if (classHasDedicatedMidTerm) return isMidTermReportScopeAssessment(a);
                 return isMidTermAssessment(a) || a.midSem !== undefined || a.midTerm !== undefined;
             }
             if (selectedSeries.startsWith('mock_')) {
@@ -756,6 +766,20 @@ export default function AcademicReportsPage() {
             return true;
         });
     }, [classAssessments, selectedSeries]);
+
+    // Mid-Term uses weighted CA + Mid-Term Exam whenever Mid-Term CA records exist (and caWeight > 0),
+    // and automatically falls back to a 100% Single-Exam broadsheet if a school only recorded Mid-Term Exam marks!
+    const midTermHasAnyCaRecords = useMemo(() => {
+        if (!isMidTermSeries) return false;
+        return seriesAssessments.some((a: any) => {
+            if (isMidTermReportScopeAssessment(a)) {
+                return resolveMidTermSlot(a) !== 'exam';
+            }
+            return a.caScore !== undefined && Number(a.caScore) > 0;
+        });
+    }, [isMidTermSeries, seriesAssessments]);
+
+    const isSingleExamSeries = isMockSeries || (isMidTermSeries && (currentCaWeight <= 0 || !midTermHasAnyCaRecords));
 
     // Distinct subjects compiled from registered subjects and series assessments
     const rawDistinctSubjectsList = useMemo(() => {
@@ -914,7 +938,14 @@ export default function AcademicReportsPage() {
     }, [isReportRequested, selectedYear, selectedTerm, selectedClassId, rawAssessments, rawGrades, rawMarks, rawReportCards, rawReportCardsAlt, rawTermReportCards, classAssessments.length]);
 
     // Data Aggregation Engine (Aggregates assessments by student & subject)
-    const getCategoryKey = (type: string, name?: string) => {
+    const getCategoryKey = (type: string, name?: string, record?: any) => {
+        if (record && isMidTermReportScopeAssessment(record)) {
+            const slot = resolveMidTermSlot(record);
+            if (slot === 'exam') return 'exam';
+            if (slot === 'hw') return 'hw';
+            if (slot === 'project') return 'proj';
+            return 'classEx';
+        }
         const t = `${type || ''} ${name || ''}`.toLowerCase();
         if (t.includes('mock')) return 'mock';
         if (t.includes('mid')) return 'midSem';
@@ -1291,7 +1322,7 @@ export default function AcademicReportsPage() {
             const maxScoreVal = Number(a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100);
 
             if (!isNaN(scoreVal) && (scoreVal > 0 || maxScoreVal > 0)) {
-                const categoryKey = getCategoryKey(a.assessmentType, a.assessmentName);
+                const categoryKey = getCategoryKey(a.assessmentType, a.assessmentName, a);
 
                 if (directClassEx === undefined && categoryKey === 'classEx') {
                     entry.classEx.score += scoreVal;
@@ -1554,7 +1585,7 @@ export default function AcademicReportsPage() {
                 if (a.caScore !== undefined) directCa = Number(a.caScore);
                 if (a.examScore !== undefined) directExam = Number(a.examScore);
 
-                const category = getCategoryKey(a.assessmentType, a.assessmentName);
+                const category = getCategoryKey(a.assessmentType, a.assessmentName, a);
                 if (isSingleExamSeries || category === 'exam' || category === 'mock') {
                     examScore += (Number(a.score) || 0);
                     examMax += (Number(a.maxScore) || 100);
