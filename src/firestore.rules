@@ -250,9 +250,21 @@ service cloud.firestore {
     function notArchivedOrAdmin() {
       return resource == null || resource.data.get('isArchived', false) != true || isAdmin();
     }
-    // Academic marks: teachers / staff / admins only. Quiz marks are graded and written by the server.
+    function isAcademicStaff() {
+      return isSignedIn() && (
+        isAdmin() ||
+        getUserRole() in ['Teacher', 'teacher', 'Subject Teacher', 'Class Teacher', 'Instructor', 'Faculty', 'Head of Department', 'Tutor'] ||
+        (request.auth.token != null && request.auth.token.role in ['Teacher', 'teacher', 'instructor']) ||
+        (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/staff/$(request.auth.uid)).data.get('role', '') in [
+           'Teacher', 'teacher', 'Subject Teacher', 'Class Teacher', 'Instructor', 'Faculty', 'Head of Department', 'Tutor'
+         ])
+      );
+    }
+
+    // Academic marks: academic staff / admins in their own school only. Quiz marks are graded and written by the server.
     function canCreateAssessment() {
-      return isTeacher() || isAdmin();
+      return isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && getUserSchoolId() != '' && newDocInMySchool());
     }
 
     function isFinanceStaff() { 
@@ -291,7 +303,26 @@ service cloud.firestore {
     function isTransportStaff() { return isAdmin() || getUserRole() == 'Transport Staff' || getUserRole() == 'transport staff'; }
 
     function parentOwnsStudent(studentId) {
-      return isParent() && studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentIds;
+      return isParent() && (
+        (exists(/databases/$(database)/documents/parents/$(request.auth.uid)) && (
+          studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.get('studentIds', []) ||
+          studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.get('childrenIds', []) ||
+          studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.get('linkedStudentIds', []) ||
+          studentId in get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.get('students', [])
+        )) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          studentId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('studentIds', []) ||
+          studentId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('childrenIds', []) ||
+          studentId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('linkedStudentIds', []) ||
+          studentId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('students', [])
+        ))
+      );
+    }
+
+    function canReadAssessmentDoc() {
+      return isSuperAdmin()
+        || (isSignedIn() && resource.data.studentId == request.auth.uid)
+        || (inMySchool() && (isAdmin() || isAcademicStaff() || parentOwnsStudent(resource.data.studentId)));
     }
 
     // A pupil's school records (marks, attendance, behaviour, homework, quiz attempts…) can be read only by
@@ -446,8 +477,8 @@ service cloud.firestore {
       }
 
       match /classes/{classId} {
-        allow read, get, list: if true;
-        allow write: if isSignedIn() && (isSuperAdmin() || isAdmin() || isTeacher());
+        allow read, get, list: if isSignedIn() && (isSuperAdmin() || getUserSchoolId() == schoolId);
+        allow write: if isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && getUserSchoolId() == schoolId);
       }
 
       match /campus_tours/{tourId} {
@@ -696,8 +727,7 @@ service cloud.firestore {
     match /academic_report_snapshots/{snapshotId} {
       allow get: if ownSchoolSnapshot(snapshotId);
       allow list: if false;
-      allow create, update: if ownSchoolSnapshot(snapshotId);
-      allow delete: if isAdmin() && ownSchoolSnapshot(snapshotId);
+      allow create, update, delete: if isSuperAdmin() || (isAdmin() && ownSchoolSnapshot(snapshotId));
     }
 
     match /attendance_report_snapshots/{snapshotId} {
@@ -761,41 +791,43 @@ service cloud.firestore {
     // =========================================================
 
      match /classes/{classId} {
-      allow read, list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow get: if isSignedIn() && (resource == null || isSuperAdmin() || resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId());
+      allow list: if isSuperAdmin() || inMySchool();
+      allow create: if isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && getUserSchoolId() != '' && request.resource.data.schoolId == getUserSchoolId());
+      allow update: if isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && getUserSchoolId() != '' && docInMySchool());
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
     }
 
     match /subjects/{subjectId} {
-      allow read, list: if isSignedIn();
-      allow create, update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() == request.resource.data.schoolId);
-      allow delete: if isSuperAdmin() || isAdmin();
+      allow get: if isSignedIn() && (resource == null || isSuperAdmin() || resource.data.get('schoolId', getUserSchoolId()) == getUserSchoolId());
+      allow list: if isSuperAdmin() || inMySchool();
+      allow create: if isSuperAdmin() || (isAdmin() && getUserSchoolId() != '' && request.resource.data.schoolId == getUserSchoolId());
+      allow update: if isSuperAdmin() || (isAdmin() && getUserSchoolId() != '' && docInMySchool());
+      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
     }
 
     match /subjects/{subjectId}/assessments/{assessmentId} {
-        // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
-        allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
-        allow list: if schoolRecordReadable();
-        allow create, update: if isSuperAdmin() || ((isAdmin() || isTeacher()) && getUserSchoolId() == request.resource.data.schoolId);
-        allow delete: if isSuperAdmin() || isAdmin() || isTeacher();
+        allow get: if isSignedIn() && (resource == null || canReadAssessmentDoc());
+        allow list: if canReadAssessmentDoc();
+        allow create: if canCreateAssessment();
+        allow update: if (isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && docInMySchool())) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && existingDocInMySchool())) && notArchivedOrAdmin();
     }
 
     match /assessments/{assessmentId} {
-        // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
-        allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
-        allow list: if schoolRecordReadable();
+        allow get: if isSignedIn() && (resource == null || canReadAssessmentDoc());
+        allow list: if canReadAssessmentDoc();
         allow create: if canCreateAssessment();
-        allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
-        allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
+        allow update: if (isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && docInMySchool())) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && existingDocInMySchool())) && notArchivedOrAdmin();
     }
 
     match /{path=**}/assessments/{assessmentId} {
-        // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
-        allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
-        allow list: if schoolRecordReadable();
+        allow get: if isSignedIn() && (resource == null || canReadAssessmentDoc());
+        allow list: if canReadAssessmentDoc();
         allow create: if canCreateAssessment();
-        allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
-        allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
+        allow update: if (isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && docInMySchool())) && notArchivedOrAdmin();
+        allow delete: if (isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && existingDocInMySchool())) && notArchivedOrAdmin();
     }
 
     match /{path=**}/liveSessions/{sessionId} {
@@ -885,15 +917,63 @@ service cloud.firestore {
     }
 
      match /report-cards/{reportId} {
-      allow get: if isSignedIn() && (isSuperAdmin() || (getUserSchoolId() == resource.data.schoolId && (
-        isTeacher() || isStaff() || isAdmin() || isDirector() ||
-        resource.data.studentId == request.auth.uid ||
-        parentOwnsStudent(resource.data.studentId)
-      )));
-      allow list: if schoolRecordReadable();
-      allow create: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId);
-      allow update: if isSuperAdmin() || ((isTeacher() || isStaff() || isAdmin()) && getUserSchoolId() == request.resource.data.schoolId && notArchivedOrAdmin());
-      allow delete: if (isSuperAdmin() || isAdmin()) && notArchivedOrAdmin();
+      allow get: if isSignedIn() && (
+        isSuperAdmin() ||
+        (resource == null && (isAdmin() || isAcademicStaff())) ||
+        (inMySchool() && (
+          isAdmin() || isAcademicStaff() ||
+          (resource.data.get('status', '') == 'Published' && (
+            resource.data.studentId == request.auth.uid ||
+            parentOwnsStudent(resource.data.studentId)
+          ))
+        ))
+      );
+      allow list: if isSuperAdmin() || (inMySchool() && (
+        isAdmin() || isAcademicStaff() ||
+        (resource.data.get('status', '') == 'Published' && (
+          resource.data.studentId == request.auth.uid ||
+          parentOwnsStudent(resource.data.studentId)
+        ))
+      ));
+      allow create: if isSuperAdmin() || (
+        getUserSchoolId() != '' &&
+        request.resource.data.schoolId == getUserSchoolId() &&
+        (isAdmin() || (isAcademicStaff() && request.resource.data.get('status', 'Draft') == 'Draft'))
+      );
+      allow update: if isSuperAdmin() || (
+        getUserSchoolId() != '' &&
+        docInMySchool() &&
+        notArchivedOrAdmin() &&
+        (isAdmin() || (
+          isAcademicStaff() &&
+          resource.data.get('status', 'Draft') != 'Published' &&
+          request.resource.data.get('status', 'Draft') == 'Draft' &&
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['headmasterSignedAt', 'digitalFingerprint'])
+        ))
+      );
+      allow delete: if (isSuperAdmin() || (isAdmin() && existingDocInMySchool())) && notArchivedOrAdmin();
+    }
+
+    match /term_report_cards/{reportId} {
+      allow get: if isSignedIn() && (
+        isSuperAdmin() ||
+        (resource == null && (isAdmin() || isAcademicStaff())) ||
+        (inMySchool() && (
+          isAdmin() || isAcademicStaff() ||
+          (resource.data.get('status', 'Published') == 'Published' && (
+            resource.data.studentId == request.auth.uid ||
+            parentOwnsStudent(resource.data.studentId)
+          ))
+        ))
+      );
+      allow list: if isSuperAdmin() || (inMySchool() && (
+        isAdmin() || isAcademicStaff() ||
+        (resource.data.get('status', 'Published') == 'Published' && (
+          resource.data.studentId == request.auth.uid ||
+          parentOwnsStudent(resource.data.studentId)
+        ))
+      ));
+      allow write: if false; // server-only (academic-rollover / lockTermReportCards)
     }
 
     match /report_card_remarks/{id} {
@@ -967,15 +1047,6 @@ service cloud.firestore {
       // Students' attempts are graded and saved by the server (submitQuizAttemptAction).
       allow create, update: if isTeacher() || isAdmin();
       allow delete: if isSuperAdmin() || isAdmin();
-    }
-
-    match /assessments/{assessmentId} {
-      // A document that does not exist yet may be looked up (e.g. today's register before it is first saved).
-      allow get: if isSignedIn() && (resource == null || schoolRecordReadable());
-      allow list: if schoolRecordReadable();
-      allow create: if canCreateAssessment();
-      allow update: if (isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
-      allow delete: if (isSuperAdmin() || isAdmin() || (isTeacher() && (resource.data.get('schoolId', '') == '' || resource.data.get('schoolId', '') == getUserSchoolId()))) && notArchivedOrAdmin();
     }
 
     match /lesson-plans/{planId} {

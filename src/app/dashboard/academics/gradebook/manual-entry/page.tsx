@@ -45,9 +45,11 @@ import {
     discoverMockSeriesOptions,
     normalizeMockSeriesInput,
     resolveMockSeriesFromAssessment,
+    isMockAssessment,
     isMidTermReportScopeAssessment,
     isStandaloneMidTermAssessment,
     resolveMidTermSlot,
+    resolveSeriesWeights,
     getSeriesGradeFromScore,
     type AcademicSeriesId,
     type AcademicSeriesOption,
@@ -117,8 +119,9 @@ class ChunkedWriter {
 /** Which matrix column a saved mark belongs to (same rules the screen uses to display it). */
 function matrixSlotOf(a: any): string {
     const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
-    // Mock exams and 100% Standalone Mid-Term exams are NOT part of the terminal SBA matrix or CA!
-    if (combined.includes('mock') || isStandaloneMidTermAssessment(a)) return 'other';
+    // Mock exams and dedicated Mid-Term workspace marks are NOT part of the terminal SBA matrix or CA,
+    // while CA tests whose title happens to contain "Mock" (e.g. "Mock Test 1") stay in CA!
+    if (isMockAssessment(a) || isStandaloneMidTermAssessment(a)) return 'other';
     if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) return 'ex';
     if (combined.includes('mid')) return 'mt';
     if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) return 'project';
@@ -159,10 +162,15 @@ export default function GradebookPage() {
     const [mockMaxScore, setMockMaxScore] = useState<number>(100);
     const [mockScores, setMockScores] = useState<Record<string, number | ''>>({});
     const [mockRemarks, setMockRemarks] = useState<Record<string, string>>({});
+    const [mockDirty, setMockDirty] = useState(false);
     const [localCustomMocks, setLocalCustomMocks] = useState<Array<{ id: string; label: string }>>([]);
     const [isCreateMockModalOpen, setIsCreateMockModalOpen] = useState(false);
     const [newMockTitleInput, setNewMockTitleInput] = useState('');
     const [isCreatingMock, setIsCreatingMock] = useState(false);
+
+    // Track removed dynamic test columns so Save deletes their orphaned records from Firestore
+    const [removedMatrixTestNames, setRemovedMatrixTestNames] = useState<string[]>([]);
+    const [removedMidTermTestNames, setRemovedMidTermTestNames] = useState<string[]>([]);
 
     // Filtering State
     const [classId, setClassId] = useState('');
@@ -267,42 +275,27 @@ export default function GradebookPage() {
         return classes?.find((c: any) => c.id === classId);
     }, [classes, classId]);
 
-    // Set dynamic school / class assessment proportions (both End of Term and Dedicated Mid-Term)
+    // Set dynamic school / class assessment proportions (both End of Term and Dedicated Mid-Term) via shared helper
     useEffect(() => {
-        const classCa = selectedClass?.caWeight;
-        const classExam = selectedClass?.examWeight;
-        const schoolCa = schoolSettings?.caWeight;
-        const schoolExam = schoolSettings?.examWeight;
+        const eot = resolveSeriesWeights({
+            series: 'end_of_term',
+            classDoc: selectedClass,
+            schoolSettings,
+        });
+        const mt = resolveSeriesWeights({
+            series: 'mid_term',
+            classDoc: selectedClass,
+            schoolSettings,
+        });
 
-        let resolvedTermCa = 30;
-        let resolvedTermExam = 70;
+        setCaWeight(eot.caWeight);
+        setExamWeight(eot.examWeight);
+        setMidTermCaWeight(mt.caWeight);
+        setMidTermExamWeight(mt.examWeight);
 
-        if (typeof classCa === 'number' && classCa >= 0 && typeof classExam === 'number' && classCa + classExam === 100) {
-            resolvedTermCa = classCa;
-            resolvedTermExam = classExam;
-        } else if (typeof classCa === 'number' && classCa > 0) {
-            resolvedTermCa = classCa;
-            resolvedTermExam = typeof classExam === 'number' ? classExam : 100 - classCa;
-        } else if (typeof schoolCa === 'number' && schoolCa > 0) {
-            resolvedTermCa = schoolCa;
-            resolvedTermExam = typeof schoolExam === 'number' ? schoolExam : 100 - schoolCa;
-        }
-
-        setCaWeight(resolvedTermCa);
-        setExamWeight(resolvedTermExam);
-
-        const mtClassCa = selectedClass?.midTermCaWeight;
-        const mtClassExam = selectedClass?.midTermExamWeight;
-        if (typeof mtClassCa === 'number' && mtClassCa >= 0 && typeof mtClassExam === 'number' && mtClassCa + mtClassExam === 100) {
-            setMidTermCaWeight(mtClassCa);
-            setMidTermExamWeight(mtClassExam);
-        } else {
-            setMidTermCaWeight(resolvedTermCa);
-            setMidTermExamWeight(resolvedTermExam);
-        }
-
-        setCustomCaInput(resolvedTermCa);
-        setCustomExamInput(resolvedTermExam);
+        setCustomCaInput(entryMode === 'midterm' ? mt.caWeight : eot.caWeight);
+        setCustomExamInput(entryMode === 'midterm' ? mt.examWeight : eot.examWeight);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedClass, schoolSettings]);
 
     // Timetable slots are only used to work out a TEACHER's classes/subjects, so only a teacher reads them,
@@ -521,6 +514,7 @@ export default function GradebookPage() {
 
     // Populate Dedicated Mid-Term Sheet (`midTermScores`) whenever rawAssessments changes
     useEffect(() => {
+        setRemovedMidTermTestNames([]);
         const midDocs = (rawAssessments || []).filter((a: any) => isMidTermReportScopeAssessment(a));
         if (midDocs.length === 0) {
             setMidTermScores({});
@@ -536,7 +530,9 @@ export default function GradebookPage() {
         });
         let activeCols = [...midTermTestColumns];
         if (testNames.size > 0) {
-            const sortedNames = Array.from(testNames.values()).sort();
+            const sortedNames = Array.from(testNames.values()).sort((a, b) =>
+                a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+            );
             activeCols = sortedNames.map((name, idx) => ({ id: `mt_test_${idx + 1}`, name }));
             setMidTermTestColumns(activeCols);
         }
@@ -583,6 +579,7 @@ export default function GradebookPage() {
 
     // Populate Mock Exam tab fields whenever rawAssessments or selectedMockSeries changes.
     useEffect(() => {
+        setMockDirty(false);
         if (!rawAssessments || rawAssessments.length === 0) {
             setMockScores({});
             setMockRemarks({});
@@ -647,13 +644,14 @@ export default function GradebookPage() {
     // Populate Matrix from existing marks. Uses the SAME column rules as the save (matrixSlotOf / orderForMatrix),
     // so the mark shown in a cell is exactly the record a save edits or clears.
     useEffect(() => {
+        setRemovedMatrixTestNames([]);
         if (!rawAssessments || rawAssessments.length === 0) {
             setMatrixScores({});
             return;
         }
         const ordered = orderForMatrix(rawAssessments);
 
-        // Identify all unique test names (case-insensitive)
+        // Identify all unique test names (case-insensitive), sorted numerically so Test 2 precedes Test 10
         const testNames = new Map<string, string>();
         ordered.forEach((a: any) => {
             if (matrixSlotOf(a).startsWith('test:')) {
@@ -663,7 +661,9 @@ export default function GradebookPage() {
         });
         let activeTestCols = [...testColumns];
         if (testNames.size > 0) {
-            const sortedNames = Array.from(testNames.values()).sort();
+            const sortedNames = Array.from(testNames.values()).sort((a, b) =>
+                a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+            );
             activeTestCols = sortedNames.map((name, idx) => ({ id: `test_${idx + 1}`, name }));
             setTestColumns(activeTestCols);
         }
@@ -740,20 +740,41 @@ export default function GradebookPage() {
         }
     }, [rawAssessments, assessmentType, assessmentName]);
 
+    // Helper to pick the next unique Test N name so removing Test 2 from [Test 1, Test 2, Test 3] never creates a duplicate "Test 3"
+    const pickNextUniqueTestName = (cols: TestColumnDef[], removedLower: string[]): string => {
+        const taken = new Set<string>([
+            ...cols.map(c => c.name.trim().toLowerCase()),
+            ...removedLower.map(n => n.trim().toLowerCase()),
+        ]);
+        let maxN = cols.length;
+        cols.forEach(c => {
+            const m = c.name.match(/(\d+)\s*$/);
+            if (m) maxN = Math.max(maxN, parseInt(m[1], 10));
+        });
+        let candidateNum = maxN + 1;
+        while (taken.has(`test ${candidateNum}`)) {
+            candidateNum++;
+        }
+        return `Test ${candidateNum}`;
+    };
+
     // Add another test column (e.g. Test 2, Test 3)
     const handleAddTestColumn = () => {
-        const nextNum = testColumns.length + 1;
         const newId = `test_${Date.now()}`;
-        const newName = `Test ${nextNum}`;
+        const newName = pickNextUniqueTestName(testColumns, removedMatrixTestNames);
         setTestColumns(prev => [...prev, { id: newId, name: newName }]);
         toast({ title: "Test Column Added ➕", description: `Added "${newName}" to the Continuous Assessment roster.` });
     };
 
-    // Remove a dynamic test column
+    // Remove a dynamic test column and mark its saved records for deletion on next Save
     const handleRemoveTestColumn = (colId: string) => {
         if (testColumns.length <= 1) return;
         const targetCol = testColumns.find(c => c.id === colId);
         setTestColumns(prev => prev.filter(c => c.id !== colId));
+        if (targetCol?.name) {
+            const lower = targetCol.name.toLowerCase();
+            setRemovedMatrixTestNames(prev => prev.includes(lower) ? prev : [...prev, lower]);
+        }
 
         setMatrixScores(prev => {
             const updated = { ...prev };
@@ -767,7 +788,7 @@ export default function GradebookPage() {
             return updated;
         });
 
-        toast({ title: "Column Removed", description: `Removed ${targetCol?.name || 'test column'} from view.` });
+        toast({ title: "Column Removed", description: `Removed ${targetCol?.name || 'test column'}. Click Save Matrix to delete its saved marks.` });
     };
 
     // Keyboard navigation helper for high-speed mark entry
@@ -840,9 +861,8 @@ export default function GradebookPage() {
 
     // Dedicated Mid-Term Sheet Column & Input Helpers
     const handleAddMidTermTestColumn = () => {
-        const nextNum = midTermTestColumns.length + 1;
         const newId = `mt_test_${Date.now()}`;
-        const newName = `Test ${nextNum}`;
+        const newName = pickNextUniqueTestName(midTermTestColumns, removedMidTermTestNames);
         setMidTermTestColumns(prev => [...prev, { id: newId, name: newName }]);
         toast({ title: "Mid-Term Test Column Added ➕", description: `Added "${newName}" to Mid-Term Continuous Assessment.` });
     };
@@ -851,6 +871,10 @@ export default function GradebookPage() {
         if (midTermTestColumns.length <= 1) return;
         const targetCol = midTermTestColumns.find(c => c.id === colId);
         setMidTermTestColumns(prev => prev.filter(c => c.id !== colId));
+        if (targetCol?.name) {
+            const lower = targetCol.name.toLowerCase();
+            setRemovedMidTermTestNames(prev => prev.includes(lower) ? prev : [...prev, lower]);
+        }
         setMidTermScores(prev => {
             const updated = { ...prev };
             Object.keys(updated).forEach(uid => {
@@ -862,7 +886,7 @@ export default function GradebookPage() {
             });
             return updated;
         });
-        toast({ title: "Column Removed", description: `Removed ${targetCol?.name || 'test column'} from Mid-Term view.` });
+        toast({ title: "Column Removed", description: `Removed ${targetCol?.name || 'test column'}. Click Save Mid-Term Marks to delete its saved marks.` });
     };
 
     const handleMidTermKeyDown = (
@@ -929,6 +953,48 @@ export default function GradebookPage() {
             },
         }));
     };
+
+    // Determine which End-of-Term CA columns actually have scores entered in the class so unused columns (e.g. Project left blank) don't penalize CA — matching Report Cards & Master List!
+    const matrixActiveCaInfo = useMemo(() => {
+        let anyTest = false;
+        let anyHw = false;
+        let anyProj = false;
+        let anyMid = false;
+        let anyExam = false;
+        const activeTestColIds = new Set<string>();
+
+        Object.values(matrixScores).forEach(row => {
+            if (!row) return;
+            testColumns.forEach(tc => {
+                const v = row.tests?.[tc.id];
+                if (v !== '' && v !== undefined && !isNaN(Number(v))) {
+                    anyTest = true;
+                    activeTestColIds.add(tc.id);
+                }
+            });
+            if (row.homework !== '' && row.homework !== undefined && !isNaN(Number(row.homework))) anyHw = true;
+            if (row.project !== '' && row.project !== undefined && !isNaN(Number(row.project))) anyProj = true;
+            if (row.midTerm !== '' && row.midTerm !== undefined && !isNaN(Number(row.midTerm))) anyMid = true;
+            if (row.exam !== '' && row.exam !== undefined && !isNaN(Number(row.exam))) anyExam = true;
+        });
+
+        const activeCaMax =
+            (anyTest ? matrixMaxScores.classTest : 0) +
+            (anyHw ? matrixMaxScores.homework : 0) +
+            (anyProj ? matrixMaxScores.project : 0) +
+            (anyMid ? matrixMaxScores.midTerm : 0);
+
+        return {
+            anyTest,
+            anyHw,
+            anyProj,
+            anyMid,
+            anyExam,
+            anyCa: anyTest || anyHw || anyProj || anyMid,
+            activeTestCount: Math.max(activeTestColIds.size, 1),
+            activeCaMax,
+        };
+    }, [matrixScores, testColumns, matrixMaxScores]);
 
     // Determine which Mid-Term CA columns actually have scores entered in the class so unused columns (e.g. Project left blank) don't penalize CA
     const midTermActiveCaInfo = useMemo(() => {
@@ -1072,7 +1138,7 @@ export default function GradebookPage() {
                     } else {
                         const caW = midTermActiveCaInfo.activeCaMax > 0 ? ((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight : 0;
                         const exW = midTermMaxScores.exam > 0 && row.exam !== '' ? (ex / midTermMaxScores.exam) * midTermExamWeight : 0;
-                        totalPct = Math.min(100, Math.round((caW + exW) * 10) / 10);
+                        totalPct = Math.min(100, Math.round(caW) + Math.round(exW));
                     }
 
                     const { autoRemark } = getGradeFromScale(totalPct, gradingScale);
@@ -1102,12 +1168,12 @@ export default function GradebookPage() {
             students.forEach((s: any) => {
                 const row = updated[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
                 
-                // Calculate valid tests average
+                // Calculate valid tests average across active class test columns
                 const studentTests = row.tests || {};
                 const validTests = testColumns
                     .map(tc => studentTests[tc.id])
                     .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
-                const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / validTests.length) : 0;
+                const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / matrixActiveCaInfo.activeTestCount) : 0;
                 const hasAnyTest = validTests.length > 0;
 
                 const hasMarks = hasAnyTest || row.homework !== '' || row.project !== '' || row.midTerm !== '' || row.exam !== '';
@@ -1119,11 +1185,16 @@ export default function GradebookPage() {
                     const mt = typeof row.midTerm === 'number' ? row.midTerm : 0;
                     const ex = typeof row.exam === 'number' ? row.exam : 0;
 
-                    const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm;
-                    const caRaw = ct + hw + pr + mt;
-                    const caWeighted = caMax > 0 ? (caRaw / caMax) * caWeight : 0;
-                    const examWeighted = matrixMaxScores.exam > 0 && row.exam !== '' ? (ex / matrixMaxScores.exam) * examWeight : 0;
-                    const totalPct = Math.min(100, Math.round((caWeighted + examWeighted) * 10) / 10);
+                    let totalPct = 0;
+                    if (caWeight <= 0) {
+                        totalPct = matrixMaxScores.exam > 0 && row.exam !== '' ? Math.min(100, Math.round((ex / matrixMaxScores.exam) * 100)) : 0;
+                    } else {
+                        const caMax = matrixActiveCaInfo.activeCaMax;
+                        const caRaw = ct + hw + pr + mt;
+                        const caWeighted = caMax > 0 ? Math.min((caRaw / caMax) * caWeight, caWeight) : 0;
+                        const examWeighted = matrixMaxScores.exam > 0 && row.exam !== '' ? Math.min((ex / matrixMaxScores.exam) * examWeight, examWeight) : 0;
+                        totalPct = Math.min(100, Math.round(caWeighted) + Math.round(examWeighted));
+                    }
                     
                     const { autoRemark } = getGradeFromScale(totalPct, gradingScale);
                     if (autoRemark) {
@@ -1360,7 +1431,24 @@ export default function GradebookPage() {
                 }
             });
 
-            if (updatedStudentIds.length === 0) {
+            // Also delete any Firestore marks belonging to test columns the teacher explicitly removed from the Matrix
+            if (removedMatrixTestNames.length > 0) {
+                const activeNamesLower = new Set(testColumns.map(tc => tc.name.toLowerCase()));
+                Object.entries(existing).forEach(([stuId, slotMap]) => {
+                    removedMatrixTestNames.forEach(remLower => {
+                        if (activeNamesLower.has(remLower)) return;
+                        const docs = slotMap[`test:${remLower}`] || [];
+                        if (docs.length > 0) {
+                            docs.forEach((d: any) => {
+                                if (d?.id && !toDelete.includes(d.id)) toDelete.push(d.id);
+                            });
+                            if (!updatedStudentIds.includes(stuId)) updatedStudentIds.push(stuId);
+                        }
+                    });
+                });
+            }
+
+            if (updatedStudentIds.length === 0 && toDelete.length === 0) {
                 const anyMarks = (students || []).some((s: any) => {
                     const row = matrixScores[s.uid];
                     return row && (Object.values(row.tests || {}).some(v => typeof v === 'number') || [row.homework, row.project, row.midTerm, row.exam].some(v => typeof v === 'number'));
@@ -1375,6 +1463,7 @@ export default function GradebookPage() {
             await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
+            if (deleted.ok) setRemovedMatrixTestNames([]);
 
             toast({
                 title: "Terminal Matrix Saved Successfully! 🎉",
@@ -1568,6 +1657,7 @@ export default function GradebookPage() {
             if (timelineWriter.size > 0) await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
+            setMockDirty(false);
 
             toast({ title: "Scores Saved Successfully! 🎉", description: `${created} new mark(s), ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} removed` : ''}.` });
             if (!deleted.ok) {
@@ -1775,7 +1865,24 @@ export default function GradebookPage() {
                 }
             });
 
-            if (updatedStudentIds.length === 0) {
+            // Also delete any Firestore marks belonging to test columns the teacher explicitly removed from the Mid-Term sheet
+            if (removedMidTermTestNames.length > 0) {
+                const activeNamesLower = new Set(midTermTestColumns.map(tc => tc.name.toLowerCase()));
+                Object.entries(existingMid).forEach(([stuId, slotMap]) => {
+                    removedMidTermTestNames.forEach(remLower => {
+                        if (activeNamesLower.has(remLower)) return;
+                        const docs = slotMap[`test:${remLower}`] || [];
+                        if (docs.length > 0) {
+                            docs.forEach((d: any) => {
+                                if (d?.id && !toDelete.includes(d.id)) toDelete.push(d.id);
+                            });
+                            if (!updatedStudentIds.includes(stuId)) updatedStudentIds.push(stuId);
+                        }
+                    });
+                });
+            }
+
+            if (updatedStudentIds.length === 0 && toDelete.length === 0) {
                 const anyMarks = (students || []).some((s: any) => {
                     const row = midTermScores[s.uid];
                     return row && (Object.values(row.tests || {}).some(v => typeof v === 'number') || [row.homework, row.project, row.exam].some(v => typeof v === 'number'));
@@ -1790,6 +1897,7 @@ export default function GradebookPage() {
             await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
+            if (deleted.ok) setRemovedMidTermTestNames([]);
 
             toast({
                 title: "Mid-Term Sheet Saved Successfully! 🎉",
@@ -1890,6 +1998,7 @@ export default function GradebookPage() {
             });
             return next;
         });
+        if (count > 0) setMockDirty(true);
         toast({
             title: 'Mock Remarks Generated ✨',
             description: `Populated remarks for ${count} student(s) based on ${activeMockOption.label} scores.`,
@@ -2054,6 +2163,7 @@ export default function GradebookPage() {
             if (timelineWriter.size > 0) await timelineWriter.commit().catch(err => console.warn('Timeline entries not saved (marks were saved):', err));
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
+            setMockDirty(false);
 
             toast({
                 title: `${seriesLabel} Scores Saved! 🎯`,
@@ -2119,7 +2229,7 @@ export default function GradebookPage() {
                     const validTests = testColumns
                         .map(tc => studentTests[tc.id])
                         .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
-                    const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / validTests.length) : 0;
+                    const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / matrixActiveCaInfo.activeTestCount) : 0;
                     
                     const ct = validTests.length > 0 ? testsAvg : 0;
                     const hw = typeof row?.homework === 'number' ? row.homework : 0;
@@ -2127,10 +2237,10 @@ export default function GradebookPage() {
                     const mt = typeof row?.midTerm === 'number' ? row.midTerm : 0;
                     const ex = typeof row?.exam === 'number' ? row.exam : 0;
                     
-                    const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm;
-                    const caWeighted = caMax > 0 ? ((ct + hw + pr + mt) / caMax) * caWeight : 0;
-                    const exWeighted = matrixMaxScores.exam > 0 && row?.exam !== '' ? (ex / matrixMaxScores.exam) * examWeight : 0;
-                    const totalPct = Math.round((caWeighted + exWeighted) * 10) / 10;
+                    const caMax = matrixActiveCaInfo.activeCaMax;
+                    const caWeighted = caWeight > 0 && caMax > 0 ? Math.min(((ct + hw + pr + mt) / caMax) * caWeight, caWeight) : 0;
+                    const exWeighted = matrixMaxScores.exam > 0 && row?.exam !== '' ? Math.min((ex / matrixMaxScores.exam) * (caWeight <= 0 ? 100 : examWeight), caWeight <= 0 ? 100 : examWeight) : 0;
+                    const totalPct = Math.min(100, Math.round(caWeighted) + Math.round(exWeighted));
                     return {
                         studentName: `${s.firstName} ${s.lastName}`,
                         score: totalPct
@@ -2149,11 +2259,11 @@ export default function GradebookPage() {
                     const ex = typeof row?.exam === 'number' ? row.exam : 0;
                     let totalPct = 0;
                     if (midTermCaWeight <= 0 || !midTermActiveCaInfo.anyCa) {
-                        totalPct = midTermMaxScores.exam > 0 && row?.exam !== '' ? Math.round((ex / midTermMaxScores.exam) * 100) : 0;
+                        totalPct = midTermMaxScores.exam > 0 && row?.exam !== '' ? Math.min(100, Math.round((ex / midTermMaxScores.exam) * 100)) : 0;
                     } else {
-                        const caW = midTermActiveCaInfo.activeCaMax > 0 ? ((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight : 0;
-                        const exW = midTermMaxScores.exam > 0 && row?.exam !== '' ? (ex / midTermMaxScores.exam) * midTermExamWeight : 0;
-                        totalPct = Math.round((caW + exW) * 10) / 10;
+                        const caW = midTermActiveCaInfo.activeCaMax > 0 ? Math.min(((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight, midTermCaWeight) : 0;
+                        const exW = midTermMaxScores.exam > 0 && row?.exam !== '' ? Math.min((ex / midTermMaxScores.exam) * midTermExamWeight, midTermExamWeight) : 0;
+                        totalPct = Math.min(100, Math.round(caW) + Math.round(exW));
                     }
                     return {
                         studentName: `${s.firstName} ${s.lastName}`,
@@ -2191,6 +2301,11 @@ export default function GradebookPage() {
     const isGlobalLoading = isUserLoading || schoolLoading;
     const gradingScale = schoolSettings?.gradingSystem || DEFAULT_GRADING_SYSTEM;
 
+    const confirmDiscardMockIfDirty = () => {
+        if (!mockDirty) return true;
+        return window.confirm('You have unsaved Mock marks on this sheet. Discard unsaved changes and switch?');
+    };
+
     return (
         <div className="space-y-6 pb-52">
             {/* Standardized Hero Banner */}
@@ -2223,7 +2338,14 @@ export default function GradebookPage() {
 
             {/* Entry Mode Switcher */}
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-white p-4 rounded-[1.8rem] border border-slate-200 shadow-sm">
-                <Tabs value={entryMode} onValueChange={(val: any) => setEntryMode(val)} className="w-full lg:w-auto">
+                <Tabs
+                    value={entryMode}
+                    onValueChange={(val: any) => {
+                        if (entryMode === 'mock' && val !== 'mock' && !confirmDiscardMockIfDirty()) return;
+                        setEntryMode(val);
+                    }}
+                    className="w-full lg:w-auto"
+                >
                     <TabsList className="bg-slate-100 p-1 rounded-2xl h-auto flex flex-wrap sm:flex-nowrap gap-1">
                         <TabsTrigger 
                             value="matrix" 
@@ -2386,11 +2508,13 @@ export default function GradebookPage() {
                                     value={selectedMockSeries}
                                     onValueChange={(val) => {
                                         if (val === '__create_new__') {
+                                            if (!confirmDiscardMockIfDirty()) return;
                                             const nextNum = availableMockSeries.reduce((max, m) => Math.max(max, m.mockNumber || 0), 0) + 1;
                                             setNewMockTitleInput(`Mock ${nextNum}`);
                                             setIsCreateMockModalOpen(true);
                                             return;
                                         }
+                                        if (val !== selectedMockSeries && !confirmDiscardMockIfDirty()) return;
                                         setSelectedMockSeries(val as AcademicSeriesId);
                                     }}
                                 >
@@ -2686,12 +2810,12 @@ export default function GradebookPage() {
                                             {students?.map((s: any, idx: number) => {
                                                 const row = matrixScores[s.uid] || { tests: {}, homework: '', project: '', midTerm: '', exam: '', remark: '' };
                                                 
-                                                // Tests aggregation
+                                                // Tests aggregation across active class test columns
                                                 const studentTests = row.tests || {};
                                                 const validTests = testColumns
                                                     .map(tc => studentTests[tc.id])
                                                     .filter(v => v !== '' && v !== undefined && !isNaN(Number(v))) as number[];
-                                                const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / validTests.length) : 0;
+                                                const testsAvg = validTests.length > 0 ? (validTests.reduce((a, b) => a + b, 0) / matrixActiveCaInfo.activeTestCount) : 0;
                                                 const hasAnyTest = validTests.length > 0;
 
                                                 const ct = hasAnyTest ? testsAvg : 0;
@@ -2702,16 +2826,21 @@ export default function GradebookPage() {
 
                                                 const hasAnyScore = hasAnyTest || row.homework !== '' || row.project !== '' || row.midTerm !== '' || row.exam !== '';
                                                 
-                                                // CA Total Raw & Scaled
-                                                const caMax = matrixMaxScores.classTest + matrixMaxScores.homework + matrixMaxScores.project + matrixMaxScores.midTerm;
+                                                // CA Total Raw & Scaled (only counting CA columns that have marks in the class, matching Report Cards & Master List)
+                                                const caMax = matrixActiveCaInfo.activeCaMax;
                                                 const caRawObtained = ct + hw + pr + mt;
-                                                const caWeighted = caMax > 0 ? (caRawObtained / caMax) * caWeight : 0;
+                                                const caWeighted = caWeight > 0 && caMax > 0 ? Math.min((caRawObtained / caMax) * caWeight, caWeight) : 0;
 
                                                 // Exam Scaled
-                                                const examWeighted = matrixMaxScores.exam > 0 && row.exam !== '' ? (ex / matrixMaxScores.exam) * examWeight : 0;
+                                                const effectiveExWeight = caWeight <= 0 ? 100 : examWeight;
+                                                const examWeighted = matrixMaxScores.exam > 0 && row.exam !== ''
+                                                    ? Math.min((ex / matrixMaxScores.exam) * effectiveExWeight, effectiveExWeight)
+                                                    : 0;
 
-                                                // Total Terminal Percent
-                                                const totalPercent = hasAnyScore ? Math.min(100, Math.round((caWeighted + examWeighted) * 10) / 10) : 0;
+                                                // Total Terminal Percent (round CA and Exam identically to Report Cards & Master List)
+                                                const totalPercent = hasAnyScore
+                                                    ? Math.min(100, Math.round(caWeighted) + Math.round(examWeighted))
+                                                    : 0;
                                                 const { grade, autoRemark } = getGradeFromScale(totalPercent, gradingScale);
 
                                                 // Check limits
@@ -3163,12 +3292,14 @@ export default function GradebookPage() {
                                                     const pureExamAuto = midTermCaWeight <= 0 || (!midTermActiveCaInfo.anyCa && midTermActiveCaInfo.anyExam);
 
                                                     const caWeighted = !pureExamAuto && midTermActiveCaInfo.activeCaMax > 0
-                                                        ? ((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight
+                                                        ? Math.min(((ct + hw + pr) / midTermActiveCaInfo.activeCaMax) * midTermCaWeight, midTermCaWeight)
                                                         : 0;
                                                     const examWeighted = midTermMaxScores.exam > 0 && row.exam !== ''
-                                                        ? (ex / midTermMaxScores.exam) * (pureExamAuto ? 100 : midTermExamWeight)
+                                                        ? Math.min((ex / midTermMaxScores.exam) * (pureExamAuto ? 100 : midTermExamWeight), pureExamAuto ? 100 : midTermExamWeight)
                                                         : 0;
-                                                    const totalPercent = hasAnyScore ? Math.min(100, Math.round((caWeighted + examWeighted) * 10) / 10) : 0;
+                                                    const totalPercent = hasAnyScore
+                                                        ? Math.min(100, Math.round(caWeighted) + Math.round(examWeighted))
+                                                        : 0;
                                                     const { grade, autoRemark } = getGradeFromScale(totalPercent, gradingScale);
 
                                                     const hwOver = row.homework !== '' && Number(row.homework) > midTermMaxScores.homework;
@@ -3397,7 +3528,10 @@ export default function GradebookPage() {
                                             <button
                                                 key={m.id}
                                                 type="button"
-                                                onClick={() => setSelectedMockSeries(m.id)}
+                                                onClick={() => {
+                                                    if (m.id !== selectedMockSeries && !confirmDiscardMockIfDirty()) return;
+                                                    setSelectedMockSeries(m.id);
+                                                }}
                                                 className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border ${
                                                     isActive
                                                         ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
@@ -3493,6 +3627,7 @@ export default function GradebookPage() {
                                                                     value={mockScores[s.uid] ?? ''}
                                                                     onChange={e => {
                                                                         const val = e.target.value;
+                                                                        setMockDirty(true);
                                                                         setMockScores(prev => ({ ...prev, [s.uid]: val === '' ? '' : Number(val) }));
                                                                     }}
                                                                     onKeyDown={e => {
@@ -3540,7 +3675,10 @@ export default function GradebookPage() {
                                                                     type="text"
                                                                     placeholder={hasVal && autoRemark ? autoRemark : `Optional remark for ${activeMockOption.label}`}
                                                                     value={mockRemarks[s.uid] ?? ''}
-                                                                    onChange={e => setMockRemarks(prev => ({ ...prev, [s.uid]: e.target.value }))}
+                                                                    onChange={e => {
+                                                                        setMockDirty(true);
+                                                                        setMockRemarks(prev => ({ ...prev, [s.uid]: e.target.value }));
+                                                                    }}
                                                                     className="rounded-xl border border-slate-200 focus-visible:ring-amber-500 h-10 shadow-xs text-sm text-slate-700"
                                                                 />
                                                             </TableCell>

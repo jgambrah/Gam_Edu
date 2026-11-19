@@ -67,8 +67,9 @@ export function normalizeMockSeriesInput(rawLabel: string): AcademicSeriesOption
     const withoutPct = trimmed.replace(/\(\s*100\s*%?\s*\)/gi, '').replace(/\b100\s*%/gi, '').trim();
     const lower = withoutPct.toLowerCase();
 
-    // Check explicit numeric mock: "Mock 2", "Mock Exam 2", "2nd Mock", "Mock #3"
-    const afterMockNum = lower.match(/\bmock(?:\s+exam(?:ination)?s?)?\s*#?\s*(\d+)\b/i);
+    // Check explicit canonical numeric mock ONLY when unprefixed: "Mock 2", "Mock Exam 2", "2nd Mock", "Mock #3"
+    // Custom prefixed names like "District Mock 2" or "Pre-BECE Mock 1" fall through to custom slugging so they never collide with Mock 2 / Mock 1.
+    const afterMockNum = lower.match(/^mock(?:\s+exam(?:ination)?s?)?\s*#?\s*(\d+)$/i);
     if (afterMockNum) {
         const num = parseInt(afterMockNum[1], 10);
         if (num >= 1 && num <= 50) {
@@ -76,7 +77,7 @@ export function normalizeMockSeriesInput(rawLabel: string): AcademicSeriesOption
         }
     }
 
-    const beforeMockNum = lower.match(/\b(\d+)(?:st|nd|rd|th)?\s+mock\b/i);
+    const beforeMockNum = lower.match(/^(\d+)(?:st|nd|rd|th)?\s+mock(?:\s+exam(?:ination)?s?)?$/i);
     if (beforeMockNum) {
         const num = parseInt(beforeMockNum[1], 10);
         if (num >= 1 && num <= 50) {
@@ -85,7 +86,10 @@ export function normalizeMockSeriesInput(rawLabel: string): AcademicSeriesOption
     }
 
     for (const [word, num] of Object.entries(WORD_ORDINALS)) {
-        if (new RegExp(`\\b${word}\\s+mock\\b`, 'i').test(lower) || new RegExp(`\\bmock\\s+${word}\\b`, 'i').test(lower)) {
+        if (
+            new RegExp(`^${word}\\s+mock(?:\\s+exam(?:ination)?s?)?$`, 'i').test(lower) ||
+            new RegExp(`^mock(?:\\s+exam(?:ination)?s?)?\\s+${word}$`, 'i').test(lower)
+        ) {
             return { id: `mock_${num}`, label: `Mock ${num}`, shortLabel: `Mock ${num}`, kind: 'mock', mockNumber: num };
         }
     }
@@ -152,20 +156,22 @@ export function resolveMockSeriesFromAssessment(a: any): AcademicSeriesOption | 
 
     const nameStr = String(a.assessmentName || '').trim();
     const typeStr = String(a.assessmentType || '').trim();
-    const combined = `${nameStr} ${typeStr}`.toLowerCase();
+    const typeHasMock = typeStr.toLowerCase().includes('mock');
+    const cleanName = nameStr.replace(/\(\s*100\s*%?\s*\)/gi, '').replace(/\b100\s*%/gi, '').trim();
+    const nameIsExplicitMockExam = /^(?:(?:\d+(?:st|nd|rd|th)|first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth)\s+)?mock(?:\s+exam(?:ination)?s?)?(?:\s*#?\s*\d+)?$/i.test(cleanName);
 
-    if (!combined.includes('mock')) {
+    // Avoid turning CA tests like "Mock Test 1" (assessmentType: "Class Exercise (CA)") into phantom mock series.
+    if (!typeHasMock && !nameIsExplicitMockExam) {
         return null;
     }
 
-    // Prefer parsing assessmentName first if it mentions mock or has a distinct title
     if (nameStr && nameStr.toLowerCase().includes('mock')) {
         const parsedName = normalizeMockSeriesInput(nameStr);
         if (parsedName) return parsedName;
     }
 
-    const parsedCombined = normalizeMockSeriesInput(`${nameStr} ${typeStr}`);
-    return parsedCombined || { id: 'mock_1', label: 'Mock 1', shortLabel: 'Mock 1', kind: 'mock', mockNumber: 1 };
+    const parsedType = normalizeMockSeriesInput(typeStr);
+    return parsedType || { id: 'mock_1', label: 'Mock 1', shortLabel: 'Mock 1', kind: 'mock', mockNumber: 1 };
 }
 
 export function isMockAssessment(a: any): boolean {
@@ -180,7 +186,7 @@ export function isMockAssessment(a: any): boolean {
  */
 export function isMidTermReportScopeAssessment(a: any): boolean {
     if (!a || isMockAssessment(a)) return false;
-    if (a.reportScope === 'mid_term' || a.standaloneMidTerm === true || a.excludeFromCa === true || a.mockSeries === 'mid_term') {
+    if (a.reportScope === 'mid_term' || a.standaloneMidTerm === true || a.mockSeries === 'mid_term') {
         return true;
     }
     const typeLower = String(a.assessmentType || '').toLowerCase();
@@ -263,6 +269,83 @@ export function selectMidTermRecordsForSubject<T = any>(items: T[], classSubject
 }
 
 /**
+ * Resolves CA/Exam weights consistently across Gradebook, Report Cards, Master List, and Ward Grades.
+ * Defaults to 30% CA / 70% Exam everywhere, honours 0% CA / 100% Exam, and derives missing pairs cleanly.
+ */
+export function resolveSeriesWeights(params: {
+    series?: AcademicSeriesId | string | null;
+    classDoc?: any | null;
+    schoolSettings?: any | null;
+}): { caWeight: number; examWeight: number } {
+    const series = params.series || 'end_of_term';
+    if (typeof series === 'string' && series.startsWith('mock_')) {
+        return { caWeight: 0, examWeight: 100 };
+    }
+    const parseNum = (v: any): number | null => {
+        if (v === undefined || v === null || v === '') return null;
+        const n = Number(v);
+        return Number.isFinite(n) && n >= 0 && n <= 100 ? n : null;
+    };
+    const pairFrom = (rawCa: any, rawEx: any): { caWeight: number; examWeight: number } | null => {
+        const c = parseNum(rawCa);
+        const e = parseNum(rawEx);
+        if (c !== null && e !== null) {
+            if (Math.round(c + e) === 100) return { caWeight: c, examWeight: e };
+            return { caWeight: c, examWeight: Math.max(0, 100 - c) };
+        }
+        if (c !== null) return { caWeight: c, examWeight: Math.max(0, 100 - c) };
+        if (e !== null) return { caWeight: Math.max(0, 100 - e), examWeight: e };
+        return null;
+    };
+    const cd = params.classDoc;
+    const ss = params.schoolSettings;
+    if (series === 'mid_term') {
+        return (
+            pairFrom(cd?.midTermCaWeight, cd?.midTermExamWeight) ||
+            pairFrom(ss?.midTermCaWeight, ss?.midTermExamWeight) ||
+            pairFrom(cd?.caWeight, cd?.examWeight) ||
+            pairFrom(ss?.caWeight, ss?.examWeight) ||
+            { caWeight: 30, examWeight: 70 }
+        );
+    }
+    return (
+        pairFrom(cd?.caWeight, cd?.examWeight) ||
+        pairFrom(ss?.caWeight, ss?.examWeight) ||
+        { caWeight: 30, examWeight: 70 }
+    );
+}
+
+/**
+ * Classifies an End-of-Term assessment record into its SBA / Exam slot, or null if it belongs to Mock or dedicated Mid-Term.
+ */
+export function resolveEndOfTermSlot(a: any): 'exam' | 'mid' | 'project' | 'hw' | 'test' | null {
+    if (!a || isMockAssessment(a) || isMidTermReportScopeAssessment(a)) return null;
+    if (isMidTermAssessment(a)) return 'mid';
+    const typeLower = String(a.assessmentType || '').toLowerCase();
+    const nameLower = String(a.assessmentName || '').toLowerCase();
+    const combined = `${typeLower} ${nameLower}`;
+    if (typeLower.includes('exam') && !typeLower.includes('ca')) return 'exam';
+    if ((nameLower.includes('end of term') || nameLower.includes('terminal exam') || nameLower === 'exam') && !typeLower.includes('ca')) {
+        return 'exam';
+    }
+    if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) return 'project';
+    if (combined.includes('home') || combined.includes('hw') || combined.includes('assign')) return 'hw';
+    return 'test';
+}
+
+export interface UnifiedSubjectScoreResult {
+    ca: number;
+    exam: number;
+    total: number;
+    isSingleExamOnly: boolean;
+    rawDisplay?: string;
+    rawObtained?: number;
+    rawMax?: number;
+    hasCa?: boolean;
+    hasExam?: boolean;
+}
+
+/**
  * Computes a student's Mid-Term subject result (`CA + Mid-Term Exam = Total`), supporting BOTH:
  * 1) Full Mid-Term SBA + Mid-Term Exam (Class Exercise/Tests + Homework + Project scaled to `caWeight`, plus Mid-Term Exam scaled to `examWeight`).
  * 2) Pure 100% Mid-Term Exam (automatically when `caWeight === 0` OR when zero Mid-Term CA marks were entered across the class for this subject).
@@ -272,13 +355,7 @@ export function computeMidTermSubjectScore(params: {
     classSubjectItems?: any[];
     caWeight: number;
     examWeight: number;
-}): {
-    ca: number;
-    exam: number;
-    total: number;
-    isSingleExamOnly: boolean;
-    rawDisplay?: string;
-} | null {
+}): UnifiedSubjectScoreResult | null {
     const num = (v: any, d: number) => {
         const n = Number(v);
         return isFinite(n) ? n : d;
@@ -290,22 +367,23 @@ export function computeMidTermSubjectScore(params: {
     const myItems = selectMidTermRecordsForSubject(params.studentItems, params.classSubjectItems);
     if (!myItems || myItems.length === 0) return null;
 
-    // Inspect which CA slots actually exist across the class in this subject so unused columns (e.g. Project left blank for everyone) never penalize students
-    const classTestMaxes: number[] = [];
-    const distinctClassTests = new Set<string>();
+    // Inspect distinct active CA columns across the class in this subject so unused columns never penalize students
+    const distinctClassTests = new Map<string, number>();
     let classHwMax = 0;
     let classProjMax = 0;
     allSubItems.forEach((a: any) => {
         const slot = resolveMidTermSlot(a);
-        const m = num(a.maxScore, 20) || 20;
+        const m = num(a.maxScore, slot === 'exam' ? 100 : 20) || 20;
         if (slot === 'test') {
-            classTestMaxes.push(m);
-            distinctClassTests.add(String(a.assessmentName || 'test 1').trim().toLowerCase());
+            const key = String(a.assessmentName || 'test 1').trim().toLowerCase() || 'test 1';
+            const prev = distinctClassTests.get(key) || 0;
+            if (m > prev) distinctClassTests.set(key, m);
         } else if (slot === 'hw' && m > classHwMax) classHwMax = m;
         else if (slot === 'project' && m > classProjMax) classProjMax = m;
     });
-    const classTestMax = classTestMaxes.length > 0
-        ? classTestMaxes.reduce((s, v) => s + v, 0) / classTestMaxes.length
+    const testMaxValues = Array.from(distinctClassTests.values());
+    const classTestMax = testMaxValues.length > 0
+        ? testMaxValues.reduce((s, v) => s + v, 0) / testMaxValues.length
         : 0;
     const activeCaMax = classTestMax + classHwMax + classProjMax;
 
@@ -325,10 +403,14 @@ export function computeMidTermSubjectScore(params: {
         const cleanMax = Math.round(max * 10) / 10;
         return {
             ca: 0,
-            exam: cleanObt,
+            exam: pct,
             total: pct,
             isSingleExamOnly: true,
+            rawObtained: cleanObt,
+            rawMax: cleanMax,
             rawDisplay: `${cleanObt}/${cleanMax}`,
+            hasCa: false,
+            hasExam: true,
         };
     }
 
@@ -336,8 +418,15 @@ export function computeMidTermSubjectScore(params: {
     const testObt = myTests.length > 0
         ? myTests.reduce((sum, a) => sum + num(a.score, 0), 0) / expectedTestCount
         : 0;
-    const hwObt = myHws.length > 0 ? num(myHws[myHws.length - 1].score, 0) : 0;
-    const projObt = myProjs.length > 0 ? num(myProjs[myProjs.length - 1].score, 0) : 0;
+    const slotObtained = (arr: any[], slotMax: number) => {
+        if (arr.length === 0 || slotMax <= 0) return 0;
+        if (arr.length === 1) return num(arr[0].score, 0);
+        const sObt = arr.reduce((s, a) => s + num(a.score, 0), 0);
+        const sMax = arr.reduce((s, a) => s + (num(a.maxScore, slotMax) || slotMax), 0);
+        return sMax > 0 ? (sObt / sMax) * slotMax : 0;
+    };
+    const hwObt = slotObtained(myHws, classHwMax);
+    const projObt = slotObtained(myProjs, classProjMax);
     const caObt = testObt + hwObt + projObt;
 
     const rawCA = activeCaMax > 0 ? Math.min((caObt / activeCaMax) * params.caWeight, params.caWeight) : 0;
@@ -348,11 +437,161 @@ export function computeMidTermSubjectScore(params: {
 
     const ca = Math.round(rawCA);
     const exam = Math.round(rawExam);
+    const hasCa = myTests.length > 0 || myHws.length > 0 || myProjs.length > 0;
+    const hasExam = myExams.length > 0;
     return {
         ca,
         exam,
         total: Math.min(100, ca + exam),
         isSingleExamOnly: false,
+        hasCa,
+        hasExam,
+    };
+}
+
+/**
+ * Unified subject scorer shared by Gradebook, Report Cards, Master List, and Ward/My Grades
+ * so every screen computes the exact same CA, Exam, and Total % for End-of-Term, Mid-Term, and Mock N.
+ */
+export function computeUnifiedSubjectScore(params: {
+    series: AcademicSeriesId | string;
+    studentItems: any[];
+    classSubjectItems?: any[];
+    caWeight: number;
+    examWeight: number;
+}): UnifiedSubjectScoreResult | null {
+    const num = (v: any, d: number) => {
+        const n = Number(v);
+        return isFinite(n) ? n : d;
+    };
+    const series = (params.series || 'end_of_term') as AcademicSeriesId;
+
+    // 1. Mock Exam series (100% single paper)
+    if (series.startsWith('mock_')) {
+        const mockItems = (params.studentItems || []).filter(a => resolveMockSeriesFromAssessment(a)?.id === series);
+        if (mockItems.length === 0) return null;
+        const obtained = mockItems.reduce((sum, a) => sum + num(a.score, 0), 0);
+        const max = mockItems.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
+        if (max <= 0) return null;
+        const pct = Math.min(100, Math.round((obtained / max) * 100));
+        const cleanObt = Math.round(obtained * 10) / 10;
+        const cleanMax = Math.round(max * 10) / 10;
+        return {
+            ca: 0,
+            exam: pct,
+            total: pct,
+            isSingleExamOnly: true,
+            rawObtained: cleanObt,
+            rawMax: cleanMax,
+            rawDisplay: `${cleanObt}/${cleanMax}`,
+            hasCa: false,
+            hasExam: true,
+        };
+    }
+
+    // 2. Dedicated Mid-Term series (CA + Mid-Term Exam, or 100% pure exam if no Mid-Term CA in class/subject)
+    if (series === 'mid_term') {
+        return computeMidTermSubjectScore({
+            studentItems: params.studentItems,
+            classSubjectItems: params.classSubjectItems,
+            caWeight: params.caWeight,
+            examWeight: params.examWeight,
+        });
+    }
+
+    // 3. End-of-Term series (SBA + End of Term Exam)
+    const rawPool = params.classSubjectItems && params.classSubjectItems.length > 0
+        ? params.classSubjectItems
+        : params.studentItems;
+    const pool = (rawPool || []).filter(a => resolveEndOfTermSlot(a) !== null);
+    const myItems = (params.studentItems || []).filter(a => resolveEndOfTermSlot(a) !== null);
+    if (myItems.length === 0) return null;
+
+    const distinctClassTests = new Map<string, number>();
+    let classHwMax = 0;
+    let classProjMax = 0;
+    let classMidMax = 0;
+    pool.forEach((a: any) => {
+        const slot = resolveEndOfTermSlot(a);
+        if (!slot || slot === 'exam') return;
+        const defaultMax = slot === 'hw' || slot === 'project' ? 10 : 20;
+        const m = num(a.maxScore, defaultMax) || defaultMax;
+        if (slot === 'test') {
+            const key = String(a.assessmentName || 'test 1').trim().toLowerCase() || 'test 1';
+            const prev = distinctClassTests.get(key) || 0;
+            if (m > prev) distinctClassTests.set(key, m);
+        } else if (slot === 'hw' && m > classHwMax) classHwMax = m;
+        else if (slot === 'project' && m > classProjMax) classProjMax = m;
+        else if (slot === 'mid' && m > classMidMax) classMidMax = m;
+    });
+
+    const testMaxValues = Array.from(distinctClassTests.values());
+    const classTestMax = testMaxValues.length > 0
+        ? testMaxValues.reduce((s, v) => s + v, 0) / testMaxValues.length
+        : 0;
+    const activeCaMax = classTestMax + classHwMax + classProjMax + classMidMax;
+
+    const myTests = myItems.filter(a => resolveEndOfTermSlot(a) === 'test');
+    const myHws = myItems.filter(a => resolveEndOfTermSlot(a) === 'hw');
+    const myProjs = myItems.filter(a => resolveEndOfTermSlot(a) === 'project');
+    const myMids = myItems.filter(a => resolveEndOfTermSlot(a) === 'mid');
+    const myExams = myItems.filter(a => resolveEndOfTermSlot(a) === 'exam');
+
+    if (params.caWeight <= 0) {
+        if (myExams.length === 0) return null;
+        const obtained = myExams.reduce((sum, a) => sum + num(a.score, 0), 0);
+        const max = myExams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
+        if (max <= 0) return null;
+        const pct = Math.min(100, Math.round((obtained / max) * 100));
+        const cleanObt = Math.round(obtained * 10) / 10;
+        const cleanMax = Math.round(max * 10) / 10;
+        return {
+            ca: 0,
+            exam: pct,
+            total: pct,
+            isSingleExamOnly: true,
+            rawObtained: cleanObt,
+            rawMax: cleanMax,
+            rawDisplay: `${cleanObt}/${cleanMax}`,
+            hasCa: false,
+            hasExam: true,
+        };
+    }
+
+    const expectedTestCount = Math.max(distinctClassTests.size, myTests.length, 1);
+    const testObt = myTests.length > 0
+        ? myTests.reduce((sum, a) => sum + num(a.score, 0), 0) / expectedTestCount
+        : 0;
+    const slotObtained = (arr: any[], slotMax: number) => {
+        if (arr.length === 0 || slotMax <= 0) return 0;
+        if (arr.length === 1) return num(arr[0].score, 0);
+        const sObt = arr.reduce((s, a) => s + num(a.score, 0), 0);
+        const sMax = arr.reduce((s, a) => s + (num(a.maxScore, slotMax) || slotMax), 0);
+        return sMax > 0 ? (sObt / sMax) * slotMax : 0;
+    };
+    const hwObt = slotObtained(myHws, classHwMax);
+    const projObt = slotObtained(myProjs, classProjMax);
+    const midObt = slotObtained(myMids, classMidMax);
+    const caObt = testObt + hwObt + projObt + midObt;
+
+    const rawCA = activeCaMax > 0 ? Math.min((caObt / activeCaMax) * params.caWeight, params.caWeight) : 0;
+
+    const exObt = myExams.reduce((sum, a) => sum + num(a.score, 0), 0);
+    const exMax = myExams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
+    const rawExam = exMax > 0 ? Math.min((exObt / exMax) * params.examWeight, params.examWeight) : 0;
+
+    const ca = Math.round(rawCA);
+    const exam = Math.round(rawExam);
+    const hasCa = myTests.length > 0 || myHws.length > 0 || myProjs.length > 0 || myMids.length > 0;
+    const hasExam = myExams.length > 0;
+
+    return {
+        ca,
+        exam,
+        total: Math.min(100, ca + exam),
+        isSingleExamOnly: false,
+        hasCa,
+        hasExam,
     };
 }
 
@@ -459,14 +698,13 @@ export function buildAllAcademicSeriesOptions(params: Parameters<typeof discover
  */
 export function isJhsOrBeceClass(className?: string | null): boolean {
     if (!className) return false;
-    const upper = className.toUpperCase();
-    if (upper.includes('JHS') || upper.includes('J.H.S') || upper.includes('JUNIOR HIGH') || upper.includes('BECE')) {
+    const cleaned = className.toUpperCase().replace(/\./g, '').replace(/\s+/g, ' ').trim();
+    if (cleaned.includes('JHS') || cleaned.includes('JUNIOR HIGH') || cleaned.includes('BECE')) {
         return true;
     }
-    const match = upper.match(/(?:BS|BASIC|GRADE|CLASS|FORM|YEAR)\s*(\d+)/);
+    const match = cleaned.match(/\b(?:BS|BASIC|GRADE|CLASS|FORM|YEAR)\s*(7|8|9|SEVEN|EIGHT|NINE)\b/);
     if (match) {
-        const n = parseInt(match[1], 10);
-        return n >= 7 && n <= 9;
+        return true;
     }
     return false;
 }
@@ -498,7 +736,7 @@ export function getSeriesGradeFromScore(
             return { ...res, isBeceGrade: true, numericGrade: parseInt(res.grade, 10) || 9 };
         }
         const bece = getBeceGradeFromScore(score);
-        return { grade: bece.grade, autoRemark: bece.autoRemark, isBeceGrade: true, numericGrade: bece.numericGrade };
+        return { grade: bece.grade, numericGrade: bece.numericGrade, autoRemark: bece.autoRemark, isBeceGrade: true };
     }
 
     const std = getGradeFromScale(score, options?.schoolGradingSystem || DEFAULT_GRADING_SYSTEM);
@@ -506,10 +744,21 @@ export function getSeriesGradeFromScore(
 }
 
 function classifyBeceCoreBucket(subjectName: string): 'english' | 'math' | 'science' | 'social' | null {
-    const s = String(subjectName || '').toLowerCase();
+    const s = String(subjectName || '').toLowerCase().trim();
     if (s.includes('english') || s === 'eng' || s.includes('eng lang')) return 'english';
     if (s.includes('math')) return 'math';
-    if (s.includes('science') && !s.includes('social')) return 'science';
+    if (
+        s.includes('science') &&
+        !s.includes('social') &&
+        !s.includes('computer') &&
+        !s.includes('computing') &&
+        !s.includes('ict') &&
+        !s.includes('home') &&
+        !s.includes('agric') &&
+        !s.includes('health')
+    ) {
+        return 'science';
+    }
     if (s.includes('social')) return 'social';
     return null;
 }
@@ -522,7 +771,8 @@ function classifyBeceCoreBucket(subjectName: string): 'english' | 'math' | 'scie
  * and flags `isCompleteSix: false` so schools see progress clearly.
  */
 export function computeBeceAggregate(
-    entries: Array<{ subjectName: string; score: number }>
+    entries: Array<{ subjectName: string; score: number }>,
+    schoolGradingSystem?: GradeBracket[] | null
 ): { aggregate: number | null; subjectsUsed: number; isCompleteSix: boolean } {
     if (!entries || entries.length === 0) {
         return { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
@@ -530,12 +780,19 @@ export function computeBeceAggregate(
 
     const graded = entries
         .filter(e => e && typeof e.score === 'number' && !isNaN(e.score))
-        .map(e => ({
-            subjectName: e.subjectName,
-            score: e.score,
-            numericGrade: getBeceGradeFromScore(e.score).numericGrade,
-            coreBucket: classifyBeceCoreBucket(e.subjectName),
-        }));
+        .map(e => {
+            const gradeRes = getSeriesGradeFromScore(e.score, {
+                isMock: true,
+                className: 'JHS 3',
+                schoolGradingSystem,
+            });
+            return {
+                subjectName: e.subjectName,
+                score: e.score,
+                numericGrade: gradeRes.numericGrade ?? getBeceGradeFromScore(e.score).numericGrade,
+                coreBucket: classifyBeceCoreBucket(e.subjectName),
+            };
+        });
 
     if (graded.length === 0) {
         return { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
@@ -634,4 +891,12 @@ export function getReportCardSeriesLabel(report: any): string {
 export function matchesReportSeries(report: any, targetSeries?: string | null): boolean {
     const effectiveTarget = targetSeries || 'end_of_term';
     return getReportCardSeriesKey(report) === effectiveTarget;
+}
+
+export function sanitizeReportFilenamePart(raw?: string | null): string {
+    return String(raw || '')
+        .trim()
+        .replace(/[\/\\]+/g, '-')
+        .replace(/[^a-zA-Z0-9_-]+/g, '_')
+        .replace(/^_+|_+$/g, '') || 'Report';
 }

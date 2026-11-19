@@ -112,6 +112,21 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     unlockedUntil: Timestamp.fromMillis(unlockExpiresAtMs),
   }, { merge: true });
 
+  // Clear cached academic_report_snapshots and frozen term_report_cards for this term on unlock
+  // so corrected marks rebuild fresh broadsheets and re-freeze cleanly on next close.
+  const staleSnaps = await db.collection('academic_report_snapshots').where('schoolId', '==', schoolId).get().catch(() => null);
+  staleSnaps?.docs.slice(0, 200).forEach(sd => {
+    batch.delete(sd.ref);
+  });
+  const frozenCards = await db.collection('term_report_cards')
+    .where('schoolId', '==', schoolId)
+    .where('termId', '==', termId)
+    .get()
+    .catch(() => null);
+  frozenCards?.docs.slice(0, 200).forEach(fc => {
+    batch.delete(fc.ref);
+  });
+
   // 2. Write structured audit log entry
   const auditLogId = `audit_unlock_${schoolId}_${termId}_${nowMs}`;
   const auditRef = db.collection('auditLogs').doc(auditLogId);

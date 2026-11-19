@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, Fragment } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRole } from '@/context/role-context';
@@ -31,13 +31,15 @@ import { MOCK_ACADEMIC_YEARS, MOCK_TERMS } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { TermManagementModal, TermUnlockCountdownBanner } from '@/components/dashboard/term-management-modal';
 
-const getGradeForScore = (score: number): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'N/A' => {
-    if (score >= 80) return 'A';
-    if (score >= 70) return 'B';
-    if (score >= 60) return 'C';
-    if (score >= 50) return 'D';
-    if (score >= 40) return 'E';
-    if (score > 0) return 'F';
+const getGradeForScore = (score: number | null | undefined, hasMark: boolean = true): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'N/A' => {
+    if (!hasMark || score === null || score === undefined || Number.isNaN(Number(score))) return 'N/A';
+    const n = Number(score);
+    if (n >= 80) return 'A';
+    if (n >= 70) return 'B';
+    if (n >= 60) return 'C';
+    if (n >= 50) return 'D';
+    if (n >= 40) return 'E';
+    if (n >= 0) return 'F';
     return 'N/A';
 };
 
@@ -153,6 +155,8 @@ import {
     isMidTermReportScopeAssessment,
     isStandaloneMidTermAssessment,
     resolveMidTermSlot,
+    resolveSeriesWeights,
+    computeUnifiedSubjectScore,
     isMockAssessment,
     resolveMockSeriesFromAssessment,
     type AcademicSeriesId,
@@ -396,16 +400,17 @@ export default function AcademicReportsPage() {
         }
     }, [schoolProfile]);
 
-    // Standard Ghanaian / Basic School default weighting: 50% CA / 50% Exam (unless overridden)
-    const CA_WEIGHT = schoolProfile?.caWeight ?? 50;
-    const EXAM_WEIGHT = schoolProfile?.examWeight ?? 50;
-
-    const currentCaWeight = selectedSeries === 'mid_term' && typeof (selectedClass as any)?.midTermCaWeight === 'number'
-        ? (selectedClass as any).midTermCaWeight
-        : (selectedClass?.caWeight ?? CA_WEIGHT);
-    const currentExamWeight = selectedSeries === 'mid_term' && typeof (selectedClass as any)?.midTermExamWeight === 'number'
-        ? (selectedClass as any).midTermExamWeight
-        : (selectedClass?.examWeight ?? EXAM_WEIGHT);
+    // Unified CA / Exam weighting across Gradebook, Report Cards, Master List, and Ward Grades (defaults to 30% CA / 70% Exam)
+    const { caWeight: currentCaWeight, examWeight: currentExamWeight } = useMemo(
+        () => resolveSeriesWeights({
+            series: selectedSeries,
+            classDoc: selectedClass,
+            schoolSettings: schoolProfile,
+        }),
+        [selectedSeries, selectedClass, schoolProfile]
+    );
+    const CA_WEIGHT = currentCaWeight;
+    const EXAM_WEIGHT = currentExamWeight;
 
     // Build comprehensive lookup index for students across all identifiers:
     // id (Firestore doc ID), uid, studentId (admission ID), admissionNumber, indexNumber, name
@@ -871,6 +876,22 @@ export default function AcademicReportsPage() {
         return () => clearTimeout(timer);
     }, [isLoadingSnapshot, isLoadingStudents, isLoadingAssessments, isLoadingGrades, isLoadingMarks, isLoadingReportCards]);
 
+    const snapshotReqSeqRef = useRef<number>(0);
+
+    // Clear any loaded snapshot immediately if filters/series move away from what the snapshot belongs to
+    useEffect(() => {
+        if (!activeSnapshot) return;
+        const snapSeries = (activeSnapshot.reportSeries || 'end_of_term') as AcademicSeriesId;
+        if (
+            snapSeries !== selectedSeries ||
+            activeSnapshot.classId !== selectedClassId ||
+            (selectedYear && activeSnapshot.academicYear && !isYearMatch(activeSnapshot.academicYear, selectedYear)) ||
+            (selectedTerm && activeSnapshot.term && !isTermMatch(activeSnapshot.term, selectedTerm))
+        ) {
+            setActiveSnapshot(null);
+        }
+    }, [activeSnapshot, selectedSeries, selectedClassId, selectedYear, selectedTerm]);
+
     const handleGenerateAnalytics = useCallback(async (forceRefresh: boolean = false, seriesOverride?: AcademicSeriesId) => {
         if (!selectedClassId || !firestore || !schoolId) return;
 
@@ -878,6 +899,8 @@ export default function AcademicReportsPage() {
         if (seriesOverride && seriesOverride !== selectedSeries) {
             setSelectedSeries(seriesOverride);
         }
+
+        const reqSeq = ++snapshotReqSeqRef.current;
 
         const snapshotDocId = buildAcademicSnapshotDocId(
             schoolId,
@@ -887,25 +910,32 @@ export default function AcademicReportsPage() {
             targetSeries
         );
 
-        if (!forceRefresh) {
+        // Only trust a pre-saved rollup snapshot for closed/archived terms (when not unlocked for correction)
+        // so active terms ALWAYS compile live marks and never serve stale 1-subject snapshots!
+        if (!forceRefresh && !schoolProfile?.isTermCorrectionActive) {
             setIsLoadingSnapshot(true);
             try {
                 const snapRef = doc(firestore, 'academic_report_snapshots', snapshotDocId);
                 const snap = await getDoc(snapRef);
+                if (reqSeq !== snapshotReqSeqRef.current) return; // Discard late out-of-order response
                 if (snap.exists()) {
                     const data = snap.data() as AcademicReportSnapshotDoc;
-                    setActiveSnapshot(data);
-                    setIsReportRequested(true);
-                    setIsLoadingSnapshot(false);
-                    return; // EXACTLY 1 READ - FULL ACADEMIC LOAD READY!
+                    const snapSeries = (data.reportSeries || 'end_of_term') as AcademicSeriesId;
+                    if (data.isArchived === true && snapSeries === targetSeries && data.classId === selectedClassId) {
+                        setActiveSnapshot(data);
+                        setIsReportRequested(true);
+                        setIsLoadingSnapshot(false);
+                        return;
+                    }
                 }
             } catch (err) {
                 console.warn("Snapshot lookup error, falling back to live compilation:", err);
             }
+            if (reqSeq !== snapshotReqSeqRef.current) return;
             setIsLoadingSnapshot(false);
         }
 
-        // Live compilation fallback
+        // Live compilation
         setActiveSnapshot(null);
         setIsReportRequested(true);
 
@@ -916,7 +946,7 @@ export default function AcademicReportsPage() {
         refetchReportCards?.();
         refetchReportCardsAlt?.();
         refetchTermReportCards?.();
-    }, [selectedClassId, firestore, schoolId, selectedYear, selectedTerm, selectedSeries, refetchStudents, refetchAssessments, refetchGrades, refetchMarks, refetchReportCards, refetchReportCardsAlt, refetchTermReportCards]);
+    }, [selectedClassId, firestore, schoolId, selectedYear, selectedTerm, selectedSeries, schoolProfile?.isTermCorrectionActive, refetchStudents, refetchAssessments, refetchGrades, refetchMarks, refetchReportCards, refetchReportCardsAlt, refetchTermReportCards]);
 
     useEffect(() => {
         if (isReportRequested) {
@@ -1018,439 +1048,139 @@ export default function AcademicReportsPage() {
         return Array.from(studentMap.values());
     }, [students, seriesAssessments, resolveStudentForMark, selectedClassId, isCurrentSession]);
 
-    // Data Aggregation Engine (Aggregates assessments by student & subject & category/series)
+    // Data Aggregation Engine — uses the SAME unified per-subject scorer (`computeUnifiedSubjectScore`) as Gradebook,
+    // Report Cards, and Ward Grades so scores, test averaging, Mid-Term per-subject pure-exam detection, weights, and
+    // rounding agree 100% across every screen!
     const rawAcademicData = useMemo(() => {
         if (seriesAssessments.length === 0) return null;
         if (effectiveStudents.length === 0 || distinctSubjectsList.length === 0) return null;
 
-        // ---------------------------------------------------------------------------
-        // BRANCH A: PURE 100% STANDALONE SERIES (Mock 1, Mock 2, ... OR Mid-Term)
-        // ---------------------------------------------------------------------------
-        if (isSingleExamSeries) {
-            const singleGrouping: Record<string, Record<string, { score: number; maxScore: number; count: number; hasStandalone?: boolean }>> = {};
-
-            seriesAssessments.forEach((a: any) => {
-                const matched = resolveStudentForMark(a);
-                const primaryStudentId = matched ? getStudentId(matched) : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
-                if (!primaryStudentId) return;
-
-                const subjectKey = resolveSubjectKey(a);
-                if (!singleGrouping[primaryStudentId]) singleGrouping[primaryStudentId] = {};
-                if (!singleGrouping[primaryStudentId][subjectKey]) {
-                    singleGrouping[primaryStudentId][subjectKey] = { score: 0, maxScore: 0, count: 0, hasStandalone: false };
-                }
-
-                const cell = singleGrouping[primaryStudentId][subjectKey];
-                const recordIsStandaloneMid = isMidTermSeries && isStandaloneMidTermAssessment(a);
-
-                // If Standalone 100% Mid-Term exists for this student+subject, ignore any SBA Mid-Term (CA) so they never double-sum!
-                if (isMidTermSeries && cell.hasStandalone && !recordIsStandaloneMid) {
-                    return;
-                }
-                if (recordIsStandaloneMid && !cell.hasStandalone) {
-                    cell.score = 0;
-                    cell.maxScore = 0;
-                    cell.count = 0;
-                    cell.hasStandalone = true;
-                }
-
-                const directMid = isMidTermSeries && !recordIsStandaloneMid ? (a.midSem ?? a.midTerm ?? a.midSemester ?? a.midterm) : undefined;
-                const scoreVal = directMid !== undefined && directMid !== null && directMid !== ''
-                    ? Number(directMid)
-                    : Number(a.score ?? a.totalScore ?? a.marks ?? a.mark ?? a.gradeScore ?? 0);
-                const maxVal = directMid !== undefined && directMid !== null && directMid !== ''
-                    ? Number(a.midSemMaxScore ?? a.midSemMax ?? a.maxScore ?? 40)
-                    : Number(a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100);
-
-                if (!isNaN(scoreVal) && maxVal > 0) {
-                    cell.score += scoreVal;
-                    cell.maxScore += maxVal;
-                    cell.count++;
-                }
-            });
-
-            const studentSubjectScores: Record<string, Record<string, number>> = {};
-            const studentAverages: Array<any> = [];
-
-            effectiveStudents.forEach(student => {
-                const primaryId = getStudentId(student);
-                const scoresMap: Record<string, number> = {};
-                const subScoresMap: Record<string, any> = {};
-                let sumPercentages = 0;
-                let testedSubjectsCount = 0;
-                let passCount = 0;
-                const beceInputs: Array<{ subjectName: string; score: number }> = [];
-
-                distinctSubjectsList.forEach(subject => {
-                    const cell = singleGrouping[primaryId]?.[subject.id];
-                    if (!cell || cell.count === 0 || cell.maxScore <= 0) return;
-
-                    const pct = Math.min(100, Math.round((cell.score / cell.maxScore) * 100));
-                    const gradeInfo = getSeriesGradeFromScore(pct, {
-                        isMock: isMockSeries,
-                        className: selectedClass?.name,
-                        schoolGradingSystem: schoolProfile?.gradingSystem || null,
-                    });
-
-                    scoresMap[subject.id] = pct;
-                    subScoresMap[subject.id] = {
-                        classEx: 0,
-                        hw: 0,
-                        midSem: isMidTermSeries ? parseFloat(cell.score.toFixed(1)) : 0,
-                        proj: 0,
-                        ca: 0,
-                        exam: isMockSeries ? parseFloat(cell.score.toFixed(1)) : 0,
-                        rawScore: parseFloat(cell.score.toFixed(1)),
-                        rawMax: parseFloat(cell.maxScore.toFixed(1)),
-                        total: pct,
-                        grade: gradeInfo.grade,
-                        isBeceGrade: gradeInfo.isBeceGrade,
-                        numericGrade: gradeInfo.numericGrade,
-                    };
-
-                    beceInputs.push({ subjectName: subject.name, score: pct });
-                    sumPercentages += pct;
-                    testedSubjectsCount++;
-                    if (pct >= 50) passCount++;
-                });
-
-                const overallAvg = testedSubjectsCount > 0 ? sumPercentages / testedSubjectsCount : 0;
-                const beceAgg = isMockSeries ? computeBeceAggregate(beceInputs) : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
-                studentSubjectScores[primaryId] = scoresMap;
-
-                studentAverages.push({
-                    studentId: primaryId,
-                    studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim() || (student as any).name || 'Student',
-                    average: Math.round(overallAvg),
-                    subjectScores: scoresMap,
-                    subjectSubScores: subScoresMap,
-                    passCount,
-                    totalTestedSubjects: testedSubjectsCount,
-                    beceAggregate: beceAgg.aggregate,
-                    beceSubjectsUsed: beceAgg.subjectsUsed,
-                    beceIsCompleteSix: beceAgg.isCompleteSix,
-                });
-            });
-
-            const subjectPerformance: Array<{
-                subjectId: string;
-                subjectName: string;
-                average: number;
-                passRate: number;
-                totalStudentsCount: number;
-            }> = [];
-
-            distinctSubjectsList.forEach(subject => {
-                let sumSubjectScores = 0;
-                let countStudentsInSubject = 0;
-                let passStudentsInSubject = 0;
-
-                effectiveStudents.forEach(student => {
-                    const primaryId = getStudentId(student);
-                    const score = studentSubjectScores[primaryId]?.[subject.id];
-                    if (score !== undefined) {
-                        sumSubjectScores += score;
-                        countStudentsInSubject++;
-                        if (score >= 50) passStudentsInSubject++;
-                    }
-                });
-
-                if (countStudentsInSubject > 0) {
-                    const avg = sumSubjectScores / countStudentsInSubject;
-                    const passRate = (passStudentsInSubject / countStudentsInSubject) * 100;
-                    subjectPerformance.push({
-                        subjectId: subject.id,
-                        subjectName: subject.name,
-                        average: parseFloat(avg.toFixed(1)),
-                        passRate: parseFloat(passRate.toFixed(1)),
-                        totalStudentsCount: countStudentsInSubject
-                    });
-                }
-            });
-
-            const validOverallStudents = studentAverages.filter(s => s.totalTestedSubjects > 0);
-            const classOverallAverage = validOverallStudents.length > 0
-                ? validOverallStudents.reduce((sum, s) => sum + s.average, 0) / validOverallStudents.length
-                : 0;
-
-            let totalTestedCombinations = 0;
-            let totalPassedCombinations = 0;
-            studentAverages.forEach(s => {
-                totalTestedCombinations += s.totalTestedSubjects;
-                totalPassedCombinations += s.passCount;
-            });
-            const classPassRate = totalTestedCombinations > 0
-                ? (totalPassedCombinations / totalTestedCombinations) * 100
-                : 0;
-
-            const atRiskStudents = studentAverages.filter(s => s.totalTestedSubjects > 0 && s.average < 50);
-            const topPerformer = validOverallStudents.length > 0
-                ? [...validOverallStudents].sort((a, b) => {
-                    const totalA = Object.values(a.subjectScores as Record<string, number>).reduce((sum, val) => sum + val, 0);
-                    const totalB = Object.values(b.subjectScores as Record<string, number>).reduce((sum, val) => sum + val, 0);
-                    if (totalB !== totalA) return totalB - totalA;
-                    return b.average - a.average;
-                })[0]
-                : null;
-
-            let excellentCount = 0, goodCount = 0, passTierCount = 0, failCount = 0;
-            validOverallStudents.forEach(s => {
-                if (s.average >= 80) excellentCount++;
-                else if (s.average >= 60) goodCount++;
-                else if (s.average >= 50) passTierCount++;
-                else failCount++;
-            });
-
-            const performanceTiers = [
-                { name: 'Excellent (80-100%)', value: excellentCount, color: '#10b981' },
-                { name: 'Good (60-79%)', value: goodCount, color: '#3b82f6' },
-                { name: 'Pass (50-59%)', value: passTierCount, color: '#f59e0b' },
-                { name: 'Needs Support (<50%)', value: failCount, color: '#ef4444' }
-            ].filter(tier => tier.value > 0);
-
-            return {
-                studentAverages,
-                studentSubjectScores,
-                subjectPerformance,
-                classOverallAverage: parseFloat(classOverallAverage.toFixed(1)),
-                classPassRate: parseFloat(classPassRate.toFixed(1)),
-                atRiskStudents,
-                topPerformer,
-                performanceTiers,
-                classAssessmentsCount: seriesAssessments.length
-            };
-        }
-
-        // ---------------------------------------------------------------------------
-        // BRANCH B: END OF TERM (SBA + Terminal Exam, strictly Mock-free!)
-        // ---------------------------------------------------------------------------
-        interface SubGrouping {
-            classEx: { score: number; maxScore: number; rawCount: number };
-            hw: { score: number; maxScore: number; rawCount: number };
-            midSem: { score: number; maxScore: number; rawCount: number };
-            proj: { score: number; maxScore: number; rawCount: number };
-            exam: { score: number; maxScore: number; rawCount: number };
-            directCa?: number;
-            directExam?: number;
-            directTotal?: number;
-            directClassEx?: number;
-            directHw?: number;
-            directMidSem?: number;
-            directProj?: number;
-        }
-
-        const grouping: Record<string, Record<string, SubGrouping>> = {};
-
-        effectiveStudents.forEach(student => {
-            const primaryId = getStudentId(student);
-            if (!primaryId) return;
-
-            grouping[primaryId] = {};
-            distinctSubjectsList.forEach(subject => {
-                grouping[primaryId][subject.id] = {
-                    classEx: { score: 0, maxScore: 0, rawCount: 0 },
-                    hw: { score: 0, maxScore: 0, rawCount: 0 },
-                    midSem: { score: 0, maxScore: 0, rawCount: 0 },
-                    proj: { score: 0, maxScore: 0, rawCount: 0 },
-                    exam: { score: 0, maxScore: 0, rawCount: 0 }
-                };
-            });
-        });
+        const classSubItemsMap: Record<string, any[]> = {};
+        const studentSubItemsMap: Record<string, Record<string, any[]>> = {};
+        distinctSubjectsList.forEach(s => { classSubItemsMap[s.id] = []; });
 
         seriesAssessments.forEach((a: any) => {
             const matched = resolveStudentForMark(a);
-            const primaryStudentId = matched ? getStudentId(matched) : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
+            const primaryStudentId = matched
+                ? getStudentId(matched)
+                : String(a.studentId || a.studentDocId || a.studentRef || a.studentUid || a.uid || '').trim();
             if (!primaryStudentId) return;
 
             const subjectKey = resolveSubjectKey(a);
+            if (!classSubItemsMap[subjectKey]) classSubItemsMap[subjectKey] = [];
+            classSubItemsMap[subjectKey].push(a);
 
-            if (!grouping[primaryStudentId]) {
-                grouping[primaryStudentId] = {};
-            }
-            if (!grouping[primaryStudentId][subjectKey]) {
-                grouping[primaryStudentId][subjectKey] = {
-                    classEx: { score: 0, maxScore: 0, rawCount: 0 },
-                    hw: { score: 0, maxScore: 0, rawCount: 0 },
-                    midSem: { score: 0, maxScore: 0, rawCount: 0 },
-                    proj: { score: 0, maxScore: 0, rawCount: 0 },
-                    exam: { score: 0, maxScore: 0, rawCount: 0 }
-                };
-            }
-
-            const entry = grouping[primaryStudentId][subjectKey];
-
-            // 1. Direct component properties check (supports all common schemas)
-            const directClassEx = a.classExercise ?? a.classEx ?? a.exercises ?? a.exercise ?? a.class_exercise ?? a.test ?? a.tests;
-            const directHw = a.homework ?? a.hw ?? a['h/w'] ?? a.assignment ?? a.assignments ?? a.home_work;
-            const directMidSem = a.midSem ?? a.midTerm ?? a.midSemester ?? a.midterm ?? a.mid_sem ?? a.mid_term;
-            const directProj = a.project ?? a.proj ?? a.practical ?? a.practicals;
-            const directExamField = a.exam ?? a.examScore ?? a.terminalExam ?? a.endOfTermExam ?? a.finalExam ?? a.exam_score;
-            const directCa = a.caScore ?? a.ca ?? a.classScore ?? a.continuousAssessment ?? a.ca_score;
-            const directTotal = a.totalScore ?? a.finalScore ?? a.percentage ?? a.total ?? a.finalTotal;
-
-            if (directClassEx !== undefined && directClassEx !== null && directClassEx !== '' && !isNaN(Number(directClassEx))) {
-                const val = Number(directClassEx);
-                entry.directClassEx = val;
-                entry.classEx.score = val;
-                entry.classEx.maxScore = Number(a.classExMaxScore ?? a.classExMax ?? 20);
-                entry.classEx.rawCount++;
-            }
-            if (directHw !== undefined && directHw !== null && directHw !== '' && !isNaN(Number(directHw))) {
-                const val = Number(directHw);
-                entry.directHw = val;
-                entry.hw.score = val;
-                entry.hw.maxScore = Number(a.hwMaxScore ?? a.hwMax ?? 20);
-                entry.hw.rawCount++;
-            }
-            if (directMidSem !== undefined && directMidSem !== null && directMidSem !== '' && !isNaN(Number(directMidSem))) {
-                const val = Number(directMidSem);
-                entry.directMidSem = val;
-                entry.midSem.score = val;
-                entry.midSem.maxScore = Number(a.midSemMaxScore ?? a.midSemMax ?? 40);
-                entry.midSem.rawCount++;
-            }
-            if (directProj !== undefined && directProj !== null && directProj !== '' && !isNaN(Number(directProj))) {
-                const val = Number(directProj);
-                entry.directProj = val;
-                entry.proj.score = val;
-                entry.proj.maxScore = Number(a.projMaxScore ?? a.projMax ?? 20);
-                entry.proj.rawCount++;
-            }
-            if (directExamField !== undefined && directExamField !== null && directExamField !== '' && !isNaN(Number(directExamField))) {
-                const val = Number(directExamField);
-                entry.directExam = val;
-                entry.exam.score = val;
-                entry.exam.maxScore = Number(a.examMaxScore ?? a.examMax ?? 100);
-                entry.exam.rawCount++;
-            }
-            if (directCa !== undefined && directCa !== null && directCa !== '' && !isNaN(Number(directCa))) {
-                entry.directCa = Number(directCa);
-            }
-            if (directTotal !== undefined && directTotal !== null && directTotal !== '' && !isNaN(Number(directTotal))) {
-                entry.directTotal = Number(directTotal);
-            }
-
-            // 2. Individual component assessment records (e.g. from manual entry / gradebook / quiz)
-            const scoreVal = Number(a.score ?? a.marks ?? a.mark ?? a.gradeScore ?? 0);
-            const maxScoreVal = Number(a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100);
-
-            if (!isNaN(scoreVal) && (scoreVal > 0 || maxScoreVal > 0)) {
-                const categoryKey = getCategoryKey(a.assessmentType, a.assessmentName, a);
-
-                if (directClassEx === undefined && categoryKey === 'classEx') {
-                    entry.classEx.score += scoreVal;
-                    entry.classEx.maxScore += maxScoreVal;
-                    entry.classEx.rawCount++;
-                } else if (directHw === undefined && categoryKey === 'hw') {
-                    entry.hw.score += scoreVal;
-                    entry.hw.maxScore += maxScoreVal;
-                    entry.hw.rawCount++;
-                } else if (directMidSem === undefined && categoryKey === 'midSem') {
-                    entry.midSem.score += scoreVal;
-                    entry.midSem.maxScore += maxScoreVal;
-                    entry.midSem.rawCount++;
-                } else if (directProj === undefined && categoryKey === 'proj') {
-                    entry.proj.score += scoreVal;
-                    entry.proj.maxScore += maxScoreVal;
-                    entry.proj.rawCount++;
-                } else if (directExamField === undefined && categoryKey === 'exam') {
-                    entry.exam.score += scoreVal;
-                    entry.exam.maxScore += maxScoreVal;
-                    entry.exam.rawCount++;
-                }
-            }
+            if (!studentSubItemsMap[primaryStudentId]) studentSubItemsMap[primaryStudentId] = {};
+            if (!studentSubItemsMap[primaryStudentId][subjectKey]) studentSubItemsMap[primaryStudentId][subjectKey] = [];
+            studentSubItemsMap[primaryStudentId][subjectKey].push(a);
         });
 
         const studentSubjectScores: Record<string, Record<string, number>> = {};
-        const studentAverages: Array<{
-            studentId: string;
-            studentName: string;
-            average: number;
-            subjectScores: Record<string, number>;
-            subjectSubScores: Record<string, { classEx: number; hw: number; midSem: number; proj: number; ca: number; exam: number; total: number }>;
-            passCount: number;
-            totalTestedSubjects: number;
-        }> = [];
+        const studentAverages: Array<any> = [];
 
         effectiveStudents.forEach(student => {
             const primaryId = getStudentId(student);
             const scoresMap: Record<string, number> = {};
-            const subScoresMap: Record<string, { classEx: number; hw: number; midSem: number; proj: number; ca: number; exam: number; total: number }> = {};
+            const subScoresMap: Record<string, any> = {};
             let sumPercentages = 0;
             let testedSubjectsCount = 0;
             let passCount = 0;
+            const beceInputs: Array<{ subjectName: string; score: number }> = [];
 
             distinctSubjectsList.forEach(subject => {
-                const subData = grouping[primaryId]?.[subject.id];
-                if (!subData) return;
+                const myItems = studentSubItemsMap[primaryId]?.[subject.id] || [];
+                if (myItems.length === 0) return;
 
-                const hasClassEx = subData.classEx.rawCount > 0 || subData.directClassEx !== undefined;
-                const hasHw = subData.hw.rawCount > 0 || subData.directHw !== undefined;
-                const hasMidSem = subData.midSem.rawCount > 0 || subData.directMidSem !== undefined;
-                const hasProj = subData.proj.rawCount > 0 || subData.directProj !== undefined;
-                const hasExam = subData.exam.rawCount > 0 || subData.directExam !== undefined;
-                const hasCa = subData.directCa !== undefined || hasClassEx || hasHw || hasMidSem || hasProj;
-                const hasDirectTotal = subData.directTotal !== undefined;
+                // Support legacy pre-aggregated row documents (from flattened reportCards / grades collections without `score`)
+                const preAggDoc = myItems.find((a: any) =>
+                    (a.score === undefined || a.score === null || a.score === '') &&
+                    (a.totalScore !== undefined || a.finalScore !== undefined || a.total !== undefined || a.caScore !== undefined || a.ca !== undefined || a.examScore !== undefined || a.exam !== undefined)
+                );
 
-                if (hasCa || hasExam || hasDirectTotal) {
-                    const rawClassExVal = subData.directClassEx !== undefined ? subData.directClassEx : subData.classEx.score;
-                    const rawHwVal = subData.directHw !== undefined ? subData.directHw : subData.hw.score;
-                    const rawMidSemVal = subData.directMidSem !== undefined ? subData.directMidSem : subData.midSem.score;
-                    const rawProjVal = subData.directProj !== undefined ? subData.directProj : subData.proj.score;
-                    const rawExamVal = subData.directExam !== undefined ? subData.directExam : subData.exam.score;
+                let finalCA = 0;
+                let finalExam = 0;
+                let finalTotal = 0;
+                let rawObtained: number | undefined;
+                let rawMax: number | undefined;
+                let subIsSingleExam = false;
 
-                    const caObtained = subData.classEx.score + subData.hw.score + subData.midSem.score + subData.proj.score;
-                    const caMax = subData.classEx.maxScore + subData.hw.maxScore + subData.midSem.maxScore + subData.proj.maxScore;
-
-                    let finalCA = 0;
-                    let finalExam = 0;
-                    let final = 0;
-
-                    if (subData.directCa !== undefined) {
-                        finalCA = Math.round(Math.min(subData.directCa, currentCaWeight));
-                    } else if (caMax > 0) {
-                        finalCA = Math.round(Math.min((caObtained / caMax) * currentCaWeight, currentCaWeight));
-                    } else if (caObtained > 0) {
-                        finalCA = Math.round(Math.min(caObtained, currentCaWeight));
-                    }
-
-                    if (subData.directExam !== undefined) {
-                        const examMax = subData.exam.maxScore > 0 ? subData.exam.maxScore : 100;
-                        finalExam = examMax === currentExamWeight ? Math.round(subData.directExam) : Math.round(Math.min((subData.directExam / examMax) * currentExamWeight, currentExamWeight));
-                    } else if (subData.exam.maxScore > 0) {
-                        finalExam = Math.round(Math.min((subData.exam.score / subData.exam.maxScore) * currentExamWeight, currentExamWeight));
-                    } else if (subData.exam.score > 0) {
-                        finalExam = Math.round(Math.min(subData.exam.score, currentExamWeight));
-                    }
-
-                    if (hasDirectTotal && !hasCa && !hasExam) {
-                        final = Math.min(Math.round(subData.directTotal!), 100);
-                        finalCA = Math.round((final / 100) * currentCaWeight);
-                        finalExam = Math.max(0, final - finalCA);
+                if (preAggDoc) {
+                    const directCa = preAggDoc.caScore ?? preAggDoc.ca ?? preAggDoc.classScore;
+                    const directEx = preAggDoc.examScore ?? preAggDoc.exam ?? preAggDoc.terminalExam;
+                    const directTot = preAggDoc.totalScore ?? preAggDoc.finalScore ?? preAggDoc.percentage ?? preAggDoc.total;
+                    if (directTot !== undefined && directCa === undefined && directEx === undefined) {
+                        finalTotal = Math.min(100, Math.max(0, Math.round(Number(directTot) || 0)));
+                        finalCA = isMockSeries ? 0 : Math.round((finalTotal / 100) * currentCaWeight);
+                        finalExam = isMockSeries ? finalTotal : Math.max(0, finalTotal - finalCA);
+                        subIsSingleExam = isMockSeries;
                     } else {
-                        final = Math.min(finalCA + finalExam, 100);
+                        finalCA = directCa !== undefined ? Math.round(Math.min(Number(directCa) || 0, currentCaWeight)) : 0;
+                        finalExam = directEx !== undefined ? Math.round(Math.min(Number(directEx) || 0, isMockSeries ? 100 : currentExamWeight)) : 0;
+                        finalTotal = Math.min(100, finalCA + finalExam);
+                        subIsSingleExam = isMockSeries;
                     }
+                } else {
+                    const normalizedItems = myItems.map((a: any) => ({
+                        ...a,
+                        score: a.score ?? a.marks ?? a.mark ?? a.gradeScore ?? (isMidTermSeries ? (a.midSem ?? a.midTerm) : undefined) ?? 0,
+                        maxScore: a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100,
+                    }));
+                    const normalizedClassItems = (classSubItemsMap[subject.id] || []).map((a: any) => ({
+                        ...a,
+                        score: a.score ?? a.marks ?? a.mark ?? a.gradeScore ?? (isMidTermSeries ? (a.midSem ?? a.midTerm) : undefined) ?? 0,
+                        maxScore: a.maxScore ?? a.totalMarks ?? a.maxMark ?? 100,
+                    }));
 
-                    scoresMap[subject.id] = final;
-                    subScoresMap[subject.id] = {
-                        classEx: parseFloat(rawClassExVal.toFixed(1)),
-                        hw: parseFloat(rawHwVal.toFixed(1)),
-                        midSem: parseFloat(rawMidSemVal.toFixed(1)),
-                        proj: parseFloat(rawProjVal.toFixed(1)),
-                        ca: finalCA,
-                        exam: rawExamVal > 0 ? parseFloat(rawExamVal.toFixed(1)) : finalExam,
-                        total: final
-                    };
+                    const scored = computeUnifiedSubjectScore({
+                        series: selectedSeries,
+                        studentItems: normalizedItems,
+                        classSubjectItems: normalizedClassItems,
+                        caWeight: currentCaWeight,
+                        examWeight: currentExamWeight,
+                    });
+                    if (!scored) return;
 
-                    sumPercentages += final;
-                    testedSubjectsCount++;
-                    if (final >= 50) {
-                        passCount++;
-                    }
+                    finalCA = scored.ca;
+                    finalExam = scored.exam;
+                    finalTotal = scored.total;
+                    rawObtained = scored.rawObtained;
+                    rawMax = scored.rawMax;
+                    subIsSingleExam = scored.isSingleExamOnly;
                 }
+
+                const gradeInfo = getSeriesGradeFromScore(finalTotal, {
+                    isMock: isMockSeries,
+                    className: selectedClass?.name,
+                    schoolGradingSystem: schoolProfile?.gradingSystem || null,
+                });
+
+                scoresMap[subject.id] = finalTotal;
+                subScoresMap[subject.id] = {
+                    classEx: 0,
+                    hw: 0,
+                    midSem: isMidTermSeries ? (rawObtained ?? finalTotal) : 0,
+                    proj: 0,
+                    ca: finalCA,
+                    exam: finalExam,
+                    rawScore: rawObtained,
+                    rawMax,
+                    isSingleExamOnly: subIsSingleExam,
+                    total: finalTotal,
+                    grade: gradeInfo.grade,
+                    isBeceGrade: gradeInfo.isBeceGrade,
+                    numericGrade: gradeInfo.numericGrade,
+                };
+
+                beceInputs.push({ subjectName: subject.name, score: finalTotal });
+                sumPercentages += finalTotal;
+                testedSubjectsCount++;
+                if (finalTotal >= 50) passCount++;
             });
 
             const overallAvg = testedSubjectsCount > 0 ? sumPercentages / testedSubjectsCount : 0;
+            const beceAgg = (isMockSeries && isBeceClass)
+                ? computeBeceAggregate(beceInputs, schoolProfile?.gradingSystem)
+                : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
             studentSubjectScores[primaryId] = scoresMap;
 
             studentAverages.push({
@@ -1460,7 +1190,10 @@ export default function AcademicReportsPage() {
                 subjectScores: scoresMap,
                 subjectSubScores: subScoresMap,
                 passCount,
-                totalTestedSubjects: testedSubjectsCount
+                totalTestedSubjects: testedSubjectsCount,
+                beceAggregate: beceAgg.aggregate,
+                beceSubjectsUsed: beceAgg.subjectsUsed,
+                beceIsCompleteSix: beceAgg.isCompleteSix,
             });
         });
 
@@ -1503,6 +1236,20 @@ export default function AcademicReportsPage() {
             }
         });
 
+        const comparePerformers = (a: any, b: any) => {
+            if (isMockSeries && isBeceClass) {
+                if (a.beceIsCompleteSix && !b.beceIsCompleteSix) return -1;
+                if (!a.beceIsCompleteSix && b.beceIsCompleteSix) return 1;
+                if (a.beceIsCompleteSix && b.beceIsCompleteSix && a.beceAggregate !== null && b.beceAggregate !== null) {
+                    if (a.beceAggregate !== b.beceAggregate) return a.beceAggregate - b.beceAggregate;
+                }
+            }
+            const totalA = Object.values((a.subjectScores || {}) as Record<string, number>).reduce((sum, val) => sum + (Number(val) || 0), 0);
+            const totalB = Object.values((b.subjectScores || {}) as Record<string, number>).reduce((sum, val) => sum + (Number(val) || 0), 0);
+            if (totalB !== totalA) return totalB - totalA;
+            return b.average - a.average;
+        };
+
         // Overall Aggregate Metrics
         const validOverallStudents = studentAverages.filter(s => s.totalTestedSubjects > 0);
         const classOverallAverage = validOverallStudents.length > 0 
@@ -1521,12 +1268,7 @@ export default function AcademicReportsPage() {
 
         const atRiskStudents = studentAverages.filter(s => s.totalTestedSubjects > 0 && s.average < 50);
         const topPerformer = validOverallStudents.length > 0
-            ? [...validOverallStudents].sort((a, b) => {
-                const totalA = Object.values(a.subjectScores).reduce((sum, val) => sum + val, 0);
-                const totalB = Object.values(b.subjectScores).reduce((sum, val) => sum + val, 0);
-                if (totalB !== totalA) return totalB - totalA;
-                return b.average - a.average;
-            })[0]
+            ? [...validOverallStudents].sort(comparePerformers)[0]
             : null;
 
         // Performance Tiers Count
@@ -1559,7 +1301,7 @@ export default function AcademicReportsPage() {
             performanceTiers,
             classAssessmentsCount: seriesAssessments.length
         };
-    }, [effectiveStudents, seriesAssessments, distinctSubjectsList, resolveSubjectKey, currentCaWeight, currentExamWeight, isSingleExamSeries, isMockSeries, isMidTermSeries, selectedClass, schoolProfile]);
+    }, [effectiveStudents, seriesAssessments, distinctSubjectsList, resolveStudentForMark, resolveSubjectKey, currentCaWeight, currentExamWeight, selectedSeries, isMockSeries, isMidTermSeries, isBeceClass, selectedClass, schoolProfile]);
 
     // Effective academicData (defaults to 1-read snapshot when loaded, else raw computation)
     const academicData = activeSnapshot ? activeSnapshot.academicData : rawAcademicData;
@@ -1583,66 +1325,68 @@ export default function AcademicReportsPage() {
         const gradeDistribution = { A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 };
         const studentSubjectDetails = effectiveStudents.map(student => {
             const primaryId = getStudentId(student);
-            const score = academicData.studentSubjectScores[primaryId]?.[subId] ?? 0;
-            const grade = getGradeForScore(score);
-            if (grade !== 'N/A') {
-                gradeDistribution[grade]++;
-            }
-
             const myAssessments = studentAssessmentsMap[primaryId] || [];
-            let caScore = 0, caMax = 0, examScore = 0, examMax = 0;
-            let directCa: number | undefined;
-            let directExam: number | undefined;
-
-            myAssessments.forEach(a => {
-                if (a.caScore !== undefined) directCa = Number(a.caScore);
-                if (a.examScore !== undefined) directExam = Number(a.examScore);
-
-                const category = getCategoryKey(a.assessmentType, a.assessmentName, a);
-                if (isSingleExamSeries || category === 'exam' || category === 'mock') {
-                    examScore += (Number(a.score) || 0);
-                    examMax += (Number(a.maxScore) || 100);
-                } else {
-                    caScore += (Number(a.score) || 0);
-                    caMax += (Number(a.maxScore) || 100);
-                }
-            });
+            const recordedScore = academicData.studentSubjectScores[primaryId]?.[subId];
+            const hasMark = recordedScore !== undefined || myAssessments.length > 0;
 
             let finalCA = 0;
             let finalExam = 0;
-            if (isSingleExamSeries) {
-                finalCA = 0;
-                finalExam = examMax > 0 ? Math.round(Math.min((examScore / examMax) * 100, 100)) : score;
-            } else {
-                if (directCa !== undefined) {
-                    finalCA = Math.round(Math.min(directCa, currentCaWeight));
-                } else if (caMax > 0) {
-                    finalCA = Math.round(Math.min((caScore / caMax) * currentCaWeight, currentCaWeight));
+            let finalScore = recordedScore ?? 0;
+            let subIsSingleExam = isMockSeries;
+            let caRawStr = '—';
+            let examRawStr = '—';
+
+            if (hasMark) {
+                const scored = computeUnifiedSubjectScore({
+                    series: selectedSeries,
+                    studentItems: myAssessments,
+                    classSubjectItems: subAssessments,
+                    caWeight: currentCaWeight,
+                    examWeight: currentExamWeight,
+                });
+                if (scored) {
+                    finalCA = scored.ca;
+                    finalExam = scored.exam;
+                    if (recordedScore === undefined) finalScore = scored.total;
+                    subIsSingleExam = scored.isSingleExamOnly;
+                    if (scored.isSingleExamOnly) {
+                        caRawStr = '—';
+                        examRawStr = scored.rawDisplay || `${finalExam}/100`;
+                    } else {
+                        caRawStr = `${finalCA}/${currentCaWeight}`;
+                        examRawStr = `${finalExam}/${currentExamWeight}`;
+                    }
+                } else if (recordedScore !== undefined) {
+                    caRawStr = isMockSeries ? '—' : `${Math.round((recordedScore / 100) * currentCaWeight)}/${currentCaWeight}`;
+                    examRawStr = isMockSeries ? `${recordedScore}/100` : `${Math.round((recordedScore / 100) * currentExamWeight)}/${currentExamWeight}`;
                 }
 
-                if (directExam !== undefined) {
-                    finalExam = Math.round(Math.min(directExam, currentExamWeight));
-                } else if (examMax > 0) {
-                    finalExam = Math.round(Math.min((examScore / examMax) * currentExamWeight, currentExamWeight));
+                const letterBucket = getGradeForScore(finalScore, true);
+                if (letterBucket !== 'N/A') {
+                    gradeDistribution[letterBucket]++;
                 }
             }
 
-            const finalScore = score > 0 ? score : Math.min(finalCA + finalExam, 100);
-            const seriesGrade = getSeriesGradeFromScore(finalScore, {
-                isMock: isMockSeries,
-                className: selectedClass?.name,
-                schoolGradingSystem: schoolProfile?.gradingSystem || null,
-            });
+            const seriesGrade = hasMark
+                ? getSeriesGradeFromScore(finalScore, {
+                    isMock: isMockSeries,
+                    className: selectedClass?.name,
+                    schoolGradingSystem: schoolProfile?.gradingSystem || null,
+                })
+                : null;
 
             return {
                 studentId: primaryId,
                 studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim() || (student as any).name || 'Student',
-                score: finalScore,
-                grade: seriesGrade.isBeceGrade ? `Grade ${seriesGrade.grade}` : getGradeForScore(finalScore),
+                hasMark,
+                score: hasMark ? finalScore : 0,
+                grade: !hasMark
+                    ? 'N/A'
+                    : (seriesGrade?.isBeceGrade ? `Grade ${seriesGrade.grade}` : getGradeForScore(finalScore, true)),
                 weightedCA: finalCA,
                 weightedExam: finalExam,
-                caRaw: isSingleExamSeries ? '—' : `${caScore}/${caMax}`,
-                examRaw: `${examScore}/${examMax}`
+                caRaw: subIsSingleExam ? '—' : caRawStr,
+                examRaw: examRawStr
             };
         });
 
@@ -1666,12 +1410,14 @@ export default function AcademicReportsPage() {
 
         const chartData = ['A', 'B', 'C', 'D', 'E', 'F'].map(g => ({ name: g, count: gradeDistribution[g as keyof typeof gradeDistribution] || 0 }));
 
-        const scores = studentSubjectDetails.map(s => s.score).filter(s => s > 0);
+        // Only evaluate statistics across tested students (including genuine 0 scores; excluding untested students!)
+        const testedStudents = studentSubjectDetails.filter(s => s.hasMark);
+        const scores = testedStudents.map(s => s.score);
         const subjectAvg = scores.length > 0 ? scores.reduce((sum, s) => sum + s, 0) / scores.length : 0;
         const highestScore = scores.length > 0 ? Math.max(...scores) : 0;
         const lowestScore = scores.length > 0 ? Math.min(...scores) : 0;
-        const passCount = studentSubjectDetails.filter(s => s.score >= 50).length;
-        const passRate = studentSubjectDetails.length > 0 ? (passCount / studentSubjectDetails.length) * 100 : 0;
+        const passCount = testedStudents.filter(s => s.score >= 50).length;
+        const passRate = testedStudents.length > 0 ? (passCount / testedStudents.length) * 100 : 0;
 
         return {
             studentScores: studentSubjectDetails,
@@ -1682,7 +1428,7 @@ export default function AcademicReportsPage() {
             lowestScore,
             passRate: parseFloat(passRate.toFixed(1))
         };
-    }, [academicData, effectiveStudents, seriesAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark, isSingleExamSeries, isMockSeries, selectedClass, schoolProfile]);
+    }, [academicData, effectiveStudents, seriesAssessments, resolveSubjectKey, currentCaWeight, currentExamWeight, resolveStudentForMark, selectedSeries, isMockSeries, selectedClass, schoolProfile]);
 
     // Single-Subject Detailed Deep Dive
     const rawSubjectDetails = useMemo(() => {
@@ -1695,36 +1441,47 @@ export default function AcademicReportsPage() {
 
     const selectedSubject = distinctSubjectsList.find(s => s.id === selectedSubjectId) || subjects?.find(s => s.id === selectedSubjectId);
 
+    const compareStudentStanding = useCallback((a: any, b: any) => {
+        if ((a.totalTestedSubjects || 0) === 0 && (b.totalTestedSubjects || 0) === 0) return 0;
+        if ((a.totalTestedSubjects || 0) === 0) return 1;
+        if ((b.totalTestedSubjects || 0) === 0) return -1;
+
+        if (isMockSeries && isBeceClass) {
+            if (a.beceIsCompleteSix && !b.beceIsCompleteSix) return -1;
+            if (!a.beceIsCompleteSix && b.beceIsCompleteSix) return 1;
+            if (a.beceIsCompleteSix && b.beceIsCompleteSix && a.beceAggregate !== null && b.beceAggregate !== null && a.beceAggregate !== undefined && b.beceAggregate !== undefined) {
+                if (a.beceAggregate !== b.beceAggregate) return a.beceAggregate - b.beceAggregate;
+            }
+        }
+
+        const scoresA = (a.subjectScores || {}) as Record<string, number>;
+        const scoresB = (b.subjectScores || {}) as Record<string, number>;
+        const totalA = typeof a.totalMarks === 'number'
+            ? a.totalMarks
+            : Object.values(scoresA).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
+        const totalB = typeof b.totalMarks === 'number'
+            ? b.totalMarks
+            : Object.values(scoresB).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
+        if (totalB !== totalA) return totalB - totalA;
+        return (b.average || 0) - (a.average || 0);
+    }, [isMockSeries, isBeceClass]);
+
     // Leaderboard search filter
     const filteredLeaderboard = useMemo(() => {
         if (!academicData?.studentAverages) return [];
         return academicData.studentAverages
             .filter(s => s.studentName.toLowerCase().includes(searchQuery.toLowerCase()))
-            .sort((a, b) => {
-                const scoresA = (a.subjectScores || {}) as Record<string, number>;
-                const scoresB = (b.subjectScores || {}) as Record<string, number>;
-                const totalA = Object.values(scoresA).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
-                const totalB = Object.values(scoresB).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
-                if (totalB !== totalA) return totalB - totalA;
-                return b.average - a.average;
-            });
-    }, [academicData, searchQuery]);
+            .sort(compareStudentStanding);
+    }, [academicData, searchQuery, compareStudentStanding]);
 
     // Top Performers List (Spots 1, 2, 3)
     const topSpots = useMemo(() => {
         if (!academicData?.studentAverages) return [];
         return [...academicData.studentAverages]
             .filter(s => s.totalTestedSubjects > 0)
-            .sort((a, b) => {
-                const scoresA = (a.subjectScores || {}) as Record<string, number>;
-                const scoresB = (b.subjectScores || {}) as Record<string, number>;
-                const totalA = Object.values(scoresA).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
-                const totalB = Object.values(scoresB).reduce((sum: number, val: number) => sum + (Number(val) || 0), 0);
-                if (totalB !== totalA) return totalB - totalA;
-                return b.average - a.average;
-            })
+            .sort(compareStudentStanding)
             .slice(0, 3);
-    }, [academicData]);
+    }, [academicData, compareStudentStanding]);
 
     // Filter subjects to only those that have at least one grade recorded for the selected class/cohort
     const rawActiveSubjects = useMemo(() => {
@@ -1755,7 +1512,7 @@ export default function AcademicReportsPage() {
 
     const activeSubjects = activeSnapshot ? activeSnapshot.activeSubjects : rawActiveSubjects;
 
-    // Rank students by total marks descending (with average as tiebreaker)
+    // Rank students (by BECE Best-6 Aggregate first on JHS Mocks, else totalMarks + average tiebreaker)
     const rawRankedStudents = useMemo(() => {
         if (!academicData?.studentAverages) return [];
         
@@ -1768,17 +1525,7 @@ export default function AcademicReportsPage() {
             };
         });
 
-        // Sort descending by totalMarks, then average. Place untested students at the end.
-        list.sort((a, b) => {
-            if (a.totalTestedSubjects === 0 && b.totalTestedSubjects === 0) return 0;
-            if (a.totalTestedSubjects === 0) return 1;
-            if (b.totalTestedSubjects === 0) return -1;
-
-            if (b.totalMarks !== a.totalMarks) {
-                return b.totalMarks - a.totalMarks;
-            }
-            return b.average - a.average;
-        });
+        list.sort(compareStudentStanding);
 
         let currentRank = 1;
         return list.map((item, idx) => {
@@ -1788,8 +1535,7 @@ export default function AcademicReportsPage() {
                     rank: '-'
                 };
             }
-            if (idx > 0 && list[idx - 1].totalTestedSubjects > 0 && 
-                (list[idx - 1].totalMarks > item.totalMarks || list[idx - 1].average > item.average)) {
+            if (idx > 0 && list[idx - 1].totalTestedSubjects > 0 && compareStudentStanding(list[idx - 1], item) < 0) {
                 currentRank = idx + 1;
             }
             return {
@@ -1797,17 +1543,21 @@ export default function AcademicReportsPage() {
                 rank: currentRank
             };
         });
-    }, [academicData]);
+    }, [academicData, compareStudentStanding]);
 
     const rankedStudents = activeSnapshot ? activeSnapshot.rankedStudents : rawRankedStudents;
 
-    // Auto-save snapshot to Firestore when raw records are calculated
+    // Auto-save snapshot to Firestore ONLY for Admins on closed/archived terms (never freeze partial open-term snapshots!)
     useEffect(() => {
         if (
+            isAdmin &&
+            rawIsTermArchived &&
+            !schoolProfile?.isTermCorrectionActive &&
             isReportRequested && 
             !activeSnapshot && 
             !isLoadingSnapshot &&
             rawAcademicData && 
+            rawActiveSubjects.length > 0 &&
             rawRankedStudents.length > 0 && 
             !isLoadingAssessments && 
             !isLoadingStudents && 
@@ -1865,6 +1615,8 @@ export default function AcademicReportsPage() {
                 });
         }
     }, [
+        isAdmin,
+        schoolProfile?.isTermCorrectionActive,
         isReportRequested, 
         activeSnapshot, 
         isLoadingSnapshot,

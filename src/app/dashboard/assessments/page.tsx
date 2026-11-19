@@ -980,7 +980,7 @@ export default function AssessmentsPage() {
                                         // Score highlighting logic
                                         let scoreColor = "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200";
                                         if (percentage >= 80) scoreColor = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200";
-                                        else if (percentage >= 50) scoreColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-emerald-200";
+                                        else if (percentage >= 50) scoreColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200";
                                         
                                         return (
                                             <TableRow key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">

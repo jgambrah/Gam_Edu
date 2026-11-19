@@ -48,9 +48,27 @@ function classContribution(m, sign, inc) {
     };
 }
 const safeKey = (v) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
-/** What one mark contributes, or null if it is not a usable mark. */
+function isNonTerminalSeriesMark(a) {
+    if (!a)
+        return false;
+    if (a.reportScope === 'mid_term' || a.standaloneMidTerm === true)
+        return true;
+    if (typeof a.mockSeries === 'string' && a.mockSeries.trim() !== '')
+        return true;
+    const typeLower = String(a.assessmentType || '').trim().toLowerCase();
+    const nameLower = String(a.assessmentName || '').trim().toLowerCase();
+    if (typeLower.includes('mock'))
+        return true;
+    if (/^(?:\d+(?:st|nd|rd|th)\s+)?mock(?:\s+exam(?:ination)?)?(?:\s*#?\d+)?(?:\s*\(100%\))?$/i.test(nameLower))
+        return true;
+    return false;
+}
+/** What one mark contributes, or null if it is not an End-of-Term usable mark. */
 function markPart(a) {
     if (!a || !a.schoolId || !a.studentId)
+        return null;
+    // Exclude Mock exams and Dedicated Mid-Term workspace marks so End-of-Term classAverages & academicSummary stay uncontaminated.
+    if (isNonTerminalSeriesMark(a))
         return null;
     const score = Number(a.score);
     const max = Number(a.maxScore);

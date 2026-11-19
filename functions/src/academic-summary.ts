@@ -53,9 +53,22 @@ export type MarkPart = {
   studentId: string; studentName: string;
 };
 
-/** What one mark contributes, or null if it is not a usable mark. */
+function isNonTerminalSeriesMark(a: any): boolean {
+  if (!a) return false;
+  if (a.reportScope === 'mid_term' || a.standaloneMidTerm === true) return true;
+  if (typeof a.mockSeries === 'string' && a.mockSeries.trim() !== '') return true;
+  const typeLower = String(a.assessmentType || '').trim().toLowerCase();
+  const nameLower = String(a.assessmentName || '').trim().toLowerCase();
+  if (typeLower.includes('mock')) return true;
+  if (/^(?:\d+(?:st|nd|rd|th)\s+)?mock(?:\s+exam(?:ination)?)?(?:\s*#?\d+)?(?:\s*\(100%\))?$/i.test(nameLower)) return true;
+  return false;
+}
+
+/** What one mark contributes, or null if it is not an End-of-Term usable mark. */
 export function markPart(a: any): MarkPart | null {
   if (!a || !a.schoolId || !a.studentId) return null;
+  // Exclude Mock exams and Dedicated Mid-Term workspace marks so End-of-Term classAverages & academicSummary stay uncontaminated.
+  if (isNonTerminalSeriesMark(a)) return null;
   const score = Number(a.score);
   const max = Number(a.maxScore);
   if (!Number.isFinite(score) || !(max > 0)) return null;

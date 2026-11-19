@@ -1339,10 +1339,16 @@ async function lockTermReportCards(schoolId, termId) {
         const studentId = data.studentId;
         if (!studentId)
             return;
-        // Deterministic frozen summary doc ID: term_report_card_${schoolId}_${studentId}_${termId}
-        const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+        const suffixMatch = String(docSnap.id || '').match(/__(mid_term|mock_[a-z0-9_]+)$/i);
+        const seriesKey = (typeof data.reportSeries === 'string' && data.reportSeries.trim())
+            ? data.reportSeries.trim()
+            : (suffixMatch ? suffixMatch[1].toLowerCase() : 'end_of_term');
+        // Deterministic series-aware frozen summary doc ID (preserves exact legacy ID for end_of_term)
+        const docId = seriesKey === 'end_of_term'
+            ? `term_report_card_${schoolId}_${studentId}_${termId}`
+            : `term_report_card_${schoolId}_${studentId}_${termId}__${seriesKey}`;
         const lockedRef = db.collection('term_report_cards').doc(docId);
-        batch.set(lockedRef, Object.assign(Object.assign({}, data), { id: docId, schoolId,
+        batch.set(lockedRef, Object.assign(Object.assign({}, data), { id: docId, reportSeries: seriesKey, sourceReportCardId: docSnap.id, schoolId,
             studentId,
             termId, isLocked: true, isArchived: true, lockedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true });
         batch.update(docSnap.ref, { isArchived: true });

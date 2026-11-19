@@ -242,7 +242,7 @@ export default function ReportCardTemplate({ data, classTeacherComment, headmast
                             <tbody>
                                 {data.rows?.map((row: any, i: number) => {
                                     const gradeVal = String(row.grade || '').toUpperCase();
-                                    const isFail = gradeVal.includes('F') || gradeVal.includes('E') || gradeVal === '9' || gradeVal === '8';
+                                    const isFail = gradeVal.includes('F') || gradeVal === '9';
                                     const isExcellent = gradeVal.includes('A') || gradeVal.includes('*') || gradeVal === '1' || gradeVal === '2';
                                     const nameLen = (row.subjectName || '').length;
                                     

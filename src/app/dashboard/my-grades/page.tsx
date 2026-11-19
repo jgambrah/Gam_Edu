@@ -16,8 +16,8 @@ import { cn } from '@/lib/utils';
 import {
     resolveMockSeriesFromAssessment,
     isMidTermReportScopeAssessment,
-    resolveMidTermSlot,
-    computeMidTermSubjectScore,
+    computeUnifiedSubjectScore,
+    resolveSeriesWeights,
     computeBeceAggregate,
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
@@ -56,51 +56,6 @@ function seriesOfAssessment(a: any): { id: AcademicSeriesId; label: string } {
     return { id: 'end_of_term', label: 'End of Term' };
 }
 
-function computeEndOfTermSubjectPreview(items: any[], caWeight: number, examWeight: number): { ca: number | null; exam: number | null; total: number } {
-    const num = (v: any, d: number) => { const n = Number(v); return isFinite(n) ? n : d; };
-    const typeOf = (a: any) => String(a.assessmentType || '').toLowerCase();
-    const isTerminalExam = (a: any) => { const t = typeOf(a); return !t.includes('mid') && (t.includes('exam') || t.includes('term')); };
-
-    const exams = items.filter(isTerminalExam);
-    const caItems = items.filter(a => !isTerminalExam(a));
-
-    const groups: Record<string, { s: number[]; m: number[] }> = {};
-    caItems.forEach(a => {
-        const c = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
-        const kind = c.includes('mid') ? 'mid'
-            : (c.includes('proj') || c.includes('group') || c.includes('practical')) ? 'project'
-            : (c.includes('home') || c.includes('hw')) ? 'hw'
-            : 'test';
-        if (!groups[kind]) groups[kind] = { s: [], m: [] };
-        groups[kind].s.push(num(a.score, 0));
-        groups[kind].m.push(num(a.maxScore, 100) || 100);
-    });
-
-    const mean = (xs: number[]) => xs.reduce((x, y) => x + y, 0) / xs.length;
-    let caScore = 0, caMax = 0;
-    Object.values(groups).forEach(g => { caScore += mean(g.s); caMax += mean(g.m); });
-    const hasCa = caMax > 0;
-    const rawCA = hasCa ? Math.min((caScore / caMax) * caWeight, caWeight) : 0;
-
-    const exScore = exams.reduce((sum, a) => sum + num(a.score, 0), 0);
-    const exMax = exams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
-    const hasExam = exams.length > 0 && exMax > 0;
-    const rawExam = hasExam ? Math.min((exScore / exMax) * examWeight, examWeight) : 0;
-
-    // If only CA has been entered so far (no terminal exam yet), show live percentage out of CA max so pupil isn't shown 27% for 27/30 CA!
-    if (hasCa && !hasExam) {
-        const liveCaPct = Math.round((caScore / caMax) * 100);
-        return { ca: Math.round(rawCA), exam: null, total: liveCaPct };
-    }
-    if (!hasCa && hasExam) {
-        const liveExPct = caWeight === 0 ? Math.round((exScore / exMax) * 100) : Math.round(rawExam);
-        return { ca: null, exam: Math.round(rawExam), total: liveExPct };
-    }
-    const ca = Math.round(rawCA);
-    const exam = Math.round(rawExam);
-    return { ca, exam, total: Math.min(100, ca + exam) };
-}
-
 export default function MyGradesPage() {
     const { user } = useUser();
     const { role, profile } = useRole();
@@ -136,10 +91,10 @@ export default function MyGradesPage() {
     const activeChild = useMemo(() => (students || []).find((s: any) => s.id === activeChildId || s.uid === activeChildId) || null, [students, activeChildId]);
     const markKey = activeChild?.uid || activeChildId;
 
-    // The pupil's own marks, newest first
+    // The pupil's own marks, newest first (raised limit so multi-term + multi-mock histories stay intact)
     const marksQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || !markKey) return null;
-        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', '==', markKey), orderBy('createdAt', 'desc'), limit(300));
+        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', '==', markKey), orderBy('createdAt', 'desc'), limit(600));
     }, [firestore, schoolId, markKey]);
     const { data: marks, isLoading: loadingMarks } = useCollection<any>(marksQuery);
 
@@ -212,12 +167,14 @@ export default function MyGradesPage() {
     const isMockActive = activeSeriesId.startsWith('mock_');
     const isMidTermActive = activeSeriesId === 'mid_term';
 
-    const caWeight = isMidTermActive && typeof classDoc?.midTermCaWeight === 'number'
-        ? classDoc.midTermCaWeight
-        : (typeof classDoc?.caWeight === 'number' ? classDoc.caWeight : (typeof schoolSettings?.caWeight === 'number' ? schoolSettings.caWeight : 30));
-    const examWeight = isMidTermActive && typeof classDoc?.midTermExamWeight === 'number'
-        ? classDoc.midTermExamWeight
-        : (typeof classDoc?.examWeight === 'number' ? classDoc.examWeight : (typeof schoolSettings?.examWeight === 'number' ? schoolSettings.examWeight : 70));
+    const { caWeight, examWeight } = useMemo(
+        () => resolveSeriesWeights({
+            series: activeSeriesId,
+            classDoc,
+            schoolSettings,
+        }),
+        [activeSeriesId, classDoc, schoolSettings]
+    );
 
     const { data: classAverages } = useDoc<any>(useMemoFirebase(
         () => (firestore && schoolId && classId && termId && termId !== 'unknown' && activeSeriesId === 'end_of_term')
@@ -246,45 +203,38 @@ export default function MyGradesPage() {
         }
 
         return Array.from(by.entries()).map(([name, list]) => {
-            let avg = 0;
+            const res = computeUnifiedSubjectScore({
+                series: activeSeriesId,
+                studentItems: list,
+                classSubjectItems: list,
+                caWeight,
+                examWeight,
+            });
+
+            let avg = res?.total ?? 0;
             let caDisplay: string | null = null;
             let exDisplay: string | null = null;
+            let scoreBadgeText: string | null = null;
+            let barPct = avg;
 
-            if (isMockActive) {
-                const obt = list.reduce((s, a) => s + (Number(a.score) || 0), 0);
-                const max = list.reduce((s, a) => s + (Number(a.maxScore) || 100), 0);
-                avg = max > 0 ? Math.min(100, Math.round((obt / max) * 100)) : 0;
-                exDisplay = `Raw ${Math.round(obt * 10) / 10}/${Math.round(max * 10) / 10}`;
-            } else if (isMidTermActive) {
-                const res = computeMidTermSubjectScore({
-                    studentItems: list,
-                    classSubjectItems: list,
-                    caWeight,
-                    examWeight,
-                });
-                const hasExamOnly = list.every(a => resolveMidTermSlot(a) === 'exam');
-                const hasCaOnly = list.every(a => resolveMidTermSlot(a) !== 'exam');
-                if (res && !hasCaOnly) {
-                    avg = res.total;
-                    if (!res.isSingleExamOnly && !hasExamOnly) {
-                        caDisplay = `CA ${res.ca}/${caWeight}`;
-                        exDisplay = `Exam ${res.exam}/${examWeight}`;
-                    } else if (res.rawDisplay) {
-                        exDisplay = `Raw ${res.rawDisplay}`;
-                    }
+            if (res) {
+                if (res.isSingleExamOnly) {
+                    exDisplay = res.rawDisplay ? `Raw ${res.rawDisplay}` : `Score ${res.total}%`;
+                } else if (res.hasCa && !res.hasExam && caWeight > 0) {
+                    // CA recorded while Exam is still pending: show exact CA points (e.g. 27/30) matching the Report Card,
+                    // alongside the CA completion rate so parents are never confused by two different numbers!
+                    const caRate = Math.round((res.ca / caWeight) * 100);
+                    caDisplay = `CA ${res.ca}/${caWeight} (${caRate}% of CA)`;
+                    exDisplay = `Exam pending (/${examWeight})`;
+                    scoreBadgeText = `${res.ca}/${caWeight}`;
+                    barPct = caRate;
                 } else {
-                    // Only Mid-Term CA entered so far (before Mid-Term Exam is written)
-                    avg = Math.round(list.reduce((s, a) => s + (pctOf(a) as number), 0) / list.length);
-                    caDisplay = `CA ${avg}% (in progress)`;
+                    caDisplay = `CA ${res.ca}/${caWeight}`;
+                    exDisplay = `Exam ${res.exam}/${examWeight}`;
                 }
-            } else {
-                const res = computeEndOfTermSubjectPreview(list, caWeight, examWeight);
-                avg = res.total;
-                caDisplay = res.ca !== null ? `CA ${res.ca}/${caWeight}` : null;
-                exDisplay = res.exam !== null ? `Exam ${res.exam}/${examWeight}` : null;
             }
 
-            const gradeInfo = getSeriesGradeFromScore(avg, {
+            const gradeInfo = getSeriesGradeFromScore(barPct, {
                 isMock: isMockActive,
                 className: classDoc?.name,
                 schoolGradingSystem: schoolSettings?.gradingSystem || null,
@@ -294,6 +244,9 @@ export default function MyGradesPage() {
             return {
                 name,
                 avg,
+                barPct,
+                scoreBadgeText,
+                caOnlyPendingExam: Boolean(res && !res.isSingleExamOnly && res.hasCa && !res.hasExam && caWeight > 0),
                 caDisplay,
                 exDisplay,
                 grade: gradeInfo.grade,
@@ -301,18 +254,21 @@ export default function MyGradesPage() {
                 classAvg: classBy[name] ?? null,
                 list: sorted,
             };
-        }).sort((a, b) => b.avg - a.avg);
+        }).sort((a, b) => b.barPct - a.barPct);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeSeriesBucket, activeSeriesId, isMockActive, isMidTermActive, caWeight, examWeight, classAverages, subjectsList, classDoc?.name, schoolSettings?.gradingSystem]);
 
     const seriesOverallAvg = subjectRows.length > 0
-        ? Math.round(subjectRows.reduce((s, r) => s + r.avg, 0) / subjectRows.length)
+        ? Math.round(subjectRows.reduce((s, r) => s + r.barPct, 0) / subjectRows.length)
         : 0;
 
     const beceSummary = useMemo(() => {
         if (!isMockActive || !isJhsOrBeceClass(classDoc?.name) || subjectRows.length === 0) return null;
-        return computeBeceAggregate(subjectRows.map(r => ({ subjectName: r.name, score: r.avg })));
-    }, [isMockActive, classDoc?.name, subjectRows]);
+        return computeBeceAggregate(
+            subjectRows.map(r => ({ subjectName: r.name, score: r.avg })),
+            schoolSettings?.gradingSystem
+        );
+    }, [isMockActive, classDoc?.name, subjectRows, schoolSettings?.gradingSystem]);
 
     const classOverall = activeSeriesId === 'end_of_term' && Number(classAverages?.totals?.c) > 0
         ? Math.round(Number(classAverages.totals.s) / Number(classAverages.totals.c))
@@ -471,7 +427,7 @@ export default function MyGradesPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     {subjectRows.map(row => {
-                        const b = band(row.avg);
+                        const b = band(row.barPct);
                         const open = openSubject === row.name;
                         const detailParts = [
                             row.caDisplay,
@@ -491,15 +447,17 @@ export default function MyGradesPage() {
                                         </div>
                                         <div className="flex items-center gap-2.5 shrink-0">
                                             <Badge variant="outline" className="text-[10px] font-black border-slate-200 text-slate-700">
-                                                {row.isBeceGrade ? `BECE ${row.grade}` : `Grade ${row.grade}`}
+                                                {row.caOnlyPendingExam ? 'CA Only' : (row.isBeceGrade ? `BECE ${row.grade}` : `Grade ${row.grade}`)}
                                             </Badge>
                                             <Badge className={cn("border-none text-[9px] font-black uppercase hidden sm:inline-flex", b.cls)}>{b.label}</Badge>
-                                            <span className="text-lg font-black text-slate-900 w-12 text-right">{row.avg}%</span>
+                                            <span className="text-lg font-black text-slate-900 min-w-[3rem] text-right">
+                                                {row.scoreBadgeText || `${row.avg}%`}
+                                            </span>
                                             <ChevronDown className={cn("h-4 w-4 text-slate-400 transition-transform", open && "rotate-180")} />
                                         </div>
                                     </div>
                                     <div className="relative h-2 mt-2.5 bg-slate-100 rounded-full overflow-hidden">
-                                        <div className={cn("h-full rounded-full", b.bar)} style={{ width: `${row.avg}%` }} />
+                                        <div className={cn("h-full rounded-full", b.bar)} style={{ width: `${row.barPct}%` }} />
                                         {row.classAvg !== null && <div className="absolute top-0 h-full w-0.5 bg-slate-700" style={{ left: `${row.classAvg}%` }} title={`Class average ${row.classAvg}%`} />}
                                     </div>
                                 </button>

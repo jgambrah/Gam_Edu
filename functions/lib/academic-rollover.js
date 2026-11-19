@@ -238,15 +238,27 @@ async function executeAcademicClose(schoolId, termId, performedBy = 'Admin') {
             const attended = s.present + s.late;
             ops.push(b => b.set(ref, Object.assign(Object.assign({ schoolId, studentId, studentName: s.name, classId: s.classId }, term), { totalPresent: s.present, totalAbsent: s.absent, totalLate: s.late, totalExcused: s.excused, totalDays: s.total, attendanceRate: s.total > 0 ? Math.round((attended / s.total) * 100) : 0, isArchived: true, updatedAt: firestore_1.FieldValue.serverTimestamp() }), { merge: true }));
         });
-        // 2. Frozen report cards.
+        // 2. Frozen report cards (series-scoped so End of Term, Mid-Term, Mock 1, Mock 2... never overwrite each other).
         let frozen = 0;
         byCol['report-cards'].forEach(d => {
             const r = d.data();
             if (!r.studentId)
                 return;
             frozen++;
-            const ref = db.collection('term_report_cards').doc(`term_report_card_${schoolId}_${r.studentId}_${termId}`);
-            ops.push(b => b.set(ref, Object.assign(Object.assign(Object.assign(Object.assign({}, r), { id: ref.id, sourceReportCardId: d.id, schoolId }), term), { isLocked: true, isArchived: true, lockedAt: firestore_1.FieldValue.serverTimestamp(), lockedBy: performedBy }), { merge: true }));
+            const suffixMatch = String(d.id || '').match(/__(mid_term|mock_[a-z0-9_]+)$/i);
+            const seriesKey = (typeof r.reportSeries === 'string' && r.reportSeries.trim())
+                ? r.reportSeries.trim()
+                : (suffixMatch ? suffixMatch[1].toLowerCase() : 'end_of_term');
+            const frozenDocId = seriesKey === 'end_of_term'
+                ? `term_report_card_${schoolId}_${r.studentId}_${termId}`
+                : `term_report_card_${schoolId}_${r.studentId}_${termId}__${seriesKey}`;
+            const ref = db.collection('term_report_cards').doc(frozenDocId);
+            ops.push(b => b.set(ref, Object.assign(Object.assign(Object.assign(Object.assign({}, r), { id: ref.id, reportSeries: seriesKey, sourceReportCardId: d.id, schoolId }), term), { isLocked: true, isArchived: true, lockedAt: firestore_1.FieldValue.serverTimestamp(), lockedBy: performedBy }), { merge: true }));
+        });
+        // Clear cached academic_report_snapshots for this school so post-close broadsheets rebuild fresh with archived status.
+        const snapDocs = await db.collection('academic_report_snapshots').where('schoolId', '==', schoolId).get().catch(() => null);
+        snapDocs === null || snapDocs === void 0 ? void 0 : snapDocs.docs.forEach(sd => {
+            ops.push(b => b.delete(sd.ref));
         });
         // 3. Archive the term's raw records (stamp termId so later look-ups are exact).
         const archived = {};

@@ -7,8 +7,9 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, orderBy, doc, getDoc } from 'firebase/firestore';
 
 /** On-demand single fetch for archived term report cards (NO onSnapshot real-time listener) */
-async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string) {
-  const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string, reportSeries?: string) {
+  const baseId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+  const docId = reportSeries && reportSeries !== 'end_of_term' ? `${baseId}__${reportSeries}` : baseId;
   const docRef = doc(firestore, 'term_report_cards', docId);
   const snap = await getDoc(docRef);
   if (snap.exists()) {
@@ -26,7 +27,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import ReportCardTemplate from '../report-cards/components/ReportCardTemplate';
-import { getReportCardSeriesKey, getReportCardSeriesLabel } from '@/lib/academic-series';
+import { getReportCardSeriesKey, getReportCardSeriesLabel, sanitizeReportFilenamePart } from '@/lib/academic-series';
 
 export default function MyReportsPage() {
     const { user } = useUser();
@@ -129,10 +130,28 @@ export default function MyReportsPage() {
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            
-            pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, 297);
-            const seriesSlug = getReportCardSeriesLabel(selectedReport).replace(/\s+/g, '_');
-            pdf.save(`${selectedReport.student?.firstName || 'Student'}_${seriesSlug}_Report_${selectedReport.term}.pdf`);
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            if (imgHeight <= pageHeight + 4) {
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, Math.min(imgHeight, pageHeight));
+            } else {
+                let heightLeft = imgHeight;
+                let position = 0;
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                heightLeft -= pageHeight;
+                while (heightLeft > 2) {
+                    position -= pageHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+            }
+            const safeStudent = sanitizeReportFilenamePart(`${selectedReport.student?.firstName || 'Student'}_${selectedReport.student?.lastName || ''}`);
+            const safeSeries = sanitizeReportFilenamePart(getReportCardSeriesLabel(selectedReport));
+            const safeYear = sanitizeReportFilenamePart(selectedReport.academicYear);
+            const safeTerm = sanitizeReportFilenamePart(selectedReport.term);
+            pdf.save(`${safeStudent}_${safeSeries}_Report_${safeYear}_${safeTerm}.pdf`);
             
             toast({ title: "Success", description: "Report card downloaded." });
         } catch (error) {
@@ -145,9 +164,18 @@ export default function MyReportsPage() {
 
     const avgOf = (r: any) => Math.round((Number(r.overallAverage ?? r.finalPercentage) || 0) * 10) / 10;
     const bandColor = (v: number) => v >= 80 ? 'text-emerald-600' : v >= 70 ? 'text-indigo-600' : v >= 50 ? 'text-amber-600' : 'text-rose-600';
-    // One section per child, newest report first (it was one mixed grid of every child's reports).
+    // One section per child, newest report first (End of Term ranked above Mocks/Mid-Term within the same term).
     const childGroups = useMemo(() => {
         const termNo = (t: any) => { const m = String(t || '').match(/(first|1)|(second|2)|(third|3)/i); return m ? (m[1] ? 1 : m[2] ? 2 : 3) : 0; };
+        const seriesOrderScore = (r: any) => {
+            const k = getReportCardSeriesKey(r);
+            if (k === 'end_of_term') return '99';
+            const m = k.match(/^mock_(\d+)$/);
+            if (m) return String(Math.min(89, 50 + parseInt(m[1], 10))).padStart(2, '0');
+            if (k.startsWith('mock_')) return '50';
+            if (k === 'mid_term') return '10';
+            return '00';
+        };
         const map = new Map<string, { key: string; name: string; reports: any[] }>();
         (reports || []).forEach((r: any) => {
             const key = r.studentId || r.student?.uid || r.id;
@@ -155,7 +183,7 @@ export default function MyReportsPage() {
             if (!map.has(key)) map.set(key, { key, name, reports: [] });
             map.get(key)!.reports.push(r);
         });
-        const order = (r: any) => `${String(r.academicYear || '').slice(0, 4)}-${termNo(r.term)}`;
+        const order = (r: any) => `${String(r.academicYear || '').slice(0, 4)}-${termNo(r.term)}-${seriesOrderScore(r)}`;
         const groups = Array.from(map.values());
         groups.forEach(g => g.reports.sort((a, b) => order(b).localeCompare(order(a))));
         return groups.sort((a, b) => parentStudentIds.indexOf(a.key) - parentStudentIds.indexOf(b.key));
@@ -233,10 +261,12 @@ export default function MyReportsPage() {
             <div>
                 <p className="text-[10px] font-black tracking-[0.2em] uppercase text-indigo-600">Results</p>
                 <h1 className="text-2xl font-black text-slate-900 tracking-tight">Report Cards</h1>
-                <p className="text-xs text-slate-500 font-medium mt-1">End-of-term reports released by the school. Open one to view, print or download it.</p>
+                <p className="text-xs text-slate-500 font-medium mt-1">Official End-of-Term, Mid-Term, and Mock report cards released by the school. Open one to view, print or download it.</p>
             </div>
 
-            {childGroups.map(group => (
+            {childGroups.map(group => {
+                const latestPrimary = group.reports.find((r: any) => getReportCardSeriesKey(r) === 'end_of_term') || group.reports[0];
+                return (
                 <Card key={group.key} className="rounded-3xl border border-slate-100 bg-white shadow-sm overflow-hidden">
                     <CardHeader className="pb-3 flex flex-row items-center justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">
@@ -246,21 +276,25 @@ export default function MyReportsPage() {
                             <div className="min-w-0">
                                 <CardTitle className="text-base font-black text-slate-900 truncate">{group.name}</CardTitle>
                                 <CardDescription className="text-[11px] font-semibold">
-                                    {group.reports.length} report{group.reports.length === 1 ? '' : 's'}{group.reports[0]?.className ? ` · latest in ${group.reports[0].className}` : ''}
+                                    {group.reports.length} report{group.reports.length === 1 ? '' : 's'}{latestPrimary?.className ? ` · latest in ${latestPrimary.className}` : ''}
                                 </CardDescription>
                             </div>
                         </div>
-                        {group.reports[0] && (
+                        {latestPrimary && (
                             <div className="text-right shrink-0">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Latest</p>
-                                <p className={cn("text-xl font-black", bandColor(avgOf(group.reports[0])))}>{avgOf(group.reports[0])}%</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">
+                                    Latest ({getReportCardSeriesLabel(latestPrimary)})
+                                </p>
+                                <p className={cn("text-xl font-black", bandColor(avgOf(latestPrimary)))}>{avgOf(latestPrimary)}%</p>
                             </div>
                         )}
                     </CardHeader>
                     <CardContent className="p-0">
                         {group.reports.map((report: any, i: number) => {
                             const avg = avgOf(report);
-                            const prev = group.reports[i + 1];
+                            const seriesKey = getReportCardSeriesKey(report);
+                            // Compare strictly within the SAME report series (never compare Mock 2 against End-of-Term!)
+                            const prev = group.reports.slice(i + 1).find((r: any) => getReportCardSeriesKey(r) === seriesKey);
                             const diff = prev ? Math.round((avg - avgOf(prev)) * 10) / 10 : null;
                             const showPos = (report.reportCardPositionMode || 'both') === 'both' && report.classPosition;
                             const size = report.totalClassStudents || report.cohortTotal || report.totalStudents;
@@ -303,7 +337,8 @@ export default function MyReportsPage() {
                         })}
                     </CardContent>
                 </Card>
-            ))}
+                );
+            })}
         </div>
     );
 }

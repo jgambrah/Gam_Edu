@@ -4,10 +4,10 @@ import { useState, useEffect, useMemo } from 'react';
 import { useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, writeBatch, doc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, onSnapshot, limit } from 'firebase/firestore';
 import { 
   PenTool, CheckCircle2, ShieldCheck, 
-  Loader2, Eye
+  Loader2, Eye, Lock
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
@@ -19,10 +19,15 @@ import { getReportCardSeriesKey, getReportCardSeriesLabel } from '@/lib/academic
 
 export default function ReportSigningPortal() {
   const { user } = useUser();
-  const { profile } = useRole();
+  const { role, profile, loading: roleLoading } = useRole();
   const firestore = useFirestore();
   const { schoolId } = useCurrentSchool();
   const { toast } = useToast();
+
+  const isAdminOrDirector = useMemo(() => {
+    const r = String(role || '').toLowerCase();
+    return ['administrator', 'director', 'admin', 'principal', 'headmaster', 'headmistress', 'head teacher', 'owner', 'super admin', 'superadmin'].includes(r);
+  }, [role]);
 
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,21 +48,30 @@ export default function ReportSigningPortal() {
   const { data: schoolSettings } = useDoc<any>(schoolSettingsRef);
 
   useEffect(() => {
-    if (!schoolId || !firestore) return;
+    if (roleLoading) return;
+    if (!schoolId || !firestore || !isAdminOrDirector) {
+      setReports([]);
+      setLoading(false);
+      return;
+    }
     
     const q = query(
       collection(firestore, "report-cards"),
       where("schoolId", "==", schoolId),
-      where("status", "==", "Draft")
+      where("status", "==", "Draft"),
+      limit(300)
     );
 
     const unsubscribe = onSnapshot(q, (snap) => {
       setReports(snap.docs.map(d => ({ id: d.id, ...d.data() })).filter((r: any) => r.isArchived !== true));
       setLoading(false);
+    }, (err) => {
+      console.warn('Signing queue listener error:', err);
+      setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [schoolId, firestore]);
+  }, [schoolId, firestore, isAdminOrDirector, roleLoading]);
 
   const seriesPills = useMemo(() => {
     const map = new Map<string, { id: string; label: string; count: number }>();
@@ -77,12 +91,21 @@ export default function ReportSigningPortal() {
   }, [reports, seriesFilter]);
 
   const handleHeadmasterSignOff = async (report: any) => {
-    const resolvedSignatureUrl = profile?.signatureUrl || schoolData?.headmasterSignatureUrl || report?.headmasterSignatureUrl || null;
+    if (!isAdminOrDirector) {
+      toast({
+        variant: 'destructive',
+        title: "Authorization Restricted",
+        description: "Only a Headmaster, Director, or Administrator can sign and publish report cards."
+      });
+      return;
+    }
+    // Prefer the school's official Headmaster signature first, falling back to existing report or signer profile signature
+    const resolvedSignatureUrl = schoolData?.headmasterSignatureUrl || report?.headmasterSignatureUrl || profile?.signatureUrl || null;
     if (!resolvedSignatureUrl) {
         toast({
           variant: 'destructive',
           title: "Signature Required",
-          description: "Please upload the Headmaster signature in School Settings or your staff profile first."
+          description: "Please upload the official Headmaster signature in School Settings first."
         });
         return;
     }
@@ -95,9 +118,8 @@ export default function ReportSigningPortal() {
     try {
       const reportRef = doc(firestore, "report-cards", report.id);
       const verificationHash = `VER-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-      const signerName = profile?.firstName
-        ? `${profile.firstName} ${profile.lastName || ''}`.trim()
-        : (schoolData?.headmasterName || 'Head of School');
+      const signerName = schoolData?.headmasterName
+        || (profile?.firstName ? `${profile.firstName} ${profile.lastName || ''}`.trim() : 'Head of School');
       const seriesLabel = getReportCardSeriesLabel(report);
 
       batch.update(reportRef, {
@@ -131,6 +153,20 @@ export default function ReportSigningPortal() {
       setSigning(false);
     }
   };
+
+  if (!roleLoading && !isAdminOrDirector) {
+    return (
+      <div className="p-12 max-w-2xl mx-auto text-center space-y-4">
+        <div className="mx-auto w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-700">
+          <Lock className="w-7 h-7" />
+        </div>
+        <h2 className="text-2xl font-black text-slate-900">Authorization Restricted</h2>
+        <p className="text-sm text-slate-500">
+          Only a Headmaster, Principal, Director, or Administrator can electronically sign and publish report cards.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 space-y-8 max-w-7xl mx-auto text-black font-bold animate-in fade-in duration-500">

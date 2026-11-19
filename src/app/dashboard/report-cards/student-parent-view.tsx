@@ -6,8 +6,9 @@ import { collection, doc, query, where, orderBy, getDoc } from 'firebase/firesto
 import { ReportCard, Student } from '@/lib/types';
 
 /** On-demand single fetch for archived term report cards (NO onSnapshot real-time listener) */
-export async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string) {
-  const docId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+export async function fetchArchivedReportCard(firestore: any, schoolId: string, studentId: string, termId: string, reportSeries?: string) {
+  const baseId = `term_report_card_${schoolId}_${studentId}_${termId}`;
+  const docId = reportSeries && reportSeries !== 'end_of_term' ? `${baseId}__${reportSeries}` : baseId;
   const docRef = doc(firestore, 'term_report_cards', docId);
   const snap = await getDoc(docRef);
   if (snap.exists()) {
@@ -31,7 +32,7 @@ import { getReportCardSeriesKey, getReportCardSeriesLabel } from '@/lib/academic
 function ReportListForStudent({ student }: { student: Student }) {
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
-    const studentIdentifier = student.id || student.uid;
+    const studentIdentifier = student.uid || student.id;
 
     const reportsQuery = useMemoFirebase(
       () => (studentIdentifier && firestore && schoolId) ? query(
@@ -108,8 +109,17 @@ function ReportListForStudent({ student }: { student: Student }) {
                                 </div>
                                 <span className="h-3 w-px bg-slate-200" />
                                 <div className="flex items-center gap-1">
-                                    <span className="text-slate-400">Class Avg:</span>
-                                    <span className="font-extrabold text-slate-700">{(report as any).classAverage || '-'}%</span>
+                                    {(report as any).beceAggregate ? (
+                                        <>
+                                            <span className="text-slate-400">BECE Agg:</span>
+                                            <span className="font-extrabold text-slate-700">{(report as any).beceAggregate}</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="text-slate-400">Subjects:</span>
+                                            <span className="font-extrabold text-slate-700">{Array.isArray((report as any).rows) ? (report as any).rows.length : '-'}</span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>

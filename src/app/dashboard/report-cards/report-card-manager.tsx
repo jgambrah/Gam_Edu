@@ -43,13 +43,13 @@ import {
     buildAllAcademicSeriesOptions,
     buildReportCardDocId,
     computeBeceAggregate,
-    computeMidTermSubjectScore,
+    computeUnifiedSubjectScore,
+    getReportCardSeriesKey,
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
-    isMidTermReportScopeAssessment,
-    isMockAssessment,
     matchesReportSeries,
-    resolveMockSeriesFromAssessment,
+    resolveSeriesWeights,
+    sanitizeReportFilenamePart,
     type AcademicSeriesId,
 } from '@/lib/academic-series';
 
@@ -85,10 +85,27 @@ function commentsSayPromoted(text: string): boolean {
 }
 
 /**
- * Computes one subject's score for one student for the selected report series:
- *   - `end_of_term`: SBA (CA) + End-of-Term Exam. Mock exams and Dedicated Mid-Term Report items are strictly excluded.
- *   - `mid_term`: Dedicated Mid-Term CA + Mid-Term Exam (or 100% Mid-Term Exam if no Mid-Term CA exists in that subject).
- *   - `mock_1`, `mock_2`, ...: 100% standalone Mock score for that exact Mock series only.
+ * Compact student snapshot embedded on report card documents so sensitive/large raw student fields are never duplicated.
+ */
+function compactStudentForCard(stu: any, fallbackClassId?: string) {
+    if (!stu) return null;
+    return {
+        uid: stu.uid || stu.id || null,
+        id: stu.id || stu.uid || null,
+        studentId: stu.studentId || stu.admissionNumber || null,
+        admissionNumber: stu.admissionNumber || stu.studentId || null,
+        firstName: stu.firstName || '',
+        lastName: stu.lastName || '',
+        middleName: stu.middleName || '',
+        gender: stu.gender || stu.sex || null,
+        classId: stu.classId || fallbackClassId || null,
+        photoURL: stu.photoURL || stu.avatarUrl || null,
+    };
+}
+
+/**
+ * Computes one subject's score for one student for the selected report series using the shared unified scorer
+ * (`academic-series.ts`), guaranteeing 100% score parity across Gradebook, Report Cards, Master List, and Ward Grades.
  */
 function computeSubjectScore(
     items: any[],
@@ -97,62 +114,13 @@ function computeSubjectScore(
     reportSeries: AcademicSeriesId = 'end_of_term',
     classSubjectItems?: any[]
 ): { ca: number; exam: number; total: number; rawDisplay?: string; isSingleExamOnly?: boolean } | null {
-    if (!items || items.length === 0) return null;
-    const num = (v: any, d: number) => { const n = Number(v); return isFinite(n) ? n : d; };
-
-    if (reportSeries.startsWith('mock_')) {
-        const mockItems = items.filter(a => resolveMockSeriesFromAssessment(a)?.id === reportSeries);
-        if (mockItems.length === 0) return null;
-        const obtained = mockItems.reduce((sum, a) => sum + num(a.score, 0), 0);
-        const max = mockItems.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
-        if (max <= 0) return null;
-        const pct = Math.min(100, Math.round((obtained / max) * 100));
-        const cleanObt = Math.round(obtained * 10) / 10;
-        const cleanMax = Math.round(max * 10) / 10;
-        return { ca: 0, exam: cleanObt, total: pct, rawDisplay: `${cleanObt}/${cleanMax}`, isSingleExamOnly: true };
-    }
-
-    if (reportSeries === 'mid_term') {
-        return computeMidTermSubjectScore({
-            studentItems: items,
-            classSubjectItems,
-            caWeight,
-            examWeight,
-        });
-    }
-
-    // End of Term: strictly exclude Mock assessments AND Dedicated Mid-Term Report workspace records!
-    const nonMockItems = items.filter(a => !isMockAssessment(a) && !isMidTermReportScopeAssessment(a));
-    if (nonMockItems.length === 0) return null;
-
-    const typeOf = (a: any) => String(a.assessmentType || '').toLowerCase();
-    const isExam = (a: any) => { const t = typeOf(a); return !t.includes('mid') && (t.includes('exam') || t.includes('term')); };
-
-    const exams = nonMockItems.filter(isExam);
-
-    const groups: Record<string, { s: number[]; m: number[] }> = {};
-    nonMockItems.filter(a => !isExam(a)).forEach(a => {
-        const c = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
-        const kind = c.includes('mid') ? 'mid'
-            : (c.includes('proj') || c.includes('group') || c.includes('practical')) ? 'project'
-            : (c.includes('home') || c.includes('hw')) ? 'hw'
-            : 'test';
-        if (!groups[kind]) groups[kind] = { s: [], m: [] };
-        groups[kind].s.push(num(a.score, 0));
-        groups[kind].m.push(num(a.maxScore, 100) || 100);
+    return computeUnifiedSubjectScore({
+        series: reportSeries,
+        studentItems: items,
+        classSubjectItems,
+        caWeight,
+        examWeight,
     });
-    const mean = (xs: number[]) => xs.reduce((x, y) => x + y, 0) / xs.length;
-    let caScore = 0, caMax = 0;
-    Object.values(groups).forEach(g => { caScore += mean(g.s); caMax += mean(g.m); });
-    const rawCA = caMax > 0 ? Math.min((caScore / caMax) * caWeight, caWeight) : 0;
-
-    const exScore = exams.reduce((sum, a) => sum + num(a.score, 0), 0);
-    const exMax = exams.reduce((sum, a) => sum + (num(a.maxScore, 100) || 100), 0);
-    const rawExam = exMax > 0 ? Math.min((exScore / exMax) * examWeight, examWeight) : 0;
-
-    const ca = Math.round(rawCA);
-    const exam = Math.round(rawExam);
-    return { ca, exam, total: Math.min(ca + exam, 100) };
 }
 
 function formatOrdinal(n: number): string {
@@ -456,13 +424,40 @@ export default function ReportCardManager() {
 
     const selectedClassObj = useMemo(() => classes?.find((c: any) => c.id === classId), [classes, classId]);
 
+    // Fetch class marks once for the selected class/year/term (shared with generateReport & handleCompileAllClassDrafts via same cache key)
+    // so custom Mock series saved directly on assessments are discovered immediately in the series selector!
+    const fetchClassTermAssessments = useCallback(async () => {
+        if (!firestore || !schoolId || !classId || !academicYear || !term) return [];
+        const tv = termVariants(term);
+        const maxYv = Math.max(1, Math.floor(30 / Math.max(1, tv.length)));
+        const yv = academicYearVariants(academicYear).slice(0, maxYv);
+        const base = [where('schoolId', '==', schoolId), where('classId', '==', classId)];
+        try {
+            if (yv.length > 0 && tv.length > 0 && yv.length * tv.length <= 30) {
+                return await readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', 'in', yv), where('term', 'in', tv)));
+            }
+        } catch (err: any) {
+            if (err?.code === 'permission-denied') throw err;
+            console.warn('Report cards: flexible marks query failed, using exact year/term.', err);
+        }
+        return readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', '==', academicYear), where('term', '==', term)));
+    }, [firestore, schoolId, classId, academicYear, term, readAll]);
+
+    const { data: classTermAssessments } = useOnceQuery<any>(
+        (firestore && schoolId && classId && academicYear && term && !profileLoading)
+            ? `rc:marks:${schoolId}:${classId}:${academicYear}:${term}`
+            : null,
+        fetchClassTermAssessments
+    );
+
     const availableSeriesOptions = useMemo(() => {
         return buildAllAcademicSeriesOptions({
+            assessments: classTermAssessments,
             classDoc: selectedClassObj,
             schoolSettings: schoolProfile,
             reportCards: [...(rawReportCards || []), ...(rawTermReportCards || [])],
         });
-    }, [selectedClassObj, schoolProfile, rawReportCards, rawTermReportCards]);
+    }, [classTermAssessments, selectedClassObj, schoolProfile, rawReportCards, rawTermReportCards]);
 
     const activeSeriesOption = useMemo(() => {
         return availableSeriesOptions.find(opt => opt.id === reportSeries) || availableSeriesOptions[0];
@@ -630,17 +625,26 @@ export default function ReportCardManager() {
         return { drafts, published, missing };
     }, [activeStudents, classReportCards]);
 
+    // Track which (student, year, term, series) selection has already been initialized so background
+    // loads (e.g. formerStudents) never wipe an unsaved compiled preview or typed remarks.
+    const loadedSelectionKeyRef = useRef<string>('');
+
     useEffect(() => {
         if (!selectedStudentId || !academicYear || !term || !firestore || !schoolId) {
+            loadedSelectionKeyRef.current = '';
             setClassTeacherComment('');
             setHeadmasterComment('');
             setPromotionDecision('');
             setPromotedToClassId('');
             return;
         }
-        const reportId = buildReportCardDocId(selectedStudentId, academicYear, term, reportSeries);
         // The class's report cards for this year are already loaded — look the student's up there (no reads).
         if (rawReportCards === null || rawTermReportCards === null) return;
+
+        const selectionKey = `${classId}|${selectedStudentId}|${academicYear}|${term}|${reportSeries}`;
+        const selectionChanged = loadedSelectionKeyRef.current !== selectionKey;
+        const reportId = buildReportCardDocId(selectedStudentId, academicYear, term, reportSeries);
+
         const fetchExisting = async () => {
             const found = [...(rawReportCards || []), ...(rawTermReportCards || [])].find((r: any) => r.id === reportId)
                 || classReportCards.find((r: any) => r.studentId === selectedStudentId);
@@ -660,8 +664,11 @@ export default function ReportCardManager() {
 
             if (snap.exists()) {
                 const data = snap.data();
-                setClassTeacherComment(data.classTeacherComment || '');
-                setHeadmasterComment(data.headmasterComment || '');
+                // Only hydrate text inputs when switching selection (never clobber active typing!)
+                if (selectionChanged) {
+                    setClassTeacherComment(data.classTeacherComment || '');
+                    setHeadmasterComment(data.headmasterComment || '');
+                }
 
                 let decision = data.promotionDecision || '';
                 let targetPromotedId = data.promotedToClassId || '';
@@ -669,10 +676,7 @@ export default function ReportCardManager() {
                 const isPromoTerm = isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || isHistoricalCohort;
                 const allComments = `${data.headmasterComment || ''} ${data.classTeacherComment || ''}`;
                 const commentsIndicatePromo = commentsSayPromoted(allComments);
-                // Auto-bind completed promotion decision if student was promoted or remarks state it
                 if (!decision || decision === '') {
-                    // Default to "Promoted" only at the end of the year (or when the remarks say so) — never in the
-                    // first/second term, and never when the remarks say the pupil repeats.
                     if ((isPromoTerm && !commentsSayRepeat(allComments)) || commentsIndicatePromo) {
                         decision = 'Promoted';
                         targetPromotedId = targetPromotedClass?.id || stu?.classId || '';
@@ -683,22 +687,31 @@ export default function ReportCardManager() {
                     targetPromotedId = targetPromotedClass?.id || stu?.classId || '';
                 }
 
-                setPromotionDecision(decision);
-                setPromotedToClassId(targetPromotedId);
+                if (selectionChanged) {
+                    setPromotionDecision(decision);
+                    setPromotedToClassId(targetPromotedId);
+                }
 
-                setProcessedReport({
-                    ...data,
-                    className: currentClassName || data.className,
-                    totalStudents: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
-                    totalClassStudents: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
-                    cohortTotal: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
-                    promotionDecision: decision,
-                    promotedToClassId: targetPromotedId,
-                    promotedToClassName: decision === 'Promoted'
-                        ? (classes?.find((c: any) => c.id === targetPromotedId)?.name || targetPromotedClass?.name || 'Next Class')
-                        : (decision === 'Repeated' ? (currentClassName || data.className) : (decision === 'Graduated' ? 'Graduated' : ''))
+                setProcessedReport((prev: any) => {
+                    // If user already freshly re-compiled an unsaved preview for this exact selection, keep its rows!
+                    if (!selectionChanged && prev && prev.studentId === selectedStudentId && getReportCardSeriesKey(prev) === reportSeries && prev._unsavedCompile) {
+                        return prev;
+                    }
+                    return {
+                        ...data,
+                        className: currentClassName || data.className,
+                        totalStudents: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
+                        totalClassStudents: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
+                        cohortTotal: cohortRoll > 0 ? cohortRoll : (data.totalStudents || 0),
+                        promotionDecision: decision,
+                        promotedToClassId: targetPromotedId,
+                        promotedToClassName: decision === 'Promoted'
+                            ? (classes?.find((c: any) => c.id === targetPromotedId)?.name || targetPromotedClass?.name || 'Next Class')
+                            : (decision === 'Repeated' ? (currentClassName || data.className) : (decision === 'Graduated' ? 'Graduated' : ''))
+                    };
                 });
-            } else {
+                loadedSelectionKeyRef.current = selectionKey;
+            } else if (selectionChanged) {
                 setProcessedReport(null);
                 setClassTeacherComment('');
                 setHeadmasterComment('');
@@ -714,6 +727,7 @@ export default function ReportCardManager() {
                 }
                 setPromotionDecision(decision);
                 setPromotedToClassId(targetPromotedId);
+                loadedSelectionKeyRef.current = selectionKey;
             }
         };
         fetchExisting();
@@ -754,30 +768,20 @@ export default function ReportCardManager() {
 
         try {
             const targetClass = classes?.find((c: any) => c.id === classId);
-            const currentCaWeight = isMidTermSeries && typeof targetClass?.midTermCaWeight === 'number'
-                ? targetClass.midTermCaWeight
-                : (targetClass?.caWeight ?? CA_WEIGHT);
-            const currentExamWeight = isMidTermSeries && typeof targetClass?.midTermExamWeight === 'number'
-                ? targetClass.midTermExamWeight
-                : (targetClass?.examWeight ?? EXAM_WEIGHT);
+            const { caWeight: currentCaWeight, examWeight: currentExamWeight } = resolveSeriesWeights({
+                series: reportSeries,
+                classDoc: targetClass,
+                schoolSettings: schoolProfile,
+            });
             const currentClassName = targetClass?.name || '';
             const usesBeceGrading = isMockSeries && isJhsOrBeceClass(currentClassName);
 
             // 1. This class's marks for the term — read ONCE per class/term per session and shared by every student
-            const yv = academicYearVariants(academicYear).slice(0, 3);
-            const tv = termVariants(term);
-            const allAssessments: any[] = await readOnceCached(`rc:marks:${schoolId}:${classId}:${academicYear}:${term}`, async () => {
-                const base = [where('schoolId', '==', schoolId), where('classId', '==', classId)];
-                try {
-                    if (yv.length > 0 && tv.length > 0 && yv.length * tv.length <= 30) {
-                        return await readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', 'in', yv), where('term', 'in', tv)));
-                    }
-                } catch (err: any) {
-                    if (err?.code === 'permission-denied') throw err;
-                    console.warn('Report cards: flexible marks query failed, using exact year/term.', err);
-                }
-                return readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', '==', academicYear), where('term', '==', term)));
-            }, { ttlMs: 5 * 60 * 1000 });
+            const allAssessments: any[] = await readOnceCached(
+                `rc:marks:${schoolId}:${classId}:${academicYear}:${term}`,
+                fetchClassTermAssessments,
+                { ttlMs: 5 * 60 * 1000 }
+            );
 
             // 2. Attendance Date Calculation (optional on Mock / Mid-Term if dates aren't configured yet)
             let totalClassDays = 0;
@@ -813,6 +817,7 @@ export default function ReportCardManager() {
 
             // 4. Grades Weighting & Position computation (strictly scoped to reportSeries!)
             const studentTotals: Record<string, number> = {};
+            const studentBeceMap: Record<string, { aggregate: number | null; isCompleteSix: boolean }> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const subjectAllMap: Record<string, any[]> = {};
             subjects?.forEach((sub: any) => {
@@ -821,24 +826,45 @@ export default function ReportCardManager() {
             });
             
             activeStudents.forEach((stu: any) => {
+                const stuKey = stu.uid || stu.id;
                 let grandTotal = 0;
+                const stuBeceEntries: Array<{ subjectName: string; score: number }> = [];
                 subjects?.forEach((sub: any) => {
                     const scored = computeSubjectScore(
-                        subjectAllMap[sub.id].filter(a => a.studentId === stu.uid),
+                        subjectAllMap[sub.id].filter(a => a.studentId === stuKey),
                         currentCaWeight, currentExamWeight, reportSeries, subjectAllMap[sub.id]
                     );
                     if (!scored) return;
                     grandTotal += scored.total;
+                    stuBeceEntries.push({ subjectName: sub.name, score: scored.total });
                     if (subjectStats[sub.id]) {
                         subjectStats[sub.id].totalScores.push(scored.total);
                         subjectStats[sub.id].sum += scored.total;
                     }
                 });
-                studentTotals[stu.uid] = grandTotal;
+                studentTotals[stuKey] = grandTotal;
+                if (usesBeceGrading) {
+                    const agg = computeBeceAggregate(stuBeceEntries, schoolProfile?.gradingSystem);
+                    studentBeceMap[stuKey] = { aggregate: agg.aggregate, isCompleteSix: agg.isCompleteSix };
+                }
             });
 
-            const myTotal = studentTotals[selectedStudentId] || 0;
-            const classPosition = formatOrdinal(Object.values(studentTotals).filter(t => t > myTotal).length + 1);
+            const isStrictlyBetterRank = (otherKey: string, meKey: string) => {
+                if (usesBeceGrading) {
+                    const oAgg = studentBeceMap[otherKey];
+                    const mAgg = studentBeceMap[meKey];
+                    if (oAgg?.isCompleteSix && !mAgg?.isCompleteSix) return true;
+                    if (!oAgg?.isCompleteSix && mAgg?.isCompleteSix) return false;
+                    if (oAgg?.isCompleteSix && mAgg?.isCompleteSix && oAgg.aggregate !== null && mAgg.aggregate !== null) {
+                        if (oAgg.aggregate !== mAgg.aggregate) return oAgg.aggregate < mAgg.aggregate;
+                    }
+                }
+                return (studentTotals[otherKey] || 0) > (studentTotals[meKey] || 0);
+            };
+
+            const classPosition = formatOrdinal(
+                Object.keys(studentTotals).filter(k => k !== selectedStudentId && isStrictlyBetterRank(k, selectedStudentId)).length + 1
+            );
             const targetStudent = activeStudents.find((s: any) => s.uid === selectedStudentId || s.id === selectedStudentId || s.studentId === selectedStudentId);
 
             const reportRows: any[] = [];
@@ -886,7 +912,9 @@ export default function ReportCardManager() {
                 return;
             }
 
-            const beceAgg = usesBeceGrading ? computeBeceAggregate(beceInputs) : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
+            const beceAgg = usesBeceGrading
+                ? computeBeceAggregate(beceInputs, schoolProfile?.gradingSystem)
+                : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
 
             // 5. Signatures Base64 Conversion
             const selectedClass = classes?.find((c: any) => c.id === classId);
@@ -947,8 +975,11 @@ export default function ReportCardManager() {
                 }
             }
 
+            const existingForStudent = classReportCards.find((r: any) => r.studentId === selectedStudentId);
             setProcessedReport({
-                student: targetStudent,
+                _unsavedCompile: true,
+                status: existingForStudent?.status || 'Draft',
+                student: compactStudentForCard(targetStudent, classId),
                 studentId: selectedStudentId,
                 schoolId,
                 classId,
@@ -1018,28 +1049,19 @@ export default function ReportCardManager() {
         setIsCompilingAll(true);
         try {
             const targetClass = classes?.find((c: any) => c.id === classId);
-            const currentCaWeight = isMidTermSeries && typeof targetClass?.midTermCaWeight === 'number'
-                ? targetClass.midTermCaWeight
-                : (targetClass?.caWeight ?? CA_WEIGHT);
-            const currentExamWeight = isMidTermSeries && typeof targetClass?.midTermExamWeight === 'number'
-                ? targetClass.midTermExamWeight
-                : (targetClass?.examWeight ?? EXAM_WEIGHT);
+            const { caWeight: currentCaWeight, examWeight: currentExamWeight } = resolveSeriesWeights({
+                series: reportSeries,
+                classDoc: targetClass,
+                schoolSettings: schoolProfile,
+            });
             const currentClassName = targetClass?.name || '';
             const usesBeceGrading = isMockSeries && isJhsOrBeceClass(currentClassName);
 
-            const yv = academicYearVariants(academicYear).slice(0, 3);
-            const tv = termVariants(term);
-            const allAssessments: any[] = await readOnceCached(`rc:marks:${schoolId}:${classId}:${academicYear}:${term}`, async () => {
-                const base = [where('schoolId', '==', schoolId), where('classId', '==', classId)];
-                try {
-                    if (yv.length > 0 && tv.length > 0 && yv.length * tv.length <= 30) {
-                        return await readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', 'in', yv), where('term', 'in', tv)));
-                    }
-                } catch (err: any) {
-                    if (err?.code === 'permission-denied') throw err;
-                }
-                return readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', '==', academicYear), where('term', '==', term)));
-            }, { ttlMs: 5 * 60 * 1000 });
+            const allAssessments: any[] = await readOnceCached(
+                `rc:marks:${schoolId}:${classId}:${academicYear}:${term}`,
+                fetchClassTermAssessments,
+                { ttlMs: 5 * 60 * 1000 }
+            );
 
             let allAttRecords: any[] = [];
             let totalClassDays = 0;
@@ -1083,6 +1105,7 @@ export default function ReportCardManager() {
             });
 
             const studentTotals: Record<string, number> = {};
+            const studentBeceMap: Record<string, { aggregate: number | null; isCompleteSix: boolean }> = {};
             const subjectStats: Record<string, { totalScores: number[], sum: number }> = {};
             const subjectAllMap: Record<string, any[]> = {};
             subjects?.forEach((sub: any) => {
@@ -1091,21 +1114,41 @@ export default function ReportCardManager() {
             });
 
             activeStudents.forEach((stu: any) => {
+                const stuKey = stu.uid || stu.id;
                 let grandTotal = 0;
+                const stuBeceEntries: Array<{ subjectName: string; score: number }> = [];
                 subjects?.forEach((sub: any) => {
                     const scored = computeSubjectScore(
-                        subjectAllMap[sub.id].filter(a => a.studentId === stu.uid),
+                        subjectAllMap[sub.id].filter(a => a.studentId === stuKey),
                         currentCaWeight, currentExamWeight, reportSeries, subjectAllMap[sub.id]
                     );
                     if (!scored) return;
                     grandTotal += scored.total;
+                    stuBeceEntries.push({ subjectName: sub.name, score: scored.total });
                     if (subjectStats[sub.id]) {
                         subjectStats[sub.id].totalScores.push(scored.total);
                         subjectStats[sub.id].sum += scored.total;
                     }
                 });
-                studentTotals[stu.uid] = grandTotal;
+                studentTotals[stuKey] = grandTotal;
+                if (usesBeceGrading) {
+                    const agg = computeBeceAggregate(stuBeceEntries, schoolProfile?.gradingSystem);
+                    studentBeceMap[stuKey] = { aggregate: agg.aggregate, isCompleteSix: agg.isCompleteSix };
+                }
             });
+
+            const isStrictlyBetterBatchRank = (otherKey: string, meKey: string) => {
+                if (usesBeceGrading) {
+                    const oAgg = studentBeceMap[otherKey];
+                    const mAgg = studentBeceMap[meKey];
+                    if (oAgg?.isCompleteSix && !mAgg?.isCompleteSix) return true;
+                    if (!oAgg?.isCompleteSix && mAgg?.isCompleteSix) return false;
+                    if (oAgg?.isCompleteSix && mAgg?.isCompleteSix && oAgg.aggregate !== null && mAgg.aggregate !== null) {
+                        if (oAgg.aggregate !== mAgg.aggregate) return oAgg.aggregate < mAgg.aggregate;
+                    }
+                }
+                return (studentTotals[otherKey] || 0) > (studentTotals[meKey] || 0);
+            };
 
             const cohortRoll = activeStudents.length;
             const localUpdates: Array<{ id: string; data: any }> = [];
@@ -1152,10 +1195,13 @@ export default function ReportCardManager() {
 
                 if (reportRows.length === 0) return;
 
-                const myTotal = studentTotals[stuId] || 0;
-                const classPosition = formatOrdinal(Object.values(studentTotals).filter(t => t > myTotal).length + 1);
+                const classPosition = formatOrdinal(
+                    Object.keys(studentTotals).filter(k => k !== stuId && isStrictlyBetterBatchRank(k, stuId)).length + 1
+                );
                 const overallAverage = Math.round(myGrandTotal / subjectsTaken);
-                const beceAgg = usesBeceGrading ? computeBeceAggregate(beceInputs) : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
+                const beceAgg = usesBeceGrading
+                ? computeBeceAggregate(beceInputs, schoolProfile?.gradingSystem)
+                : { aggregate: null, subjectsUsed: 0, isCompleteSix: false };
                 const presentDays = allAttRecords.filter(r => r.studentId === stuId && (r.status === 'Present' || r.status === 'Late')).length;
                 const docId = buildReportCardDocId(stuId, academicYear, term, reportSeries);
                 const isCardSingleExamOnly = isMockSeries || (isMidTermSeries && reportRows.every((r: any) => r.isSingleExamOnly === true));
@@ -1168,7 +1214,7 @@ export default function ReportCardManager() {
 
                 const payload: any = {
                     id: docId,
-                    student: stu,
+                    student: compactStudentForCard(stu, classId),
                     studentId: stuId,
                     schoolId,
                     classId,
@@ -1252,14 +1298,26 @@ export default function ReportCardManager() {
 
     const handleSaveProgress = async () => {
         if (!processedReport || !schoolId || isSaving) return;
+        const alreadyPublished = processedReport.status === 'Published';
+        if (alreadyPublished && !isAdminOrDirector) {
+            toast({
+                variant: 'destructive',
+                title: "Report Already Published",
+                description: "Published report cards are locked for teachers. Ask an administrator if an official revision is required.",
+            });
+            return;
+        }
         setIsSaving(true);
         try {
             const cohortRoll = activeStudents.length || (classSummary ? (classSummary.published.length + classSummary.drafts.length + classSummary.missing.length) : 0);
             const currentClassName = classes?.find((c: any) => c.id === classId)?.name || '';
+            const cardId = processedReport.id || buildReportCardDocId(selectedStudentId!, academicYear, term, reportSeries);
 
             const finalData = {
                 ...processedReport,
-                id: processedReport.id || buildReportCardDocId(selectedStudentId!, academicYear, term, reportSeries),
+                _unsavedCompile: false,
+                id: cardId,
+                student: compactStudentForCard(processedReport.student || targetStudent, classId),
                 schoolId, 
                 classId,
                 reportSeries,
@@ -1268,7 +1326,8 @@ export default function ReportCardManager() {
                 totalStudents: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
                 totalClassStudents: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
                 cohortTotal: cohortRoll > 0 ? cohortRoll : (processedReport.totalStudents || 0),
-                status: 'Draft', 
+                // Never silently downgrade a Published card back to Draft!
+                status: alreadyPublished ? 'Published' : 'Draft', 
                 classTeacherComment, 
                 headmasterComment,
                 ...(!isSingleExamSeries && (isTermMatch(term, 'Third Term') || isTermMatch(term, '3') || promotionDecision) ? {
@@ -1282,11 +1341,11 @@ export default function ReportCardManager() {
                 updatedAt: serverTimestamp()
             };
             
-            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
-            await setDoc(doc(firestore!, 'report-cards', processedReport.id), dbFriendlyData, { merge: true });
-            upsertLocalReportCards([{ id: processedReport.id, data: { ...dbFriendlyData, updatedAt: new Date() } }]);
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, _unsavedCompile, ...dbFriendlyData } = finalData as any;
+            await setDoc(doc(firestore!, 'report-cards', cardId), dbFriendlyData, { merge: true });
+            upsertLocalReportCards([{ id: cardId, data: { ...dbFriendlyData, updatedAt: new Date() } }]);
             setProcessedReport(finalData);
-            toast({ title: "Draft Report Saved" });
+            toast({ title: alreadyPublished ? "Published Report Updated" : "Draft Report Saved" });
 
             await logAuditEvent({
                 firestore: firestore!,
@@ -1314,7 +1373,9 @@ export default function ReportCardManager() {
 
             const finalData = {
                 ...processedReport,
+                _unsavedCompile: false,
                 id: processedReport.id || buildReportCardDocId(selectedStudentId!, academicYear, term, reportSeries),
+                student: compactStudentForCard(processedReport.student || targetStudent, classId),
                 schoolId, 
                 classId,
                 reportSeries,
@@ -1340,7 +1401,7 @@ export default function ReportCardManager() {
                 digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
             };
 
-            const { logoBase64, teacherSigBase64, headmasterSigBase64, ...dbFriendlyData } = finalData;
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, _unsavedCompile, ...dbFriendlyData } = finalData as any;
             await setDoc(doc(firestore!, 'report-cards', finalData.id), dbFriendlyData, { merge: true });
             upsertLocalReportCards([{ id: finalData.id, data: { ...dbFriendlyData, status: 'Published', publishedAt: new Date(), updatedAt: new Date() } }]);
             setProcessedReport(finalData);
@@ -1398,17 +1459,22 @@ export default function ReportCardManager() {
                 await batch.commit();
             }
             upsertLocalReportCards(localUpdates);
-            toast({ title: "Bulk Publish Successful! 🎉", description: `Released ${studentIdsToNotify.length} report cards.` });
+            toast({ title: `Bulk Publish Successful! 🎉`, description: `Released ${studentIdsToNotify.length} ${activeSeriesOption.shortLabel} report cards.` });
             
             await logAuditEvent({
                 firestore,
                 schoolId,
                 userName: profile ? `${profile.firstName || ''} ${profile.lastName || ''}`.trim() : (user?.displayName || user?.email || 'Anonymous'),
                 action: 'BULK_PUBLISH_REPORT_CARDS',
-                details: `Bulk published ${studentIdsToNotify.length} report cards for class ${classes?.find(c => c.id === classId)?.name || classId} (${term}, ${academicYear})`
+                details: `Bulk published ${studentIdsToNotify.length} ${activeSeriesOption.shortLabel} report cards for class ${classes?.find(c => c.id === classId)?.name || classId} (${term}, ${academicYear})`
             });
 
-            notifyParents(studentIdsToNotify, "Report Card Ready 🎓", "Terminal report cards are now available.", "/dashboard/my-reports")
+            notifyParents(
+                studentIdsToNotify,
+                `${activeSeriesOption.shortLabel} Report Ready 🎓`,
+                `${activeSeriesOption.shortLabel} report cards (${term}, ${academicYear}) are now available.`,
+                "/dashboard/my-reports"
+            )
                 .catch(err => console.error("Bulk notification failed:", err));
         } catch (e: any) {
             console.error("Bulk publish error:", e);
@@ -1448,8 +1514,28 @@ export default function ReportCardManager() {
 
             const imgData = canvas.toDataURL('image/jpeg', 1.0);
             const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-            pdf.save(`${processedReport.student?.firstName}_${activeSeriesOption.shortLabel.replace(/\s+/g, '_')}_Report_${term}.pdf`);
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            if (imgHeight <= pageHeight + 4) {
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, Math.min(imgHeight, pageHeight));
+            } else {
+                let heightLeft = imgHeight;
+                let position = 0;
+                pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+                while (heightLeft > 2) {
+                    position -= pageHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+            }
+            const safeStudent = sanitizeReportFilenamePart(`${processedReport.student?.firstName || ''}_${processedReport.student?.lastName || ''}`);
+            const safeSeries = sanitizeReportFilenamePart(activeSeriesOption.shortLabel);
+            const safeYear = sanitizeReportFilenamePart(academicYear);
+            const safeTerm = sanitizeReportFilenamePart(term);
+            pdf.save(`${safeStudent}_${safeSeries}_Report_${safeYear}_${safeTerm}.pdf`);
             toast({ title: "PDF Export Complete 📥" });
         } catch (error: any) {
             console.error(error);
@@ -1537,11 +1623,27 @@ export default function ReportCardManager() {
                 });
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.9);
-                
+                const imgWidth = 210;
+                const pageHeight = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
                 if (i > 0) {
                     pdf.addPage();
                 }
-                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                if (imgHeight <= pageHeight + 4) {
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, Math.min(imgHeight, pageHeight));
+                } else {
+                    let heightLeft = imgHeight;
+                    let position = 0;
+                    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    while (heightLeft > 2) {
+                        position -= pageHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                    }
+                }
             }
 
             // Cleanup visibility
@@ -1550,7 +1652,11 @@ export default function ReportCardManager() {
             printArea.style.display = 'none';
 
             const className = classes?.find((c: any) => c.id === classId)?.name || 'Class';
-            pdf.save(`All_${activeSeriesOption.shortLabel.replace(/\s+/g, '_')}_Reports_${className}_${term}.pdf`);
+            const safeSeries = sanitizeReportFilenamePart(activeSeriesOption.shortLabel);
+            const safeClass = sanitizeReportFilenamePart(className);
+            const safeYear = sanitizeReportFilenamePart(academicYear);
+            const safeTerm = sanitizeReportFilenamePart(term);
+            pdf.save(`All_${safeSeries}_Reports_${safeClass}_${safeYear}_${safeTerm}.pdf`);
             toast({ title: "Class PDF Compilation Complete 📥", description: `Successfully generated a ${cardElements.length}-page report card document.` });
         } catch (error: any) {
             console.error(error);
@@ -1973,7 +2079,7 @@ export default function ReportCardManager() {
                                   value={classTeacherComment} 
                                   onChange={(e) => setClassTeacherComment(e.target.value)} 
                                   rows={4} 
-                                  disabled={!isTeacher && !isAdminOrDirector}
+                                  disabled={(!isTeacher && !isAdminOrDirector) || (processedReport?.status === 'Published' && !isAdminOrDirector)}
                                   className="rounded-xl border border-slate-200 focus-visible:ring-indigo-500 shadow-sm text-sm"
                                 />
                             </div>
@@ -2057,10 +2163,19 @@ export default function ReportCardManager() {
                         </CardContent>
                         <CardFooter className="justify-end gap-2 bg-slate-50/50 border-t border-slate-100 p-4">
                             <Button onClick={handleDownloadPDF} disabled={isExporting} variant="secondary" className="rounded-xl font-bold h-10">{isExporting ? <Loader2 className="animate-spin mr-2 h-4 w-4"/> : <Download className="mr-2 h-4 w-4"/>} Download PDF</Button>
-                            <Button onClick={handleSaveProgress} disabled={isSaving} className="bg-slate-800 hover:bg-slate-900 rounded-xl font-bold h-10 text-white"><Save className="mr-2 h-4 w-4"/> Save Draft</Button>
+                            <Button
+                                onClick={handleSaveProgress}
+                                disabled={isSaving || processedReport?.status === 'Published'}
+                                title={processedReport?.status === 'Published' ? 'Published report cards cannot be downgraded back to Draft' : undefined}
+                                className="bg-slate-800 hover:bg-slate-900 rounded-xl font-bold h-10 text-white disabled:opacity-50"
+                            >
+                                <Save className="mr-2 h-4 w-4"/>
+                                {processedReport?.status === 'Published' ? 'Published (Locked)' : 'Save Draft'}
+                            </Button>
                             {isAdminOrDirector && (
                                 <Button onClick={handlePublish} disabled={isPublishing} className="bg-emerald-600 hover:bg-emerald-700 font-bold rounded-xl h-10 text-white">
-                                    {isPublishing ? <Loader2 className="animate-spin h-4 w-4"/> : <ShieldCheck className="mr-2 h-4 w-4"/>} Sign & Publish
+                                    {isPublishing ? <Loader2 className="animate-spin h-4 w-4"/> : <ShieldCheck className="mr-2 h-4 w-4"/>}
+                                    {processedReport?.status === 'Published' ? 'Update & Re-Sign' : 'Sign & Publish'}
                                 </Button>
                             )}
                         </CardFooter>
