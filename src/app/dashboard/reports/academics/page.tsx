@@ -223,6 +223,19 @@ export default function AcademicReportsPage() {
 
     useEffect(() => {
         setMounted(true);
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const sParam = params.get('series');
+            const cParam = params.get('classId');
+            if (sParam && (sParam === 'end_of_term' || sParam === 'mid_term' || sParam.startsWith('mock_'))) {
+                setSelectedSeries(sParam as AcademicSeriesId);
+                setViewMode('master_report');
+            }
+            if (cParam) {
+                setSelectedClassId(cParam);
+                setIsReportRequested(true);
+            }
+        }
     }, []);
 
     const isAdmin = ['Administrator', 'Director'].includes(role || '');

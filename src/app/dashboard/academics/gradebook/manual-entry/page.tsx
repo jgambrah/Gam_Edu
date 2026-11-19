@@ -2203,7 +2203,10 @@ export default function GradebookPage() {
               actions={
                 <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
                   <Button asChild variant="outline" className="h-9 px-3.5 rounded-xl border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 text-slate-200 text-xs font-semibold cursor-pointer transition-colors">
-                    <Link href="/dashboard/report-cards" className="flex items-center gap-1.5">
+                    <Link
+                      href={`/dashboard/report-cards?series=${entryMode === 'midterm' ? 'mid_term' : entryMode === 'mock' ? selectedMockSeries : 'end_of_term'}${classId ? `&classId=${encodeURIComponent(classId)}` : ''}`}
+                      className="flex items-center gap-1.5"
+                    >
                       <ArrowLeft className="h-4 w-4" />
                       <span>Back to Reports</span>
                     </Link>
@@ -2993,13 +2996,13 @@ export default function GradebookPage() {
                                     </div>
                                     <div className="flex items-center gap-4 ml-auto">
                                         <Link
-                                            href="/dashboard/reports/academics"
+                                            href={`/dashboard/reports/academics?series=mid_term${classId ? `&classId=${encodeURIComponent(classId)}` : ''}`}
                                             className="font-black text-teal-700 hover:text-teal-900 underline underline-offset-2"
                                         >
                                             Open Mid-Term Master List →
                                         </Link>
                                         <Link
-                                            href="/dashboard/report-cards"
+                                            href={`/dashboard/report-cards?series=mid_term${classId ? `&classId=${encodeURIComponent(classId)}` : ''}`}
                                             className="font-black text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
                                         >
                                             Generate Mid-Term Report Cards →
@@ -3414,12 +3417,20 @@ export default function GradebookPage() {
                                             </button>
                                         );
                                     })}
-                                    <Link
-                                        href="/dashboard/reports/academics"
-                                        className="ml-auto text-xs font-black text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
-                                    >
-                                        Open Printable Mock Master List →
-                                    </Link>
+                                    <div className="flex items-center gap-4 ml-auto">
+                                        <Link
+                                            href={`/dashboard/reports/academics?series=${encodeURIComponent(selectedMockSeries)}${classId ? `&classId=${encodeURIComponent(classId)}` : ''}`}
+                                            className="text-xs font-black text-amber-800 hover:text-amber-950 underline underline-offset-2"
+                                        >
+                                            Open Printable {activeMockOption.shortLabel} Master List →
+                                        </Link>
+                                        <Link
+                                            href={`/dashboard/report-cards?series=${encodeURIComponent(selectedMockSeries)}${classId ? `&classId=${encodeURIComponent(classId)}` : ''}`}
+                                            className="text-xs font-black text-indigo-600 hover:text-indigo-800 underline underline-offset-2"
+                                        >
+                                            Generate {activeMockOption.shortLabel} Report Cards →
+                                        </Link>
+                                    </div>
                                 </div>
                             </CardHeader>
 

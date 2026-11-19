@@ -269,6 +269,20 @@ export default function ReportCardManager() {
     const [reportSeries, setReportSeries] = useState<AcademicSeriesId>('end_of_term');
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
 
+    // Pre-select reportSeries and classId when arriving via Gradebook deep-links (?series=mid_term&classId=...)
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const params = new URLSearchParams(window.location.search);
+        const sParam = params.get('series');
+        const cParam = params.get('classId');
+        if (sParam && (sParam === 'end_of_term' || sParam === 'mid_term' || sParam.startsWith('mock_'))) {
+            setReportSeries(sParam as AcademicSeriesId);
+        }
+        if (cParam) {
+            setClassId(cParam);
+        }
+    }, []);
+
     // Comments State
     const [classTeacherComment, setClassTeacherComment] = useState('');
     const [headmasterComment, setHeadmasterComment] = useState('');
