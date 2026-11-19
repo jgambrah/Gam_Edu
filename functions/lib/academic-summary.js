@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.flushDirtyClassSeriesProfiles = exports.onAssessmentWriteForSummary = exports.CLASS_SERIES_PROFILES = exports.CLASS_AVERAGES = exports.ACADEMIC_SUMMARY = exports.MAX_SCHEDULED_RECOMPUTES = exports.LEASE_WINDOW_MS = exports.INSTANCE_COOLDOWN_MS = void 0;
+exports.flushDirtyClassSeriesProfiles = exports.onAssessmentWriteForSummary = exports.CLASS_SERIES_PROFILES = exports.CLASS_AVERAGES = exports.ACADEMIC_SUMMARY = exports.MAX_DIRTY_ATTEMPTS = exports.MAX_SCHEDULED_RECOMPUTES = exports.LEASE_WINDOW_MS = exports.INSTANCE_COOLDOWN_MS = void 0;
 exports.resetAcademicSummaryMemoryCacheForTests = resetAcademicSummaryMemoryCacheForTests;
 exports.isServerGradedQuizRecord = isServerGradedQuizRecord;
 exports.isNoOpForProfileAndVersion = isNoOpForProfileAndVersion;
@@ -41,6 +41,7 @@ const defaultDb = (0, firestore_2.getFirestore)();
 exports.INSTANCE_COOLDOWN_MS = 60000;
 exports.LEASE_WINDOW_MS = 5 * 60000;
 exports.MAX_SCHEDULED_RECOMPUTES = 200;
+exports.MAX_DIRTY_ATTEMPTS = 5;
 const instanceCooldowns = new Map();
 function resetAcademicSummaryMemoryCacheForTests() {
     instanceCooldowns.clear();
@@ -345,7 +346,7 @@ async function scanSubjectTermAssessments(store, t, forceVariantScan) {
     });
     return { termDocs, reads, sawUnstamped };
 }
-async function recomputeAndPersistSubjectCaProfile(store, t, hasLegacyUnstamped, clearDirtyFlag) {
+async function recomputeAndPersistSubjectCaProfile(store, t, hasLegacyUnstamped) {
     const { termDocs, reads, sawUnstamped } = await scanSubjectTermAssessments(store, t, hasLegacyUnstamped);
     const profiles = computeCaProfilesForClassSubject(termDocs);
     const eotKey = `end_of_term__${t.safeSubId}`;
@@ -371,8 +372,9 @@ async function recomputeAndPersistSubjectCaProfile(store, t, hasLegacyUnstamped,
             const safeSubName = safeKey(t.subjectName.toLowerCase().trim());
             args.push(new firestore_2.FieldPath(topField, `end_of_term__name__${safeSubName}`), profiles.end_of_term, new firestore_2.FieldPath(topField, `mid_term__name__${safeSubName}`), profiles.mid_term);
         }
-        if (isProfileCollection && clearDirtyFlag) {
-            args.push(new firestore_2.FieldPath('dirty', t.safeSubId), firestore_2.FieldValue.delete(), new firestore_2.FieldPath('dirtyTargets', t.safeSubId), firestore_2.FieldValue.delete());
+        if (isProfileCollection) {
+            // R5-2: reset retry counter on successful recompute (R5-5: `dirty.<subId>` is cleared BEFORE scan starts!)
+            args.push(new firestore_2.FieldPath('dirtyAttempts', t.safeSubId), firestore_2.FieldValue.delete());
         }
         await ref.update(...args);
     };
@@ -524,7 +526,7 @@ async function processAssessmentWriteEvent(store, params) {
         try {
             const profRef = (0, exports.CLASS_SERIES_PROFILES)(t.schoolId, t.termId, t.safeClassId, store);
             const leaseOutcome = await store.runTransaction(async (tx) => {
-                var _a, _b;
+                var _a, _b, _c;
                 const profSnap = await tx.get(profRef);
                 reads += 1;
                 const profData = profSnap.data() || {};
@@ -563,6 +565,10 @@ async function processAssessmentWriteEvent(store, params) {
                     scanLease: { [t.safeSubId]: nextLeaseEventMs },
                     scanLeaseUntil: { [t.safeSubId]: nowMs + exports.LEASE_WINDOW_MS },
                 }, { merge: true });
+                if (profSnap.exists && ((_c = profData.dirty) === null || _c === void 0 ? void 0 : _c[t.safeSubId])) {
+                    // R5-5: Clear `dirty.<subId>` BEFORE scanning so any write arriving *during* the scan survives!
+                    tx.update(profRef, new firestore_2.FieldPath('dirty', t.safeSubId), firestore_2.FieldValue.delete());
+                }
                 return { action: 'scan_now', lastScannedEventMs: nextLeaseEventMs, leaseUntilMs: nowMs + exports.LEASE_WINDOW_MS, hasLegacyUnstamped };
             });
             if (leaseOutcome.action === 'already_covered') {
@@ -582,7 +588,7 @@ async function processAssessmentWriteEvent(store, params) {
                 });
                 continue;
             }
-            const scanRes = await recomputeAndPersistSubjectCaProfile(store, t, leaseOutcome.hasLegacyUnstamped, true);
+            const scanRes = await recomputeAndPersistSubjectCaProfile(store, t, leaseOutcome.hasLegacyUnstamped);
             reads += scanRes.reads;
             scans += 1;
         }
@@ -622,12 +628,20 @@ async function runFlushDirtyProfiles(store = defaultDb, maxRecomputes = exports.
         const safeClassId = String(data.classId || '');
         const dirtyMap = (data.dirty && typeof data.dirty === 'object') ? data.dirty : {};
         const dirtyTargets = (data.dirtyTargets && typeof data.dirtyTargets === 'object') ? data.dirtyTargets : {};
-        const dirtySubIds = Object.keys(dirtyMap).filter(k => dirtyMap[k] === true);
+        const dirtyAttempts = (data.dirtyAttempts && typeof data.dirtyAttempts === 'object') ? data.dirtyAttempts : {};
+        const dirtySubIds = Object.keys(dirtyMap).filter(k => Boolean(dirtyMap[k]));
         if (!termId || !safeClassId || dirtySubIds.length === 0) {
-            await profDoc.ref.set({ hasDirtyProfiles: false }, { merge: true });
+            await store.runTransaction(async (tx) => {
+                var _a;
+                const freshSnap = await tx.get(profDoc.ref);
+                addSchoolReads(schoolId, 1);
+                const freshDirty = ((_a = freshSnap.data()) === null || _a === void 0 ? void 0 : _a.dirty) || {};
+                if (!Object.values(freshDirty).some(Boolean)) {
+                    tx.set(profDoc.ref, { hasDirtyProfiles: false }, { merge: true });
+                }
+            });
             continue;
         }
-        let processedOnDoc = 0;
         for (const safeSubId of dirtySubIds) {
             if (recomputed >= maxRecomputes)
                 break;
@@ -645,18 +659,43 @@ async function runFlushDirtyProfiles(store = defaultDb, maxRecomputes = exports.
                 hasExplicitTermId: meta.hasExplicitTermId !== false,
             };
             try {
-                const res = await recomputeAndPersistSubjectCaProfile(store, target, data.hasLegacyUnstamped === true, true);
+                // R5-5: Clear `dirty.<safeSubId>` BEFORE running `q.get()` so a concurrent mark saved during the scan survives!
+                await profDoc.ref.update(new firestore_2.FieldPath('dirty', safeSubId), firestore_2.FieldValue.delete(), new firestore_2.FieldPath('dirtyTargets', safeSubId), firestore_2.FieldValue.delete());
+                const res = await recomputeAndPersistSubjectCaProfile(store, target, data.hasLegacyUnstamped === true);
                 addSchoolReads(schoolId, res.reads);
                 recomputed += 1;
-                processedOnDoc += 1;
             }
             catch (err) {
-                console.warn('[flushDirtyClassSeriesProfiles] subject recompute failed:', schoolId, termId, safeClassId, safeSubId, err === null || err === void 0 ? void 0 : err.message);
+                // R5-2: Cap retries at MAX_DIRTY_ATTEMPTS (5) so a broken subject never retries 288 times/day!
+                const nextAttempts = (Number(dirtyAttempts[safeSubId]) || 0) + 1;
+                if (nextAttempts >= exports.MAX_DIRTY_ATTEMPTS) {
+                    console.warn(`[flushDirtyClassSeriesProfiles] Giving up after ${nextAttempts} attempts:`, schoolId, termId, safeClassId, safeSubId, err === null || err === void 0 ? void 0 : err.message);
+                    await profDoc.ref.set({
+                        dirtyAttempts: { [safeSubId]: nextAttempts },
+                        dirtyGaveUpAt: { [safeSubId]: Date.now() },
+                    }, { merge: true }).catch(() => { });
+                }
+                else {
+                    console.warn(`[flushDirtyClassSeriesProfiles] Retry ${nextAttempts}/${exports.MAX_DIRTY_ATTEMPTS} scheduled:`, schoolId, termId, safeClassId, safeSubId, err === null || err === void 0 ? void 0 : err.message);
+                    await profDoc.ref.set({
+                        hasDirtyProfiles: true,
+                        dirty: { [safeSubId]: true },
+                        dirtyTargets: { [safeSubId]: meta },
+                        dirtyAttempts: { [safeSubId]: nextAttempts },
+                    }, { merge: true }).catch(() => { });
+                }
             }
         }
-        if (processedOnDoc === dirtySubIds.length) {
-            await profDoc.ref.set({ hasDirtyProfiles: false }, { merge: true });
-        }
+        // R5-5: Only clear `hasDirtyProfiles` if NO dirty keys remain (including any added concurrently during scans)
+        await store.runTransaction(async (tx) => {
+            var _a;
+            const freshSnap = await tx.get(profDoc.ref);
+            addSchoolReads(schoolId, 1);
+            const freshDirty = ((_a = freshSnap.data()) === null || _a === void 0 ? void 0 : _a.dirty) || {};
+            if (!Object.values(freshDirty).some(Boolean)) {
+                tx.set(profDoc.ref, { hasDirtyProfiles: false }, { merge: true });
+            }
+        });
     }
     readsBySchool.forEach((schoolReads, sid) => {
         console.log('[readBudget]', { fn: 'flushDirtyClassSeriesProfiles', schoolId: sid, reads: schoolReads, recomputed });
@@ -670,7 +709,8 @@ exports.onAssessmentWriteForSummary = (0, firestore_1.onDocumentWritten)('assess
     const eventTimeMs = (event.time ? Date.parse(event.time) : 0) || Date.now();
     await processAssessmentWriteEvent(defaultDb, { rawBefore, rawAfter, eventTimeMs });
 });
-exports.flushDirtyClassSeriesProfiles = (0, scheduler_1.onSchedule)('every 5 minutes', async () => {
+// R5-6: Explicit 300s timeout and 256MiB memory so up to 200 recomputes complete comfortably within schedule budget
+exports.flushDirtyClassSeriesProfiles = (0, scheduler_1.onSchedule)({ schedule: 'every 5 minutes', timeoutSeconds: 300, memory: '256MiB' }, async () => {
     await runFlushDirtyProfiles(defaultDb, exports.MAX_SCHEDULED_RECOMPUTES);
 });
 //# sourceMappingURL=academic-summary.js.map

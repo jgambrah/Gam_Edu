@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useUser, useFirestore } from '@/firebase';
 import { useOnceQuery, readOnceCached } from '@/lib/firestore-once';
 import { currentTermFromProfile, termStampOfRecord, compareTermIds, stampFromTermId } from '@/lib/term';
+import { academicYearVariants, termVariants } from '@/lib/academic-match';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { collection, query, where, orderBy, limit, documentId, doc, getDoc, getDocs } from 'firebase/firestore';
@@ -196,16 +197,52 @@ export default function MyGradesPage() {
                 return fetchFallback600();
             }
 
-            const stampedDocs = await readAll(
-                query(
-                    collection(firestore!, 'assessments'),
-                    where('schoolId', '==', schoolId),
-                    where('studentId', '==', markKey),
-                    where('termId', '==', requestedTermId)
-                )
-            );
-            if (stampedDocs.length > 0) {
-                return stampedDocs;
+            // R5-3: Query spelling-tolerant year/term variants (just like Report Card Manager) + stamped `termId`
+            // so terms mixing modern `termId`-stamped marks and legacy unstamped marks never undercount!
+            const parsedStamp = stampFromTermId(requestedTermId);
+            const byId = new Map<string, any>();
+            if (parsedStamp) {
+                const allYv = academicYearVariants(parsedStamp.academicYear);
+                const tv = termVariants(parsedStamp.term);
+                const maxYv = Math.max(1, Math.floor(30 / Math.max(1, tv.length)));
+                try {
+                    const chunks: string[][] = [];
+                    for (let i = 0; i < allYv.length; i += maxYv) {
+                        chunks.push(allYv.slice(i, i + maxYv));
+                    }
+                    const variantResults = await Promise.all(
+                        chunks.map(yvChunk =>
+                            readAll(
+                                query(
+                                    collection(firestore!, 'assessments'),
+                                    where('schoolId', '==', schoolId),
+                                    where('studentId', '==', markKey),
+                                    where('academicYear', 'in', yvChunk),
+                                    where('term', 'in', tv)
+                                )
+                            )
+                        )
+                    );
+                    variantResults.flat().forEach((d: any) => byId.set(d.id, d));
+                } catch (err: any) {
+                    if (err?.code === 'permission-denied') throw err;
+                }
+            }
+
+            if (byId.size === 0) {
+                const stampedDocs = await readAll(
+                    query(
+                        collection(firestore!, 'assessments'),
+                        where('schoolId', '==', schoolId),
+                        where('studentId', '==', markKey),
+                        where('termId', '==', requestedTermId)
+                    )
+                );
+                stampedDocs.forEach((d: any) => byId.set(d.id, d));
+            }
+
+            if (byId.size > 0) {
+                return Array.from(byId.values());
             }
             return fetchFallback600();
         },

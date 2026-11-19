@@ -37,6 +37,7 @@ const defaultDb = getFirestore();
 export const INSTANCE_COOLDOWN_MS = 60_000;
 export const LEASE_WINDOW_MS = 5 * 60_000;
 export const MAX_SCHEDULED_RECOMPUTES = 200;
+export const MAX_DIRTY_ATTEMPTS = 5;
 
 interface CooldownEntry {
   cooldownUntil: number;
@@ -397,8 +398,7 @@ async function scanSubjectTermAssessments(
 async function recomputeAndPersistSubjectCaProfile(
   store: FirebaseFirestore.Firestore,
   t: ProfileRecomputeTarget,
-  hasLegacyUnstamped: boolean,
-  clearDirtyFlag: boolean
+  hasLegacyUnstamped: boolean
 ): Promise<{ reads: number }> {
   const { termDocs, reads, sawUnstamped } = await scanSubjectTermAssessments(store, t, hasLegacyUnstamped);
   const profiles = computeCaProfilesForClassSubject(termDocs);
@@ -434,11 +434,9 @@ async function recomputeAndPersistSubjectCaProfile(
         new FieldPath(topField, `mid_term__name__${safeSubName}`), profiles.mid_term,
       );
     }
-    if (isProfileCollection && clearDirtyFlag) {
-      args.push(
-        new FieldPath('dirty', t.safeSubId), FieldValue.delete(),
-        new FieldPath('dirtyTargets', t.safeSubId), FieldValue.delete(),
-      );
+    if (isProfileCollection) {
+      // R5-2: reset retry counter on successful recompute (R5-5: `dirty.<subId>` is cleared BEFORE scan starts!)
+      args.push(new FieldPath('dirtyAttempts', t.safeSubId), FieldValue.delete());
     }
     await (ref as any).update(...args);
   };
@@ -685,6 +683,10 @@ export async function processAssessmentWriteEvent(
           scanLease: { [t.safeSubId]: nextLeaseEventMs },
           scanLeaseUntil: { [t.safeSubId]: nowMs + LEASE_WINDOW_MS },
         }, { merge: true });
+        if (profSnap.exists && profData.dirty?.[t.safeSubId]) {
+          // R5-5: Clear `dirty.<subId>` BEFORE scanning so any write arriving *during* the scan survives!
+          (tx as any).update(profRef, new FieldPath('dirty', t.safeSubId), FieldValue.delete());
+        }
         return { action: 'scan_now' as const, lastScannedEventMs: nextLeaseEventMs, leaseUntilMs: nowMs + LEASE_WINDOW_MS, hasLegacyUnstamped };
       });
 
@@ -710,8 +712,7 @@ export async function processAssessmentWriteEvent(
       const scanRes = await recomputeAndPersistSubjectCaProfile(
         store,
         t,
-        leaseOutcome.hasLegacyUnstamped,
-        true
+        leaseOutcome.hasLegacyUnstamped
       );
       reads += scanRes.reads;
       scans += 1;
@@ -760,14 +761,21 @@ export async function runFlushDirtyProfiles(
     const safeClassId = String(data.classId || '');
     const dirtyMap = (data.dirty && typeof data.dirty === 'object') ? data.dirty : {};
     const dirtyTargets = (data.dirtyTargets && typeof data.dirtyTargets === 'object') ? data.dirtyTargets : {};
-    const dirtySubIds = Object.keys(dirtyMap).filter(k => dirtyMap[k] === true);
+    const dirtyAttempts = (data.dirtyAttempts && typeof data.dirtyAttempts === 'object') ? data.dirtyAttempts : {};
+    const dirtySubIds = Object.keys(dirtyMap).filter(k => Boolean(dirtyMap[k]));
 
     if (!termId || !safeClassId || dirtySubIds.length === 0) {
-      await profDoc.ref.set({ hasDirtyProfiles: false }, { merge: true });
+      await store.runTransaction(async (tx) => {
+        const freshSnap = await tx.get(profDoc.ref);
+        addSchoolReads(schoolId, 1);
+        const freshDirty = freshSnap.data()?.dirty || {};
+        if (!Object.values(freshDirty).some(Boolean)) {
+          tx.set(profDoc.ref, { hasDirtyProfiles: false }, { merge: true });
+        }
+      });
       continue;
     }
 
-    let processedOnDoc = 0;
     for (const safeSubId of dirtySubIds) {
       if (recomputed >= maxRecomputes) break;
       const meta = dirtyTargets[safeSubId] || {};
@@ -784,23 +792,54 @@ export async function runFlushDirtyProfiles(
         hasExplicitTermId: meta.hasExplicitTermId !== false,
       };
       try {
+        // R5-5: Clear `dirty.<safeSubId>` BEFORE running `q.get()` so a concurrent mark saved during the scan survives!
+        await (profDoc.ref as any).update(
+          new FieldPath('dirty', safeSubId), FieldValue.delete(),
+          new FieldPath('dirtyTargets', safeSubId), FieldValue.delete()
+        );
         const res = await recomputeAndPersistSubjectCaProfile(
           store,
           target,
-          data.hasLegacyUnstamped === true,
-          true
+          data.hasLegacyUnstamped === true
         );
         addSchoolReads(schoolId, res.reads);
         recomputed += 1;
-        processedOnDoc += 1;
       } catch (err: any) {
-        console.warn('[flushDirtyClassSeriesProfiles] subject recompute failed:', schoolId, termId, safeClassId, safeSubId, err?.message);
+        // R5-2: Cap retries at MAX_DIRTY_ATTEMPTS (5) so a broken subject never retries 288 times/day!
+        const nextAttempts = (Number(dirtyAttempts[safeSubId]) || 0) + 1;
+        if (nextAttempts >= MAX_DIRTY_ATTEMPTS) {
+          console.warn(
+            `[flushDirtyClassSeriesProfiles] Giving up after ${nextAttempts} attempts:`,
+            schoolId, termId, safeClassId, safeSubId, err?.message
+          );
+          await profDoc.ref.set({
+            dirtyAttempts: { [safeSubId]: nextAttempts },
+            dirtyGaveUpAt: { [safeSubId]: Date.now() },
+          }, { merge: true }).catch(() => {});
+        } else {
+          console.warn(
+            `[flushDirtyClassSeriesProfiles] Retry ${nextAttempts}/${MAX_DIRTY_ATTEMPTS} scheduled:`,
+            schoolId, termId, safeClassId, safeSubId, err?.message
+          );
+          await profDoc.ref.set({
+            hasDirtyProfiles: true,
+            dirty: { [safeSubId]: true },
+            dirtyTargets: { [safeSubId]: meta },
+            dirtyAttempts: { [safeSubId]: nextAttempts },
+          }, { merge: true }).catch(() => {});
+        }
       }
     }
 
-    if (processedOnDoc === dirtySubIds.length) {
-      await profDoc.ref.set({ hasDirtyProfiles: false }, { merge: true });
-    }
+    // R5-5: Only clear `hasDirtyProfiles` if NO dirty keys remain (including any added concurrently during scans)
+    await store.runTransaction(async (tx) => {
+      const freshSnap = await tx.get(profDoc.ref);
+      addSchoolReads(schoolId, 1);
+      const freshDirty = freshSnap.data()?.dirty || {};
+      if (!Object.values(freshDirty).some(Boolean)) {
+        tx.set(profDoc.ref, { hasDirtyProfiles: false }, { merge: true });
+      }
+    });
   }
 
   readsBySchool.forEach((schoolReads, sid) => {
@@ -816,6 +855,10 @@ export const onAssessmentWriteForSummary = onDocumentWritten('assessments/{asses
   await processAssessmentWriteEvent(defaultDb, { rawBefore, rawAfter, eventTimeMs });
 });
 
-export const flushDirtyClassSeriesProfiles = onSchedule('every 5 minutes', async () => {
-  await runFlushDirtyProfiles(defaultDb, MAX_SCHEDULED_RECOMPUTES);
-});
+// R5-6: Explicit 300s timeout and 256MiB memory so up to 200 recomputes complete comfortably within schedule budget
+export const flushDirtyClassSeriesProfiles = onSchedule(
+  { schedule: 'every 5 minutes', timeoutSeconds: 300, memory: '256MiB' },
+  async () => {
+    await runFlushDirtyProfiles(defaultDb, MAX_SCHEDULED_RECOMPUTES);
+  }
+);

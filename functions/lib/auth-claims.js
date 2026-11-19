@@ -33,7 +33,7 @@ function isCustomClaimsEnabled() {
 async function resolveCanonicalClaimsForUid(store, uid, email) {
     const cleanEmail = String(email || '').trim().toLowerCase();
     if (uid === MERCY_ADMIN_UID || cleanEmail === MERCY_ADMIN_EMAIL) {
-        return { role: 'Director', schoolId: MERCY_SCHOOL_ID };
+        return { role: 'Director', schoolId: MERCY_SCHOOL_ID, isStaff: true };
     }
     const [staffSnap, userSnap, studentSnap, parentSnap] = await Promise.all([
         store.collection('staff').doc(uid).get(),
@@ -55,14 +55,14 @@ async function resolveCanonicalClaimsForUid(store, uid, email) {
         (student ? 'Student' : '') ||
         (parent ? 'Parent' : '') ||
         null;
-    return { role, schoolId };
+    return { role, schoolId, isStaff: Boolean(staff) };
 }
 /**
- * Stamps `{ role, schoolId }` onto Firebase Auth custom claims while preserving all unrelated claims
- * (such as `story_publisher`, `super_admin`, etc.). Clears `role` / `schoolId` if the profile was removed.
+ * Stamps `{ role, schoolId, isStaff }` onto Firebase Auth custom claims while preserving all unrelated claims
+ * (`story_publisher`, `super_admin`, etc.). Never overwrites or clears `role === 'super_admin'`.
  */
 async function syncUserCustomClaims(params) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     const enabled = params.forceWhenFlagOff === true || isCustomClaimsEnabled();
     if (!enabled) {
         return { enabled: false, updated: false, role: null, schoolId: null };
@@ -71,23 +71,28 @@ async function syncUserCustomClaims(params) {
     const store = params.store || (0, firestore_2.getFirestore)();
     const authUser = await auth.getUser(params.uid);
     const existingClaims = Object.assign({}, (authUser.customClaims || {}));
-    const { role, schoolId } = await resolveCanonicalClaimsForUid(store, params.uid, authUser.email);
-    const prevRole = (_a = existingClaims.role) !== null && _a !== void 0 ? _a : null;
-    const prevSchoolId = (_b = existingClaims.schoolId) !== null && _b !== void 0 ? _b : null;
-    if (prevRole === role && prevSchoolId === schoolId) {
-        return { enabled: true, updated: false, role, schoolId };
+    const resolved = await resolveCanonicalClaimsForUid(store, params.uid, authUser.email);
+    // R5-1: Never demote or overwrite an account holding `role: 'super_admin'`
+    const effectiveRole = existingClaims.role === 'super_admin' ? 'super_admin' : resolved.role;
+    const effectiveSchoolId = (_a = resolved.schoolId) !== null && _a !== void 0 ? _a : (existingClaims.role === 'super_admin' ? ((_b = existingClaims.schoolId) !== null && _b !== void 0 ? _b : null) : null);
+    const effectiveIsStaff = existingClaims.role === 'super_admin' ? true : resolved.isStaff;
+    const prevRole = (_c = existingClaims.role) !== null && _c !== void 0 ? _c : null;
+    const prevSchoolId = (_d = existingClaims.schoolId) !== null && _d !== void 0 ? _d : null;
+    const prevIsStaff = typeof existingClaims.isStaff === 'boolean' ? existingClaims.isStaff : null;
+    if (prevRole === effectiveRole && prevSchoolId === effectiveSchoolId && prevIsStaff === effectiveIsStaff) {
+        return { enabled: true, updated: false, role: effectiveRole, schoolId: effectiveSchoolId, isStaff: effectiveIsStaff };
     }
-    const nextClaims = Object.assign({}, existingClaims);
-    if (role)
-        nextClaims.role = role;
+    const nextClaims = Object.assign(Object.assign({}, existingClaims), { isStaff: effectiveIsStaff });
+    if (effectiveRole)
+        nextClaims.role = effectiveRole;
     else
         delete nextClaims.role;
-    if (schoolId)
-        nextClaims.schoolId = schoolId;
+    if (effectiveSchoolId)
+        nextClaims.schoolId = effectiveSchoolId;
     else
         delete nextClaims.schoolId;
     await auth.setCustomUserClaims(params.uid, nextClaims);
-    return { enabled: true, updated: true, role, schoolId };
+    return { enabled: true, updated: true, role: effectiveRole, schoolId: effectiveSchoolId, isStaff: effectiveIsStaff };
 }
 function didClaimFieldsChange(before, after) {
     if (!before || !after)

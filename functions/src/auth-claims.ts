@@ -33,10 +33,10 @@ export async function resolveCanonicalClaimsForUid(
   store: any,
   uid: string,
   email?: string | null
-): Promise<{ role: string | null; schoolId: string | null }> {
+): Promise<{ role: string | null; schoolId: string | null; isStaff: boolean }> {
   const cleanEmail = String(email || '').trim().toLowerCase();
   if (uid === MERCY_ADMIN_UID || cleanEmail === MERCY_ADMIN_EMAIL) {
-    return { role: 'Director', schoolId: MERCY_SCHOOL_ID };
+    return { role: 'Director', schoolId: MERCY_SCHOOL_ID, isStaff: true };
   }
 
   const [staffSnap, userSnap, studentSnap, parentSnap] = await Promise.all([
@@ -65,12 +65,12 @@ export async function resolveCanonicalClaimsForUid(
     (parent ? 'Parent' : '') ||
     null;
 
-  return { role, schoolId };
+  return { role, schoolId, isStaff: Boolean(staff) };
 }
 
 /**
- * Stamps `{ role, schoolId }` onto Firebase Auth custom claims while preserving all unrelated claims
- * (such as `story_publisher`, `super_admin`, etc.). Clears `role` / `schoolId` if the profile was removed.
+ * Stamps `{ role, schoolId, isStaff }` onto Firebase Auth custom claims while preserving all unrelated claims
+ * (`story_publisher`, `super_admin`, etc.). Never overwrites or clears `role === 'super_admin'`.
  */
 export async function syncUserCustomClaims(params: {
   uid: string;
@@ -82,6 +82,7 @@ export async function syncUserCustomClaims(params: {
   updated: boolean;
   role: string | null;
   schoolId: string | null;
+  isStaff?: boolean;
 }> {
   const enabled = params.forceWhenFlagOff === true || isCustomClaimsEnabled();
   if (!enabled) {
@@ -93,23 +94,28 @@ export async function syncUserCustomClaims(params: {
   const authUser = await auth.getUser(params.uid);
   const existingClaims = { ...(authUser.customClaims || {}) };
 
-  const { role, schoolId } = await resolveCanonicalClaimsForUid(store, params.uid, authUser.email);
+  const resolved = await resolveCanonicalClaimsForUid(store, params.uid, authUser.email);
+  // R5-1: Never demote or overwrite an account holding `role: 'super_admin'`
+  const effectiveRole = existingClaims.role === 'super_admin' ? 'super_admin' : resolved.role;
+  const effectiveSchoolId = resolved.schoolId ?? (existingClaims.role === 'super_admin' ? (existingClaims.schoolId ?? null) : null);
+  const effectiveIsStaff = existingClaims.role === 'super_admin' ? true : resolved.isStaff;
 
   const prevRole = existingClaims.role ?? null;
   const prevSchoolId = existingClaims.schoolId ?? null;
-  if (prevRole === role && prevSchoolId === schoolId) {
-    return { enabled: true, updated: false, role, schoolId };
+  const prevIsStaff = typeof existingClaims.isStaff === 'boolean' ? existingClaims.isStaff : null;
+  if (prevRole === effectiveRole && prevSchoolId === effectiveSchoolId && prevIsStaff === effectiveIsStaff) {
+    return { enabled: true, updated: false, role: effectiveRole, schoolId: effectiveSchoolId, isStaff: effectiveIsStaff };
   }
 
-  const nextClaims: Record<string, any> = { ...existingClaims };
-  if (role) nextClaims.role = role;
+  const nextClaims: Record<string, any> = { ...existingClaims, isStaff: effectiveIsStaff };
+  if (effectiveRole) nextClaims.role = effectiveRole;
   else delete nextClaims.role;
 
-  if (schoolId) nextClaims.schoolId = schoolId;
+  if (effectiveSchoolId) nextClaims.schoolId = effectiveSchoolId;
   else delete nextClaims.schoolId;
 
   await auth.setCustomUserClaims(params.uid, nextClaims);
-  return { enabled: true, updated: true, role, schoolId };
+  return { enabled: true, updated: true, role: effectiveRole, schoolId: effectiveSchoolId, isStaff: effectiveIsStaff };
 }
 
 function didClaimFieldsChange(before: any | null, after: any | null): boolean {

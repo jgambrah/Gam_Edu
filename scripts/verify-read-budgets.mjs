@@ -715,6 +715,18 @@ const resultsTable = [];
   }
   // Existing unrelated claim `story_publisher: true` must be preserved!
   assert.equal(claimsStore.get('u_dir').story_publisher, true);
+  assert.equal(claimsStore.get('u_dir').isStaff, true);
+  assert.equal(claimsStore.get('u_stu').isStaff, false);
+
+  // R5-1: `role: 'super_admin'` claim must NEVER be demoted or cleared, and custom staff roles (`Nurse`, `Warden`) get `isStaff: true`
+  claimsStore.set('u_super', { role: 'super_admin' });
+  dbClaims.seed('staff', 'u_nurse', { role: 'Nurse', schoolId: 'sch1' });
+  claimsStore.set('u_nurse', {});
+  await syncUserCustomClaims({ uid: 'u_super', auth: mockAuth, store: dbClaims, forceWhenFlagOff: true });
+  await syncUserCustomClaims({ uid: 'u_nurse', auth: mockAuth, store: dbClaims, forceWhenFlagOff: true });
+  assert.equal(claimsStore.get('u_super').role, 'super_admin', 'R5-1: super_admin role claim must never be overwritten');
+  assert.equal(claimsStore.get('u_nurse').isStaff, true, 'R5-1: Nurse with staff/{uid} doc must receive isStaff: true');
+
   assert.ok(budgetLogs.length > 0, '[readBudget] structured logs must be emitted');
 
   console.log('\n=== GAM EDU FIRESTORE READ-BUDGET ACCEPTANCE RESULTS ===');

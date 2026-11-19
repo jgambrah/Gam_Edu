@@ -248,27 +248,35 @@ service cloud.firestore {
     }
     function isStaff() {
       return isSignedIn() && (
-        hasTokenRole()
-          ? request.auth.token.role in [
-              'Teacher', 'teacher', 'Subject Teacher', 'Class Teacher', 'Instructor', 'Faculty',
-              'Head of Department', 'Tutor', 'Administrator', 'Director', 'Admin', 'administrator',
-              'director', 'admin', 'Principal', 'Headmaster', 'Headmistress', 'Head Teacher',
-              'Registrar', 'Admissions', 'Owner', 'Accountant', 'accountant', 'Librarian', 'librarian',
-              'Transport Staff', 'transport staff', 'Cook', 'cook', 'Cleaner', 'cleaner',
-              'Security Officer', 'security officer', 'Secretary', 'secretary', 'Receptionist', 'receptionist',
-              'Bursar', 'bursar', 'Cashier', 'cashier', 'Finance', 'finance', 'Accounts Officer', 'accounts officer',
-              'Finance Officer', 'finance officer', 'HR', 'hr', 'HR Manager', 'HR Officer', 'Human Resources'
-            ]
-          : (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) ||
-             (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in [
-                'Teacher', 'teacher', 'Subject Teacher', 'Class Teacher', 'Instructor', 'Faculty',
-                'Head of Department', 'Tutor', 'Administrator', 'Director', 'Admin', 'administrator',
-                'director', 'admin', 'Accountant', 'accountant', 'Librarian', 'librarian',
-                'Transport Staff', 'transport staff', 'Cook', 'cook', 'Cleaner', 'cleaner',
-                'Security Officer', 'security officer', 'Secretary', 'secretary', 'Receptionist', 'receptionist',
-                'Bursar', 'bursar', 'Cashier', 'cashier', 'Finance', 'finance', 'Accounts Officer', 'accounts officer'
-              ]))
+        (request.auth.token != null && 'isStaff' in request.auth.token && request.auth.token.isStaff is bool)
+          ? request.auth.token.isStaff == true
+          : (hasTokenRole()
+              ? request.auth.token.role in [
+                  'Teacher', 'teacher', 'Subject Teacher', 'Class Teacher', 'Instructor', 'Faculty',
+                  'Head of Department', 'Tutor', 'Administrator', 'Director', 'Admin', 'administrator',
+                  'director', 'admin', 'Principal', 'Headmaster', 'Headmistress', 'Head Teacher',
+                  'Registrar', 'Admissions', 'Owner', 'Accountant', 'accountant', 'Librarian', 'librarian',
+                  'Transport Staff', 'transport staff', 'Cook', 'cook', 'Cleaner', 'cleaner',
+                  'Security Officer', 'security officer', 'Security', 'security',
+                  'Driver', 'driver', 'Nurse', 'nurse', 'Doctor', 'doctor',
+                  'Warden', 'warden', 'Boarding Staff', 'boarding staff', 'Staff', 'staff',
+                  'Secretary', 'secretary', 'Receptionist', 'receptionist',
+                  'Bursar', 'bursar', 'Cashier', 'cashier', 'Finance', 'finance', 'Accounts Officer', 'accounts officer',
+                  'Finance Officer', 'finance officer', 'HR', 'hr', 'HR Manager', 'HR Officer', 'Human Resources'
+                ]
+              : (exists(/databases/$(database)/documents/staff/$(request.auth.uid)) ||
+                 (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+                  get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in [
+                    'Teacher', 'teacher', 'Subject Teacher', 'Class Teacher', 'Instructor', 'Faculty',
+                    'Head of Department', 'Tutor', 'Administrator', 'Director', 'Admin', 'administrator',
+                    'director', 'admin', 'Accountant', 'accountant', 'Librarian', 'librarian',
+                    'Transport Staff', 'transport staff', 'Cook', 'cook', 'Cleaner', 'cleaner',
+                    'Security Officer', 'security officer', 'Security', 'security',
+                    'Driver', 'driver', 'Nurse', 'nurse', 'Doctor', 'doctor',
+                    'Warden', 'warden', 'Boarding Staff', 'boarding staff', 'Staff', 'staff',
+                    'Secretary', 'secretary', 'Receptionist', 'receptionist',
+                    'Bursar', 'bursar', 'Cashier', 'cashier', 'Finance', 'finance', 'Accounts Officer', 'accounts officer'
+                  ])))
       );
     }
     function isParent() {
