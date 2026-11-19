@@ -430,11 +430,20 @@ export default function ReportCardManager() {
         if (!firestore || !schoolId || !classId || !academicYear || !term) return [];
         const tv = termVariants(term);
         const maxYv = Math.max(1, Math.floor(30 / Math.max(1, tv.length)));
-        const yv = academicYearVariants(academicYear).slice(0, maxYv);
+        const allYv = academicYearVariants(academicYear);
         const base = [where('schoolId', '==', schoolId), where('classId', '==', classId)];
         try {
-            if (yv.length > 0 && tv.length > 0 && yv.length * tv.length <= 30) {
-                return await readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', 'in', yv), where('term', 'in', tv)));
+            if (allYv.length > 0 && tv.length > 0) {
+                const chunks: string[][] = [];
+                for (let i = 0; i < allYv.length; i += maxYv) {
+                    chunks.push(allYv.slice(i, i + maxYv));
+                }
+                const results = await Promise.all(
+                    chunks.map(yvChunk => readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', 'in', yvChunk), where('term', 'in', tv))))
+                );
+                const byId = new Map<string, any>();
+                results.flat().forEach((r: any) => byId.set(r.id, r));
+                return Array.from(byId.values());
             }
         } catch (err: any) {
             if (err?.code === 'permission-denied') throw err;
@@ -1284,6 +1293,12 @@ export default function ReportCardManager() {
             }
 
             upsertLocalReportCards(localUpdates);
+            if (selectedStudentId) {
+                const updatedForSelected = localUpdates.find(u => u.data?.studentId === selectedStudentId);
+                if (updatedForSelected) {
+                    setProcessedReport((prev: any) => prev ? { ...prev, ...updatedForSelected.data, _unsavedCompile: false } : updatedForSelected.data);
+                }
+            }
             toast({
                 title: `Compiled ${docsToWrite.length} ${activeSeriesOption.shortLabel} Drafts! 🎉`,
                 description: `All ${docsToWrite.length} report cards are now ready to Bulk Publish or Download as Combined PDF.`,
@@ -1435,30 +1450,45 @@ export default function ReportCardManager() {
 
             const studentIdsToNotify: string[] = [];
             const localUpdates: Array<{ id: string; data: any }> = [];
-            const drafts = classSummary.drafts;
-            for (let i = 0; i < drafts.length; i += 450) {
+            // Never write directly to frozen `term_report_cards` (server-only); target live `report-cards` drafts only!
+            const publishableDrafts = classSummary.drafts.filter(({ report }: any) => {
+                if (report._col === 'term_report_cards' && !report.sourceReportCardId) return false;
+                return true;
+            });
+            if (publishableDrafts.length === 0) {
+                toast({
+                    variant: 'destructive',
+                    title: 'No Editable Drafts',
+                    description: 'Frozen archived transcripts cannot be modified directly. Unlock the term or recompile live drafts first.',
+                });
+                return;
+            }
+            for (let i = 0; i < publishableDrafts.length; i += 450) {
                 const batch = writeBatch(firestore);
-                drafts.slice(i, i + 450).forEach(({ student, report }: any) => {
-                    // Older report cards live in "term_report_cards" — update them where they are
-                    // (updating the wrong collection failed the whole bulk publish).
-                    const reportRef = doc(firestore, report._col || 'report-cards', report.id);
+                publishableDrafts.slice(i, i + 450).forEach(({ student, report }: any) => {
+                    const targetCardId = report._col === 'term_report_cards' ? report.sourceReportCardId : report.id;
+                    const reportRef = doc(firestore, 'report-cards', targetCardId);
                     const fingerprint = `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-                    batch.update(reportRef, {
+                    batch.set(reportRef, {
                         status: 'Published',
                         publishedAt: serverTimestamp(),
                         headmasterName,
                         headmasterSignatureUrl,
                         headmasterSignedAt: serverTimestamp(),
                         digitalFingerprint: fingerprint
-                    });
-                    if ((report._col || 'report-cards') === 'report-cards') {
-                        localUpdates.push({ id: report.id, data: { status: 'Published', publishedAt: new Date(), headmasterName, headmasterSignatureUrl, digitalFingerprint: fingerprint } });
-                    }
+                    }, { merge: true });
+                    localUpdates.push({ id: targetCardId, data: { status: 'Published', publishedAt: new Date(), headmasterName, headmasterSignatureUrl, digitalFingerprint: fingerprint } });
                     studentIdsToNotify.push(student.uid || student.id || report.studentId);
                 });
                 await batch.commit();
             }
             upsertLocalReportCards(localUpdates);
+            if (selectedStudentId) {
+                const updatedForSelected = localUpdates.find(u => u.data?.studentId === selectedStudentId);
+                if (updatedForSelected) {
+                    setProcessedReport((prev: any) => prev ? { ...prev, ...updatedForSelected.data, _unsavedCompile: false } : updatedForSelected.data);
+                }
+            }
             toast({ title: `Bulk Publish Successful! 🎉`, description: `Released ${studentIdsToNotify.length} ${activeSeriesOption.shortLabel} report cards.` });
             
             await logAuditEvent({

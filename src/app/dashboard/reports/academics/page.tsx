@@ -142,7 +142,7 @@ const getStudentId = (student: any): string => {
     return String(student.id || student.uid || student.studentId || student.admissionNumber || student.indexNumber || '').trim();
 };
 
-import { normalizeYear, isYearMatch, normalizeTerm, isTermMatch } from '@/lib/academic-match';
+import { normalizeYear, isYearMatch, normalizeTerm, isTermMatch, academicYearVariants } from '@/lib/academic-match';
 import {
     buildAcademicSnapshotDocId,
     buildAllAcademicSeriesOptions,
@@ -164,6 +164,7 @@ import {
 
 interface AcademicReportSnapshotDoc {
     id: string;
+    calcVersion?: number;
     schoolId: string;
     academicYear: string;
     term: string;
@@ -312,79 +313,84 @@ export default function AcademicReportsPage() {
         });
     }, [rawStudents, selectedClassId, selectedClass]);
 
-    // Multi-Source On-Demand Querying: Scoped Assessments collection (99% read reduction)
+    const selectedYearVariants = useMemo(
+        () => (selectedYear ? academicYearVariants(selectedYear).slice(0, 10) : []),
+        [selectedYear]
+    );
+
+    // Multi-Source On-Demand Querying: Scoped Assessments collection (matches all year spellings incl. "2024/25")
     const assessmentsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYear) {
-            constraints.push(where('academicYear', '==', selectedYear));
+        if (selectedYearVariants.length > 0) {
+            constraints.push(where('academicYear', 'in', selectedYearVariants));
         }
         if (selectedClassId && selectedClassId !== 'all') {
             constraints.push(where('classId', '==', selectedClassId));
         }
         return query(collection(firestore, 'assessments'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear, selectedClassId]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants, selectedClassId]);
     const { data: rawAssessments, isLoading: isLoadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
 
     // Multi-Source On-Demand Querying: Scoped Grades collection
     const gradesQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYear) {
-            constraints.push(where('academicYear', '==', selectedYear));
+        if (selectedYearVariants.length > 0) {
+            constraints.push(where('academicYear', 'in', selectedYearVariants));
         }
         if (selectedClassId && selectedClassId !== 'all') {
             constraints.push(where('classId', '==', selectedClassId));
         }
         return query(collection(firestore, 'grades'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear, selectedClassId]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants, selectedClassId]);
     const { data: rawGrades, isLoading: isLoadingGrades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
 
     // Multi-Source On-Demand Querying: Scoped Report Cards collection (kebab-case)
     const reportCardsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYear) {
-            constraints.push(where('academicYear', '==', selectedYear));
+        if (selectedYearVariants.length > 0) {
+            constraints.push(where('academicYear', 'in', selectedYearVariants));
         }
         return query(collection(firestore, 'report-cards'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants]);
     const { data: rawReportCards, isLoading: isLoadingReportCards, forceRefetch: refetchReportCards } = useCollection<any>(reportCardsQuery);
 
     // Multi-Source On-Demand Querying: Scoped Report Cards collection (camelCase alternate)
     const reportCardsAltQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYear) {
-            constraints.push(where('academicYear', '==', selectedYear));
+        if (selectedYearVariants.length > 0) {
+            constraints.push(where('academicYear', 'in', selectedYearVariants));
         }
         return query(collection(firestore, 'reportCards'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants]);
     const { data: rawReportCardsAlt, isLoading: isLoadingReportCardsAlt, forceRefetch: refetchReportCardsAlt } = useCollection<any>(reportCardsAltQuery);
 
     // Multi-Source On-Demand Querying: Scoped Term Report Cards collection
     const termReportCardsQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYear) {
-            constraints.push(where('academicYear', '==', selectedYear));
+        if (selectedYearVariants.length > 0) {
+            constraints.push(where('academicYear', 'in', selectedYearVariants));
         }
         return query(collection(firestore, 'term_report_cards'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants]);
     const { data: rawTermReportCards, isLoading: isLoadingTermReportCards, forceRefetch: refetchTermReportCards } = useCollection<any>(termReportCardsQuery);
 
     // Multi-Source On-Demand Querying: Scoped Marks collection
     const marksQuery = useMemoFirebase(() => {
         if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
         const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYear) {
-            constraints.push(where('academicYear', '==', selectedYear));
+        if (selectedYearVariants.length > 0) {
+            constraints.push(where('academicYear', 'in', selectedYearVariants));
         }
         if (selectedClassId && selectedClassId !== 'all') {
             constraints.push(where('classId', '==', selectedClassId));
         }
         return query(collection(firestore, 'marks'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYear, selectedClassId]);
+    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants, selectedClassId]);
     const { data: rawMarks, isLoading: isLoadingMarks, forceRefetch: refetchMarks } = useCollection<any>(marksQuery);
 
     // Fetch School Settings for standard weighting overrides
@@ -762,9 +768,6 @@ export default function AcademicReportsPage() {
     // - Mock N: ONLY assessments belonging to that exact Mock N (legacy unnumbered mocks map cleanly to Mock 1)
     const seriesAssessments = useMemo(() => {
         if (!classAssessments || classAssessments.length === 0) return [];
-        const classHasDedicatedMidTerm = classAssessments.some((a: any) =>
-            a._reportSeries === 'mid_term' || isMidTermReportScopeAssessment(a)
-        );
         return classAssessments.filter((a: any) => {
             if (selectedSeries === 'end_of_term') {
                 if (a._reportSeries && a._reportSeries !== 'end_of_term') return false;
@@ -773,8 +776,9 @@ export default function AcademicReportsPage() {
             }
             if (selectedSeries === 'mid_term') {
                 if (a._reportSeries) return a._reportSeries === 'mid_term';
-                if (classHasDedicatedMidTerm) return isMidTermReportScopeAssessment(a);
-                return isMidTermAssessment(a) || a.midSem !== undefined || a.midTerm !== undefined;
+                // Keep both dedicated Mid-Term and legacy Mid-Term records here so `computeUnifiedSubjectScore`
+                // (`selectMidTermRecordsForSubject`) decides PER SUBJECT rather than dropping legacy subjects class-wide!
+                return isMidTermReportScopeAssessment(a) || isMidTermAssessment(a) || a.midSem !== undefined || a.midTerm !== undefined;
             }
             if (selectedSeries.startsWith('mock_')) {
                 if (a._reportSeries) return a._reportSeries === selectedSeries;
@@ -921,7 +925,12 @@ export default function AcademicReportsPage() {
                 if (snap.exists()) {
                     const data = snap.data() as AcademicReportSnapshotDoc;
                     const snapSeries = (data.reportSeries || 'end_of_term') as AcademicSeriesId;
-                    if (data.isArchived === true && snapSeries === targetSeries && data.classId === selectedClassId) {
+                    if (
+                        data.calcVersion === 2 &&
+                        data.isArchived === true &&
+                        snapSeries === targetSeries &&
+                        data.classId === selectedClassId
+                    ) {
                         setActiveSnapshot(data);
                         setIsReportRequested(true);
                         setIsLoadingSnapshot(false);
@@ -1587,6 +1596,7 @@ export default function AcademicReportsPage() {
 
             const snapshotPayload: AcademicReportSnapshotDoc = {
                 id: snapshotDocId,
+                calcVersion: 2,
                 schoolId,
                 academicYear: selectedYear,
                 term: selectedTerm,

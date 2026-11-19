@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, setDoc, getDocs } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, setDoc, getDocs, FieldPath } from 'firebase/firestore';
 import { useOnceQuery, invalidateOnceCache } from '@/lib/firestore-once';
 import { buildTermId } from '@/lib/term';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -53,6 +53,7 @@ import {
     getSeriesGradeFromScore,
     type AcademicSeriesId,
     type AcademicSeriesOption,
+    type SubjectCaProfile,
 } from '@/lib/academic-series';
 
 const ASSESSMENT_TYPES = [
@@ -122,8 +123,8 @@ function matrixSlotOf(a: any): string {
     // Mock exams and dedicated Mid-Term workspace marks are NOT part of the terminal SBA matrix or CA,
     // while CA tests whose title happens to contain "Mock" (e.g. "Mock Test 1") stay in CA!
     if (isMockAssessment(a) || isStandaloneMidTermAssessment(a)) return 'other';
-    if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) return 'ex';
     if (combined.includes('mid')) return 'mt';
+    if (combined.includes('exam') || combined.includes('terminal') || combined.includes('end of term')) return 'ex';
     if (combined.includes('proj') || combined.includes('group') || combined.includes('practical')) return 'project';
     if (combined.includes('home') || combined.includes('hw')) return 'hw';
     return `test:${(a.assessmentName || 'test 1').toLowerCase()}`;
@@ -1465,6 +1466,47 @@ export default function GradebookPage() {
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
             if (deleted.ok) setRemovedMatrixTestNames([]);
 
+            // Publish anonymous class-subject CA profile so Student/Parent Ward Grades matches Report Card denominators immediately
+            if (termId) {
+                const safeKey = (v: string) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
+                const activeTestsMap: Record<string, number> = {};
+                let hwHasAny = false, projHasAny = false, midHasAny = false, exHasAny = false;
+                (students || []).forEach((s: any) => {
+                    const r = matrixScores[s.uid];
+                    if (!r) return;
+                    testColumns.forEach(tc => {
+                        const v = r.tests?.[tc.id];
+                        if (v !== '' && v !== undefined && !isNaN(Number(v))) {
+                            activeTestsMap[safeKey(tc.name.toLowerCase())] = matrixMaxScores.classTest;
+                        }
+                    });
+                    if (r.homework !== '' && r.homework !== undefined && !isNaN(Number(r.homework))) hwHasAny = true;
+                    if (r.project !== '' && r.project !== undefined && !isNaN(Number(r.project))) projHasAny = true;
+                    if (r.midTerm !== '' && r.midTerm !== undefined && !isNaN(Number(r.midTerm))) midHasAny = true;
+                    if (r.exam !== '' && r.exam !== undefined && !isNaN(Number(r.exam))) exHasAny = true;
+                });
+                const caProf: SubjectCaProfile = {
+                    tests: activeTestsMap,
+                    hwMax: hwHasAny ? matrixMaxScores.homework : 0,
+                    projMax: projHasAny ? matrixMaxScores.project : 0,
+                    midMax: midHasAny ? matrixMaxScores.midTerm : 0,
+                    examMax: exHasAny ? matrixMaxScores.exam : 0,
+                    hasDedicatedMidTerm: false,
+                };
+                const profRef = doc(firestore, 'classSeriesProfiles', `${schoolId}__${termId}__${safeKey(classId)}`);
+                const subKey = `end_of_term__${safeKey(subjectId)}`;
+                const nameKey = `end_of_term__name__${safeKey(subjectName.toLowerCase().trim())}`;
+                updateDoc(profRef, new FieldPath('profiles', subKey), caProf, new FieldPath('profiles', nameKey), caProf, 'updatedAt', serverTimestamp())
+                    .catch(() => setDoc(profRef, {
+                        schoolId,
+                        termId,
+                        classId: safeKey(classId),
+                        profiles: { [subKey]: caProf, [nameKey]: caProf },
+                        updatedAt: serverTimestamp(),
+                    }, { merge: true }))
+                    .catch(() => {});
+            }
+
             toast({
                 title: "Terminal Matrix Saved Successfully! 🎉",
                 description: `Saved changes for ${updatedStudentIds.length} student(s): ${created} new mark(s), ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} cleared` : ''}.`
@@ -1898,6 +1940,46 @@ export default function GradebookPage() {
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
             if (deleted.ok) setRemovedMidTermTestNames([]);
+
+            // Publish anonymous Mid-Term CA profile so Student/Parent Ward Grades matches Mid-Term Report Card denominators immediately
+            if (termId) {
+                const safeKey = (v: string) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
+                const activeTestsMap: Record<string, number> = {};
+                let hwHasAny = false, projHasAny = false, exHasAny = false;
+                (students || []).forEach((s: any) => {
+                    const r = midTermScores[s.uid];
+                    if (!r) return;
+                    midTermTestColumns.forEach(tc => {
+                        const v = r.tests?.[tc.id];
+                        if (v !== '' && v !== undefined && !isNaN(Number(v))) {
+                            activeTestsMap[safeKey(tc.name.toLowerCase())] = midTermMaxScores.classTest;
+                        }
+                    });
+                    if (r.homework !== '' && r.homework !== undefined && !isNaN(Number(r.homework))) hwHasAny = true;
+                    if (r.project !== '' && r.project !== undefined && !isNaN(Number(r.project))) projHasAny = true;
+                    if (r.exam !== '' && r.exam !== undefined && !isNaN(Number(r.exam))) exHasAny = true;
+                });
+                const caProf: SubjectCaProfile = {
+                    tests: activeTestsMap,
+                    hwMax: hwHasAny ? midTermMaxScores.homework : 0,
+                    projMax: projHasAny ? midTermMaxScores.project : 0,
+                    midMax: 0,
+                    examMax: exHasAny ? midTermMaxScores.exam : 0,
+                    hasDedicatedMidTerm: true,
+                };
+                const profRef = doc(firestore, 'classSeriesProfiles', `${schoolId}__${termId}__${safeKey(classId)}`);
+                const subKey = `mid_term__${safeKey(subjectId)}`;
+                const nameKey = `mid_term__name__${safeKey(subjectName.toLowerCase().trim())}`;
+                updateDoc(profRef, new FieldPath('profiles', subKey), caProf, new FieldPath('profiles', nameKey), caProf, 'updatedAt', serverTimestamp())
+                    .catch(() => setDoc(profRef, {
+                        schoolId,
+                        termId,
+                        classId: safeKey(classId),
+                        profiles: { [subKey]: caProf, [nameKey]: caProf },
+                        updatedAt: serverTimestamp(),
+                    }, { merge: true }))
+                    .catch(() => {});
+            }
 
             toast({
                 title: "Mid-Term Sheet Saved Successfully! 🎉",
@@ -2450,7 +2532,14 @@ export default function GradebookPage() {
                 <CardContent className={`grid gap-4 p-6 bg-white ${(entryMode === 'matrix' || entryMode === 'midterm') ? 'grid-cols-2 md:grid-cols-4' : entryMode === 'mock' ? 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-7'}`}>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Academic Year</Label>
-                        <Select value={academicYear} onValueChange={setAcademicYear} disabled={role === 'Teacher'}>
+                        <Select
+                            value={academicYear}
+                            onValueChange={(val) => {
+                                if (entryMode === 'mock' && val !== academicYear && !confirmDiscardMockIfDirty()) return;
+                                setAcademicYear(val);
+                            }}
+                            disabled={role === 'Teacher'}
+                        >
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm font-semibold">
                                 <SelectValue />
                             </SelectTrigger>
@@ -2463,7 +2552,14 @@ export default function GradebookPage() {
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Term</Label>
-                        <Select value={term} onValueChange={setTerm} disabled={role === 'Teacher'}>
+                        <Select
+                            value={term}
+                            onValueChange={(val) => {
+                                if (entryMode === 'mock' && val !== term && !confirmDiscardMockIfDirty()) return;
+                                setTerm(val);
+                            }}
+                            disabled={role === 'Teacher'}
+                        >
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm font-semibold">
                                 <SelectValue />
                             </SelectTrigger>
@@ -2476,7 +2572,13 @@ export default function GradebookPage() {
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Class</Label>
-                        <Select value={classId} onValueChange={setClassId}>
+                        <Select
+                            value={classId}
+                            onValueChange={(val) => {
+                                if (entryMode === 'mock' && val !== classId && !confirmDiscardMockIfDirty()) return;
+                                setClassId(val);
+                            }}
+                        >
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm font-semibold">
                                 <SelectValue placeholder="Select Class" />
                             </SelectTrigger>
@@ -2487,7 +2589,14 @@ export default function GradebookPage() {
                     </div>
                     <div className="space-y-2">
                         <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Subject</Label>
-                        <Select key={`subject-select-${classId}-${subjectId}`} value={subjectId} onValueChange={setSubjectId}>
+                        <Select
+                            key={`subject-select-${classId}-${subjectId}`}
+                            value={subjectId}
+                            onValueChange={(val) => {
+                                if (entryMode === 'mock' && val !== subjectId && !confirmDiscardMockIfDirty()) return;
+                                setSubjectId(val);
+                            }}
+                        >
                             <SelectTrigger className="bg-white border border-slate-200 rounded-xl h-11 focus:ring-indigo-500 shadow-sm font-semibold">
                                 <SelectValue placeholder="Select Subject">
                                     {visibleSubjects?.find((s: any) => s.id === subjectId)?.name}

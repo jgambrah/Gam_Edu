@@ -253,7 +253,7 @@ async function executeAcademicClose(schoolId, termId, performedBy = 'Admin') {
                 ? `term_report_card_${schoolId}_${r.studentId}_${termId}`
                 : `term_report_card_${schoolId}_${r.studentId}_${termId}__${seriesKey}`;
             const ref = db.collection('term_report_cards').doc(frozenDocId);
-            ops.push(b => b.set(ref, Object.assign(Object.assign(Object.assign(Object.assign({}, r), { id: ref.id, reportSeries: seriesKey, sourceReportCardId: d.id, schoolId }), term), { isLocked: true, isArchived: true, lockedAt: firestore_1.FieldValue.serverTimestamp(), lockedBy: performedBy }), { merge: true }));
+            ops.push(b => b.set(ref, Object.assign(Object.assign(Object.assign(Object.assign({}, r), { id: ref.id, reportSeries: seriesKey, sourceReportCardId: d.id, schoolId }), term), { isLocked: true, isArchived: true, lockedAt: firestore_1.FieldValue.serverTimestamp(), lockedBy: performedBy })));
         });
         // Clear cached academic_report_snapshots for this school so post-close broadsheets rebuild fresh with archived status.
         const snapDocs = await db.collection('academic_report_snapshots').where('schoolId', '==', schoolId).get().catch(() => null);

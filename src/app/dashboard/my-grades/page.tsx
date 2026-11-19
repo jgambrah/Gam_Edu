@@ -22,7 +22,10 @@ import {
     getSeriesGradeFromScore,
     isJhsOrBeceClass,
     formatSeriesLabelFromId,
+    matchesReportSeries,
+    synthesizeClassItemsFromCaProfile,
     type AcademicSeriesId,
+    type SubjectCaProfile,
 } from '@/lib/academic-series';
 
 /**
@@ -176,12 +179,43 @@ export default function MyGradesPage() {
         [activeSeriesId, classDoc, schoolSettings]
     );
 
+    const safeDocKey = (v: any) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
+
     const { data: classAverages } = useDoc<any>(useMemoFirebase(
-        () => (firestore && schoolId && classId && termId && termId !== 'unknown' && activeSeriesId === 'end_of_term')
-            ? doc(firestore, 'classAverages', `${schoolId}__${termId}__${classId}`)
+        () => (firestore && schoolId && classId && termId && termId !== 'unknown')
+            ? doc(firestore, 'classAverages', `${schoolId}__${termId}__${safeDocKey(classId)}`)
             : null,
-        [firestore, schoolId, classId, termId, activeSeriesId]
+        [firestore, schoolId, classId, termId]
     ));
+
+    const { data: classSeriesProfiles } = useDoc<any>(useMemoFirebase(
+        () => (firestore && schoolId && classId && termId && termId !== 'unknown' && !isMockActive)
+            ? doc(firestore, 'classSeriesProfiles', `${schoolId}__${termId}__${safeDocKey(classId)}`)
+            : null,
+        [firestore, schoolId, classId, termId, isMockActive]
+    ));
+
+    const publishedCardsQuery = useMemoFirebase(
+        () => (firestore && schoolId && markKey)
+            ? query(
+                collection(firestore, 'report-cards'),
+                where('schoolId', '==', schoolId),
+                where('studentId', '==', markKey),
+                where('status', '==', 'Published'),
+                orderBy('publishedAt', 'desc')
+            )
+            : null,
+        [firestore, schoolId, markKey]
+    );
+    const { data: publishedCards } = useCollection<any>(publishedCardsQuery);
+
+    const activePublishedCard = useMemo(() => {
+        if (!publishedCards || !termId || termId === 'unknown') return null;
+        return publishedCards.find((rc: any) => {
+            const rcTermId = termStampOfRecord(rc)?.termId;
+            return rcTermId === termId && matchesReportSeries(rc, activeSeriesId);
+        }) || null;
+    }, [publishedCards, termId, activeSeriesId]);
 
     const subjectName = (a: any) => subjectsList?.find((s: any) => s.id === a.subjectId)?.name || a.subjectName || 'Subject';
 
@@ -193,6 +227,14 @@ export default function MyGradesPage() {
             if (!by.has(n)) by.set(n, []);
             by.get(n)!.push(a);
         });
+        if (Array.isArray(activePublishedCard?.rows)) {
+            activePublishedCard.rows.forEach((r: any) => {
+                if (r?.subjectName && !by.has(r.subjectName)) {
+                    by.set(r.subjectName, []);
+                }
+            });
+        }
+
         const classBy: Record<string, number> = {};
         if (activeSeriesId === 'end_of_term') {
             Object.entries(classAverages?.subjects || {}).forEach(([sid, v]: any) => {
@@ -202,43 +244,78 @@ export default function MyGradesPage() {
             });
         }
 
+        const profilesBag: Record<string, SubjectCaProfile> = {
+            ...(classAverages?.caProfiles || {}),
+            ...(classSeriesProfiles?.profiles || {}),
+        };
+
         return Array.from(by.entries()).map(([name, list]) => {
+            const publishedRow = Array.isArray(activePublishedCard?.rows)
+                ? activePublishedCard.rows.find((r: any) => String(r?.subjectName || '').toLowerCase().trim() === name.toLowerCase().trim())
+                : null;
+
+            const sampleSubId = list[0]?.subjectId || subjectsList?.find((s: any) => String(s.name || '').toLowerCase().trim() === name.toLowerCase().trim())?.id || '';
+            const profById = sampleSubId ? profilesBag[`${activeSeriesId}__${safeDocKey(sampleSubId)}`] : undefined;
+            const profByName = profilesBag[`${activeSeriesId}__name__${safeDocKey(name.toLowerCase().trim())}`];
+            const caProfile = profById || profByName || null;
+
+            const synthesizedClassItems = caProfile && !isMockActive
+                ? [...list, ...synthesizeClassItemsFromCaProfile(caProfile, activeSeriesId)]
+                : list;
+
             const res = computeUnifiedSubjectScore({
                 series: activeSeriesId,
                 studentItems: list,
-                classSubjectItems: list,
+                classSubjectItems: synthesizedClassItems,
                 caWeight,
                 examWeight,
             });
 
-            let avg = res?.total ?? 0;
+            let avg = publishedRow ? Number(publishedRow.total) || 0 : (res?.total ?? 0);
             let caDisplay: string | null = null;
             let exDisplay: string | null = null;
             let scoreBadgeText: string | null = null;
             let barPct = avg;
+            let caOnlyPendingExam = false;
 
-            if (res) {
+            if (publishedRow) {
+                const pubSingle = Boolean(publishedRow.isSingleExamOnly || activePublishedCard?.isSingleExamOnly || isMockActive);
+                if (pubSingle) {
+                    exDisplay = publishedRow.rawDisplay ? `Raw ${publishedRow.rawDisplay}` : `Score ${avg}%`;
+                } else {
+                    const cardCaW = activePublishedCard?.caWeight ?? caWeight;
+                    const cardExW = activePublishedCard?.examWeight ?? examWeight;
+                    caDisplay = `CA ${publishedRow.ca}/${cardCaW}`;
+                    exDisplay = `Exam ${publishedRow.exam}/${cardExW}`;
+                }
+            } else if (res) {
+                const classAlreadyWroteExam = (Number(caProfile?.examMax) || 0) > 0;
                 if (res.isSingleExamOnly) {
                     exDisplay = res.rawDisplay ? `Raw ${res.rawDisplay}` : `Score ${res.total}%`;
-                } else if (res.hasCa && !res.hasExam && caWeight > 0) {
-                    // CA recorded while Exam is still pending: show exact CA points (e.g. 27/30) matching the Report Card,
-                    // alongside the CA completion rate so parents are never confused by two different numbers!
+                } else if (res.hasCa && !res.hasExam && !classAlreadyWroteExam && caWeight > 0) {
                     const caRate = Math.round((res.ca / caWeight) * 100);
                     caDisplay = `CA ${res.ca}/${caWeight} (${caRate}% of CA)`;
                     exDisplay = `Exam pending (/${examWeight})`;
                     scoreBadgeText = `${res.ca}/${caWeight}`;
                     barPct = caRate;
+                    caOnlyPendingExam = true;
                 } else {
                     caDisplay = `CA ${res.ca}/${caWeight}`;
                     exDisplay = `Exam ${res.exam}/${examWeight}`;
                 }
             }
 
-            const gradeInfo = getSeriesGradeFromScore(barPct, {
-                isMock: isMockActive,
-                className: classDoc?.name,
-                schoolGradingSystem: schoolSettings?.gradingSystem || null,
-            });
+            const gradeInfo = publishedRow?.grade
+                ? { grade: String(publishedRow.grade), isBeceGrade: Boolean(activePublishedCard?.usesBeceGrading) }
+                : getSeriesGradeFromScore(barPct, {
+                    isMock: isMockActive,
+                    className: classDoc?.name,
+                    schoolGradingSystem: schoolSettings?.gradingSystem || null,
+                });
+
+            const resolvedClassAvg = typeof publishedRow?.classAverage === 'number'
+                ? publishedRow.classAverage
+                : (classBy[name] ?? null);
 
             const sorted = [...list].sort((x, y) => (toDate(y.assessmentDate || y.createdAt)?.getTime() || 0) - (toDate(x.assessmentDate || x.createdAt)?.getTime() || 0));
             return {
@@ -246,17 +323,17 @@ export default function MyGradesPage() {
                 avg,
                 barPct,
                 scoreBadgeText,
-                caOnlyPendingExam: Boolean(res && !res.isSingleExamOnly && res.hasCa && !res.hasExam && caWeight > 0),
+                caOnlyPendingExam,
                 caDisplay,
                 exDisplay,
                 grade: gradeInfo.grade,
                 isBeceGrade: gradeInfo.isBeceGrade,
-                classAvg: classBy[name] ?? null,
+                classAvg: resolvedClassAvg,
                 list: sorted,
             };
         }).sort((a, b) => b.barPct - a.barPct);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeSeriesBucket, activeSeriesId, isMockActive, isMidTermActive, caWeight, examWeight, classAverages, subjectsList, classDoc?.name, schoolSettings?.gradingSystem]);
+    }, [activeSeriesBucket, activeSeriesId, isMockActive, isMidTermActive, caWeight, examWeight, classAverages, classSeriesProfiles, activePublishedCard, subjectsList, classDoc?.name, schoolSettings?.gradingSystem]);
 
     const seriesOverallAvg = subjectRows.length > 0
         ? Math.round(subjectRows.reduce((s, r) => s + r.barPct, 0) / subjectRows.length)

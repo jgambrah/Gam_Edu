@@ -22,7 +22,7 @@ export const DEFAULT_GRADING_SYSTEM: GradeBracket[] = [
 ];
 
 export function getGradeFromScale(score: number, gradingScale?: GradeBracket[]) {
-  if (score <= 0) {
+  if (score < 0 || Number.isNaN(Number(score))) {
     return { grade: 'N/A', remark: '', autoRemark: '' };
   }
   const scale = gradingScale && gradingScale.length > 0 ? gradingScale : DEFAULT_GRADING_SYSTEM;

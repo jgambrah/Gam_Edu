@@ -695,6 +695,7 @@ export function buildAllAcademicSeriesOptions(params: Parameters<typeof discover
 
 /**
  * Checks whether a class is JHS / Basic 7–9 (where WAEC BECE 1–9 grading & Best-6 Aggregate apply on Mocks).
+ * Supports streamed labels like "BS 7A", "Basic 8B", "Class 9C", "B.S. 7", and "Basic Seven".
  */
 export function isJhsOrBeceClass(className?: string | null): boolean {
     if (!className) return false;
@@ -702,7 +703,7 @@ export function isJhsOrBeceClass(className?: string | null): boolean {
     if (cleaned.includes('JHS') || cleaned.includes('JUNIOR HIGH') || cleaned.includes('BECE')) {
         return true;
     }
-    const match = cleaned.match(/\b(?:BS|BASIC|GRADE|CLASS|FORM|YEAR)\s*(7|8|9|SEVEN|EIGHT|NINE)\b/);
+    const match = cleaned.match(/\b(?:BS|BASIC|GRADE|CLASS|FORM|YEAR)\s*(?:[789]|(?:SEVEN|EIGHT|NINE)\b)(?![0-9])/);
     if (match) {
         return true;
     }
@@ -899,4 +900,61 @@ export function sanitizeReportFilenamePart(raw?: string | null): string {
         .replace(/[\/\\]+/g, '-')
         .replace(/[^a-zA-Z0-9_-]+/g, '_')
         .replace(/^_+|_+$/g, '') || 'Report';
+}
+
+/**
+ * Anonymous class-subject CA structure (no pupil IDs or scores) stored on `classAverages` / `classSeriesProfiles`
+ * so Student & Parent portals (`my-grades`) reproduce the exact class CA denominators without reading classmates' marks.
+ */
+export interface SubjectCaProfile {
+    tests?: Record<string, number>;
+    hwMax?: number;
+    projMax?: number;
+    midMax?: number;
+    examMax?: number;
+    hasDedicatedMidTerm?: boolean;
+}
+
+export function synthesizeClassItemsFromCaProfile(
+    profile?: SubjectCaProfile | null,
+    series: AcademicSeriesId | string = 'end_of_term'
+): any[] {
+    if (!profile) return [];
+    const out: any[] = [];
+    const isMid = series === 'mid_term';
+
+    if (profile.tests && typeof profile.tests === 'object') {
+        Object.entries(profile.tests).forEach(([testKey, maxScore]) => {
+            const m = Number(maxScore) || 0;
+            if (m <= 0) return;
+            out.push(isMid
+                ? { reportScope: 'mid_term', midTermSlot: 'test', assessmentType: 'Class Exercise (CA)', assessmentName: testKey, score: 0, maxScore: m }
+                : { assessmentType: 'Class Exercise (CA)', assessmentName: testKey, score: 0, maxScore: m }
+            );
+        });
+    }
+    if ((Number(profile.hwMax) || 0) > 0) {
+        out.push(isMid
+            ? { reportScope: 'mid_term', midTermSlot: 'hw', assessmentType: 'Homework (CA)', assessmentName: 'Homework', score: 0, maxScore: Number(profile.hwMax) }
+            : { assessmentType: 'Homework (CA)', assessmentName: 'Homework', score: 0, maxScore: Number(profile.hwMax) }
+        );
+    }
+    if ((Number(profile.projMax) || 0) > 0) {
+        out.push(isMid
+            ? { reportScope: 'mid_term', midTermSlot: 'project', assessmentType: 'Project (CA)', assessmentName: 'Project', score: 0, maxScore: Number(profile.projMax) }
+            : { assessmentType: 'Project (CA)', assessmentName: 'Project', score: 0, maxScore: Number(profile.projMax) }
+        );
+    }
+    if (!isMid && (Number(profile.midMax) || 0) > 0) {
+        out.push({ assessmentType: 'Mid-Term (CA)', assessmentName: 'Mid-Term', score: 0, maxScore: Number(profile.midMax) });
+    }
+    if ((Number(profile.examMax) || 0) > 0) {
+        out.push(isMid
+            ? (profile.hasDedicatedMidTerm !== false
+                ? { reportScope: 'mid_term', midTermSlot: 'exam', assessmentType: 'Mid-Term Exam (Exam)', assessmentName: 'Mid-Term Exam', score: 0, maxScore: Number(profile.examMax) }
+                : { assessmentType: 'Mid-Term (CA)', assessmentName: 'Mid-Term', score: 0, maxScore: Number(profile.examMax) })
+            : { assessmentType: 'End of Term Exam (Exam)', assessmentName: 'End of Term Exam', score: 0, maxScore: Number(profile.examMax) }
+        );
+    }
+    return out;
 }

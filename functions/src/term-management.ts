@@ -112,21 +112,6 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     unlockedUntil: Timestamp.fromMillis(unlockExpiresAtMs),
   }, { merge: true });
 
-  // Clear cached academic_report_snapshots and frozen term_report_cards for this term on unlock
-  // so corrected marks rebuild fresh broadsheets and re-freeze cleanly on next close.
-  const staleSnaps = await db.collection('academic_report_snapshots').where('schoolId', '==', schoolId).get().catch(() => null);
-  staleSnaps?.docs.slice(0, 200).forEach(sd => {
-    batch.delete(sd.ref);
-  });
-  const frozenCards = await db.collection('term_report_cards')
-    .where('schoolId', '==', schoolId)
-    .where('termId', '==', termId)
-    .get()
-    .catch(() => null);
-  frozenCards?.docs.slice(0, 200).forEach(fc => {
-    batch.delete(fc.ref);
-  });
-
   // 2. Write structured audit log entry
   const auditLogId = `audit_unlock_${schoolId}_${termId}_${nowMs}`;
   const auditRef = db.collection('auditLogs').doc(auditLogId);
@@ -142,8 +127,27 @@ export async function requestTermUnlock(params: TermUnlockParams): Promise<{
     expiresAt: Timestamp.fromMillis(unlockExpiresAtMs),
   }, { merge: true });
 
-  // Commit the primary metadata & audit update in one small atomic write (3 operations total)
+  // Commit the primary metadata & audit update in one small atomic write
   await batch.commit();
+
+  // Clear ALL cached academic_report_snapshots and frozen term_report_cards for this term in chunked batches (no 200-doc cap)
+  try {
+    const [staleSnaps, frozenCards] = await Promise.all([
+      db.collection('academic_report_snapshots').where('schoolId', '==', schoolId).get().catch(() => null),
+      db.collection('term_report_cards').where('schoolId', '==', schoolId).where('termId', '==', termId).get().catch(() => null),
+    ]);
+    const refsToDelete: FirebaseFirestore.DocumentReference[] = [
+      ...(staleSnaps?.docs.map(d => d.ref) || []),
+      ...(frozenCards?.docs.map(d => d.ref) || []),
+    ];
+    for (let i = 0; i < refsToDelete.length; i += 400) {
+      const delBatch = db.batch();
+      refsToDelete.slice(i, i + 400).forEach(r => delBatch.delete(r));
+      await delBatch.commit();
+    }
+  } catch (cleanupErr) {
+    console.warn('[unlockTerm] Snapshot/frozen card cleanup warning:', cleanupErr);
+  }
 
   let rawRecordsUpdated = 0;
 

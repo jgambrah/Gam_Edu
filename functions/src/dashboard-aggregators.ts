@@ -1340,7 +1340,7 @@ export async function lockTermReportCards(schoolId: string, termId: string): Pro
       isLocked: true,
       isArchived: true,
       lockedAt: FieldValue.serverTimestamp(),
-    }, { merge: true });
+    });
 
     batch.update(docSnap.ref, { isArchived: true });
   });

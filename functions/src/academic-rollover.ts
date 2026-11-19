@@ -291,7 +291,7 @@ export async function executeAcademicClose(
         isArchived: true,
         lockedAt: FieldValue.serverTimestamp(),
         lockedBy: performedBy,
-      }, { merge: true }));
+      }));
     });
 
     // Clear cached academic_report_snapshots for this school so post-close broadsheets rebuild fresh with archived status.

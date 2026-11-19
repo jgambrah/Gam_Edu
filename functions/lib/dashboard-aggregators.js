@@ -1350,7 +1350,7 @@ async function lockTermReportCards(schoolId, termId) {
         const lockedRef = db.collection('term_report_cards').doc(docId);
         batch.set(lockedRef, Object.assign(Object.assign({}, data), { id: docId, reportSeries: seriesKey, sourceReportCardId: docSnap.id, schoolId,
             studentId,
-            termId, isLocked: true, isArchived: true, lockedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true });
+            termId, isLocked: true, isArchived: true, lockedAt: firestore_2.FieldValue.serverTimestamp() }));
         batch.update(docSnap.ref, { isArchived: true });
     });
     const assessmentsSnap = await db.collection('assessments')

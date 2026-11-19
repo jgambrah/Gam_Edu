@@ -41,7 +41,8 @@ export default function MyReportsPage() {
     const printRef = useRef<HTMLDivElement>(null);
 
     const parentStudentIds = useMemo(() => {
-        return profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
+        const raw = profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
+        return Array.from(new Set((Array.isArray(raw) ? raw : []).map((id: any) => String(id || '').trim()).filter(Boolean))).slice(0, 30);
     }, [profile]);
     const parentStudentIdsStr = parentStudentIds.join(',');
 

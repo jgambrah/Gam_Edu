@@ -12039,7 +12039,10 @@ export default function DashboardClient() {
 
   // Director skips the full students sweep — uses summary doc counts instead.
   // Parent fetches only their linked children. Staff fetches up to 300 for feature operations.
-  const parentStudentIds = useMemo(() => profile?.studentIds || [], [profile]);
+  const parentStudentIds = useMemo(
+    () => profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [],
+    [profile]
+  );
 
   const studentsQuery = useMemoFirebase(() => {
     if (!firestore || !schoolId) return null;
@@ -12406,9 +12409,9 @@ export default function DashboardClient() {
   }, [firestore, schoolId, isParent, activeClassId, parentTerm?.termId]);
   const { data: classAverages } = useDoc<any>(classAveragesRef);
 
-  // Live assessment records for Director / Admin / Staff (gated to academics tab)
+  // Live assessment records strictly for Director / Admin / Teacher (never run for Student, Parent, or non-academic staff)
   const staffAssessmentsQuery = useMemoFirebase(() => {
-    if (!firestore || !schoolId || isParent) return null;
+    if (!firestore || !schoolId || !(role === 'Director' || role === 'Administrator' || role === 'Teacher')) return null;
     if ((isDirector && directorActiveTab === 'overview') || (isAdminRole && adminActiveTab === 'overview')) {
       return null;
     }
@@ -12417,7 +12420,7 @@ export default function DashboardClient() {
       where('schoolId', '==', schoolId),
       limit(50)
     );
-  }, [firestore, schoolId, isParent, isDirector, isAdminRole, directorActiveTab, adminActiveTab]);
+  }, [firestore, schoolId, role, isDirector, isAdminRole, directorActiveTab, adminActiveTab]);
   const { data: staffAssessments, isLoading: loadingStaffAssessments } = useCollection<Assessment>(staffAssessmentsQuery);
 
   const recentAssessments = isParent ? (parentAssessments || []) : (staffAssessments || []);
