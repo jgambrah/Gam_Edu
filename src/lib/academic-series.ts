@@ -345,6 +345,37 @@ export interface UnifiedSubjectScoreResult {
     hasExam?: boolean;
 }
 
+export interface SubjectCaProfile {
+    testCount?: number;
+    testMaxAvg?: number;
+    tests?: Record<string, number>;
+    hwMax?: number;
+    projMax?: number;
+    midMax?: number;
+    examMax?: number;
+    hasDedicatedMidTerm?: boolean;
+}
+
+function extractCaProfileMetrics(profile?: SubjectCaProfile | null) {
+    if (!profile) return null;
+    let testCount = Number(profile.testCount) || 0;
+    let testMaxAvg = Number(profile.testMaxAvg) || 0;
+    if (testCount === 0 && profile.tests && typeof profile.tests === 'object') {
+        const vals = Object.values(profile.tests).map(v => Number(v) || 0).filter(v => v > 0);
+        testCount = vals.length;
+        testMaxAvg = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : 0;
+    }
+    return {
+        testCount,
+        testMaxAvg,
+        hwMax: Number(profile.hwMax) || 0,
+        projMax: Number(profile.projMax) || 0,
+        midMax: Number(profile.midMax) || 0,
+        examMax: Number(profile.examMax) || 0,
+        hasDedicatedMidTerm: Boolean(profile.hasDedicatedMidTerm),
+    };
+}
+
 /**
  * Computes a student's Mid-Term subject result (`CA + Mid-Term Exam = Total`), supporting BOTH:
  * 1) Full Mid-Term SBA + Mid-Term Exam (Class Exercise/Tests + Homework + Project scaled to `caWeight`, plus Mid-Term Exam scaled to `examWeight`).
@@ -353,6 +384,7 @@ export interface UnifiedSubjectScoreResult {
 export function computeMidTermSubjectScore(params: {
     studentItems: any[];
     classSubjectItems?: any[];
+    classCaProfile?: SubjectCaProfile | null;
     caWeight: number;
     examWeight: number;
 }): UnifiedSubjectScoreResult | null {
@@ -360,11 +392,15 @@ export function computeMidTermSubjectScore(params: {
         const n = Number(v);
         return isFinite(n) ? n : d;
     };
+    const prof = extractCaProfileMetrics(params.classCaProfile);
+    const effectivePool = prof?.hasDedicatedMidTerm
+        ? [...(params.classSubjectItems || []), { reportScope: 'mid_term', midTermSlot: 'exam', score: 0, maxScore: prof.examMax || 100 }]
+        : params.classSubjectItems;
     const allSubItems = selectMidTermRecordsForSubject(
-        params.classSubjectItems && params.classSubjectItems.length > 0 ? params.classSubjectItems : params.studentItems,
-        params.classSubjectItems
+        effectivePool && effectivePool.length > 0 ? effectivePool : params.studentItems,
+        effectivePool
     );
-    const myItems = selectMidTermRecordsForSubject(params.studentItems, params.classSubjectItems);
+    const myItems = selectMidTermRecordsForSubject(params.studentItems, effectivePool);
     if (!myItems || myItems.length === 0) return null;
 
     // Inspect distinct active CA columns across the class in this subject so unused columns never penalize students
@@ -382,9 +418,20 @@ export function computeMidTermSubjectScore(params: {
         else if (slot === 'project' && m > classProjMax) classProjMax = m;
     });
     const testMaxValues = Array.from(distinctClassTests.values());
-    const classTestMax = testMaxValues.length > 0
+    let classTestCount = distinctClassTests.size;
+    let classTestMax = testMaxValues.length > 0
         ? testMaxValues.reduce((s, v) => s + v, 0) / testMaxValues.length
         : 0;
+    if (prof) {
+        if (prof.testCount > classTestCount) {
+            classTestCount = prof.testCount;
+            classTestMax = prof.testMaxAvg || classTestMax;
+        } else if (prof.testCount > 0 && prof.testMaxAvg > 0) {
+            classTestMax = prof.testMaxAvg;
+        }
+        if (prof.hwMax > classHwMax) classHwMax = prof.hwMax;
+        if (prof.projMax > classProjMax) classProjMax = prof.projMax;
+    }
     const activeCaMax = classTestMax + classHwMax + classProjMax;
 
     const myTests = myItems.filter(a => resolveMidTermSlot(a) === 'test');
@@ -414,7 +461,7 @@ export function computeMidTermSubjectScore(params: {
         };
     }
 
-    const expectedTestCount = Math.max(distinctClassTests.size, myTests.length, 1);
+    const expectedTestCount = Math.max(classTestCount, myTests.length, 1);
     const testObt = myTests.length > 0
         ? myTests.reduce((sum, a) => sum + num(a.score, 0), 0) / expectedTestCount
         : 0;
@@ -457,6 +504,7 @@ export function computeUnifiedSubjectScore(params: {
     series: AcademicSeriesId | string;
     studentItems: any[];
     classSubjectItems?: any[];
+    classCaProfile?: SubjectCaProfile | null;
     caWeight: number;
     examWeight: number;
 }): UnifiedSubjectScoreResult | null {
@@ -494,6 +542,7 @@ export function computeUnifiedSubjectScore(params: {
         return computeMidTermSubjectScore({
             studentItems: params.studentItems,
             classSubjectItems: params.classSubjectItems,
+            classCaProfile: params.classCaProfile,
             caWeight: params.caWeight,
             examWeight: params.examWeight,
         });
@@ -525,10 +574,23 @@ export function computeUnifiedSubjectScore(params: {
         else if (slot === 'mid' && m > classMidMax) classMidMax = m;
     });
 
+    const prof = extractCaProfileMetrics(params.classCaProfile);
     const testMaxValues = Array.from(distinctClassTests.values());
-    const classTestMax = testMaxValues.length > 0
+    let classTestCount = distinctClassTests.size;
+    let classTestMax = testMaxValues.length > 0
         ? testMaxValues.reduce((s, v) => s + v, 0) / testMaxValues.length
         : 0;
+    if (prof) {
+        if (prof.testCount > classTestCount) {
+            classTestCount = prof.testCount;
+            classTestMax = prof.testMaxAvg || classTestMax;
+        } else if (prof.testCount > 0 && prof.testMaxAvg > 0) {
+            classTestMax = prof.testMaxAvg;
+        }
+        if (prof.hwMax > classHwMax) classHwMax = prof.hwMax;
+        if (prof.projMax > classProjMax) classProjMax = prof.projMax;
+        if (prof.midMax > classMidMax) classMidMax = prof.midMax;
+    }
     const activeCaMax = classTestMax + classHwMax + classProjMax + classMidMax;
 
     const myTests = myItems.filter(a => resolveEndOfTermSlot(a) === 'test');
@@ -558,7 +620,7 @@ export function computeUnifiedSubjectScore(params: {
         };
     }
 
-    const expectedTestCount = Math.max(distinctClassTests.size, myTests.length, 1);
+    const expectedTestCount = Math.max(classTestCount, myTests.length, 1);
     const testObt = myTests.length > 0
         ? myTests.reduce((sum, a) => sum + num(a.score, 0), 0) / expectedTestCount
         : 0;
@@ -900,61 +962,4 @@ export function sanitizeReportFilenamePart(raw?: string | null): string {
         .replace(/[\/\\]+/g, '-')
         .replace(/[^a-zA-Z0-9_-]+/g, '_')
         .replace(/^_+|_+$/g, '') || 'Report';
-}
-
-/**
- * Anonymous class-subject CA structure (no pupil IDs or scores) stored on `classAverages` / `classSeriesProfiles`
- * so Student & Parent portals (`my-grades`) reproduce the exact class CA denominators without reading classmates' marks.
- */
-export interface SubjectCaProfile {
-    tests?: Record<string, number>;
-    hwMax?: number;
-    projMax?: number;
-    midMax?: number;
-    examMax?: number;
-    hasDedicatedMidTerm?: boolean;
-}
-
-export function synthesizeClassItemsFromCaProfile(
-    profile?: SubjectCaProfile | null,
-    series: AcademicSeriesId | string = 'end_of_term'
-): any[] {
-    if (!profile) return [];
-    const out: any[] = [];
-    const isMid = series === 'mid_term';
-
-    if (profile.tests && typeof profile.tests === 'object') {
-        Object.entries(profile.tests).forEach(([testKey, maxScore]) => {
-            const m = Number(maxScore) || 0;
-            if (m <= 0) return;
-            out.push(isMid
-                ? { reportScope: 'mid_term', midTermSlot: 'test', assessmentType: 'Class Exercise (CA)', assessmentName: testKey, score: 0, maxScore: m }
-                : { assessmentType: 'Class Exercise (CA)', assessmentName: testKey, score: 0, maxScore: m }
-            );
-        });
-    }
-    if ((Number(profile.hwMax) || 0) > 0) {
-        out.push(isMid
-            ? { reportScope: 'mid_term', midTermSlot: 'hw', assessmentType: 'Homework (CA)', assessmentName: 'Homework', score: 0, maxScore: Number(profile.hwMax) }
-            : { assessmentType: 'Homework (CA)', assessmentName: 'Homework', score: 0, maxScore: Number(profile.hwMax) }
-        );
-    }
-    if ((Number(profile.projMax) || 0) > 0) {
-        out.push(isMid
-            ? { reportScope: 'mid_term', midTermSlot: 'project', assessmentType: 'Project (CA)', assessmentName: 'Project', score: 0, maxScore: Number(profile.projMax) }
-            : { assessmentType: 'Project (CA)', assessmentName: 'Project', score: 0, maxScore: Number(profile.projMax) }
-        );
-    }
-    if (!isMid && (Number(profile.midMax) || 0) > 0) {
-        out.push({ assessmentType: 'Mid-Term (CA)', assessmentName: 'Mid-Term', score: 0, maxScore: Number(profile.midMax) });
-    }
-    if ((Number(profile.examMax) || 0) > 0) {
-        out.push(isMid
-            ? (profile.hasDedicatedMidTerm !== false
-                ? { reportScope: 'mid_term', midTermSlot: 'exam', assessmentType: 'Mid-Term Exam (Exam)', assessmentName: 'Mid-Term Exam', score: 0, maxScore: Number(profile.examMax) }
-                : { assessmentType: 'Mid-Term (CA)', assessmentName: 'Mid-Term', score: 0, maxScore: Number(profile.examMax) })
-            : { assessmentType: 'End of Term Exam (Exam)', assessmentName: 'End of Term Exam', score: 0, maxScore: Number(profile.examMax) }
-        );
-    }
-    return out;
 }

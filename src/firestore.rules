@@ -557,14 +557,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Per-class, per-term, per-series CA component maxima (no pupil names or scores), readable within the school
-    // so Ward/Student Grades reproduces the exact class test/CA denominators used by Report Cards & Gradebook.
+    // Per-class, per-term, per-series CA component maxima (pure numbers only; no pupil names, scores, or free text),
+    // kept by Cloud Functions (`onAssessmentWriteForSummary`) and readable within the school.
     match /classSeriesProfiles/{docId} {
       allow get: if isSignedIn() && (resource == null || isSuperAdmin() || resource.data.schoolId == getUserSchoolId());
       allow list: if false;
-      allow create: if isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && getUserSchoolId() != '' && request.resource.data.schoolId == getUserSchoolId());
-      allow update: if isSuperAdmin() || ((isAdmin() || isAcademicStaff()) && getUserSchoolId() != '' && docInMySchool());
-      allow delete: if isSuperAdmin() || (isAdmin() && existingDocInMySchool());
+      allow write: if false;
     }
 
     match /studentBalances/{schoolId} {

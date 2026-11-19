@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useUser, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { useRole } from '@/context/role-context';
-import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, setDoc, getDocs, FieldPath } from 'firebase/firestore';
+import { collection, query, where, writeBatch, doc, serverTimestamp, updateDoc, setDoc, getDocs } from 'firebase/firestore';
 import { useOnceQuery, invalidateOnceCache } from '@/lib/firestore-once';
 import { buildTermId } from '@/lib/term';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
@@ -53,7 +53,6 @@ import {
     getSeriesGradeFromScore,
     type AcademicSeriesId,
     type AcademicSeriesOption,
-    type SubjectCaProfile,
 } from '@/lib/academic-series';
 
 const ASSESSMENT_TYPES = [
@@ -1466,47 +1465,6 @@ export default function GradebookPage() {
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
             if (deleted.ok) setRemovedMatrixTestNames([]);
 
-            // Publish anonymous class-subject CA profile so Student/Parent Ward Grades matches Report Card denominators immediately
-            if (termId) {
-                const safeKey = (v: string) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
-                const activeTestsMap: Record<string, number> = {};
-                let hwHasAny = false, projHasAny = false, midHasAny = false, exHasAny = false;
-                (students || []).forEach((s: any) => {
-                    const r = matrixScores[s.uid];
-                    if (!r) return;
-                    testColumns.forEach(tc => {
-                        const v = r.tests?.[tc.id];
-                        if (v !== '' && v !== undefined && !isNaN(Number(v))) {
-                            activeTestsMap[safeKey(tc.name.toLowerCase())] = matrixMaxScores.classTest;
-                        }
-                    });
-                    if (r.homework !== '' && r.homework !== undefined && !isNaN(Number(r.homework))) hwHasAny = true;
-                    if (r.project !== '' && r.project !== undefined && !isNaN(Number(r.project))) projHasAny = true;
-                    if (r.midTerm !== '' && r.midTerm !== undefined && !isNaN(Number(r.midTerm))) midHasAny = true;
-                    if (r.exam !== '' && r.exam !== undefined && !isNaN(Number(r.exam))) exHasAny = true;
-                });
-                const caProf: SubjectCaProfile = {
-                    tests: activeTestsMap,
-                    hwMax: hwHasAny ? matrixMaxScores.homework : 0,
-                    projMax: projHasAny ? matrixMaxScores.project : 0,
-                    midMax: midHasAny ? matrixMaxScores.midTerm : 0,
-                    examMax: exHasAny ? matrixMaxScores.exam : 0,
-                    hasDedicatedMidTerm: false,
-                };
-                const profRef = doc(firestore, 'classSeriesProfiles', `${schoolId}__${termId}__${safeKey(classId)}`);
-                const subKey = `end_of_term__${safeKey(subjectId)}`;
-                const nameKey = `end_of_term__name__${safeKey(subjectName.toLowerCase().trim())}`;
-                updateDoc(profRef, new FieldPath('profiles', subKey), caProf, new FieldPath('profiles', nameKey), caProf, 'updatedAt', serverTimestamp())
-                    .catch(() => setDoc(profRef, {
-                        schoolId,
-                        termId,
-                        classId: safeKey(classId),
-                        profiles: { [subKey]: caProf, [nameKey]: caProf },
-                        updatedAt: serverTimestamp(),
-                    }, { merge: true }))
-                    .catch(() => {});
-            }
-
             toast({
                 title: "Terminal Matrix Saved Successfully! 🎉",
                 description: `Saved changes for ${updatedStudentIds.length} student(s): ${created} new mark(s), ${changed} updated${deleted.ok && toDelete.length ? `, ${toDelete.length} cleared` : ''}.`
@@ -1940,46 +1898,6 @@ export default function GradebookPage() {
             const deleted = await commitDeletes(toDelete);
             applyLocalChanges(upserts, deleted.ok ? toDelete : []);
             if (deleted.ok) setRemovedMidTermTestNames([]);
-
-            // Publish anonymous Mid-Term CA profile so Student/Parent Ward Grades matches Mid-Term Report Card denominators immediately
-            if (termId) {
-                const safeKey = (v: string) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
-                const activeTestsMap: Record<string, number> = {};
-                let hwHasAny = false, projHasAny = false, exHasAny = false;
-                (students || []).forEach((s: any) => {
-                    const r = midTermScores[s.uid];
-                    if (!r) return;
-                    midTermTestColumns.forEach(tc => {
-                        const v = r.tests?.[tc.id];
-                        if (v !== '' && v !== undefined && !isNaN(Number(v))) {
-                            activeTestsMap[safeKey(tc.name.toLowerCase())] = midTermMaxScores.classTest;
-                        }
-                    });
-                    if (r.homework !== '' && r.homework !== undefined && !isNaN(Number(r.homework))) hwHasAny = true;
-                    if (r.project !== '' && r.project !== undefined && !isNaN(Number(r.project))) projHasAny = true;
-                    if (r.exam !== '' && r.exam !== undefined && !isNaN(Number(r.exam))) exHasAny = true;
-                });
-                const caProf: SubjectCaProfile = {
-                    tests: activeTestsMap,
-                    hwMax: hwHasAny ? midTermMaxScores.homework : 0,
-                    projMax: projHasAny ? midTermMaxScores.project : 0,
-                    midMax: 0,
-                    examMax: exHasAny ? midTermMaxScores.exam : 0,
-                    hasDedicatedMidTerm: true,
-                };
-                const profRef = doc(firestore, 'classSeriesProfiles', `${schoolId}__${termId}__${safeKey(classId)}`);
-                const subKey = `mid_term__${safeKey(subjectId)}`;
-                const nameKey = `mid_term__name__${safeKey(subjectName.toLowerCase().trim())}`;
-                updateDoc(profRef, new FieldPath('profiles', subKey), caProf, new FieldPath('profiles', nameKey), caProf, 'updatedAt', serverTimestamp())
-                    .catch(() => setDoc(profRef, {
-                        schoolId,
-                        termId,
-                        classId: safeKey(classId),
-                        profiles: { [subKey]: caProf, [nameKey]: caProf },
-                        updatedAt: serverTimestamp(),
-                    }, { merge: true }))
-                    .catch(() => {});
-            }
 
             toast({
                 title: "Mid-Term Sheet Saved Successfully! 🎉",

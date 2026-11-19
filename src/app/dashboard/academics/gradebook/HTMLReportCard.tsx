@@ -136,7 +136,9 @@ export const HTMLReportCard = ({
                 classAvg, 
                 rank: subRank,
                 totalSubStudents,
-                ...getGradeFromScale(totalPercent, schoolProfile?.gradingSystem) 
+                ...(studentAssessments.length === 0
+                    ? { grade: 'N/A', remark: '', autoRemark: '' }
+                    : getGradeFromScale(totalPercent, schoolProfile?.gradingSystem))
             };
         });
     }, [assessments, student.uid, subjects, globalSubjectStats, currentCaWeight, currentExamWeight, schoolProfile]);

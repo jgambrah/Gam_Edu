@@ -23,7 +23,6 @@ import {
     isJhsOrBeceClass,
     formatSeriesLabelFromId,
     matchesReportSeries,
-    synthesizeClassItemsFromCaProfile,
     type AcademicSeriesId,
     type SubjectCaProfile,
 } from '@/lib/academic-series';
@@ -259,14 +258,11 @@ export default function MyGradesPage() {
             const profByName = profilesBag[`${activeSeriesId}__name__${safeDocKey(name.toLowerCase().trim())}`];
             const caProfile = profById || profByName || null;
 
-            const synthesizedClassItems = caProfile && !isMockActive
-                ? [...list, ...synthesizeClassItemsFromCaProfile(caProfile, activeSeriesId)]
-                : list;
-
             const res = computeUnifiedSubjectScore({
                 series: activeSeriesId,
                 studentItems: list,
-                classSubjectItems: synthesizedClassItems,
+                classSubjectItems: list,
+                classCaProfile: !isMockActive ? caProfile : null,
                 caWeight,
                 examWeight,
             });

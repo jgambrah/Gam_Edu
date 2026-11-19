@@ -1257,9 +1257,11 @@ export default function ReportCardManager() {
                     nextTermDate: schoolProfile?.nextTermDate || null,
                     classTeacherName,
                     classTeacherSignatureUrl,
-                    headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
                     classTeacherComment: autoTeacherComment,
-                    headmasterComment: existingCard?.headmasterComment || '',
+                    ...(isAdminOrDirector ? {
+                        headmasterSignatureUrl: schoolData?.headmasterSignatureUrl || null,
+                        headmasterComment: existingCard?.headmasterComment || '',
+                    } : {}),
                     term,
                     academicYear,
                     caWeight: isCardSingleExamOnly ? 0 : currentCaWeight,
@@ -1356,9 +1358,24 @@ export default function ReportCardManager() {
                 updatedAt: serverTimestamp()
             };
             
-            const { logoBase64, teacherSigBase64, headmasterSigBase64, _unsavedCompile, ...dbFriendlyData } = finalData as any;
-            await setDoc(doc(firestore!, 'report-cards', cardId), dbFriendlyData, { merge: true });
-            upsertLocalReportCards([{ id: cardId, data: { ...dbFriendlyData, updatedAt: new Date() } }]);
+            const {
+                logoBase64,
+                teacherSigBase64,
+                headmasterSigBase64,
+                _unsavedCompile,
+                _col,
+                ...rawDbData
+            } = finalData as any;
+            // Non-admin teachers must never write or mutate headmaster* / digitalFingerprint fields (locked in firestore.rules)
+            if (!isAdminOrDirector) {
+                delete rawDbData.headmasterSignatureUrl;
+                delete rawDbData.headmasterName;
+                delete rawDbData.headmasterComment;
+                delete rawDbData.headmasterSignedAt;
+                delete rawDbData.digitalFingerprint;
+            }
+            await setDoc(doc(firestore!, 'report-cards', cardId), rawDbData, { merge: true });
+            upsertLocalReportCards([{ id: cardId, data: { ...rawDbData, updatedAt: new Date() } }]);
             setProcessedReport(finalData);
             toast({ title: alreadyPublished ? "Published Report Updated" : "Draft Report Saved" });
 
@@ -1450,10 +1467,11 @@ export default function ReportCardManager() {
 
             const studentIdsToNotify: string[] = [];
             const localUpdates: Array<{ id: string; data: any }> = [];
-            // Never write directly to frozen `term_report_cards` (server-only); target live `report-cards` drafts only!
+            const liveCardIds = new Set((rawReportCards || []).map((r: any) => r.id));
+            // Never write directly to frozen `term_report_cards` (server-only) or create empty stubs for missing live cards!
             const publishableDrafts = classSummary.drafts.filter(({ report }: any) => {
-                if (report._col === 'term_report_cards' && !report.sourceReportCardId) return false;
-                return true;
+                const targetId = report._col === 'term_report_cards' ? report.sourceReportCardId : report.id;
+                return Boolean(targetId && liveCardIds.has(targetId));
             });
             if (publishableDrafts.length === 0) {
                 toast({
@@ -1467,18 +1485,29 @@ export default function ReportCardManager() {
                 const batch = writeBatch(firestore);
                 publishableDrafts.slice(i, i + 450).forEach(({ student, report }: any) => {
                     const targetCardId = report._col === 'term_report_cards' ? report.sourceReportCardId : report.id;
+                    const stuKey = student.uid || student.id || report.studentId;
                     const reportRef = doc(firestore, 'report-cards', targetCardId);
                     const fingerprint = `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
-                    batch.set(reportRef, {
+                    batch.update(reportRef, {
                         status: 'Published',
                         publishedAt: serverTimestamp(),
                         headmasterName,
                         headmasterSignatureUrl,
                         headmasterSignedAt: serverTimestamp(),
                         digitalFingerprint: fingerprint
-                    }, { merge: true });
-                    localUpdates.push({ id: targetCardId, data: { status: 'Published', publishedAt: new Date(), headmasterName, headmasterSignatureUrl, digitalFingerprint: fingerprint } });
-                    studentIdsToNotify.push(student.uid || student.id || report.studentId);
+                    });
+                    localUpdates.push({
+                        id: targetCardId,
+                        data: {
+                            studentId: stuKey,
+                            status: 'Published',
+                            publishedAt: new Date(),
+                            headmasterName,
+                            headmasterSignatureUrl,
+                            digitalFingerprint: fingerprint,
+                        },
+                    });
+                    studentIdsToNotify.push(stuKey);
                 });
                 await batch.commit();
             }

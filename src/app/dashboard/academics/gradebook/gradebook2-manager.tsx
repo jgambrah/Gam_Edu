@@ -212,7 +212,9 @@ function StudentGradesDetail({
                 classAvg, 
                 rank: subRank,
                 totalSubStudents,
-                ...getGradeFromScale(totalPercent, gradingScale) 
+                ...(studentAssessments.length === 0
+                    ? { grade: 'N/A', remark: '', autoRemark: '' }
+                    : getGradeFromScale(totalPercent, gradingScale))
             };
         });
     }, [allAssessments, student.uid, allSubjects, globalSubjectStats, caWeight, examWeight, gradingScale]);
