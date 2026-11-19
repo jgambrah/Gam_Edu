@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
+import { useOnceQuery, readOnceCached } from '@/lib/firestore-once';
 import { currentTermFromProfile, termStampOfRecord, compareTermIds, stampFromTermId } from '@/lib/term';
 import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
-import { collection, query, where, orderBy, limit, documentId, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit, documentId, doc, getDoc, getDocs } from 'firebase/firestore';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -68,6 +69,17 @@ export default function MyGradesPage() {
     const [selectedTermId, setSelectedTermId] = useState<string>('');
     const [selectedSeriesId, setSelectedSeriesId] = useState<AcademicSeriesId | ''>('');
     const [openSubject, setOpenSubject] = useState<string | null>(null);
+    const [loadAllHistory, setLoadAllHistory] = useState<boolean>(false);
+
+    const MY_GRADES_TTL_MS = 10 * 60 * 1000;
+    const readAll = useCallback(async <T = any>(q: any): Promise<T[]> => {
+        const snap = await getDocs(q);
+        return snap.docs.map((d: any) => ({ ...(d.data() as any), id: d.id })) as T[];
+    }, []);
+    const readSingleDoc = useCallback(async (colName: string, id: string): Promise<any[]> => {
+        const snap = await getDoc(doc(firestore!, colName, id));
+        return snap.exists() ? [{ ...(snap.data() as any), id: snap.id }] : [];
+    }, [firestore]);
 
     const parentStudentIds: string[] = useMemo(() => {
         const ids = profile?.studentIds || profile?.student_ids || profile?.students || profile?.childrenIds || profile?.linkedStudentIds || profile?.linked_students || profile?.studentIDs || [];
@@ -75,39 +87,132 @@ export default function MyGradesPage() {
     }, [profile]);
     const parentStudentIdsStr = parentStudentIds.join(',');
 
-    // Children (parent) or the pupil themself
-    const studentsQuery = useMemoFirebase(() => {
+    // Children (parent) or the pupil themself — one-time cached read
+    const studentsCacheKey = useMemo(() => {
         if (!firestore || !schoolId || !role) return null;
-        if (role === 'Student' && user) {
-            return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where('uid', '==', user.uid));
-        }
-        if (role === 'Parent' && parentStudentIds.length > 0) {
-            return query(collection(firestore, 'students'), where('schoolId', '==', schoolId), where(documentId(), 'in', parentStudentIds));
-        }
+        if (role === 'Student' && user?.uid) return `mg:students:${schoolId}:student:${user.uid}`;
+        if (role === 'Parent' && parentStudentIds.length > 0) return `mg:students:${schoolId}:parent:${parentStudentIdsStr}`;
         return null;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [firestore, schoolId, parentStudentIdsStr, role, user?.uid]);
-    const { data: students } = useCollection<any>(studentsQuery);
+    }, [firestore, schoolId, role, user?.uid, parentStudentIds.length, parentStudentIdsStr]);
+
+    const { data: students } = useOnceQuery<any>(
+        studentsCacheKey,
+        () => {
+            if (role === 'Student' && user) {
+                return readAll(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('uid', '==', user.uid)));
+            }
+            return readAll(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where(documentId(), 'in', parentStudentIds)));
+        },
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
 
     const activeChildId = role === 'Student' ? (user?.uid || '') : (selectedChildId || parentStudentIds[0] || '');
     const activeChild = useMemo(() => (students || []).find((s: any) => s.id === activeChildId || s.uid === activeChildId) || null, [students, activeChildId]);
     const markKey = activeChild?.uid || activeChildId;
 
-    // The pupil's own marks, newest first (raised limit so multi-term + multi-mock histories stay intact)
-    const marksQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || !markKey) return null;
-        return query(collection(firestore, 'assessments'), where('schoolId', '==', schoolId), where('studentId', '==', markKey), orderBy('createdAt', 'desc'), limit(600));
-    }, [firestore, schoolId, markKey]);
-    const { data: marks, isLoading: loadingMarks } = useCollection<any>(marksQuery);
+    const { data: schoolProfileRows, isLoading: loadingSchoolProfile } = useOnceQuery<any>(
+        (firestore && schoolId) ? `mg:school:${schoolId}` : null,
+        () => readSingleDoc('schools', schoolId!),
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+    const schoolProfile = schoolProfileRows?.[0] || null;
 
-    const { data: schoolProfile } = useDoc<any>(useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]));
-    const { data: schoolSettings } = useDoc<any>(useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]));
+    const { data: schoolSettingsRows, isLoading: loadingSchoolSettings } = useOnceQuery<any>(
+        (firestore && schoolId) ? `mg:schoolSettings:${schoolId}` : null,
+        () => readSingleDoc('schoolSettings', schoolId!),
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+    const schoolSettings = schoolSettingsRows?.[0] || null;
+
     const classId = activeChild?.classId || '';
-    const { data: classDoc } = useDoc<any>(useMemoFirebase(() => (firestore && classId) ? doc(firestore, 'classes', classId) : null, [firestore, classId]));
-    const { data: subjectsList } = useCollection<any>(useMemoFirebase(() => (firestore && schoolId) ? query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId)) : null, [firestore, schoolId]));
-    const currentTermId = currentTermFromProfile(schoolSettings || schoolProfile)?.termId || '';
+    const { data: classDocRows } = useOnceQuery<any>(
+        (firestore && classId) ? `mg:class:${classId}` : null,
+        () => readSingleDoc('classes', classId),
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+    const classDoc = classDocRows?.[0] || null;
 
-    // Group marks by term
+    const { data: subjectsList } = useOnceQuery<any>(
+        (firestore && schoolId) ? `mg:subjects:${schoolId}` : null,
+        () => readAll(query(collection(firestore!, 'subjects'), where('schoolId', '==', schoolId))),
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+
+    // 3b) One-time read of published report cards for this pupil (also surfaces historical term chips cleanly)
+    const { data: publishedCards } = useOnceQuery<any>(
+        (firestore && schoolId && markKey) ? `mg:pubcards:${schoolId}:${markKey}` : null,
+        () => readAll(
+            query(
+                collection(firestore!, 'report-cards'),
+                where('schoolId', '==', schoolId),
+                where('studentId', '==', markKey),
+                where('status', '==', 'Published'),
+                orderBy('publishedAt', 'desc')
+            )
+        ),
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+
+    const currentTermId = currentTermFromProfile(schoolSettings || schoolProfile)?.termId || '';
+    const publishedTermIds = useMemo(() => {
+        const set = new Set<string>();
+        (publishedCards || []).forEach((rc: any) => {
+            const tid = termStampOfRecord(rc)?.termId;
+            if (tid && tid !== 'unknown') set.add(tid);
+        });
+        return Array.from(set).sort(compareTermIds);
+    }, [publishedCards]);
+
+    const termSettingsReady = !loadingSchoolProfile && !loadingSchoolSettings;
+    const requestedTermId = selectedTermId
+        || currentTermId
+        || publishedTermIds[publishedTermIds.length - 1]
+        || 'fallback_latest';
+
+    // 3a) One-time read of marks scoped to `termId == requestedTermId` (cached per child+term),
+    // falling back to the 600-limit query ONLY if that term has 0 stamped docs (or when viewing full history).
+    const marksCacheKey = (firestore && schoolId && markKey && termSettingsReady)
+        ? `mg:marks:${schoolId}:${markKey}:${loadAllHistory ? 'all600' : requestedTermId}`
+        : null;
+
+    const { data: marks, isLoading: loadingMarks } = useOnceQuery<any>(
+        marksCacheKey,
+        async () => {
+            const fetchFallback600 = () => readOnceCached<any>(
+                `mg:marks:${schoolId}:${markKey}:all600`,
+                () => readAll(
+                    query(
+                        collection(firestore!, 'assessments'),
+                        where('schoolId', '==', schoolId),
+                        where('studentId', '==', markKey),
+                        orderBy('createdAt', 'desc'),
+                        limit(600)
+                    )
+                ),
+                { ttlMs: MY_GRADES_TTL_MS }
+            );
+
+            if (loadAllHistory || !requestedTermId || requestedTermId === 'unknown' || requestedTermId === 'fallback_latest') {
+                return fetchFallback600();
+            }
+
+            const stampedDocs = await readAll(
+                query(
+                    collection(firestore!, 'assessments'),
+                    where('schoolId', '==', schoolId),
+                    where('studentId', '==', markKey),
+                    where('termId', '==', requestedTermId)
+                )
+            );
+            if (stampedDocs.length > 0) {
+                return stampedDocs;
+            }
+            return fetchFallback600();
+        },
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+
+    // Group loaded marks by term + merge known published report-card terms so past terms remain selectable
     const terms = useMemo(() => {
         const map = new Map<string, any[]>();
         (marks || []).forEach((a: any) => {
@@ -116,22 +221,35 @@ export default function MyGradesPage() {
             if (!map.has(id)) map.set(id, []);
             map.get(id)!.push(a);
         });
+        publishedTermIds.forEach(tid => {
+            if (!map.has(tid)) map.set(tid, []);
+        });
         return Array.from(map.entries())
-            .map(([termId, list]) => {
-                const st = stampFromTermId(termId);
+            .filter(([tid, list]) => list.length > 0 || publishedTermIds.includes(tid))
+            .map(([tid, list]) => {
+                const st = stampFromTermId(tid);
                 return {
-                    termId,
+                    termId: tid,
                     label: st ? `${st.term} ${st.academicYear}` : 'Term not recorded',
                     short: st ? `${st.term.replace(' Term', '')} ${st.academicYear}` : 'Unknown',
                     list,
                 };
             })
             .sort((a, b) => (a.termId === 'unknown' ? -1 : b.termId === 'unknown' ? 1 : compareTermIds(a.termId, b.termId)));
-    }, [marks]);
+    }, [marks, publishedTermIds]);
 
-    useEffect(() => { setSelectedTermId(''); setSelectedSeriesId(''); setOpenSubject(null); }, [markKey]);
-    const termId = selectedTermId
-        || (terms.some(t => t.termId === currentTermId) ? currentTermId : (terms.filter(t => t.termId !== 'unknown').slice(-1)[0]?.termId || terms[0]?.termId || ''));
+    useEffect(() => {
+        setSelectedTermId('');
+        setSelectedSeriesId('');
+        setOpenSubject(null);
+        setLoadAllHistory(false);
+    }, [markKey]);
+
+    const termId = (selectedTermId && terms.some(t => t.termId === selectedTermId))
+        ? selectedTermId
+        : (terms.some(t => t.termId === currentTermId)
+            ? currentTermId
+            : (terms.filter(t => t.termId !== 'unknown').slice(-1)[0]?.termId || terms[0]?.termId || ''));
     const term = terms.find(t => t.termId === termId) || null;
 
     // Discover which Assessment Series exist inside the selected term (End of Term, Mid-Term, Mock 1, Mock 2, ...)
@@ -180,33 +298,24 @@ export default function MyGradesPage() {
 
     const safeDocKey = (v: any) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
 
-    const { data: classAverages } = useDoc<any>(useMemoFirebase(
-        () => (firestore && schoolId && classId && termId && termId !== 'unknown')
-            ? doc(firestore, 'classAverages', `${schoolId}__${termId}__${safeDocKey(classId)}`)
-            : null,
-        [firestore, schoolId, classId, termId]
-    ));
+    // 3b) Read `classAverages` and `classSeriesProfiles` ONCE per (schoolId, classId, termId) — NOT per series switch!
+    const classTermDocId = (firestore && schoolId && classId && termId && termId !== 'unknown')
+        ? `${schoolId}__${termId}__${safeDocKey(classId)}`
+        : null;
 
-    const { data: classSeriesProfiles } = useDoc<any>(useMemoFirebase(
-        () => (firestore && schoolId && classId && termId && termId !== 'unknown' && !isMockActive)
-            ? doc(firestore, 'classSeriesProfiles', `${schoolId}__${termId}__${safeDocKey(classId)}`)
-            : null,
-        [firestore, schoolId, classId, termId, isMockActive]
-    ));
-
-    const publishedCardsQuery = useMemoFirebase(
-        () => (firestore && schoolId && markKey)
-            ? query(
-                collection(firestore, 'report-cards'),
-                where('schoolId', '==', schoolId),
-                where('studentId', '==', markKey),
-                where('status', '==', 'Published'),
-                orderBy('publishedAt', 'desc')
-            )
-            : null,
-        [firestore, schoolId, markKey]
+    const { data: classAveragesRows } = useOnceQuery<any>(
+        classTermDocId ? `mg:classAvg:${classTermDocId}` : null,
+        () => readSingleDoc('classAverages', classTermDocId!),
+        { ttlMs: MY_GRADES_TTL_MS }
     );
-    const { data: publishedCards } = useCollection<any>(publishedCardsQuery);
+    const classAverages = classAveragesRows?.[0] || null;
+
+    const { data: classSeriesProfilesRows } = useOnceQuery<any>(
+        classTermDocId ? `mg:classProf:${classTermDocId}` : null,
+        () => readSingleDoc('classSeriesProfiles', classTermDocId!),
+        { ttlMs: MY_GRADES_TTL_MS }
+    );
+    const classSeriesProfiles = classSeriesProfilesRows?.[0] || null;
 
     const activePublishedCard = useMemo(() => {
         if (!publishedCards || !termId || termId === 'unknown') return null;
@@ -395,15 +504,26 @@ export default function MyGradesPage() {
             ) : (
             <>
             {/* Term chips */}
-            <div className="flex gap-2 overflow-x-auto pb-1">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
                 {[...terms].reverse().map(t => (
                     <button key={t.termId} onClick={() => { setSelectedTermId(t.termId); setSelectedSeriesId(''); setOpenSubject(null); }}
                         className={cn("shrink-0 px-3.5 py-2 rounded-xl border text-left transition-all",
                             t.termId === termId ? "bg-indigo-50 border-indigo-300" : "bg-white border-slate-200 hover:border-indigo-200")}>
                         <span className="block text-[11px] font-black text-slate-800">{t.short}{t.termId === currentTermId ? ' · now' : ''}</span>
-                        <span className="block text-[10px] font-bold text-slate-500">{t.list.length} raw mark{t.list.length === 1 ? '' : 's'}</span>
+                        <span className="block text-[10px] font-bold text-slate-500">
+                            {t.list.length > 0 ? `${t.list.length} raw mark${t.list.length === 1 ? '' : 's'}` : 'Tap to load'}
+                        </span>
                     </button>
                 ))}
+                {!loadAllHistory && (
+                    <button
+                        type="button"
+                        onClick={() => setLoadAllHistory(true)}
+                        className="shrink-0 px-3 py-2 rounded-xl border border-dashed border-slate-300 bg-slate-50/70 hover:bg-slate-100 text-[11px] font-bold text-slate-600 transition-all"
+                    >
+                        Earlier terms
+                    </button>
+                )}
             </div>
 
             {/* Assessment Series Switcher (End of Term / Mid-Term / Mock 1 / Mock 2 ...) */}
