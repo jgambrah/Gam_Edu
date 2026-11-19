@@ -94,7 +94,10 @@ async function deleteDocsInChunks(docRefs) {
 
       if (termId !== 'unknown' && safeClassId && safeSubId) {
         const ctsKey = `${termId}__${safeClassId}`;
-        rawByClassTermSub[ctsKey] = rawByClassTermSub[ctsKey] || { termId, classId: safeClassId, subjects: {} };
+        rawByClassTermSub[ctsKey] = rawByClassTermSub[ctsKey] || { termId, classId: safeClassId, hasLegacyUnstamped: false, subjects: {} };
+        if (!data.termId) {
+          rawByClassTermSub[ctsKey].hasLegacyUnstamped = true;
+        }
         rawByClassTermSub[ctsKey].subjects[safeSubId] = rawByClassTermSub[ctsKey].subjects[safeSubId] || {
           subjectName: String(data.subjectName || ''),
           docs: [],
@@ -152,6 +155,8 @@ async function deleteDocsInChunks(docRefs) {
           termId,
           classId,
           caProfiles: profilesMap,
+          lastMarkWriteAt: admin.firestore.FieldValue.serverTimestamp(),
+          markVersion: 1,
           rebuiltAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       }
@@ -161,6 +166,8 @@ async function deleteDocsInChunks(docRefs) {
           termId,
           classId,
           profiles: profilesMap,
+          ...(profEntry?.hasLegacyUnstamped ? { hasLegacyUnstamped: true } : {}),
+          hasDirtyProfiles: false,
           rebuiltAt: admin.firestore.FieldValue.serverTimestamp(),
         });
       }

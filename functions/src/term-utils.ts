@@ -129,3 +129,39 @@ export function compareTermIds(a: string, b: string): number {
   if (pa.academicYear !== pb.academicYear) return pa.academicYear < pb.academicYear ? -1 : 1;
   return pa.termNumber - pb.termNumber;
 }
+
+/**
+ * Spelling variants an academic year may have been saved with (matches `src/lib/academic-match.ts`),
+ * e.g. "2026-2027" -> ["2026-2027", "2026/2027", "2026 - 2027", "2026 / 2027", "2026/27", "2026-27"].
+ */
+export function academicYearVariantsForStamp(year?: string | null): string[] {
+  const raw = String(year || '').trim();
+  if (!raw) return [];
+  const out = new Set<string>([raw]);
+  const m = raw.match(/(\d{4})\s*[\/\\-]\s*(\d{2,4})/);
+  if (m) {
+    const a = m[1];
+    const b = m[2].length === 2 ? `${a.slice(0, 2)}${m[2]}` : m[2];
+    const bb = b.slice(-2);
+    [`${a}-${b}`, `${a}/${b}`, `${a} - ${b}`, `${a} / ${b}`, `${a}/${bb}`, `${a}-${bb}`].forEach(v => out.add(v));
+  }
+  return Array.from(out).slice(0, 10);
+}
+
+/**
+ * Spelling variants a term may have been saved with (matches `src/lib/academic-match.ts`),
+ * e.g. "First Term" -> ["First Term", "Term 1", "1st Term", "first term", "term 1", "FIRST TERM", "T1"].
+ */
+export function termVariantsForStamp(term?: string | null): string[] {
+  const raw = String(term || '').trim();
+  if (!raw) return [];
+  const n = termNumber(raw);
+  const words: Record<number, [string, string]> = { 1: ['First', '1st'], 2: ['Second', '2nd'], 3: ['Third', '3rd'] };
+  const out = new Set<string>([raw]);
+  if (n && words[n]) {
+    const [word, ord] = words[n];
+    [`${word} Term`, `Term ${n}`, `${ord} Term`, `${word} term`.toLowerCase(), `term ${n}`, `${word} Term`.toUpperCase(), `T${n}`]
+      .forEach(v => out.add(v));
+  }
+  return Array.from(out).slice(0, 10);
+}

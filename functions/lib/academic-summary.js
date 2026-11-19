@@ -1,44 +1,55 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onAssessmentWriteForSummary = exports.CLASS_SERIES_PROFILES = exports.CLASS_AVERAGES = exports.ACADEMIC_SUMMARY = void 0;
+exports.flushDirtyClassSeriesProfiles = exports.onAssessmentWriteForSummary = exports.CLASS_SERIES_PROFILES = exports.CLASS_AVERAGES = exports.ACADEMIC_SUMMARY = exports.MAX_SCHEDULED_RECOMPUTES = exports.LEASE_WINDOW_MS = exports.INSTANCE_COOLDOWN_MS = void 0;
+exports.resetAcademicSummaryMemoryCacheForTests = resetAcademicSummaryMemoryCacheForTests;
+exports.isServerGradedQuizRecord = isServerGradedQuizRecord;
+exports.isNoOpForProfileAndVersion = isNoOpForProfileAndVersion;
 exports.computeCaProfilesForClassSubject = computeCaProfilesForClassSubject;
 exports.classContribution = classContribution;
 exports.markPart = markPart;
 exports.contribution = contribution;
+exports.processAssessmentWriteEvent = processAssessmentWriteEvent;
+exports.runFlushDirtyProfiles = runFlushDirtyProfiles;
 /**
  * Academic summary per school and term, kept by the server from every mark (assessments/{id}).
  *
  *   academicSummary/{schoolId}__{termId} = {
  *     schoolId, termId,
- *     totals:   { s, c, p }                         s = sum of % scores, c = marks, p = marks ≥ 50%
+ *     totals:   { s, c, p }                         s = sum of % scores, c = marks, p = marks >= 50%
  *     classes:  { <classId>:   { s, c, p } }
  *     subjects: { <subjectId>: { s, c, p, name } }
  *     teachers: { <teacherId>: { s, c, p } }
  *     students: { <studentId>: { s, c, name, classId, f: { <subjectId>: marks below 50% } } }
  *   }
  *
- * The Director's Academic Affairs page reads ONE of these documents for the term (plus the last few
- * terms for the trend line) instead of a random sample of 50 marks, so its averages, rankings and
- * at-risk list cover every mark entered. Kept by increments (no reads); rebuild-academic-summary.js
- * builds it once from existing marks.
+ * Read-cost architecture for `classSeriesProfiles`:
+ *   1. Server-graded quiz marks (`gradedOnServer: true` or `quizId`) never trigger CA profile scans.
+ *   2. Archival-only mutations (term close / term unlock) skip profile scans completely (0 reads).
+ *   3. Per-instance 60s cooldown Map exits BEFORE the lease transaction (0 reads during bursts).
+ *   4. Lease window (5 min) marks `dirty.<safeSubId> = true` + `hasDirtyProfiles = true` (0-read merge)
+ *      when writes trickle in too soon, and `flushDirtyClassSeriesProfiles` (every 5 minutes) recomputes
+ *      each dirty subject ONCE and clears the flag.
  */
 const firestore_1 = require("firebase-functions/v2/firestore");
+const scheduler_1 = require("firebase-functions/v2/scheduler");
 const app_1 = require("firebase-admin/app");
 const firestore_2 = require("firebase-admin/firestore");
 const term_utils_1 = require("./term-utils");
 if (!(0, app_1.getApps)().length)
     (0, app_1.initializeApp)();
-const db = (0, firestore_2.getFirestore)();
-const ACADEMIC_SUMMARY = (schoolId, termId) => db.collection('academicSummary').doc(`${schoolId}__${termId}`);
+const defaultDb = (0, firestore_2.getFirestore)();
+exports.INSTANCE_COOLDOWN_MS = 60000;
+exports.LEASE_WINDOW_MS = 5 * 60000;
+exports.MAX_SCHEDULED_RECOMPUTES = 200;
+const instanceCooldowns = new Map();
+function resetAcademicSummaryMemoryCacheForTests() {
+    instanceCooldowns.clear();
+}
+const ACADEMIC_SUMMARY = (schoolId, termId, store = defaultDb) => store.collection('academicSummary').doc(`${schoolId}__${termId}`);
 exports.ACADEMIC_SUMMARY = ACADEMIC_SUMMARY;
-/**
- * Parent-safe class averages: classAverages/{schoolId}__{termId}__{classId} = { schoolId, termId, classId,
- * totals: { s, c }, subjects: { <subjectId>: { s, c, name } } }. No pupil names or ids, so parents of the
- * class may read it (the parent portal used to download 250 of the classmates' marks to work this out).
- */
-const CLASS_AVERAGES = (schoolId, termId, classId) => db.collection('classAverages').doc(`${schoolId}__${termId}__${classId}`);
+const CLASS_AVERAGES = (schoolId, termId, classId, store = defaultDb) => store.collection('classAverages').doc(`${schoolId}__${termId}__${classId}`);
 exports.CLASS_AVERAGES = CLASS_AVERAGES;
-const CLASS_SERIES_PROFILES = (schoolId, termId, classId) => db.collection('classSeriesProfiles').doc(`${schoolId}__${termId}__${classId}`);
+const CLASS_SERIES_PROFILES = (schoolId, termId, classId, store = defaultDb) => store.collection('classSeriesProfiles').doc(`${schoolId}__${termId}__${classId}`);
 exports.CLASS_SERIES_PROFILES = CLASS_SERIES_PROFILES;
 function isMockMarkRecord(a) {
     if (!a)
@@ -74,9 +85,47 @@ function isAnyMidTermRecord(a) {
     const combined = `${a.assessmentType || ''} ${a.assessmentName || ''}`.toLowerCase();
     return combined.includes('mid-term') || combined.includes('mid term') || combined.includes('midterm') || combined.includes('mid-sem') || combined.includes('mid sem') || combined.includes('midsemester');
 }
+function isServerGradedQuizRecord(r) {
+    return Boolean(r && (r.gradedOnServer === true || r.quizId));
+}
+const safeKey = (v) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
 /**
- * Computes anonymous class-subject CA structure (no student IDs or scores) for End-of-Term and Mid-Term
- * from all assessment docs of one (schoolId, termId, classId, subjectId).
+ * Returns true if an update did NOT alter any score, component, class, subject, year, term, or termId
+ * (or is purely a term-close / term-unlock archival flag toggle).
+ */
+function isNoOpForProfileAndVersion(rawBefore, rawAfter) {
+    var _a, _b;
+    if (!rawBefore || !rawAfter)
+        return false;
+    const contentSame = rawBefore.score === rawAfter.score &&
+        rawBefore.maxScore === rawAfter.maxScore &&
+        rawBefore.assessmentType === rawAfter.assessmentType &&
+        rawBefore.assessmentName === rawAfter.assessmentName &&
+        rawBefore.reportScope === rawAfter.reportScope &&
+        rawBefore.midTermSlot === rawAfter.midTermSlot &&
+        rawBefore.mockSeries === rawAfter.mockSeries &&
+        rawBefore.standaloneMidTerm === rawAfter.standaloneMidTerm &&
+        safeKey(rawBefore.classId) === safeKey(rawAfter.classId) &&
+        safeKey(rawBefore.subjectId || rawBefore.subjectName || 'general') === safeKey(rawAfter.subjectId || rawAfter.subjectName || 'general');
+    if (!contentSame)
+        return false;
+    // Term close / unlock rewrites `isArchived` (and stamps `closedInTermId` / `termId` / `unlockedForCorrection`)
+    // without changing marks or subjects — must produce 0 scans.
+    if (Boolean(rawBefore.isArchived) !== Boolean(rawAfter.isArchived)) {
+        return true;
+    }
+    return (String(rawBefore.classId || '') === String(rawAfter.classId || '') &&
+        String(rawBefore.subjectId || '') === String(rawAfter.subjectId || '') &&
+        String(rawBefore.academicYear || '') === String(rawAfter.academicYear || '') &&
+        String(rawBefore.term || '') === String(rawAfter.term || '') &&
+        String(rawBefore.termId || '') === String(rawAfter.termId || '') &&
+        (((_a = (0, term_utils_1.termStampOfRecord)(rawBefore)) === null || _a === void 0 ? void 0 : _a.termId) || '') === (((_b = (0, term_utils_1.termStampOfRecord)(rawAfter)) === null || _b === void 0 ? void 0 : _b.termId) || '') &&
+        (0, term_utils_1.normalizeYear)(rawBefore.academicYear) === (0, term_utils_1.normalizeYear)(rawAfter.academicYear) &&
+        (0, term_utils_1.termNumber)(rawBefore.term) === (0, term_utils_1.termNumber)(rawAfter.term));
+}
+/**
+ * Computes anonymous class-subject CA structure (no student IDs, scores, or free-text names)
+ * for End-of-Term and Mid-Term from all assessment docs of one (schoolId, termId, classId, subjectId).
  */
 function computeCaProfilesForClassSubject(docs) {
     const eotTests = new Map();
@@ -179,7 +228,6 @@ function classContribution(m, sign, inc) {
         subjects: { [m.subjectId]: Object.assign({ s: sp, c: c1 }, (sign > 0 && m.subjectName ? { name: m.subjectName } : {})) },
     };
 }
-const safeKey = (v) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
 function isNonTerminalSeriesMark(a) {
     return isMockMarkRecord(a) || isDedicatedMidTermRecord(a);
 }
@@ -187,7 +235,6 @@ function isNonTerminalSeriesMark(a) {
 function markPart(a) {
     if (!a || !a.schoolId || !a.studentId)
         return null;
-    // Exclude Mock exams and Dedicated Mid-Term workspace marks so End-of-Term classAverages & academicSummary stay uncontaminated.
     if (isNonTerminalSeriesMark(a))
         return null;
     const score = Number(a.score);
@@ -228,142 +275,402 @@ function contribution(m, sign, inc) {
         out.teachers = { [m.teacherId]: { s: sp, c: c1, p: p1 } };
     return out;
 }
-exports.onAssessmentWriteForSummary = (0, firestore_1.onDocumentWritten)('assessments/{assessmentId}', async (event) => {
-    var _a, _b, _c, _d;
-    const rawBefore = ((_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before) === null || _b === void 0 ? void 0 : _b.exists) ? event.data.before.data() : null;
-    const rawAfter = ((_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.after) === null || _d === void 0 ? void 0 : _d.exists) ? event.data.after.data() : null;
+const billedQueryReads = (docCount) => (docCount > 0 ? docCount : 1);
+/**
+ * Scans all marks for one `(schoolId, termId, classId, subjectId)` scoped first by stamped `termId`
+ * (single query, immune to year/term spelling differences), with a spelling-tolerant fallback to
+ * `academicYearVariants` x `termVariants` when unstamped legacy marks exist.
+ */
+async function scanSubjectTermAssessments(store, t, forceVariantScan) {
+    let reads = 0;
+    const byId = new Map();
+    const buildBase = () => {
+        let q = store.collection('assessments')
+            .where('schoolId', '==', t.schoolId)
+            .where('classId', '==', t.rawClassId);
+        if (t.rawSubjectId) {
+            q = q.where('subjectId', '==', t.rawSubjectId);
+        }
+        return q;
+    };
+    if (t.hasExplicitTermId && !forceVariantScan) {
+        const stampedSnap = await buildBase().where('termId', '==', t.termId).get();
+        reads += billedQueryReads(stampedSnap.docs.length);
+        stampedSnap.docs.forEach(d => byId.set(d.id, d.data()));
+    }
+    if (byId.size === 0 || forceVariantScan || !t.hasExplicitTermId) {
+        const canonical = (0, term_utils_1.stampFromTermId)(t.termId);
+        const ySet = new Set([
+            ...(0, term_utils_1.academicYearVariantsForStamp)((canonical === null || canonical === void 0 ? void 0 : canonical.academicYear) || ''),
+            ...(0, term_utils_1.academicYearVariantsForStamp)(t.rawYear),
+        ]);
+        const tSet = new Set([
+            ...(0, term_utils_1.termVariantsForStamp)((canonical === null || canonical === void 0 ? void 0 : canonical.term) || ''),
+            ...(0, term_utils_1.termVariantsForStamp)(t.rawTerm),
+        ]);
+        const yv = Array.from(ySet).filter(Boolean).slice(0, 10);
+        const tv = Array.from(tSet).filter(Boolean).slice(0, 10);
+        if (yv.length > 0 && tv.length > 0) {
+            const maxYv = Math.max(1, Math.floor(30 / Math.max(1, tv.length)));
+            for (let i = 0; i < yv.length; i += maxYv) {
+                const yvChunk = yv.slice(i, i + maxYv);
+                const snap = await buildBase()
+                    .where('academicYear', 'in', yvChunk)
+                    .where('term', 'in', tv)
+                    .get();
+                reads += billedQueryReads(snap.docs.length);
+                snap.docs.forEach(d => byId.set(d.id, d.data()));
+            }
+        }
+        if (t.hasExplicitTermId && forceVariantScan) {
+            const stampedSnap = await buildBase().where('termId', '==', t.termId).get();
+            reads += billedQueryReads(stampedSnap.docs.length);
+            stampedSnap.docs.forEach(d => byId.set(d.id, d.data()));
+        }
+        if (byId.size === 0) {
+            const fallbackSnap = await buildBase().get();
+            reads += billedQueryReads(fallbackSnap.docs.length);
+            fallbackSnap.docs.forEach(d => byId.set(d.id, d.data()));
+        }
+    }
+    let sawUnstamped = false;
+    const termDocs = [];
+    byId.forEach(d => {
+        var _a;
+        if ((((_a = (0, term_utils_1.termStampOfRecord)(d)) === null || _a === void 0 ? void 0 : _a.termId) || 'unknown') === t.termId) {
+            termDocs.push(d);
+            if (!d.termId)
+                sawUnstamped = true;
+        }
+    });
+    return { termDocs, reads, sawUnstamped };
+}
+async function recomputeAndPersistSubjectCaProfile(store, t, hasLegacyUnstamped, clearDirtyFlag) {
+    const { termDocs, reads, sawUnstamped } = await scanSubjectTermAssessments(store, t, hasLegacyUnstamped);
+    const profiles = computeCaProfilesForClassSubject(termDocs);
+    const eotKey = `end_of_term__${t.safeSubId}`;
+    const mtKey = `mid_term__${t.safeSubId}`;
+    const profRef = (0, exports.CLASS_SERIES_PROFILES)(t.schoolId, t.termId, t.safeClassId, store);
+    const avgRef = (0, exports.CLASS_AVERAGES)(t.schoolId, t.termId, t.safeClassId, store);
+    const upsertExactProfiles = async (ref, topField, isProfileCollection) => {
+        const baseMeta = {
+            schoolId: t.schoolId,
+            termId: t.termId,
+            classId: t.safeClassId,
+        };
+        if (isProfileCollection && sawUnstamped) {
+            baseMeta.hasLegacyUnstamped = true;
+        }
+        await ref.set(baseMeta, { merge: true });
+        const args = [
+            new firestore_2.FieldPath(topField, eotKey), profiles.end_of_term,
+            new firestore_2.FieldPath(topField, mtKey), profiles.mid_term,
+            'updatedAt', firestore_2.FieldValue.serverTimestamp(),
+        ];
+        if (t.subjectName) {
+            const safeSubName = safeKey(t.subjectName.toLowerCase().trim());
+            args.push(new firestore_2.FieldPath(topField, `end_of_term__name__${safeSubName}`), profiles.end_of_term, new firestore_2.FieldPath(topField, `mid_term__name__${safeSubName}`), profiles.mid_term);
+        }
+        if (isProfileCollection && clearDirtyFlag) {
+            args.push(new firestore_2.FieldPath('dirty', t.safeSubId), firestore_2.FieldValue.delete(), new firestore_2.FieldPath('dirtyTargets', t.safeSubId), firestore_2.FieldValue.delete());
+        }
+        await ref.update(...args);
+    };
+    await Promise.all([
+        upsertExactProfiles(profRef, 'profiles', true),
+        upsertExactProfiles(avgRef, 'caProfiles', false),
+    ]);
+    return { reads };
+}
+async function markSubjectDirtyNoRead(store, t) {
+    const profRef = (0, exports.CLASS_SERIES_PROFILES)(t.schoolId, t.termId, t.safeClassId, store);
+    await profRef.set({
+        schoolId: t.schoolId,
+        termId: t.termId,
+        classId: t.safeClassId,
+        hasDirtyProfiles: true,
+        dirty: { [t.safeSubId]: true },
+        dirtyTargets: {
+            [t.safeSubId]: {
+                rawClassId: t.rawClassId,
+                rawSubjectId: t.rawSubjectId,
+                rawYear: t.rawYear,
+                rawTerm: t.rawTerm,
+                subjectName: t.subjectName,
+                hasExplicitTermId: t.hasExplicitTermId,
+            },
+        },
+    }, { merge: true });
+}
+async function processAssessmentWriteEvent(store, params) {
+    var _a;
+    const { rawBefore, rawAfter } = params;
+    const nowMs = (_a = params.nowMs) !== null && _a !== void 0 ? _a : Date.now();
+    const eventTimeMs = params.eventTimeMs || nowMs;
+    const schoolId = String((rawAfter === null || rawAfter === void 0 ? void 0 : rawAfter.schoolId) || (rawBefore === null || rawBefore === void 0 ? void 0 : rawBefore.schoolId) || 'unknown');
+    let reads = 0;
+    let scans = 0;
+    // Early exit for archival-only rewrites (term close / unlock) or identical writes
+    const noOp = isNoOpForProfileAndVersion(rawBefore, rawAfter);
     const before = markPart(rawBefore);
     const after = markPart(rawAfter);
     const inc = (n) => firestore_2.FieldValue.increment(n);
     const writes = [];
+    const versionStampedClassTerms = new Set();
     if (before || after) {
         if (!(before && after && JSON.stringify(before) === JSON.stringify(after))) {
-            if (before)
-                writes.push((0, exports.ACADEMIC_SUMMARY)(before.schoolId, before.termId).set(Object.assign(Object.assign({}, contribution(before, -1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
-            if (after)
-                writes.push((0, exports.ACADEMIC_SUMMARY)(after.schoolId, after.termId).set(Object.assign(Object.assign({}, contribution(after, 1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
-            if ((before === null || before === void 0 ? void 0 : before.classId) && before.subjectId)
-                writes.push((0, exports.CLASS_AVERAGES)(before.schoolId, before.termId, before.classId).set(Object.assign(Object.assign({}, classContribution(before, -1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
-            if ((after === null || after === void 0 ? void 0 : after.classId) && after.subjectId)
-                writes.push((0, exports.CLASS_AVERAGES)(after.schoolId, after.termId, after.classId).set(Object.assign(Object.assign({}, classContribution(after, 1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+            if (before) {
+                writes.push((0, exports.ACADEMIC_SUMMARY)(before.schoolId, before.termId, store).set(Object.assign(Object.assign({}, contribution(before, -1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+            }
+            if (after) {
+                writes.push((0, exports.ACADEMIC_SUMMARY)(after.schoolId, after.termId, store).set(Object.assign(Object.assign({}, contribution(after, 1, inc)), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+            }
+            if ((before === null || before === void 0 ? void 0 : before.classId) && before.subjectId) {
+                versionStampedClassTerms.add(`${before.schoolId}__${before.termId}__${before.classId}`);
+                writes.push((0, exports.CLASS_AVERAGES)(before.schoolId, before.termId, before.classId, store).set(Object.assign(Object.assign({}, classContribution(before, -1, inc)), { lastMarkWriteAt: firestore_2.FieldValue.serverTimestamp(), markVersion: inc(1), updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+            }
+            if ((after === null || after === void 0 ? void 0 : after.classId) && after.subjectId) {
+                const sameClassTermAsBefore = (before === null || before === void 0 ? void 0 : before.schoolId) === after.schoolId &&
+                    (before === null || before === void 0 ? void 0 : before.termId) === after.termId &&
+                    (before === null || before === void 0 ? void 0 : before.classId) === after.classId &&
+                    Boolean(before === null || before === void 0 ? void 0 : before.subjectId);
+                versionStampedClassTerms.add(`${after.schoolId}__${after.termId}__${after.classId}`);
+                writes.push((0, exports.CLASS_AVERAGES)(after.schoolId, after.termId, after.classId, store).set(Object.assign(Object.assign(Object.assign({}, classContribution(after, 1, inc)), (sameClassTermAsBefore
+                    ? {}
+                    : { lastMarkWriteAt: firestore_2.FieldValue.serverTimestamp(), markVersion: inc(1) })), { updatedAt: firestore_2.FieldValue.serverTimestamp() }), { merge: true }));
+            }
         }
     }
-    // Recompute exact pure-numeric CA profile for affected (schoolId, termId, classId, subjectId).
-    // Deduplicated via a transaction lease (`scanLease.<safeSubId>`) + year/term-scoped query so a 280-write
-    // Gradebook batch triggers ONLY ONE ~40-doc subject scan instead of 280 full-history scans!
-    const eventTimeMs = (event.time ? Date.parse(event.time) : 0) || Date.now();
-    const targets = new Map();
-    [rawBefore, rawAfter].forEach((r) => {
-        var _a;
-        if (!r || !r.schoolId || !r.classId || !(r.subjectId || r.subjectName) || isMockMarkRecord(r))
-            return;
-        // Skip if neither score, maxScore, assessmentType, assessmentName, reportScope, nor midTermSlot changed
-        if (rawBefore && rawAfter &&
-            rawBefore.score === rawAfter.score &&
-            rawBefore.maxScore === rawAfter.maxScore &&
-            rawBefore.assessmentType === rawAfter.assessmentType &&
-            rawBefore.assessmentName === rawAfter.assessmentName &&
-            rawBefore.reportScope === rawAfter.reportScope &&
-            rawBefore.midTermSlot === rawAfter.midTermSlot) {
-            return;
-        }
-        const termId = ((_a = (0, term_utils_1.termStampOfRecord)(r)) === null || _a === void 0 ? void 0 : _a.termId) || 'unknown';
-        if (termId === 'unknown')
-            return;
-        const safeClassId = safeKey(r.classId);
-        const safeSubId = safeKey(r.subjectId || r.subjectName || 'general');
-        const k = `${r.schoolId}__${termId}__${safeClassId}__${safeSubId}`;
-        targets.set(k, {
-            schoolId: String(r.schoolId),
-            termId,
-            rawClassId: String(r.classId),
-            rawSubjectId: String(r.subjectId || ''),
-            rawYear: String(r.academicYear || ''),
-            rawTerm: String(r.term || ''),
-            safeClassId,
-            safeSubId,
-            subjectName: String(r.subjectName || ''),
+    // Also bump `lastMarkWriteAt` & `markVersion` on `classAverages` for non-End-of-Term mark writes
+    // (Dedicated Mid-Term & Mock marks) so active-term Master List snapshots invalidate immediately!
+    if (!noOp) {
+        [rawBefore, rawAfter].forEach((r) => {
+            var _a;
+            if (!r || !r.schoolId || !r.classId)
+                return;
+            const termId = ((_a = (0, term_utils_1.termStampOfRecord)(r)) === null || _a === void 0 ? void 0 : _a.termId) || 'unknown';
+            if (termId === 'unknown')
+                return;
+            const safeClassId = safeKey(r.classId);
+            const ctKey = `${r.schoolId}__${termId}__${safeClassId}`;
+            if (versionStampedClassTerms.has(ctKey))
+                return;
+            versionStampedClassTerms.add(ctKey);
+            writes.push((0, exports.CLASS_AVERAGES)(String(r.schoolId), termId, safeClassId, store).set({
+                schoolId: String(r.schoolId),
+                termId,
+                classId: safeClassId,
+                lastMarkWriteAt: firestore_2.FieldValue.serverTimestamp(),
+                markVersion: inc(1),
+                updatedAt: firestore_2.FieldValue.serverTimestamp(),
+            }, { merge: true }));
         });
-    });
+    }
+    // Build CA profile recompute targets
+    const targets = new Map();
+    if (!noOp) {
+        [rawBefore, rawAfter].forEach((r) => {
+            var _a;
+            if (!r || !r.schoolId || !r.classId || !(r.subjectId || r.subjectName))
+                return;
+            // 1a) Server-graded quiz records never define CA structure -> skip profile recompute entirely
+            if (isServerGradedQuizRecord(r) || isMockMarkRecord(r))
+                return;
+            const termId = ((_a = (0, term_utils_1.termStampOfRecord)(r)) === null || _a === void 0 ? void 0 : _a.termId) || 'unknown';
+            if (termId === 'unknown')
+                return;
+            const safeClassId = safeKey(r.classId);
+            const safeSubId = safeKey(r.subjectId || r.subjectName || 'general');
+            const k = `${r.schoolId}__${termId}__${safeClassId}__${safeSubId}`;
+            const existing = targets.get(k);
+            targets.set(k, {
+                schoolId: String(r.schoolId),
+                termId,
+                rawClassId: String(r.classId),
+                rawSubjectId: String(r.subjectId || (existing === null || existing === void 0 ? void 0 : existing.rawSubjectId) || ''),
+                rawYear: String(r.academicYear || (existing === null || existing === void 0 ? void 0 : existing.rawYear) || ''),
+                rawTerm: String(r.term || (existing === null || existing === void 0 ? void 0 : existing.rawTerm) || ''),
+                safeClassId,
+                safeSubId,
+                subjectName: String(r.subjectName || (existing === null || existing === void 0 ? void 0 : existing.subjectName) || ''),
+                hasExplicitTermId: existing ? (existing.hasExplicitTermId && Boolean(r.termId)) : Boolean(r.termId),
+            });
+        });
+    }
     if (writes.length > 0) {
         await Promise.all(writes).catch(e => console.warn('[academicSummary] update failed:', e === null || e === void 0 ? void 0 : e.message));
     }
-    for (const t of targets.values()) {
+    for (const [targetKey, t] of targets.entries()) {
+        // 1b) Per-instance 60s cooldown BEFORE the lease transaction (0 reads during bursts)
+        const mem = instanceCooldowns.get(targetKey);
+        if (mem && nowMs < mem.cooldownUntil) {
+            // Same batch commit timestamp already covered by Invocation #1 -> 0 reads, 0 dirty writes
+            if (eventTimeMs > 0 && eventTimeMs <= mem.coveredEventTimeMs) {
+                continue;
+            }
+            // Newer trickle write arrived inside cooldown -> mark dirty once (merge write, 0 reads)
+            if (nowMs >= mem.dirtyMarkedUntil) {
+                mem.dirtyMarkedUntil = mem.cooldownUntil;
+                await markSubjectDirtyNoRead(store, t).catch(err => console.warn('[academicSummary] dirty marker write warning:', err === null || err === void 0 ? void 0 : err.message));
+            }
+            continue;
+        }
+        // Reserve in-memory cooldown immediately for concurrent invocations on this instance
+        instanceCooldowns.set(targetKey, {
+            cooldownUntil: nowMs + exports.INSTANCE_COOLDOWN_MS,
+            coveredEventTimeMs: eventTimeMs,
+            dirtyMarkedUntil: 0,
+        });
         try {
-            const profRef = (0, exports.CLASS_SERIES_PROFILES)(t.schoolId, t.termId, t.safeClassId);
-            const avgRef = (0, exports.CLASS_AVERAGES)(t.schoolId, t.termId, t.safeClassId);
-            // Claim scan lease in a 1-doc transaction so concurrent batch invocations from the same save exit immediately (0 collection reads)
-            const shouldScan = await db.runTransaction(async (tx) => {
+            const profRef = (0, exports.CLASS_SERIES_PROFILES)(t.schoolId, t.termId, t.safeClassId, store);
+            const leaseOutcome = await store.runTransaction(async (tx) => {
                 var _a, _b;
                 const profSnap = await tx.get(profRef);
-                const existingLease = Number(((_b = (_a = profSnap.data()) === null || _a === void 0 ? void 0 : _a.scanLease) === null || _b === void 0 ? void 0 : _b[t.safeSubId]) || 0);
-                // If another invocation already scanned at or after this write's commit timestamp, nothing left to do!
-                if (existingLease >= eventTimeMs) {
-                    return false;
+                reads += 1;
+                const profData = profSnap.data() || {};
+                const lastScannedEventMs = Number(((_a = profData.scanLease) === null || _a === void 0 ? void 0 : _a[t.safeSubId]) || 0);
+                const leaseUntilMs = Number(((_b = profData.scanLeaseUntil) === null || _b === void 0 ? void 0 : _b[t.safeSubId]) || 0);
+                const hasLegacyUnstamped = profData.hasLegacyUnstamped === true;
+                if (eventTimeMs > 0 && lastScannedEventMs >= eventTimeMs) {
+                    return { action: 'already_covered', lastScannedEventMs, leaseUntilMs, hasLegacyUnstamped };
                 }
-                const nextLease = Math.max(Date.now(), eventTimeMs);
+                // 1c) Lease says "too soon": mark dirty instead of scanning on every subsequent write
+                if (leaseUntilMs > nowMs) {
+                    tx.set(profRef, {
+                        schoolId: t.schoolId,
+                        termId: t.termId,
+                        classId: t.safeClassId,
+                        hasDirtyProfiles: true,
+                        dirty: { [t.safeSubId]: true },
+                        dirtyTargets: {
+                            [t.safeSubId]: {
+                                rawClassId: t.rawClassId,
+                                rawSubjectId: t.rawSubjectId,
+                                rawYear: t.rawYear,
+                                rawTerm: t.rawTerm,
+                                subjectName: t.subjectName,
+                                hasExplicitTermId: t.hasExplicitTermId,
+                            },
+                        },
+                    }, { merge: true });
+                    return { action: 'marked_dirty', lastScannedEventMs, leaseUntilMs, hasLegacyUnstamped };
+                }
+                const nextLeaseEventMs = Math.max(nowMs, eventTimeMs);
                 tx.set(profRef, {
                     schoolId: t.schoolId,
                     termId: t.termId,
                     classId: t.safeClassId,
-                    scanLease: { [t.safeSubId]: nextLease },
+                    scanLease: { [t.safeSubId]: nextLeaseEventMs },
+                    scanLeaseUntil: { [t.safeSubId]: nowMs + exports.LEASE_WINDOW_MS },
                 }, { merge: true });
-                return true;
+                return { action: 'scan_now', lastScannedEventMs: nextLeaseEventMs, leaseUntilMs: nowMs + exports.LEASE_WINDOW_MS, hasLegacyUnstamped };
             });
-            if (!shouldScan)
+            if (leaseOutcome.action === 'already_covered') {
+                instanceCooldowns.set(targetKey, {
+                    cooldownUntil: nowMs + exports.INSTANCE_COOLDOWN_MS,
+                    coveredEventTimeMs: Math.max(eventTimeMs, leaseOutcome.lastScannedEventMs),
+                    dirtyMarkedUntil: 0,
+                });
                 continue;
-            let q = db.collection('assessments')
-                .where('schoolId', '==', t.schoolId)
-                .where('classId', '==', t.rawClassId);
-            if (t.rawSubjectId) {
-                q = q.where('subjectId', '==', t.rawSubjectId);
             }
-            if (t.rawYear) {
-                q = q.where('academicYear', '==', t.rawYear);
+            if (leaseOutcome.action === 'marked_dirty') {
+                const until = Math.min(leaseOutcome.leaseUntilMs, nowMs + exports.INSTANCE_COOLDOWN_MS);
+                instanceCooldowns.set(targetKey, {
+                    cooldownUntil: until,
+                    coveredEventTimeMs: leaseOutcome.lastScannedEventMs,
+                    dirtyMarkedUntil: until,
+                });
+                continue;
             }
-            if (t.rawTerm) {
-                q = q.where('term', '==', t.rawTerm);
-            }
-            let snap = await q.get();
-            // Fallback without exact year/term equality only if mixed spellings exist in the same term
-            if (snap.empty && (t.rawYear || t.rawTerm)) {
-                let fallbackQ = db.collection('assessments')
-                    .where('schoolId', '==', t.schoolId)
-                    .where('classId', '==', t.rawClassId);
-                if (t.rawSubjectId)
-                    fallbackQ = fallbackQ.where('subjectId', '==', t.rawSubjectId);
-                snap = await fallbackQ.get();
-            }
-            const termDocs = snap.docs.map(d => d.data()).filter(d => { var _a; return (((_a = (0, term_utils_1.termStampOfRecord)(d)) === null || _a === void 0 ? void 0 : _a.termId) || 'unknown') === t.termId; });
-            const profiles = computeCaProfilesForClassSubject(termDocs);
-            const eotKey = `end_of_term__${t.safeSubId}`;
-            const mtKey = `mid_term__${t.safeSubId}`;
-            // Race-free upsert: merge base metadata first, then replace exact subject keys via FieldPath update
-            const upsertExactProfiles = async (ref, topField) => {
-                await ref.set({
-                    schoolId: t.schoolId,
-                    termId: t.termId,
-                    classId: t.safeClassId,
-                }, { merge: true });
-                const args = [
-                    new firestore_2.FieldPath(topField, eotKey), profiles.end_of_term,
-                    new firestore_2.FieldPath(topField, mtKey), profiles.mid_term,
-                    'updatedAt', firestore_2.FieldValue.serverTimestamp(),
-                ];
-                if (t.subjectName) {
-                    const safeSubName = safeKey(t.subjectName.toLowerCase().trim());
-                    args.push(new firestore_2.FieldPath(topField, `end_of_term__name__${safeSubName}`), profiles.end_of_term, new firestore_2.FieldPath(topField, `mid_term__name__${safeSubName}`), profiles.mid_term);
-                }
-                await ref.update(...args);
-            };
-            await Promise.all([
-                upsertExactProfiles(profRef, 'profiles'),
-                upsertExactProfiles(avgRef, 'caProfiles'),
-            ]);
+            const scanRes = await recomputeAndPersistSubjectCaProfile(store, t, leaseOutcome.hasLegacyUnstamped, true);
+            reads += scanRes.reads;
+            scans += 1;
         }
         catch (profErr) {
+            // R4-3 self-heal: release in-memory cooldown and flag dirty so the 5-min scheduler retries cleanly
+            instanceCooldowns.delete(targetKey);
+            await markSubjectDirtyNoRead(store, t).catch(() => { });
             console.warn('[academicSummary] caProfile update warning:', profErr === null || profErr === void 0 ? void 0 : profErr.message);
         }
     }
+    console.log('[readBudget]', { fn: 'onAssessmentWriteForSummary', schoolId, reads, scans });
+    return { reads, scans };
+}
+async function runFlushDirtyProfiles(store = defaultDb, maxRecomputes = exports.MAX_SCHEDULED_RECOMPUTES) {
+    let totalReads = 0;
+    let recomputed = 0;
+    const readsBySchool = new Map();
+    const addSchoolReads = (sid, n) => {
+        totalReads += n;
+        readsBySchool.set(sid, (readsBySchool.get(sid) || 0) + n);
+    };
+    const dirtySnap = await store
+        .collection('classSeriesProfiles')
+        .where('hasDirtyProfiles', '==', true)
+        .limit(maxRecomputes)
+        .get();
+    if (dirtySnap.empty) {
+        totalReads += 1;
+        console.log('[readBudget]', { fn: 'flushDirtyClassSeriesProfiles', schoolId: 'all', reads: totalReads, recomputed: 0 });
+        return { reads: totalReads, recomputed: 0 };
+    }
+    for (const profDoc of dirtySnap.docs) {
+        const data = profDoc.data() || {};
+        const schoolId = String(data.schoolId || 'unknown');
+        addSchoolReads(schoolId, 1);
+        const termId = String(data.termId || '');
+        const safeClassId = String(data.classId || '');
+        const dirtyMap = (data.dirty && typeof data.dirty === 'object') ? data.dirty : {};
+        const dirtyTargets = (data.dirtyTargets && typeof data.dirtyTargets === 'object') ? data.dirtyTargets : {};
+        const dirtySubIds = Object.keys(dirtyMap).filter(k => dirtyMap[k] === true);
+        if (!termId || !safeClassId || dirtySubIds.length === 0) {
+            await profDoc.ref.set({ hasDirtyProfiles: false }, { merge: true });
+            continue;
+        }
+        let processedOnDoc = 0;
+        for (const safeSubId of dirtySubIds) {
+            if (recomputed >= maxRecomputes)
+                break;
+            const meta = dirtyTargets[safeSubId] || {};
+            const target = {
+                schoolId,
+                termId,
+                rawClassId: String(meta.rawClassId || safeClassId),
+                rawSubjectId: String(meta.rawSubjectId || (safeSubId !== 'general' ? safeSubId : '')),
+                rawYear: String(meta.rawYear || ''),
+                rawTerm: String(meta.rawTerm || ''),
+                safeClassId,
+                safeSubId,
+                subjectName: String(meta.subjectName || ''),
+                hasExplicitTermId: meta.hasExplicitTermId !== false,
+            };
+            try {
+                const res = await recomputeAndPersistSubjectCaProfile(store, target, data.hasLegacyUnstamped === true, true);
+                addSchoolReads(schoolId, res.reads);
+                recomputed += 1;
+                processedOnDoc += 1;
+            }
+            catch (err) {
+                console.warn('[flushDirtyClassSeriesProfiles] subject recompute failed:', schoolId, termId, safeClassId, safeSubId, err === null || err === void 0 ? void 0 : err.message);
+            }
+        }
+        if (processedOnDoc === dirtySubIds.length) {
+            await profDoc.ref.set({ hasDirtyProfiles: false }, { merge: true });
+        }
+    }
+    readsBySchool.forEach((schoolReads, sid) => {
+        console.log('[readBudget]', { fn: 'flushDirtyClassSeriesProfiles', schoolId: sid, reads: schoolReads, recomputed });
+    });
+    return { reads: totalReads, recomputed };
+}
+exports.onAssessmentWriteForSummary = (0, firestore_1.onDocumentWritten)('assessments/{assessmentId}', async (event) => {
+    var _a, _b, _c, _d;
+    const rawBefore = ((_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.before) === null || _b === void 0 ? void 0 : _b.exists) ? event.data.before.data() : null;
+    const rawAfter = ((_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.after) === null || _d === void 0 ? void 0 : _d.exists) ? event.data.after.data() : null;
+    const eventTimeMs = (event.time ? Date.parse(event.time) : 0) || Date.now();
+    await processAssessmentWriteEvent(defaultDb, { rawBefore, rawAfter, eventTimeMs });
+});
+exports.flushDirtyClassSeriesProfiles = (0, scheduler_1.onSchedule)('every 5 minutes', async () => {
+    await runFlushDirtyProfiles(defaultDb, exports.MAX_SCHEDULED_RECOMPUTES);
 });
 //# sourceMappingURL=academic-summary.js.map
