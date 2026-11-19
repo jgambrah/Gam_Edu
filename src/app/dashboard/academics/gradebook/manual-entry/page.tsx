@@ -1161,12 +1161,12 @@ export default function GradebookPage() {
             setExamWeight(customExamInput);
         }
 
-        if (saveAsClassDefault && firestore && classId) {
+        if (saveAsClassDefault && firestore && classId && schoolId) {
             setIsSavingWeight(true);
             try {
                 const payload = isMidTermTab
-                    ? { midTermCaWeight: customCaInput, midTermExamWeight: customExamInput }
-                    : { caWeight: customCaInput, examWeight: customExamInput };
+                    ? { schoolId, midTermCaWeight: customCaInput, midTermExamWeight: customExamInput }
+                    : { schoolId, caWeight: customCaInput, examWeight: customExamInput };
                 await updateDoc(doc(firestore, 'classes', classId), payload);
                 setClassesCache((prev: any[]) =>
                     (prev || []).map((c: any) => c.id === classId ? { ...c, ...payload } : c)

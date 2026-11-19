@@ -38,6 +38,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { isMidTermReportScopeAssessment, resolveMockSeriesFromAssessment } from '@/lib/academic-series';
 
 const toDateSafe = (d: any): Date => {
   if (!d) return new Date();
@@ -57,6 +58,9 @@ export interface AssessmentSnapshotItem {
   subjectName: string;
   assessmentName: string;
   assessmentType: string;
+  reportScope?: string;
+  mockSeries?: string;
+  mockSeriesLabel?: string;
   score?: number;
   maxScore?: number;
   assessmentDate: any;
@@ -294,6 +298,9 @@ export default function AssessmentsPage() {
             subjectName: a.subjectName || a.subject || subjectMap.get(a.subjectId) || '—',
             assessmentName: a.assessmentName || 'Assessment',
             assessmentType: a.assessmentType || 'Class Exercise (CA)',
+            ...(a.reportScope ? { reportScope: a.reportScope } : {}),
+            ...(a.mockSeries ? { mockSeries: a.mockSeries } : {}),
+            ...(a.mockSeriesLabel ? { mockSeriesLabel: a.mockSeriesLabel } : {}),
             score: a.score,
             maxScore: a.maxScore,
             assessmentDate: a.assessmentDate ? (a.assessmentDate.toDate ? a.assessmentDate.toDate().toISOString() : new Date(a.assessmentDate).toISOString()) : new Date().toISOString()
@@ -963,15 +970,17 @@ export default function AssessmentsPage() {
                                         </TableRow>
                                     ) : filteredAssessments.map((item) => {
                                         const assessmentDate = toDateSafe(item.assessmentDate);
-                                        const studentName = studentMap.get(item.studentId) || item.studentId;
+                                        const studentName = (item as any).studentName || studentMap.get(item.studentId) || item.studentId;
                                         const className = (item as any).className || classMap.get(item.classId) || studentClassMap.get(item.studentId) || '—';
                                         const subjectName = (item as any).subjectName || (item as any).subject || subjectMap.get(item.subjectId) || '—';
                                         const percentage = item.score !== undefined && item.maxScore ? (item.score / item.maxScore) * 100 : 0;
+                                        const mockInfo = resolveMockSeriesFromAssessment(item);
+                                        const isMidTermScope = isMidTermReportScopeAssessment(item);
                                         
                                         // Score highlighting logic
                                         let scoreColor = "bg-red-50 text-red-700 dark:bg-red-950/20 dark:text-red-400 border-red-200";
                                         if (percentage >= 80) scoreColor = "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border-emerald-200";
-                                        else if (percentage >= 50) scoreColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-amber-200";
+                                        else if (percentage >= 50) scoreColor = "bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border-emerald-200";
                                         
                                         return (
                                             <TableRow key={item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">
@@ -989,9 +998,20 @@ export default function AssessmentsPage() {
                                                 </TableCell>
                                                 <TableCell className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.assessmentName}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider bg-slate-50 text-slate-600 dark:bg-slate-900 border-slate-200">
-                                                        {item.assessmentType}
-                                                    </Badge>
+                                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                                        {mockInfo ? (
+                                                            <Badge className="text-[9px] font-black uppercase bg-amber-100 text-amber-900 border-amber-300">
+                                                                {mockInfo.shortLabel}
+                                                            </Badge>
+                                                        ) : isMidTermScope ? (
+                                                            <Badge className="text-[9px] font-black uppercase bg-teal-100 text-teal-900 border-teal-300">
+                                                                Mid-Term
+                                                            </Badge>
+                                                        ) : null}
+                                                        <Badge variant="outline" className="text-[10px] font-black uppercase tracking-wider bg-slate-50 text-slate-600 dark:bg-slate-900 border-slate-200">
+                                                            {item.assessmentType}
+                                                        </Badge>
+                                                    </div>
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     {item.score !== undefined && item.maxScore !== undefined ? (
