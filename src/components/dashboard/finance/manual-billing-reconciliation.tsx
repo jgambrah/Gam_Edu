@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
-import { format, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
+import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc, schoolDayStartUtc } from '@/lib/attendance-date';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -71,19 +72,23 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             const studentsSnap = await getDocs(studentsQuery);
             const studentMap = new Map(studentsSnap.docs.map(d => [d.id, d.data()]));
 
-            const dateStr = format(date, 'yyyy-MM-dd');
-            const searchDate = startOfDay(date); 
+            const { queryStart, queryEnd, targetDateStr: dateStr } = schoolDayQueryBoundsUtc(date);
 
-            // D. Get Attendance (Who was present?)
+            // D. Get Attendance (Who was present?) — timezone-safe day window + deduplication
             const attendanceQ = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
-                where('date', '==', Timestamp.fromDate(searchDate)),
-                where('status', 'in', ['Present', 'Late'])
+                where('date', '>=', Timestamp.fromDate(queryStart)),
+                where('date', '<=', Timestamp.fromDate(queryEnd))
             );
             const attendanceSnap = await getDocs(attendanceQ);
+            const presentRows = deduplicateAttendanceForDate(
+                attendanceSnap.docs.map(d => ({ id: d.id, data: d.data() })),
+                dateStr,
+                'all'
+            ).filter(r => r.status === 'Present' || r.status === 'Late');
             
-            if (attendanceSnap.empty) {
+            if (presentRows.length === 0) {
                 toast({ title: "No Attendance Found", description: "No students were marked Present/Late on this date." });
                 setIsLoading(false);
                 return;
@@ -93,17 +98,21 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
-                where('dueDate', '==', Timestamp.fromDate(searchDate)) 
+                where('dueDate', '>=', Timestamp.fromDate(queryStart)),
+                where('dueDate', '<=', Timestamp.fromDate(queryEnd))
             );
             const billsSnap = await getDocs(billsQ);
-            const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
+            const existingBillIds = new Set(
+                billsSnap.docs
+                    .filter(d => !d.data().voided && !d.data().isArchived)
+                    .map(d => d.id)
+            );
 
             const detectedMissing: MissingBillItem[] = [];
 
             // F. Compare
             let missingCounter = 0; 
-            for (const attDoc of attendanceSnap.docs) {
-                const att = attDoc.data();
+            for (const att of presentRows) {
                 const studentMeta = studentMap.get(att.studentId);
                 if (!studentMeta || studentMeta.enrollmentStatus === 'Inactive') continue;
 
@@ -190,7 +199,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 type: item.type === 'Canteen' ? 'Canteen Fee (Daily)' : 'Transport Fee (Daily)',
                 description: `${item.type} - ${format(date, 'PPP')}`,
                 status: 'Unpaid',
-                dueDate: Timestamp.fromDate(startOfDay(date)),
+                dueDate: Timestamp.fromDate(schoolDayStartUtc(date)),
                 createdAt: serverTimestamp(),
                 amountPaid: 0,
                 ...termFields,

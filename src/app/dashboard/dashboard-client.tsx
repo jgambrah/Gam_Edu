@@ -847,11 +847,13 @@ function AdminDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingAttendance(true);
     try {
-      const todayNormalized = startOfDay(new Date());
+      const { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc } = await import('@/lib/attendance-date');
+      const { queryStart, queryEnd, targetDateStr } = schoolDayQueryBoundsUtc(new Date());
       const q = query(
         collection(firestore, 'attendance'),
         where('schoolId', '==', schoolId),
-        where('date', '==', Timestamp.fromDate(todayNormalized))
+        where('date', '>=', Timestamp.fromDate(queryStart)),
+        where('date', '<=', Timestamp.fromDate(queryEnd))
       );
       const snap = await getDocs(q);
 
@@ -860,25 +862,23 @@ function AdminDashboard({
       const absentList: any[] = [];
       const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
 
-      snap.docs.forEach((d) => {
-        const data = d.data();
-        const records = data.records || {};
-        const className = data.className || "Class";
+      const dayRows = deduplicateAttendanceForDate(
+        snap.docs.map((d) => ({ id: d.id, data: d.data() })),
+        targetDateStr,
+        'all'
+      );
 
-        if (records && typeof records === 'object') {
-          Object.entries(records).forEach(([sId, status]: [string, any]) => {
-            if (activeStudentIds.size > 0 && !activeStudentIds.has(sId)) return;
-            totalRecorded++;
-            if (status === 'Present' || status === 'Late') {
-              presentCount++;
-            } else if (status === 'Absent') {
-              const stud = activeStudents.find((s: any) => s.uid === sId);
-              absentList.push({
-                id: sId,
-                name: stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student",
-                className: className
-              });
-            }
+      dayRows.forEach((row) => {
+        if (activeStudentIds.size > 0 && !activeStudentIds.has(row.studentId)) return;
+        totalRecorded++;
+        if (row.status === 'Present' || row.status === 'Late') {
+          presentCount++;
+        } else if (row.status === 'Absent') {
+          const stud = activeStudents.find((s: any) => s.uid === row.studentId);
+          absentList.push({
+            id: row.studentId,
+            name: row.studentName || (stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student"),
+            className: row.classId || "Class"
           });
         }
       });
@@ -3065,11 +3065,13 @@ function DirectorDashboard({
     if (!firestore || !schoolId) return;
     setIsSyncingAttendance(true);
     try {
-      const todayNormalized = startOfDay(new Date());
+      const { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc } = await import('@/lib/attendance-date');
+      const { queryStart, queryEnd, targetDateStr } = schoolDayQueryBoundsUtc(new Date());
       const q = query(
         collection(firestore, 'attendance'),
         where('schoolId', '==', schoolId),
-        where('date', '==', Timestamp.fromDate(todayNormalized))
+        where('date', '>=', Timestamp.fromDate(queryStart)),
+        where('date', '<=', Timestamp.fromDate(queryEnd))
       );
       const snap = await getDocs(q);
 
@@ -3078,25 +3080,23 @@ function DirectorDashboard({
       const absentList: any[] = [];
       const activeStudentIds = new Set(activeStudents.map((s: any) => s.uid));
 
-      snap.docs.forEach((d) => {
-        const data = d.data();
-        const records = data.records || {};
-        const className = data.className || "Class";
+      const dayRows = deduplicateAttendanceForDate(
+        snap.docs.map((d) => ({ id: d.id, data: d.data() })),
+        targetDateStr,
+        'all'
+      );
 
-        if (records && typeof records === 'object') {
-          Object.entries(records).forEach(([sId, status]: [string, any]) => {
-            if (activeStudentIds.size > 0 && !activeStudentIds.has(sId)) return;
-            totalRecorded++;
-            if (status === 'Present' || status === 'Late') {
-              presentCount++;
-            } else if (status === 'Absent') {
-              const stud = activeStudents.find((s: any) => s.uid === sId);
-              absentList.push({
-                id: sId,
-                name: stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student",
-                className: className
-              });
-            }
+      dayRows.forEach((row) => {
+        if (activeStudentIds.size > 0 && !activeStudentIds.has(row.studentId)) return;
+        totalRecorded++;
+        if (row.status === 'Present' || row.status === 'Late') {
+          presentCount++;
+        } else if (row.status === 'Absent') {
+          const stud = activeStudents.find((s: any) => s.uid === row.studentId);
+          absentList.push({
+            id: row.studentId,
+            name: row.studentName || (stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student"),
+            className: row.classId || "Class"
           });
         }
       });
@@ -12228,11 +12228,13 @@ export default function DashboardClient() {
                      role === 'Teacher' ||
                      isReceptionist || isSecretary;
     if (!isNeeded) return null;
-    const todayNormalized = startOfDay(new Date());
+    const todayStartUtc = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0, 0));
+    const todayEndUtc = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999));
     return query(
       collection(firestore, 'attendance'), 
       where('schoolId', '==', schoolId),
-      where('date', '==', Timestamp.fromDate(todayNormalized))
+      where('date', '>=', Timestamp.fromDate(todayStartUtc)),
+      where('date', '<=', Timestamp.fromDate(todayEndUtc))
     );
   }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab, todayStr]);
   const { data: attendance } = useCollection(attendanceQuery);

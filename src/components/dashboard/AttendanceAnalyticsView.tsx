@@ -82,11 +82,13 @@ export function AttendanceAnalyticsView({
     if (!firestore || !sId) return;
     setIsSyncingAttendance(true);
     try {
-      const todayNormalized = startOfDay(new Date());
+      const { queryStart, queryEnd, targetDateStr } = (await import('@/lib/attendance-date')).schoolDayQueryBoundsUtc(new Date());
+      const { deduplicateAttendanceForDate } = await import('@/lib/attendance-date');
       const q = query(
         collection(firestore, 'attendance'),
         where('schoolId', '==', sId),
-        where('date', '==', Timestamp.fromDate(todayNormalized))
+        where('date', '>=', Timestamp.fromDate(queryStart)),
+        where('date', '<=', Timestamp.fromDate(queryEnd))
       );
       const snap = await getDocs(q);
 
@@ -94,26 +96,25 @@ export function AttendanceAnalyticsView({
       let totalRecorded = 0;
       const absentList: any[] = [];
       const activeStudentIds = new Set(students?.filter((s: any) => s.enrollmentStatus === 'Active' || !s.enrollmentStatus).map((s: any) => s.uid || s.id) || []);
+      const classMap = new Map((classes || []).map((c: any) => [c.id, c.name]));
 
-      snap.docs.forEach((d) => {
-        const data = d.data();
-        const records = data.records || {};
-        const className = data.className || "Class";
+      const dayRows = deduplicateAttendanceForDate(
+        snap.docs.map((d) => ({ id: d.id, data: d.data() })),
+        targetDateStr,
+        'all'
+      );
 
-        if (records && typeof records === 'object') {
-          Object.entries(records).forEach(([sId, status]: [string, any]) => {
-            if (activeStudentIds.size > 0 && !activeStudentIds.has(sId)) return;
-            totalRecorded++;
-            if (status === 'Present' || status === 'Late') {
-              presentCount++;
-            } else if (status === 'Absent') {
-              const stud = students?.find((s: any) => (s.uid || s.id) === sId);
-              absentList.push({
-                id: sId,
-                name: stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student",
-                className: className
-              });
-            }
+      dayRows.forEach((row) => {
+        if (activeStudentIds.size > 0 && !activeStudentIds.has(row.studentId)) return;
+        totalRecorded++;
+        if (row.status === 'Present' || row.status === 'Late') {
+          presentCount++;
+        } else if (row.status === 'Absent') {
+          const stud = students?.find((s: any) => (s.uid || s.id) === row.studentId);
+          absentList.push({
+            id: row.studentId,
+            name: row.studentName || (stud ? `${stud.firstName || ""} ${stud.lastName || ""}`.trim() : "Student"),
+            className: classMap.get(row.classId) || "Class"
           });
         }
       });

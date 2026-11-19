@@ -16,6 +16,7 @@ import { DateRange } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format, startOfDay, endOfDay } from 'date-fns';
+import { schoolDayQueryBoundsUtc } from '@/lib/attendance-date';
 import { Calendar } from '@/components/ui/calendar';
 import { Badge } from '@/components/ui/badge';
 import { useCurrentSchool } from '@/hooks/use-current-school';
@@ -103,20 +104,29 @@ function AttendanceManagerDialog({ classes, schoolId, onRefresh }: { classes: an
         
         setIsLoading(true);
         try {
+            const { queryStart, queryEnd, targetDateStr } = schoolDayQueryBoundsUtc(selectedDate);
             const q = query(
                 collection(firestore, 'attendance'),
                 where('schoolId', '==', schoolId),
                 where('classId', '==', selectedClassId),
-                where('date', '==', Timestamp.fromDate(startOfDay(selectedDate)))
+                where('date', '>=', Timestamp.fromDate(queryStart)),
+                where('date', '<=', Timestamp.fromDate(queryEnd))
             );
             
             const snapshot = await getDocs(q);
+            const matchingDocs = snapshot.docs.filter(d => {
+                const data = d.data();
+                if (typeof data.dateStr === 'string') return data.dateStr === targetDateStr;
+                if (d.id.endsWith(targetDateStr)) return true;
+                const jsDate = data.date?.toDate ? data.date.toDate() : (data.date ? new Date(data.date) : null);
+                return jsDate ? jsDate.toISOString().slice(0, 10) === targetDateStr : false;
+            });
             
-            if (snapshot.empty) {
+            if (matchingDocs.length === 0) {
                 toast({ title: "No Records Found", description: "No attendance was taken on this date for this class." });
                 setRecordsToDelete([]);
             } else {
-                const ids = snapshot.docs.map(doc => doc.id);
+                const ids = matchingDocs.map(doc => doc.id);
                 setRecordsToDelete(ids);
                 toast({ title: "Records Located", description: `Found ${ids.length} records ready for maintenance.` });
             }
@@ -1132,7 +1142,7 @@ export default function AttendanceReportsPage() {
                     )}
 
                     {/* SUMMARY STAT CARDS */}
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-5">
                         <Card className="border border-slate-200/80 bg-gradient-to-br from-emerald-50 to-emerald-100/30 shadow-sm overflow-hidden group">
                             <CardContent className="pt-6 relative">
                                 <TrendingUp className="absolute -right-2 -bottom-2 h-16 w-16 text-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -1142,6 +1152,18 @@ export default function AttendanceReportsPage() {
                                         <p className="text-3xl font-black text-emerald-700">{summaryStats.rate}%</p>
                                     </div>
                                     <TrendingUp className="h-8 w-8 text-emerald-300" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="border border-slate-200/80 bg-gradient-to-br from-sky-50 to-blue-100/30 shadow-sm overflow-hidden group">
+                            <CardContent className="pt-6 relative">
+                                <CheckCircle2 className="absolute -right-2 -bottom-2 h-16 w-16 text-sky-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="flex items-center justify-between relative z-10">
+                                    <div>
+                                        <p className="text-xs font-bold text-sky-600 uppercase tracking-wider">Total Present</p>
+                                        <p className="text-3xl font-black text-sky-800">{summaryStats.present + summaryStats.late}</p>
+                                    </div>
+                                    <CheckCircle2 className="h-8 w-8 text-sky-300" />
                                 </div>
                             </CardContent>
                         </Card>
@@ -1176,6 +1198,7 @@ export default function AttendanceReportsPage() {
                                     <div>
                                         <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Total Records</p>
                                         <p className="text-3xl font-black text-indigo-700">{summaryStats.total}</p>
+                                        <p className="text-[10px] font-semibold text-indigo-500/80 mt-0.5">Present + Absent</p>
                                     </div>
                                     <Users className="h-8 w-8 text-indigo-300" />
                                 </div>

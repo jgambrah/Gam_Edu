@@ -5,7 +5,8 @@ import { useFirestore, useUser } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { termStampOfRecord } from '@/lib/term';
-import { format, startOfDay, endOfDay } from 'date-fns';
+import { format } from 'date-fns';
+import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc } from '@/lib/attendance-date';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -94,23 +95,29 @@ export default function BulkDailyReceiptsPage() {
         setRowNarrations({});
 
         try {
-            const dayStart = startOfDay(date);
-            const dayEnd = endOfDay(date);
+            const { queryStart, queryEnd, targetDateStr } = schoolDayQueryBoundsUtc(date);
             
             let studentsPresent: any[] = [];
             
             // A. FETCH ATTENDANCE (Only for Canteen and Transport)
+            // Uses a timezone-safe day window + calendar-date deduplication so classrooms saved from devices
+            // with non-UTC timezone offsets (e.g. UTC-8 -> 08:00:00Z) are never omitted.
             if (serviceType !== 'Tuition') {
                 const attQuery = query(
                     collection(firestore, 'attendance'),
                     where('schoolId', '==', schoolId),
-                    where('date', '==', Timestamp.fromDate(dayStart)),
-                    where('status', 'in', ['Present', 'Late'])
+                    where('date', '>=', Timestamp.fromDate(queryStart)),
+                    where('date', '<=', Timestamp.fromDate(queryEnd))
                 );
                 const attSnap = await getDocs(attQuery);
-                studentsPresent = attSnap.docs
-                    .map(d => d.data())
-                    .filter(d => selectedClassId === 'all' || d.classId === selectedClassId);
+                const dedupedDayRows = deduplicateAttendanceForDate(
+                    attSnap.docs.map(d => ({ id: d.id, data: d.data() })),
+                    targetDateStr,
+                    selectedClassId
+                );
+                studentsPresent = dedupedDayRows.filter(
+                    d => d.status === 'Present' || d.status === 'Late'
+                );
             }
 
             // B. FETCH EXISTING BILLS
@@ -126,8 +133,8 @@ export default function BulkDailyReceiptsPage() {
                 billsQuery = query(
                     collection(firestore, 'financialRecords'),
                     where('schoolId', '==', schoolId),
-                    where('dueDate', '>=', Timestamp.fromDate(dayStart)),
-                    where('dueDate', '<=', Timestamp.fromDate(dayEnd))
+                    where('dueDate', '>=', Timestamp.fromDate(queryStart)),
+                    where('dueDate', '<=', Timestamp.fromDate(queryEnd))
                 );
             }
             const billsSnap = await getDocs(billsQuery);
@@ -140,6 +147,16 @@ export default function BulkDailyReceiptsPage() {
 
             billsSnap.docs.forEach(d => {
                 const data = d.data();
+                if (data.voided === true || data.isArchived === true) return;
+                if (serviceType !== 'Tuition') {
+                    // Match deterministic daily bill ID suffix (`...-YYYY-MM-DD`) when present, else UTC date
+                    const idDateMatch = /(\d{4}-\d{2}-\d{2})$/.exec(d.id);
+                    if (idDateMatch && idDateMatch[1] !== targetDateStr) return;
+                    if (!idDateMatch) {
+                        const dueJs = data.dueDate?.toDate ? data.dueDate.toDate() : (data.dueDate ? new Date(data.dueDate) : null);
+                        if (dueJs && dueJs.toISOString().slice(0, 10) !== targetDateStr) return;
+                    }
+                }
                 const type = (data.type || '').toLowerCase();
                 
                 // Allow any unpaid fee/receivable record EXCEPT canteen/transport if in Tuition/School Fees mode
@@ -177,9 +194,18 @@ export default function BulkDailyReceiptsPage() {
                 studentsPresent.forEach(att => {
                     const bill = existingBillsMap.get(att.studentId);
                     if (!bill) {
-                        if (att.canteenMode !== 'Termly' && att.transportMode !== 'Termly') {
+                        const meta: any = stuMetaMap.get(att.studentId);
+                        const expectsDailyBill =
+                            serviceType === 'Canteen'
+                                ? (meta
+                                    ? meta.usesCanteen !== false && meta.canteenBillingMode !== 'Termly' && meta.canteenBillingMode !== 'None'
+                                    : att.canteenMode !== 'Termly' && att.usesCanteen !== 'false' && att.usesCanteen !== false)
+                                : (meta
+                                    ? meta.usesBusService === true && meta.transportBillingModel === 'Daily'
+                                    : att.transportMode !== 'Termly' && (att.usesBusService === 'true' || att.usesBusService === true));
+
+                        if (expectsDailyBill) {
                             missingCount++;
-                            const meta: any = stuMetaMap.get(att.studentId);
                             missingList.push({
                                 id: att.studentId,
                                 name: att.studentName || (meta ? `${meta.firstName} ${meta.lastName}` : 'Unknown')

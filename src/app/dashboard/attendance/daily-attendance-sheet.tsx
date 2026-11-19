@@ -22,6 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles, CheckCheck, RotateCcw, UtensilsCrossed } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { format, startOfDay, differenceInDays, isSameDay } from 'date-fns';
+import { schoolDayDateStr, schoolDayQueryBoundsUtc, schoolDayStartUtc } from '@/lib/attendance-date';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -210,16 +211,24 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }
 
             if (!foundExisting) {
+                const { queryStart, queryEnd, targetDateStr } = schoolDayQueryBoundsUtc(selectedDate);
                 const attendanceQuery = query(
                     collection(firestore, 'attendance'),
                     where('schoolId', '==', schoolId),
                     where('classId', '==', selectedClassId),
-                    where('date', '==', startOfDay(selectedDate))
+                    where('date', '>=', Timestamp.fromDate(queryStart)),
+                    where('date', '<=', Timestamp.fromDate(queryEnd))
                 );
                 const attendanceSnapshot = await getDocs(attendanceQuery);
                 const existingDocs = attendanceSnapshot.docs
                     .map(doc => ({ id: doc.id, ...doc.data() }))
-                    .filter((r: any) => r.isArchived !== true) as AttendanceRecord[];
+                    .filter((r: any) => {
+                        if (r.isArchived === true) return false;
+                        if (typeof r.dateStr === 'string') return r.dateStr === targetDateStr;
+                        if (typeof r.id === 'string' && r.id.endsWith(targetDateStr)) return true;
+                        const d = r.date?.toDate ? r.date.toDate() : (r.date ? new Date(r.date) : null);
+                        return d ? d.toISOString().slice(0, 10) === targetDateStr : false;
+                    }) as AttendanceRecord[];
 
                 if (existingDocs.length > 0) {
                     foundExisting = true;
@@ -329,7 +338,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
         setBillingProgress("Saving attendance...");
         
         try {
-            const dateStr = format(selectedDate, 'yyyy-MM-dd');
+            const dateStr = schoolDayDateStr(selectedDate);
+            const canonicalDayUtc = Timestamp.fromDate(schoolDayStartUtc(selectedDate));
             // A day that belongs to a closed term is read-only (its attendance was summarised when the term closed).
             const closedCheck = await getDoc(doc(firestore, 'attendance', `${schoolId}_${selectedClassId}_${dateStr}`));
             if (closedCheck.exists() && (closedCheck.data() as any)?.isArchived === true) {
@@ -377,7 +387,8 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 
                 batch.set(recordRef, {
                     ...dataToSave,
-                    date: startOfDay(selectedDate),
+                    date: canonicalDayUtc,
+                    dateStr,
                     schoolId: schoolId,
                     updatedAt: serverTimestamp(),
                     updatedBy: user?.uid
@@ -398,7 +409,7 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 schoolId,
                 classId: selectedClassId,
                 className,
-                date: startOfDay(selectedDate),
+                date: canonicalDayUtc,
                 dateStr,
                 totalStudents: data.records.length,
                 presentCount,

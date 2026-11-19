@@ -4,6 +4,7 @@ import { doc, getDoc, serverTimestamp, Timestamp, collection, writeBatch, query,
 import type { Firestore } from 'firebase/firestore';
 import type { Student } from '@/lib/types';
 import { format, startOfDay } from 'date-fns';
+import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
 import { applyHeldCreditAfterBilling, reallocateExistingOverpayments, setStudentCreditMarker } from '@/lib/credit-allocation';
 import { currentTermFromProfile, type TermStamp } from '@/lib/term';
 
@@ -130,9 +131,10 @@ export async function billStudentForAttendance(
       };
     }
 
-    // NORMALIZE DATE: Use midnight for all financial dueDates
-    const normalizedDate = startOfDay(attendanceDate);
-    const dateStr = format(normalizedDate, 'yyyy-MM-dd');
+    // NORMALIZE DATE: Anchor to canonical UTC midnight for the selected calendar date regardless of device timezone
+    const displayDate = startOfDay(attendanceDate);
+    const normalizedUtcDate = schoolDayStartUtc(attendanceDate);
+    const dateStr = schoolDayDateStr(attendanceDate);
 
     // 1. Check preferences
     // Only bill daily Canteen if their mode is 'Daily' (or not set, assuming default daily)
@@ -203,12 +205,12 @@ export async function billStudentForAttendance(
             studentName: `${student.firstName} ${student.lastName}`,
             classId: student.classId || '',
             type: 'Canteen Fee (Daily)',
-            description: `Canteen - ${format(normalizedDate, 'PPP')}`,
+            description: `Canteen - ${format(displayDate, 'PPP')}`,
             billedAmount: canteenRate,
             amountPaid: 0,
             waiverAmount: 0,
             status: 'Unpaid',
-            dueDate: Timestamp.fromDate(normalizedDate), // Standardized to Start of Day
+            dueDate: Timestamp.fromDate(normalizedUtcDate), // Standardized to UTC Start of School Day
             createdAt: serverTimestamp(),
             schoolId: schoolId,
             ...termFields,
@@ -230,12 +232,12 @@ export async function billStudentForAttendance(
             studentName: `${student.firstName} ${student.lastName}`,
             classId: student.classId || '',
             type: 'Transport Fee (Daily)',
-            description: `Transport - ${format(normalizedDate, 'PPP')}`,
+            description: `Transport - ${format(displayDate, 'PPP')}`,
             billedAmount: transportRate,
             amountPaid: 0,
             waiverAmount: 0,
             status: 'Unpaid',
-            dueDate: Timestamp.fromDate(normalizedDate), // Standardized to Start of Day
+            dueDate: Timestamp.fromDate(normalizedUtcDate), // Standardized to UTC Start of School Day
             createdAt: serverTimestamp(),
             schoolId: schoolId,
             ...termFields,
@@ -325,14 +327,13 @@ export async function billMultipleStudents(
   const termStamp = await fetchCurrentTermStamp(firestore, schoolId);
 
   // 3. Fetch existing bills for this date and school to avoid overwriting them
-  const normalizedDate = startOfDay(attendanceDate);
   let existingBillIds: Set<string> | undefined = new Set<string>();
   const voidedBills = new Map<string, any>();
   try {
       // READ COST: look up exactly this list's daily bills by their (deterministic) ids, 30 at a time — only
       // bills that exist are read. (Was: every bill of the WHOLE SCHOOL due that day, read again for every
       // class whose attendance was saved.)
-      const dateStr = format(normalizedDate, 'yyyy-MM-dd');
+      const dateStr = schoolDayDateStr(attendanceDate);
       const ids = students.flatMap(st => st?.uid ? [`canteen-${st.uid}-${dateStr}`, `transport-${st.uid}-${dateStr}`] : []);
       for (let i = 0; i < ids.length; i += 30) {
           // (schoolId filter: the security rules only allow reading the school's own bills)

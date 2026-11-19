@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, writeBatch, doc, Timestamp } from 'firebase/firestore';
-import { startOfDay } from 'date-fns';
+import { schoolDayFromDateStr } from '@/lib/attendance-date';
 import { useToast } from '@/hooks/use-toast';
 
 export interface OfflineAttendanceBatch {
@@ -134,10 +134,11 @@ export function useOfflineSync() {
         for (const batchItem of attendanceQueue) {
           try {
             const batch = writeBatch(firestore);
-            const attDate = startOfDay(new Date(batchItem.dateStr));
+            const attDate = schoolDayFromDateStr(batchItem.dateStr);
 
             for (const rec of batchItem.records) {
-              const newRef = doc(collection(firestore, 'attendance'));
+              const deterministicId = `att-${batchItem.schoolId}-${batchItem.classId}-${rec.studentId}-${batchItem.dateStr}`;
+              const newRef = doc(firestore, 'attendance', deterministicId);
               batch.set(newRef, {
                 schoolId: batchItem.schoolId,
                 classId: batchItem.classId,
@@ -146,9 +147,10 @@ export function useOfflineSync() {
                 status: rec.status,
                 notes: rec.notes || '',
                 date: Timestamp.fromDate(attDate),
+                dateStr: batchItem.dateStr,
                 syncedFromOffline: true,
                 createdAt: Timestamp.now()
-              });
+              }, { merge: true });
             }
             await batch.commit();
           } catch (err) {
