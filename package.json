@@ -10,6 +10,7 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:read-budget": "node scripts/verify-read-budgets.mjs",
     "test:watch": "vitest",
     "test:rules": "npx --yes firebase-tools@15.35.0 emulators:exec --only firestore,storage --project demo-gam-edu --config firebase.emulators.json \"vitest run --config vitest.rules.config.ts\"",
     "story:media": "tsx scripts/library/seed-batch-media.ts",
