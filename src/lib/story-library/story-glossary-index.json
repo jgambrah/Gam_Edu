@@ -5826,7 +5826,7 @@
     "definition": "The readable message before it is turned into a code."
   },
   "tradition": {
-    "definition": "Beliefs, stories, and customs passed down from older people to younger ones."
+    "definition": "History that is spoken and remembered, not written."
   },
   "adobe": {
     "definition": "A building material made of mud and clay."
@@ -5856,7 +5856,7 @@
     "definition": "A drink poured out while calling on God and the ancestors."
   },
   "union": {
-    "definition": "A group of states or people joined together for a shared purpose."
+    "definition": "A group of states or peoples joined together."
   },
   "chieftaincy": {
     "definition": "The office or rule of a chief."
@@ -6205,16 +6205,16 @@
     "definition": "A time when there is very little food and many go hungry."
   },
   "lagoon": {
-    "definition": "A stretch of shallow water separated from the sea by a strip of land."
+    "definition": "A shallow body of water separated from the sea."
   },
   "enskinned": {
-    "definition": "Made a chief in northern Ghana, where a chief sits on animal skins."
+    "definition": "Given the right to rule by sitting on the royal skin, as northern chiefs are."
   },
   "rotates": {
     "definition": "Passes from one to the next in turn."
   },
   "kingmakers": {
-    "definition": "Elders who have the right to choose a new king."
+    "definition": "Elders who have the duty of choosing a new ruler."
   },
   "treaty": {
     "definition": "A written agreement between states or peoples."
@@ -6235,7 +6235,7 @@
     "definition": "An agreement between states or groups to help one another."
   },
   "patient": {
-    "definition": "Able to wait calmly without becoming angry or giving up."
+    "definition": "Able to wait calmly without giving up."
   },
   "grief": {
     "definition": "Deep sadness after losing someone."
@@ -6461,6 +6461,21 @@
   },
   "prefect": {
     "definition": "A senior pupil who helps to keep order at school."
+  },
+  "oath": {
+    "definition": "A serious promise, often made before witnesses."
+  },
+  "exile": {
+    "definition": "Being made to live away from your home country."
+  },
+  "plague": {
+    "definition": "A deadly disease that spreads quickly among many people."
+  },
+  "ancestor": {
+    "definition": "A person in your family who lived long before you."
+  },
+  "rotating": {
+    "definition": "Taking turns in a fixed order, one after another."
   },
   "well": {
     "definition": "A deep hole in the ground where people get water."
@@ -6887,7 +6902,7 @@
     "definition": "Guiding, helping and taking responsibility for a group or community."
   },
   "generations": {
-    "definition": "The successive groups of people born over a long time."
+    "definition": "Groups of people born and living at about the same time."
   },
   "expenses": {
     "definition": "Money a business spends on goods, transport and running costs."
@@ -7191,7 +7206,7 @@
     "definition": "A large state that rules over many peoples and lands."
   },
   "independence": {
-    "definition": "Freedom from the control of another country."
+    "definition": "Freedom of a country to rule itself."
   },
   "atlantis": {
     "definition": "A legendary island that Plato said sank beneath the sea."
@@ -7240,7 +7255,7 @@
     "definition": "A place that keeps important documents and records."
   },
   "asantehene": {
-    "definition": "The king of Asante. (King of the Asante people and kingdom.)",
+    "definition": "The king of the Asante. (King of the Asante people and kingdom.)",
     "phonetic": "ah-sahn-teh-heh-neh"
   },
   "buttresses": {
@@ -7565,7 +7580,7 @@
     "definition": "Making fun of someone in an unkind way."
   },
   "counsellor": {
-    "definition": "A person trained to listen and help with problems."
+    "definition": "A person who gives wise advice to a ruler."
   },
   "unkind": {
     "definition": "Not caring or friendly; hurting someone’s feelings."
@@ -8585,7 +8600,7 @@
     "definition": "Making people pay money to the state."
   },
   "governor": {
-    "definition": "A person who rules a place on behalf of a government."
+    "definition": "The person sent to rule a colony for a foreign country."
   },
   "unite": {
     "definition": "To join together as one."
@@ -8601,7 +8616,7 @@
     "definition": "A loose garment sewn from strips of hand-woven cotton."
   },
   "scholars": {
-    "definition": "People who have studied deeply and can read and write well."
+    "definition": "People who study and teach, often through reading and writing."
   },
   "division": {
     "definition": "One of the parts into which a kingdom is split, each with its own chief."
@@ -8619,7 +8634,7 @@
     "definition": "The main office from which a government or organisation works."
   },
   "priests": {
-    "definition": "Earth priests: leaders who look after the land and its shrines."
+    "definition": "People who lead prayers and care for sacred places."
   },
   "gates": {
     "definition": "Royal houses that take turns to provide the king."
@@ -8772,7 +8787,7 @@
     "definition": "Made quieter and less clear."
   },
   "hesitated": {
-    "definition": "Paused before deciding, because of doubt."
+    "definition": "Paused because of doubt or fear."
   },
   "sweepings": {
     "definition": "Dust and rubbish collected with a broom."
@@ -8988,7 +9003,7 @@
     "definition": "Money paid for work."
   },
   "apprentice": {
-    "definition": "A young person learning a trade by working with an expert."
+    "definition": "A young person learning a skill from an expert."
   },
   "figures": {
     "definition": "Numbers, especially about money."
@@ -8997,7 +9012,7 @@
     "definition": "A fixed set of steps that always gives the right answer."
   },
   "courage": {
-    "definition": "The strength to do something frightening."
+    "definition": "Doing what is right even when you are afraid."
   },
   "livelihood": {
     "definition": "The work that a person earns a living from."
@@ -9521,6 +9536,48 @@
   },
   "avoidable": {
     "definition": "Able to be prevented."
+  },
+  "linguists": {
+    "definition": "Court officials who speak on behalf of a chief."
+  },
+  "soul": {
+    "definition": "The deep spirit of a person or a people."
+  },
+  "harshly": {
+    "definition": "In a cruel and strict way."
+  },
+  "trackers": {
+    "definition": "People who follow footprints and other signs."
+  },
+  "shrine": {
+    "definition": "A holy place where people pray and remember."
+  },
+  "vaccines": {
+    "definition": "Medicines that protect people from some diseases."
+  },
+  "procession": {
+    "definition": "A line of people moving together in a ceremony."
+  },
+  "savannah": {
+    "definition": "A wide, grassy land with scattered trees."
+  },
+  "succession": {
+    "definition": "The way a new ruler follows an old one."
+  },
+  "festivals": {
+    "definition": "Special celebrations held at a regular time."
+  },
+  "chronicles": {
+    "definition": "Written records of events in the order they happened."
+  },
+  "campaigns": {
+    "definition": "Planned series of military actions."
+  },
+  "divisions": {
+    "definition": "Parts of a larger area or group, each with its own leader."
+  },
+  "successors": {
+    "definition": "People who come after and take over a role."
   },
   "efua": {
     "definition": "Akan day name for a girl born on Friday.",
@@ -12297,5 +12354,153 @@
   "fosua": {
     "definition": "Akan female personal name (feminine counterpart of Fosu).",
     "phonetic": "foh-soo-ah"
+  },
+  "kumasihene": {
+    "definition": "Traditional ruler of Kumasi before the founding of the Asante union.",
+    "phonetic": "koo-mah-see-heh-neh"
+  },
+  "komfo": {
+    "definition": "Variant of Okomfo (traditional priest), as in Komfo Anokye Teaching Hospital.",
+    "phonetic": "kohm-foh"
+  },
+  "keta": {
+    "definition": "Historic coastal and lagoon town in the Volta Region of Ghana.",
+    "phonetic": "keh-tah"
+  },
+  "notsie": {
+    "definition": "Historic walled town in present-day Togo from which the Ewe migrated.",
+    "phonetic": "noh-tsee-eh"
+  },
+  "tegli": {
+    "definition": "Elder in the Ewe migration tradition who advised softening the clay wall of Notsie.",
+    "phonetic": "teh-glee"
+  },
+  "tsali": {
+    "definition": "Revered Anlo-Ewe spiritual leader in the Notsie migration tradition (Togbe Tsali).",
+    "phonetic": "tsah-lee"
+  },
+  "ahobaa": {
+    "definition": "Traditional Fante festival remembering Egya Ahor and the ancestors.",
+    "phonetic": "ah-hoh-baah"
+  },
+  "kese": {
+    "definition": "Akan word meaning great or major (as in Ahobaa Kese).",
+    "phonetic": "keh-seh"
+  },
+  "mankessim": {
+    "definition": "Historic Fante traditional capital in the Central Region of Ghana.",
+    "phonetic": "mahn-keh-sim"
+  },
+  "egya": {
+    "definition": "Fante title and word for father or respected elder (as in Egya Ahor).",
+    "phonetic": "eh-jah"
+  },
+  "ahor": {
+    "definition": "Revered Fante priest remembered at the Ahobaa festival (Egya Ahor).",
+    "phonetic": "ah-hor"
+  },
+  "fante": {
+    "definition": "Major Akan people and language of coastal Central and Western Ghana.",
+    "phonetic": "fahn-tee"
+  },
+  "gbewaa": {
+    "definition": "Founding royal ancestor of the Mole-Dagbani kingdoms (Naa Gbewaa).",
+    "phonetic": "gbeh-waah"
+  },
+  "mole-dagbani": {
+    "definition": "Major Gur language and cultural group of northern Ghana and Burkina Faso.",
+    "phonetic": "moh-leh-dahg-bah-nee"
+  },
+  "tohigu": {
+    "definition": "Son of Naa Gbewaa remembered as the founder of Mamprugu (Naa Tohigu).",
+    "phonetic": "toh-hee-goo"
+  },
+  "shitɔbu": {
+    "definition": "Son of Naa Gbewaa remembered as the founder of Dagbon (Naa Shitɔbu).",
+    "phonetic": "shih-taw-boo"
+  },
+  "shitobu-open-o": {
+    "definition": "Son of Naa Gbewaa remembered as the founder of Dagbon (Naa Shitɔbu).",
+    "phonetic": "shih-taw-boo"
+  },
+  "gmantambo": {
+    "definition": "Son of Naa Gbewaa remembered as the founder of Nanung (Naa Gmantambo).",
+    "phonetic": "gmahn-tahm-boh"
+  },
+  "mampruli": {
+    "definition": "Language of the Mamprugu kingdom in northern Ghana.",
+    "phonetic": "mahm-proo-lee"
+  },
+  "mooré": {
+    "definition": "Language of the Mossi people of Burkina Faso.",
+    "phonetic": "moh-ray"
+  },
+  "moore-accent": {
+    "definition": "Language of the Mossi people of Burkina Faso.",
+    "phonetic": "moh-ray"
+  },
+  "damba": {
+    "definition": "Major royal festival celebrated across northern Ghana.",
+    "phonetic": "dahm-bah"
+  },
+  "dagombas": {
+    "definition": "People of the Dagbon kingdom in northern Ghana (plural).",
+    "phonetic": "dah-gohm-bahz"
+  },
+  "mamprusis": {
+    "definition": "People of the Mamprugu kingdom in northern Ghana (plural).",
+    "phonetic": "mahm-proo-seez"
+  },
+  "nanumba": {
+    "definition": "People of the Nanung kingdom in northern Ghana.",
+    "phonetic": "nah-noom-bah"
+  },
+  "gonja": {
+    "definition": "Kingdom, people, and Guang language of the Savannah Region of northern Ghana.",
+    "phonetic": "gohn-jah"
+  },
+  "yagbonwura": {
+    "definition": "Title of the Overlord (paramount king) of the Gonja kingdom.",
+    "phonetic": "yahg-bohn-woo-rah"
+  },
+  "ndewura": {
+    "definition": "Royal title and name of Sumaila Ndewura Jakpa, founder of the Gonja kingdom.",
+    "phonetic": "n-deh-woo-rah"
+  },
+  "jakpa": {
+    "definition": "Name of Sumaila Ndewura Jakpa, founder of the Gonja kingdom.",
+    "phonetic": "jahk-pah"
+  },
+  "mande": {
+    "definition": "Major West African language and cultural family of the upper Niger basin.",
+    "phonetic": "mahn-day"
+  },
+  "yagbon": {
+    "definition": "Paramount royal skin of the Gonja kingdom.",
+    "phonetic": "yahg-bohn"
+  },
+  "wasipe": {
+    "definition": "One of the royal divisions of the Gonja kingdom (Daboya).",
+    "phonetic": "wah-see-peh"
+  },
+  "kpembe": {
+    "definition": "Royal division of the Gonja kingdom near Salaga.",
+    "phonetic": "kpem-beh"
+  },
+  "bole": {
+    "definition": "Historic town and royal division of the Gonja kingdom in the Savannah Region.",
+    "phonetic": "boh-leh"
+  },
+  "tuluwe": {
+    "definition": "Royal division of the Gonja kingdom.",
+    "phonetic": "too-loo-weh"
+  },
+  "kusawgu": {
+    "definition": "Royal division of the Gonja kingdom.",
+    "phonetic": "koo-sahw-goo"
+  },
+  "brumasi": {
+    "definition": "Historic site associated with the death of Sumaila Ndewura Jakpa.",
+    "phonetic": "broo-mah-see"
   }
 }
