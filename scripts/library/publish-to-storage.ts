@@ -986,7 +986,9 @@ async function buildStagedBundle(opts: CliOptions, remoteCatalogue: { catalogueV
       remoteEntry.infoHash !== infoHash ||
       remoteEntry.infoPath !== `/${remoteInfoPath}` ||
       remoteEntry.title !== s.title ||
-      remoteEntry.summary !== s.summary
+      remoteEntry.summary !== s.summary ||
+      remoteEntry.releaseAt !== releaseAt ||
+      remoteEntry.publishedAt !== publishedAt
     ) {
       anyStoryChangedVsRemote = true;
     }
