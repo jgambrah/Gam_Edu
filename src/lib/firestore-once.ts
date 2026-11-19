@@ -89,3 +89,16 @@ export function useOnceQuery<T = any>(key: string | null, load: () => Promise<T[
 export function invalidateOnceCache(prefix: string) {
   Array.from(cache.keys()).forEach((k) => { if (k.startsWith(prefix)) cache.delete(k); });
 }
+
+/** Peek a fresh cached entry synchronously without triggering a network read (returns null on miss/expiry). */
+export function peekOnceCache<T = any>(key: string | null, ttlMs: number = DEFAULT_TTL_MS): T[] | null {
+  if (!key) return null;
+  const hit = cache.get(key);
+  if (!hit || Date.now() - hit.at >= ttlMs) return null;
+  return hit.data as T[];
+}
+
+/** Populate or update a cache entry directly without a read. */
+export function writeOnceCache<T = any>(key: string, data: T[]) {
+  cache.set(key, { at: Date.now(), data });
+}

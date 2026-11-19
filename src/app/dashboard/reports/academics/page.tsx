@@ -4,8 +4,10 @@ import { useState, useMemo, useEffect, useCallback, useRef, Fragment } from 'rea
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
 import { useRole } from '@/context/role-context';
-import { useCollection, useFirestore, useMemoFirebase, useDoc } from '@/firebase';
-import { collection, query, where, doc, getDoc, setDoc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, query, where, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { useOnceQuery, readOnceCached, invalidateOnceCache, peekOnceCache, writeOnceCache } from '@/lib/firestore-once';
+import { buildTermId } from '@/lib/term';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -165,6 +167,10 @@ import {
 interface AcademicReportSnapshotDoc {
     id: string;
     calcVersion?: number;
+    builtAt?: number;
+    markVersion?: number;
+    caWeight?: number;
+    examWeight?: number;
     schoolId: string;
     academicYear: string;
     term: string;
@@ -200,16 +206,24 @@ interface AcademicReportSnapshotDoc {
     subjectDetailsMap?: Record<string, any>;
 }
 
+const MASTER_LIST_TTL_MS = 10 * 60 * 1000;
+const safeDocKey = (v: any) => String(v || '').replace(/[.\/\[\]#$*`~]/g, '_').slice(0, 120);
+const toEpochMs = (v: any): number => {
+    if (!v) return 0;
+    if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
+    if (typeof v.toMillis === 'function') return v.toMillis();
+    if (typeof v.seconds === 'number') return v.seconds * 1000 + Math.floor((v.nanoseconds || 0) / 1e6);
+    const parsed = Date.parse(String(v));
+    return Number.isFinite(parsed) ? parsed : 0;
+};
+
 export default function AcademicReportsPage() {
     const { role, loading: isRoleLoading } = useRole();
     const router = useRouter();
     const firestore = useFirestore();
     const { user } = useUser();
     const { schoolId, loading: isSchoolLoading } = useCurrentSchool();
-    
-    const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
-    const { data: schoolData } = useDoc<any>(schoolRef);
-    
+
     // States
     const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string>('all');
@@ -225,6 +239,12 @@ export default function AcademicReportsPage() {
     const [activeSnapshot, setActiveSnapshot] = useState<AcademicReportSnapshotDoc | null>(null);
     const [isLoadingSnapshot, setIsLoadingSnapshot] = useState<boolean>(false);
     const [loadingTimedOut, setLoadingTimedOut] = useState<boolean>(false);
+    const pendingAutoOpenRef = useRef<{ classId: string; series?: AcademicSeriesId } | null>(null);
+    const latestClassAvgMetaRef = useRef<{ lastMarkWriteAtMs: number; markVersion: number }>({
+        lastMarkWriteAtMs: 0,
+        markVersion: 0,
+    });
+    const persistedSnapshotKeysRef = useRef<Set<string>>(new Set());
 
     useEffect(() => {
         setMounted(true);
@@ -232,13 +252,16 @@ export default function AcademicReportsPage() {
             const params = new URLSearchParams(window.location.search);
             const sParam = params.get('series');
             const cParam = params.get('classId');
-            if (sParam && (sParam === 'end_of_term' || sParam === 'mid_term' || sParam.startsWith('mock_'))) {
-                setSelectedSeries(sParam as AcademicSeriesId);
+            const validSeries = (sParam && (sParam === 'end_of_term' || sParam === 'mid_term' || sParam.startsWith('mock_')))
+                ? (sParam as AcademicSeriesId)
+                : undefined;
+            if (validSeries) {
+                setSelectedSeries(validSeries);
                 setViewMode('master_report');
             }
             if (cParam) {
                 setSelectedClassId(cParam);
-                setIsReportRequested(true);
+                pendingAutoOpenRef.current = { classId: cParam, series: validSeries };
             }
         }
     }, []);
@@ -263,16 +286,25 @@ export default function AcademicReportsPage() {
         }
     }, [role, isRoleLoading, router]);
 
-    // Query Classes
-    const classesQuery = useMemoFirebase(() => {
-        if (!user || !firestore || !schoolId || isRoleLoading || !canAccess) return null;
-        let q = query(collection(firestore, 'classes'), where('schoolId', '==', schoolId));
-        if (role === 'Teacher') {
-            q = query(q, where('teacherId', '==', user.uid));
-        }
-        return q;
-    }, [firestore, user, role, schoolId, isRoleLoading, canAccess]);
-    const { data: rawClasses, isLoading: isLoadingClasses } = useCollection<Class>(classesQuery);
+    const readAll = useCallback(async <T = any>(q: any): Promise<T[]> => {
+        const snap = await getDocs(q);
+        return snap.docs.map((d: any) => ({ ...(d.data() as any), id: d.id })) as T[];
+    }, []);
+
+    // One-time cached reads (10 min TTL) for Classes, Subjects & School Settings (replaces live onSnapshot listeners)
+    const { data: rawClasses, isLoading: isLoadingClasses } = useOnceQuery<Class>(
+        (user && firestore && schoolId && !isRoleLoading && canAccess)
+            ? `ml:classes:${schoolId}:${role === 'Teacher' ? user.uid : 'all'}`
+            : null,
+        () => {
+            let q = query(collection(firestore!, 'classes'), where('schoolId', '==', schoolId));
+            if (role === 'Teacher') {
+                q = query(q, where('teacherId', '==', user!.uid));
+            }
+            return readAll<Class>(q);
+        },
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
     // Pedagogical Academic Sorting for classes
     const classes = useMemo(() => {
@@ -282,19 +314,62 @@ export default function AcademicReportsPage() {
 
     const selectedClass = classes?.find(c => c.id === selectedClassId);
 
-    // Query Subjects
-    const subjectsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess) return null;
-        return query(collection(firestore, 'subjects'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess]);
-    const { data: subjects, isLoading: isLoadingSubjects } = useCollection<Subject>(subjectsQuery);
+    const { data: subjects, isLoading: isLoadingSubjects } = useOnceQuery<Subject>(
+        (firestore && schoolId && !isRoleLoading && canAccess) ? `ml:subjects:${schoolId}` : null,
+        () => readAll<Subject>(query(collection(firestore!, 'subjects'), where('schoolId', '==', schoolId))),
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
-    // Query Students (school-wide on-demand to support flexible classId/className matching)
-    const studentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        return query(collection(firestore, 'students'), where('schoolId', '==', schoolId));
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot]);
-    const { data: rawStudents, isLoading: isLoadingStudents, forceRefetch: refetchStudents } = useCollection<Student>(studentsQuery);
+    const { data: schoolProfileRows } = useOnceQuery<any>(
+        (firestore && schoolId && !isRoleLoading && canAccess) ? `ml:schoolSettings:${schoolId}` : null,
+        async () => {
+            const snap = await getDoc(doc(firestore!, 'schoolSettings', schoolId!));
+            return snap.exists() ? [{ ...(snap.data() as any), id: snap.id }] : [];
+        },
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
+    const schoolProfile = schoolProfileRows?.[0] || null;
+
+    const selectedYearVariants = useMemo(
+        () => (selectedYear ? academicYearVariants(selectedYear).slice(0, 10) : []),
+        [selectedYear]
+    );
+    const yearKey = selectedYearVariants.join('|') || selectedYear || 'current';
+    const classScopeKey = selectedClassId || 'none';
+    const liveCompileReady = Boolean(
+        firestore &&
+        schoolId &&
+        !isRoleLoading &&
+        canAccess &&
+        isReportRequested &&
+        !activeSnapshot &&
+        !isLoadingSnapshot &&
+        selectedClassId
+    );
+
+    // 2a & 2b) Class-scoped one-time reads (10-min TTL). Switching series reuses these cached arrays with 0 extra reads!
+    const {
+        data: rawStudents,
+        isLoading: isLoadingStudents,
+        refresh: refreshStudents,
+    } = useOnceQuery<Student>(
+        liveCompileReady ? `ml:students:${schoolId}:${classScopeKey}` : null,
+        async () => {
+            if (selectedClassId && selectedClassId !== 'all') {
+                const byClass = await readAll<Student>(
+                    query(collection(firestore!, 'students'), where('schoolId', '==', schoolId), where('classId', '==', selectedClassId))
+                );
+                if (byClass.length > 0) return byClass;
+            }
+            // Fallback to school-wide students ONLY when classId=='all' or classId query returned 0 (legacy name-matched rosters)
+            return readOnceCached<Student>(
+                `ml:students:all:${schoolId}`,
+                () => readAll<Student>(query(collection(firestore!, 'students'), where('schoolId', '==', schoolId))),
+                { ttlMs: MASTER_LIST_TTL_MS }
+            );
+        },
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
     const students = useMemo(() => {
         if (!rawStudents) return [];
@@ -313,89 +388,85 @@ export default function AcademicReportsPage() {
         });
     }, [rawStudents, selectedClassId, selectedClass]);
 
-    const selectedYearVariants = useMemo(
-        () => (selectedYear ? academicYearVariants(selectedYear).slice(0, 10) : []),
-        [selectedYear]
+    const readScopedByClassAndYear = useCallback(async <T = any>(colName: string): Promise<T[]> => {
+        const base: any[] = [where('schoolId', '==', schoolId)];
+        if (selectedClassId && selectedClassId !== 'all') {
+            base.push(where('classId', '==', selectedClassId));
+        }
+        if (selectedYearVariants.length > 0) {
+            try {
+                return await readAll<T>(query(collection(firestore!, colName), ...base, where('academicYear', 'in', selectedYearVariants)));
+            } catch (err: any) {
+                if (err?.code === 'permission-denied') throw err;
+                console.warn(`[MasterList] Year-variant query on ${colName} fell back to class-scoped query:`, err?.message);
+            }
+        }
+        return readAll<T>(query(collection(firestore!, colName), ...base));
+    }, [firestore, schoolId, selectedClassId, selectedYearVariants, readAll]);
+
+    const assessmentsCacheKey = (firestore && schoolId && selectedClassId)
+        ? `ml:assessments:${schoolId}:${classScopeKey}:${yearKey}`
+        : null;
+
+    const {
+        data: rawAssessments,
+        isLoading: isLoadingAssessments,
+        refresh: refreshAssessments,
+    } = useOnceQuery<Assessment>(
+        liveCompileReady ? assessmentsCacheKey : null,
+        () => readScopedByClassAndYear<Assessment>('assessments'),
+        { ttlMs: MASTER_LIST_TTL_MS }
     );
 
-    // Multi-Source On-Demand Querying: Scoped Assessments collection (matches all year spellings incl. "2024/25")
-    const assessmentsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYearVariants.length > 0) {
-            constraints.push(where('academicYear', 'in', selectedYearVariants));
-        }
-        if (selectedClassId && selectedClassId !== 'all') {
-            constraints.push(where('classId', '==', selectedClassId));
-        }
-        return query(collection(firestore, 'assessments'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants, selectedClassId]);
-    const { data: rawAssessments, isLoading: isLoadingAssessments, forceRefetch: refetchAssessments } = useCollection<Assessment>(assessmentsQuery);
+    const {
+        data: rawGrades,
+        isLoading: isLoadingGrades,
+        refresh: refreshGrades,
+    } = useOnceQuery<any>(
+        liveCompileReady ? `ml:grades:${schoolId}:${classScopeKey}:${yearKey}` : null,
+        () => readScopedByClassAndYear<any>('grades'),
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
-    // Multi-Source On-Demand Querying: Scoped Grades collection
-    const gradesQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYearVariants.length > 0) {
-            constraints.push(where('academicYear', 'in', selectedYearVariants));
-        }
-        if (selectedClassId && selectedClassId !== 'all') {
-            constraints.push(where('classId', '==', selectedClassId));
-        }
-        return query(collection(firestore, 'grades'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants, selectedClassId]);
-    const { data: rawGrades, isLoading: isLoadingGrades, forceRefetch: refetchGrades } = useCollection<any>(gradesQuery);
+    const {
+        data: rawReportCards,
+        isLoading: isLoadingReportCards,
+        refresh: refreshReportCards,
+    } = useOnceQuery<any>(
+        liveCompileReady ? `ml:report-cards:${schoolId}:${classScopeKey}:${yearKey}` : null,
+        () => readScopedByClassAndYear<any>('report-cards'),
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
-    // Multi-Source On-Demand Querying: Scoped Report Cards collection (kebab-case)
-    const reportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYearVariants.length > 0) {
-            constraints.push(where('academicYear', 'in', selectedYearVariants));
-        }
-        return query(collection(firestore, 'report-cards'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants]);
-    const { data: rawReportCards, isLoading: isLoadingReportCards, forceRefetch: refetchReportCards } = useCollection<any>(reportCardsQuery);
+    const {
+        data: rawReportCardsAlt,
+        isLoading: isLoadingReportCardsAlt,
+        refresh: refreshReportCardsAlt,
+    } = useOnceQuery<any>(
+        liveCompileReady ? `ml:reportCards:${schoolId}:${classScopeKey}:${yearKey}` : null,
+        () => readScopedByClassAndYear<any>('reportCards'),
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
-    // Multi-Source On-Demand Querying: Scoped Report Cards collection (camelCase alternate)
-    const reportCardsAltQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYearVariants.length > 0) {
-            constraints.push(where('academicYear', 'in', selectedYearVariants));
-        }
-        return query(collection(firestore, 'reportCards'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants]);
-    const { data: rawReportCardsAlt, isLoading: isLoadingReportCardsAlt, forceRefetch: refetchReportCardsAlt } = useCollection<any>(reportCardsAltQuery);
+    const {
+        data: rawTermReportCards,
+        isLoading: isLoadingTermReportCards,
+        refresh: refreshTermReportCards,
+    } = useOnceQuery<any>(
+        liveCompileReady ? `ml:term_report_cards:${schoolId}:${classScopeKey}:${yearKey}` : null,
+        () => readScopedByClassAndYear<any>('term_report_cards'),
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
-    // Multi-Source On-Demand Querying: Scoped Term Report Cards collection
-    const termReportCardsQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYearVariants.length > 0) {
-            constraints.push(where('academicYear', 'in', selectedYearVariants));
-        }
-        return query(collection(firestore, 'term_report_cards'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants]);
-    const { data: rawTermReportCards, isLoading: isLoadingTermReportCards, forceRefetch: refetchTermReportCards } = useCollection<any>(termReportCardsQuery);
-
-    // Multi-Source On-Demand Querying: Scoped Marks collection
-    const marksQuery = useMemoFirebase(() => {
-        if (!firestore || !schoolId || isRoleLoading || !canAccess || !isReportRequested || activeSnapshot) return null;
-        const constraints: any[] = [where('schoolId', '==', schoolId)];
-        if (selectedYearVariants.length > 0) {
-            constraints.push(where('academicYear', 'in', selectedYearVariants));
-        }
-        if (selectedClassId && selectedClassId !== 'all') {
-            constraints.push(where('classId', '==', selectedClassId));
-        }
-        return query(collection(firestore, 'marks'), ...constraints);
-    }, [firestore, schoolId, isRoleLoading, canAccess, isReportRequested, activeSnapshot, selectedYearVariants, selectedClassId]);
-    const { data: rawMarks, isLoading: isLoadingMarks, forceRefetch: refetchMarks } = useCollection<any>(marksQuery);
-
-    // Fetch School Settings for standard weighting overrides
-    const schoolProfileRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schoolSettings', schoolId) : null, [firestore, schoolId]);
-    const { data: schoolProfile } = useDoc<any>(schoolProfileRef);
+    const {
+        data: rawMarks,
+        isLoading: isLoadingMarks,
+        refresh: refreshMarks,
+    } = useOnceQuery<any>(
+        liveCompileReady ? `ml:marks:${schoolId}:${classScopeKey}:${yearKey}` : null,
+        () => readScopedByClassAndYear<any>('marks'),
+        { ttlMs: MASTER_LIST_TTL_MS }
+    );
 
     useEffect(() => {
         if (schoolProfile) {
@@ -867,9 +938,18 @@ export default function AcademicReportsPage() {
 
     
     // Safety timer: prevent indefinite spinner freeze if network latency spikes
+    const isAnyCollectionLoading =
+        isLoadingStudents ||
+        isLoadingAssessments ||
+        isLoadingGrades ||
+        isLoadingMarks ||
+        isLoadingReportCards ||
+        isLoadingReportCardsAlt ||
+        isLoadingTermReportCards;
+
     useEffect(() => {
         let timer: any;
-        const isAnyLoading = isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards;
+        const isAnyLoading = isLoadingSnapshot || isAnyCollectionLoading;
         if (isAnyLoading) {
             timer = setTimeout(() => {
                 setLoadingTimedOut(true);
@@ -878,7 +958,7 @@ export default function AcademicReportsPage() {
             setLoadingTimedOut(false);
         }
         return () => clearTimeout(timer);
-    }, [isLoadingSnapshot, isLoadingStudents, isLoadingAssessments, isLoadingGrades, isLoadingMarks, isLoadingReportCards]);
+    }, [isLoadingSnapshot, isAnyCollectionLoading]);
 
     const snapshotReqSeqRef = useRef<number>(0);
 
@@ -905,6 +985,21 @@ export default function AcademicReportsPage() {
         }
 
         const reqSeq = ++snapshotReqSeqRef.current;
+        const canonicalTermId = buildTermId(selectedYear, selectedTerm);
+        const targetClassDoc = classes?.find(c => c.id === selectedClassId);
+        const targetWeights = resolveSeriesWeights({
+            series: targetSeries,
+            classDoc: targetClassDoc,
+            schoolSettings: schoolProfile,
+        });
+
+        // Fast path (0 Firestore reads): if raw class marks/cards are already cached in memory and this is not an explicit Refresh,
+        // switching series computes immediately from cached data with 0 extra reads!
+        if (!forceRefresh && assessmentsCacheKey && peekOnceCache(assessmentsCacheKey, MASTER_LIST_TTL_MS) !== null) {
+            setActiveSnapshot(null);
+            setIsReportRequested(true);
+            return;
+        }
 
         const snapshotDocId = buildAcademicSnapshotDocId(
             schoolId,
@@ -914,22 +1009,60 @@ export default function AcademicReportsPage() {
             targetSeries
         );
 
-        // Only trust a pre-saved rollup snapshot for closed/archived terms (when not unlocked for correction)
-        // so active terms ALWAYS compile live marks and never serve stale 1-subject snapshots!
-        if (!forceRefresh && !schoolProfile?.isTermCorrectionActive) {
+        // 2c) Check 1-doc snapshot for BOTH archived AND unchanged active terms (`builtAt >= lastMarkWriteAt` & `calcVersion === 2`)
+        if (!forceRefresh && !schoolProfile?.isTermCorrectionActive && selectedClassId !== 'all') {
             setIsLoadingSnapshot(true);
             try {
-                const snapRef = doc(firestore, 'academic_report_snapshots', snapshotDocId);
-                const snap = await getDoc(snapRef);
-                if (reqSeq !== snapshotReqSeqRef.current) return; // Discard late out-of-order response
-                if (snap.exists()) {
-                    const data = snap.data() as AcademicReportSnapshotDoc;
+                const classAvgDocId = canonicalTermId
+                    ? `${schoolId}__${canonicalTermId}__${safeDocKey(selectedClassId)}`
+                    : null;
+
+                const [snapArr, classAvgArr] = await Promise.all([
+                    readOnceCached<AcademicReportSnapshotDoc>(
+                        `ml:snap:${snapshotDocId}`,
+                        async () => {
+                            const s = await getDoc(doc(firestore, 'academic_report_snapshots', snapshotDocId));
+                            return s.exists() ? [s.data() as AcademicReportSnapshotDoc] : [];
+                        },
+                        { ttlMs: MASTER_LIST_TTL_MS }
+                    ),
+                    classAvgDocId
+                        ? readOnceCached<any>(
+                            `ml:classAvg:${classAvgDocId}`,
+                            async () => {
+                                const c = await getDoc(doc(firestore, 'classAverages', classAvgDocId));
+                                return c.exists() ? [c.data()] : [];
+                            },
+                            { ttlMs: MASTER_LIST_TTL_MS }
+                        )
+                        : Promise.resolve([]),
+                ]);
+
+                if (reqSeq !== snapshotReqSeqRef.current) return;
+
+                const classAvgData = classAvgArr[0] || null;
+                const lastMarkWriteAtMs = toEpochMs(classAvgData?.lastMarkWriteAt);
+                const currentMarkVersion = Number(classAvgData?.markVersion || 0);
+                latestClassAvgMetaRef.current = { lastMarkWriteAtMs, markVersion: currentMarkVersion };
+
+                const data = snapArr[0];
+                if (data) {
                     const snapSeries = (data.reportSeries || 'end_of_term') as AcademicSeriesId;
+                    const snapBuiltAtMs = toEpochMs(data.builtAt);
+                    const weightsMatch =
+                        (data.caWeight === undefined || data.caWeight === targetWeights.caWeight) &&
+                        (data.examWeight === undefined || data.examWeight === targetWeights.examWeight);
+                    const isFreshActiveSnapshot =
+                        snapBuiltAtMs > 0 &&
+                        snapBuiltAtMs >= lastMarkWriteAtMs &&
+                        (classAvgData?.markVersion === undefined || Number(data.markVersion ?? 0) >= currentMarkVersion) &&
+                        weightsMatch;
+
                     if (
                         data.calcVersion === 2 &&
-                        data.isArchived === true &&
                         snapSeries === targetSeries &&
-                        data.classId === selectedClassId
+                        data.classId === selectedClassId &&
+                        (data.isArchived === true || isFreshActiveSnapshot)
                     ) {
                         setActiveSnapshot(data);
                         setIsReportRequested(true);
@@ -944,18 +1077,77 @@ export default function AcademicReportsPage() {
             setIsLoadingSnapshot(false);
         }
 
-        // Live compilation
+        // Explicit Refresh button: invalidate cached snapshots/marks and force one-time re-read
+        if (forceRefresh) {
+            persistedSnapshotKeysRef.current.clear();
+            invalidateOnceCache(`ml:snap:${schoolId}`);
+            invalidateOnceCache(`ml:classAvg:${schoolId}`);
+            invalidateOnceCache(`ml:students:${schoolId}:${classScopeKey}`);
+            invalidateOnceCache(`ml:assessments:${schoolId}:${classScopeKey}`);
+            invalidateOnceCache(`ml:grades:${schoolId}:${classScopeKey}`);
+            invalidateOnceCache(`ml:marks:${schoolId}:${classScopeKey}`);
+            invalidateOnceCache(`ml:report-cards:${schoolId}:${classScopeKey}`);
+            invalidateOnceCache(`ml:reportCards:${schoolId}:${classScopeKey}`);
+            invalidateOnceCache(`ml:term_report_cards:${schoolId}:${classScopeKey}`);
+
+            if (canonicalTermId && selectedClassId !== 'all') {
+                const classAvgDocId = `${schoolId}__${canonicalTermId}__${safeDocKey(selectedClassId)}`;
+                try {
+                    const cSnap = await getDoc(doc(firestore, 'classAverages', classAvgDocId));
+                    const cData = cSnap.exists() ? cSnap.data() : null;
+                    latestClassAvgMetaRef.current = {
+                        lastMarkWriteAtMs: toEpochMs(cData?.lastMarkWriteAt),
+                        markVersion: Number(cData?.markVersion || 0),
+                    };
+                    writeOnceCache(`ml:classAvg:${classAvgDocId}`, cData ? [cData] : []);
+                } catch {}
+            }
+
+            setActiveSnapshot(null);
+            setIsReportRequested(true);
+            refreshStudents();
+            refreshAssessments();
+            refreshGrades();
+            refreshMarks();
+            refreshReportCards();
+            refreshReportCardsAlt();
+            refreshTermReportCards();
+            return;
+        }
+
+        // Live compilation (uses `useOnceQuery` 10-min cache — no duplicate refetch listeners!)
         setActiveSnapshot(null);
         setIsReportRequested(true);
+    }, [
+        selectedClassId,
+        firestore,
+        schoolId,
+        selectedYear,
+        selectedTerm,
+        selectedSeries,
+        classes,
+        schoolProfile,
+        assessmentsCacheKey,
+        classScopeKey,
+        refreshStudents,
+        refreshAssessments,
+        refreshGrades,
+        refreshMarks,
+        refreshReportCards,
+        refreshReportCardsAlt,
+        refreshTermReportCards,
+    ]);
 
-        refetchStudents?.();
-        refetchAssessments?.();
-        refetchGrades?.();
-        refetchMarks?.();
-        refetchReportCards?.();
-        refetchReportCardsAlt?.();
-        refetchTermReportCards?.();
-    }, [selectedClassId, firestore, schoolId, selectedYear, selectedTerm, selectedSeries, schoolProfile?.isTermCorrectionActive, refetchStudents, refetchAssessments, refetchGrades, refetchMarks, refetchReportCards, refetchReportCardsAlt, refetchTermReportCards]);
+    // Trigger initial snapshot-first load when opened via ?classId=...&series=... URL link
+    useEffect(() => {
+        if (!pendingAutoOpenRef.current || !firestore || !schoolId || !selectedYear || !selectedTerm || isRoleLoading || !canAccess) {
+            return;
+        }
+        const pending = pendingAutoOpenRef.current;
+        if (selectedClassId !== pending.classId) return;
+        pendingAutoOpenRef.current = null;
+        handleGenerateAnalytics(false, pending.series);
+    }, [firestore, schoolId, selectedYear, selectedTerm, selectedClassId, isRoleLoading, canAccess, handleGenerateAnalytics]);
 
     useEffect(() => {
         if (isReportRequested) {
@@ -1556,11 +1748,13 @@ export default function AcademicReportsPage() {
 
     const rankedStudents = activeSnapshot ? activeSnapshot.rankedStudents : rawRankedStudents;
 
-    // Auto-save snapshot to Firestore ONLY for Admins on closed/archived terms (never freeze partial open-term snapshots!)
+    // 2c) Auto-save snapshot to Firestore for Admins (both archived AND active terms, stamped with `builtAt` & `markVersion`)
+    // so subsequent opens by Teachers or Admins cost <= 2 Firestore reads unless a new mark was written (`builtAt < lastMarkWriteAt`)!
     useEffect(() => {
         if (
             isAdmin &&
-            rawIsTermArchived &&
+            selectedClassId &&
+            selectedClassId !== 'all' &&
             !schoolProfile?.isTermCorrectionActive &&
             isReportRequested && 
             !activeSnapshot && 
@@ -1568,14 +1762,9 @@ export default function AcademicReportsPage() {
             rawAcademicData && 
             rawActiveSubjects.length > 0 &&
             rawRankedStudents.length > 0 && 
-            !isLoadingAssessments && 
-            !isLoadingStudents && 
-            !isLoadingGrades &&
-            !isLoadingMarks &&
-            !isLoadingReportCards &&
+            !isAnyCollectionLoading &&
             firestore && 
-            schoolId && 
-            selectedClassId
+            schoolId
         ) {
             const snapshotDocId = buildAcademicSnapshotDocId(
                 schoolId,
@@ -1584,6 +1773,10 @@ export default function AcademicReportsPage() {
                 selectedClassId,
                 selectedSeries
             );
+            const { lastMarkWriteAtMs, markVersion } = latestClassAvgMetaRef.current;
+            const persistKey = `${snapshotDocId}@${markVersion}:${currentCaWeight}:${currentExamWeight}`;
+            if (persistedSnapshotKeysRef.current.has(persistKey)) return;
+            persistedSnapshotKeysRef.current.add(persistKey);
 
             // Pre-compile subjectDetailsMap for all class subjects
             const detailsMap: Record<string, any> = {};
@@ -1594,9 +1787,14 @@ export default function AcademicReportsPage() {
                 }
             });
 
+            const builtAtMs = Math.max(Date.now(), lastMarkWriteAtMs);
             const snapshotPayload: AcademicReportSnapshotDoc = {
                 id: snapshotDocId,
                 calcVersion: 2,
+                builtAt: builtAtMs,
+                markVersion,
+                caWeight: currentCaWeight,
+                examWeight: currentExamWeight,
                 schoolId,
                 academicYear: selectedYear,
                 term: selectedTerm,
@@ -1605,8 +1803,8 @@ export default function AcademicReportsPage() {
                 classId: selectedClassId,
                 className: selectedClass?.name || 'All Classes',
                 isArchived: rawIsTermArchived,
-                snapshotCreatedAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
+                snapshotCreatedAt: new Date(builtAtMs).toISOString(),
+                updatedAt: new Date(builtAtMs).toISOString(),
                 distinctSubjectsList: rawDistinctSubjectsList,
                 activeSubjects: rawActiveSubjects,
                 rankedStudents: rawRankedStudents,
@@ -1617,10 +1815,11 @@ export default function AcademicReportsPage() {
             const sanitizedPayload = JSON.parse(JSON.stringify(snapshotPayload));
             setDoc(doc(firestore, 'academic_report_snapshots', snapshotDocId), sanitizedPayload, { merge: true })
                 .then(() => {
-                    console.log("Academic report snapshot persisted successfully (1-read rollup created):", snapshotDocId);
+                    writeOnceCache(`ml:snap:${snapshotDocId}`, [snapshotPayload]);
                     setActiveSnapshot(snapshotPayload);
                 })
                 .catch(err => {
+                    persistedSnapshotKeysRef.current.delete(persistKey);
                     console.warn("Failed to persist academic report snapshot:", err);
                 });
         }
@@ -1635,11 +1834,7 @@ export default function AcademicReportsPage() {
         rawDistinctSubjectsList, 
         rawActiveSubjects, 
         rawIsTermArchived,
-        isLoadingAssessments, 
-        isLoadingStudents, 
-        isLoadingGrades,
-        isLoadingMarks,
-        isLoadingReportCards,
+        isAnyCollectionLoading,
         firestore, 
         schoolId, 
         selectedClassId, 
@@ -1648,6 +1843,8 @@ export default function AcademicReportsPage() {
         selectedSeries,
         activeSeriesOption,
         selectedClass, 
+        currentCaWeight,
+        currentExamWeight,
         computeSubjectDetails
     ]);
 
@@ -2066,7 +2263,7 @@ export default function AcademicReportsPage() {
                             <label className="hidden md:block text-xs font-semibold text-transparent uppercase mb-1 select-none pointer-events-none">&nbsp;</label>
                             <Button 
                                 onClick={() => handleGenerateAnalytics(false)} 
-                                disabled={!selectedClassId || isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards} 
+                                disabled={!selectedClassId || isLoadingSnapshot || isAnyCollectionLoading} 
                                 title={!selectedClassId ? "Please select a class to generate analytics" : "Generate academic analytics"}
                                 className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 gap-2 rounded-xl transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
                             >
@@ -2075,7 +2272,7 @@ export default function AcademicReportsPage() {
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                         <span>Checking Snapshot...</span>
                                     </>
-                                ) : isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards ? (
+                                ) : isAnyCollectionLoading ? (
                                     <>
                                         <Loader2 className="h-4 w-4 animate-spin" />
                                         <span>Generating...</span>
@@ -2107,7 +2304,7 @@ export default function AcademicReportsPage() {
                         </p>
                     </div>
                 </Card>
-            ) : (isLoadingSnapshot || isLoadingStudents || isLoadingAssessments || isLoadingGrades || isLoadingMarks || isLoadingReportCards) ? (
+            ) : (isLoadingSnapshot || isAnyCollectionLoading) ? (
                  <div className="text-center py-20 px-6 bg-white border border-slate-200 rounded-2xl shadow-sm max-w-lg mx-auto space-y-4 my-8">
                      <Loader2 className="mx-auto h-10 w-10 animate-spin text-indigo-600 mb-2"/>
                      <div className="space-y-1">
@@ -2257,6 +2454,14 @@ export default function AcademicReportsPage() {
                             )}
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
+                            <Button
+                                variant="outline"
+                                onClick={() => handleGenerateAnalytics(true)}
+                                className="bg-white hover:bg-slate-100 text-slate-700 border-slate-300 font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
+                                title="Force refresh marks and cards from Firestore"
+                            >
+                                <RefreshCw className="h-3.5 w-3.5" /> Refresh
+                            </Button>
                             <Button
                                 onClick={() => window.print()}
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-9 shadow-sm flex items-center gap-1.5"
