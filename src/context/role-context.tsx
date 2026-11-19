@@ -60,6 +60,35 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
   const refreshRole = useCallback(() => setRefreshTrigger(prev => prev + 1), []);
 
+  // Optional custom-claims sync behind `NEXT_PUBLIC_ENABLE_CUSTOM_CLAIMS=true`:
+  // stamps `{ role, schoolId }` via Admin SDK and refreshes the client ID token once so `firestore.rules`
+  // evaluates membership & role with 0 billed rule-lookup reads.
+  const ensureTokenClaimsSynced = useCallback(async (
+    currentUser: User,
+    resolvedRole: string | null | undefined,
+    resolvedSchoolId: string | null | undefined,
+    existingClaims?: Record<string, any>
+  ) => {
+    if (process.env.NEXT_PUBLIC_ENABLE_CUSTOM_CLAIMS !== 'true') return;
+    if (!resolvedRole || !resolvedSchoolId) return;
+    try {
+      const claims = existingClaims || (await currentUser.getIdTokenResult()).claims || {};
+      if (claims.role === resolvedRole && claims.schoolId === resolvedSchoolId) return;
+      const idToken = await currentUser.getIdToken();
+      const res = await fetch('/api/auth/sync-claims', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      if (!res.ok) return;
+      const payload = await res.json();
+      if (payload?.updated) {
+        await currentUser.getIdToken(true);
+      }
+    } catch {
+      // Non-blocking: Firestore rules retain full document-lookup fallback when claims are absent
+    }
+  }, []);
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -71,9 +100,11 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
       try {
         // --- FAST-PATH 0: Check Custom Claims on currentUser token ---
+        let initialTokenClaims: Record<string, any> = {};
         try {
           const tokenResult = await currentUser.getIdTokenResult();
-          const claimRole = tokenResult?.claims?.role as Role;
+          initialTokenClaims = tokenResult?.claims || {};
+          const claimRole = initialTokenClaims?.role as Role;
           if (claimRole && !isCancelled) {
             setRole(claimRole);
             try {
@@ -153,6 +184,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
               sessionStorage.setItem('gam_cached_profile', JSON.stringify(directorProfile));
             } catch {}
             setLoading(false);
+            void ensureTokenClaimsSynced(currentUser, 'Director', finalSchoolId, initialTokenClaims);
           }
           return;
         }
@@ -188,6 +220,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
               sessionStorage.setItem('gam_cached_profile', JSON.stringify(data));
             } catch {}
             setLoading(false);
+            void ensureTokenClaimsSynced(currentUser, data.role, data.schoolId, initialTokenClaims);
             return;
           }
         }
@@ -220,6 +253,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
             }
           }
           setLoading(false);
+          void ensureTokenClaimsSynced(currentUser, data.role, data.schoolId, initialTokenClaims);
           return;
         }
 
@@ -228,13 +262,15 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         const studentSnap = await getDoc(studentRef);
         if (studentSnap.exists()) {
           if (isCancelled) return;
+          const sData: any = studentSnap.data();
           setRole('Student');
-          setProfile(studentSnap.data());
+          setProfile(sData);
           try {
             sessionStorage.setItem('gam_cached_role', 'Student');
-            sessionStorage.setItem('gam_cached_profile', JSON.stringify(studentSnap.data()));
+            sessionStorage.setItem('gam_cached_profile', JSON.stringify(sData));
           } catch {}
           setLoading(false);
+          void ensureTokenClaimsSynced(currentUser, 'Student', sData?.schoolId, initialTokenClaims);
           return;
         }
 
@@ -243,13 +279,15 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
         const parentSnap = await getDoc(parentRef);
         if (parentSnap.exists()) {
           if (isCancelled) return;
+          const pData: any = parentSnap.data();
           setRole('Parent');
-          setProfile(parentSnap.data());
+          setProfile(pData);
           try {
             sessionStorage.setItem('gam_cached_role', 'Parent');
-            sessionStorage.setItem('gam_cached_profile', JSON.stringify(parentSnap.data()));
+            sessionStorage.setItem('gam_cached_profile', JSON.stringify(pData));
           } catch {}
           setLoading(false);
+          void ensureTokenClaimsSynced(currentUser, 'Parent', pData?.schoolId, initialTokenClaims);
           return;
         }
 

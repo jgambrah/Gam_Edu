@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.flushDirtyClassSeriesProfiles = exports.onAssessmentWriteForSummary = exports.onSchoolWriteForPublicSite = exports.onPayrollRecordForReview = exports.onSalaryConfigChangeForReview = exports.onVoucherCreatedForReview = exports.onPaymentReversalForReview = exports.onBillChangeForReview = exports.quizAnswerVault = exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
+exports.onParentDocWriteSyncClaims = exports.onStudentDocWriteSyncClaims = exports.onUserDocWriteSyncClaims = exports.onStaffWriteSyncClaims = exports.flushDirtyClassSeriesProfiles = exports.onAssessmentWriteForSummary = exports.onSchoolWriteForPublicSite = exports.onPayrollRecordForReview = exports.onSalaryConfigChangeForReview = exports.onVoucherCreatedForReview = exports.onPaymentReversalForReview = exports.onBillChangeForReview = exports.quizAnswerVault = exports.enforceTermRolloverSafetyNet = exports.requestTermUnlock = exports.executeTermFinancialRollover = exports.lockTermReportCards = exports.summarizeTermAttendance = exports.onParentWrite = exports.onBehavioralWrite = exports.onAdmissionWrite = exports.onStaffAttendanceWrite = exports.onPaymentSubcollectionWrite = exports.onFinancialRecordWrite = exports.onAttendanceWrite = exports.onStudentWrite = void 0;
 var dashboard_aggregators_1 = require("./dashboard-aggregators");
 Object.defineProperty(exports, "onStudentWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onStudentWrite; } });
 Object.defineProperty(exports, "onAttendanceWrite", { enumerable: true, get: function () { return dashboard_aggregators_1.onAttendanceWrite; } });
@@ -31,4 +31,9 @@ Object.defineProperty(exports, "onSchoolWriteForPublicSite", { enumerable: true,
 var academic_summary_1 = require("./academic-summary");
 Object.defineProperty(exports, "onAssessmentWriteForSummary", { enumerable: true, get: function () { return academic_summary_1.onAssessmentWriteForSummary; } });
 Object.defineProperty(exports, "flushDirtyClassSeriesProfiles", { enumerable: true, get: function () { return academic_summary_1.flushDirtyClassSeriesProfiles; } });
+var auth_claims_1 = require("./auth-claims");
+Object.defineProperty(exports, "onStaffWriteSyncClaims", { enumerable: true, get: function () { return auth_claims_1.onStaffWriteSyncClaims; } });
+Object.defineProperty(exports, "onUserDocWriteSyncClaims", { enumerable: true, get: function () { return auth_claims_1.onUserDocWriteSyncClaims; } });
+Object.defineProperty(exports, "onStudentDocWriteSyncClaims", { enumerable: true, get: function () { return auth_claims_1.onStudentDocWriteSyncClaims; } });
+Object.defineProperty(exports, "onParentDocWriteSyncClaims", { enumerable: true, get: function () { return auth_claims_1.onParentDocWriteSyncClaims; } });
 //# sourceMappingURL=index.js.map

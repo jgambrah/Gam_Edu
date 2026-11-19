@@ -6,3 +6,9 @@ export { quizAnswerVault } from './quiz-answer-vault';
 export { onBillChangeForReview, onPaymentReversalForReview, onVoucherCreatedForReview, onSalaryConfigChangeForReview, onPayrollRecordForReview } from './finance-review';
 export { onSchoolWriteForPublicSite } from './public-site';
 export { onAssessmentWriteForSummary, flushDirtyClassSeriesProfiles } from './academic-summary';
+export {
+  onStaffWriteSyncClaims,
+  onUserDocWriteSyncClaims,
+  onStudentDocWriteSyncClaims,
+  onParentDocWriteSyncClaims,
+} from './auth-claims';
