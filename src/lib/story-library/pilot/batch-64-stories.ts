@@ -34,7 +34,7 @@ interface Guide {
   localise: string[];
   discoveryStatus?: NonNullable<PilotStory['teacherGuide']>['discoveryStatus'];
   investigation?: NonNullable<PilotStory['teacherGuide']>['investigation'];
-  factCheck?: NonNullable<PilotStory['teacherGuide']>['factCheck'];
+  factCheck?: NonNullable<PilotStory['teacherGuide']>['factCheck'] | string[];
 }
 
 interface Spec {
@@ -128,7 +128,7 @@ const mk = (s: Spec): PilotStory => {
       localiseThis: g.localise,
       ...(g.discoveryStatus ? { discoveryStatus: g.discoveryStatus } : {}),
       ...(g.investigation ? { investigation: g.investigation } : {}),
-      ...(g.factCheck ? { factCheck: g.factCheck } : {}),
+      ...(g.factCheck ? { factCheck: g.factCheck as NonNullable<PilotStory['teacherGuide']>['factCheck'] } : {}),
     },
   };
 };
@@ -866,7 +866,7 @@ export const BATCH_64_AFRICAN_LEGENDS_GHANA: PilotStory[] = [
       ),
       pg(
         '🕊️',
-        'GRANDPA KWEKU. “The tradition says that Egya Ahor listened to his people and prayed, and then he said something that made the whole camp go quiet. He said that if one life could save the people, he was willing to give his own. He did not say it lightly, and nobody asked it of him. The elders remember him as a man who loved his people more than his own comfort. We do not tell the rest of this part in detail, because it is very sad. We say only that the sickness weakened after that, and the people were able to travel on and found their homes.” Esi was silent.',
+        'GRANDPA KWEKU. “The tradition says that Egya Ahor listened to his people and prayed, and then he said something that made the whole camp go quiet. He said that if one life could save the people, he was willing to give his own. He did not say it lightly, and nobody asked it of him. The elders remember him as a man who loved his people more than his own comfort. We do not tell the rest of this part in detail, because it is very sad. We say only that the sickness weakened after that, and the people were able to travel on and found their homes.” She sat silent beside me.',
         'A gentle scene of an old priest standing among quiet travellers at dusk, his hand raised in prayer.'
       ),
       pg(
@@ -1448,7 +1448,7 @@ export const BATCH_64_AFRICAN_LEGENDS_GHANA: PilotStory[] = [
     culturalNotes: [
       'Source and tradition: Sumaila Ndewura Jakpa is remembered as the founder of the Gonja kingdom. Sources differ on his dates (the sixteenth or seventeenth century), and the article says so. The Yagbon skin is said to pass in turn among five divisions (Wasipe, Kpembe, Bole, Tuluwe, Kusawgu); the article uses a simple three- and four-division model, not a full account of how titles pass today.',
       'Original piece written for Ghanaian JHS learners from well-known oral tradition and history. The scenes and child characters are invented, and it copies no published retelling or epic text.',
-      'Respect: the article names conquest honestly but gently and does not glorify violence. It takes no side in any present chieftaincy matter. Check the details of the divisions, the earth priests and the Yagbonwura title (older spelling Yagbumwura) with a Gonja elder or the Gonja traditional council.',
+      'Respect: the article names conquest honestly but gently and does not glorify violence. It takes no side in any present chieftaincy matter. Check the details of the divisions, the earth priests and the Yagbonwura title with a Gonja elder or the Gonja traditional council.',
     ],
     reviewQuestions: [
       'Ask a Gonja elder or teacher to confirm the description of the divisions, the Yagbonwura title and the Yagbon skin, and the rotation among the five divisions.',
