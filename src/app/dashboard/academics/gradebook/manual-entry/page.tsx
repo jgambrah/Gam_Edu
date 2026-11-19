@@ -2808,26 +2808,26 @@ export default function GradebookPage() {
 
             {/* Assessment Proportions Configuration Modal */}
             <Dialog open={isWeightModalOpen} onOpenChange={setIsWeightModalOpen}>
-                <DialogContent className="sm:max-w-[480px] rounded-[2rem] border-0 shadow-2xl p-6">
+                <DialogContent className="sm:max-w-[640px] w-[95vw] rounded-[2rem] border-0 shadow-2xl p-7 bg-white">
                     <DialogHeader className="border-b border-slate-100 pb-4">
-                        <DialogTitle className="flex items-center gap-2 text-slate-900 font-black text-xl">
-                            <Sliders className="h-5 w-5 text-indigo-600" /> Configure Assessment Proportions
+                        <DialogTitle className="flex items-center gap-2.5 text-slate-900 font-black text-xl">
+                            <Sliders className="h-5 w-5 text-indigo-600 shrink-0" /> Configure Assessment Proportions
                         </DialogTitle>
-                        <DialogDescription className="text-slate-400 text-xs">
+                        <DialogDescription className="text-slate-500 text-xs leading-relaxed">
                             Define the ratio between Continuous Assessment (SBA) and End of Term Exam for this school/class.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-4 py-2">
+                    <div className="space-y-5 py-3">
                         {/* Presets */}
-                        <div className="space-y-1.5">
+                        <div className="space-y-2.5">
                             <Label className="text-xs font-black text-slate-500 uppercase tracking-wider">Quick Presets</Label>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => { setCustomCaInput(0); setCustomExamInput(100); }}
-                                    className={`rounded-xl text-xs font-bold h-11 ${
+                                    className={`rounded-xl text-xs font-bold h-12 px-4 whitespace-normal justify-center ${
                                         customCaInput === 0 && customExamInput === 100 
                                             ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-2 ring-indigo-500' 
                                             : 'border-amber-300 bg-amber-50/60 text-amber-900 hover:bg-amber-100'
@@ -2839,10 +2839,10 @@ export default function GradebookPage() {
                                     type="button"
                                     variant="outline"
                                     onClick={() => { setCustomCaInput(30); setCustomExamInput(70); }}
-                                    className={`rounded-xl text-xs font-bold h-11 ${
+                                    className={`rounded-xl text-xs font-bold h-12 px-4 whitespace-normal justify-center ${
                                         customCaInput === 30 && customExamInput === 70 
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-1 ring-indigo-500' 
-                                            : 'border-slate-200 text-slate-700'
+                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-2 ring-indigo-500' 
+                                            : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                                     }`}
                                 >
                                     30% CA / 70% Exam
@@ -2851,10 +2851,10 @@ export default function GradebookPage() {
                                     type="button"
                                     variant="outline"
                                     onClick={() => { setCustomCaInput(50); setCustomExamInput(50); }}
-                                    className={`rounded-xl text-xs font-bold h-11 ${
+                                    className={`rounded-xl text-xs font-bold h-12 px-4 whitespace-normal justify-center ${
                                         customCaInput === 50 && customExamInput === 50 
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-1 ring-indigo-500' 
-                                            : 'border-slate-200 text-slate-700'
+                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-2 ring-indigo-500' 
+                                            : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                                     }`}
                                 >
                                     50% CA / 50% Exam
@@ -2863,10 +2863,10 @@ export default function GradebookPage() {
                                     type="button"
                                     variant="outline"
                                     onClick={() => { setCustomCaInput(40); setCustomExamInput(60); }}
-                                    className={`rounded-xl text-xs font-bold h-11 ${
+                                    className={`rounded-xl text-xs font-bold h-12 px-4 whitespace-normal justify-center ${
                                         customCaInput === 40 && customExamInput === 60 
-                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-1 ring-indigo-500' 
-                                            : 'border-slate-200 text-slate-700'
+                                            ? 'border-indigo-600 bg-indigo-50 text-indigo-900 ring-2 ring-indigo-500' 
+                                            : 'border-slate-200 text-slate-700 hover:bg-slate-50'
                                     }`}
                                 >
                                     40% CA / 60% Exam
@@ -2875,7 +2875,7 @@ export default function GradebookPage() {
                         </div>
 
                         {/* Custom Weight Inputs */}
-                        <div className="grid grid-cols-2 gap-3 pt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                             <div className="space-y-1.5">
                                 <Label className="text-xs font-bold text-slate-700">Continuous Assessment (CA %)</Label>
                                 <div className="relative">
@@ -2889,9 +2889,9 @@ export default function GradebookPage() {
                                             setCustomCaInput(val);
                                             setCustomExamInput(Math.max(0, 100 - val));
                                         }}
-                                        className="h-11 rounded-xl font-black text-center pr-8 border-slate-200"
+                                        className="h-12 rounded-xl font-black text-center text-base pr-9 border-slate-200"
                                     />
-                                    <span className="absolute right-3 top-3 text-xs font-black text-slate-400">%</span>
+                                    <span className="absolute right-3.5 top-3.5 text-xs font-black text-slate-400">%</span>
                                 </div>
                             </div>
                             <div className="space-y-1.5">
@@ -2907,27 +2907,27 @@ export default function GradebookPage() {
                                             setCustomExamInput(val);
                                             setCustomCaInput(Math.max(0, 100 - val));
                                         }}
-                                        className="h-11 rounded-xl font-black text-center pr-8 border-slate-200"
+                                        className="h-12 rounded-xl font-black text-center text-base pr-9 border-slate-200"
                                     />
-                                    <span className="absolute right-3 top-3 text-xs font-black text-slate-400">%</span>
+                                    <span className="absolute right-3.5 top-3.5 text-xs font-black text-slate-400">%</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
-                            <span className="text-slate-500 font-medium">Combined Weight:</span>
-                            <span className={`font-black ${customCaInput + customExamInput === 100 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                        <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200/70 flex items-center justify-between text-xs">
+                            <span className="text-slate-600 font-semibold">Combined Weight:</span>
+                            <span className={`font-black text-sm ${customCaInput + customExamInput === 100 ? 'text-emerald-600' : 'text-rose-600'}`}>
                                 {customCaInput + customExamInput}% / 100%
                             </span>
                         </div>
                     </div>
 
-                    <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">
+                    <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-3 mt-4 pt-3 border-t border-slate-100">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => handleApplyProportions(false)}
-                            className="rounded-xl font-bold border-slate-200 text-slate-700 h-10"
+                            className="rounded-xl font-bold border-slate-200 text-slate-700 h-11 px-5"
                         >
                             Apply to Current Session
                         </Button>
@@ -2935,7 +2935,7 @@ export default function GradebookPage() {
                             type="button"
                             onClick={() => handleApplyProportions(true)}
                             disabled={isSavingWeight || !classId}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold h-10"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold h-11 px-6"
                         >
                             {isSavingWeight ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                             Save as Class Default
@@ -2946,20 +2946,20 @@ export default function GradebookPage() {
 
             {/* Column Max Scores Configuration Modal */}
             <Dialog open={isMaxScoresModalOpen} onOpenChange={setIsMaxScoresModalOpen}>
-                <DialogContent className="sm:max-w-[500px] rounded-[2rem] border-0 shadow-2xl p-6 bg-white">
+                <DialogContent className="sm:max-w-[620px] w-[95vw] rounded-[2rem] border-0 shadow-2xl p-7 bg-white">
                     <DialogHeader className="border-b border-slate-100 pb-4">
-                        <DialogTitle className="flex items-center gap-2 text-slate-900 font-black text-xl">
-                            <Sliders className="h-5 w-5 text-indigo-600" /> Column Max Scores
+                        <DialogTitle className="flex items-center gap-2.5 text-slate-900 font-black text-xl">
+                            <Sliders className="h-5 w-5 text-indigo-600 shrink-0" /> Column Max Scores
                         </DialogTitle>
-                        <DialogDescription className="text-slate-500 text-xs">
+                        <DialogDescription className="text-slate-500 text-xs leading-relaxed">
                             Configure the maximum achievable score for each assessment component. To record a pure 100% Mock Exam, you can set CA components to 0 and Terminal Exam to 100.
                         </DialogDescription>
                     </DialogHeader>
 
                     {/* Quick 1-Click Presets */}
                     <div className="pt-2 pb-1">
-                        <Label className="text-[11px] font-black text-slate-400 uppercase tracking-wider block mb-2">Quick Configuration Presets</Label>
-                        <div className="grid grid-cols-2 gap-2">
+                        <Label className="text-xs font-black text-slate-500 uppercase tracking-wider block mb-2.5">Quick Configuration Presets</Label>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -2971,7 +2971,7 @@ export default function GradebookPage() {
                                     setCustomExamInput(100);
                                     toast({ title: "Mock Exam Mode Activated 🎯", description: "CA components set to 0 and Exam set to 100%." });
                                 }}
-                                className="h-10 text-xs font-bold rounded-xl border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
+                                className="h-12 px-4 text-xs font-bold rounded-xl whitespace-normal justify-center border-amber-300 bg-amber-50 text-amber-900 hover:bg-amber-100"
                             >
                                 🎯 100% Mock / Exam Only
                             </Button>
@@ -2982,7 +2982,7 @@ export default function GradebookPage() {
                                     setMatrixMaxScores({ classTest: 20, homework: 20, project: 20, midTerm: 40, exam: 100 });
                                     toast({ title: "Standard Defaults Restored", description: "Set to 20 / 20 / 20 / 40 / 100." });
                                 }}
-                                className="h-10 text-xs font-bold rounded-xl border-slate-200 text-slate-700 hover:bg-slate-100"
+                                className="h-12 px-4 text-xs font-bold rounded-xl whitespace-normal justify-center border-slate-200 text-slate-700 hover:bg-slate-100"
                             >
                                 🔄 Standard NaCCA (20/40/100)
                             </Button>
