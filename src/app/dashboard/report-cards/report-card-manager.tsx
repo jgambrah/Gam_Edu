@@ -6,7 +6,7 @@ import { useRole } from '@/context/role-context';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { logAuditEvent } from '@/lib/audit';
 import { collection, query, where, getDocs, getDoc, doc, setDoc, serverTimestamp, updateDoc, Timestamp, writeBatch, documentId } from 'firebase/firestore';
-import { useOnceQuery, readOnceCached } from '@/lib/firestore-once';
+import { useOnceQuery, readOnceCached, peekOnceCache } from '@/lib/firestore-once';
 import { format, parseISO, startOfDay, endOfDay } from 'date-fns';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -276,7 +276,18 @@ export default function ReportCardManager() {
     
     const printRef = useRef<HTMLDivElement>(null);
 
-    const isAdminOrDirector = ['administrator', 'director'].includes(role?.toLowerCase() || '');
+    const isAdminOrDirector = [
+        'administrator',
+        'director',
+        'admin',
+        'principal',
+        'headmaster',
+        'headmistress',
+        'head teacher',
+        'registrar',
+        'admissions',
+        'owner',
+    ].includes(role?.toLowerCase() || '');
     const isTeacher = role?.toLowerCase() === 'teacher';
 
     // Data Fetching
@@ -452,21 +463,25 @@ export default function ReportCardManager() {
         return readAll(query(collection(firestore, 'assessments'), ...base, where('academicYear', '==', academicYear), where('term', '==', term)));
     }, [firestore, schoolId, classId, academicYear, term, readAll]);
 
-    const { data: classTermAssessments } = useOnceQuery<any>(
-        (firestore && schoolId && classId && academicYear && term && !profileLoading)
-            ? `rc:marks:${schoolId}:${classId}:${academicYear}:${term}`
-            : null,
-        fetchClassTermAssessments
-    );
+    // Task 4: Do NOT eagerly load class marks on class selection just to discover custom mock series!
+    // Custom mocks are discovered from `classDoc.customMockSeries`, `schoolSettings.customMockSeries`, and existing
+    // report cards (zero assessment reads until Generate / Compile All is pressed).
+    const marksCacheKey = (firestore && schoolId && classId && academicYear && term && !profileLoading)
+        ? `rc:marks:${schoolId}:${classId}:${academicYear}:${term}`
+        : null;
+    const [compiledClassMarks, setCompiledClassMarks] = useState<any[] | null>(null);
+    useEffect(() => {
+        setCompiledClassMarks(marksCacheKey ? peekOnceCache(marksCacheKey) : null);
+    }, [marksCacheKey]);
 
     const availableSeriesOptions = useMemo(() => {
         return buildAllAcademicSeriesOptions({
-            assessments: classTermAssessments,
+            assessments: compiledClassMarks,
             classDoc: selectedClassObj,
             schoolSettings: schoolProfile,
             reportCards: [...(rawReportCards || []), ...(rawTermReportCards || [])],
         });
-    }, [classTermAssessments, selectedClassObj, schoolProfile, rawReportCards, rawTermReportCards]);
+    }, [compiledClassMarks, selectedClassObj, schoolProfile, rawReportCards, rawTermReportCards]);
 
     const activeSeriesOption = useMemo(() => {
         return availableSeriesOptions.find(opt => opt.id === reportSeries) || availableSeriesOptions[0];
@@ -785,12 +800,13 @@ export default function ReportCardManager() {
             const currentClassName = targetClass?.name || '';
             const usesBeceGrading = isMockSeries && isJhsOrBeceClass(currentClassName);
 
-            // 1. This class's marks for the term — read ONCE per class/term per session and shared by every student
+            // 1. This class's marks for the term — read ONCE per class/term per session when Compile/Generate is pressed
             const allAssessments: any[] = await readOnceCached(
                 `rc:marks:${schoolId}:${classId}:${academicYear}:${term}`,
                 fetchClassTermAssessments,
                 { ttlMs: 5 * 60 * 1000 }
             );
+            setCompiledClassMarks(allAssessments);
 
             // 2. Attendance Date Calculation (optional on Mock / Mid-Term if dates aren't configured yet)
             let totalClassDays = 0;
@@ -1071,6 +1087,7 @@ export default function ReportCardManager() {
                 fetchClassTermAssessments,
                 { ttlMs: 5 * 60 * 1000 }
             );
+            setCompiledClassMarks(allAssessments);
 
             let allAttRecords: any[] = [];
             let totalClassDays = 0;
@@ -1433,7 +1450,7 @@ export default function ReportCardManager() {
                 digitalFingerprint: `AUTH-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
             };
 
-            const { logoBase64, teacherSigBase64, headmasterSigBase64, _unsavedCompile, ...dbFriendlyData } = finalData as any;
+            const { logoBase64, teacherSigBase64, headmasterSigBase64, _unsavedCompile, _col, ...dbFriendlyData } = finalData as any;
             await setDoc(doc(firestore!, 'report-cards', finalData.id), dbFriendlyData, { merge: true });
             upsertLocalReportCards([{ id: finalData.id, data: { ...dbFriendlyData, status: 'Published', publishedAt: new Date(), updatedAt: new Date() } }]);
             setProcessedReport(finalData);
