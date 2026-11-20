@@ -82,9 +82,24 @@ export interface PointerCue {
 
 export type TimingMethod = 'forced-align' | 'silence-detect' | 'estimated';
 
+export interface LessonSection {
+  id: string;
+  order: number;
+  title: string;
+  goal: string;
+  indicatorIds: string[];
+  slideIds: string[];
+  stopPoints?: string[];
+  checkpointId?: string | null;
+  masteryCheck?: boolean;
+  estimatedMinutes?: number;
+  resumable?: boolean;
+}
+
 export interface LessonSlide {
   id: string;
   order: number;
+  sectionId?: string;
   title: string;
   purpose: string;
   onScreenText: string[];
@@ -123,11 +138,13 @@ export interface McqItem {
 export interface SequenceItem {
   id: string;
   type: 'sequence';
-  prompt: string;
-  items: Array<{ id: string; text: string }>;
+  prompt?: string;
+  question?: string;
+  items?: Array<{ id: string; text: string }>;
+  steps?: Array<{ id: string; text: string }>;
   correctOrder: string[];
   explanation: string;
-  onCorrect: { text: string };
+  onCorrect?: { text: string };
   onWrong: WrongFeedback[];
   indicatorId: string;
   cognitiveLevel: string;
@@ -138,8 +155,10 @@ export interface TapDiagramHotspot {
   label: string;
   x: number;
   y: number;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
+  w?: number;
+  h?: number;
 }
 
 export interface TapDiagramItem {
@@ -151,7 +170,7 @@ export interface TapDiagramItem {
   hotspots: TapDiagramHotspot[];
   correctHotspotId: string;
   explanation: string;
-  onCorrect: { text: string };
+  onCorrect?: { text: string };
   onWrong: WrongFeedback[];
   indicatorId: string;
   cognitiveLevel: string;
@@ -161,13 +180,16 @@ export type AssessmentItem = McqItem | SequenceItem | TapDiagramItem;
 
 export interface LessonCheckpoint {
   id: string;
-  afterSlide: string;
-  coversSlides: string[];
+  sectionId?: string;
+  afterSlide?: string;
+  afterSlideId?: string;
+  coversSlides?: string[];
   retryRule: string;
   items: AssessmentItem[];
 }
 
 export interface MasteryCheck {
+  sectionId?: string;
   passMark: number;
   items: AssessmentItem[];
 }
@@ -201,8 +223,10 @@ export interface VerifyFlag {
 export interface NarratedLesson {
   lessonId: string;
   schemaVersion: string;
+  schemaExtensions?: string[];
   meta: LessonMeta;
   learningOutcomes: string[];
+  sections?: LessonSection[];
   pronunciationGuide: PronunciationEntry[];
   vocabulary: VocabularyEntry[];
   misconceptionsAddressed: MisconceptionEntry[];

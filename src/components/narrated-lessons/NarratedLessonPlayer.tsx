@@ -112,7 +112,8 @@ export function NarratedLessonPlayer({
     const out: PlayerStep[] = [{ kind: 'intro', id: 'intro', label: 'Start' }];
     const cpByAfter = new Map<string, LessonCheckpoint>();
     for (const cp of lesson.checkpoints) {
-      cpByAfter.set(cp.afterSlide, cp);
+      const afterKey = cp.afterSlide ?? cp.afterSlideId;
+      if (afterKey) cpByAfter.set(afterKey, cp);
     }
     for (const slide of lesson.slides) {
       out.push({
@@ -172,11 +173,14 @@ export function NarratedLessonPlayer({
   const [itemProgress, setItemProgress] = useState<Record<string, ItemProgress>>({});
   const [sequenceOrders, setSequenceOrders] = useState<Record<string, string[]>>(() => {
     const init: Record<string, string[]> = {};
-    for (const cp of lesson.checkpoints) {
-      for (const item of cp.items) {
-        if (item.type === 'sequence') {
-          init[item.id] = deterministicShuffleIds(item.items.map((x) => x.id));
-        }
+    const allItems = [
+      ...lesson.checkpoints.flatMap((cp) => cp.items),
+      ...lesson.masteryCheck.items,
+    ];
+    for (const item of allItems) {
+      if (item.type === 'sequence') {
+        const list = item.steps ?? item.items ?? [];
+        init[item.id] = deterministicShuffleIds(list.map((x) => x.id));
       }
     }
     return init;
@@ -606,7 +610,7 @@ export function NarratedLessonPlayer({
           solved: true,
           revealed: false,
           correctFirstTry: attempts === 1,
-          lastFeedback: `${item.onCorrect.text} ${item.explanation}`,
+          lastFeedback: `${item.onCorrect?.text ?? 'Well done!'} ${item.explanation}`,
           lastWasCorrect: true,
         },
       }));
@@ -646,7 +650,7 @@ export function NarratedLessonPlayer({
           solved: true,
           revealed: false,
           correctFirstTry: attempts === 1,
-          lastFeedback: `${item.onCorrect.text} ${item.explanation}`,
+          lastFeedback: `${item.onCorrect?.text ?? 'Well done!'} ${item.explanation}`,
           lastWasCorrect: true,
           selectedHotspotId: hotspotId,
         },
@@ -752,11 +756,14 @@ export function NarratedLessonPlayer({
     setStepIdx(0);
     setItemProgress({});
     const resetSeq: Record<string, string[]> = {};
-    for (const cp of lesson.checkpoints) {
-      for (const item of cp.items) {
-        if (item.type === 'sequence') {
-          resetSeq[item.id] = deterministicShuffleIds(item.items.map((x) => x.id));
-        }
+    const allItems = [
+      ...lesson.checkpoints.flatMap((cp) => cp.items),
+      ...lesson.masteryCheck.items,
+    ];
+    for (const item of allItems) {
+      if (item.type === 'sequence') {
+        const list = item.steps ?? item.items ?? [];
+        resetSeq[item.id] = deterministicShuffleIds(list.map((x) => x.id));
       }
     }
     setSequenceOrders(resetSeq);
@@ -981,17 +988,22 @@ export function NarratedLessonPlayer({
                 {lesson.meta.class} {lesson.meta.subject} · GES / NaCCA {lesson.meta.indicators.join(' & ')}
               </div>
               <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                The Water Cycle: Nature&apos;s Repeated Journey
+                {lesson.meta.title || lesson.slides[0]?.title || 'Narrated Lesson'}
               </h1>
               <p className="mt-2 max-w-2xl text-sm text-sky-100 sm:text-base">
                 An interactive narrated lesson taught step-by-step by Teacher Kore, with pause-and-check questions and an Ask Teacher helper on every slide.
               </p>
               <div className="mt-5 flex flex-wrap gap-3 text-xs font-medium text-sky-50">
-                <span className="rounded-lg bg-white/15 px-3 py-1.5">13 Slides (7 Diagrams + 6 Illustrations)</span>
+                <span className="rounded-lg bg-white/15 px-3 py-1.5">
+                  {lesson.slides.length} Slides
+                  {lesson.sections?.length ? ` · ${lesson.sections.length} Sections` : ''}
+                </span>
                 <span className="rounded-lg bg-white/15 px-3 py-1.5">
                   ~{lesson.meta.estimatedNarrationMinutes} min audio · ~{lesson.meta.estimatedTotalMinutes} min total
                 </span>
-                <span className="rounded-lg bg-white/15 px-3 py-1.5">4 Checkpoints + 5-Item Mastery Check</span>
+                <span className="rounded-lg bg-white/15 px-3 py-1.5">
+                  {lesson.checkpoints.length} Checkpoints + {lesson.masteryCheck.items.length}-Item Mastery Check
+                </span>
               </div>
             </div>
 
@@ -1007,6 +1019,42 @@ export function NarratedLessonPlayer({
                   </li>
                 ))}
               </ul>
+
+              {lesson.sections && lesson.sections.length > 0 && (
+                <div className="mt-6">
+                  <h2 className="text-sm font-bold uppercase tracking-wide text-slate-500">
+                    Lesson Sections (play one section at a time)
+                  </h2>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {lesson.sections.map((sec) => {
+                      const firstSlideId = sec.slideIds[0];
+                      const targetIdx = steps.findIndex((st) => st.id === firstSlideId);
+                      return (
+                        <button
+                          key={sec.id}
+                          type="button"
+                          onClick={() => {
+                            if (targetIdx >= 0) setStepIdx(targetIdx);
+                          }}
+                          className="flex flex-col rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-left transition hover:border-sky-300 hover:bg-sky-50/60"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-xs font-extrabold text-sky-700">
+                              Section {sec.order}: {sec.title}
+                            </span>
+                            {sec.estimatedMinutes && (
+                              <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-slate-600">
+                                ~{sec.estimatedMinutes}m
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-1 text-xs text-slate-600">{sec.goal}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
                 <p className="font-semibold">For Teachers &amp; Reviewers:</p>
@@ -1353,7 +1401,12 @@ export function NarratedLessonPlayer({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
-                    Concept Check · Covers Slides {currentStep.checkpoint.coversSlides.join(', ')}
+                    Concept Check
+                    {currentStep.checkpoint.coversSlides?.length
+                      ? ` · Covers Slides ${currentStep.checkpoint.coversSlides.join(', ')}`
+                      : currentStep.checkpoint.sectionId
+                        ? ` · Section ${currentStep.checkpoint.sectionId.replace('sec', '')}`
+                        : ''}
                   </span>
                   <h2 className="text-xl font-extrabold text-slate-900">
                     Pause &amp; Check Your Understanding
@@ -1811,62 +1864,65 @@ function AssessmentCard({
       )}
 
       {/* SEQUENCE */}
-      {item.type === 'sequence' && (
-        <>
-          <p className="text-base font-bold text-slate-900">{item.prompt}</p>
-          <div className="mt-4 space-y-2">
-            {(sequenceOrder ?? item.items.map((x) => x.id)).map((id, idx, arr) => {
-              const label = item.items.find((x) => x.id === id)?.text ?? id;
-              return (
-                <div
-                  key={id}
-                  className={`flex items-center justify-between rounded-xl border-2 px-4 py-2.5 ${
-                    locked ? 'border-emerald-300 bg-emerald-50/60' : 'border-slate-200 bg-slate-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sky-600 text-xs font-bold text-white">
-                      {idx + 1}
-                    </span>
-                    <span className="text-sm font-bold text-slate-900">{label}</span>
-                  </div>
-                  {!locked && (
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        disabled={idx === 0}
-                        onClick={() => onMoveSeq(idx, -1)}
-                        className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-100 disabled:opacity-30"
-                        aria-label={`Move ${label} up`}
-                      >
-                        <ChevronUp className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        disabled={idx === arr.length - 1}
-                        onClick={() => onMoveSeq(idx, 1)}
-                        className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-100 disabled:opacity-30"
-                        aria-label={`Move ${label} down`}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </button>
+      {item.type === 'sequence' && (() => {
+        const seqList = item.steps ?? item.items ?? [];
+        return (
+          <>
+            <p className="text-base font-bold text-slate-900">{item.prompt ?? item.question}</p>
+            <div className="mt-4 space-y-2">
+              {(sequenceOrder ?? seqList.map((x) => x.id)).map((id, idx, arr) => {
+                const label = seqList.find((x) => x.id === id)?.text ?? id;
+                return (
+                  <div
+                    key={id}
+                    className={`flex items-center justify-between rounded-xl border-2 px-4 py-2.5 ${
+                      locked ? 'border-emerald-300 bg-emerald-50/60' : 'border-slate-200 bg-slate-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-sky-600 text-xs font-bold text-white">
+                        {idx + 1}
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">{label}</span>
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {!locked && (
-            <button
-              type="button"
-              onClick={onCheckSeq}
-              className="mt-4 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-sky-700"
-            >
-              Check My Order
-            </button>
-          )}
-        </>
-      )}
+                    {!locked && (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          onClick={() => onMoveSeq(idx, -1)}
+                          className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-100 disabled:opacity-30"
+                          aria-label={`Move ${label} up`}
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={idx === arr.length - 1}
+                          onClick={() => onMoveSeq(idx, 1)}
+                          className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-100 disabled:opacity-30"
+                          aria-label={`Move ${label} down`}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {!locked && (
+              <button
+                type="button"
+                onClick={onCheckSeq}
+                className="mt-4 rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-sky-700"
+              >
+                Check My Order
+              </button>
+            )}
+          </>
+        );
+      })()}
 
       {/* TAP DIAGRAM */}
       {item.type === 'tapDiagram' && (() => {
@@ -1903,8 +1959,8 @@ function AssessmentCard({
                     style={{
                       left: `${(hs.x / 1280) * 100}%`,
                       top: `${(hs.y / 720) * 100}%`,
-                      width: `${(hs.width / 1280) * 100}%`,
-                      height: `${(hs.height / 720) * 100}%`,
+                      width: `${((hs.width ?? hs.w ?? 160) / 1280) * 100}%`,
+                      height: `${((hs.height ?? hs.h ?? 160) / 720) * 100}%`,
                     }}
                     className={`absolute rounded-xl border-4 transition focus:outline-none focus:ring-4 focus:ring-sky-400 ${ringClass}`}
                   />
