@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import lessonData from '@/lib/narrated-lessons/bs7-sci-t1-water-cycle.json';
+import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
 import type { NarratedLesson } from '@/lib/narrated-lessons/types';
 
-const lesson = lessonData as unknown as NarratedLesson;
+// In-memory 5-minute cache of CDN lesson packages so Ask Teacher works for ANY published lesson
+const lessonCache = new Map<string, { lesson: NarratedLesson; expiresAt: number }>();
+const LESSON_CACHE_TTL_MS = 5 * 60 * 1000;
+
+async function loadLessonFromCdn(lessonId: string): Promise<NarratedLesson | null> {
+  const key = lessonId || 'bs7-sci-t1-water-cycle';
+  const cached = lessonCache.get(key);
+  if (cached && Date.now() < cached.expiresAt) return cached.lesson;
+  const loaded = await fetchLessonPackageById(key);
+  if (!loaded) return null;
+  lessonCache.set(key, { lesson: loaded.lesson, expiresAt: Date.now() + LESSON_CACHE_TTL_MS });
+  return loaded.lesson;
+}
 
 // Lightweight per-IP rate limiter for public pilot review (25 questions per 10 minutes)
 const rateBucket = new Map<string, { count: number; resetAt: number }>();
@@ -59,6 +71,10 @@ export async function POST(req: NextRequest) {
       question?: string;
     } | null;
 
+    const lessonId =
+      typeof body?.lessonId === 'string' && body.lessonId.trim()
+        ? body.lessonId.trim()
+        : 'bs7-sci-t1-water-cycle';
     const slideId = typeof body?.slideId === 'string' ? body.slideId.trim() : '';
     const question = typeof body?.question === 'string' ? body.question.trim() : '';
 
@@ -67,6 +83,11 @@ export async function POST(req: NextRequest) {
     }
     if (question.length > 400) {
       return NextResponse.json({ error: 'Please keep your question under 400 characters.' }, { status: 400 });
+    }
+
+    const lesson = await loadLessonFromCdn(lessonId);
+    if (!lesson) {
+      return NextResponse.json({ error: 'Lesson not found in the central library.' }, { status: 404 });
     }
 
     const slide = lesson.slides.find((s) => s.id === slideId) ?? lesson.slides[0];
@@ -90,9 +111,9 @@ export async function POST(req: NextRequest) {
     }
 
     const systemInstruction = [
-      'You are a warm, patient Ghanaian Basic 7 (JHS 1) Science teacher helping a 12-year-old pupil during a narrated lesson on the Water Cycle.',
+      `You are a warm, patient Ghanaian ${lesson.meta.class} ${lesson.meta.subject} teacher helping a pupil during a narrated lesson (${lesson.meta.contentStandard}).`,
       'STRICT RULES:',
-      '1. Answer from the provided SLIDE CONTEXT first and prefer the lesson\'s exact scientific wording (for example, say droplets join and grow too heavy rather than "clouds get full", and say borehole water is safe when protected and tested rather than guaranteeing it is "clean"). Stay accurate to Basic 7 GES/NaCCA Science.',
+      `1. Answer from the provided SLIDE CONTEXT first and prefer the lesson's exact scientific/subject wording. Stay accurate to ${lesson.meta.class} GES/NaCCA ${lesson.meta.subject}.`,
       '2. Use simple, clear Ghanaian English with short sentences. Explain any scientific word you use. Start directly with the answer — do not repeat stock openers like "Ah, that is a good question!" or "Great question!".',
       '3. Keep your answer under 110 words.',
       '4. Output PLAIN TEXT ONLY. No markdown, no asterisks, no bullet points, no headings, no URLs, and do not recommend any external websites or apps.',

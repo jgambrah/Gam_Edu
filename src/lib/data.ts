@@ -77,12 +77,6 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
-    path: '/narrated-lessons/water-cycle',
-    title: 'Narrated Lessons (Pilot)',
-    icon: BookOpen,
-    roles: ['Director', 'Administrator', 'Teacher', 'Student'],
-  },
-  {
     path: '/dashboard/my-children',
     title: 'My Children',
     icon: Users,
@@ -333,6 +327,12 @@ export const navItems: NavItem[] = [
             title: 'Dr. Gam AI Tutor',
             icon: BrainCircuit,
             roles: ['Student', 'Teacher', 'Administrator', 'Director'],
+        },
+        {
+            path: '/dashboard/narrated-lessons',
+            title: 'Narrated Lessons',
+            icon: BookOpen,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
         },
         {
             path: '/dashboard/maths-club-v2',
