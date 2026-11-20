@@ -285,6 +285,12 @@ export function NarratedLessonPlayer({
     return () => obs.disconnect();
   }, [stepIdx]);
 
+  // Set browser tab title to the lesson title (improves shared links & bookmarks)
+  useEffect(() => {
+    const title = lesson.meta.title || lesson.slides[0]?.title || 'Narrated Lesson';
+    document.title = `${title} (${lesson.meta.class} ${lesson.meta.subject}) — GAM Edu`;
+  }, [lesson.meta.class, lesson.meta.subject, lesson.meta.title, lesson.slides]);
+
   // Restore progress from localStorage (plus optional ?slide=s03&t=18&review=1 deep-link)
   useEffect(() => {
     try {

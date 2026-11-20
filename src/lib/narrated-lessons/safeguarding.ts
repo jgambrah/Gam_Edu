@@ -4,19 +4,25 @@
  * Privacy rule: callers must NEVER log the student's question text — log trigger counts only.
  */
 
+const PERSON_SUBJECT =
+  '(?:he|she|they|someone|somebody|people|dem|a\\s+man|a\\s+boy|a\\s+girl|my\\s+(?:dad|father|mum|mom|mother|uncle|aunt|aunty|auntie|stepfather|stepmother|stepdad|stepmum|brother|sister|cousin|teacher|master|sir|madam|pastor|neighbour|neighbor|friend|guardian|parent|parents))';
+
 export const SAFEGUARDING_PATTERNS: readonly RegExp[] = [
   // Self-harm / suicide (standard & Ghanaian English / Pidgin)
-  /\b(kill|hurt|harm|cut|hang|end)\s+(myself|my\s*self|my\s+life)\b/i,
+  /\b(kill|hurt|harm|hang|end)\s+(myself|my\s*self|my\s+life)\b/i,
+  /\bcut\s+(myself|my\s*self)\b(?!\s+off\b)/i,
   /\b(suicide|suicidal|self[- ]?harm)\b/i,
   /\b(want\s+to\s+die|wanna\s+die|wan\s+die|wish\s+i\s+(was|were)\s+dead|(?:don'?t|do\s+not)\s+want\s+to\s+live|no\s+want\s+live|tired\s+of\s+living)\b/i,
-  // Physical / sexual / emotional abuse & domestic fear (standard & Ghanaian English / Pidgin)
-  /\b(scared|afraid|frightened|terrified|unsafe)\s+(at\s+home|to\s+go\s+home|of\s+my\s+(dad|father|mum|mom|mother|uncle|aunt|aunty|stepfather|stepmother|teacher))\b/i,
-  /\b(hits?|hitting|beats?|beating|slaps?|slapping|hurts?|hurting|harms?|harming|abuses?|abusing|touches?|touching|touched|molests?|molesting)\s+me\b/i,
-  /\b(dey\s+(beat|hit|hurt|slap|touch|abuse)\s+me)\b/i,
+  // Physical / sexual / emotional abuse & domestic fear — requires a PERSON subject so science questions ("can dirty water hurt me?") never false-positive
+  /\b(scared|afraid|frightened|terrified|unsafe)\s+(at\s+home|to\s+go\s+home|of\s+my\s+(dad|father|mum|mom|mother|uncle|aunt|aunty|auntie|stepfather|stepmother|teacher))\b/i,
+  new RegExp(
+    `\\b${PERSON_SUBJECT}\\b(?:\\s+(?:is|are|was|were|always|often|keeps?|kept|sometimes|usually|dey))?\\s+(?:hits?|hitting|beats?|beating|slaps?|slapping|hurts?|hurting|harms?|harming|abuses?|abusing|touch(?:es|ing|ed)?|molests?|molesting)\\s+me\\b`,
+    'i',
+  ),
   /\b(being\s+(abused|bullied|beaten|hit|hurt|touched|molested))\b/i,
   /\b(am|i'?m)\s+(being\s+)?(beaten|hit|abused|bullied|molested)\b/i,
   /\b(touched|touches|touching)\s+my\s+(private|body)\b/i,
-  /\b(nobody\s+loves\s+me|no\s+one\s+cares\s+if\s+i\s+die)\b/i,
+  /\b(nobody\s+(loves|wants)\s+me|no\s+one\s+cares\s+if\s+i\s+die|going\s+to\s+run\s+away\s+from\s+home)\b/i,
 ];
 
 export const SAFEGUARDING_RESPONSE =
