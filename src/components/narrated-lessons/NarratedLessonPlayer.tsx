@@ -11,6 +11,7 @@ import {
   ChevronUp,
   ClipboardCheck,
   Copy,
+  Crosshair,
   Download,
   Eye,
   FlaskConical,
@@ -34,10 +35,13 @@ import type {
   LessonSlide,
   McqItem,
   NarratedLesson,
+  PointerCue,
   SequenceItem,
   TapDiagramItem,
 } from '@/lib/narrated-lessons/types';
 import { lessonMediaUrl } from '@/lib/narrated-lessons/types';
+import { TeacherPointerOverlay } from './TeacherPointerOverlay';
+import { PointerCueEditor } from './PointerCueEditor';
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -65,6 +69,8 @@ interface ChatMessage {
 
 const STORAGE_KEY_PREFIX = 'gamedu_narrated_lesson_progress_v1_';
 const PRON_REVIEW_STORAGE_PREFIX = 'gamedu_narrated_lesson_pron_review_v1_';
+const POINTER_ENABLED_STORAGE_KEY = 'gamedu_narrated_lesson_pointer_enabled_v1';
+const CUES_STORAGE_PREFIX = 'gamedu_narrated_lesson_cues_v1_';
 
 type SlidePronStatus = 'OK' | 'Odd' | 'Wrong' | '';
 
@@ -131,11 +137,19 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
 
   const [stepIdx, setStepIdx] = useState(0);
   const [lowDataMode, setLowDataMode] = useState(false);
+  const [pointerEnabled, setPointerEnabled] = useState(true);
   const [reviewerMode, setReviewerMode] = useState(false);
   const [showReviewerPanel, setShowReviewerPanel] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
   const [showTeacherNote, setShowTeacherNote] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  // Pointer cue overrides & editor state
+  const [customCuesBySlide, setCustomCuesBySlide] = useState<Record<string, PointerCue[]>>({});
+  const [savedHashesBySlide, setSavedHashesBySlide] = useState<Record<string, string>>({});
+  const [selectedCueId, setSelectedCueId] = useState<string | null>(null);
+  const chipsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [chipsInView, setChipsInView] = useState(true);
 
   // Audio state
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -221,9 +235,63 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
     URL.revokeObjectURL(url);
   };
 
-  // Restore progress from localStorage
+  // Restore pointer preference & custom cues per lesson version
   useEffect(() => {
     try {
+      const pRaw = localStorage.getItem(POINTER_ENABLED_STORAGE_KEY);
+      if (pRaw !== null) setPointerEnabled(pRaw === 'true');
+      const cRaw = localStorage.getItem(`${CUES_STORAGE_PREFIX}${lesson.lessonId}_${lesson.schemaVersion}`);
+      if (cRaw) {
+        const parsed = JSON.parse(cRaw) as {
+          cuesBySlide?: Record<string, PointerCue[]>;
+          hashesBySlide?: Record<string, string>;
+        };
+        if (parsed.cuesBySlide) setCustomCuesBySlide(parsed.cuesBySlide);
+        if (parsed.hashesBySlide) setSavedHashesBySlide(parsed.hashesBySlide);
+      }
+    } catch {
+      // ignore
+    }
+  }, [lesson.lessonId, lesson.schemaVersion]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(POINTER_ENABLED_STORAGE_KEY, String(pointerEnabled));
+    } catch {
+      // ignore
+    }
+  }, [pointerEnabled]);
+
+  // Observe whether the on-screen chips are visible (for the phone "↓ look below" nudge, no auto-scroll)
+  useEffect(() => {
+    const el = chipsContainerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) setChipsInView(entries[0].isIntersecting);
+      },
+      { threshold: 0.25 },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [stepIdx]);
+
+  // Restore progress from localStorage (plus optional ?slide=s03&t=18 review deep-link)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const qSlide = params.get('slide');
+      const qTime = params.get('t');
+      if (qSlide) {
+        const idx = steps.findIndex((s) => s.id === qSlide);
+        if (idx >= 0) {
+          setStepIdx(idx);
+          if (qTime && Number.isFinite(Number(qTime))) {
+            setTimeout(() => setAudioCurrent(Number(qTime)), 60);
+          }
+          return;
+        }
+      }
       const raw = localStorage.getItem(STORAGE_KEY_PREFIX + lesson.lessonId);
       if (!raw) return;
       const saved = JSON.parse(raw) as {
@@ -239,7 +307,7 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
     } catch {
       // ignore storage errors
     }
-  }, [lesson.lessonId, steps.length]);
+  }, [lesson.lessonId, steps]);
 
   // Persist progress to localStorage (zero Firestore writes)
   useEffect(() => {
@@ -265,13 +333,14 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
     return null;
   }, [currentStep, lesson.lessonId, lowDataMode]);
 
-  // Reset audio when step changes
+  // Reset audio and selected cue when step changes
   useEffect(() => {
     const el = audioRef.current;
     setIsPlaying(false);
     setAudioCurrent(0);
     setAudioDuration(0);
     setAudioError(false);
+    setSelectedCueId(null);
     if (el) {
       el.pause();
       el.currentTime = 0;
@@ -310,10 +379,105 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
   }, [currentAudioUrl, playbackRate]);
 
   const cycleSpeed = () => {
-    const speeds = [0.85, 1, 1.15];
+    const speeds = [0.75, 1, 1.25];
     const next = speeds[(speeds.indexOf(playbackRate) + 1) % speeds.length];
     setPlaybackRate(next);
     if (audioRef.current) audioRef.current.playbackRate = next;
+  };
+
+  // Current slide cues (edited override or default from JSON)
+  const currentSlideCues = useMemo<PointerCue[]>(() => {
+    if (currentStep.kind !== 'slide') return [];
+    return customCuesBySlide[currentStep.slide.id] ?? currentStep.slide.cues ?? [];
+  }, [currentStep, customCuesBySlide]);
+
+  // Active cue locked deterministically to audioCurrent (zero drift across pause/seek/speed)
+  const activeCue = useMemo<PointerCue | null>(() => {
+    if (currentStep.kind !== 'slide') return null;
+    if (reviewerMode && selectedCueId) {
+      const selected = currentSlideCues.find((c) => c.id === selectedCueId);
+      if (selected) return selected;
+    }
+    if (!pointerEnabled) return null;
+    return currentSlideCues.find((c) => audioCurrent >= c.startSec && audioCurrent < c.endSec) ?? null;
+  }, [audioCurrent, currentSlideCues, currentStep.kind, pointerEnabled, reviewerMode, selectedCueId]);
+
+  const persistCustomCues = (nextBySlide: Record<string, PointerCue[]>, slideId: string, slideHash?: string) => {
+    const nextHashes = slideHash
+      ? { ...savedHashesBySlide, [slideId]: slideHash }
+      : savedHashesBySlide;
+    setCustomCuesBySlide(nextBySlide);
+    setSavedHashesBySlide(nextHashes);
+    try {
+      localStorage.setItem(
+        `${CUES_STORAGE_PREFIX}${lesson.lessonId}_${lesson.schemaVersion}`,
+        JSON.stringify({ cuesBySlide: nextBySlide, hashesBySlide: nextHashes }),
+      );
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleUpdateSlideCues = (slide: LessonSlide, next: PointerCue[]) => {
+    persistCustomCues({ ...customCuesBySlide, [slide.id]: next }, slide.id, slide.audioHash);
+  };
+
+  const handleDragCueRegion = (cueId: string, region: { x: number; y: number; w: number; h: number }) => {
+    if (currentStep.kind !== 'slide') return;
+    const next = currentSlideCues.map((c) =>
+      c.id === cueId ? { ...c, target: { type: 'region' as const, ...region } } : c,
+    );
+    handleUpdateSlideCues(currentStep.slide, next);
+  };
+
+  const handleExportAllCues = () => {
+    const out: Record<string, { timingMethod?: string; audioHash?: string; cues: PointerCue[] }> = {};
+    for (const s of lesson.slides) {
+      out[s.id] = {
+        timingMethod: s.timingMethod,
+        audioHash: s.audioHash,
+        cues: customCuesBySlide[s.id] ?? s.cues ?? [],
+      };
+    }
+    const blob = new Blob(
+      [
+        JSON.stringify(
+          { lessonId: lesson.lessonId, schemaVersion: lesson.schemaVersion, exportedAt: new Date().toISOString(), slides: out },
+          null,
+          2,
+        ),
+      ],
+      { type: 'application/json' },
+    );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${lesson.lessonId}-pointer-cues.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportAllCues = (jsonText: string) => {
+    try {
+      const parsed = JSON.parse(jsonText) as {
+        slides?: Record<string, { audioHash?: string; cues?: PointerCue[] }>;
+      };
+      if (!parsed.slides) return;
+      const nextCues: Record<string, PointerCue[]> = { ...customCuesBySlide };
+      const nextHashes: Record<string, string> = { ...savedHashesBySlide };
+      for (const [sid, data] of Object.entries(parsed.slides)) {
+        if (Array.isArray(data.cues)) nextCues[sid] = data.cues;
+        if (data.audioHash) nextHashes[sid] = data.audioHash;
+      }
+      setCustomCuesBySlide(nextCues);
+      setSavedHashesBySlide(nextHashes);
+      localStorage.setItem(
+        `${CUES_STORAGE_PREFIX}${lesson.lessonId}_${lesson.schemaVersion}`,
+        JSON.stringify({ cuesBySlide: nextCues, hashesBySlide: nextHashes }),
+      );
+    } catch {
+      // ignore invalid JSON
+    }
   };
 
   const handleCopyShareLink = async () => {
@@ -614,6 +778,21 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
+              onClick={() => setPointerEnabled((v) => !v)}
+              aria-pressed={pointerEnabled}
+              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
+                pointerEnabled
+                  ? 'border-amber-300 bg-amber-50 text-amber-900'
+                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              }`}
+              title="Toggle the teacher pointer overlay on slides"
+            >
+              <Crosshair className="h-3.5 w-3.5" />
+              {pointerEnabled ? 'Pointer: On' : 'Pointer: Off'}
+            </button>
+
+            <button
+              type="button"
               onClick={() => setLowDataMode((v) => !v)}
               className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
                 lowDataMode
@@ -822,18 +1001,49 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
                     loading="eager"
                   />
                 )}
+
+                {/* Pure HTML/CSS Teacher Pointer Overlay (never baked into SVGs or AI images) */}
+                <TeacherPointerOverlay
+                  cue={activeCue}
+                  editable={reviewerMode && Boolean(selectedCueId)}
+                  onUpdateRegion={handleDragCueRegion}
+                />
+
+                {/* Off-screen chip nudge (no auto-scroll on phones) */}
+                {activeCue?.target.type === 'chip' && !chipsInView && (
+                  <div className="pointer-events-none absolute bottom-2 right-2 rounded-full border-2 border-slate-950 bg-amber-400 px-3 py-1 text-xs font-extrabold text-slate-950 shadow-md">
+                    ↓ look below
+                  </div>
+                )}
               </div>
 
               {/* Minimal On-Screen Key Takeaways */}
-              <div className="grid gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3.5 sm:grid-cols-3">
-                {currentStep.slide.onScreenText.map((line, i) => (
-                  <div
-                    key={i}
-                    className="rounded-xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 shadow-2xs"
-                  >
-                    {line}
-                  </div>
-                ))}
+              <div
+                ref={chipsContainerRef}
+                className="grid gap-2 border-t border-slate-100 bg-slate-50/70 px-5 py-3.5 sm:grid-cols-3"
+              >
+                {currentStep.slide.onScreenText.map((line, i) => {
+                  const isHighlightedChip =
+                    activeCue?.target.type === 'chip' && activeCue.target.index === i;
+                  return (
+                    <div
+                      key={i}
+                      data-chip-highlighted={isHighlightedChip ? 'true' : 'false'}
+                      className={`rounded-xl px-3.5 py-2.5 text-sm font-semibold transition ${
+                        isHighlightedChip
+                          ? 'border-[4px] border-amber-400 bg-amber-50 text-slate-950 shadow-[0_0_0_2px_#0f172a]'
+                          : 'border border-slate-200/80 bg-white text-slate-800 shadow-2xs'
+                      }`}
+                    >
+                      {isHighlightedChip && (
+                        <span className="mr-1.5 inline-block rounded bg-slate-950 px-1.5 py-0.5 text-[10px] font-extrabold uppercase text-amber-300">
+                          Look
+                        </span>
+                      )}
+                      {line}
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Kore Audio Controls */}
@@ -943,6 +1153,29 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
                 )}
               </div>
             </div>
+
+            {/* Reviewer-Mode Pointer Cues Editor */}
+            {reviewerMode && (
+              <PointerCueEditor
+                slide={currentStep.slide}
+                cues={currentSlideCues}
+                selectedCueId={selectedCueId}
+                audioCurrent={audioCurrent}
+                isAudioHashStale={Boolean(
+                  savedHashesBySlide[currentStep.slide.id] &&
+                    currentStep.slide.audioHash &&
+                    savedHashesBySlide[currentStep.slide.id] !== currentStep.slide.audioHash,
+                )}
+                onSelectCue={setSelectedCueId}
+                onChangeCues={(next) => handleUpdateSlideCues(currentStep.slide, next)}
+                onSeekTo={(sec) => {
+                  if (audioRef.current) audioRef.current.currentTime = sec;
+                  setAudioCurrent(sec);
+                }}
+                onExportAllCues={handleExportAllCues}
+                onImportAllCues={handleImportAllCues}
+              />
+            )}
 
             {/* Reviewer-Mode Pronunciation Check Panel (Step 7) */}
             {reviewerMode && (() => {

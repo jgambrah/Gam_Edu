@@ -239,7 +239,43 @@
         ],
         "outOfScopeRule": "That is an interesting question, but right now we are focusing on how water moves in the water cycle. Please ask your classroom teacher later."
       },
-      "teacherNote": "Ask two pupils to share another place they have seen water dry up quickly, such as puddles after rain or a freshly mopped classroom floor."
+      "teacherNote": "Ask two pupils to share another place they have seen water dry up quickly, such as puddles after rain or a freshly mopped classroom floor.",
+      "timingMethod": "silence-detect",
+      "audioHash": "5f5bcd945a046d2f",
+      "cues": [
+        {
+          "id": "s01.c1",
+          "sentenceIndex": 2,
+          "startSec": 5.4,
+          "endSec": 14.8,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 4,
+            "y": 22,
+            "w": 44,
+            "h": 58
+          },
+          "label": "Drying school uniforms on clothesline",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s01.c2",
+          "sentenceIndex": 6,
+          "startSec": 20.1,
+          "endSec": 34.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 53,
+            "y": 32,
+            "w": 43,
+            "h": 56
+          },
+          "label": "Cold sachet of water with outside droplets",
+          "needsHumanCheck": true
+        }
+      ]
     },
     {
       "id": "s02",
@@ -303,7 +339,86 @@
         ],
         "outOfScopeRule": "Let us keep our focus on how water changes between solid, liquid, and gas. For other topics, please ask your classroom teacher."
       },
-      "teacherNote": "Reinforce the link to B7.1.1.1.1 (states of matter). Clarify that visible mist above a boiling kenkey pot is tiny condensed liquid droplets."
+      "teacherNote": "Reinforce the link to B7.1.1.1.1 (states of matter). Clarify that visible mist above a boiling kenkey pot is tiny condensed liquid droplets.",
+      "timingMethod": "silence-detect",
+      "audioHash": "3e6ff1fdc517fa4f",
+      "cues": [
+        {
+          "id": "s02.c1",
+          "sentenceIndex": 3,
+          "startSec": 13.3,
+          "endSec": 17.3,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 4,
+            "y": 31,
+            "w": 26,
+            "h": 34
+          },
+          "label": "Solid ice box"
+        },
+        {
+          "id": "s02.c2",
+          "sentenceIndex": 4,
+          "startSec": 17.3,
+          "endSec": 20.9,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 37,
+            "y": 31,
+            "w": 26,
+            "h": 34
+          },
+          "label": "Liquid water box"
+        },
+        {
+          "id": "s02.c3",
+          "sentenceIndex": 5,
+          "startSec": 20.9,
+          "endSec": 28.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 70,
+            "y": 31,
+            "w": 26,
+            "h": 34
+          },
+          "label": "Invisible water vapour dashed box"
+        },
+        {
+          "id": "s02.c4",
+          "sentenceIndex": 8,
+          "startSec": 33.6,
+          "endSec": 42.9,
+          "style": "arrow",
+          "target": {
+            "type": "region",
+            "x": 28,
+            "y": 10,
+            "w": 44,
+            "h": 20
+          },
+          "label": "Top arrows: Add Heat"
+        },
+        {
+          "id": "s02.c5",
+          "sentenceIndex": 10,
+          "startSec": 42.9,
+          "endSec": 49.4,
+          "style": "arrow",
+          "target": {
+            "type": "region",
+            "x": 28,
+            "y": 68,
+            "w": 44,
+            "h": 21
+          },
+          "label": "Bottom arrows: Cool Down"
+        }
+      ]
     },
     {
       "id": "s03",
@@ -366,7 +481,71 @@
         ],
         "outOfScopeRule": "I can only answer questions about the four stages of the water cycle here. Please ask your teacher about other topics."
       },
-      "teacherNote": "Checkpoint A follows immediately. Have pupils trace the clockwise circle in the air while saying the four stage names aloud."
+      "teacherNote": "Checkpoint A follows immediately. Have pupils trace the clockwise circle in the air while saying the four stage names aloud.",
+      "timingMethod": "silence-detect",
+      "audioHash": "e9ca74573d5ce519",
+      "cues": [
+        {
+          "id": "s03.c1",
+          "sentenceIndex": 3,
+          "startSec": 14.4,
+          "endSec": 22.8,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 3,
+            "y": 36,
+            "w": 40,
+            "h": 35
+          },
+          "label": "1. Evaporation"
+        },
+        {
+          "id": "s03.c2",
+          "sentenceIndex": 4,
+          "startSec": 22.8,
+          "endSec": 29.3,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 57,
+            "y": 3,
+            "w": 36,
+            "h": 30
+          },
+          "label": "2. Condensation"
+        },
+        {
+          "id": "s03.c3",
+          "sentenceIndex": 5,
+          "startSec": 29.3,
+          "endSec": 37.1,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 59,
+            "y": 33,
+            "w": 39,
+            "h": 27
+          },
+          "label": "3. Precipitation"
+        },
+        {
+          "id": "s03.c4",
+          "sentenceIndex": 6,
+          "startSec": 37.1,
+          "endSec": 44.6,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 49,
+            "y": 67,
+            "w": 36,
+            "h": 29
+          },
+          "label": "4. Collection"
+        }
+      ]
     },
     {
       "id": "s04",
@@ -430,7 +609,68 @@
         ],
         "outOfScopeRule": "Right now we are studying evaporation and transpiration in the water cycle. Please ask your teacher if you want to explore another topic."
       },
-      "teacherNote": "Explicitly counter the misconception that only the sea evaporates. Point out nearby trees or school garden crops as sources of transpiration."
+      "teacherNote": "Explicitly counter the misconception that only the sea evaporates. Point out nearby trees or school garden crops as sources of transpiration.",
+      "timingMethod": "silence-detect",
+      "audioHash": "e474a517ee2b37ff",
+      "cues": [
+        {
+          "id": "s04.c1",
+          "sentenceIndex": 1,
+          "startSec": 3.8,
+          "endSec": 9.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 4,
+            "y": 6,
+            "w": 15,
+            "h": 24
+          },
+          "label": "Sun providing heat"
+        },
+        {
+          "id": "s04.c2",
+          "sentenceIndex": 1,
+          "startSec": 9.5,
+          "endSec": 15.6,
+          "style": "arrow",
+          "target": {
+            "type": "region",
+            "x": 18,
+            "y": 26,
+            "w": 26,
+            "h": 46
+          },
+          "label": "Evaporation arrows rising from water"
+        },
+        {
+          "id": "s04.c3",
+          "sentenceIndex": 6,
+          "startSec": 29.7,
+          "endSec": 39.2,
+          "style": "chip",
+          "target": {
+            "type": "chip",
+            "index": 1
+          },
+          "label": "Evaporation happens from many water sources"
+        },
+        {
+          "id": "s04.c4",
+          "sentenceIndex": 7,
+          "startSec": 39.2,
+          "endSec": 51.2,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 61,
+            "y": 6,
+            "w": 28,
+            "h": 68
+          },
+          "label": "Tree and transpiration arrows"
+        }
+      ]
     },
     {
       "id": "s05",
@@ -493,7 +733,68 @@
         ],
         "outOfScopeRule": "Let us stick to condensation and how clouds form right now. Please ask your teacher if your question is on another subject."
       },
-      "teacherNote": "Connect back to the cold sachet water from the start of the lesson so pupils see condensation as a real everyday process."
+      "teacherNote": "Connect back to the cold sachet water from the start of the lesson so pupils see condensation as a real everyday process.",
+      "timingMethod": "silence-detect",
+      "audioHash": "7365dd9718c36eed",
+      "cues": [
+        {
+          "id": "s05.c1",
+          "sentenceIndex": 1,
+          "startSec": 4.9,
+          "endSec": 15.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 22,
+            "y": 5,
+            "w": 24,
+            "h": 12
+          },
+          "label": "Cool upper air"
+        },
+        {
+          "id": "s05.c2",
+          "sentenceIndex": 2,
+          "startSec": 15.5,
+          "endSec": 23.4,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 13,
+            "y": 20,
+            "w": 41,
+            "h": 24
+          },
+          "label": "Cloud formed by condensation"
+        },
+        {
+          "id": "s05.c3",
+          "sentenceIndex": 4,
+          "startSec": 23.4,
+          "endSec": 33.4,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 65,
+            "y": 19,
+            "w": 25,
+            "h": 55
+          },
+          "label": "Magnified cloud droplets circle"
+        },
+        {
+          "id": "s05.c4",
+          "sentenceIndex": 6,
+          "startSec": 33.4,
+          "endSec": 44.6,
+          "style": "chip",
+          "target": {
+            "type": "chip",
+            "index": 2
+          },
+          "label": "Clouds are water, not smoke"
+        }
+      ]
     },
     {
       "id": "s06",
@@ -556,7 +857,56 @@
         ],
         "outOfScopeRule": "I can only help with precipitation and how rain or hail forms here. Please ask your teacher about other topics."
       },
-      "teacherNote": "Checkpoint B follows immediately. Ask pupils if anyone has ever heard hailstones hit a zinc roof during a heavy storm."
+      "teacherNote": "Checkpoint B follows immediately. Ask pupils if anyone has ever heard hailstones hit a zinc roof during a heavy storm.",
+      "timingMethod": "silence-detect",
+      "audioHash": "cc41f7672ae8cba0",
+      "cues": [
+        {
+          "id": "s06.c1",
+          "sentenceIndex": 2,
+          "startSec": 10.6,
+          "endSec": 23.2,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 8,
+            "y": 18,
+            "w": 35,
+            "h": 50
+          },
+          "label": "Falling rain droplets"
+        },
+        {
+          "id": "s06.c2",
+          "sentenceIndex": 6,
+          "startSec": 33.5,
+          "endSec": 44.1,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 1,
+            "y": 2,
+            "w": 48,
+            "h": 96
+          },
+          "label": "Rainy Season panel"
+        },
+        {
+          "id": "s06.c3",
+          "sentenceIndex": 7,
+          "startSec": 44.1,
+          "endSec": 55.6,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 51,
+            "y": 2,
+            "w": 48,
+            "h": 96
+          },
+          "label": "Dry Harmattan panel"
+        }
+      ]
     },
     {
       "id": "s07",
@@ -619,7 +969,86 @@
         ],
         "outOfScopeRule": "Let us keep our questions focused on collection, surface run-off, and groundwater. Ask your teacher for other topics."
       },
-      "teacherNote": "Remind pupils that borehole water must come from a protected, tested source, and untreated open-well or stream water should be boiled or treated before drinking."
+      "teacherNote": "Remind pupils that borehole water must come from a protected, tested source, and untreated open-well or stream water should be boiled or treated before drinking.",
+      "timingMethod": "silence-detect",
+      "audioHash": "b89516ac09e3c231",
+      "cues": [
+        {
+          "id": "s07.c1",
+          "sentenceIndex": 2,
+          "startSec": 8.7,
+          "endSec": 16.5,
+          "style": "arrow",
+          "target": {
+            "type": "region",
+            "x": 5,
+            "y": 20,
+            "w": 30,
+            "h": 30
+          },
+          "label": "Surface run-off arrow"
+        },
+        {
+          "id": "s07.c2",
+          "sentenceIndex": 3,
+          "startSec": 16.5,
+          "endSec": 28.8,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 36,
+            "y": 52,
+            "w": 25,
+            "h": 20
+          },
+          "label": "Lake collecting surface water"
+        },
+        {
+          "id": "s07.c3",
+          "sentenceIndex": 5,
+          "startSec": 28.8,
+          "endSec": 32.2,
+          "style": "arrow",
+          "target": {
+            "type": "region",
+            "x": 15,
+            "y": 47,
+            "w": 12,
+            "h": 27
+          },
+          "label": "Rainwater soaking into soil"
+        },
+        {
+          "id": "s07.c4",
+          "sentenceIndex": 6,
+          "startSec": 32.2,
+          "endSec": 40.6,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 2,
+            "y": 75,
+            "w": 96,
+            "h": 23
+          },
+          "label": "Underground groundwater layer"
+        },
+        {
+          "id": "s07.c5",
+          "sentenceIndex": 7,
+          "startSec": 40.6,
+          "endSec": 51.3,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 74,
+            "y": 29,
+            "w": 18,
+            "h": 52
+          },
+          "label": "Protected borehole pump"
+        }
+      ]
     },
     {
       "id": "s08",
@@ -681,7 +1110,59 @@
         ],
         "outOfScopeRule": "Let us stay with our water drop's journey right now. Please ask your teacher if you have a question about a different topic."
       },
-      "teacherNote": "Optional quick activity: ask pupils to retell the drop's four-step journey to their desk partner in under thirty seconds."
+      "teacherNote": "Optional quick activity: ask pupils to retell the drop's four-step journey to their desk partner in under thirty seconds.",
+      "timingMethod": "silence-detect",
+      "audioHash": "081431c6ceb3d915",
+      "cues": [
+        {
+          "id": "s08.c1",
+          "sentenceIndex": 1,
+          "startSec": 7.3,
+          "endSec": 25.1,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 3,
+            "y": 45,
+            "w": 42,
+            "h": 45
+          },
+          "label": "Lake Volta",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s08.c2",
+          "sentenceIndex": 4,
+          "startSec": 25.1,
+          "endSec": 39.6,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 25,
+            "y": 6,
+            "w": 55,
+            "h": 30
+          },
+          "label": "Drifting rain clouds",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s08.c3",
+          "sentenceIndex": 6,
+          "startSec": 39.6,
+          "endSec": 55.8,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 52,
+            "y": 42,
+            "w": 44,
+            "h": 50
+          },
+          "label": "Maize and cocoa farm and stream",
+          "needsHumanCheck": true
+        }
+      ]
     },
     {
       "id": "s09",
@@ -746,7 +1227,86 @@
         ],
         "outOfScopeRule": "Let us keep our questions on why the water cycle is a repeated pattern. Please ask your teacher about other subjects."
       },
-      "teacherNote": "Checkpoint C follows immediately. Emphasize that 'same water recycled' does not mean safe drinking water is unlimited locally."
+      "teacherNote": "Checkpoint C follows immediately. Emphasize that 'same water recycled' does not mean safe drinking water is unlimited locally.",
+      "timingMethod": "silence-detect",
+      "audioHash": "08dd90d045c8f03b",
+      "cues": [
+        {
+          "id": "s09.c1",
+          "sentenceIndex": 1,
+          "startSec": 6.2,
+          "endSec": 18,
+          "style": "spotlight",
+          "target": {
+            "type": "region",
+            "x": 39,
+            "y": 26,
+            "w": 22,
+            "h": 39
+          },
+          "label": "Sun and outward heat arrows"
+        },
+        {
+          "id": "s09.c2",
+          "sentenceIndex": 3,
+          "startSec": 18,
+          "endSec": 21.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 8,
+            "y": 18,
+            "w": 23,
+            "h": 14
+          },
+          "label": "Evaporation stage"
+        },
+        {
+          "id": "s09.c3",
+          "sentenceIndex": 3,
+          "startSec": 21.5,
+          "endSec": 24.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 67,
+            "y": 18,
+            "w": 27,
+            "h": 14
+          },
+          "label": "Condensation stage"
+        },
+        {
+          "id": "s09.c4",
+          "sentenceIndex": 3,
+          "startSec": 24.5,
+          "endSec": 27.7,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 67,
+            "y": 60,
+            "w": 27,
+            "h": 14
+          },
+          "label": "Precipitation stage"
+        },
+        {
+          "id": "s09.c5",
+          "sentenceIndex": 5,
+          "startSec": 35,
+          "endSec": 49.9,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 21,
+            "y": 82,
+            "w": 58,
+            "h": 13
+          },
+          "label": "Same water recycled banner"
+        }
+      ]
     },
     {
       "id": "s10",
@@ -808,7 +1368,59 @@
         ],
         "outOfScopeRule": "Let us keep our questions focused on why the water cycle matters for drinking water, farming, and living things. Please ask your teacher about other topics."
       },
-      "teacherNote": "Do not claim evaporation 'purifies' water completely for drinking; remind pupils that roof rainwater can pick up dust or dirt and should always be treated (boiled or filtered) before drinking."
+      "teacherNote": "Do not claim evaporation 'purifies' water completely for drinking; remind pupils that roof rainwater can pick up dust or dirt and should always be treated (boiled or filtered) before drinking.",
+      "timingMethod": "silence-detect",
+      "audioHash": "c2545117da444545",
+      "cues": [
+        {
+          "id": "s10.c1",
+          "sentenceIndex": 1,
+          "startSec": 7,
+          "endSec": 23.7,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 2,
+            "y": 30,
+            "w": 32,
+            "h": 64
+          },
+          "label": "Children fetching drinking water at borehole",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s10.c2",
+          "sentenceIndex": 3,
+          "startSec": 23.7,
+          "endSec": 41.9,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 34,
+            "y": 28,
+            "w": 32,
+            "h": 66
+          },
+          "label": "Farmer tending maize and cocoa crops",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s10.c3",
+          "sentenceIndex": 6,
+          "startSec": 41.9,
+          "endSec": 53.7,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 67,
+            "y": 32,
+            "w": 31,
+            "h": 62
+          },
+          "label": "Animals drinking by shaded stream",
+          "needsHumanCheck": true
+        }
+      ]
     },
     {
       "id": "s11",
@@ -870,7 +1482,59 @@
         ],
         "outOfScopeRule": "Let us stay focused on natural habitats, weather, and hydroelectric power in the water cycle. Please ask your teacher about other topics."
       },
-      "teacherNote": "Emphasise that indicator B7.2.1.1.2 is about the importance of the water cycle *in nature* as a whole — habitats, freshwater distribution, and weather — not just human drinking water."
+      "teacherNote": "Emphasise that indicator B7.2.1.1.2 is about the importance of the water cycle *in nature* as a whole — habitats, freshwater distribution, and weather — not just human drinking water.",
+      "timingMethod": "silence-detect",
+      "audioHash": "20bfa006d018ff4a",
+      "cues": [
+        {
+          "id": "s11.c1",
+          "sentenceIndex": 1,
+          "startSec": 6.4,
+          "endSec": 16.2,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 3,
+            "y": 26,
+            "w": 45,
+            "h": 68
+          },
+          "label": "River and wetland wildlife habitat",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s11.c2",
+          "sentenceIndex": 2,
+          "startSec": 16.2,
+          "endSec": 34.2,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 15,
+            "y": 4,
+            "w": 70,
+            "h": 24
+          },
+          "label": "Passing clouds distributing fresh water",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s11.c3",
+          "sentenceIndex": 4,
+          "startSec": 34.2,
+          "endSec": 51.6,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 52,
+            "y": 24,
+            "w": 45,
+            "h": 70
+          },
+          "label": "Hydroelectric dam powering homes and schools",
+          "needsHumanCheck": true
+        }
+      ]
     },
     {
       "id": "s12",
@@ -932,7 +1596,71 @@
         ],
         "outOfScopeRule": "Let us stay focused on how human actions affect clean water and what we can do to protect it. Ask your teacher for other topics."
       },
-      "teacherNote": "Keep the discussion of mining and pollution factual and age-appropriate; focus on constructive actions pupils can take at school and home."
+      "teacherNote": "Keep the discussion of mining and pollution factual and age-appropriate; focus on constructive actions pupils can take at school and home.",
+      "timingMethod": "silence-detect",
+      "audioHash": "f878da6ac0f42671",
+      "cues": [
+        {
+          "id": "s12.c1",
+          "sentenceIndex": 1,
+          "startSec": 7.8,
+          "endSec": 16.5,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 34,
+            "y": 30,
+            "w": 32,
+            "h": 64
+          },
+          "label": "Keeping gutters free of plastic waste",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s12.c2",
+          "sentenceIndex": 2,
+          "startSec": 16.5,
+          "endSec": 30,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 2,
+            "y": 26,
+            "w": 32,
+            "h": 68
+          },
+          "label": "Planting young trees along riverbank",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s12.c3",
+          "sentenceIndex": 3,
+          "startSec": 30,
+          "endSec": 32.2,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 67,
+            "y": 28,
+            "w": 31,
+            "h": 66
+          },
+          "label": "Closing dripping school tap",
+          "needsHumanCheck": true
+        },
+        {
+          "id": "s12.c4",
+          "sentenceIndex": 5,
+          "startSec": 36.7,
+          "endSec": 46.2,
+          "style": "chip",
+          "target": {
+            "type": "chip",
+            "index": 2
+          },
+          "label": "Keep gutters clean and plant trees"
+        }
+      ]
     },
     {
       "id": "s13",
@@ -995,7 +1723,51 @@
         ],
         "outOfScopeRule": "I can help with the lesson summary or the water cycle in a bag experiment here. Please ask your teacher about other topics."
       },
-      "teacherNote": "Checkpoint D and the 5-question Mastery Check follow. You can set up one demonstration bag on a sunny classroom window at the start of the week."
+      "teacherNote": "Checkpoint D and the 5-question Mastery Check follow. You can set up one demonstration bag on a sunny classroom window at the start of the week.",
+      "timingMethod": "silence-detect",
+      "audioHash": "8a3e7f1f33f5c549",
+      "cues": [
+        {
+          "id": "s13.c1",
+          "sentenceIndex": 3,
+          "startSec": 8.6,
+          "endSec": 27.6,
+          "style": "chip",
+          "target": {
+            "type": "chip",
+            "index": 0
+          },
+          "label": "Four repeating stages of the water cycle"
+        },
+        {
+          "id": "s13.c2",
+          "sentenceIndex": 5,
+          "startSec": 27.6,
+          "endSec": 37.6,
+          "style": "chip",
+          "target": {
+            "type": "chip",
+            "index": 2
+          },
+          "label": "Protect rivers, trees, and safe water"
+        },
+        {
+          "id": "s13.c3",
+          "sentenceIndex": 7,
+          "startSec": 39.7,
+          "endSec": 47.7,
+          "style": "ring",
+          "target": {
+            "type": "region",
+            "x": 46,
+            "y": 18,
+            "w": 46,
+            "h": 68
+          },
+          "label": "Sealed plastic bag water-cycle model on sunny window",
+          "needsHumanCheck": true
+        }
+      ]
     }
   ],
   "checkpoints": [

@@ -60,6 +60,25 @@ export interface AskTeacherContext {
   outOfScopeRule: string;
 }
 
+export type CueStyle = 'ring' | 'arrow' | 'spotlight' | 'chip';
+
+export type CueTarget =
+  | { type: 'region'; x: number; y: number; w: number; h: number }
+  | { type: 'chip'; index: number };
+
+export interface PointerCue {
+  id: string;
+  sentenceIndex: number;
+  startSec: number;
+  endSec: number;
+  style: CueStyle;
+  target: CueTarget;
+  label?: string;
+  needsHumanCheck?: boolean;
+}
+
+export type TimingMethod = 'forced-align' | 'silence-detect' | 'estimated';
+
 export interface LessonSlide {
   id: string;
   order: number;
@@ -72,6 +91,9 @@ export interface LessonSlide {
   indicatorIds: string[];
   askTeacherContext: AskTeacherContext;
   teacherNote: string;
+  timingMethod?: TimingMethod;
+  audioHash?: string;
+  cues?: PointerCue[];
 }
 
 export interface WrongFeedback {
