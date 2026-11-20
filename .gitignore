@@ -40,6 +40,7 @@ scratch/membership-audit/
 
 # Story Spark Cloud Storage generated & staged assets (binary media served from Firebase Storage CDN)
 /.story-spark-build/
+/.narrated-lesson-build/
 /public/story-spark-preview/audio/
 /public/story-spark-preview/images/
 /public/story-spark-preview/candidates/

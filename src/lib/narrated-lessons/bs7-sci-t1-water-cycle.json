@@ -1,0 +1,1763 @@
+{
+  "lessonId": "bs7-sci-t1-water-cycle",
+  "schemaVersion": "0.3-pilot",
+  "meta": {
+    "class": "Basic 7",
+    "subject": "Science",
+    "term": 1,
+    "contentStandard": "B7.2.1.1",
+    "indicators": [
+      "B7.2.1.1.1",
+      "B7.2.1.1.2"
+    ],
+    "narrationWordCount": 1310,
+    "estimatedNarrationMinutes": 9,
+    "estimatedTotalMinutes": 17
+  },
+  "learningOutcomes": [
+    "By the end, you can name and explain the four main stages of the water cycle: evaporation, condensation, precipitation, and collection.",
+    "By the end, you can explain why the water cycle is a repeated pattern powered by heat energy from the sun.",
+    "By the end, you can describe why the water cycle is important for nature, habitats, drinking water, farming, and hydroelectric power in Ghana.",
+    "By the end, you can suggest practical ways to protect rivers, forests, and safe water in your community."
+  ],
+  "pronunciationGuide": [
+    {
+      "term": "Bosomtwe",
+      "respelling": "boh-SOHM-chway",
+      "languageOrContext": "Akan (Twi) — natural crater lake in the Ashanti Region of Ghana",
+      "slides": [
+        "s07"
+      ]
+    },
+    {
+      "term": "Akosombo",
+      "respelling": "ah-koh-SOHM-boh",
+      "languageOrContext": "Ghanaian town and hydroelectric dam on the Volta River",
+      "slides": [
+        "s11"
+      ]
+    },
+    {
+      "term": "Harmattan",
+      "respelling": "har-mah-TAHN",
+      "languageOrContext": "West African dry, dusty trade-wind season",
+      "slides": [
+        "s06"
+      ]
+    },
+    {
+      "term": "kenkey",
+      "respelling": "KEN-kay",
+      "languageOrContext": "Ghanaian staple steamed fermented maize dish",
+      "slides": [
+        "s02",
+        "s04"
+      ]
+    },
+    {
+      "term": "Volta",
+      "respelling": "VOHL-tah",
+      "languageOrContext": "Major river and reservoir lake in Ghana",
+      "slides": [
+        "s04",
+        "s07",
+        "s08",
+        "s11"
+      ]
+    }
+  ],
+  "vocabulary": [
+    {
+      "term": "water vapour",
+      "studentFriendlyMeaning": "Water in the form of an invisible gas in the air.",
+      "pronunciationNote": "WAW-ter VAY-per",
+      "firstUsedInSlide": "s02"
+    },
+    {
+      "term": "water cycle",
+      "studentFriendlyMeaning": "The continuous, repeated movement of water between the Earth and the sky.",
+      "pronunciationNote": "WAW-ter SY-kul",
+      "firstUsedInSlide": "s03"
+    },
+    {
+      "term": "evaporation",
+      "studentFriendlyMeaning": "When heat turns liquid water into invisible water vapour that rises into the air.",
+      "pronunciationNote": "ih-vap-uh-RAY-shun",
+      "firstUsedInSlide": "s03"
+    },
+    {
+      "term": "transpiration",
+      "studentFriendlyMeaning": "When plants release water vapour into the air through tiny openings in their leaves.",
+      "pronunciationNote": "tran-spuh-RAY-shun",
+      "firstUsedInSlide": "s04"
+    },
+    {
+      "term": "condensation",
+      "studentFriendlyMeaning": "When water vapour cools down and changes back into tiny liquid water droplets.",
+      "pronunciationNote": "kon-den-SAY-shun",
+      "firstUsedInSlide": "s03"
+    },
+    {
+      "term": "precipitation",
+      "studentFriendlyMeaning": "Water that falls from clouds to the Earth as rain, hail, or snow.",
+      "pronunciationNote": "pree-sip-ih-TAY-shun",
+      "firstUsedInSlide": "s03"
+    },
+    {
+      "term": "collection",
+      "studentFriendlyMeaning": "When fallen water gathers in rivers, lakes, the sea, and underground soil.",
+      "pronunciationNote": "kuh-LEK-shun",
+      "firstUsedInSlide": "s03"
+    },
+    {
+      "term": "surface run-off",
+      "studentFriendlyMeaning": "Rainwater that flows over the ground into gutters, streams, rivers, and lakes.",
+      "pronunciationNote": "SUR-fis RUN-off",
+      "firstUsedInSlide": "s07"
+    },
+    {
+      "term": "groundwater",
+      "studentFriendlyMeaning": "Rainwater that soaks deep into the soil and rocks underground, feeding wells and boreholes.",
+      "pronunciationNote": "GROWND-waw-ter",
+      "firstUsedInSlide": "s07"
+    },
+    {
+      "term": "habitat",
+      "studentFriendlyMeaning": "The natural home where a plant or animal lives, finds food, and grows.",
+      "pronunciationNote": "HAB-ih-tat",
+      "firstUsedInSlide": "s11"
+    },
+    {
+      "term": "hydroelectric power",
+      "studentFriendlyMeaning": "Electricity made by using the force of flowing water from a river or dam.",
+      "pronunciationNote": "HY-droh-ih-LEK-trik POW-er",
+      "firstUsedInSlide": "s11"
+    },
+    {
+      "term": "gravity",
+      "studentFriendlyMeaning": "The invisible downward pull of the Earth that makes heavy things fall.",
+      "pronunciationNote": "GRAV-ih-tee",
+      "firstUsedInSlide": "s06"
+    },
+    {
+      "term": "reservoir",
+      "studentFriendlyMeaning": "A large artificial or natural lake where water is stored for drinking, farming, or electricity.",
+      "pronunciationNote": "REZ-er-vwah",
+      "firstUsedInSlide": "s11"
+    },
+    {
+      "term": "turbine",
+      "studentFriendlyMeaning": "A large spinning wheel turned by flowing water to generate electricity.",
+      "pronunciationNote": "TUR-byne",
+      "firstUsedInSlide": "s11"
+    }
+  ],
+  "misconceptionsAddressed": [
+    {
+      "misconception": "Water that dries up disappears forever.",
+      "slideId": "s01",
+      "howAddressed": "Uses drying school uniforms to ask where the water went, then explains on s04 that it changed into invisible water vapour in the air."
+    },
+    {
+      "misconception": "Only the sea is part of the water cycle.",
+      "slideId": "s04",
+      "howAddressed": "Explains that evaporation happens from rivers, lakes, puddles, damp soil, clothes, and plant leaves through transpiration, not only the sea."
+    },
+    {
+      "misconception": "Clouds are made of smoke.",
+      "slideId": "s05",
+      "howAddressed": "Contrasts clouds with smoke and explains that clouds are made mostly of tiny liquid water droplets, and sometimes tiny ice crystals in very high clouds."
+    },
+    {
+      "misconception": "Rain is poured from a giant tank in the sky.",
+      "slideId": "s06",
+      "howAddressed": "Rejects the sky-tank idea and explains that rain falls when cloud droplets join together and become too heavy for the air to hold."
+    },
+    {
+      "misconception": "Brand new water is made each time it rains.",
+      "slideId": "s09",
+      "howAddressed": "Explains that Earth recycles the same water again and again using the sun's heat energy over a very long time."
+    }
+  ],
+  "slides": [
+    {
+      "id": "s01",
+      "order": 1,
+      "title": "Where Does the Rain Come From?",
+      "purpose": "Hook learners with familiar Ghanaian everyday observations and surface the misconception that dried water disappears forever.",
+      "onScreenText": [
+        "Wet clothes dry in the sun.",
+        "Cold sachet water grows drops outside.",
+        "Where does that water go?"
+      ],
+      "visual": {
+        "type": "illustration",
+        "description": "Split sunny Ghanaian compound scene: left side shows school uniforms drying on a clothesline in bright sunlight; right side shows a chilled clear sachet of water on a wooden table with tiny glistening droplets on the outside plastic.",
+        "labels": [
+          "Drying clothes",
+          "Cold sachet water",
+          "Water droplets"
+        ],
+        "altText": "A sunny Ghanaian courtyard showing wet clothes drying on a line and water droplets forming on the outside of a cold sachet of water.",
+        "svgCode": null,
+        "imagePrompt": "Warm hand-painted educational illustration, landscape 16:9, split scene in a sunny Ghanaian home courtyard. On the left, damp school uniforms hang on a washing line in warm sunlight with a gentle breeze. On the right, a close-up of a chilled clear plastic water sachet resting on a wooden table with tiny glistening water droplets on the outside surface. Clean, uncluttered sky area at top. No text, letters, numbers, or labels inside the image."
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say warmly, like a patient JHS science teacher welcoming the class, at a moderate pace, with a short pause after questions:",
+        "script": "Hello, class. Think about a bright afternoon at home. You wash your school uniform and hang it on the drying line. Two hours later, it is completely dry. Where did all that water go? Did it vanish forever? Now picture buying an iced sachet of water on a hot day. Soon, the outside of the plastic feels wet with tiny drops, even though the sachet is not leaking. Where did those drops come from? Today, we will solve both mysteries together by exploring one of nature's greatest journeys: the water cycle.",
+        "estSeconds": 39,
+        "pauseCues": [
+          "after 'Where did all that water go?'",
+          "after 'Did it vanish forever?'",
+          "after 'Where did those drops come from?'"
+        ],
+        "ttsText": "Hello, class. Think about a bright afternoon at home. You wash your school uniform and hang it on the drying line. Two hours later, it is completely dry. Where did all that water go? Did it vanish forever? Now picture buying an iced sachet of water on a hot day. Soon, the outside of the plastic feels wet with tiny drops, even though the sachet is not leaking. Where did those drops come from? Today, we will solve both mysteries together by exploring one of nature's greatest journeys: the water cycle."
+      },
+      "keyIdeas": [
+        "Water moves into and out of the air around us every day.",
+        "Water that dries up has not disappeared forever."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "This opening introduces the water cycle using two everyday Ghanaian examples: wet clothes drying on a line and water droplets forming on the outside of a cold sachet of water. Water on drying clothes does not vanish; it changes into invisible gas in the air. Droplets outside a cold sachet do not leak from inside; they come from water vapour already in the warm air.",
+        "seedFaqs": [
+          {
+            "q": "Does water from wet clothes really not disappear?",
+            "a": "No, it never disappears. Heat from the sun changes the liquid water into an invisible gas that moves into the air."
+          },
+          {
+            "q": "Why does my cold sachet water get wet on the outside if it has no hole?",
+            "a": "Warm air around the sachet holds invisible water vapour. When that vapour touches the cold plastic, it cools and turns into tiny liquid drops."
+          },
+          {
+            "q": "Why do clothes dry faster in the sun than in the shade?",
+            "a": "The sun gives more heat energy, which helps liquid water turn into gas much faster."
+          }
+        ],
+        "outOfScopeRule": "That is an interesting question, but right now we are focusing on how water moves in the water cycle. Please ask your classroom teacher later."
+      },
+      "teacherNote": "Ask two pupils to share another place they have seen water dry up quickly, such as puddles after rain or a freshly mopped classroom floor."
+    },
+    {
+      "id": "s02",
+      "order": 2,
+      "title": "Water Can Change Its State",
+      "purpose": "Link back to states of matter by showing how heating and cooling change water between solid, liquid, and gas.",
+      "onScreenText": [
+        "Solid: ice",
+        "Liquid: drinking water",
+        "Gas: invisible water vapour"
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Three-box state-change diagram: Ice on the left, Water in the middle, Vapour in a dashed box on the right. Top arrows point right for Add Heat; bottom arrows point left for Cool Down.",
+        "labels": [
+          "Ice",
+          "Water",
+          "Vapour",
+          "Add Heat",
+          "Cool Down"
+        ],
+        "altText": "Diagram showing water changing from solid ice to liquid water to invisible gas vapour when heated, and changing back when cooled.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>Water changing between ice, liquid water, and invisible vapour</title><rect width='1280' height='720' fill='#F8FAFC'/><defs><marker id='aH' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#D55E00'/></marker><marker id='aC' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#0072B2'/></marker></defs><rect x='60' y='230' width='310' height='230' rx='24' fill='#E0F2FE' stroke='#0072B2' stroke-width='5'/><rect x='175' y='265' width='80' height='80' rx='10' fill='#56B4E9' stroke='#0072B2' stroke-width='4'/><text x='215' y='425' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Ice</text><rect x='485' y='230' width='310' height='230' rx='24' fill='#E0F2FE' stroke='#0072B2' stroke-width='5'/><path d='M640 260 C675 315 685 335 640 360 C595 335 605 315 640 260 Z' fill='#0072B2'/><text x='640' y='425' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Water</text><rect x='910' y='230' width='310' height='230' rx='24' fill='#F1F5F9' stroke='#475569' stroke-width='5' stroke-dasharray='14,10'/><path d='M1025 355 Q1010 320 1030 290 Q1045 270 1025 255' fill='none' stroke='#009E73' stroke-width='7' stroke-linecap='round'/><path d='M1085 355 Q1070 320 1090 290 Q1105 270 1085 255' fill='none' stroke='#009E73' stroke-width='7' stroke-linecap='round'/><text x='1065' y='425' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Vapour</text><line x1='380' y1='185' x2='475' y2='185' stroke='#D55E00' stroke-width='9' marker-end='url(#aH)'/><line x1='805' y1='185' x2='900' y2='185' stroke='#D55E00' stroke-width='9' marker-end='url(#aH)'/><text x='640' y='130' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#D55E00'>Add Heat</text><line x1='900' y1='520' x2='805' y2='520' stroke='#0072B2' stroke-width='9' marker-end='url(#aC)'/><line x1='475' y1='520' x2='380' y2='520' stroke='#0072B2' stroke-width='9' marker-end='url(#aC)'/><text x='640' y='610' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Cool Down</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say clearly and encouragingly, connecting to prior knowledge, at a moderate pace:",
+        "script": "You may remember learning about solids, liquids, and gases. Water is special because it can exist in all three states. Look at the three boxes across the middle. On the left is ice, which is solid water. In the centre is the liquid water you drink. On the right is water vapour, which is water as a gas. Notice the dashed outline around vapour. That reminds us that pure water vapour is invisible in the air. Follow the top arrows pointing right. Adding heat melts ice into liquid water and turns liquid water into vapour. Follow the bottom arrows pointing left. Cooling turns vapour back into liquid water.",
+        "estSeconds": 46,
+        "pauseCues": [
+          "after 'solids, liquids, and gases.'",
+          "after 'Follow the top arrows pointing right.'",
+          "after 'Follow the bottom arrows pointing left.'"
+        ],
+        "ttsText": "You may remember learning about solids, liquids, and gases. Water is special because it can exist in all three states. Look at the three boxes across the middle. On the left is ice, which is solid water. In the centre is the liquid water you drink. On the right is water vapour, which is water as a gas. Notice the dashed outline around vapour. That reminds us that pure water vapour is invisible in the air. Follow the top arrows pointing right. Adding heat melts ice into liquid water and turns liquid water into vapour. Follow the bottom arrows pointing left. Cooling turns vapour back into liquid water."
+      },
+      "keyIdeas": [
+        "Water exists as solid (ice), liquid (water), and gas (water vapour).",
+        "Pure water vapour is an invisible gas.",
+        "Heating and cooling cause water to change from one state to another."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "Water exists in three states: solid (ice), liquid (drinking water), and gas (water vapour). Pure water vapour is invisible. Adding heat melts solid ice into liquid water and changes liquid water into water vapour. Cooling changes water vapour back into liquid water and freezes liquid water into ice. White mist above a boiling kenkey pot is tiny cooled liquid droplets, not pure invisible vapour.",
+        "seedFaqs": [
+          {
+            "q": "If water vapour is invisible, why can I see mist above a boiling kenkey pot?",
+            "a": "Great question! The mist you see above the pot is actually tiny liquid droplets that already cooled slightly in the air. Pure water vapour right at the surface is invisible."
+          },
+          {
+            "q": "Is water vapour still water?",
+            "a": "Yes. It is the exact same water, just spread out as a gas instead of flowing as a liquid."
+          },
+          {
+            "q": "What makes water change from one state to another?",
+            "a": "Adding heat energy or taking heat away by cooling makes water change its state."
+          }
+        ],
+        "outOfScopeRule": "Let us keep our focus on how water changes between solid, liquid, and gas. For other topics, please ask your classroom teacher."
+      },
+      "teacherNote": "Reinforce the link to B7.1.1.1.1 (states of matter). Clarify that visible mist above a boiling kenkey pot is tiny condensed liquid droplets."
+    },
+    {
+      "id": "s03",
+      "order": 3,
+      "title": "The Big Picture: Four Stages in a Circle",
+      "purpose": "Introduce the water cycle as a continuous loop and name its four main stages before exploring each in detail.",
+      "onScreenText": [
+        "Evaporation and Condensation",
+        "Precipitation and Collection",
+        "A continuous, repeated journey."
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Main overview water cycle diagram: Sun top-left, water body bottom-left, land hill bottom-right, cloud top-right, and clockwise arrows for Evaporation, Condensation, Precipitation, and Collection. Each stage label sits inside a high-contrast white rounded pill completely clear of arrows.",
+        "labels": [
+          "Sun",
+          "1. Evaporation",
+          "2. Condensation",
+          "3. Precipitation",
+          "4. Collection"
+        ],
+        "altText": "Overview diagram of the water cycle showing the sun and a clockwise loop of four stages: evaporation rising from water, condensation forming clouds, precipitation falling as rain, and collection flowing back to water bodies.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>Overview of the four stages of the water cycle</title><rect width='1280' height='720' fill='#F0F9FF'/><defs><marker id='m1' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#D55E00'/></marker><marker id='m2' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#0072B2'/></marker><marker id='m3' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#1E293B'/></marker></defs><circle cx='145' cy='120' r='72' fill='#E69F00'/><text x='145' y='137' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Sun</text><rect x='0' y='520' width='680' height='200' fill='#0072B2'/><path d='M620 520 Q880 410 1280 470 L1280 720 L620 720 Z' fill='#009E73'/><path d='M760 220 Q760 160 830 160 Q865 115 940 130 Q1005 115 1045 160 Q1115 165 1110 220 Z' fill='#CBD5E1' stroke='#475569' stroke-width='4'/><path d='M485 505 C500 355 570 220 725 185' fill='none' stroke='#D55E00' stroke-width='10' marker-end='url(#m1)'/><path d='M790 235 L790 420' fill='none' stroke='#0072B2' stroke-width='10' stroke-dasharray='16,12' marker-end='url(#m2)'/><path d='M905 495 Q775 545 645 570' fill='none' stroke='#1E293B' stroke-width='10' marker-end='url(#m3)'/><rect x='55' y='285' width='405' height='76' rx='16' fill='#FFFFFF' stroke='#D55E00' stroke-width='4'/><text x='257' y='340' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>1. Evaporation</text><rect x='740' y='26' width='430' height='76' rx='16' fill='#FFFFFF' stroke='#1E293B' stroke-width='4'/><text x='955' y='81' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>2. Condensation</text><rect x='830' y='285' width='405' height='76' rx='16' fill='#FFFFFF' stroke='#0072B2' stroke-width='4'/><text x='1032' y='340' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>3. Precipitation</text><rect x='675' y='600' width='390' height='76' rx='16' fill='#FFFFFF' stroke='#1E293B' stroke-width='4'/><text x='870' y='655' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>4. Collection</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say warmly and steadily, guiding the learner's eyes clockwise around the diagram:",
+        "script": "Now let us look at the whole water cycle at once. A cycle is a pattern that goes round and round without ending. Follow the arrows clockwise around the picture. First, on the left, heat from the sun drives evaporation, lifting water into the air. Second, at the top right, condensation turns vapour into clouds. Third, moving straight down on the right, precipitation brings water back to Earth as rain. Fourth, along the bottom, collection gathers water in rivers, lakes, the sea, and the ground. Then the journey starts all over again. Let us pause for a quick check before moving on.",
+        "estSeconds": 44,
+        "pauseCues": [
+          "after 'without ending.'",
+          "after 'clockwise around the picture.'",
+          "after 'all over again.'"
+        ],
+        "ttsText": "Now let us look at the whole water cycle at once. A cycle is a pattern that goes round and round without ending. Follow the arrows clockwise around the picture. First, on the left, heat from the sun drives evaporation, lifting water into the air. Second, at the top right, condensation turns vapour into clouds. Third, moving straight down on the right, precipitation brings water back to Earth as rain. Fourth, along the bottom, collection gathers water in rivers, lakes, the sea, and the ground. Then the journey starts all over again. Let us pause for a quick check before moving on."
+      },
+      "keyIdeas": [
+        "A cycle is a repeated pattern with no end.",
+        "The four main stages are evaporation, condensation, precipitation, and collection."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "The water cycle is the continuous, repeated movement of water between the Earth's surface and the sky. Its four main stages in clockwise order are evaporation (water rises as vapour), condensation (vapour cools to form clouds), precipitation (water falls as rain or hail), and collection (water gathers in rivers, lakes, the sea, and underground). Because it is a cycle, it has no true starting or ending point.",
+        "seedFaqs": [
+          {
+            "q": "Does the water cycle ever stop?",
+            "a": "No. As long as the sun shines and there is water on Earth, the water cycle keeps repeating day after day."
+          },
+          {
+            "q": "Which stage is the very first stage of the water cycle?",
+            "a": "Because a cycle is a circle, it has no true start or end. Teachers often begin with evaporation to make it easy to follow."
+          },
+          {
+            "q": "How can I remember the four stage names?",
+            "a": "Think of the direction: rising up is evaporation, forming clouds is condensation, falling rain is precipitation, and gathering on Earth is collection."
+          }
+        ],
+        "outOfScopeRule": "I can only answer questions about the four stages of the water cycle here. Please ask your teacher about other topics."
+      },
+      "teacherNote": "Checkpoint A follows immediately. Have pupils trace the clockwise circle in the air while saying the four stage names aloud."
+    },
+    {
+      "id": "s04",
+      "order": 4,
+      "title": "Stage One: Evaporation and Transpiration",
+      "purpose": "Explain how sun's heat drives evaporation from many water sources (not just the sea) and introduce transpiration from plants.",
+      "onScreenText": [
+        "Sun heats liquid water into vapour.",
+        "Happens from seas, rivers, soil, and clothes.",
+        "Plants also release vapour: transpiration."
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Sun top-left shining dashed heat rays onto a river/lake on the left and a leafy tree on the right. Wavy upward arrows rise from both the water (Evaporation) and the tree leaves (Transpiration).",
+        "labels": [
+          "Sun",
+          "Evaporation",
+          "Transpiration",
+          "Water",
+          "Plants"
+        ],
+        "altText": "Diagram showing the sun warming a water body and a tree so invisible water vapour rises by evaporation from water and transpiration from leaves.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>Evaporation from water and transpiration from plants</title><rect width='1280' height='720' fill='#FFFBEB'/><defs><marker id='u1' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#D55E00'/></marker><marker id='u2' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#009E73'/></marker></defs><circle cx='135' cy='125' r='74' fill='#E69F00'/><text x='135' y='142' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Sun</text><line x1='220' y1='170' x2='335' y2='240' stroke='#E69F00' stroke-width='7' stroke-dasharray='12,8'/><rect x='0' y='525' width='660' height='195' fill='#0072B2'/><rect x='660' y='525' width='620' height='195' fill='#92400E'/><rect x='930' y='385' width='48' height='145' fill='#78350F'/><circle cx='954' cy='335' r='96' fill='#009E73'/><path d='M290 500 Q270 400 305 295' fill='none' stroke='#D55E00' stroke-width='10' marker-end='url(#u1)'/><path d='M445 500 Q425 400 460 295' fill='none' stroke='#D55E00' stroke-width='10' marker-end='url(#u1)'/><path d='M915 235 Q900 185 925 140' fill='none' stroke='#009E73' stroke-width='10' marker-end='url(#u2)'/><path d='M1000 235 Q985 185 1010 140' fill='none' stroke='#009E73' stroke-width='10' marker-end='url(#u2)'/><text x='385' y='245' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#D55E00'>Evaporation</text><text x='955' y='96' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#009E73'>Transpiration</text><text x='330' y='642' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#FFFFFF'>Water</text><text x='970' y='642' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#FFFFFF'>Plants</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say clearly and warmly, emphasizing the new terms 'evaporation' and 'transpiration':",
+        "script": "Let us look closely at evaporation. Evaporation happens when heat from the sun warms liquid water and turns it into invisible water vapour, which rises into the sky. Remember your wet school uniform hanging in the sun? That water did not disappear. It evaporated into the air. Some people think only the sea takes part in the water cycle, but that is not true. Evaporation happens from Lake Volta, rivers, puddles, damp soil, and even boiling kenkey pots. Now look at the tree on the right side. Plants also release water vapour through tiny openings in their leaves. Scientists call this transpiration.",
+        "estSeconds": 44,
+        "pauseCues": [
+          "after 'evaporation.'",
+          "after 'that is not true.'",
+          "after 'Now look at the tree on the right side.'"
+        ],
+        "ttsText": "Let us look closely at evaporation. Evaporation happens when heat from the sun warms liquid water and turns it into invisible water vapour, which rises into the sky. Remember your wet school uniform hanging in the sun? That water did not disappear. It evaporated into the air. Some people think only the sea takes part in the water cycle, but that is not true. Evaporation happens from Lake VOHL-tah, rivers, puddles, damp soil, and even boiling KEN-kay pots. Now look at the tree on the right side. Plants also release water vapour through tiny openings in their leaves. Scientists call this transpiration."
+      },
+      "keyIdeas": [
+        "Evaporation is liquid water turning into water vapour due to heat from the sun.",
+        "Evaporation happens from seas, lakes, rivers, puddles, wet clothes, and soil — not only the sea.",
+        "Transpiration is water vapour released into the air by plant leaves."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "Evaporation is the process by which heat energy from the sun turns liquid water into invisible water vapour that rises into the air. It occurs from oceans, Lake Volta, rivers, puddles, damp soil, and drying clothes — not just the sea. Plants also release water vapour into the air through tiny openings in their leaves; this process is called transpiration.",
+        "seedFaqs": [
+          {
+            "q": "Does water have to boil before it can evaporate?",
+            "a": "No! Water evaporates slowly at ordinary warm temperatures too, which is why puddles and wet clothes dry without boiling."
+          },
+          {
+            "q": "What is the difference between evaporation and transpiration?",
+            "a": "Evaporation is water turning into vapour from open surfaces like lakes or clothes. Transpiration is water vapour escaping from plant leaves."
+          },
+          {
+            "q": "Why does windy weather help water evaporate faster?",
+            "a": "Wind blows away the damp air above the water, making room for more liquid water to turn into vapour."
+          }
+        ],
+        "outOfScopeRule": "Right now we are studying evaporation and transpiration in the water cycle. Please ask your teacher if you want to explore another topic."
+      },
+      "teacherNote": "Explicitly counter the misconception that only the sea evaporates. Point out nearby trees or school garden crops as sources of transpiration."
+    },
+    {
+      "id": "s05",
+      "order": 5,
+      "title": "Stage Two: Condensation Forms Clouds",
+      "purpose": "Explain how rising water vapour cools and turns mostly into tiny liquid droplets (and ice crystals in very high clouds) that form clouds, addressing the 'clouds are smoke' misconception.",
+      "onScreenText": [
+        "Warm vapour rises and cools high up.",
+        "It forms mostly tiny water droplets.",
+        "Clouds are water, not smoke!"
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Vertical diagram: rising dashed arrow at bottom ('Warm vapour'), cool upper air ('Cool air') around a drawn Cloud, and a magnified circular inset on the right showing tiny liquid droplets ('Droplets').",
+        "labels": [
+          "Cool air",
+          "Cloud",
+          "Warm vapour",
+          "Droplets"
+        ],
+        "altText": "Diagram showing warm water vapour rising into cool high air and condensing into tiny water droplets inside a cloud.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>Condensation turning rising water vapour into cloud droplets</title><defs><linearGradient id='sG' x1='0' y1='1' x2='0' y2='0'><stop offset='0%' stop-color='#FEF3C7'/><stop offset='100%' stop-color='#BAE6FD'/></linearGradient><marker id='cA' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#0072B2'/></marker></defs><rect width='1280' height='720' fill='url(#sG)'/><text x='430' y='92' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Cool air</text><path d='M180 300 Q180 215 275 215 Q325 145 430 165 Q525 140 590 215 Q685 220 675 300 Z' fill='#E2E8F0' stroke='#475569' stroke-width='5'/><text x='430' y='265' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Cloud</text><path d='M430 595 L430 340' fill='none' stroke='#0072B2' stroke-width='10' stroke-dasharray='16,12' marker-end='url(#cA)'/><text x='430' y='665' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Warm vapour</text><line x1='660' y1='255' x2='835' y2='275' stroke='#475569' stroke-width='5' stroke-dasharray='10,8'/><circle cx='985' cy='290' r='145' fill='#FFFFFF' stroke='#0072B2' stroke-width='6'/><circle cx='930' cy='240' r='18' fill='#0072B2'/><circle cx='995' cy='220' r='20' fill='#56B4E9'/><circle cx='1045' cy='275' r='17' fill='#0072B2'/><circle cx='975' cy='305' r='21' fill='#56B4E9'/><circle cx='925' cy='330' r='16' fill='#0072B2'/><circle cx='1030' cy='350' r='18' fill='#0072B2'/><text x='985' y='505' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Droplets</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say clearly and curiously, pausing before explaining what clouds are made of:",
+        "script": "What happens after water vapour rises into the sky? Higher up above the Earth, the air is much cooler. When warm water vapour reaches that cool air, it loses heat and changes back into millions of tiny liquid water droplets. Scientists call this change condensation. Look at the magnified circle on the right. Those tiny droplets group together to form clouds. Very high, freezing clouds can also hold tiny ice crystals, but clouds are made mostly of water droplets, never smoke from fires! You see condensation on the ground too, as morning mist on hills or drops outside a cold sachet of water.",
+        "estSeconds": 44,
+        "pauseCues": [
+          "after 'rises into the sky?'",
+          "after 'condensation.'",
+          "after 'never smoke from fires!'"
+        ],
+        "ttsText": "What happens after water vapour rises into the sky? Higher up above the Earth, the air is much cooler. When warm water vapour reaches that cool air, it loses heat and changes back into millions of tiny liquid water droplets. Scientists call this change condensation. Look at the magnified circle on the right. Those tiny droplets group together to form clouds. Very high, freezing clouds can also hold tiny ice crystals, but clouds are made mostly of water droplets, never smoke from fires! You see condensation on the ground too, as morning mist on hills or drops outside a cold sachet of water."
+      },
+      "keyIdeas": [
+        "Condensation is water vapour cooling down to become tiny liquid droplets.",
+        "Clouds are made mostly of tiny water droplets (and tiny ice crystals in very high clouds), not smoke.",
+        "Morning mist and drops on a cold sachet are everyday examples of condensation."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "Condensation happens when warm, invisible water vapour rises into cooler air high in the sky, loses heat, and turns back into millions of tiny liquid water droplets. These droplets group together to form clouds. Very high clouds can also contain tiny ice crystals. Clouds are made of water, not smoke. Condensation also happens near the ground as morning mist on hills or drops on a cold sachet of water.",
+        "seedFaqs": [
+          {
+            "q": "Why do clouds stay floating in the sky if they are made of liquid water?",
+            "a": "Each droplet inside a cloud is so tiny and light that moving air easily holds it up."
+          },
+          {
+            "q": "Are clouds made of smoke?",
+            "a": "No. Smoke comes from burning and contains tiny bits of ash. Clouds are made mostly of tiny water droplets formed by condensation."
+          },
+          {
+            "q": "Can a cloud ever contain ice?",
+            "a": "Yes! Very high up in the sky where the air is freezing cold, clouds can contain tiny ice crystals as well as water droplets."
+          }
+        ],
+        "outOfScopeRule": "Let us stick to condensation and how clouds form right now. Please ask your teacher if your question is on another subject."
+      },
+      "teacherNote": "Connect back to the cold sachet water from the start of the lesson so pupils see condensation as a real everyday process."
+    },
+    {
+      "id": "s06",
+      "order": 6,
+      "title": "Stage Three: Precipitation and Ghana's Seasons",
+      "purpose": "Explain how heavy droplets fall as rain or hail, dispel the 'sky tank' myth, and connect to Ghana's rainy season and dry Harmattan.",
+      "onScreenText": [
+        "Droplets join and grow heavy.",
+        "Gravity pulls them down as rain or hail.",
+        "Dry Harmattan brings little precipitation."
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Two-panel comparison diagram: left panel ('Rainy Season') shows a dark cloud with falling rain above a house roof; right panel ('Harmattan') shows dry hazy wind lines and no rain.",
+        "labels": [
+          "Rainy Season",
+          "Harmattan",
+          "Rain",
+          "Dry wind"
+        ],
+        "altText": "Two-panel diagram comparing rain falling from clouds during the rainy season on the left with dry wind and no rain during Harmattan on the right.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>Comparison of precipitation in Ghana's rainy season and dry Harmattan season</title><rect x='0' y='0' width='640' height='720' fill='#E0F2FE'/><rect x='640' y='0' width='640' height='720' fill='#FEF3C7'/><line x1='640' y1='0' x2='640' y2='720' stroke='#475569' stroke-width='5'/><text x='320' y='92' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Rainy Season</text><text x='960' y='92' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#D55E00'>Harmattan</text><path d='M130 250 Q130 185 205 185 Q245 135 335 150 Q410 130 465 185 Q535 190 525 250 Z' fill='#475569'/><line x1='225' y1='285' x2='210' y2='365' stroke='#0072B2' stroke-width='9' stroke-linecap='round'/><line x1='315' y1='285' x2='300' y2='365' stroke='#0072B2' stroke-width='9' stroke-linecap='round'/><line x1='405' y1='285' x2='390' y2='365' stroke='#0072B2' stroke-width='9' stroke-linecap='round'/><text x='320' y='445' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Rain</text><polygon points='175,575 320,500 465,575' fill='#475569'/><rect x='210' y='575' width='220' height='105' fill='#CBD5E1'/><circle cx='980' cy='210' r='64' fill='#E69F00' opacity='0.85'/><path d='M735 335 Q860 305 990 335 Q1090 355 1185 325' fill='none' stroke='#D55E00' stroke-width='9' stroke-dasharray='16,12'/><path d='M735 415 Q860 385 990 415 Q1090 435 1185 405' fill='none' stroke='#D55E00' stroke-width='9' stroke-dasharray='16,12'/><rect x='640' y='555' width='640' height='165' fill='#92400E'/><text x='960' y='655' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#FFFFFF'>Dry wind</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say warmly and expressively, contrasting the rainy season with Harmattan:",
+        "script": "Inside a cloud, tiny water droplets bump into one another and join together. As they join, they become bigger and heavier. Soon, the air can no longer hold them up, and gravity, the Earth's downward pull, brings them back to Earth. This falling water is called precipitation. There is no giant tank pouring rain from the sky. Rain falls simply because cloud drops grow too heavy! In Ghana, precipitation is mostly rain drumming on zinc roofs, though very cold storm clouds sometimes drop small ice balls called hail. Look at the right panel. During the dry Harmattan season, the air holds very little moisture, so there is very little precipitation.",
+        "estSeconds": 47,
+        "pauseCues": [
+          "after 'precipitation.'",
+          "after 'grow too heavy!'",
+          "after 'Look at the right panel.'"
+        ],
+        "ttsText": "Inside a cloud, tiny water droplets bump into one another and join together. As they join, they become bigger and heavier. Soon, the air can no longer hold them up, and gravity, the Earth's downward pull, brings them back to Earth. This falling water is called precipitation. There is no giant tank pouring rain from the sky. Rain falls simply because cloud drops grow too heavy! In Ghana, precipitation is mostly rain drumming on zinc roofs, though very cold storm clouds sometimes drop small ice balls called hail. Look at the right panel. During the dry har-mah-TAHN season, the air holds very little moisture, so there is very little precipitation."
+      },
+      "keyIdeas": [
+        "Precipitation happens when cloud droplets join, become too heavy for the air to hold, and fall.",
+        "Rain is not poured from a tank in the sky.",
+        "Precipitation includes rain and hail; Harmattan brings dry air and little precipitation."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "Precipitation occurs when tiny droplets in a cloud collide, combine, and grow too heavy to stay suspended in the air, so gravity pulls them to Earth. Rain is not poured from a sky tank. In Ghana, precipitation is mainly rain, with occasional hail during strong storms. During the dry Harmattan season, dry winds carry very little moisture, so precipitation is very low.",
+        "seedFaqs": [
+          {
+            "q": "Why does it sometimes rain hail in Ghana even though Ghana is warm?",
+            "a": "High up inside tall storm clouds, the air is freezing cold. Water droplets can freeze into small ice balls called hail before falling quickly to the ground."
+          },
+          {
+            "q": "Why is there almost no rain during Harmattan?",
+            "a": "Harmattan winds blow from dry desert areas, so the air carries very little water vapour to form rain clouds."
+          },
+          {
+            "q": "Why does rain stop after a while?",
+            "a": "Once most of the heavy water droplets have fallen out of the cloud, the cloud thins out and the rain stops."
+          }
+        ],
+        "outOfScopeRule": "I can only help with precipitation and how rain or hail forms here. Please ask your teacher about other topics."
+      },
+      "teacherNote": "Checkpoint B follows immediately. Ask pupils if anyone has ever heard hailstones hit a zinc roof during a heavy storm."
+    },
+    {
+      "id": "s07",
+      "order": 7,
+      "title": "Stage Four: Collection on Land and Underground",
+      "purpose": "Explain what happens to water after it lands — surface run-off into rivers, lakes, and the sea, plus soaking underground into groundwater that feeds protected boreholes.",
+      "onScreenText": [
+        "Surface run-off flows to rivers and lakes.",
+        "Some water soaks deep as groundwater.",
+        "Protected boreholes pump groundwater."
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Cross-section diagram: hill slope on left with surface run-off arrow flowing into a river/lake in the middle; dashed downward arrows soaking through soil into a lower groundwater layer tapped by a borehole pump on the right.",
+        "labels": [
+          "Run-off",
+          "Lake",
+          "Borehole",
+          "Groundwater"
+        ],
+        "altText": "Cross-section diagram showing rainwater flowing over land as run-off into a lake and soaking down through soil into underground groundwater drawn by a borehole.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>Collection of rainwater as surface run-off and underground groundwater</title><rect width='1280' height='720' fill='#F0F9FF'/><defs><marker id='gA' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#0072B2'/></marker></defs><path d='M0 230 L470 385 L770 385 L1280 385 L1280 540 L0 540 Z' fill='#92400E'/><path d='M0 230 L470 385 L470 410 L0 255 Z' fill='#009E73'/><path d='M770 385 L1280 385 L1280 410 L770 410 Z' fill='#009E73'/><rect x='470' y='385' width='300' height='120' fill='#0072B2'/><rect x='0' y='540' width='1280' height='180' fill='#56B4E9'/><path d='M75 215 L425 335' fill='none' stroke='#0072B2' stroke-width='10' marker-end='url(#gA)'/><path d='M250 350 L250 515' fill='none' stroke='#0072B2' stroke-width='9' stroke-dasharray='14,10' marker-end='url(#gA)'/><path d='M885 415 L885 520' fill='none' stroke='#0072B2' stroke-width='9' stroke-dasharray='14,10' marker-end='url(#gA)'/><rect x='1045' y='305' width='28' height='275' fill='#1E293B'/><rect x='1018' y='295' width='82' height='36' rx='6' fill='#D55E00'/><path d='M1092 330 Q1135 345 1135 380' fill='none' stroke='#0072B2' stroke-width='9'/><text x='275' y='200' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Run-off</text><text x='620' y='462' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#FFFFFF'>Lake</text><text x='1060' y='260' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#D55E00'>Borehole</text><text x='640' y='648' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Groundwater</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say clearly and steadily, directing attention to both the surface and underground parts of the diagram:",
+        "script": "Where does all the rainwater go after it hits the ground? That brings us to collection. Look at the hillside on the left. Some rainwater flows over the land into gutters, streams, rivers, and lakes like Lake Bosomtwe and Lake Volta, and some reaches the sea. We call this flowing water surface run-off. Now look beneath the upper soil layer. Much of the rain slowly soaks down through tiny spaces in soil and rock to become groundwater. On the right, notice the borehole. Many Ghanaian towns and schools pump safe water when the borehole is protected and tested.",
+        "estSeconds": 42,
+        "pauseCues": [
+          "after 'hits the ground?'",
+          "after 'surface run-off.'",
+          "after 'become groundwater.'"
+        ],
+        "ttsText": "Where does all the rainwater go after it hits the ground? That brings us to collection. Look at the hillside on the left. Some rainwater flows over the land into gutters, streams, rivers, and lakes like Lake boh-SOHM-chway and Lake VOHL-tah, and some reaches the sea. We call this flowing water surface run-off. Now look beneath the upper soil layer. Much of the rain slowly soaks down through tiny spaces in soil and rock to become groundwater. On the right, notice the borehole. Many Ghanaian towns and schools pump safe water when the borehole is protected and tested."
+      },
+      "keyIdeas": [
+        "Collection gathers water on the surface (rivers, lakes, sea) and underground.",
+        "Surface run-off flows over the land into streams, rivers, and lakes.",
+        "Groundwater soaks into soil and rock and supplies wells and boreholes."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "Collection is the stage where fallen rainwater gathers on Earth. Part of it flows across the land as surface run-off into streams, rivers, lakes (such as Lake Volta and Lake Bosomtwe), and the ocean. Another part soaks down through tiny spaces in soil and rocks to form groundwater, which fills wells and boreholes. Borehole water is safe to drink when the borehole is properly protected and tested.",
+        "seedFaqs": [
+          {
+            "q": "How can water fit underground if the ground is solid rock and soil?",
+            "a": "Soil and many rocks have millions of tiny spaces and cracks between their grains, like a hard sponge, where groundwater can collect."
+          },
+          {
+            "q": "Why does rainwater sometimes flood our streets instead of soaking in?",
+            "a": "Concrete roads, tarred surfaces, and blocked gutters stop water from soaking into the soil, so more water becomes fast surface run-off."
+          },
+          {
+            "q": "Is borehole water always safe to drink without checking?",
+            "a": "No. Borehole water is safe when the borehole is properly built, kept away from waste, and tested regularly."
+          }
+        ],
+        "outOfScopeRule": "Let us keep our questions focused on collection, surface run-off, and groundwater. Ask your teacher for other topics."
+      },
+      "teacherNote": "Remind pupils that borehole water must come from a protected, tested source, and untreated open-well or stream water should be boiled or treated before drinking."
+    },
+    {
+      "id": "s08",
+      "order": 8,
+      "title": "Follow One Drop of Water",
+      "purpose": "Consolidate all four stages into a memorable narrative journey of a single drop of water in Ghana.",
+      "onScreenText": [
+        "Rises from Lake Volta",
+        "Rides in a cloud, falls on a farm",
+        "Flows back to a stream and river"
+      ],
+      "visual": {
+        "type": "illustration",
+        "description": "Warm panoramic storybook illustration of Ghana showing sunlight over Lake Volta on the left, clouds drifting across the sky, gentle rain falling over a maize and cocoa farm on the right, and a clear stream winding back toward the lake.",
+        "labels": [
+          "Lake Volta",
+          "Cloud",
+          "Maize and cocoa farm",
+          "Stream"
+        ],
+        "altText": "Panoramic illustration of a Ghanaian landscape showing sunlight over Lake Volta, clouds moving over a farm with falling rain, and a stream flowing back to the lake.",
+        "svgCode": null,
+        "imagePrompt": "Warm hand-painted gouache educational landscape illustration, 16:9 panorama of Ghana. On the left, bright sunlight sparkles on a wide blue lake with gentle hills. Above, clouds drift across the sky toward the right, releasing gentle rain over a lush Ghanaian maize and cocoa farm. A clear winding stream flows from the farmland back toward the lake. Calm uncluttered sky band at the top. No text, letters, numbers, or labels inside the image."
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say with warm storytelling energy, slightly slower so learners picture the journey:",
+        "script": "Let us follow one tiny drop of water on a real Ghanaian adventure. Imagine our drop floating near the surface of Lake Volta on a sunny morning. The sun warms it up. Soon, it evaporates into invisible water vapour and floats high into the sky. Up there, cool air makes our drop condense with millions of friends inside a growing cloud. Wind carries the cloud inland over a maize and cocoa farm. Our drop bumps into other droplets, grows heavy, and falls as rain onto the soil. Some friends soak down to nourish the crops, while our drop runs into a stream and heads back toward the river.",
+        "estSeconds": 46,
+        "pauseCues": [
+          "after 'real Ghanaian adventure.'",
+          "after 'into a growing cloud.'",
+          "after 'falls as rain onto the soil.'"
+        ],
+        "ttsText": "Let us follow one tiny drop of water on a real Ghanaian adventure. Imagine our drop floating near the surface of Lake VOHL-tah on a sunny morning. The sun warms it up. Soon, it evaporates into invisible water vapour and floats high into the sky. Up there, cool air makes our drop condense with millions of friends inside a growing cloud. Wind carries the cloud inland over a maize and cocoa farm. Our drop bumps into other droplets, grows heavy, and falls as rain onto the soil. Some friends soak down to nourish the crops, while our drop runs into a stream and heads back toward the river."
+      },
+      "keyIdeas": [
+        "A single drop of water moves through evaporation, condensation, precipitation, and collection.",
+        "Wind helps move clouds from lakes and seas over inland farms."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "This story traces one drop of water through the full water cycle in Ghana: warming and evaporating from Lake Volta, condensing in cool high air into a cloud, being carried by wind over a maize and cocoa farm, falling as precipitation (rain), and either soaking into the soil for crops or flowing back as surface run-off into a stream and river.",
+        "seedFaqs": [
+          {
+            "q": "How long does it take one drop of water to finish the whole cycle?",
+            "a": "It varies a lot! A drop in a cloud might fall in a few days, while water deep underground can stay there for many years before coming back up."
+          },
+          {
+            "q": "How do clouds move from the sea or a lake to farms far inland?",
+            "a": "Winds high in the sky push the clouds across the land before the water falls as rain."
+          },
+          {
+            "q": "If a drop of water evaporates from the salty sea, why is rain not salty?",
+            "a": "When sea water evaporates, only the water turns into vapour. The salt is left behind in the sea."
+          }
+        ],
+        "outOfScopeRule": "Let us stay with our water drop's journey right now. Please ask your teacher if you have a question about a different topic."
+      },
+      "teacherNote": "Optional quick activity: ask pupils to retell the drop's four-step journey to their desk partner in under thirty seconds."
+    },
+    {
+      "id": "s09",
+      "order": 9,
+      "title": "Why It Is a Repeated Pattern",
+      "purpose": "Directly address indicator B7.2.1.1.1 by explaining why the cycle repeats endlessly (sun's energy + Earth's recycled water) and clearing the 'new water is made' misconception.",
+      "onScreenText": [
+        "Sun's heat energy powers the cycle.",
+        "Earth recycles the same water.",
+        "No brand-new water is created."
+      ],
+      "visual": {
+        "type": "svg",
+        "description": "Circular recycling diagram with the Sun in the centre radiating four dashed heat arrows outward to a thick clockwise loop labelled Evaporation, Condensation, Precipitation, and Collection, above a bottom banner 'Same water recycled'.",
+        "labels": [
+          "Sun",
+          "Evaporation",
+          "Condensation",
+          "Precipitation",
+          "Collection",
+          "Same water recycled"
+        ],
+        "altText": "Circular diagram with the sun at the centre sending heat arrows outward to power an endless loop of evaporation, condensation, precipitation, and collection.",
+        "svgCode": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720' role='img'><title>The sun's heat energy powering the repeated water cycle</title><rect width='1280' height='720' fill='#F8FAFC'/><defs><marker id='rA' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='7' markerHeight='7' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#0072B2'/></marker><marker id='hA' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='6' markerHeight='6' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#D55E00'/></marker></defs><circle cx='640' cy='330' r='74' fill='#E69F00'/><text x='640' y='347' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Sun</text><line x1='575' y1='265' x2='520' y2='210' stroke='#D55E00' stroke-width='7' stroke-dasharray='10,6' marker-end='url(#hA)'/><line x1='705' y1='265' x2='760' y2='210' stroke='#D55E00' stroke-width='7' stroke-dasharray='10,6' marker-end='url(#hA)'/><line x1='705' y1='395' x2='760' y2='450' stroke='#D55E00' stroke-width='7' stroke-dasharray='10,6' marker-end='url(#hA)'/><line x1='575' y1='395' x2='520' y2='450' stroke='#D55E00' stroke-width='7' stroke-dasharray='10,6' marker-end='url(#hA)'/><path d='M430 330 A210 210 0 0 1 620 122' fill='none' stroke='#D55E00' stroke-width='12' marker-end='url(#rA)'/><path d='M660 122 A210 210 0 0 1 850 310' fill='none' stroke='#0072B2' stroke-width='12' marker-end='url(#rA)'/><path d='M850 350 A210 210 0 0 1 660 538' fill='none' stroke='#0072B2' stroke-width='12' marker-end='url(#rA)'/><path d='M620 538 A210 210 0 0 1 430 350' fill='none' stroke='#009E73' stroke-width='12' marker-end='url(#rA)'/><text x='245' y='195' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#D55E00'>Evaporation</text><text x='1030' y='195' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Condensation</text><text x='1030' y='495' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#0072B2'>Precipitation</text><text x='245' y='495' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#009E73'>Collection</text><rect x='280' y='600' width='720' height='80' rx='18' fill='#E0F2FE' stroke='#0072B2' stroke-width='4'/><text x='640' y='656' font-family='sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='#1E293B'>Same water recycled</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say thoughtfully and clearly, emphasizing cause and effect:",
+        "script": "Why do scientists call the water cycle a repeated pattern in nature? Look at the centre of the circle, with heat arrows radiating outward. Heat energy from the sun is the engine that keeps everything moving. Without the sun's heat, liquid water would not evaporate, clouds would not form, and rain would stop. Here is an astonishing fact: Earth does not make brand new water every time it rains. Instead, nature recycles the exact same water over and over again. The water you drank this morning has travelled through clouds, rivers, and rainstorms for a very long time.",
+        "estSeconds": 42,
+        "pauseCues": [
+          "after 'pattern in nature?'",
+          "after 'astonishing fact:'",
+          "after 'over and over again.'"
+        ],
+        "ttsText": "Why do scientists call the water cycle a repeated pattern in nature? Look at the centre of the circle, with heat arrows radiating outward. Heat energy from the sun is the engine that keeps everything moving. Without the sun's heat, liquid water would not evaporate, clouds would not form, and rain would stop. Here is an astonishing fact: Earth does not make brand new water every time it rains. Instead, nature recycles the exact same water over and over again. The water you drank this morning has travelled through clouds, rivers, and rainstorms for a very long time."
+      },
+      "keyIdeas": [
+        "Heat energy from the sun powers the water cycle.",
+        "The water cycle repeats because water keeps changing state and moving in a loop.",
+        "No new water is made; Earth recycles the same water over a very long time."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1"
+      ],
+      "askTeacherContext": {
+        "summary": "The water cycle is a repeated pattern because heat energy from the sun continuously drives evaporation, while gravity pulls precipitation down and moves run-off back to rivers and the sea. Earth does not create new water each time it rains; the same water is naturally recycled over a very long time.",
+        "seedFaqs": [
+          {
+            "q": "What would happen to the water cycle if the sun stopped shining?",
+            "a": "Without the sun's heat energy, water would stop evaporating and eventually freeze, so the water cycle would stop."
+          },
+          {
+            "q": "If Earth never loses its water, why do we still worry about water shortages?",
+            "a": "Even though total water on Earth stays the same, safe fresh water in one town can run low during dry seasons or become too polluted to drink."
+          },
+          {
+            "q": "Does gravity also help the water cycle repeat?",
+            "a": "Yes! Gravity pulls heavy rain droplets down from clouds and pulls rivers downhill toward lakes and the sea."
+          }
+        ],
+        "outOfScopeRule": "Let us keep our questions on why the water cycle is a repeated pattern. Please ask your teacher about other subjects."
+      },
+      "teacherNote": "Checkpoint C follows immediately. Emphasize that 'same water recycled' does not mean safe drinking water is unlimited locally."
+    },
+    {
+      "id": "s10",
+      "order": 10,
+      "title": "Why It Matters: Drinking Water and Food",
+      "purpose": "Address indicator B7.2.1.1.2 (part 1): refilling fresh drinking water, supporting farming and food crops, and sustaining plants and animals.",
+      "onScreenText": [
+        "Refills rivers, wells, and boreholes.",
+        "Waters maize, cocoa, and vegetables.",
+        "Keeps people, plants, and animals alive."
+      ],
+      "visual": {
+        "type": "illustration",
+        "description": "Warm three-part Ghanaian community illustration: left shows children filling buckets at a protected borehole; middle shows a farmer tending healthy maize and cocoa plants after rain; right shows goats and birds drinking beside a stream.",
+        "labels": [
+          "Drinking water",
+          "Healthy crops",
+          "Animals and plants"
+        ],
+        "altText": "Illustration showing Ghanaian children fetching water at a borehole, maize and cocoa crops growing on a farm, and animals drinking from a stream.",
+        "svgCode": null,
+        "imagePrompt": "Warm hand-painted gouache educational illustration, landscape 16:9, three gentle scenes blended across a Ghanaian community. Left: two school children filling clean buckets at a neat protected village borehole. Centre: a smiling Ghanaian farmer inspecting healthy maize stalks and cocoa trees glistening after rain. Right: goats and birds drinking beside a shaded stream. Calm uncluttered sky at top. No text, letters, numbers, or labels inside the image."
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say warmly and appreciatively, connecting science to daily life in Ghana:",
+        "script": "Now let us ask a big question: why is the water cycle so important to us? First, it constantly refills our fresh water sources. Every rainy season, water replenishes rivers, dams, wells, and boreholes so families have water for drinking, cooking, and bathing. Second, the water cycle feeds the nation. Ghanaian farmers depend on steady rain to grow maize, yam, cassava, vegetables, and cocoa. Without regular rainfall, crops dry out and food becomes scarce. Third, every plant and animal around us needs fresh water to stay alive. Simply put, without the water cycle, life on land could not continue.",
+        "estSeconds": 43,
+        "pauseCues": [
+          "after 'so important to us?'",
+          "after 'feeds the nation.'",
+          "after 'could not continue.'"
+        ],
+        "ttsText": "Now let us ask a big question: why is the water cycle so important to us? First, it constantly refills our fresh water sources. Every rainy season, water replenishes rivers, dams, wells, and boreholes so families have water for drinking, cooking, and bathing. Second, the water cycle feeds the nation. Ghanaian farmers depend on steady rain to grow maize, yam, cassava, vegetables, and cocoa. Without regular rainfall, crops dry out and food becomes scarce. Third, every plant and animal around us needs fresh water to stay alive. Simply put, without the water cycle, life on land could not continue."
+      },
+      "keyIdeas": [
+        "The water cycle replenishes fresh water in rivers, wells, and boreholes.",
+        "Rainfall supports farming and food production (maize, cocoa, vegetables).",
+        "All humans, plants, and animals depend on fresh water from the cycle."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.2"
+      ],
+      "askTeacherContext": {
+        "summary": "The water cycle is essential for life on Earth. First, precipitation refills fresh water in rivers, dams, wells, and boreholes. Second, rainfall waters crops such as maize, cassava, vegetables, and cocoa so communities have food. Third, all plants and animals rely on this continuous supply of fresh water. Note that rainwater collected from roofs can pick up dust or bird droppings and should be boiled or treated before drinking.",
+        "seedFaqs": [
+          {
+            "q": "Is rainwater from our roof safe to drink right away?",
+            "a": "No. Roof rainwater can pick up dust or dirt from the roof, so it should be filtered or boiled before drinking."
+          },
+          {
+            "q": "What happens to farms if the rainy season starts very late?",
+            "a": "Seeds cannot sprout well and young crops dry out, which leads to smaller harvests and higher food prices."
+          },
+          {
+            "q": "Do plants need the water cycle for anything besides drinking?",
+            "a": "Yes! Plants use water to make their own food using sunlight and to carry nutrients up from the soil."
+          }
+        ],
+        "outOfScopeRule": "Let us keep our questions focused on why the water cycle matters for drinking water, farming, and living things. Please ask your teacher about other topics."
+      },
+      "teacherNote": "Do not claim evaporation 'purifies' water completely for drinking; remind pupils that roof rainwater can pick up dust or dirt and should always be treated (boiled or filtered) before drinking."
+    },
+    {
+      "id": "s11",
+      "order": 11,
+      "title": "Nature's Habitats, Weather, and Power",
+      "purpose": "Address indicator B7.2.1.1.2 (part 2): natural importance (habitats, refilling rivers and lakes, distributing fresh water across land, shaping weather) plus hydroelectric power.",
+      "onScreenText": [
+        "Keeps rivers, lakes, and habitats alive.",
+        "Distributes fresh water and shapes weather.",
+        "Powers hydroelectric dams like Akosombo."
+      ],
+      "visual": {
+        "type": "illustration",
+        "description": "Split Ghanaian natural-and-energy landscape: left shows a lush riverbank wetland habitat with fish, frogs, waterbirds, and trees nourished by flowing water; right shows the Akosombo hydroelectric dam generating electricity for a nearby town and school under passing clouds.",
+        "labels": [
+          "River habitats",
+          "Fresh water flow",
+          "Hydroelectric dam"
+        ],
+        "altText": "Illustration showing a river habitat with fish, birds, and trees on the left, and a hydroelectric dam generating electricity under passing clouds on the right.",
+        "svgCode": null,
+        "imagePrompt": "Warm hand-painted gouache educational illustration, landscape 16:9, split Ghanaian scene. Left side: a thriving natural river and wetland habitat in Ghana with clear flowing water, fish, waterbirds, and leafy trees along the bank. Right side: a hydroelectric dam like Akosombo with flowing river water turning turbines and power lines lighting up a nearby Ghanaian school and homes under soft passing clouds. Calm uncluttered sky at top. No text, letters, numbers, or labels inside the image."
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say clearly and appreciatively, highlighting how nature and human energy both depend on the water cycle:",
+        "script": "The water cycle is just as vital for nature as it is for people. By refilling rivers, wetlands, and lakes, it keeps natural habitats alive for fish, frogs, birds, and forest wildlife. Winds carry clouds inland, distributing fresh water to dry lands far away from the sea. Passing clouds also shade the ground on hot days and help shape our local weather patterns. Rain-fed rivers also fill a reservoir, a large stored body of water like Lake Volta, whose flowing water spins giant wheels called turbines at the Akosombo Dam to generate hydroelectric power for homes and schools.",
+        "estSeconds": 42,
+        "pauseCues": [
+          "after 'as it is for people.'",
+          "after 'local weather patterns.'",
+          "after 'like Lake Volta,'"
+        ],
+        "ttsText": "The water cycle is just as vital for nature as it is for people. By refilling rivers, wetlands, and lakes, it keeps natural habitats alive for fish, frogs, birds, and forest wildlife. Winds carry clouds inland, distributing fresh water to dry lands far away from the sea. Passing clouds also shade the ground on hot days and help shape our local weather patterns. Rain-fed rivers also fill a reservoir, a large stored body of water like Lake VOHL-tah, whose flowing water spins giant wheels called turbines at the ah-koh-SOHM-boh Dam to generate hydroelectric power for homes and schools."
+      },
+      "keyIdeas": [
+        "The water cycle maintains natural habitats by refilling rivers, wetlands, and lakes.",
+        "It distributes fresh water across inland areas and helps shape local weather.",
+        "Rain-fed rivers generate hydroelectric power at dams such as Akosombo Dam."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.2"
+      ],
+      "askTeacherContext": {
+        "summary": "In nature, the water cycle refills rivers, wetlands, and lakes that serve as habitats for fish, birds, and wildlife; distributes fresh water far inland away from the sea; and helps shape local weather as clouds shade the ground and bring rain. For Ghana's energy, rain-fed rivers fill reservoirs like Lake Volta so the Akosombo Dam can generate hydroelectric power.",
+        "seedFaqs": [
+          {
+            "q": "How does the water cycle help wild fish and birds?",
+            "a": "Regular rainfall refills rivers, ponds, and wetlands so aquatic animals and birds always have a healthy habitat with water and food."
+          },
+          {
+            "q": "How does the water cycle help make electricity?",
+            "a": "Rain keeps rivers and lakes full so water can flow forcefully through turbines inside hydroelectric dams like Akosombo to generate electricity."
+          },
+          {
+            "q": "How do clouds affect our weather?",
+            "a": "Clouds shade the ground during hot parts of the day and bring rain that refreshes the soil and air."
+          }
+        ],
+        "outOfScopeRule": "Let us stay focused on natural habitats, weather, and hydroelectric power in the water cycle. Please ask your teacher about other topics."
+      },
+      "teacherNote": "Emphasise that indicator B7.2.1.1.2 is about the importance of the water cycle *in nature* as a whole — habitats, freshwater distribution, and weather — not just human drinking water."
+    },
+    {
+      "id": "s12",
+      "order": 12,
+      "title": "Protecting Clean Water and Forests",
+      "purpose": "Address human threats to clean water and local moisture (river pollution, cutting forests, wasting treated water) and practical steps Basic 7 pupils can take.",
+      "onScreenText": [
+        "Pollution and cutting trees harm water.",
+        "Close dripping taps to save water.",
+        "Keep gutters clean and plant trees."
+      ],
+      "visual": {
+        "type": "illustration",
+        "description": "Positive Ghanaian school-community action scene: JHS pupils planting young tree saplings along a clean riverbank on the left, picking up plastic litter near a school gutter in the middle, and turning off a dripping tap on the right.",
+        "labels": [
+          "Plant trees",
+          "Keep gutters clean",
+          "Close dripping taps"
+        ],
+        "altText": "Illustration of Ghanaian pupils planting young trees along a riverbank, clearing litter from a gutter, and closing a dripping school tap.",
+        "svgCode": null,
+        "imagePrompt": "Warm hand-painted gouache educational illustration, landscape 16:9, bright Ghanaian school community scene. On the left, junior high school students happily plant young tree saplings along a clean riverbank. In the centre, two students collect plastic litter near a roadside gutter into a bin. On the right, a student turns off a dripping school tap carefully. Calm uncluttered sky at top. No text, letters, numbers, or labels inside the image."
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say earnestly and constructively, empowering learners with practical actions:",
+        "script": "Even though nature recycles water, human actions can seriously harm our clean water supply. Dumping plastic rubbish, sewage, or mining waste into rivers makes water unsafe for people, fish, and farm animals. Cutting down too many forest trees also hurts the cycle: fewer leaves mean less transpiration, and bare soil washes as mud into streams during heavy rain. Wasting treated tap water leaves less for everyone else. The good news is that you can make a real difference! Close dripping taps tightly, never throw rubbish into gutters or streams, and join tree-planting days at school.",
+        "estSeconds": 41,
+        "pauseCues": [
+          "after 'clean water supply.'",
+          "after 'during heavy rain.'",
+          "after 'make a real difference!'"
+        ],
+        "ttsText": "Even though nature recycles water, human actions can seriously harm our clean water supply. Dumping plastic rubbish, sewage, or mining waste into rivers makes water unsafe for people, fish, and farm animals. Cutting down too many forest trees also hurts the cycle: fewer leaves mean less transpiration, and bare soil washes as mud into streams during heavy rain. Wasting treated tap water leaves less for everyone else. The good news is that you can make a real difference! Close dripping taps tightly, never throw rubbish into gutters or streams, and join tree-planting days at school."
+      },
+      "keyIdeas": [
+        "River pollution from rubbish, sewage, or mining waste makes water unsafe for humans and wildlife.",
+        "Cutting down trees reduces transpiration and causes muddy run-off into streams.",
+        "Pupils can protect water by closing taps, keeping gutters clean, and planting trees."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.2"
+      ],
+      "askTeacherContext": {
+        "summary": "Human actions such as dumping plastic, sewage, or mining waste into rivers pollute water for people and wildlife. Cutting down forests reduces transpiration from tree leaves and lets bare soil wash into streams as mud. Wasting treated tap water reduces supply for others. Pupils can help by turning off dripping taps, keeping gutters and rivers free of litter, and planting trees.",
+        "seedFaqs": [
+          {
+            "q": "How does cutting down trees affect the water cycle?",
+            "a": "Trees release water vapour through transpiration and their roots hold soil in place. Cutting many trees reduces local moisture and causes muddy run-off into rivers."
+          },
+          {
+            "q": "Why does throwing plastic into a gutter hurt rivers?",
+            "a": "When it rains, surface run-off washes rubbish from gutters straight into streams, rivers, and the sea, polluting the water."
+          },
+          {
+            "q": "If Earth recycles water, why does wasting tap water still matter?",
+            "a": "Cleaning and pumping tap water to homes takes energy and money, and local dams can run low during dry seasons."
+          }
+        ],
+        "outOfScopeRule": "Let us stay focused on how human actions affect clean water and what we can do to protect it. Ask your teacher for other topics."
+      },
+      "teacherNote": "Keep the discussion of mining and pollution factual and age-appropriate; focus on constructive actions pupils can take at school and home."
+    },
+    {
+      "id": "s13",
+      "order": 13,
+      "title": "Wrap-Up and Your Mini Water Cycle",
+      "purpose": "Review three core takeaways and preview the safe 'water cycle in a bag' home experiment before the final check.",
+      "onScreenText": [
+        "Evaporation, condensation, precipitation, collection.",
+        "Try a water cycle in a sunny bag.",
+        "Protect rivers, trees, and safe water."
+      ],
+      "visual": {
+        "type": "illustration",
+        "description": "Close-up sunny Ghanaian classroom window with a clear sealed plastic bag taped to the glass; a small pool of water sits at the bottom, tiny droplets cling near the top inside plastic, and two drops trickle down the side.",
+        "labels": [
+          "Water pool",
+          "Condensed droplets",
+          "Falling drops"
+        ],
+        "altText": "A clear sealed plastic bag with a little water taped to a sunny window, showing tiny droplets condensing near the top and sliding down like rain.",
+        "svgCode": null,
+        "imagePrompt": "Warm hand-painted gouache educational illustration, landscape 16:9. Close-up of a bright sunlit classroom window with a clear sealed plastic bag taped cleanly to the glass. A small pool of water sits at the bottom of the bag, fine mist and tiny glistening water droplets cling to the upper inside of the plastic, and two larger drops trickle down the inside wall. Warm wooden window frame, calm uncluttered space on the left. No text, letters, numbers, or labels inside the image."
+      },
+      "narration": {
+        "ttsStyleInstruction": "Say warmly and encouragingly, celebrating the learner's progress:",
+        "script": "Well done! You have reached the end of our lesson on the water cycle. Remember three big ideas. First, heat from the sun drives evaporation and transpiration, turning liquid water into invisible vapour. Second, cooling forms clouds by condensation, heavy drops fall as precipitation, and collection stores water on land and underground. Third, this repeated cycle keeps habitats, farms, and hydroelectric dams alive, so we must protect our rivers and trees. Want to see the cycle yourself? Seal two tablespoons of cool water in a clear plastic bag, tape it to a sunny window, and watch droplets form!",
+        "estSeconds": 42,
+        "pauseCues": [
+          "after 'Well done!'",
+          "after 'three big ideas.'",
+          "after 'see the cycle yourself?'"
+        ],
+        "ttsText": "Well done! You have reached the end of our lesson on the water cycle. Remember three big ideas. First, heat from the sun drives evaporation and transpiration, turning liquid water into invisible vapour. Second, cooling forms clouds by condensation, heavy drops fall as precipitation, and collection stores water on land and underground. Third, this repeated cycle keeps habitats, farms, and hydroelectric dams alive, so we must protect our rivers and trees. Want to see the cycle yourself? Seal two tablespoons of cool water in a clear plastic bag, tape it to a sunny window, and watch droplets form!"
+      },
+      "keyIdeas": [
+        "Four stages repeat continuously: evaporation, condensation, precipitation, and collection.",
+        "The water cycle sustains nature, farming, drinking water, and hydroelectric power.",
+        "A sealed water bag in a sunny window models the water cycle safely at home."
+      ],
+      "indicatorIds": [
+        "B7.2.1.1.1",
+        "B7.2.1.1.2"
+      ],
+      "askTeacherContext": {
+        "summary": "This wrap-up reviews the four stages of the water cycle (evaporation, condensation, precipitation, collection), its importance for habitats, drinking water, food, and hydroelectric power, and the safe 'water cycle in a bag' home experiment: put two tablespoons of cool water in a clear sealed plastic bag, tape it to a sunny window, and observe evaporation, condensation droplets, and trickling drops.",
+        "seedFaqs": [
+          {
+            "q": "What if my home does not have a glass window for the bag experiment?",
+            "a": "You can tape the sealed bag to any sunny outside wall or fence where it will stay safe and warm."
+          },
+          {
+            "q": "Why must the plastic bag be sealed tightly?",
+            "a": "Sealing the bag traps the water vapour inside so you can see it cool, condense into droplets, and slide back down."
+          },
+          {
+            "q": "How long do I need to wait to see droplets inside the bag?",
+            "a": "In bright sunshine, you will usually start seeing mist and tiny droplets within one to three hours."
+          }
+        ],
+        "outOfScopeRule": "I can help with the lesson summary or the water cycle in a bag experiment here. Please ask your teacher about other topics."
+      },
+      "teacherNote": "Checkpoint D and the 5-question Mastery Check follow. You can set up one demonstration bag on a sunny classroom window at the start of the week."
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "cpA",
+      "afterSlide": "s03",
+      "coversSlides": [
+        "s01",
+        "s02",
+        "s03"
+      ],
+      "retryRule": "2 attempts, then show the answer with the explanation",
+      "items": [
+        {
+          "type": "mcq",
+          "question": "When liquid water is heated strongly by the sun, what invisible state does it change into?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Solid ice crystals"
+            },
+            {
+              "id": "b",
+              "text": "Tiny mist droplets"
+            },
+            {
+              "id": "c",
+              "text": "Water vapour"
+            },
+            {
+              "id": "d",
+              "text": "White cooking steam"
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "Heating liquid water turns it into water vapour, which is an invisible gas in the air.",
+          "onCorrect": {
+            "text": "Well done! Heat turns liquid water into invisible water vapour."
+          },
+          "onWrong": [
+            {
+              "optionId": "a",
+              "hintText": "Ice forms when water cools down, not when it is heated. Look for the invisible gas state.",
+              "misconceptionTargeted": "Confusing heating with cooling state changes"
+            },
+            {
+              "optionId": "b",
+              "hintText": "Mist droplets are tiny liquids you can see. Look for the invisible gas form of water.",
+              "misconceptionTargeted": "Confusing visible mist droplets with invisible water vapour"
+            },
+            {
+              "optionId": "d",
+              "hintText": "White steam above a pot is cooled liquid droplets you can see. Pure gas water is invisible.",
+              "misconceptionTargeted": "Believing water vapour is visible white steam"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.1",
+          "cognitiveLevel": "recall",
+          "id": "cpA.1"
+        },
+        {
+          "id": "cpA.2",
+          "type": "sequence",
+          "prompt": "Put the four stages of the water cycle in the right clockwise order, starting with water rising from a lake.",
+          "items": [
+            {
+              "id": "evap",
+              "text": "Evaporation"
+            },
+            {
+              "id": "cond",
+              "text": "Condensation"
+            },
+            {
+              "id": "prec",
+              "text": "Precipitation"
+            },
+            {
+              "id": "coll",
+              "text": "Collection"
+            }
+          ],
+          "correctOrder": [
+            "evap",
+            "cond",
+            "prec",
+            "coll"
+          ],
+          "explanation": "Heat lifts water by evaporation, cool air forms clouds by condensation, heavy drops fall as precipitation, and water gathers through collection.",
+          "onCorrect": {
+            "text": "Spot on! Evaporation, condensation, precipitation, and collection repeat in that clockwise order."
+          },
+          "onWrong": [
+            {
+              "condition": "wrongOrder",
+              "hintText": "Follow one drop: first it rises up, then it forms a cloud, then it falls as rain, and last it gathers on Earth.",
+              "misconceptionTargeted": "Misordering the four stages of the water cycle"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.1",
+          "cognitiveLevel": "understand"
+        }
+      ]
+    },
+    {
+      "id": "cpB",
+      "afterSlide": "s06",
+      "coversSlides": [
+        "s04",
+        "s05",
+        "s06"
+      ],
+      "retryRule": "2 attempts, then show the answer with the explanation",
+      "items": [
+        {
+          "type": "mcq",
+          "question": "Kwame buys a cold sachet of water on a hot afternoon. Soon, tiny water drops appear on the outside of the sealed plastic. Which stage caused these drops?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Condensation"
+            },
+            {
+              "id": "b",
+              "text": "Evaporation from inside"
+            },
+            {
+              "id": "c",
+              "text": "Transpiration through plastic"
+            },
+            {
+              "id": "d",
+              "text": "Precipitation from above"
+            }
+          ],
+          "correctOptionId": "a",
+          "explanation": "Warm water vapour in the air cooled when it touched the cold sachet and turned into liquid drops — that is condensation.",
+          "onCorrect": {
+            "text": "Excellent thinking! Cooling vapour into liquid drops is condensation."
+          },
+          "onWrong": [
+            {
+              "optionId": "b",
+              "hintText": "The sachet is sealed and evaporation turns liquid into gas. Here, gas in the air cooled into drops.",
+              "misconceptionTargeted": "Confusing evaporation with condensation or assuming the sachet leaks"
+            },
+            {
+              "optionId": "c",
+              "hintText": "Transpiration only happens from plant leaves, not plastic bags. Look for cooling vapour into drops.",
+              "misconceptionTargeted": "Confusing transpiration with condensation"
+            },
+            {
+              "optionId": "d",
+              "hintText": "Precipitation falls from clouds in the sky. Here, drops formed directly on a cold surface.",
+              "misconceptionTargeted": "Confusing surface condensation with precipitation"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.1",
+          "cognitiveLevel": "apply",
+          "id": "cpB.1"
+        },
+        {
+          "id": "cpB.2",
+          "type": "mcq",
+          "question": "Why does rain fall from clouds to the ground?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Clouds bump together until they burst open."
+            },
+            {
+              "id": "b",
+              "text": "Clouds are made of smoke that cools into water."
+            },
+            {
+              "id": "c",
+              "text": "Wind pushes water down from tall mountains."
+            },
+            {
+              "id": "d",
+              "text": "Cloud droplets join and grow too heavy."
+            }
+          ],
+          "correctOptionId": "d",
+          "explanation": "As tiny water droplets inside a cloud bump and join, they grow too heavy for the air to hold and gravity pulls them down.",
+          "onCorrect": {
+            "text": "Right! Rain falls when cloud droplets join and become too heavy to stay up."
+          },
+          "onWrong": [
+            {
+              "optionId": "a",
+              "hintText": "Clouds are not solid bags that burst! Think about what happens when tiny droplets join together.",
+              "misconceptionTargeted": "Thinking clouds are containers or tanks that burst open"
+            },
+            {
+              "optionId": "b",
+              "hintText": "Clouds are made mostly of water droplets, not smoke. Why do those droplets start falling?",
+              "misconceptionTargeted": "Clouds are smoke"
+            },
+            {
+              "optionId": "c",
+              "hintText": "Wind moves clouds across the sky, but gravity pulls heavy droplets downward as rain.",
+              "misconceptionTargeted": "Thinking wind pushes rain down from mountains"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.1",
+          "cognitiveLevel": "understand"
+        }
+      ]
+    },
+    {
+      "id": "cpC",
+      "afterSlide": "s09",
+      "coversSlides": [
+        "s07",
+        "s08",
+        "s09"
+      ],
+      "retryRule": "2 attempts, then show the answer with the explanation",
+      "items": [
+        {
+          "id": "cpC.1",
+          "type": "mcq",
+          "question": "A school in Northern Ghana pumps safe water from a protected borehole during the dry season. Which water source supplies that borehole?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Surface run-off sitting on tarred roads"
+            },
+            {
+              "id": "b",
+              "text": "Groundwater in soil and rock"
+            },
+            {
+              "id": "c",
+              "text": "Water vapour that cooled inside the pump"
+            },
+            {
+              "id": "d",
+              "text": "Underground sea water pumped from the coast"
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Rainwater that soaks down through tiny spaces in soil and rocks becomes groundwater, which supplies wells and boreholes.",
+          "onCorrect": {
+            "text": "Correct! Boreholes draw groundwater that soaked underground during collection."
+          },
+          "onWrong": [
+            {
+              "optionId": "a",
+              "hintText": "Surface run-off flows on top of the ground. Boreholes reach water stored deep underneath.",
+              "misconceptionTargeted": "Confusing surface run-off with groundwater"
+            },
+            {
+              "optionId": "c",
+              "hintText": "Boreholes pump stored liquid water from underground, not condensed vapour inside the pipe.",
+              "misconceptionTargeted": "Believing boreholes condense air into water"
+            },
+            {
+              "optionId": "d",
+              "hintText": "Sea water is salty and far away. Boreholes tap fresh rainwater stored underground.",
+              "misconceptionTargeted": "Only the sea supplies underground water"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.1",
+          "cognitiveLevel": "apply"
+        },
+        {
+          "type": "mcq",
+          "question": "Why is the water cycle described as a repeated pattern in nature?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Earth creates brand new water every rainy season."
+            },
+            {
+              "id": "b",
+              "text": "Only sea water moves up into the sky each year."
+            },
+            {
+              "id": "c",
+              "text": "The sun's heat recycles the same water."
+            },
+            {
+              "id": "d",
+              "text": "Clouds always drop the same amount of rain daily."
+            }
+          ],
+          "correctOptionId": "c",
+          "explanation": "Heat energy from the sun continuously powers evaporation, recycling the exact same water through the four stages again and again.",
+          "onCorrect": {
+            "text": "Yes! The sun's energy keeps recycling the same water over and over."
+          },
+          "onWrong": [
+            {
+              "optionId": "a",
+              "hintText": "Earth does not create brand new water. Instead, nature reuses the same water.",
+              "misconceptionTargeted": "New water is made each time"
+            },
+            {
+              "optionId": "b",
+              "hintText": "Rivers, lakes, soil, and plants also release water vapour — not only the sea.",
+              "misconceptionTargeted": "Only the sea is part of the cycle"
+            },
+            {
+              "optionId": "d",
+              "hintText": "Rainfall changes with seasons like Harmattan. The repeated pattern is the four-stage loop itself.",
+              "misconceptionTargeted": "Thinking a repeated pattern means identical daily weather"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.1",
+          "cognitiveLevel": "understand",
+          "id": "cpC.2"
+        }
+      ]
+    },
+    {
+      "id": "cpD",
+      "afterSlide": "s13",
+      "coversSlides": [
+        "s10",
+        "s11",
+        "s12",
+        "s13"
+      ],
+      "retryRule": "2 attempts, then show the answer with the explanation",
+      "items": [
+        {
+          "type": "mcq",
+          "question": "How does the water cycle help Ghana generate electricity at the Akosombo Dam?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Dry Harmattan winds spin the heavy dam turbines."
+            },
+            {
+              "id": "b",
+              "text": "Rain keeps rivers full to turn turbines."
+            },
+            {
+              "id": "c",
+              "text": "Water vapour from the sea powers electric wires."
+            },
+            {
+              "id": "d",
+              "text": "Stopping evaporation keeps Lake Volta full all year."
+            }
+          ],
+          "correctOptionId": "b",
+          "explanation": "Precipitation refills rivers and reservoirs like Lake Volta, providing the flowing water needed to turn dam turbines.",
+          "onCorrect": {
+            "text": "Well done! Flowing water from rain-fed rivers powers hydroelectric dams."
+          },
+          "onWrong": [
+            {
+              "optionId": "a",
+              "hintText": "Hydroelectric dams use flowing river water, not dry wind, to turn their turbines.",
+              "misconceptionTargeted": "Confusing wind power with hydroelectric power"
+            },
+            {
+              "optionId": "c",
+              "hintText": "Invisible vapour in the air cannot spin dam turbines. Think of liquid river water flowing.",
+              "misconceptionTargeted": "Confusing water vapour with flowing river water"
+            },
+            {
+              "optionId": "d",
+              "hintText": "Without evaporation, no rain would form to refill Lake Volta! Think about rain-fed rivers.",
+              "misconceptionTargeted": "Seeing evaporation as harmful rather than essential to the cycle"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.2",
+          "cognitiveLevel": "understand",
+          "id": "cpD.1"
+        },
+        {
+          "id": "cpD.2",
+          "type": "mcq",
+          "question": "Your school wants to protect local rivers and support the water cycle. Which single action is MOST helpful?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Drop empty plastic sachets into roadside gutters."
+            },
+            {
+              "id": "b",
+              "text": "Clear all shade trees along the school riverbank."
+            },
+            {
+              "id": "c",
+              "text": "Leave dripping school taps running after break."
+            },
+            {
+              "id": "d",
+              "text": "Plant young trees along the school riverbank."
+            }
+          ],
+          "correctOptionId": "d",
+          "explanation": "Planting trees along a riverbank holds soil in place, prevents muddy run-off, and adds moisture through transpiration.",
+          "onCorrect": {
+            "text": "Great choice! Planting trees along riverbanks protects clean water and supports transpiration."
+          },
+          "onWrong": [
+            {
+              "optionId": "a",
+              "hintText": "Rain run-off washes gutter plastic straight into streams and rivers, polluting our water.",
+              "misconceptionTargeted": "Thinking gutter litter disappears safely"
+            },
+            {
+              "optionId": "b",
+              "hintText": "Tree roots hold soil in place and leaves release moisture. Clearing them harms local rivers.",
+              "misconceptionTargeted": "Not connecting trees to river protection and transpiration"
+            },
+            {
+              "optionId": "c",
+              "hintText": "Leaving taps running wastes treated drinking water that took energy and money to clean.",
+              "misconceptionTargeted": "Thinking recycled water means tap water cannot be wasted"
+            }
+          ],
+          "indicatorId": "B7.2.1.1.2",
+          "cognitiveLevel": "apply"
+        }
+      ]
+    }
+  ],
+  "masteryCheck": {
+    "passMark": 4,
+    "items": [
+      {
+        "id": "mastery.1",
+        "type": "mcq",
+        "question": "Ama hangs her wet school uniform in the sun and later it is dry. What actually happened to the water in the cloth?",
+        "options": [
+          {
+            "id": "a",
+            "text": "It evaporated into invisible vapour."
+          },
+          {
+            "id": "b",
+            "text": "It dried up and disappeared completely forever."
+          },
+          {
+            "id": "c",
+            "text": "The cotton cloth permanently absorbed it all."
+          },
+          {
+            "id": "d",
+            "text": "The wind shook all the liquid drops onto the grass."
+          }
+        ],
+        "correctOptionId": "a",
+        "explanation": "Heat from the sun caused the liquid water in the cloth to evaporate into invisible water vapour in the air.",
+        "onCorrect": {
+          "text": "Correct! Water never vanishes — it evaporates into invisible vapour."
+        },
+        "onWrong": [
+          {
+            "optionId": "b",
+            "hintText": "Water never disappears forever. It only changes state into an invisible gas.",
+            "misconceptionTargeted": "Water that dries up disappears forever"
+          },
+          {
+            "optionId": "c",
+            "hintText": "If the cloth still held all the water, it would feel heavy and wet. Where did the water go?",
+            "misconceptionTargeted": "Believing dried water stays hidden inside the cloth"
+          },
+          {
+            "optionId": "d",
+            "hintText": "Clothes dry even on a calm, windless sunny day because heat turns liquid water into vapour.",
+            "misconceptionTargeted": "Thinking wind physically shakes water off clothes to dry them"
+          }
+        ],
+        "indicatorId": "B7.2.1.1.1",
+        "cognitiveLevel": "understand"
+      },
+      {
+        "id": "mastery.2",
+        "type": "tapDiagram",
+        "diagramSlideId": "s03",
+        "playerNote": "Render each hotspot as an accessible HTML <button> overlaid on the diagram viewBox so touch, keyboard, and screen-reader users can select stages reliably.",
+        "question": "Tap the stage on the water cycle diagram where rising invisible water vapour cools down to form clouds.",
+        "hotspots": [
+          {
+            "id": "evaporation",
+            "label": "1. Evaporation",
+            "x": 50,
+            "y": 265,
+            "width": 490,
+            "height": 225
+          },
+          {
+            "id": "condensation",
+            "label": "2. Condensation",
+            "x": 735,
+            "y": 20,
+            "width": 440,
+            "height": 210
+          },
+          {
+            "id": "precipitation",
+            "label": "3. Precipitation",
+            "x": 760,
+            "y": 245,
+            "width": 480,
+            "height": 185
+          },
+          {
+            "id": "collection",
+            "label": "4. Collection",
+            "x": 645,
+            "y": 490,
+            "width": 430,
+            "height": 195
+          }
+        ],
+        "correctHotspotId": "condensation",
+        "explanation": "Condensation happens high in the cool air at the top right, where invisible water vapour cools into tiny droplets that form clouds.",
+        "onCorrect": {
+          "text": "Brilliant! Condensation at the top right is where vapour cools into clouds."
+        },
+        "onWrong": [
+          {
+            "hotspotId": "evaporation",
+            "hintText": "Evaporation lifts liquid water up into vapour. Look at the top where the cloud forms.",
+            "misconceptionTargeted": "Confusing evaporation with condensation"
+          },
+          {
+            "hotspotId": "precipitation",
+            "hintText": "Precipitation is heavy rain falling downward. Tap the stage right above it where the cloud forms.",
+            "misconceptionTargeted": "Confusing precipitation with condensation"
+          },
+          {
+            "hotspotId": "collection",
+            "hintText": "Collection is water gathering on Earth at the bottom. Look high up where the cloud forms.",
+            "misconceptionTargeted": "Confusing collection with condensation"
+          }
+        ],
+        "indicatorId": "B7.2.1.1.1",
+        "cognitiveLevel": "recall"
+      },
+      {
+        "type": "mcq",
+        "question": "In the 'water cycle in a bag' experiment taped to a sunny window, tiny water drops appear near the top inside the sealed bag. Which stage do those drops model?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Collection at the bottom"
+          },
+          {
+            "id": "b",
+            "text": "Transpiration from leaves"
+          },
+          {
+            "id": "c",
+            "text": "Condensation"
+          },
+          {
+            "id": "d",
+            "text": "Surface run-off downhill"
+          }
+        ],
+        "correctOptionId": "c",
+        "explanation": "Water evaporated from the bottom of the bag, rose, cooled on the upper plastic, and formed tiny liquid droplets — modelling condensation.",
+        "onCorrect": {
+          "text": "Spot on! Those tiny droplets at the top model condensation, just like clouds."
+        },
+        "onWrong": [
+          {
+            "optionId": "a",
+            "hintText": "Collection is modelled by the pool at the bottom. What forms droplets near the top?",
+            "misconceptionTargeted": "Confusing collection with condensation"
+          },
+          {
+            "optionId": "b",
+            "hintText": "There are no plants inside the bag! Look for the stage where vapour cools into droplets.",
+            "misconceptionTargeted": "Confusing transpiration with condensation"
+          },
+          {
+            "optionId": "d",
+            "hintText": "Run-off is water flowing over land. Here, vapour cooled into tiny hanging drops.",
+            "misconceptionTargeted": "Confusing run-off with condensation"
+          }
+        ],
+        "indicatorId": "B7.2.1.1.1",
+        "cognitiveLevel": "apply",
+        "id": "mastery.3"
+      },
+      {
+        "id": "mastery.4",
+        "type": "mcq",
+        "question": "Which statement BEST describes why the water cycle is important in nature?",
+        "options": [
+          {
+            "id": "a",
+            "text": "It refills rivers, wetlands, and habitats."
+          },
+          {
+            "id": "b",
+            "text": "It turns fresh lakes into salty ocean water."
+          },
+          {
+            "id": "c",
+            "text": "It keeps rivers full even during long droughts."
+          },
+          {
+            "id": "d",
+            "text": "It only brings rain to towns near the coast."
+          }
+        ],
+        "correctOptionId": "a",
+        "explanation": "The water cycle refills rivers, lakes, and wetlands, supports wildlife habitats, distributes fresh water inland, and sustains farming and drinking water.",
+        "onCorrect": {
+          "text": "Well done! Refilling rivers, wetlands, and habitats keeps nature alive."
+        },
+        "onWrong": [
+          {
+            "optionId": "b",
+            "hintText": "Evaporation leaves salt behind in the sea, so the water cycle actually supplies fresh water.",
+            "misconceptionTargeted": "Reversing fresh vs. salt water separation"
+          },
+          {
+            "optionId": "c",
+            "hintText": "During dry seasons or droughts, rivers can still drop very low when little rain falls.",
+            "misconceptionTargeted": "Thinking the water cycle prevents seasonal droughts"
+          },
+          {
+            "optionId": "d",
+            "hintText": "Winds carry clouds far inland, distributing fresh rain to farms and forests away from the sea.",
+            "misconceptionTargeted": "Only the sea or coast is part of the cycle"
+          }
+        ],
+        "indicatorId": "B7.2.1.1.2",
+        "cognitiveLevel": "recall"
+      },
+      {
+        "id": "mastery.5",
+        "type": "mcq",
+        "question": "A town cuts down trees along its main river and people dump waste into the stream. What are two likely results?",
+        "options": [
+          {
+            "id": "a",
+            "text": "Faster transpiration and healthier river fish."
+          },
+          {
+            "id": "b",
+            "text": "Dirty river water and muddy run-off."
+          },
+          {
+            "id": "c",
+            "text": "More rainwater soaking into hard bare soil."
+          },
+          {
+            "id": "d",
+            "text": "Cleaner drinking water for towns downstream."
+          }
+        ],
+        "correctOptionId": "b",
+        "explanation": "Dumping waste pollutes river water, and cutting trees leaves soil bare so rain washes mud into the river.",
+        "onCorrect": {
+          "text": "Exactly right! Protecting trees and keeping waste out of streams keeps our water safe."
+        },
+        "onWrong": [
+          {
+            "optionId": "a",
+            "hintText": "Fewer trees mean less transpiration, and dumping waste harms fish habitats.",
+            "misconceptionTargeted": "Reversing deforestation and pollution effects"
+          },
+          {
+            "optionId": "c",
+            "hintText": "Tree roots help water soak in. Without trees, rain runs off quickly and carries mud away.",
+            "misconceptionTargeted": "Thinking bare land absorbs more water than forested land"
+          },
+          {
+            "optionId": "d",
+            "hintText": "Flowing rivers carry waste and mud downstream, making water dirtier for the next town.",
+            "misconceptionTargeted": "Thinking river pollution stays in one spot and clears up immediately"
+          }
+        ],
+        "indicatorId": "B7.2.1.1.2",
+        "cognitiveLevel": "apply"
+      }
+    ]
+  },
+  "summary": {
+    "recapScript": "Today you learned that the water cycle is nature's repeated journey of water powered by heat energy from the sun. Through evaporation and transpiration, liquid water rises as invisible vapour. High in cool air, condensation turns vapour into clouds made mostly of tiny droplets. Heavy droplets fall as precipitation, and collection stores water in rivers, lakes, the sea, and underground boreholes. Because this cycle keeps habitats, farms, and hydroelectric dams alive, every one of us must help protect our rivers and trees.",
+    "takeaways": [
+      "The four stages — evaporation, condensation, precipitation, and collection — repeat continuously using the sun's heat energy.",
+      "Earth does not make new water; it recycles the same water across seas, lakes, rivers, soil, clouds, and plants over a very long time.",
+      "The water cycle supports natural habitats, weather, drinking water, farming, and hydroelectric power, so we must protect rivers and trees."
+    ]
+  },
+  "extensionActivity": {
+    "title": "Water Cycle in a Bag",
+    "materials": [
+      "One clear, sealable plastic bag (such as a clean zip-lock or knotted transparent polythene bag)",
+      "Two tablespoons of clean cool tap water",
+      "Strong sticky tape",
+      "A sunny window or warm outdoor wall"
+    ],
+    "steps": [
+      "Pour two tablespoons of clean cool water into the clear plastic bag.",
+      "Seal the bag tightly so no air or water vapour can escape.",
+      "Use sticky tape to fasten the top of the bag flat against a sunny window.",
+      "Check the bag after one hour, three hours, and at the end of the afternoon, and draw what you see in your science notebook."
+    ],
+    "safetyNote": "Use only clean, cool water — never hot water. Keep plastic bags away from babies and small children, and dispose of or reuse the bag responsibly after the experiment.",
+    "expectedObservation": "Warm sunlight causes some water at the bottom to evaporate into invisible vapour. Near the cooler upper plastic, tiny misty droplets form by condensation. When droplets join and grow heavy, they trickle down the inside of the bag like precipitation back into the pool (collection)."
+  },
+  "coverageMatrix": [
+    {
+      "indicatorId": "B7.2.1.1.1",
+      "slides": [
+        "s01",
+        "s02",
+        "s03",
+        "s04",
+        "s05",
+        "s06",
+        "s07",
+        "s08",
+        "s09",
+        "s13"
+      ],
+      "checkpointItems": [
+        "cpA.1",
+        "cpA.2",
+        "cpB.1",
+        "cpB.2",
+        "cpC.1",
+        "cpC.2",
+        "mastery.1",
+        "mastery.2",
+        "mastery.3"
+      ]
+    },
+    {
+      "indicatorId": "B7.2.1.1.2",
+      "slides": [
+        "s10",
+        "s11",
+        "s12",
+        "s13"
+      ],
+      "checkpointItems": [
+        "cpD.1",
+        "cpD.2",
+        "mastery.4",
+        "mastery.5"
+      ]
+    }
+  ],
+  "verifyFlags": [
+    {
+      "claim": "Source PDF places Living Cells (B7.1.2.1) under Cycles and Earth Science / Water Cycle (B7.2.1.1) under Systems.",
+      "slideId": "meta",
+      "reason": "[VERIFY] In the official NaCCA Basic 7 Science curriculum, B7.1.x codes normally belong to Strand 1 (Diversity of Matter), B7.2.x to Strand 2 (Cycles), and B7.3.x to Strand 3 (Systems). Confirm the official GES/NaCCA strand labels before final catalogue tagging."
+    },
+    {
+      "claim": "Harmattan winds blow from dry desert areas and bring very little precipitation.",
+      "slideId": "s06",
+      "reason": "[VERIFY] Confirm with a JHS Science teacher that this phrasing matches the level of meteorological detail expected in Basic 7."
+    },
+    {
+      "claim": "Lake Bosomtwe and Lake Volta are named as examples of lakes where water collects and evaporates.",
+      "slideId": "s07",
+      "reason": "[VERIFY] Confirm spellings (Lake Bosomtwe, Lake Volta) and note that Lake Bosomtwe is a closed crater lake with no outflowing river to the sea, whereas Lake Volta drains via the Volta River."
+    },
+    {
+      "claim": "Akosombo Dam generates hydroelectric power from flowing river water for Ghanaian homes, hospitals, and schools.",
+      "slideId": "s11",
+      "reason": "[VERIFY] Confirm naming and current curriculum phrasing for Ghana's main hydroelectric dam (Akosombo Dam on the Volta River)."
+    },
+    {
+      "claim": "Slide s02 references prior learning of solids, liquids, and gases (indicator B7.1.1.1.1).",
+      "slideId": "s02",
+      "reason": "[VERIFY] Confirm that B7.1.1.1.1 is taught before B7.2.1.1 in the school's actual Term 1 sequence; phrasing was softened to 'You may remember learning...' so it still works if taught in a different order."
+    }
+  ]
+}
