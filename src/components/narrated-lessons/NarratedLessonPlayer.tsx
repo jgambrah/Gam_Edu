@@ -554,13 +554,13 @@ export function NarratedLessonPlayer({
           solved: true,
           revealed: false,
           correctFirstTry: attempts === 1,
-          lastFeedback: `${item.onCorrect.text} ${item.explanation}`,
+          lastFeedback: `${item.onCorrect?.text ?? 'Well done!'} ${item.explanation}`,
           lastWasCorrect: true,
           selectedOptionId: optionId,
         },
       }));
     } else {
-      const wrongInfo = item.onWrong.find((w) => w.optionId === optionId);
+      const wrongInfo = (item.onWrong ?? []).find((w) => w.optionId === optionId);
       const revealed = attempts >= 2;
       const correctText = item.options.find((o) => o.id === item.correctOptionId)?.text ?? '';
       setItemProgress((old) => ({
@@ -627,8 +627,8 @@ export function NarratedLessonPlayer({
           revealed,
           correctFirstTry: false,
           lastFeedback: revealed
-            ? `Here is the right clockwise order. ${item.explanation}`
-            : item.onWrong[0]?.hintText || 'Check the order again and try once more!',
+            ? `Here is the right order. ${item.explanation}`
+            : item.onWrong?.[0]?.hintText || 'Check the order again and try once more!',
           lastWasCorrect: false,
         },
       }));
@@ -656,7 +656,7 @@ export function NarratedLessonPlayer({
         },
       }));
     } else {
-      const wrongInfo = item.onWrong.find((w) => w.hotspotId === hotspotId);
+      const wrongInfo = (item.onWrong ?? []).find((w) => w.hotspotId === hotspotId);
       const revealed = attempts >= 2;
       const correctLabel = item.hotspots.find((h) => h.id === item.correctHotspotId)?.label ?? '';
       setItemProgress((old) => ({
@@ -667,8 +667,8 @@ export function NarratedLessonPlayer({
           revealed,
           correctFirstTry: false,
           lastFeedback: revealed
-            ? `The right stage is ${correctLabel}. ${item.explanation}`
-            : wrongInfo?.hintText || 'Try another stage on the diagram!',
+            ? `The right answer is ${correctLabel}. ${item.explanation}`
+            : wrongInfo?.hintText || 'Try tapping another part of the diagram!',
           lastWasCorrect: false,
           selectedHotspotId: hotspotId,
         },
@@ -1833,7 +1833,7 @@ function AssessmentCard({
       {/* MCQ */}
       {item.type === 'mcq' && (
         <>
-          <p className="text-base font-bold text-slate-900">{item.question}</p>
+          <p className="text-base font-bold text-slate-900">{item.question ?? item.prompt}</p>
           <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
             {item.options.map((opt) => {
               const isSelected = progress?.selectedOptionId === opt.id;
@@ -1929,9 +1929,9 @@ function AssessmentCard({
         const diagSlide = slideById.get(item.diagramSlideId);
         return (
           <>
-            <p className="text-base font-bold text-slate-900">{item.question}</p>
+            <p className="text-base font-bold text-slate-900">{item.question ?? item.prompt}</p>
             <p className="mt-1 text-xs text-slate-500">
-              Tap directly on the matching stage in the diagram below:
+              Tap directly on the matching part of the diagram below:
             </p>
             <div className="relative mt-3 aspect-video w-full overflow-hidden rounded-xl border border-slate-200 bg-sky-50">
               {diagSlide?.visual.svgCode && (

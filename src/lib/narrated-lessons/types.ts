@@ -125,11 +125,12 @@ export interface WrongFeedback {
 export interface McqItem {
   id: string;
   type: 'mcq';
-  question: string;
+  question?: string;
+  prompt?: string;
   options: Array<{ id: string; text: string }>;
   correctOptionId: string;
   explanation: string;
-  onCorrect: { text: string };
+  onCorrect?: { text: string };
   onWrong: WrongFeedback[];
   indicatorId: string;
   cognitiveLevel: string;
@@ -166,7 +167,8 @@ export interface TapDiagramItem {
   type: 'tapDiagram';
   diagramSlideId: string;
   playerNote?: string;
-  question: string;
+  question?: string;
+  prompt?: string;
   hotspots: TapDiagramHotspot[];
   correctHotspotId: string;
   explanation: string;
