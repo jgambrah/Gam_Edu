@@ -1,4 +1,5 @@
 export interface LessonMeta {
+  title?: string;
   class: string;
   subject: string;
   term: number;
@@ -36,6 +37,7 @@ export interface SlideVisual {
   altText: string;
   svgCode: string | null;
   imagePrompt: string | null;
+  imageUrl?: string;
 }
 
 export type AudioSource = 'tts' | 'human';
@@ -45,6 +47,7 @@ export interface SlideNarration {
   script: string;
   ttsText?: string;
   audioSource?: AudioSource;
+  audioUrl?: string;
   estSeconds: number;
   pauseCues: string[];
 }
@@ -171,6 +174,7 @@ export interface MasteryCheck {
 
 export interface LessonSummary {
   recapScript: string;
+  recapAudioUrl?: string;
   takeaways: string[];
 }
 
@@ -214,7 +218,8 @@ export interface NarratedLesson {
 export const NARRATED_LESSON_CDN_BUCKET = 'gamedu-69888475-f5783.firebasestorage.app';
 export const NARRATED_LESSON_CDN_PREFIX = 'story-spark-preview/narrated-lessons';
 
-export function lessonMediaUrl(lessonId: string, relPath: string): string {
-  const objectPath = `${NARRATED_LESSON_CDN_PREFIX}/${lessonId}/${relPath}`;
-  return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(NARRATED_LESSON_CDN_BUCKET)}/o/${encodeURIComponent(objectPath)}?alt=media`;
+export function lessonMediaUrl(lessonId: string, relPath: string, versionHash?: string): string {
+  const objectPath = `${NARRATED_LESSON_CDN_PREFIX}/${lessonId}/${relPath.replace(/^\/+/, '')}`;
+  const vParam = versionHash ? `&v=${encodeURIComponent(versionHash)}` : '';
+  return `https://firebasestorage.googleapis.com/v0/b/${encodeURIComponent(NARRATED_LESSON_CDN_BUCKET)}/o/${encodeURIComponent(objectPath)}?alt=media${vParam}`;
 }

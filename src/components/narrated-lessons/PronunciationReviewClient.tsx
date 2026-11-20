@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, Download, Save, Volume2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Download, Volume2 } from 'lucide-react';
 import { lessonMediaUrl } from '@/lib/narrated-lessons/types';
 
 type VariantRating = 'best' | 'acceptable' | 'wrong' | '';
@@ -41,8 +41,7 @@ export function PronunciationReviewClient({ manifest }: { manifest: TestClipsMan
     notes: {},
     chosenRespelling: {},
   });
-  const [saving, setSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -84,43 +83,6 @@ export function PronunciationReviewClient({ manifest }: { manifest: TestClipsMan
     setState((old) => ({ ...old, notes: { ...old.notes, [key]: note } }));
   };
 
-  const handleSaveToGuide = async () => {
-    if (Object.keys(state.chosenRespelling).length === 0) {
-      setSaveMessage('Please mark at least one "Best variant" before saving to pronunciationGuide.');
-      return;
-    }
-    setSaving(true);
-    setSaveMessage(null);
-    try {
-      const res = await fetch('/api/narrated-lessons/pronunciation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ choices: state.chosenRespelling }),
-      });
-      const data = (await res.json()) as {
-        ok?: boolean;
-        persistedToDisk?: boolean;
-        updatedTerms?: string[];
-        error?: string;
-      };
-      if (!res.ok || !data.ok) {
-        setSaveMessage(data.error || 'Could not save choices.');
-      } else if (data.persistedToDisk) {
-        setSaveMessage(
-          `Saved chosen respellings (${(data.updatedTerms ?? []).join(', ')}) directly into pronunciationGuide in bs7-sci-t1-water-cycle.json.`,
-        );
-      } else {
-        setSaveMessage(
-          `Saved locally in your browser (${(data.updatedTerms ?? []).join(', ')}). Click "Export Review JSON" to share your choices with the engineering team for production deployment.`,
-        );
-      }
-    } catch {
-      setSaveMessage('Network error while saving. Your ratings are still saved in this browser — use Export Review JSON.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleExport = () => {
     const payload = {
       lessonId: manifest.lessonId,
@@ -144,6 +106,9 @@ export function PronunciationReviewClient({ manifest }: { manifest: TestClipsMan
     a.download = `${manifest.lessonId}-pronunciation-test-review.json`;
     a.click();
     URL.revokeObjectURL(url);
+    setExportMessage(
+      'Exported your pronunciation review JSON! Send this file to the curriculum publisher to apply the winning respellings and regenerate only the affected slides.',
+    );
   };
 
   return (
@@ -172,29 +137,20 @@ export function PronunciationReviewClient({ manifest }: { manifest: TestClipsMan
             <button
               type="button"
               onClick={handleExport}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-sky-700"
             >
               <Download className="h-3.5 w-3.5" />
               Export Review JSON
-            </button>
-            <button
-              type="button"
-              onClick={handleSaveToGuide}
-              disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-sky-700 disabled:bg-slate-300"
-            >
-              <Save className="h-3.5 w-3.5" />
-              {saving ? 'Saving...' : 'Save Chosen Respellings'}
             </button>
           </div>
         </div>
       </header>
 
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-6">
-        {saveMessage && (
+        {exportMessage && (
           <div className="flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-xs font-medium text-emerald-950">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-            <span>{saveMessage}</span>
+            <span>{exportMessage}</span>
           </div>
         )}
 

@@ -96,7 +96,8 @@ export function catalogueCdnUrl(): string {
 }
 
 export async function fetchLessonCatalogue(): Promise<LessonCatalogue> {
-  const res = await fetch(catalogueCdnUrl(), { cache: 'no-store' });
+  // Respect CDN Cache-Control (public, max-age=60, stale-while-revalidate=300)
+  const res = await fetch(catalogueCdnUrl());
   if (!res.ok) {
     throw new Error(`Failed to load lesson catalogue (HTTP ${res.status})`);
   }

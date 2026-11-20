@@ -177,12 +177,47 @@ async function getAccessToken(): Promise<string> {
   throw new Error('No Google Cloud / Firebase Storage credentials found.');
 }
 
+function fetchObjectGeneration(token: string, remotePath: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        hostname: 'storage.googleapis.com',
+        port: 443,
+        path: `/storage/v1/b/${encodeURIComponent(NARRATED_LESSON_CDN_BUCKET)}/o/${encodeURIComponent(remotePath)}`,
+        method: 'GET',
+        agent,
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on('data', (c: Buffer) => chunks.push(c));
+        res.on('end', () => {
+          if (res.statusCode === 404) return resolve('0');
+          if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
+            try {
+              const meta = JSON.parse(Buffer.concat(chunks).toString('utf8')) as { generation?: string };
+              return resolve(meta.generation ?? '0');
+            } catch (e) {
+              return reject(e);
+            }
+          }
+          reject(new Error(`Metadata fetch failed (${res.statusCode}) for ${remotePath}`));
+        });
+        res.on('error', reject);
+      },
+    );
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 function uploadObject(
   token: string,
   remotePath: string,
   data: Buffer,
   contentType: string,
   cacheControl: string,
+  ifGenerationMatch?: string,
 ): Promise<void> {
   const boundary = '----GamEduLessonPub' + Math.random().toString(36).slice(2);
   const metadata = JSON.stringify({ name: remotePath, contentType, cacheControl });
@@ -193,13 +228,14 @@ function uploadObject(
   );
   const tail = Buffer.from(`\r\n--${boundary}--\r\n`, 'utf8');
   const body = Buffer.concat([head, data, tail]);
+  const genParam = ifGenerationMatch !== undefined ? `&ifGenerationMatch=${encodeURIComponent(ifGenerationMatch)}` : '';
 
   return new Promise((resolve, reject) => {
     const req = https.request(
       {
         hostname: 'storage.googleapis.com',
         port: 443,
-        path: `/upload/storage/v1/b/${encodeURIComponent(NARRATED_LESSON_CDN_BUCKET)}/o?uploadType=multipart`,
+        path: `/upload/storage/v1/b/${encodeURIComponent(NARRATED_LESSON_CDN_BUCKET)}/o?uploadType=multipart${genParam}`,
         method: 'POST',
         agent,
         headers: {
@@ -424,8 +460,17 @@ async function main() {
         }
         if (!ok) throw new Error(`TTS failed for ${track.id}`);
       }
-      const remoteAudio = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/audio/${track.id}.mp3`;
-      await uploadObject(token, remoteAudio, fs.readFileSync(outMp3), 'audio/mpeg', IMMUTABLE_CACHE);
+      const mp3Buf = fs.readFileSync(outMp3);
+      const mp3ContentHash = createHash('sha256').update(mp3Buf).digest('hex').slice(0, 12);
+      const relHashedAudio = `audio/${track.id}.${mp3ContentHash}.mp3`;
+      const remoteAudio = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/${relHashedAudio}`;
+      await uploadObject(token, remoteAudio, mp3Buf, 'audio/mpeg', IMMUTABLE_CACHE);
+      if (track.id === 'recap') {
+        lesson.summary.recapAudioUrl = relHashedAudio;
+      } else {
+        const targetSlide = lesson.slides.find((s) => s.id === track.id);
+        if (targetSlide) targetSlide.narration.audioUrl = relHashedAudio;
+      }
       console.log(`  [upload] ${remoteAudio}`);
     }
 
@@ -434,7 +479,7 @@ async function main() {
       autoAlignSlideCues(ffmpeg, path.join(audioDir, `${slide.id}.mp3`), slide);
     }
 
-    // Convert & upload any illustrations provided in --images-dir
+    // Convert & upload any illustrations provided in --images-dir (content-hashed filenames so updates never serve stale cache)
     if (imagesDirArg && fs.existsSync(imagesDirArg)) {
       const sharp = createRequire(path.join(REPO_ROOT, 'package.json'))('sharp') as typeof import('sharp');
       const files = fs.readdirSync(imagesDirArg);
@@ -447,8 +492,12 @@ async function main() {
           .resize(1280, 720, { fit: 'cover', position: 'centre' })
           .webp({ quality: 84 })
           .toFile(dest);
-        const remoteImg = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/images/${slide.id}.webp`;
-        await uploadObject(token, remoteImg, fs.readFileSync(dest), 'image/webp', IMMUTABLE_CACHE);
+        const imgBuf = fs.readFileSync(dest);
+        const imgHash = createHash('sha256').update(imgBuf).digest('hex').slice(0, 12);
+        const relHashedImg = `images/${slide.id}.${imgHash}.webp`;
+        const remoteImg = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/${relHashedImg}`;
+        await uploadObject(token, remoteImg, imgBuf, 'image/webp', IMMUTABLE_CACHE);
+        slide.visual.imageUrl = relHashedImg;
         console.log(`  [upload] ${remoteImg}`);
       }
     }
@@ -462,8 +511,9 @@ async function main() {
   await uploadObject(token, remotePkg, Buffer.from(pkgStr, 'utf8'), 'application/json; charset=utf-8', IMMUTABLE_CACHE);
   console.log(`[lesson:publish] Uploaded package -> ${remotePkg}`);
 
-  // 4. Fetch existing catalogue.json, merge/upsert this lesson, and upload LAST
+  // 4. Fetch existing catalogue.json + GCS generation (optimistic concurrency lock) and back it up before overwriting
   const remoteCat = `${NARRATED_LESSON_CDN_PREFIX}/catalogue.json`;
+  const expectedGeneration = await fetchObjectGeneration(token, remoteCat);
   let catalogue: LessonCatalogue = {
     catalogueVersion: 0,
     updatedAt: new Date().toISOString(),
@@ -473,6 +523,10 @@ async function main() {
   if (liveCat.statusCode === 200) {
     try {
       catalogue = JSON.parse(liveCat.body.toString('utf8')) as LessonCatalogue;
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const backupPath = `${NARRATED_LESSON_CDN_PREFIX}/backups/catalogue.${stamp}.json`;
+      await uploadObject(token, backupPath, liveCat.body, 'application/json; charset=utf-8', IMMUTABLE_CACHE);
+      console.log(`[lesson:publish] Backed up prior catalogue -> ${backupPath}`);
     } catch {
       // start fresh if malformed
     }
@@ -480,10 +534,18 @@ async function main() {
 
   const firstImgSlide = lesson.slides.find((s) => s.visual.type === 'illustration');
   const normalizedClass = normalizeClassLevel(lesson.meta.class) ?? lesson.meta.class;
+  const derivedTitle =
+    lesson.meta.title?.trim() ||
+    lesson.slides[0]?.title ||
+    lesson.lessonId;
+  const coverRel = firstImgSlide
+    ? `${lesson.lessonId}/${firstImgSlide.visual.imageUrl || `images/${firstImgSlide.id}.webp`}`
+    : undefined;
+
   const entry: LessonCatalogueEntry = {
     lessonId: lesson.lessonId,
     ...(explicitSlug ? { slug: explicitSlug } : {}),
-    title: lesson.slides[0]?.title ? `${lesson.meta.subject}: ${lesson.lessonId.split('-').slice(3).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ')}` : lesson.lessonId,
+    title: derivedTitle,
     summary: lesson.learningOutcomes[0] ?? lesson.summary.takeaways[0] ?? '',
     class: normalizedClass,
     subject: lesson.meta.subject,
@@ -496,12 +558,12 @@ async function main() {
     schemaVersion: lesson.schemaVersion,
     packagePath: relPackagePath,
     packageHash: pkgHash,
-    ...(firstImgSlide ? { coverImagePath: `${lesson.lessonId}/images/${firstImgSlide.id}.webp` } : {}),
+    ...(coverRel ? { coverImagePath: coverRel } : {}),
     status: 'published',
     updatedAt: new Date().toISOString(),
   };
 
-  // Preserve custom title/slug if already present in live catalogue
+  // Preserve custom slug if already present in live catalogue
   const existingIdx = catalogue.entries.findIndex((e) => e.lessonId === lesson.lessonId);
   if (existingIdx !== -1) {
     const prev = catalogue.entries[existingIdx];
@@ -523,6 +585,7 @@ async function main() {
     Buffer.from(JSON.stringify(catalogue, null, 2), 'utf8'),
     'application/json; charset=utf-8',
     CATALOGUE_CACHE,
+    expectedGeneration,
   );
   console.log(`[lesson:publish] Updated catalogue.json (v${catalogue.catalogueVersion}, ${catalogue.entries.length} lesson(s))`);
 

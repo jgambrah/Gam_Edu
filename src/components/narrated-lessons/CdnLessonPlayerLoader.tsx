@@ -11,12 +11,14 @@ interface CdnLessonPlayerLoaderProps {
   lessonIdOrSlug: string;
   backHref?: string;
   backLabel?: string;
+  allowReviewerTools?: boolean;
 }
 
 export function CdnLessonPlayerLoader({
   lessonIdOrSlug,
   backHref,
   backLabel = 'All Narrated Lessons',
+  allowReviewerTools = false,
 }: CdnLessonPlayerLoaderProps) {
   const [lesson, setLesson] = useState<NarratedLesson | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,7 +93,7 @@ export function CdnLessonPlayerLoader({
           </div>
         </div>
       )}
-      <NarratedLessonPlayer lesson={lesson} />
+      <NarratedLessonPlayer lesson={lesson} allowReviewerTools={allowReviewerTools} />
     </div>
   );
 }

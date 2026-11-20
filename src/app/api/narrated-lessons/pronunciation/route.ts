@@ -14,6 +14,17 @@ const LESSON_JSON_PATH = path.join(
 );
 
 export async function POST(req: NextRequest) {
+  // Dev-only route: production hosts are read-only and must never accept unauthenticated file writes.
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      {
+        error:
+          'Direct saving is disabled in production. Use "Export Review JSON" and apply choices with npm run lesson:publish.',
+      },
+      { status: 403 },
+    );
+  }
+
   try {
     const body = (await req.json().catch(() => null)) as {
       choices?: Record<string, string>;

@@ -22,6 +22,7 @@ import {
   Play,
   RotateCcw,
   Send,
+  Settings2,
   ShieldAlert,
   Sparkles,
   Volume2,
@@ -100,7 +101,13 @@ function deterministicShuffleIds(ids: string[]): string[] {
   return [...ids].reverse();
 }
 
-export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
+export function NarratedLessonPlayer({
+  lesson,
+  allowReviewerTools = false,
+}: {
+  lesson: NarratedLesson;
+  allowReviewerTools?: boolean;
+}) {
   const steps = useMemo<PlayerStep[]>(() => {
     const out: PlayerStep[] = [{ kind: 'intro', id: 'intro', label: 'Start' }];
     const cpByAfter = new Map<string, LessonCheckpoint>();
@@ -138,6 +145,8 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
   const [stepIdx, setStepIdx] = useState(0);
   const [lowDataMode, setLowDataMode] = useState(false);
   const [pointerEnabled, setPointerEnabled] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [canUseReviewerTools, setCanUseReviewerTools] = useState(allowReviewerTools);
   const [reviewerMode, setReviewerMode] = useState(false);
   const [showReviewerPanel, setShowReviewerPanel] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
@@ -276,10 +285,13 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
     return () => obs.disconnect();
   }, [stepIdx]);
 
-  // Restore progress from localStorage (plus optional ?slide=s03&t=18 review deep-link)
+  // Restore progress from localStorage (plus optional ?slide=s03&t=18&review=1 deep-link)
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
+      if (params.get('review') === '1' || allowReviewerTools) {
+        setCanUseReviewerTools(true);
+      }
       const qSlide = params.get('slide');
       const qTime = params.get('t');
       if (qSlide) {
@@ -325,13 +337,18 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
   const currentAudioUrl = useMemo(() => {
     if (lowDataMode) return null;
     if (currentStep.kind === 'slide') {
-      return lessonMediaUrl(lesson.lessonId, `audio/${currentStep.slide.id}.mp3`);
+      const s = currentStep.slide;
+      return s.narration.audioUrl
+        ? lessonMediaUrl(lesson.lessonId, s.narration.audioUrl)
+        : lessonMediaUrl(lesson.lessonId, `audio/${s.id}.mp3`, s.audioHash);
     }
     if (currentStep.kind === 'summary') {
-      return lessonMediaUrl(lesson.lessonId, 'audio/recap.mp3');
+      return lesson.summary.recapAudioUrl
+        ? lessonMediaUrl(lesson.lessonId, lesson.summary.recapAudioUrl)
+        : lessonMediaUrl(lesson.lessonId, 'audio/recap.mp3', lesson.schemaVersion);
     }
     return null;
-  }, [currentStep, lesson.lessonId, lowDataMode]);
+  }, [currentStep, lesson.lessonId, lesson.schemaVersion, lesson.summary.recapAudioUrl, lowDataMode]);
 
   // Reset audio and selected cue when step changes
   useEffect(() => {
@@ -677,9 +694,22 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
     }));
     setAskLoading(true);
     try {
+      let sessionId = '';
+      try {
+        sessionId = sessionStorage.getItem('gamedu_lesson_session_id') || '';
+        if (!sessionId) {
+          sessionId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          sessionStorage.setItem('gamedu_lesson_session_id', sessionId);
+        }
+      } catch {
+        // ignore storage errors
+      }
       const res = await fetch('/api/narrated-lessons/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(sessionId ? { 'x-lesson-session': sessionId } : {}),
+        },
         body: JSON.stringify({
           lessonId: lesson.lessonId,
           slideId: sid,
@@ -755,87 +785,129 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
         />
       )}
 
-      {/* Top Sticky Bar */}
+      {/* Top Sticky Bar — Slim 1-row pupil header on 360px phones */}
       <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-2.5">
-          <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-600 text-white shadow-sm">
-              <BookOpen className="h-5 w-5" />
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-2 px-3 py-2 sm:px-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-600 text-white shadow-sm">
+              <BookOpen className="h-4 w-4" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-900">GAM Edu Narrated Lesson</span>
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
-                  Pilot {lesson.schemaVersion}
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="truncate text-sm font-bold text-slate-900">
+                  {lesson.meta.title || 'Narrated Lesson'}
                 </span>
+                {canUseReviewerTools && (
+                  <span className="hidden rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800 sm:inline">
+                    {lesson.schemaVersion}
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-slate-500">
-                {lesson.meta.class} {lesson.meta.subject} · Term {lesson.meta.term} · {lesson.meta.contentStandard}
+              <p className="truncate text-[11px] text-slate-500">
+                {lesson.meta.class} {lesson.meta.subject} · {lesson.meta.contentStandard}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="relative flex shrink-0 items-center gap-1.5">
+            {/* Compact Settings button (holds Pointer On/Off & Low-Data Mode) */}
             <button
               type="button"
-              onClick={() => setPointerEnabled((v) => !v)}
-              aria-pressed={pointerEnabled}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
-                pointerEnabled
-                  ? 'border-amber-300 bg-amber-50 text-amber-900'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              onClick={() => setSettingsOpen((v) => !v)}
+              aria-expanded={settingsOpen}
+              aria-label="Lesson settings"
+              className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                settingsOpen
+                  ? 'border-sky-400 bg-sky-50 text-sky-900'
+                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
               }`}
-              title="Toggle the teacher pointer overlay on slides"
             >
-              <Crosshair className="h-3.5 w-3.5" />
-              {pointerEnabled ? 'Pointer: On' : 'Pointer: Off'}
+              <Settings2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Settings</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setLowDataMode((v) => !v)}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
-                lowDataMode
-                  ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-              title="Skip audio downloads and read full transcripts"
-            >
-              <WifiOff className="h-3.5 w-3.5" />
-              {lowDataMode ? 'Low-Data: ON' : 'Low-Data'}
-            </button>
+            {/* Reviewer / Teacher tools — hidden from pupils unless ?review=1 or staff session */}
+            {canUseReviewerTools && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setReviewerMode((v) => !v)}
+                  className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
+                    reviewerMode
+                      ? 'border-indigo-300 bg-indigo-50 text-indigo-800'
+                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  }`}
+                  title="Unlock free navigation, Pointer Cue Editor, and Pronunciation Audit"
+                >
+                  <Eye className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">{reviewerMode ? 'Reviewer: ON' : 'Reviewer'}</span>
+                </button>
 
-            <button
-              type="button"
-              onClick={() => setReviewerMode((v) => !v)}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition ${
-                reviewerMode
-                  ? 'border-indigo-300 bg-indigo-50 text-indigo-800'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-              }`}
-              title="Unlock free navigation to any slide or checkpoint for reviewing"
-            >
-              <Eye className="h-3.5 w-3.5" />
-              {reviewerMode ? 'Reviewer Mode: ON' : 'Reviewer Mode'}
-            </button>
+                <button
+                  type="button"
+                  onClick={() => setShowReviewerPanel(true)}
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                  title="Teacher Guide & Coverage Matrix"
+                >
+                  <ClipboardCheck className="h-3.5 w-3.5" />
+                  <span className="hidden md:inline">Guide</span>
+                </button>
 
-            <button
-              type="button"
-              onClick={() => setShowReviewerPanel(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-            >
-              <ClipboardCheck className="h-3.5 w-3.5" />
-              Teacher Guide
-            </button>
+                <button
+                  type="button"
+                  onClick={handleCopyShareLink}
+                  className="inline-flex items-center gap-1 rounded-lg bg-sky-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700"
+                  title="Copy review link"
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  <span className="hidden md:inline">{copiedLink ? 'Copied!' : 'Share'}</span>
+                </button>
+              </>
+            )}
 
-            <button
-              type="button"
-              onClick={handleCopyShareLink}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-700"
-            >
-              <Copy className="h-3.5 w-3.5" />
-              {copiedLink ? 'Link Copied!' : 'Share Review Link'}
-            </button>
+            {/* Settings Popover */}
+            {settingsOpen && (
+              <div className="absolute right-0 top-10 z-40 w-60 rounded-xl border border-slate-200 bg-white p-3 shadow-xl">
+                <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Player Settings
+                </p>
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => setPointerEnabled((v) => !v)}
+                    aria-pressed={pointerEnabled}
+                    className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+                      pointerEnabled
+                        ? 'border-amber-300 bg-amber-50 text-amber-950'
+                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <Crosshair className="h-3.5 w-3.5" />
+                      Teacher Pointer
+                    </span>
+                    <span>{pointerEnabled ? 'On' : 'Off'}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setLowDataMode((v) => !v)}
+                    aria-pressed={lowDataMode}
+                    className={`flex w-full items-center justify-between rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+                      lowDataMode
+                        ? 'border-emerald-300 bg-emerald-50 text-emerald-950'
+                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <WifiOff className="h-3.5 w-3.5" />
+                      Low-Data Mode
+                    </span>
+                    <span>{lowDataMode ? 'On' : 'Off'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -946,17 +1018,19 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
                   <Play className="h-4 w-4 fill-current" />
                   Start Narrated Lesson
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setReviewerMode(true);
-                    setStepIdx(1);
-                  }}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-                >
-                  <Eye className="h-4 w-4" />
-                  Open in Reviewer Mode
-                </button>
+                {canUseReviewerTools && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setReviewerMode(true);
+                      setStepIdx(1);
+                    }}
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  >
+                    <Eye className="h-4 w-4" />
+                    Open in Reviewer Mode
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -995,7 +1069,11 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
                   />
                 ) : (
                   <img
-                    src={lessonMediaUrl(lesson.lessonId, `images/${currentStep.slide.id}.webp`)}
+                    src={
+                      currentStep.slide.visual.imageUrl
+                        ? lessonMediaUrl(lesson.lessonId, currentStep.slide.visual.imageUrl)
+                        : lessonMediaUrl(lesson.lessonId, `images/${currentStep.slide.id}.webp`, lesson.schemaVersion)
+                    }
                     alt={currentStep.slide.visual.altText}
                     className="h-full w-full object-cover"
                     loading="eager"
