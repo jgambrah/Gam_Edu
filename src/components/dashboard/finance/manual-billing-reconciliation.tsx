@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { fetchCurrentTermStamp } from '@/lib/billing';
+import { fetchCurrentTermStamp, isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing';
 
 interface MissingBillItem {
     id: string; // Unique ID (e.g. canteen-studentID-date)
@@ -95,6 +95,8 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
             }
 
             // E. Get Existing Bills (Who already has a bill on this DAY?)
+            // SAFETY (H2): Keep ALL existing bill IDs — including voided or archived bills — in `existingBillIds`
+            // so a bill that was paid and later voided via an absence correction is NEVER overwritten with amountPaid: 0.
             const billsQ = query(
                 collection(firestore, 'financialRecords'),
                 where('schoolId', '==', schoolId),
@@ -102,11 +104,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                 where('dueDate', '<=', Timestamp.fromDate(queryEnd))
             );
             const billsSnap = await getDocs(billsQ);
-            const existingBillIds = new Set(
-                billsSnap.docs
-                    .filter(d => !d.data().voided && !d.data().isArchived)
-                    .map(d => d.id)
-            );
+            const existingBillIds = new Set(billsSnap.docs.map(d => d.id));
 
             const detectedMissing: MissingBillItem[] = [];
 
@@ -118,9 +116,8 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
 
                 const studentName = att.studentName || `${studentMeta.firstName} ${studentMeta.lastName}`;
                 
-                // 1. Check Canteen Gap
-                const canteenMode = studentMeta.canteenBillingMode || 'Daily';
-                if (canteenMode === 'Daily' && studentMeta.usesCanteen !== false) {
+                // 1. Check Canteen Gap (shared predicate with billing.ts)
+                if (shouldBillDailyCanteen(studentMeta)) {
                     let currentCanteenRate = canteenModel === 'Flat' ? globalCanteenRate : (classCanteenRates[att.classId] || 0);
                     
                     if (currentCanteenRate > 0) {
@@ -139,9 +136,8 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
                     }
                 }
 
-                // 2. Check Transport Gap
-                const transportMode = studentMeta.transportBillingModel || 'Daily';
-                if (transportMode === 'Daily' && studentMeta.usesBusService === true) {
+                // 2. Check Transport Gap (shared predicate with billing.ts)
+                if (isDailyTransportSubscriber(studentMeta)) {
                     const specificTransportRate = studentToTransportRateMap.get(att.studentId) || 0;
                     
                     if (specificTransportRate > 0) {

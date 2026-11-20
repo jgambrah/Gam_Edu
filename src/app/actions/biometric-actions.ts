@@ -4,7 +4,8 @@ import crypto from 'crypto';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { format, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
+import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
 import { notifyParents } from './notifications';
 import { sendSchoolWhatsAppServer } from '@/lib/whatsapp-server';
 import { billMultipleStudentsServer } from '@/lib/billing-server';
@@ -203,8 +204,8 @@ export async function processBiometricScans(
   targetDate: Date,
   logs: { biometricId: string; timestamp: number }[]
 ) {
-  const dateStr = format(targetDate, 'yyyy-MM-dd');
-  const normalizedDateStart = startOfDay(targetDate);
+  const dateStr = schoolDayDateStr(targetDate);
+  const normalizedDateStart = schoolDayStartUtc(targetDate);
 
   // Fetch school settings to calculate Late vs Present
   const settingsDoc = await db.collection('schoolSettings').doc(schoolId).get();
@@ -284,6 +285,7 @@ export async function processBiometricScans(
       status: status,
       notes: `Biometric scan recorded at ${format(scanTime, 'pp')}`,
       date: normalizedDateStart,
+      dateStr,
       schoolId: schoolId,
       updatedAt: new Date(),
       updatedBy: 'biometric-system'

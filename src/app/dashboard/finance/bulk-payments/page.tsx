@@ -6,7 +6,8 @@ import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Ti
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { termStampOfRecord } from '@/lib/term';
 import { format } from 'date-fns';
-import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc } from '@/lib/attendance-date';
+import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc, schoolTodayLocalDate } from '@/lib/attendance-date';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,7 +51,7 @@ export default function BulkDailyReceiptsPage() {
     const { schoolId } = useCurrentSchool();
     const { toast } = useToast();
 
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(() => schoolTodayLocalDate());
     const [serviceType, setServiceType] = useState<'Canteen' | 'Transport' | 'Tuition'>('Canteen');
     const [selectedClassId, setSelectedClassId] = useState<string>('all');
     
@@ -195,13 +196,14 @@ export default function BulkDailyReceiptsPage() {
                     const bill = existingBillsMap.get(att.studentId);
                     if (!bill) {
                         const meta: any = stuMetaMap.get(att.studentId);
+                        if (meta && meta.enrollmentStatus === 'Inactive') return;
                         const expectsDailyBill =
                             serviceType === 'Canteen'
                                 ? (meta
-                                    ? meta.usesCanteen !== false && meta.canteenBillingMode !== 'Termly' && meta.canteenBillingMode !== 'None'
+                                    ? shouldBillDailyCanteen(meta)
                                     : att.canteenMode !== 'Termly' && att.usesCanteen !== 'false' && att.usesCanteen !== false)
                                 : (meta
-                                    ? meta.usesBusService === true && meta.transportBillingModel === 'Daily'
+                                    ? isDailyTransportSubscriber(meta)
                                     : att.transportMode !== 'Termly' && (att.usesBusService === 'true' || att.usesBusService === true));
 
                         if (expectsDailyBill) {

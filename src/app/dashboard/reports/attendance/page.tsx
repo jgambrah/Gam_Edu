@@ -1198,7 +1198,7 @@ export default function AttendanceReportsPage() {
                                     <div>
                                         <p className="text-xs font-bold text-indigo-600 uppercase tracking-wider">Total Records</p>
                                         <p className="text-3xl font-black text-indigo-700">{summaryStats.total}</p>
-                                        <p className="text-[10px] font-semibold text-indigo-500/80 mt-0.5">Present + Absent</p>
+                                        <p className="text-[10px] font-semibold text-indigo-500/80 mt-0.5">All marked statuses</p>
                                     </div>
                                     <Users className="h-8 w-8 text-indigo-300" />
                                 </div>

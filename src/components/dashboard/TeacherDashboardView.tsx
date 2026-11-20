@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, addDoc, doc, setDoc, serverTimestamp, query, where, writeBatch } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, serverTimestamp, query, where, writeBatch, Timestamp } from 'firebase/firestore';
 import { 
   GraduationCap, Users, School, Loader2, 
   Bell, FileText, CalendarCheck,
@@ -32,6 +32,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { sendSchoolSMSAction } from '@/app/actions/sms';
 import { billMultipleStudents, reverseDailyBillsForAbsence } from '@/lib/billing';
+import { schoolDayStartUtc, schoolTodayDateStr, schoolTodayLocalDate } from '@/lib/attendance-date';
 
 export function TeacherDashboardView({ 
     profile, 
@@ -393,17 +394,21 @@ export function TeacherDashboardView({
 
     const handleToggleAttendance = async (student: any) => {
         if (!firestore || !schoolId || !activeClassId) return;
-        const dateStr = format(new Date(), 'yyyy-MM-dd');
+        const todayDate = schoolTodayLocalDate();
+        const dateStr = schoolTodayDateStr();
         const deterministicId = `att-${schoolId}-${activeClassId}-${student.uid}-${dateStr}`;
         setTogglingAttendanceId(student.uid);
         try {
             const docRef = doc(firestore, 'attendance', deterministicId);
             
-            // Find existing record today
+            // Find existing record today (supports dateStr, ID suffix, or UTC date)
             const existingLog = attendanceDocs?.find((a: any) => {
+                if (a.studentId !== student.uid) return false;
+                if (typeof a.dateStr === 'string') return a.dateStr === dateStr;
+                if (typeof a.id === 'string' && a.id.endsWith(dateStr)) return true;
                 if (!a.date) return false;
-                let logDate = a.date.toDate ? a.date.toDate() : new Date(a.date);
-                return a.studentId === student.uid && format(logDate, 'yyyy-MM-dd') === dateStr;
+                const logDate = a.date.toDate ? a.date.toDate() : new Date(a.date);
+                return logDate.toISOString().slice(0, 10) === dateStr;
             });
 
             const isPresent = existingLog && (existingLog.status === 'Present' || existingLog.status === 'Late');
@@ -415,7 +420,8 @@ export function TeacherDashboardView({
                 studentName,
                 classId: activeClassId,
                 status: newStatus,
-                date: startOfDay(new Date()),
+                date: Timestamp.fromDate(schoolDayStartUtc(todayDate)),
+                dateStr,
                 schoolId: schoolId,
                 updatedAt: serverTimestamp(),
                 updatedBy: user?.uid
@@ -427,7 +433,7 @@ export function TeacherDashboardView({
             } else {
                 // billMultipleStudents resolves the school's canteen/transport rates (calling
                 // billStudentForAttendance without rates billed GHS 0).
-                await billMultipleStudents(firestore, [student], new Date(), schoolId);
+                await billMultipleStudents(firestore, [student], todayDate, schoolId);
             }
 
             toast({ 

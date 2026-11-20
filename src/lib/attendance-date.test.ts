@@ -5,86 +5,120 @@ import {
   schoolDayDateStr,
   schoolDayEndUtc,
   schoolDayFromDateStr,
+  schoolDayQueryBoundsUtc,
   schoolDayStartUtc,
+  schoolTodayDateStr,
+  schoolTodayLocalDate,
 } from './attendance-date';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from './billing';
 
 describe('attendance-date timezone normalization & deduplication', () => {
-  it('anchors local calendar dates and YYYY-MM-DD strings to UTC midnight', () => {
+  it('anchors local calendar dates and YYYY-MM-DD strings to UTC midnight and rejects malformed strings', () => {
     const localPick = new Date(2026, 10, 19, 15, 30, 0); // Nov 19, 2026
     expect(schoolDayDateStr(localPick)).toBe('2026-11-19');
     expect(schoolDayStartUtc(localPick).toISOString()).toBe('2026-11-19T00:00:00.000Z');
     expect(schoolDayEndUtc(localPick).toISOString()).toBe('2026-11-19T23:59:59.999Z');
-    expect(schoolDayFromDateStr('2026-11-19').toISOString()).toBe('2026-11-19T00:00:00.000Z');
+    expect(schoolDayFromDateStr('2026-11-19')?.toISOString()).toBe('2026-11-19T00:00:00.000Z');
+    expect(schoolDayFromDateStr('not-a-date')).toBeNull();
+    expect(schoolDayFromDateStr('2026-02-30')).toBeNull();
   });
 
-  it('captures both UTC+0 (00:00Z) and UTC-8 (08:00Z) classrooms without double-counting dual-written sheet + individual docs', () => {
+  it('derives school "today" from Ghana UTC+0 even before 08:00 UTC (when UTC-8 devices still show yesterday)', () => {
+    const earlyGhanaMorning = new Date('2026-11-20T07:30:00.000Z');
+    expect(schoolTodayDateStr(earlyGhanaMorning)).toBe('2026-11-20');
+    const localToday = schoolTodayLocalDate(earlyGhanaMorning);
+    expect(schoolDayDateStr(localToday)).toBe('2026-11-20');
+    expect(schoolDayStartUtc(localToday).toISOString()).toBe('2026-11-20T00:00:00.000Z');
+  });
+
+  it('spans UTC+14 (-14h) through UTC-12 (+12h) while strictly excluding D+1 00:00:00Z docs', () => {
+    const nov19 = new Date(2026, 10, 19);
+    const { queryStart, queryEnd, targetDateStr } = schoolDayQueryBoundsUtc(nov19);
+    expect(targetDateStr).toBe('2026-11-19');
+    expect(queryStart.toISOString()).toBe('2026-11-18T10:00:00.000Z');
+    expect(queryEnd.toISOString()).toBe('2026-11-19T12:00:00.000Z');
+
+    // Legacy UTC+1 (2026-11-18T23:00Z) and UTC-8 (2026-11-19T08:00Z) are INSIDE the window
+    expect(Date.parse('2026-11-18T23:00:00.000Z')).toBeGreaterThanOrEqual(queryStart.getTime());
+    expect(Date.parse('2026-11-19T08:00:00.000Z')).toBeLessThanOrEqual(queryEnd.getTime());
+
+    // Next day's canonical 2026-11-20T00:00:00Z is STRICTLY OUTSIDE the window (zero D+1 read waste)
+    expect(Date.parse('2026-11-20T00:00:00.000Z')).toBeGreaterThan(queryEnd.getTime());
+  });
+
+  it('captures UTC+0 (00:00Z), UTC-8 (08:00Z), and legacy UTC+1 (23:00Z prev day) docs and resolves conflicts by latest updatedAt', () => {
     const rawDocs = [
-      // Aggregated sheet for Grade 1 Orchid saved from a UTC-8 teacher phone (08:00:00Z)
+      // Aggregated sheet for Grade 1 Orchid saved from a UTC-8 phone at 08:00Z
       {
         id: 'school_grade-1-orchid_2026-11-19',
         data: {
           classId: 'grade-1-orchid',
           date: { seconds: Math.floor(Date.parse('2026-11-19T08:00:00Z') / 1000) },
           dateStr: '2026-11-19',
+          updatedAt: Date.parse('2026-11-19T09:00:00Z'),
           studentsMap: {
             stu1: { studentId: 'stu1', studentName: 'Felicity', status: 'Present' },
             stu2: { studentId: 'stu2', studentName: 'Fauzan', status: 'Present' },
           },
         },
       },
-      // Dual-written individual doc for stu1 (also 08:00:00Z)
+      // Later single-student toggle marking stu1 Absent at 10:00Z -> must win over 09:00Z sheet
       {
         id: 'att-school-grade-1-orchid-stu1-2026-11-19',
         data: {
           studentId: 'stu1',
           studentName: 'Felicity',
           classId: 'grade-1-orchid',
-          date: { seconds: Math.floor(Date.parse('2026-11-19T08:00:00Z') / 1000) },
-          status: 'Present',
+          date: { seconds: Math.floor(Date.parse('2026-11-19T00:00:00Z') / 1000) },
+          updatedAt: Date.parse('2026-11-19T10:00:00Z'),
+          status: 'Absent',
         },
       },
-      // UTC+0 classroom individual doc (00:00:00Z)
+      // Legacy UTC+1 doc (2026-11-18T23:00:00Z) with deterministic ID ending 2026-11-19
       {
         id: 'att-school-grade-2-lilly-stu3-2026-11-19',
         data: {
           studentId: 'stu3',
           studentName: 'Ama',
           classId: 'grade-2-lilly',
-          date: { seconds: Math.floor(Date.parse('2026-11-19T00:00:00Z') / 1000) },
+          date: { seconds: Math.floor(Date.parse('2026-11-18T23:00:00Z') / 1000) },
+          updatedAt: Date.parse('2026-11-19T08:15:00Z'),
           status: 'Present',
         },
       },
-      // Absent student on 2026-11-19
+      // Stale older individual doc for stu2 (08:30Z) must NOT override newer 09:00Z sheet
       {
-        id: 'att-school-grade-2-lilly-stu4-2026-11-19',
+        id: 'att-school-grade-1-orchid-stu2-2026-11-19',
         data: {
-          studentId: 'stu4',
-          studentName: 'Kojo',
-          classId: 'grade-2-lilly',
-          date: { seconds: Math.floor(Date.parse('2026-11-19T00:00:00Z') / 1000) },
+          studentId: 'stu2',
+          studentName: 'Fauzan',
+          classId: 'grade-1-orchid',
+          date: { seconds: Math.floor(Date.parse('2026-11-19T08:00:00Z') / 1000) },
+          updatedAt: Date.parse('2026-11-19T08:30:00Z'),
           status: 'Absent',
-        },
-      },
-      // Previous day record inside wide query window — must be excluded
-      {
-        id: 'att-school-grade-2-lilly-stu5-2026-11-18',
-        data: {
-          studentId: 'stu5',
-          studentName: 'Yaw',
-          classId: 'grade-2-lilly',
-          date: { seconds: Math.floor(Date.parse('2026-11-18T20:00:00Z') / 1000) },
-          status: 'Present',
         },
       },
     ];
 
     const allNov19 = deduplicateAttendanceForDate(rawDocs, '2026-11-19', 'all');
-    expect(allNov19).toHaveLength(4);
-    const presentOrLate = allNov19.filter((r) => r.status === 'Present' || r.status === 'Late');
-    expect(presentOrLate.map((r) => r.studentId).sort()).toEqual(['stu1', 'stu2', 'stu3']);
+    const byId = Object.fromEntries(allNov19.map((r) => [r.studentId, r.status]));
+    expect(byId).toEqual({
+      stu1: 'Absent',  // 10:00Z toggle beat 09:00Z sheet
+      stu2: 'Present', // 09:00Z sheet beat 08:30Z stale doc
+      stu3: 'Present', // UTC+1 23:00Z legacy doc matched via ID suffix
+    });
+  });
 
-    const orchidOnly = deduplicateAttendanceForDate(rawDocs, '2026-11-19', 'grade-1-orchid');
-    expect(orchidOnly.map((r) => r.studentId).sort()).toEqual(['stu1', 'stu2']);
+  it('uses consistent daily Canteen and Transport billing predicates across billing and reconciliation', () => {
+    expect(shouldBillDailyCanteen({ usesCanteen: true, canteenBillingMode: 'Daily' })).toBe(true);
+    expect(shouldBillDailyCanteen({ usesCanteen: undefined, canteenBillingMode: undefined })).toBe(true);
+    // Crucial M4 edge case: usesCanteen=false must NOT be billed even if canteenBillingMode defaulted to 'Daily'
+    expect(shouldBillDailyCanteen({ usesCanteen: false, canteenBillingMode: 'Daily' })).toBe(false);
+    expect(shouldBillDailyCanteen({ usesCanteen: false, canteenBillingMode: 'None' })).toBe(false);
+    expect(shouldBillDailyCanteen({ usesCanteen: true, canteenBillingMode: 'Termly' })).toBe(false);
+
+    expect(isDailyTransportSubscriber({ usesBusService: true, transportBillingModel: 'Daily' })).toBe(true);
+    expect(isDailyTransportSubscriber({ usesBusService: true, transportBillingModel: 'Termly' })).toBe(false);
+    expect(isDailyTransportSubscriber({ usesBusService: false, transportBillingModel: 'Daily' })).toBe(false);
   });
 });
-

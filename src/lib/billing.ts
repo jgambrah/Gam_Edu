@@ -101,6 +101,24 @@ const DAILY_RATES = {
   BUS: 0.00,
 };
 
+/** Single source of truth for whether a student should receive a daily Canteen invoice. */
+export function shouldBillDailyCanteen(
+  student: { usesCanteen?: boolean; canteenBillingMode?: string } | null | undefined,
+): boolean {
+  if (!student) return false;
+  if (student.usesCanteen === false) return false;
+  if (student.canteenBillingMode === 'Termly' || student.canteenBillingMode === 'None') return false;
+  return student.canteenBillingMode === 'Daily' || !student.canteenBillingMode;
+}
+
+/** Single source of truth for whether a student should receive a daily Transport invoice. */
+export function isDailyTransportSubscriber(
+  student: { usesBusService?: boolean; transportBillingModel?: string } | null | undefined,
+): boolean {
+  if (!student) return false;
+  return student.usesBusService === true && student.transportBillingModel === 'Daily';
+}
+
 interface BillingResult {
   success: boolean;
   message: string;
@@ -136,14 +154,11 @@ export async function billStudentForAttendance(
     const normalizedUtcDate = schoolDayStartUtc(attendanceDate);
     const dateStr = schoolDayDateStr(attendanceDate);
 
-    // 1. Check preferences
-    // Only bill daily Canteen if their mode is 'Daily' (or not set, assuming default daily)
-    const shouldBillCanteen = student.canteenBillingMode === 'Daily' || (student.usesCanteen !== false && !student.canteenBillingMode);
-    
-    // Only bill daily Transport if they use the bus AND their mode is 'Daily'
-    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
+    // 1. Check preferences (shared predicates with Bulk Receipts & Reconciliation)
+    const shouldBillCanteen = shouldBillDailyCanteen(student);
+    const shouldBillTransport = isDailyTransportSubscriber(student);
 
-    if (!shouldBillCanteen && !isDailyTransportSubscriber) {
+    if (!shouldBillCanteen && !shouldBillTransport) {
       return {
         success: true,
         message: 'No daily services to bill (skipped Termly or None subscribers)',
@@ -220,11 +235,11 @@ export async function billStudentForAttendance(
     }
 
     // 4. Process Transport Bill (Using Deterministic ID)
-    if (isDailyTransportSubscriber && transportRate > 0 && voided.has(transportRecordId)) {
+    if (shouldBillTransport && transportRate > 0 && voided.has(transportRecordId)) {
         batch.update(doc(firestore, 'financialRecords', transportRecordId), restoreVoidedBill(voided.get(transportRecordId), transportRate));
         totalBilled += transportRate;
         billedServices.push('Transport');
-    } else if (isDailyTransportSubscriber && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
+    } else if (shouldBillTransport && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
         const transportRef = doc(firestore, 'financialRecords', transportRecordId);
         
         batch.set(transportRef, {

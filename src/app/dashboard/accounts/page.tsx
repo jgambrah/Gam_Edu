@@ -8,6 +8,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc, runTransaction, limit, arrayUnion } from 'firebase/firestore';
 import { standardStatus, billBalance, reversiblePayments, round2 as round2Money } from '@/lib/bill-actions';
 import { format, isPast, startOfDay, endOfDay, startOfMonth, isAfter, isToday, differenceInDays } from 'date-fns';
+import { schoolDayStartUtc } from '@/lib/attendance-date';
 import type { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -790,7 +791,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded,
                     billedAmount: appliedRate,
                     amountPaid: 0,
                     status: 'Unpaid',
-                    dueDate: Timestamp.fromDate(startOfDay(date)),
+                    dueDate: Timestamp.fromDate(schoolDayStartUtc(date)),
                     createdAt: serverTimestamp(),
                     schoolId: schoolId,
                     academicYear: normalizeAcademicYear(academicYear) || getDefaultAcademicYear(),

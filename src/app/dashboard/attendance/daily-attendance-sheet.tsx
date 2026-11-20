@@ -22,7 +22,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CalendarIcon, Loader2, Utensils, Bus, Check, Search, Clock, X, FileText, AlertCircle, Sparkles, CheckCheck, RotateCcw, UtensilsCrossed } from 'lucide-react'; 
 import { cn } from '@/lib/utils';
 import { format, startOfDay, differenceInDays, isSameDay } from 'date-fns';
-import { schoolDayDateStr, schoolDayQueryBoundsUtc, schoolDayStartUtc } from '@/lib/attendance-date';
+import { schoolDayDateStr, schoolDayQueryBoundsUtc, schoolDayStartUtc, schoolTodayLocalDate } from '@/lib/attendance-date';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
@@ -79,18 +79,19 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [searchTerm, setSearchTerm] = useState('');
     
     const [selectedClassId, setSelectedClassId] = useState<string>(propClassId || '');
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    // While the teacher is on "today", keep following today: a tab or installed app left open overnight used
-    // to keep yesterday's date (and so yesterday's marks) the next morning. Picking another date stops this.
+    const [selectedDate, setSelectedDate] = useState<Date>(() => schoolTodayLocalDate());
+    // While the teacher is on "today" (in Ghana UTC+0), keep following today even if a tab was left open
+    // overnight or the device timezone is offset (e.g. UTC-8 before 08:00 Ghana time).
     const followTodayRef = useRef(true);
     const pickDate = useCallback((d: Date) => {
-        followTodayRef.current = isSameDay(d, new Date());
+        followTodayRef.current = isSameDay(d, schoolTodayLocalDate());
         setSelectedDate(d);
     }, []);
     useEffect(() => {
         const rollToToday = () => {
             if (!followTodayRef.current) return;
-            setSelectedDate(prev => (isSameDay(prev, new Date()) ? prev : new Date()));
+            const ghanaToday = schoolTodayLocalDate();
+            setSelectedDate(prev => (isSameDay(prev, ghanaToday) ? prev : ghanaToday));
         };
         rollToToday();
         const timer = setInterval(rollToToday, 60_000);

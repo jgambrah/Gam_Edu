@@ -135,6 +135,10 @@ export function useOfflineSync() {
           try {
             const batch = writeBatch(firestore);
             const attDate = schoolDayFromDateStr(batchItem.dateStr);
+            if (!attDate) {
+              console.warn('Skipping malformed offline attendance dateStr:', batchItem.dateStr);
+              continue;
+            }
 
             for (const rec of batchItem.records) {
               const deterministicId = `att-${batchItem.schoolId}-${batchItem.classId}-${rec.studentId}-${batchItem.dateStr}`;

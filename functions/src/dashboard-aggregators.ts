@@ -762,16 +762,17 @@ export const onAttendanceWrite = onDocumentWritten(
     }
 
     const dateVal = after?.date ?? before?.date;
-    const dateStr = getYYYYMMDD(dateVal);
+    const explicitDateStr = after?.dateStr ?? before?.dateStr;
+    const dateStr = (typeof explicitDateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(explicitDateStr))
+      ? explicitDateStr
+      : getYYYYMMDD(dateVal);
     if (!dateStr || dateStr !== todayStr()) return;
 
-    // Convert dateStr (e.g. "2026-07-13") to the exact Timestamp object to query Firestore
-    const startOfToday = new Date(dateStr + 'T00:00:00.000Z');
-    const todayTimestamp = Timestamp.fromDate(startOfToday);
-
+    // Query by `dateStr` (backed by `(schoolId ASC, dateStr ASC)` index) so aggregated class sheets saved
+    // from devices with non-UTC timezones (e.g. UTC-8 -> 08:00Z) are never dropped from the director summary.
     const snap = await db.collection('attendance')
       .where('schoolId', '==', schoolId)
-      .where('date', '==', todayTimestamp)
+      .where('dateStr', '==', dateStr)
       .get();
 
     let present = 0, absent = 0, late = 0;

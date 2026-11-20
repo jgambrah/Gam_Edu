@@ -5,6 +5,7 @@ import { FeeChangeReviewPanel } from '@/components/finance/FeeChangeReviewPanel'
 import { UnbilledStudentsPanel } from '@/components/finance/UnbilledStudentsPanel';
 import { useMemo, useState, useTransition, useCallback, useEffect } from 'react';
 import { currentTermFromProfile, termStampOfRecord, normalizeYear } from '@/lib/term';
+import { schoolDayQueryBoundsUtc, schoolTodayLocalDate } from '@/lib/attendance-date';
 import { computeLedgerFigures, summaryGrossDebt, summaryCredits, summaryYearPerformance, activeStudentKeySet } from '@/lib/finance-summary';
 import StudentLearningResourcesView from './StudentLearningResourcesView';
 import { AssignedRemoteTaskBanner } from '@/components/curriculum/AssignedRemoteTaskBanner';
@@ -12228,13 +12229,12 @@ export default function DashboardClient() {
                      role === 'Teacher' ||
                      isReceptionist || isSecretary;
     if (!isNeeded) return null;
-    const todayStartUtc = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0, 0));
-    const todayEndUtc = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 23, 59, 59, 999));
+    const { queryStart, queryEnd } = schoolDayQueryBoundsUtc(schoolTodayLocalDate());
     return query(
       collection(firestore, 'attendance'), 
       where('schoolId', '==', schoolId),
-      where('date', '>=', Timestamp.fromDate(todayStartUtc)),
-      where('date', '<=', Timestamp.fromDate(todayEndUtc))
+      where('date', '>=', Timestamp.fromDate(queryStart)),
+      where('date', '<=', Timestamp.fromDate(queryEnd))
     );
   }, [firestore, schoolId, role, isReceptionist, isSecretary, adminActiveTab, directorActiveTab, todayStr]);
   const { data: attendance } = useCollection(attendanceQuery);

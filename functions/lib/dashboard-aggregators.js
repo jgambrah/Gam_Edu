@@ -762,7 +762,7 @@ exports.onStudentWrite = (0, firestore_1.onDocumentWritten)('students/{studentId
 });
 // ── TRIGGER 2: Student Attendance ─────────────────────────────────────────────
 exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{recordId}', async (event) => {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d, _e, _f, _g;
     const after = (_b = (_a = event.data) === null || _a === void 0 ? void 0 : _a.after) === null || _b === void 0 ? void 0 : _b.data();
     const before = (_d = (_c = event.data) === null || _c === void 0 ? void 0 : _c.before) === null || _d === void 0 ? void 0 : _d.data();
     const schoolId = (_e = after === null || after === void 0 ? void 0 : after.schoolId) !== null && _e !== void 0 ? _e : before === null || before === void 0 ? void 0 : before.schoolId;
@@ -775,15 +775,17 @@ exports.onAttendanceWrite = (0, firestore_1.onDocumentWritten)('attendance/{reco
         return;
     }
     const dateVal = (_f = after === null || after === void 0 ? void 0 : after.date) !== null && _f !== void 0 ? _f : before === null || before === void 0 ? void 0 : before.date;
-    const dateStr = getYYYYMMDD(dateVal);
+    const explicitDateStr = (_g = after === null || after === void 0 ? void 0 : after.dateStr) !== null && _g !== void 0 ? _g : before === null || before === void 0 ? void 0 : before.dateStr;
+    const dateStr = (typeof explicitDateStr === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(explicitDateStr))
+        ? explicitDateStr
+        : getYYYYMMDD(dateVal);
     if (!dateStr || dateStr !== todayStr())
         return;
-    // Convert dateStr (e.g. "2026-07-13") to the exact Timestamp object to query Firestore
-    const startOfToday = new Date(dateStr + 'T00:00:00.000Z');
-    const todayTimestamp = firestore_2.Timestamp.fromDate(startOfToday);
+    // Query by `dateStr` (backed by `(schoolId ASC, dateStr ASC)` index) so aggregated class sheets saved
+    // from devices with non-UTC timezones (e.g. UTC-8 -> 08:00Z) are never dropped from the director summary.
     const snap = await db.collection('attendance')
         .where('schoolId', '==', schoolId)
-        .where('date', '==', todayTimestamp)
+        .where('dateStr', '==', dateStr)
         .get();
     let present = 0, absent = 0, late = 0;
     const absentIds = [];

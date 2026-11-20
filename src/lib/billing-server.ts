@@ -1,5 +1,7 @@
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { format, startOfDay } from 'date-fns';
+import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing';
 import { applyHeldCreditAfterBillingServer } from '@/lib/credit-allocation-server';
 import { currentTermFromProfile, type TermStamp } from '@/lib/term';
 
@@ -49,15 +51,16 @@ export async function billStudentForAttendanceServer(
       };
     }
 
-    // NORMALIZE DATE: Use midnight for all financial dueDates
-    const normalizedDate = startOfDay(attendanceDate);
-    const dateStr = format(normalizedDate, 'yyyy-MM-dd');
+    // NORMALIZE DATE: Canonical UTC midnight independent of server host timezone
+    const displayDate = startOfDay(attendanceDate);
+    const normalizedUtcDate = schoolDayStartUtc(attendanceDate);
+    const dateStr = schoolDayDateStr(attendanceDate);
 
-    // 1. Check preferences
-    const shouldBillCanteen = student.canteenBillingMode === 'Daily' || (student.usesCanteen !== false && !student.canteenBillingMode);
-    const isDailyTransportSubscriber = student.usesBusService === true && student.transportBillingModel === 'Daily';
+    // 1. Check preferences (shared predicates with client billing & reconciliation)
+    const shouldBillCanteen = shouldBillDailyCanteen(student);
+    const shouldBillTransport = isDailyTransportSubscriber(student);
 
-    if (!shouldBillCanteen && !isDailyTransportSubscriber) {
+    if (!shouldBillCanteen && !shouldBillTransport) {
       return {
         success: true,
         message: 'No daily services to bill (skipped Termly or None subscribers)',
@@ -128,12 +131,12 @@ export async function billStudentForAttendanceServer(
         studentName: `${student.firstName} ${student.lastName}`,
         classId: student.classId || '',
         type: 'Canteen Fee (Daily)',
-        description: `Canteen - ${format(normalizedDate, 'PPP')}`,
+        description: `Canteen - ${format(displayDate, 'PPP')}`,
         billedAmount: canteenRate,
         amountPaid: 0,
         waiverAmount: 0,
         status: 'Unpaid',
-        dueDate: Timestamp.fromDate(normalizedDate),
+        dueDate: Timestamp.fromDate(normalizedUtcDate),
         createdAt: FieldValue.serverTimestamp(),
         schoolId: schoolId,
         ...termFields,
@@ -143,11 +146,11 @@ export async function billStudentForAttendanceServer(
     }
 
     // 4. Process Transport Bill (Using Deterministic ID)
-    if (isDailyTransportSubscriber && transportRate > 0 && voided.has(transportRecordId)) {
+    if (shouldBillTransport && transportRate > 0 && voided.has(transportRecordId)) {
       batch.update(db.collection('financialRecords').doc(transportRecordId), restoreVoided(voided.get(transportRecordId), transportRate));
       totalBilled += transportRate;
       billedServices.push('Transport');
-    } else if (isDailyTransportSubscriber && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
+    } else if (shouldBillTransport && transportRate > 0 && !alreadyBilled.has(transportRecordId)) {
       const transportRef = db.collection('financialRecords').doc(transportRecordId);
       
       batch.set(transportRef, {
@@ -155,12 +158,12 @@ export async function billStudentForAttendanceServer(
         studentName: `${student.firstName} ${student.lastName}`,
         classId: student.classId || '',
         type: 'Transport Fee (Daily)',
-        description: `Transport - ${format(normalizedDate, 'PPP')}`,
+        description: `Transport - ${format(displayDate, 'PPP')}`,
         billedAmount: transportRate,
         amountPaid: 0,
         waiverAmount: 0,
         status: 'Unpaid',
-        dueDate: Timestamp.fromDate(normalizedDate),
+        dueDate: Timestamp.fromDate(normalizedUtcDate),
         createdAt: FieldValue.serverTimestamp(),
         schoolId: schoolId,
         ...termFields,

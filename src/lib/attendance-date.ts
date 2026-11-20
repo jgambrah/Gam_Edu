@@ -1,17 +1,30 @@
 /**
- * Canonical school-calendar date helpers.
+ * Canonical school-calendar date helpers (anchored to Ghana `Africa/Accra` / `UTC+0`).
  *
  * Why this exists:
  *   `startOfDay(selectedDate)` from `date-fns` uses the *device's local timezone*. When a teacher marks
  *   attendance on a phone set to `UTC-8`, "Nov 19, 2026" becomes `2026-11-19T08:00:00.000Z`, whereas on a
- *   Ghana (`UTC+0`) phone it becomes `2026-11-19T00:00:00.000Z` (and on a `UTC+1` phone it becomes
- *   `2026-11-18T23:00:00.000Z`!). Any exact-match query `where('date', '==', startOfDay(date))` then drops
+ *   Ghana (`UTC+0`) phone it becomes `2026-11-19T00:00:00.000Z` and on a `UTC+1` phone it becomes
+ *   `2026-11-18T23:00:00.000Z`. Any exact-match query `where('date', '==', startOfDay(date))` then drops
  *   entire classrooms whose teacher's phone has a non-UTC timezone.
  *
  *   Anchoring calendar selections to UTC midnight (`YYYY-MM-DDT00:00:00.000Z` — Ghana time) on write and
- *   querying `[schoolDayStartUtc(date) .. schoolDayEndUtc(date)]` on read guarantees consistent headcounts
- *   across Attendance Insights, Bulk Daily Receipts, Manual Billing Reconciliation, and Dashboards.
+ *   querying `[D - 14h .. D + 12h]` on read guarantees consistent headcounts across all timezones
+ *   (`UTC-12` .. `UTC+14`) without pulling in `D+1`'s canonical `00:00Z` documents.
  */
+
+/** Today's calendar date string (`YYYY-MM-DD`) in Ghana Time (`UTC+0`), independent of the device clock's timezone. */
+export function schoolTodayDateStr(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+/**
+ * A local `Date` object whose `.getFullYear() / .getMonth() / .getDate()` match *today in Ghana (`UTC+0`)*.
+ * Prevents a `UTC-8` phone opened at `07:30 AM` Ghana time from defaulting date pickers to yesterday.
+ */
+export function schoolTodayLocalDate(now: Date = new Date()): Date {
+  return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 0, 0, 0, 0);
+}
 
 export function schoolDayDateStr(date: Date): string {
   const y = date.getFullYear();
@@ -31,8 +44,9 @@ export function schoolDayEndUtc(date: Date): Date {
 }
 
 /**
- * Wide query window (`-12h` to `+35h59m59s` around UTC midnight) paired with calendar-day filtering when
- * historical records may have been saved using `startOfDay(localDate)` in any timezone (`UTC-12` .. `UTC+14`).
+ * Exact timezone-spanning query window for legacy local-midnight docs across all IANA offsets (`UTC+14` -> `D-14h`
+ * through `UTC-12` -> `D+12h`), while strictly excluding `D+1`'s canonical `00:00:00Z` documents so past-date
+ * queries do not double-read the next day.
  */
 export function schoolDayQueryBoundsUtc(date: Date): {
   queryStart: Date;
@@ -42,20 +56,24 @@ export function schoolDayQueryBoundsUtc(date: Date): {
   const targetDateStr = schoolDayDateStr(date);
   const startUtcMs = schoolDayStartUtc(date).getTime();
   return {
-    queryStart: new Date(startUtcMs - 12 * 3600_000),
-    queryEnd: new Date(startUtcMs + 36 * 3600_000 - 1),
+    queryStart: new Date(startUtcMs - 14 * 3600_000),
+    queryEnd: new Date(startUtcMs + 12 * 3600_000),
     targetDateStr,
   };
 }
 
-/** Parses `'YYYY-MM-DD'` into canonical UTC midnight without local-timezone day shifting. */
-export function schoolDayFromDateStr(dateStr: string): Date {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr.trim());
-  if (!m) {
-    const parsed = new Date(dateStr);
-    return schoolDayStartUtc(parsed);
+/** Parses `'YYYY-MM-DD'` strictly into canonical UTC midnight, returning `null` for malformed input. */
+export function schoolDayFromDateStr(dateStr: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateStr || '').trim());
+  if (!m) return null;
+  const year = Number(m[1]);
+  const month = Number(m[2]);
+  const day = Number(m[3]);
+  const dt = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
+  if (dt.getUTCFullYear() !== year || dt.getUTCMonth() !== month - 1 || dt.getUTCDate() !== day) {
+    return null;
   }
-  return new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 0, 0, 0, 0));
+  return dt;
 }
 
 export interface NormalizedAttendanceStudentRow {
@@ -63,10 +81,26 @@ export interface NormalizedAttendanceStudentRow {
   studentName?: string;
   classId: string;
   status: string;
+  updatedAtMs?: number;
   canteenMode?: string;
   transportMode?: string;
   usesCanteen?: string | boolean;
   usesBusService?: string | boolean;
+}
+
+function toEpochMs(val: any): number {
+  if (!val) return 0;
+  if (typeof val === 'number') return Number.isFinite(val) ? val : 0;
+  if (val instanceof Date) return Number.isNaN(val.getTime()) ? 0 : val.getTime();
+  if (typeof val?.toMillis === 'function') return val.toMillis();
+  if (typeof val?.toDate === 'function') {
+    const d = val.toDate();
+    return d && !Number.isNaN(d.getTime()) ? d.getTime() : 0;
+  }
+  if (typeof val?.seconds === 'number') return val.seconds * 1000;
+  if (typeof val?._seconds === 'number') return val._seconds * 1000;
+  const parsed = Date.parse(String(val));
+  return Number.isNaN(parsed) ? 0 : parsed;
 }
 
 function resolveDocCalendarDateStr(raw: Record<string, any>, docId?: string): string | null {
@@ -77,29 +111,40 @@ function resolveDocCalendarDateStr(raw: Record<string, any>, docId?: string): st
     const tail = /(\d{4}-\d{2}-\d{2})$/.exec(docId);
     if (tail) return tail[1];
   }
-  const d = raw.date;
-  let jsDate: Date | null = null;
-  if (d?.toDate && typeof d.toDate === 'function') jsDate = d.toDate();
-  else if (d instanceof Date) jsDate = d;
-  else if (typeof d?.seconds === 'number') jsDate = new Date(d.seconds * 1000);
-  else if (typeof d?._seconds === 'number') jsDate = new Date(d._seconds * 1000);
-  else if (typeof d === 'string' || typeof d === 'number') jsDate = new Date(d);
-  if (!jsDate || Number.isNaN(jsDate.getTime())) return null;
-  return jsDate.toISOString().slice(0, 10);
+  const ms = toEpochMs(raw.date);
+  if (!ms) return null;
+  return new Date(ms).toISOString().slice(0, 10);
 }
 
 /**
  * Deduplicates a day's attendance documents (supporting both individual `att-*` docs and aggregated
  * `studentsMap` / `records` class-sheet docs, regardless of device timezone offset when saved) into one
  * canonical status row per `studentId` for `targetDateStr`.
+ *
+ * Conflict resolution: newest `updatedAt` wins; on ties, an explicit individual `att-*` record overrides a
+ * sheet entry (e.g. a single-student toggle).
  */
 export function deduplicateAttendanceForDate(
   rawDocs: ReadonlyArray<{ id?: string; data: Record<string, any> }>,
   targetDateStr: string,
   selectedClassId = 'all',
 ): NormalizedAttendanceStudentRow[] {
-  // Store sheet entries first, then let explicit individual `att-*` docs override so single-student edits win
-  const byStudent = new Map<string, NormalizedAttendanceStudentRow>();
+  const byStudent = new Map<string, { row: NormalizedAttendanceStudentRow; isIndiv: boolean; updatedAtMs: number }>();
+
+  const consider = (row: NormalizedAttendanceStudentRow, isIndiv: boolean, updatedAtMs: number) => {
+    const prev = byStudent.get(row.studentId);
+    if (!prev) {
+      byStudent.set(row.studentId, { row, isIndiv, updatedAtMs });
+      return;
+    }
+    if (updatedAtMs > prev.updatedAtMs) {
+      byStudent.set(row.studentId, { row, isIndiv, updatedAtMs });
+      return;
+    }
+    if (updatedAtMs === prev.updatedAtMs && isIndiv && !prev.isIndiv) {
+      byStudent.set(row.studentId, { row, isIndiv, updatedAtMs });
+    }
+  };
 
   for (const item of rawDocs) {
     const data = item.data;
@@ -107,6 +152,7 @@ export function deduplicateAttendanceForDate(
     const docDateStr = resolveDocCalendarDateStr(data, item.id);
     if (docDateStr !== targetDateStr) continue;
 
+    const updatedAtMs = toEpochMs(data.updatedAt) || toEpochMs(data.createdAt);
     const sheetMap = data.studentsMap || data.records;
     if (sheetMap && typeof sheetMap === 'object' && !Array.isArray(sheetMap)) {
       const classId = String(data.classId || '');
@@ -116,44 +162,42 @@ export function deduplicateAttendanceForDate(
         const studentId = String((typeof stVal === 'object' ? stVal.studentId : '') || stKey || '');
         if (!studentId) continue;
         const status = typeof stVal === 'string' ? stVal : String(stVal.status || 'Present');
-        if (!byStudent.has(studentId)) {
-          byStudent.set(studentId, {
+        consider(
+          {
             studentId,
             studentName: typeof stVal === 'object' ? stVal.studentName : undefined,
             classId,
             status,
+            updatedAtMs,
             usesCanteen: typeof stVal === 'object' ? stVal.usesCanteen : undefined,
             usesBusService: typeof stVal === 'object' ? stVal.usesBusService : undefined,
-          });
-        }
+          },
+          false,
+          updatedAtMs,
+        );
       }
+    } else {
+      const classId = String(data.classId || '');
+      if (selectedClassId !== 'all' && classId !== selectedClassId) continue;
+      const studentId = String(data.studentId || '');
+      if (!studentId) continue;
+      consider(
+        {
+          studentId,
+          studentName: data.studentName,
+          classId,
+          status: String(data.status || 'Present'),
+          updatedAtMs,
+          canteenMode: data.canteenMode,
+          transportMode: data.transportMode,
+          usesCanteen: data.usesCanteen,
+          usesBusService: data.usesBusService,
+        },
+        true,
+        updatedAtMs,
+      );
     }
   }
 
-  for (const item of rawDocs) {
-    const data = item.data;
-    if (!data || data.isArchived === true) continue;
-    if (data.studentsMap || (data.records && typeof data.records === 'object' && !Array.isArray(data.records))) {
-      continue;
-    }
-    const docDateStr = resolveDocCalendarDateStr(data, item.id);
-    if (docDateStr !== targetDateStr) continue;
-    const classId = String(data.classId || '');
-    if (selectedClassId !== 'all' && classId !== selectedClassId) continue;
-    const studentId = String(data.studentId || '');
-    if (!studentId) continue;
-    byStudent.set(studentId, {
-      studentId,
-      studentName: data.studentName,
-      classId,
-      status: String(data.status || 'Present'),
-      canteenMode: data.canteenMode,
-      transportMode: data.transportMode,
-      usesCanteen: data.usesCanteen,
-      usesBusService: data.usesBusService,
-    });
-  }
-
-  return [...byStudent.values()];
+  return [...byStudent.values()].map((v) => v.row);
 }
-
