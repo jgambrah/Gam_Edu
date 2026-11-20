@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import {
   BookOpen,
   CheckCircle2,
@@ -10,10 +11,12 @@ import {
   ChevronUp,
   ClipboardCheck,
   Copy,
+  Download,
   Eye,
   FlaskConical,
   HelpCircle,
   MessageCircleQuestion,
+  Mic,
   Pause,
   Play,
   RotateCcw,
@@ -61,6 +64,22 @@ interface ChatMessage {
 }
 
 const STORAGE_KEY_PREFIX = 'gamedu_narrated_lesson_progress_v1_';
+const PRON_REVIEW_STORAGE_PREFIX = 'gamedu_narrated_lesson_pron_review_v1_';
+
+type SlidePronStatus = 'OK' | 'Odd' | 'Wrong' | '';
+
+interface SlidePronEntry {
+  status: SlidePronStatus;
+  note: string;
+}
+
+function getSlidePronunciationTerms(slide: LessonSlide, guide: NarratedLesson['pronunciationGuide']) {
+  const script = slide.narration?.script ?? '';
+  return guide.filter((entry) => {
+    const escaped = entry.term.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`\\b${escaped}\\b`, 'i').test(script);
+  });
+}
 
 function formatTime(sec: number): string {
   if (!Number.isFinite(sec) || sec < 0) return '0:00';
@@ -145,6 +164,62 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
   const [chatBySlide, setChatBySlide] = useState<Record<string, ChatMessage[]>>({});
   const [askInput, setAskInput] = useState('');
   const [askLoading, setAskLoading] = useState(false);
+
+  // Reviewer-mode per-slide pronunciation audit state (Step 7)
+  const [pronAudit, setPronAudit] = useState<Record<string, SlidePronEntry>>({});
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(PRON_REVIEW_STORAGE_PREFIX + lesson.lessonId);
+      if (raw) setPronAudit(JSON.parse(raw) as Record<string, SlidePronEntry>);
+    } catch {
+      // ignore
+    }
+  }, [lesson.lessonId]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PRON_REVIEW_STORAGE_PREFIX + lesson.lessonId, JSON.stringify(pronAudit));
+    } catch {
+      // ignore
+    }
+  }, [lesson.lessonId, pronAudit]);
+
+  const updateSlidePronAudit = (slideId: string, term: string, patch: Partial<SlidePronEntry>) => {
+    const key = `${slideId}:${term}`;
+    setPronAudit((old) => ({
+      ...old,
+      [key]: { status: old[key]?.status ?? '', note: old[key]?.note ?? '', ...patch },
+    }));
+  };
+
+  const exportSlidePronAudit = () => {
+    const rows = lesson.slides.flatMap((s) =>
+      getSlidePronunciationTerms(s, lesson.pronunciationGuide).map((g) => {
+        const entry = pronAudit[`${s.id}:${g.term}`];
+        return {
+          slideId: s.id,
+          slideOrder: s.order,
+          audioSource: s.narration.audioSource ?? 'tts',
+          term: g.term,
+          status: entry?.status || 'Unreviewed',
+          note: entry?.note || '',
+        };
+      }),
+    );
+    const payload = {
+      lessonId: lesson.lessonId,
+      exportedAt: new Date().toISOString(),
+      entries: rows,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${lesson.lessonId}-slide-pronunciation-audit.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   // Restore progress from localStorage
   useEffect(() => {
@@ -596,24 +671,43 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
         {/* Reviewer Free-Jump Strip */}
         {reviewerMode && (
           <div className="border-t border-indigo-100 bg-indigo-50/70 px-4 py-2">
-            <div className="mx-auto flex max-w-5xl items-center gap-1.5 overflow-x-auto">
-              <span className="mr-1 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-indigo-700">
-                Jump:
-              </span>
-              {steps.map((st, idx) => (
-                <button
-                  key={st.id}
-                  type="button"
-                  onClick={() => setStepIdx(idx)}
-                  className={`shrink-0 rounded-md px-2 py-1 text-xs font-medium transition ${
-                    idx === stepIdx
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white text-indigo-800 hover:bg-indigo-100'
-                  }`}
+            <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                <span className="mr-1 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-indigo-700">
+                  Jump:
+                </span>
+                {steps.map((st, idx) => (
+                  <button
+                    key={st.id}
+                    type="button"
+                    onClick={() => setStepIdx(idx)}
+                    className={`shrink-0 rounded-md px-2 py-1 text-xs font-medium transition ${
+                      idx === stepIdx
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-indigo-800 hover:bg-indigo-100'
+                    }`}
+                  >
+                    {st.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/narrated-lessons/water-cycle/pronunciation-review"
+                  className="inline-flex items-center gap-1 rounded-md border border-indigo-200 bg-white px-2.5 py-1 text-[11px] font-bold text-indigo-800 hover:bg-indigo-100"
                 >
-                  {st.label}
+                  <Mic className="h-3 w-3" />
+                  Test Clips Review
+                </Link>
+                <button
+                  type="button"
+                  onClick={exportSlidePronAudit}
+                  className="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-indigo-700"
+                >
+                  <Download className="h-3 w-3" />
+                  Export Pronunciation Audit
                 </button>
-              ))}
+              </div>
             </div>
           </div>
         )}
@@ -849,6 +943,89 @@ export function NarratedLessonPlayer({ lesson }: { lesson: NarratedLesson }) {
                 )}
               </div>
             </div>
+
+            {/* Reviewer-Mode Pronunciation Check Panel (Step 7) */}
+            {reviewerMode && (() => {
+              const termsOnSlide = getSlidePronunciationTerms(currentStep.slide, lesson.pronunciationGuide);
+              return (
+                <div className="rounded-2xl border border-indigo-200 bg-indigo-50/50 p-4 shadow-2xs">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Mic className="h-4 w-4 text-indigo-700" />
+                      <h3 className="text-xs font-extrabold uppercase tracking-wide text-indigo-900">
+                        Reviewer Pronunciation Check — Slide {currentStep.slide.id}
+                      </h3>
+                      <span className="rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                        audioSource: {currentStep.slide.narration.audioSource ?? 'tts'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={exportSlidePronAudit}
+                      className="inline-flex items-center gap-1 rounded-lg border border-indigo-200 bg-white px-2.5 py-1 text-[11px] font-bold text-indigo-800 hover:bg-indigo-100"
+                    >
+                      <Download className="h-3 w-3" />
+                      Export Results
+                    </button>
+                  </div>
+
+                  {termsOnSlide.length === 0 ? (
+                    <p className="mt-2 text-xs text-indigo-800/80">
+                      No Ghanaian names from the pronunciation guide appear in this slide&apos;s narration.
+                    </p>
+                  ) : (
+                    <div className="mt-3 space-y-2.5">
+                      {termsOnSlide.map((entry) => {
+                        const audit = pronAudit[`${currentStep.slide.id}:${entry.term}`] ?? {
+                          status: '',
+                          note: '',
+                        };
+                        return (
+                          <div
+                            key={entry.term}
+                            className="flex flex-col gap-2 rounded-xl border border-indigo-100 bg-white p-3 sm:flex-row sm:items-center sm:justify-between"
+                          >
+                            <div className="min-w-[120px]">
+                              <span className="text-sm font-bold text-slate-900">{entry.term}</span>
+                              <p className="text-[11px] text-slate-500">{entry.languageOrContext}</p>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {(['OK', 'Odd', 'Wrong'] as const).map((st) => (
+                                <button
+                                  key={st}
+                                  type="button"
+                                  onClick={() => updateSlidePronAudit(currentStep.slide.id, entry.term, { status: st })}
+                                  className={`rounded-lg border px-2.5 py-1 text-xs font-bold transition ${
+                                    audit.status === st
+                                      ? st === 'OK'
+                                        ? 'border-emerald-600 bg-emerald-600 text-white'
+                                        : st === 'Odd'
+                                          ? 'border-amber-500 bg-amber-500 text-white'
+                                          : 'border-rose-600 bg-rose-600 text-white'
+                                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                                  }`}
+                                >
+                                  {st}
+                                </button>
+                              ))}
+                              <input
+                                type="text"
+                                value={audit.note}
+                                onChange={(e) =>
+                                  updateSlidePronAudit(currentStep.slide.id, entry.term, { note: e.target.value })
+                                }
+                                placeholder="Pronunciation note..."
+                                className="w-48 rounded-lg border border-slate-200 px-2.5 py-1 text-xs focus:border-indigo-500 focus:outline-none"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         )}
 

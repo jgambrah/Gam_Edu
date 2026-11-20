@@ -1,0 +1,103 @@
+{
+  "lessonId": "bs7-sci-t1-water-cycle",
+  "voiceName": "Kore",
+  "styleInstruction": "Say clearly and warmly, like a patient Ghanaian JHS science teacher in class, at a moderate pace:",
+  "terms": [
+    {
+      "term": "Bosomtwe",
+      "slides": ["s07"],
+      "variants": [
+        {
+          "variant": "A",
+          "respelling": "Boh-SOHM-chway",
+          "sentence": "Rainwater collects in Lake Boh-SOHM-chway in the Ashanti Region.",
+          "filePath": "test/bosomtwe_A.mp3"
+        },
+        {
+          "variant": "B",
+          "respelling": "Bo-SOM-chwee",
+          "sentence": "Rainwater collects in Lake Bo-SOM-chwee in the Ashanti Region.",
+          "filePath": "test/bosomtwe_B.mp3"
+        },
+        {
+          "variant": "C",
+          "respelling": "Bosomtwe",
+          "sentence": "Rainwater collects in Lake Bosomtwe in the Ashanti Region.",
+          "filePath": "test/bosomtwe_C.mp3"
+        }
+      ]
+    },
+    {
+      "term": "Akosombo",
+      "slides": ["s11"],
+      "variants": [
+        {
+          "variant": "A",
+          "respelling": "Ah-koh-SOHM-boh",
+          "sentence": "Flowing river water spins turbines at the Ah-koh-SOHM-boh Dam.",
+          "filePath": "test/akosombo_A.mp3"
+        },
+        {
+          "variant": "B",
+          "respelling": "A-ko-SOM-bo",
+          "sentence": "Flowing river water spins turbines at the A-ko-SOM-bo Dam.",
+          "filePath": "test/akosombo_B.mp3"
+        },
+        {
+          "variant": "C",
+          "respelling": "Akosombo",
+          "sentence": "Flowing river water spins turbines at the Akosombo Dam.",
+          "filePath": "test/akosombo_C.mp3"
+        }
+      ]
+    },
+    {
+      "term": "Harmattan",
+      "slides": ["s06"],
+      "variants": [
+        {
+          "variant": "A",
+          "respelling": "Har-mah-TAHN",
+          "sentence": "During the dry Har-mah-TAHN season, very little rain falls.",
+          "filePath": "test/harmattan_A.mp3"
+        },
+        {
+          "variant": "B",
+          "respelling": "HAR-ma-tan",
+          "sentence": "During the dry HAR-ma-tan season, very little rain falls.",
+          "filePath": "test/harmattan_B.mp3"
+        },
+        {
+          "variant": "C",
+          "respelling": "Harmattan",
+          "sentence": "During the dry Harmattan season, very little rain falls.",
+          "filePath": "test/harmattan_C.mp3"
+        }
+      ]
+    },
+    {
+      "term": "Volta",
+      "slides": ["s04", "s07", "s08", "s11"],
+      "variants": [
+        {
+          "variant": "A",
+          "respelling": "VOHL-tah",
+          "sentence": "Evaporation rises from Lake VOHL-tah under the hot sun.",
+          "filePath": "test/volta_A.mp3"
+        },
+        {
+          "variant": "B",
+          "respelling": "VOL-ta",
+          "sentence": "Evaporation rises from Lake VOL-ta under the hot sun.",
+          "filePath": "test/volta_B.mp3"
+        },
+        {
+          "variant": "C",
+          "respelling": "Volta",
+          "sentence": "Evaporation rises from Lake Volta under the hot sun.",
+          "filePath": "test/volta_C.mp3"
+        }
+      ]
+    }
+  ]
+}

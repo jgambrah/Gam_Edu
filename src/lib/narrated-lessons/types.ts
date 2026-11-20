@@ -38,10 +38,13 @@ export interface SlideVisual {
   imagePrompt: string | null;
 }
 
+export type AudioSource = 'tts' | 'human';
+
 export interface SlideNarration {
   ttsStyleInstruction: string;
   script: string;
-  ttsText: string;
+  ttsText?: string;
+  audioSource?: AudioSource;
   estSeconds: number;
   pauseCues: string[];
 }

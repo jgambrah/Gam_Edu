@@ -211,7 +211,8 @@
           "after 'Did it vanish forever?'",
           "after 'Where did those drops come from?'"
         ],
-        "ttsText": "Hello, class. Think about a bright afternoon at home. You wash your school uniform and hang it on the drying line. Two hours later, it is completely dry. Where did all that water go? Did it vanish forever? Now picture buying an iced sachet of water on a hot day. Soon, the outside of the plastic feels wet with tiny drops, even though the sachet is not leaking. Where did those drops come from? Today, we will solve both mysteries together by exploring one of nature's greatest journeys: the water cycle."
+        "ttsText": "Hello, class. Think about a bright afternoon at home. You wash your school uniform and hang it on the drying line. Two hours later, it is completely dry. Where did all that water go? Did it vanish forever? Now picture buying an iced sachet of water on a hot day. Soon, the outside of the plastic feels wet with tiny drops, even though the sachet is not leaking. Where did those drops come from? Today, we will solve both mysteries together by exploring one of nature's greatest journeys: the water cycle.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Water moves into and out of the air around us every day.",
@@ -273,7 +274,8 @@
           "after 'Follow the top arrows pointing right.'",
           "after 'Follow the bottom arrows pointing left.'"
         ],
-        "ttsText": "You may remember learning about solids, liquids, and gases. Water is special because it can exist in all three states. Look at the three boxes across the middle. On the left is ice, which is solid water. In the centre is the liquid water you drink. On the right is water vapour, which is water as a gas. Notice the dashed outline around vapour. That reminds us that pure water vapour is invisible in the air. Follow the top arrows pointing right. Adding heat melts ice into liquid water and turns liquid water into vapour. Follow the bottom arrows pointing left. Cooling turns vapour back into liquid water."
+        "ttsText": "You may remember learning about solids, liquids, and gases. Water is special because it can exist in all three states. Look at the three boxes across the middle. On the left is ice, which is solid water. In the centre is the liquid water you drink. On the right is water vapour, which is water as a gas. Notice the dashed outline around vapour. That reminds us that pure water vapour is invisible in the air. Follow the top arrows pointing right. Adding heat melts ice into liquid water and turns liquid water into vapour. Follow the bottom arrows pointing left. Cooling turns vapour back into liquid water.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Water exists as solid (ice), liquid (water), and gas (water vapour).",
@@ -336,7 +338,8 @@
           "after 'clockwise around the picture.'",
           "after 'all over again.'"
         ],
-        "ttsText": "Now let us look at the whole water cycle at once. A cycle is a pattern that goes round and round without ending. Follow the arrows clockwise around the picture. First, on the left, heat from the sun drives evaporation, lifting water into the air. Second, at the top right, condensation turns vapour into clouds. Third, moving straight down on the right, precipitation brings water back to Earth as rain. Fourth, along the bottom, collection gathers water in rivers, lakes, the sea, and the ground. Then the journey starts all over again. Let us pause for a quick check before moving on."
+        "ttsText": "Now let us look at the whole water cycle at once. A cycle is a pattern that goes round and round without ending. Follow the arrows clockwise around the picture. First, on the left, heat from the sun drives evaporation, lifting water into the air. Second, at the top right, condensation turns vapour into clouds. Third, moving straight down on the right, precipitation brings water back to Earth as rain. Fourth, along the bottom, collection gathers water in rivers, lakes, the sea, and the ground. Then the journey starts all over again. Let us pause for a quick check before moving on.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "A cycle is a repeated pattern with no end.",
@@ -398,7 +401,8 @@
           "after 'that is not true.'",
           "after 'Now look at the tree on the right side.'"
         ],
-        "ttsText": "Let us look closely at evaporation. Evaporation happens when heat from the sun warms liquid water and turns it into invisible water vapour, which rises into the sky. Remember your wet school uniform hanging in the sun? That water did not disappear. It evaporated into the air. Some people think only the sea takes part in the water cycle, but that is not true. Evaporation happens from Lake VOHL-tah, rivers, puddles, damp soil, and even boiling KEN-kay pots. Now look at the tree on the right side. Plants also release water vapour through tiny openings in their leaves. Scientists call this transpiration."
+        "ttsText": "Let us look closely at evaporation. Evaporation happens when heat from the sun warms liquid water and turns it into invisible water vapour, which rises into the sky. Remember your wet school uniform hanging in the sun? That water did not disappear. It evaporated into the air. Some people think only the sea takes part in the water cycle, but that is not true. Evaporation happens from Lake VOHL-tah, rivers, puddles, damp soil, and even boiling KEN-kay pots. Now look at the tree on the right side. Plants also release water vapour through tiny openings in their leaves. Scientists call this transpiration.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Evaporation is liquid water turning into water vapour due to heat from the sun.",
@@ -460,7 +464,8 @@
           "after 'condensation.'",
           "after 'never smoke from fires!'"
         ],
-        "ttsText": "What happens after water vapour rises into the sky? Higher up above the Earth, the air is much cooler. When warm water vapour reaches that cool air, it loses heat and changes back into millions of tiny liquid water droplets. Scientists call this change condensation. Look at the magnified circle on the right. Those tiny droplets group together to form clouds. Very high, freezing clouds can also hold tiny ice crystals, but clouds are made mostly of water droplets, never smoke from fires! You see condensation on the ground too, as morning mist on hills or drops outside a cold sachet of water."
+        "ttsText": "What happens after water vapour rises into the sky? Higher up above the Earth, the air is much cooler. When warm water vapour reaches that cool air, it loses heat and changes back into millions of tiny liquid water droplets. Scientists call this change condensation. Look at the magnified circle on the right. Those tiny droplets group together to form clouds. Very high, freezing clouds can also hold tiny ice crystals, but clouds are made mostly of water droplets, never smoke from fires! You see condensation on the ground too, as morning mist on hills or drops outside a cold sachet of water.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Condensation is water vapour cooling down to become tiny liquid droplets.",
@@ -522,7 +527,8 @@
           "after 'grow too heavy!'",
           "after 'Look at the right panel.'"
         ],
-        "ttsText": "Inside a cloud, tiny water droplets bump into one another and join together. As they join, they become bigger and heavier. Soon, the air can no longer hold them up, and gravity, the Earth's downward pull, brings them back to Earth. This falling water is called precipitation. There is no giant tank pouring rain from the sky. Rain falls simply because cloud drops grow too heavy! In Ghana, precipitation is mostly rain drumming on zinc roofs, though very cold storm clouds sometimes drop small ice balls called hail. Look at the right panel. During the dry har-mah-TAHN season, the air holds very little moisture, so there is very little precipitation."
+        "ttsText": "Inside a cloud, tiny water droplets bump into one another and join together. As they join, they become bigger and heavier. Soon, the air can no longer hold them up, and gravity, the Earth's downward pull, brings them back to Earth. This falling water is called precipitation. There is no giant tank pouring rain from the sky. Rain falls simply because cloud drops grow too heavy! In Ghana, precipitation is mostly rain drumming on zinc roofs, though very cold storm clouds sometimes drop small ice balls called hail. Look at the right panel. During the dry har-mah-TAHN season, the air holds very little moisture, so there is very little precipitation.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Precipitation happens when cloud droplets join, become too heavy for the air to hold, and fall.",
@@ -584,7 +590,8 @@
           "after 'surface run-off.'",
           "after 'become groundwater.'"
         ],
-        "ttsText": "Where does all the rainwater go after it hits the ground? That brings us to collection. Look at the hillside on the left. Some rainwater flows over the land into gutters, streams, rivers, and lakes like Lake boh-SOHM-chway and Lake VOHL-tah, and some reaches the sea. We call this flowing water surface run-off. Now look beneath the upper soil layer. Much of the rain slowly soaks down through tiny spaces in soil and rock to become groundwater. On the right, notice the borehole. Many Ghanaian towns and schools pump safe water when the borehole is protected and tested."
+        "ttsText": "Where does all the rainwater go after it hits the ground? That brings us to collection. Look at the hillside on the left. Some rainwater flows over the land into gutters, streams, rivers, and lakes like Lake boh-SOHM-chway and Lake VOHL-tah, and some reaches the sea. We call this flowing water surface run-off. Now look beneath the upper soil layer. Much of the rain slowly soaks down through tiny spaces in soil and rock to become groundwater. On the right, notice the borehole. Many Ghanaian towns and schools pump safe water when the borehole is protected and tested.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Collection gathers water on the surface (rivers, lakes, sea) and underground.",
@@ -646,7 +653,8 @@
           "after 'into a growing cloud.'",
           "after 'falls as rain onto the soil.'"
         ],
-        "ttsText": "Let us follow one tiny drop of water on a real Ghanaian adventure. Imagine our drop floating near the surface of Lake VOHL-tah on a sunny morning. The sun warms it up. Soon, it evaporates into invisible water vapour and floats high into the sky. Up there, cool air makes our drop condense with millions of friends inside a growing cloud. Wind carries the cloud inland over a maize and cocoa farm. Our drop bumps into other droplets, grows heavy, and falls as rain onto the soil. Some friends soak down to nourish the crops, while our drop runs into a stream and heads back toward the river."
+        "ttsText": "Let us follow one tiny drop of water on a real Ghanaian adventure. Imagine our drop floating near the surface of Lake VOHL-tah on a sunny morning. The sun warms it up. Soon, it evaporates into invisible water vapour and floats high into the sky. Up there, cool air makes our drop condense with millions of friends inside a growing cloud. Wind carries the cloud inland over a maize and cocoa farm. Our drop bumps into other droplets, grows heavy, and falls as rain onto the soil. Some friends soak down to nourish the crops, while our drop runs into a stream and heads back toward the river.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "A single drop of water moves through evaporation, condensation, precipitation, and collection.",
@@ -709,7 +717,8 @@
           "after 'astonishing fact:'",
           "after 'over and over again.'"
         ],
-        "ttsText": "Why do scientists call the water cycle a repeated pattern in nature? Look at the centre of the circle, with heat arrows radiating outward. Heat energy from the sun is the engine that keeps everything moving. Without the sun's heat, liquid water would not evaporate, clouds would not form, and rain would stop. Here is an astonishing fact: Earth does not make brand new water every time it rains. Instead, nature recycles the exact same water over and over again. The water you drank this morning has travelled through clouds, rivers, and rainstorms for a very long time."
+        "ttsText": "Why do scientists call the water cycle a repeated pattern in nature? Look at the centre of the circle, with heat arrows radiating outward. Heat energy from the sun is the engine that keeps everything moving. Without the sun's heat, liquid water would not evaporate, clouds would not form, and rain would stop. Here is an astonishing fact: Earth does not make brand new water every time it rains. Instead, nature recycles the exact same water over and over again. The water you drank this morning has travelled through clouds, rivers, and rainstorms for a very long time.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Heat energy from the sun powers the water cycle.",
@@ -770,7 +779,8 @@
           "after 'feeds the nation.'",
           "after 'could not continue.'"
         ],
-        "ttsText": "Now let us ask a big question: why is the water cycle so important to us? First, it constantly refills our fresh water sources. Every rainy season, water replenishes rivers, dams, wells, and boreholes so families have water for drinking, cooking, and bathing. Second, the water cycle feeds the nation. Ghanaian farmers depend on steady rain to grow maize, yam, cassava, vegetables, and cocoa. Without regular rainfall, crops dry out and food becomes scarce. Third, every plant and animal around us needs fresh water to stay alive. Simply put, without the water cycle, life on land could not continue."
+        "ttsText": "Now let us ask a big question: why is the water cycle so important to us? First, it constantly refills our fresh water sources. Every rainy season, water replenishes rivers, dams, wells, and boreholes so families have water for drinking, cooking, and bathing. Second, the water cycle feeds the nation. Ghanaian farmers depend on steady rain to grow maize, yam, cassava, vegetables, and cocoa. Without regular rainfall, crops dry out and food becomes scarce. Third, every plant and animal around us needs fresh water to stay alive. Simply put, without the water cycle, life on land could not continue.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "The water cycle replenishes fresh water in rivers, wells, and boreholes.",
@@ -831,7 +841,8 @@
           "after 'local weather patterns.'",
           "after 'like Lake Volta,'"
         ],
-        "ttsText": "The water cycle is just as vital for nature as it is for people. By refilling rivers, wetlands, and lakes, it keeps natural habitats alive for fish, frogs, birds, and forest wildlife. Winds carry clouds inland, distributing fresh water to dry lands far away from the sea. Passing clouds also shade the ground on hot days and help shape our local weather patterns. Rain-fed rivers also fill a reservoir, a large stored body of water like Lake VOHL-tah, whose flowing water spins giant wheels called turbines at the ah-koh-SOHM-boh Dam to generate hydroelectric power for homes and schools."
+        "ttsText": "The water cycle is just as vital for nature as it is for people. By refilling rivers, wetlands, and lakes, it keeps natural habitats alive for fish, frogs, birds, and forest wildlife. Winds carry clouds inland, distributing fresh water to dry lands far away from the sea. Passing clouds also shade the ground on hot days and help shape our local weather patterns. Rain-fed rivers also fill a reservoir, a large stored body of water like Lake VOHL-tah, whose flowing water spins giant wheels called turbines at the ah-koh-SOHM-boh Dam to generate hydroelectric power for homes and schools.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "The water cycle maintains natural habitats by refilling rivers, wetlands, and lakes.",
@@ -892,7 +903,8 @@
           "after 'during heavy rain.'",
           "after 'make a real difference!'"
         ],
-        "ttsText": "Even though nature recycles water, human actions can seriously harm our clean water supply. Dumping plastic rubbish, sewage, or mining waste into rivers makes water unsafe for people, fish, and farm animals. Cutting down too many forest trees also hurts the cycle: fewer leaves mean less transpiration, and bare soil washes as mud into streams during heavy rain. Wasting treated tap water leaves less for everyone else. The good news is that you can make a real difference! Close dripping taps tightly, never throw rubbish into gutters or streams, and join tree-planting days at school."
+        "ttsText": "Even though nature recycles water, human actions can seriously harm our clean water supply. Dumping plastic rubbish, sewage, or mining waste into rivers makes water unsafe for people, fish, and farm animals. Cutting down too many forest trees also hurts the cycle: fewer leaves mean less transpiration, and bare soil washes as mud into streams during heavy rain. Wasting treated tap water leaves less for everyone else. The good news is that you can make a real difference! Close dripping taps tightly, never throw rubbish into gutters or streams, and join tree-planting days at school.",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "River pollution from rubbish, sewage, or mining waste makes water unsafe for humans and wildlife.",
@@ -953,7 +965,8 @@
           "after 'three big ideas.'",
           "after 'see the cycle yourself?'"
         ],
-        "ttsText": "Well done! You have reached the end of our lesson on the water cycle. Remember three big ideas. First, heat from the sun drives evaporation and transpiration, turning liquid water into invisible vapour. Second, cooling forms clouds by condensation, heavy drops fall as precipitation, and collection stores water on land and underground. Third, this repeated cycle keeps habitats, farms, and hydroelectric dams alive, so we must protect our rivers and trees. Want to see the cycle yourself? Seal two tablespoons of cool water in a clear plastic bag, tape it to a sunny window, and watch droplets form!"
+        "ttsText": "Well done! You have reached the end of our lesson on the water cycle. Remember three big ideas. First, heat from the sun drives evaporation and transpiration, turning liquid water into invisible vapour. Second, cooling forms clouds by condensation, heavy drops fall as precipitation, and collection stores water on land and underground. Third, this repeated cycle keeps habitats, farms, and hydroelectric dams alive, so we must protect our rivers and trees. Want to see the cycle yourself? Seal two tablespoons of cool water in a clear plastic bag, tape it to a sunny window, and watch droplets form!",
+        "audioSource": "tts"
       },
       "keyIdeas": [
         "Four stages repeat continuously: evaporation, condensation, precipitation, and collection.",

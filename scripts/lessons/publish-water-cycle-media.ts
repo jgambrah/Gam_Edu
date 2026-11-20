@@ -20,14 +20,21 @@ import * as dotenv from 'dotenv';
 import { GoogleAuth } from 'google-auth-library';
 import type { NarratedLesson } from '../../src/lib/narrated-lessons/types';
 import { NARRATED_LESSON_CDN_BUCKET, NARRATED_LESSON_CDN_PREFIX } from '../../src/lib/narrated-lessons/types';
+import {
+  assertPronunciationCoverage,
+  buildTtsText,
+  computeTtsCacheKey,
+} from '../../src/lib/narrated-lessons/pronunciation';
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
 dotenv.config({ path: path.join(REPO_ROOT, '.env.local') });
 dotenv.config({ path: path.join(REPO_ROOT, '.env') });
 
 const LESSON_JSON_PATH = path.join(REPO_ROOT, 'src', 'lib', 'narrated-lessons', 'bs7-sci-t1-water-cycle.json');
+const TEST_CLIPS_JSON_PATH = path.join(REPO_ROOT, 'src', 'lib', 'narrated-lessons', 'pronunciation-test-clips.json');
 const BUILD_DIR = path.join(REPO_ROOT, '.narrated-lesson-build', 'bs7-sci-t1-water-cycle');
 const AUDIO_DIR = path.join(BUILD_DIR, 'audio');
+const TEST_DIR = path.join(BUILD_DIR, 'test');
 const IMAGES_DIR = path.join(BUILD_DIR, 'images');
 const STRICT_TTS_MODEL = 'gemini-3.1-flash-tts-preview';
 const IMMUTABLE_CACHE = 'public, max-age=31536000, immutable';
@@ -265,83 +272,196 @@ function verifyPublicUrl(bucket: string, remotePath: string): Promise<number> {
   });
 }
 
-async function generateAudio(lesson: NarratedLesson) {
-  fs.mkdirSync(AUDIO_DIR, { recursive: true });
-  const apiKeys = collectGeminiKeys();
-  if (apiKeys.length === 0) throw new Error('No GEMINI_API_KEY* found in .env.local');
-  const ffmpegBin = resolvePortableFfmpeg();
-  const exhausted = new Set<string>();
+async function synthesizeKoreMp3(
+  apiKeys: string[],
+  exhausted: Set<string>,
+  ffmpegBin: string,
+  style: string,
+  text: string,
+  outMp3: string,
+  label: string,
+): Promise<string> {
   const nextKey = (attempt: number) => {
     const active = apiKeys.filter((k) => !exhausted.has(k));
     const pool = active.length > 0 ? active : apiKeys;
     return pool[(attempt - 1) % pool.length];
   };
 
-  const tracks: Array<{ id: string; style: string; text: string }> = [
-    ...lesson.slides.map((s) => ({
-      id: s.id,
-      style: s.narration.ttsStyleInstruction,
-      text: s.narration.ttsText,
-    })),
+  const maxAttempts = Math.max(6, apiKeys.length * 3);
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const key = nextKey(attempt);
+    const prompt =
+      `You are a warm, patient Ghanaian JHS science teacher speaking in clear, natural Ghanaian English (en-GH).\n` +
+      `${style}\n` +
+      `Speak ONLY the exact words below verbatim from start to finish, with no introduction or extra commentary:\n\n` +
+      text;
+
+    let res: any;
+    try {
+      res = await geminiPost(STRICT_TTS_MODEL, key, {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseModalities: ['AUDIO'],
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
+        },
+      });
+    } catch (err: any) {
+      res = { error: { message: err?.message || String(err) } };
+    }
+
+    const b64 = res?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    if (!b64) {
+      if ([400, 402, 403, 429].includes(res?.error?.code)) exhausted.add(key);
+      if (attempt === maxAttempts) {
+        throw new Error(`TTS failed for ${label}: ${JSON.stringify(res?.error || res).slice(0, 240)}`);
+      }
+      await new Promise((r) => setTimeout(r, 1500 * Math.min(attempt, 3)));
+      continue;
+    }
+
+    const pcm = Buffer.from(b64, 'base64');
+    const wavTmp = `${outMp3}.tmp.wav`;
+    fs.writeFileSync(wavTmp, pcm24kMonoToWav(pcm));
+    cp.execFileSync(ffmpegBin, ['-y', '-i', wavTmp, '-codec:a', 'libmp3lame', '-b:a', '64k', outMp3], {
+      stdio: 'ignore',
+    });
+    fs.unlinkSync(wavTmp);
+    return (pcm.length / 2 / 24000).toFixed(2);
+  }
+  throw new Error(`TTS exhausted attempts for ${label}`);
+}
+
+async function generateAudio(lesson: NarratedLesson) {
+  // Build-time pronunciation coverage check — fails loudly if any watched Ghanaian term is missing from guide
+  assertPronunciationCoverage(lesson.slides, lesson.pronunciationGuide);
+
+  fs.mkdirSync(AUDIO_DIR, { recursive: true });
+  const apiKeys = collectGeminiKeys();
+  if (apiKeys.length === 0) throw new Error('No GEMINI_API_KEY* found in .env.local');
+  const ffmpegBin = resolvePortableFfmpeg();
+  const exhausted = new Set<string>();
+
+  const tracks: Array<{ id: string; style: string; text: string; audioSource: 'tts' | 'human' }> = [
+    ...lesson.slides.map((s) => {
+      // Derive ttsText from pronunciationGuide (single source of truth), falling back to ttsText or script
+      const derivedTts = buildTtsText(s.narration.script, lesson.pronunciationGuide);
+      const effectiveTts = derivedTts || s.narration.ttsText || s.narration.script;
+      return {
+        id: s.id,
+        style: s.narration.ttsStyleInstruction,
+        text: effectiveTts,
+        audioSource: s.narration.audioSource ?? 'tts',
+      };
+    }),
     {
       id: 'recap',
       style: 'Say warmly and clearly like a proud JHS science teacher summarising the lesson:',
-      text: lesson.summary.recapScript,
+      text: buildTtsText(lesson.summary.recapScript, lesson.pronunciationGuide),
+      audioSource: 'tts',
     },
   ];
 
   for (const track of tracks) {
-    const outMp3 = path.join(AUDIO_DIR, `${track.id}.mp3`);
-    if (fs.existsSync(outMp3) && fs.statSync(outMp3).size > 4000) {
-      console.log(`  [audio] skipping existing ${track.id}.mp3`);
+    if (track.audioSource === 'human') {
+      console.log(`  [audio] SKIPPING ${track.id}.mp3 (audioSource: "human" — protected from TTS overwrite)`);
       continue;
     }
 
-    let generated = false;
-    const maxAttempts = Math.max(6, apiKeys.length * 3);
-    for (let attempt = 1; attempt <= maxAttempts && !generated; attempt++) {
-      const key = nextKey(attempt);
-      const prompt =
-        `You are a warm, patient Ghanaian JHS science teacher speaking in clear, natural Ghanaian English (en-GH).\n` +
-        `${track.style}\n` +
-        `Speak ONLY the exact words below verbatim from start to finish, with no introduction or extra commentary:\n\n` +
-        track.text;
+    const outMp3 = path.join(AUDIO_DIR, `${track.id}.mp3`);
+    const hashFile = path.join(AUDIO_DIR, `${track.id}.sha256`);
+    const cacheKey = computeTtsCacheKey(track.text, track.style, 'Kore');
+    const existingHash = fs.existsSync(hashFile) ? fs.readFileSync(hashFile, 'utf8').trim() : '';
 
-      let res: any;
-      try {
-        res = await geminiPost(STRICT_TTS_MODEL, key, {
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            responseModalities: ['AUDIO'],
-            speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
-          },
-        });
-      } catch (err: any) {
-        res = { error: { message: err?.message || String(err) } };
+    if (fs.existsSync(outMp3) && fs.statSync(outMp3).size > 4000 && existingHash === cacheKey) {
+      console.log(`  [audio] cache hit for ${track.id}.mp3 (${cacheKey})`);
+      continue;
+    }
+
+    const durSec = await synthesizeKoreMp3(apiKeys, exhausted, ffmpegBin, track.style, track.text, outMp3, track.id);
+    fs.writeFileSync(hashFile, cacheKey, 'utf8');
+    console.log(`  [audio] generated ${track.id}.mp3 (${durSec}s, hash=${cacheKey})`);
+  }
+}
+
+async function generateAndUploadTestClips(lesson: NarratedLesson, upload: boolean) {
+  const manifest = JSON.parse(fs.readFileSync(TEST_CLIPS_JSON_PATH, 'utf8')) as {
+    styleInstruction: string;
+    terms: Array<{
+      term: string;
+      variants: Array<{ variant: string; respelling: string; sentence: string; filePath: string }>;
+    }>;
+  };
+
+  fs.mkdirSync(TEST_DIR, { recursive: true });
+  const apiKeys = collectGeminiKeys();
+  if (apiKeys.length === 0) throw new Error('No GEMINI_API_KEY* found in .env.local');
+  const ffmpegBin = resolvePortableFfmpeg();
+  const exhausted = new Set<string>();
+
+  const generatedFiles: Array<{ local: string; remote: string }> = [];
+  const basePrefix = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}`;
+
+  for (const t of manifest.terms) {
+    for (const v of t.variants) {
+      const fileName = path.basename(v.filePath);
+      const outMp3 = path.join(TEST_DIR, fileName);
+      if (fs.existsSync(outMp3) && fs.statSync(outMp3).size > 2000) {
+        console.log(`  [test-clip] skipping existing ${v.filePath}`);
+      } else {
+        const durSec = await synthesizeKoreMp3(
+          apiKeys,
+          exhausted,
+          ffmpegBin,
+          manifest.styleInstruction,
+          v.sentence,
+          outMp3,
+          `${t.term}_${v.variant}`,
+        );
+        console.log(`  [test-clip] generated ${v.filePath} (${durSec}s) -> "${v.respelling}"`);
       }
-
-      const b64 = res?.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-      if (!b64) {
-        if ([400, 402, 403, 429].includes(res?.error?.code)) exhausted.add(key);
-        if (attempt === maxAttempts) {
-          throw new Error(`TTS failed for ${track.id}: ${JSON.stringify(res?.error || res).slice(0, 240)}`);
-        }
-        await new Promise((r) => setTimeout(r, 1500 * Math.min(attempt, 3)));
-        continue;
-      }
-
-      const pcm = Buffer.from(b64, 'base64');
-      const wavTmp = path.join(AUDIO_DIR, `${track.id}.tmp.wav`);
-      fs.writeFileSync(wavTmp, pcm24kMonoToWav(pcm));
-      cp.execFileSync(ffmpegBin, ['-y', '-i', wavTmp, '-codec:a', 'libmp3lame', '-b:a', '64k', outMp3], {
-        stdio: 'ignore',
-      });
-      fs.unlinkSync(wavTmp);
-      const durSec = (pcm.length / 2 / 24000).toFixed(2);
-      console.log(`  [audio] generated ${track.id}.mp3 (${durSec}s)`);
-      generated = true;
+      generatedFiles.push({ local: outMp3, remote: `${basePrefix}/${v.filePath}` });
     }
   }
+
+  if (upload) {
+    const token = await getAccessToken();
+    console.log(`[lesson:test-clips] Uploading ${generatedFiles.length} test clips to gs://${NARRATED_LESSON_CDN_BUCKET}/${basePrefix}/test/ ...`);
+    for (const f of generatedFiles) {
+      const buf = fs.readFileSync(f.local);
+      await uploadObject(token, NARRATED_LESSON_CDN_BUCKET, f.remote, buf, 'audio/mpeg');
+      console.log(`  [upload] ${f.remote} (${(buf.length / 1024).toFixed(1)} KB)`);
+    }
+    const sample = generatedFiles[0];
+    const code = await verifyPublicUrl(NARRATED_LESSON_CDN_BUCKET, sample.remote);
+    if (code !== 200) throw new Error(`Public CDN check failed (HTTP ${code}) for ${sample.remote}`);
+    console.log(`  [verify] HTTP 200 OK -> ${sample.remote}`);
+  }
+}
+
+async function attachHumanRecording(lesson: NarratedLesson, slideId: string, sourceFile: string) {
+  const slide = lesson.slides.find((s) => s.id === slideId);
+  if (!slide) throw new Error(`Slide "${slideId}" not found in lesson JSON.`);
+  if (!fs.existsSync(sourceFile)) throw new Error(`Audio file not found: ${sourceFile}`);
+
+  fs.mkdirSync(AUDIO_DIR, { recursive: true });
+  const ffmpegBin = resolvePortableFfmpeg();
+  const outMp3 = path.join(AUDIO_DIR, `${slideId}.mp3`);
+  cp.execFileSync(
+    ffmpegBin,
+    ['-y', '-i', sourceFile, '-ac', '1', '-ar', '24000', '-codec:a', 'libmp3lame', '-b:a', '64k', outMp3],
+    { stdio: 'ignore' },
+  );
+
+  const token = await getAccessToken();
+  const remote = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/audio/${slideId}.mp3`;
+  const buf = fs.readFileSync(outMp3);
+  await uploadObject(token, NARRATED_LESSON_CDN_BUCKET, remote, buf, 'audio/mpeg');
+  const code = await verifyPublicUrl(NARRATED_LESSON_CDN_BUCKET, remote);
+  if (code !== 200) throw new Error(`Public CDN check failed (HTTP ${code}) for ${remote}`);
+
+  slide.narration.audioSource = 'human';
+  fs.writeFileSync(LESSON_JSON_PATH, JSON.stringify(lesson, null, 2), 'utf8');
+  console.log(`[lesson:human] Attached ${sourceFile} -> ${remote} and marked ${slideId}.narration.audioSource = "human".`);
 }
 
 async function convertImages(brainDir: string) {
@@ -418,10 +538,30 @@ async function main() {
   const audioOnly = argv.includes('--audio-only');
   const imagesOnly = argv.includes('--images-only');
   const uploadOnly = argv.includes('--upload-only');
+  const testClipsOnly = argv.includes('--test-clips');
+  const noUpload = argv.includes('--no-upload');
+  const attachIdx = argv.indexOf('--attach-human');
   const brainIdx = argv.indexOf('--brain-dir');
   const brainDir = brainIdx !== -1 ? argv[brainIdx + 1] : '';
 
   const lesson = JSON.parse(fs.readFileSync(LESSON_JSON_PATH, 'utf8')) as NarratedLesson;
+
+  if (attachIdx !== -1) {
+    const slideId = argv[attachIdx + 1];
+    const sourceFile = argv[attachIdx + 2];
+    if (!slideId || !sourceFile) {
+      throw new Error('Usage: --attach-human <slideId> <localAudioFile>');
+    }
+    await attachHumanRecording(lesson, slideId, sourceFile);
+    return;
+  }
+
+  if (testClipsOnly) {
+    console.log('[lesson:test-clips] Generating 12 pronunciation test clips (existing lesson audio untouched)...');
+    await generateAndUploadTestClips(lesson, !noUpload);
+    console.log('[lesson:test-clips] Done.');
+    return;
+  }
 
   if (!imagesOnly && !uploadOnly) {
     console.log('[lesson:media] Generating Kore narration MP3s...');
