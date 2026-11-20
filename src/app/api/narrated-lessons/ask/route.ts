@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
+import {
+  isSafeguardingConcern,
+  SAFEGUARDING_RESPONSE,
+  SAFETY_BLOCK_FALLBACK_RESPONSE,
+} from '@/lib/narrated-lessons/safeguarding';
 import type { NarratedLesson } from '@/lib/narrated-lessons/types';
 
 // In-memory 5-minute cache of CDN lesson packages so Ask Teacher works for ANY published lesson
@@ -41,6 +46,12 @@ function checkRateLimit(clientKey: string): { ok: true } | { ok: false; message:
     };
   }
 
+  if (rateBucket.size > 2000) {
+    for (const [k, v] of rateBucket.entries()) {
+      if (now > v.resetAt) rateBucket.delete(k);
+    }
+  }
+
   const entry = rateBucket.get(clientKey);
   if (!entry || now > entry.resetAt) {
     rateBucket.set(clientKey, { count: 1, resetAt: now + WINDOW_MS });
@@ -56,22 +67,6 @@ function checkRateLimit(clientKey: string): { ok: true } | { ok: false; message:
   entry.count += 1;
   dailyCount += 1;
   return { ok: true };
-}
-
-// Deterministic safeguarding pre-check BEFORE calling Gemini so a safety-blocked prompt NEVER falls through to a science FAQ
-const SAFEGUARDING_PATTERNS: readonly RegExp[] = [
-  /\b(kill|hurt|harm|cut)\s+(myself|me)\b/i,
-  /\b(suicide|suicidal|want\s+to\s+die|don'?t\s+want\s+to\s+live|end\s+my\s+life)\b/i,
-  /\b(scared|afraid|unsafe)\s+(at\s+home|to\s+go\s+home)\b/i,
-  /\b(hits?|beats?|beating|hurts?|abuses?|abusing|touches?|touched)\s+me\b/i,
-  /\b(being\s+(abused|bullied|beaten|hurt))\b/i,
-];
-
-const SAFEGUARDING_RESPONSE =
-  'I am really sorry you are going through something hard, and I am glad you spoke up. You deserve to be safe. Please tell a trusted adult right away — such as your classroom teacher, head teacher, school counsellor, or a parent or relative you trust — so they can help you today.';
-
-function isSafeguardingConcern(text: string): boolean {
-  return SAFEGUARDING_PATTERNS.some((re) => re.test(text));
 }
 
 function getApiKey(): string | null {
@@ -257,7 +252,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (blockedBySafety) {
-      return NextResponse.json({ answer: SAFEGUARDING_RESPONSE, source: 'safeguarding' });
+      return NextResponse.json({ answer: SAFETY_BLOCK_FALLBACK_RESPONSE, source: 'safeguarding' });
     }
 
     if (!answerText) {

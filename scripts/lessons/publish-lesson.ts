@@ -177,6 +177,33 @@ async function getAccessToken(): Promise<string> {
   throw new Error('No Google Cloud / Firebase Storage credentials found.');
 }
 
+function fetchObjectByGeneration(
+  token: string,
+  remotePath: string,
+  generation: string,
+): Promise<{ statusCode: number; body: Buffer }> {
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        hostname: 'storage.googleapis.com',
+        port: 443,
+        path: `/storage/v1/b/${encodeURIComponent(NARRATED_LESSON_CDN_BUCKET)}/o/${encodeURIComponent(remotePath)}?alt=media&generation=${encodeURIComponent(generation)}`,
+        method: 'GET',
+        agent,
+        headers: { Authorization: `Bearer ${token}` },
+      },
+      (res) => {
+        const chunks: Buffer[] = [];
+        res.on('data', (c: Buffer) => chunks.push(c));
+        res.on('end', () => resolve({ statusCode: res.statusCode ?? 0, body: Buffer.concat(chunks) }));
+        res.on('error', reject);
+      },
+    );
+    req.on('error', reject);
+    req.end();
+  });
+}
+
 function fetchObjectGeneration(token: string, remotePath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const req = https.request(
@@ -393,8 +420,55 @@ async function main() {
 
   const token = await getAccessToken();
 
-  // 2. Media generation & upload (unless --skip-media)
-  if (!skipMedia) {
+  // Fetch exact current catalogue.json by GCS generation FIRST (never from cached public CDN)
+  const remoteCat = `${NARRATED_LESSON_CDN_PREFIX}/catalogue.json`;
+  const expectedGeneration = await fetchObjectGeneration(token, remoteCat);
+  let catalogue: LessonCatalogue = {
+    catalogueVersion: 0,
+    updatedAt: new Date().toISOString(),
+    entries: [],
+  };
+  let priorCatalogueRaw: Buffer | null = null;
+  if (expectedGeneration !== '0') {
+    const exactCat = await fetchObjectByGeneration(token, remoteCat, expectedGeneration);
+    if (exactCat.statusCode !== 200) {
+      throw new Error(`Could not read catalogue.json at generation ${expectedGeneration} (HTTP ${exactCat.statusCode})`);
+    }
+    priorCatalogueRaw = exactCat.body;
+    catalogue = JSON.parse(exactCat.body.toString('utf8')) as LessonCatalogue;
+  }
+
+  // 2. Media generation & upload (or preserve existing hashed URLs when --skip-media is passed)
+  if (skipMedia) {
+    const prevEntry = catalogue.entries.find((e) => e.lessonId === lesson.lessonId);
+    if (!prevEntry) {
+      throw new Error('--skip-media cannot be used for a brand-new lesson not yet in catalogue.json.');
+    }
+    const prevPkgRes = await fetchPublicObject(`${NARRATED_LESSON_CDN_PREFIX}/${prevEntry.packagePath}`);
+    if (prevPkgRes.statusCode !== 200) {
+      throw new Error(`--skip-media could not read prior package ${prevEntry.packagePath} (HTTP ${prevPkgRes.statusCode}).`);
+    }
+    const prevPkg = JSON.parse(prevPkgRes.body.toString('utf8')) as NarratedLesson;
+    if (prevPkg.summary?.recapAudioUrl) {
+      lesson.summary.recapAudioUrl = prevPkg.summary.recapAudioUrl;
+    }
+    for (const slide of lesson.slides) {
+      const prevSlide = prevPkg.slides.find((s) => s.id === slide.id);
+      if (!slide.narration.audioUrl && prevSlide?.narration?.audioUrl) {
+        slide.narration.audioUrl = prevSlide.narration.audioUrl;
+      }
+      if (slide.visual.type === 'illustration' && !slide.visual.imageUrl && prevSlide?.visual?.imageUrl) {
+        slide.visual.imageUrl = prevSlide.visual.imageUrl;
+      }
+      if (!slide.narration.audioUrl) {
+        throw new Error(`--skip-media refused: slide ${slide.id} has no existing hashed audioUrl. Republish without --skip-media first.`);
+      }
+      if (slide.visual.type === 'illustration' && !slide.visual.imageUrl) {
+        throw new Error(`--skip-media refused: slide ${slide.id} has no existing hashed imageUrl. Republish without --skip-media first.`);
+      }
+    }
+    console.log('[lesson:publish] --skip-media preserved all existing hashed audioUrl and imageUrl fields.');
+  } else {
     const apiKeys = collectGeminiKeys();
     const ffmpeg = resolveFfmpeg();
     const exhausted = new Set<string>();
@@ -422,14 +496,13 @@ async function main() {
     ];
 
     for (const track of tracks) {
-      if (track.audioSource === 'human') {
-        console.log(`  [audio] SKIPPING ${track.id}.mp3 (audioSource: "human")`);
-        continue;
-      }
       const outMp3 = path.join(audioDir, `${track.id}.mp3`);
       const hashFile = path.join(audioDir, `${track.id}.sha256`);
       const existingHash = fs.existsSync(hashFile) ? fs.readFileSync(hashFile, 'utf8').trim() : '';
-      if (!fs.existsSync(outMp3) || existingHash !== track.hash) {
+
+      if (track.audioSource === 'human') {
+        console.log(`  [audio] PRESERVING human recording ${track.id}.mp3 (audioSource: "human")`);
+      } else if (!fs.existsSync(outMp3) || (existingHash && existingHash !== track.hash)) {
         if (apiKeys.length === 0) throw new Error('No GEMINI_API_KEY* found for TTS generation.');
         let ok = false;
         for (let attempt = 1; attempt <= Math.max(6, apiKeys.length * 3) && !ok; attempt++) {
@@ -459,7 +532,10 @@ async function main() {
           ok = true;
         }
         if (!ok) throw new Error(`TTS failed for ${track.id}`);
+      } else if (!existingHash) {
+        fs.writeFileSync(hashFile, track.hash, 'utf8');
       }
+
       const mp3Buf = fs.readFileSync(outMp3);
       const mp3ContentHash = createHash('sha256').update(mp3Buf).digest('hex').slice(0, 12);
       const relHashedAudio = `audio/${track.id}.${mp3ContentHash}.mp3`;
@@ -479,7 +555,7 @@ async function main() {
       autoAlignSlideCues(ffmpeg, path.join(audioDir, `${slide.id}.mp3`), slide);
     }
 
-    // Convert & upload any illustrations provided in --images-dir (content-hashed filenames so updates never serve stale cache)
+    // Convert any raw images in --images-dir, then upload all slide WebPs with content-hashed filenames
     if (imagesDirArg && fs.existsSync(imagesDirArg)) {
       const sharp = createRequire(path.join(REPO_ROOT, 'package.json'))('sharp') as typeof import('sharp');
       const files = fs.readdirSync(imagesDirArg);
@@ -492,14 +568,22 @@ async function main() {
           .resize(1280, 720, { fit: 'cover', position: 'centre' })
           .webp({ quality: 84 })
           .toFile(dest);
-        const imgBuf = fs.readFileSync(dest);
-        const imgHash = createHash('sha256').update(imgBuf).digest('hex').slice(0, 12);
-        const relHashedImg = `images/${slide.id}.${imgHash}.webp`;
-        const remoteImg = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/${relHashedImg}`;
-        await uploadObject(token, remoteImg, imgBuf, 'image/webp', IMMUTABLE_CACHE);
-        slide.visual.imageUrl = relHashedImg;
-        console.log(`  [upload] ${remoteImg}`);
       }
+    }
+
+    for (const slide of lesson.slides) {
+      if (slide.visual.type !== 'illustration') continue;
+      const localWebp = path.join(imagesDir, `${slide.id}.webp`);
+      if (!fs.existsSync(localWebp)) {
+        throw new Error(`Missing illustration ${localWebp} for slide ${slide.id}. Pass --images-dir <dir>.`);
+      }
+      const imgBuf = fs.readFileSync(localWebp);
+      const imgHash = createHash('sha256').update(imgBuf).digest('hex').slice(0, 12);
+      const relHashedImg = `images/${slide.id}.${imgHash}.webp`;
+      const remoteImg = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/${relHashedImg}`;
+      await uploadObject(token, remoteImg, imgBuf, 'image/webp', IMMUTABLE_CACHE);
+      slide.visual.imageUrl = relHashedImg;
+      console.log(`  [upload] ${remoteImg}`);
     }
   }
 
@@ -511,25 +595,12 @@ async function main() {
   await uploadObject(token, remotePkg, Buffer.from(pkgStr, 'utf8'), 'application/json; charset=utf-8', IMMUTABLE_CACHE);
   console.log(`[lesson:publish] Uploaded package -> ${remotePkg}`);
 
-  // 4. Fetch existing catalogue.json + GCS generation (optimistic concurrency lock) and back it up before overwriting
-  const remoteCat = `${NARRATED_LESSON_CDN_PREFIX}/catalogue.json`;
-  const expectedGeneration = await fetchObjectGeneration(token, remoteCat);
-  let catalogue: LessonCatalogue = {
-    catalogueVersion: 0,
-    updatedAt: new Date().toISOString(),
-    entries: [],
-  };
-  const liveCat = await fetchPublicObject(remoteCat);
-  if (liveCat.statusCode === 200) {
-    try {
-      catalogue = JSON.parse(liveCat.body.toString('utf8')) as LessonCatalogue;
-      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const backupPath = `${NARRATED_LESSON_CDN_PREFIX}/backups/catalogue.${stamp}.json`;
-      await uploadObject(token, backupPath, liveCat.body, 'application/json; charset=utf-8', IMMUTABLE_CACHE);
-      console.log(`[lesson:publish] Backed up prior catalogue -> ${backupPath}`);
-    } catch {
-      // start fresh if malformed
-    }
+  // 4. Back up prior catalogue (from exact generation) and write updated catalogue with ifGenerationMatch lock
+  if (priorCatalogueRaw) {
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupPath = `${NARRATED_LESSON_CDN_PREFIX}/backups/catalogue.${stamp}.json`;
+    await uploadObject(token, backupPath, priorCatalogueRaw, 'application/json; charset=utf-8', IMMUTABLE_CACHE);
+    console.log(`[lesson:publish] Backed up prior catalogue (gen=${expectedGeneration}) -> ${backupPath}`);
   }
 
   const firstImgSlide = lesson.slides.find((s) => s.visual.type === 'illustration');

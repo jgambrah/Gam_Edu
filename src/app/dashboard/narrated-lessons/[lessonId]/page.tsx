@@ -8,7 +8,17 @@ export default function DashboardNarratedLessonPlayerPage() {
   const params = useParams<{ lessonId: string }>();
   const { role } = useRole();
   const lessonId = typeof params?.lessonId === 'string' ? decodeURIComponent(params.lessonId) : '';
-  const isStaff = ['teacher', 'administrator', 'director', 'admin'].includes((role || '').toLowerCase());
+  const isStaff = [
+    'teacher',
+    'administrator',
+    'director',
+    'admin',
+    'headmaster',
+    'headmistress',
+    'head teacher',
+    'principal',
+    'owner',
+  ].includes((role || '').toLowerCase());
 
   return (
     <CdnLessonPlayerLoader
