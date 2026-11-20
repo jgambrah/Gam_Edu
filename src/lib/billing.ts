@@ -7,6 +7,9 @@ import { format, startOfDay } from 'date-fns';
 import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
 import { applyHeldCreditAfterBilling, reallocateExistingOverpayments, setStudentCreditMarker } from '@/lib/credit-allocation';
 import { currentTermFromProfile, type TermStamp } from '@/lib/term';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing-predicates';
+
+export { isDailyTransportSubscriber, shouldBillDailyCanteen };
 
 /** Reads the school's current term from the school profile. Returns null if it isn't set. Never throws. */
 export async function fetchCurrentTermStamp(firestore: Firestore, schoolId: string): Promise<TermStamp | null> {
@@ -100,24 +103,6 @@ const DAILY_RATES = {
   CANTEEN: 0.00,
   BUS: 0.00,
 };
-
-/** Single source of truth for whether a student should receive a daily Canteen invoice. */
-export function shouldBillDailyCanteen(
-  student: { usesCanteen?: boolean; canteenBillingMode?: string } | null | undefined,
-): boolean {
-  if (!student) return false;
-  if (student.usesCanteen === false) return false;
-  if (student.canteenBillingMode === 'Termly' || student.canteenBillingMode === 'None') return false;
-  return student.canteenBillingMode === 'Daily' || !student.canteenBillingMode;
-}
-
-/** Single source of truth for whether a student should receive a daily Transport invoice. */
-export function isDailyTransportSubscriber(
-  student: { usesBusService?: boolean; transportBillingModel?: string } | null | undefined,
-): boolean {
-  if (!student) return false;
-  return student.usesBusService === true && student.transportBillingModel === 'Daily';
-}
 
 interface BillingResult {
   success: boolean;

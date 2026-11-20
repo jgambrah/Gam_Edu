@@ -5,7 +5,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { format } from 'date-fns';
-import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
+import { schoolDayDateStrUtc, schoolDayFromDateStr, schoolDayStartUtcFromInstant } from '@/lib/attendance-date';
 import { notifyParents } from './notifications';
 import { sendSchoolWhatsAppServer } from '@/lib/whatsapp-server';
 import { billMultipleStudentsServer } from '@/lib/billing-server';
@@ -204,8 +204,8 @@ export async function processBiometricScans(
   targetDate: Date,
   logs: { biometricId: string; timestamp: number }[]
 ) {
-  const dateStr = schoolDayDateStr(targetDate);
-  const normalizedDateStart = schoolDayStartUtc(targetDate);
+  const dateStr = schoolDayDateStrUtc(targetDate);
+  const normalizedDateStart = schoolDayStartUtcFromInstant(targetDate);
 
   // Fetch school settings to calculate Late vs Present
   const settingsDoc = await db.collection('schoolSettings').doc(schoolId).get();
@@ -213,8 +213,10 @@ export async function processBiometricScans(
   const schoolStartTimeStr = settings?.schoolStartTime || "08:00"; // default 8 AM
 
   const [startHour, startMinute] = schoolStartTimeStr.split(':').map(Number);
-  const schoolStartTimeToday = new Date(targetDate);
-  schoolStartTimeToday.setHours(startHour, startMinute, 0, 0);
+  // Ghana time is UTC+0; anchor school start time to canonical UTC midnight so host timezone never shifts Late/Present
+  const schoolStartTimeToday = new Date(
+    normalizedDateStart.getTime() + ((startHour || 0) * 60 + (startMinute || 0)) * 60_000,
+  );
 
   const studentsToBill: any[] = [];
   const processedRecords: string[] = [];
@@ -322,10 +324,23 @@ export async function processBiometricScans(
     const aggSnap = await aggRef.get();
     const agg: any = aggSnap.exists ? (aggSnap.data() || {}) : {};
     if (agg.isArchived === true) { closedClasses.add(classId); continue; }
-    const map: Record<string, any> = { ...(agg.studentsMap || {}) };
+    const scanWriteTime = new Date();
+    const fallbackPrevUpdatedAt = agg.updatedAt || agg.createdAt || null;
+    const map: Record<string, any> = {};
+    for (const [sid, existingEntry] of Object.entries((agg.studentsMap || {}) as Record<string, any>)) {
+      if (existingEntry && typeof existingEntry === 'object') {
+        // Preserve each untouched student's prior timestamp so bumping the sheet's updatedAt never overrides a newer manual att-* edit
+        map[sid] = existingEntry.updatedAt
+          ? { ...existingEntry }
+          : { ...existingEntry, ...(fallbackPrevUpdatedAt ? { updatedAt: fallbackPrevUpdatedAt } : {}) };
+      } else {
+        map[sid] = existingEntry;
+      }
+    }
     Object.values(scanned).forEach(r => {
       const prev = map[r.studentId] || {};
       map[r.studentId] = { ...prev, studentId: r.studentId, studentName: r.studentName, status: r.status, notes: r.notes,
+        updatedAt: scanWriteTime,
         canteenEligible: prev.usesCanteen !== 'false' };
     });
     const entries = Object.values(map) as any[];
@@ -427,7 +442,7 @@ export async function importBiometricCsvAction(
       return { success: false, error: 'Unauthorized role privileges.' };
     }
 
-    const targetDate = new Date(targetDateVal);
+    const targetDate = schoolDayFromDateStr(targetDateVal) ?? new Date(targetDateVal);
 
     const result = await processBiometricScans(db, schoolId, targetDate, records);
     return result;

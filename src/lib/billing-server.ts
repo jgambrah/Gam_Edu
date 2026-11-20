@@ -1,7 +1,7 @@
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
-import { format, startOfDay } from 'date-fns';
-import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
-import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing';
+import { format } from 'date-fns';
+import { schoolDayDateStrUtc, schoolDayStartUtcFromInstant } from '@/lib/attendance-date';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing-predicates';
 import { applyHeldCreditAfterBillingServer } from '@/lib/credit-allocation-server';
 import { currentTermFromProfile, type TermStamp } from '@/lib/term';
 
@@ -52,9 +52,13 @@ export async function billStudentForAttendanceServer(
     }
 
     // NORMALIZE DATE: Canonical UTC midnight independent of server host timezone
-    const displayDate = startOfDay(attendanceDate);
-    const normalizedUtcDate = schoolDayStartUtc(attendanceDate);
-    const dateStr = schoolDayDateStr(attendanceDate);
+    const normalizedUtcDate = schoolDayStartUtcFromInstant(attendanceDate);
+    const dateStr = schoolDayDateStrUtc(attendanceDate);
+    const displayDate = new Date(
+      normalizedUtcDate.getUTCFullYear(),
+      normalizedUtcDate.getUTCMonth(),
+      normalizedUtcDate.getUTCDate(),
+    );
 
     // 1. Check preferences (shared predicates with client billing & reconciliation)
     const shouldBillCanteen = shouldBillDailyCanteen(student);

@@ -38,6 +38,22 @@ export function schoolDayStartUtc(date: Date): Date {
   return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0));
 }
 
+/**
+ * Server-safe calendar date string (`YYYY-MM-DD`) in Ghana Time (`UTC+0`) derived strictly from UTC getters,
+ * independent of the host machine's local timezone.
+ */
+export function schoolDayDateStrUtc(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+/**
+ * Server-safe canonical UTC midnight (`YYYY-MM-DDT00:00:00.000Z`) derived strictly from UTC getters,
+ * independent of the host machine's local timezone.
+ */
+export function schoolDayStartUtcFromInstant(date: Date): Date {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0));
+}
+
 /** Canonical UTC end-of-day (`YYYY-MM-DDT23:59:59.999Z`) for the local calendar date picked by the user. */
 export function schoolDayEndUtc(date: Date): Date {
   return new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999));
@@ -152,7 +168,7 @@ export function deduplicateAttendanceForDate(
     const docDateStr = resolveDocCalendarDateStr(data, item.id);
     if (docDateStr !== targetDateStr) continue;
 
-    const updatedAtMs = toEpochMs(data.updatedAt) || toEpochMs(data.createdAt);
+    const sheetUpdatedAtMs = toEpochMs(data.updatedAt) || toEpochMs(data.createdAt);
     const sheetMap = data.studentsMap || data.records;
     if (sheetMap && typeof sheetMap === 'object' && !Array.isArray(sheetMap)) {
       const classId = String(data.classId || '');
@@ -162,18 +178,19 @@ export function deduplicateAttendanceForDate(
         const studentId = String((typeof stVal === 'object' ? stVal.studentId : '') || stKey || '');
         if (!studentId) continue;
         const status = typeof stVal === 'string' ? stVal : String(stVal.status || 'Present');
+        const entryUpdatedAtMs = (typeof stVal === 'object' ? toEpochMs(stVal.updatedAt) : 0) || sheetUpdatedAtMs;
         consider(
           {
             studentId,
             studentName: typeof stVal === 'object' ? stVal.studentName : undefined,
             classId,
             status,
-            updatedAtMs,
+            updatedAtMs: entryUpdatedAtMs,
             usesCanteen: typeof stVal === 'object' ? stVal.usesCanteen : undefined,
             usesBusService: typeof stVal === 'object' ? stVal.usesBusService : undefined,
           },
           false,
-          updatedAtMs,
+          entryUpdatedAtMs,
         );
       }
     } else {
@@ -187,14 +204,14 @@ export function deduplicateAttendanceForDate(
           studentName: data.studentName,
           classId,
           status: String(data.status || 'Present'),
-          updatedAtMs,
+          updatedAtMs: sheetUpdatedAtMs,
           canteenMode: data.canteenMode,
           transportMode: data.transportMode,
           usesCanteen: data.usesCanteen,
           usesBusService: data.usesBusService,
         },
         true,
-        updatedAtMs,
+        sheetUpdatedAtMs,
       );
     }
   }

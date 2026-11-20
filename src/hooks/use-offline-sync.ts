@@ -153,6 +153,7 @@ export function useOfflineSync() {
                 date: Timestamp.fromDate(attDate),
                 dateStr: batchItem.dateStr,
                 syncedFromOffline: true,
+                updatedAt: Timestamp.fromMillis(batchItem.timestamp),
                 createdAt: Timestamp.now()
               }, { merge: true });
             }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, getDoc, Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
-import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc, schoolDayStartUtc } from '@/lib/attendance-date';
+import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc, schoolDayStartUtc, schoolTodayLocalDate } from '@/lib/attendance-date';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
@@ -15,7 +15,8 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { fetchCurrentTermStamp, isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing';
+import { fetchCurrentTermStamp } from '@/lib/billing';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing-predicates';
 
 interface MissingBillItem {
     id: string; // Unique ID (e.g. canteen-studentID-date)
@@ -31,7 +32,7 @@ export function ManualBillingReconciliation({ schoolId }: { schoolId: string }) 
     const firestore = useFirestore();
     const { toast } = useToast();
     
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(() => schoolTodayLocalDate());
     const [isLoading, setIsLoading] = useState(false);
     const [isFixing, setIsFixing] = useState(false);
     const [missingBills, setMissingBills] = useState<MissingBillItem[]>([]);

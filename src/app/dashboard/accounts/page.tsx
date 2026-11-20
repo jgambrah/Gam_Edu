@@ -8,7 +8,7 @@ import { useRole } from '@/context/role-context';
 import { collection, query, doc, writeBatch, serverTimestamp, updateDoc, setDoc, where, getDocs, getDoc, increment, orderBy, deleteField, addDoc, Timestamp, deleteDoc, runTransaction, limit, arrayUnion } from 'firebase/firestore';
 import { standardStatus, billBalance, reversiblePayments, round2 as round2Money } from '@/lib/bill-actions';
 import { format, isPast, startOfDay, endOfDay, startOfMonth, isAfter, isToday, differenceInDays } from 'date-fns';
-import { schoolDayStartUtc } from '@/lib/attendance-date';
+import { schoolDayStartUtc, schoolTodayLocalDate } from '@/lib/attendance-date';
 import type { DateRange } from 'react-day-picker';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -707,7 +707,7 @@ function DailyChargeForm({ setOpen, classes, students, schoolId, onRecordsAdded,
     
     const [chargeType, setChargeType] = useState<'Canteen' | 'Transport'>('Canteen');
     const [selectedClassId, setSelectedClassId] = useState('');
-    const [date, setDate] = useState<Date>(new Date());
+    const [date, setDate] = useState<Date>(() => schoolTodayLocalDate());
     
     const [canteenSettings, setCanteenSettings] = useState<any>(null);
     const [studentToRouteRateMap, setStudentToRouteRateMap] = useState<Map<string, number>>(new Map());

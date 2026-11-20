@@ -7,7 +7,7 @@ import { useCurrentSchool } from '@/hooks/use-current-school';
 import { termStampOfRecord } from '@/lib/term';
 import { format } from 'date-fns';
 import { deduplicateAttendanceForDate, schoolDayQueryBoundsUtc, schoolTodayLocalDate } from '@/lib/attendance-date';
-import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing-predicates';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -148,7 +148,7 @@ export default function BulkDailyReceiptsPage() {
 
             billsSnap.docs.forEach(d => {
                 const data = d.data();
-                if (data.voided === true || data.isArchived === true) return;
+                const isVoidedOrArchived = data.voided === true || data.isArchived === true;
                 if (serviceType !== 'Tuition') {
                     // Match deterministic daily bill ID suffix (`...-YYYY-MM-DD`) when present, else UTC date
                     const idDateMatch = /(\d{4}-\d{2}-\d{2})$/.exec(d.id);
@@ -166,7 +166,12 @@ export default function BulkDailyReceiptsPage() {
                     : type.includes(serviceType.toLowerCase());
                 
                 if (isCorrectService) {
-                    existingBillsMap.set(data.studentId, { id: d.id, ...data });
+                    // Treat voided/archived bills as existing in the audit map (matching ManualBillingReconciliation)
+                    // so a present student whose paid bill was voided is not flagged as missing.
+                    if (!existingBillsMap.has(data.studentId) || !isVoidedOrArchived) {
+                        existingBillsMap.set(data.studentId, { id: d.id, ...data });
+                    }
+                    if (isVoidedOrArchived) return;
 
                     const billed = Number(data.billedAmount) || 0;
                     const paid = Number(data.amountPaid) || 0;

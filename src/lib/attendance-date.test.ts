@@ -1,16 +1,20 @@
 // @vitest-environment node
+import fs from 'node:fs';
+import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   deduplicateAttendanceForDate,
   schoolDayDateStr,
+  schoolDayDateStrUtc,
   schoolDayEndUtc,
   schoolDayFromDateStr,
   schoolDayQueryBoundsUtc,
   schoolDayStartUtc,
+  schoolDayStartUtcFromInstant,
   schoolTodayDateStr,
   schoolTodayLocalDate,
 } from './attendance-date';
-import { isDailyTransportSubscriber, shouldBillDailyCanteen } from './billing';
+import { isDailyTransportSubscriber, shouldBillDailyCanteen } from './billing-predicates';
 
 describe('attendance-date timezone normalization & deduplication', () => {
   it('anchors local calendar dates and YYYY-MM-DD strings to UTC midnight and rejects malformed strings', () => {
@@ -120,5 +124,95 @@ describe('attendance-date timezone normalization & deduplication', () => {
     expect(isDailyTransportSubscriber({ usesBusService: true, transportBillingModel: 'Daily' })).toBe(true);
     expect(isDailyTransportSubscriber({ usesBusService: true, transportBillingModel: 'Termly' })).toBe(false);
     expect(isDailyTransportSubscriber({ usesBusService: false, transportBillingModel: 'Daily' })).toBe(false);
+  });
+
+  it('breaks updatedAt ties in favour of individual att-* docs and falls back to createdAt when updatedAt is absent', () => {
+    const tieTime = Date.parse('2026-11-19T09:00:00Z');
+    const docsSheetFirst = [
+      {
+        id: 'school_c1_2026-11-19',
+        data: {
+          classId: 'c1',
+          dateStr: '2026-11-19',
+          updatedAt: tieTime,
+          studentsMap: {
+            stu1: { studentId: 'stu1', status: 'Present' },
+            stu2: { studentId: 'stu2', status: 'Present' },
+          },
+        },
+      },
+      {
+        id: 'att-school-c1-stu1-2026-11-19',
+        data: {
+          studentId: 'stu1',
+          classId: 'c1',
+          dateStr: '2026-11-19',
+          updatedAt: tieTime,
+          status: 'Absent',
+        },
+      },
+      // Legacy doc with only createdAt (no updatedAt), newer than 09:00Z sheet -> must win
+      {
+        id: 'att-school-c1-stu2-2026-11-19',
+        data: {
+          studentId: 'stu2',
+          classId: 'c1',
+          dateStr: '2026-11-19',
+          createdAt: Date.parse('2026-11-19T10:30:00Z'),
+          status: 'Late',
+        },
+      },
+    ];
+    const res1 = Object.fromEntries(deduplicateAttendanceForDate(docsSheetFirst, '2026-11-19').map((r) => [r.studentId, r.status]));
+    expect(res1).toEqual({ stu1: 'Absent', stu2: 'Late' });
+
+    // Same tie with individual doc listed first -> individual doc still wins
+    const res2 = Object.fromEntries(deduplicateAttendanceForDate([...docsSheetFirst].reverse(), '2026-11-19').map((r) => [r.studentId, r.status]));
+    expect(res2).toEqual({ stu1: 'Absent', stu2: 'Late' });
+  });
+
+  it('honours per-student updatedAt inside studentsMap so a later sheet bump does not overwrite a newer manual att-* edit', () => {
+    const rawDocs = [
+      {
+        id: 'school_c1_2026-11-19',
+        data: {
+          classId: 'c1',
+          dateStr: '2026-11-19',
+          // Sheet was bumped at 11:00Z when stu2 scanned in, but stu1's entry stayed at 08:00Z
+          updatedAt: Date.parse('2026-11-19T11:00:00Z'),
+          studentsMap: {
+            stu1: { studentId: 'stu1', status: 'Present', updatedAt: Date.parse('2026-11-19T08:00:00Z') },
+            stu2: { studentId: 'stu2', status: 'Late', updatedAt: Date.parse('2026-11-19T11:00:00Z') },
+          },
+        },
+      },
+      // Teacher manually marked stu1 Absent at 09:30Z -> newer than stu1's 08:00Z sheet entry!
+      {
+        id: 'att-school-c1-stu1-2026-11-19',
+        data: {
+          studentId: 'stu1',
+          classId: 'c1',
+          dateStr: '2026-11-19',
+          updatedAt: Date.parse('2026-11-19T09:30:00Z'),
+          status: 'Absent',
+        },
+      },
+    ];
+    const byId = Object.fromEntries(deduplicateAttendanceForDate(rawDocs, '2026-11-19').map((r) => [r.studentId, r.status]));
+    expect(byId).toEqual({ stu1: 'Absent', stu2: 'Late' });
+  });
+
+  it('derives server-safe UTC date strings and midnight instants independent of host timezone', () => {
+    const instant = new Date('2026-11-20T01:15:00.000Z');
+    expect(schoolDayDateStrUtc(instant)).toBe('2026-11-20');
+    expect(schoolDayStartUtcFromInstant(instant).toISOString()).toBe('2026-11-20T00:00:00.000Z');
+  });
+
+  it('keeps billing-server.ts and billing-predicates.ts free of "use client" imports (NG1 regression guard)', () => {
+    const predicatesSrc = fs.readFileSync(path.resolve(__dirname, 'billing-predicates.ts'), 'utf8');
+    const serverSrc = fs.readFileSync(path.resolve(__dirname, 'billing-server.ts'), 'utf8');
+    expect(predicatesSrc).not.toMatch(/^\s*['"]use client['"]/m);
+    expect(serverSrc).not.toMatch(/from\s+['"]@\/lib\/billing['"]/);
+    expect(serverSrc).toMatch(/from\s+['"]@\/lib\/billing-predicates['"]/);
   });
 });
