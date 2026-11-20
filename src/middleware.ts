@@ -19,7 +19,11 @@ export async function middleware(req: NextRequest) {
 
   const isMainDomain = mainDomains.some(domain => hostname === domain || hostname === `www.${domain}`);
 
-  if (isMainDomain) {
+  if (
+    isMainDomain ||
+    url.pathname.startsWith('/narrated-lessons') ||
+    url.pathname.startsWith('/story-spark-preview')
+  ) {
     return NextResponse.next();
   }
 

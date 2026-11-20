@@ -77,6 +77,12 @@ export const navItems: NavItem[] = [
     roles: 'all',
   },
   {
+    path: '/narrated-lessons/water-cycle',
+    title: 'Narrated Lessons (Pilot)',
+    icon: BookOpen,
+    roles: ['Director', 'Administrator', 'Teacher', 'Student'],
+  },
+  {
     path: '/dashboard/my-children',
     title: 'My Children',
     icon: Users,
