@@ -1086,19 +1086,14 @@ function AdminDashboard({
 
   const attendanceRate = useMemo(() => {
     if (!attendance || attendance.length === 0 || activeStudents.length === 0) return null; // no records: show "—" (was an invented 66%)
-    const today = startOfDay(new Date());
-    const todayRecords = attendance.filter((r: any) => {
-      const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
-      return startOfDay(d).getTime() === today.getTime();
-    });
-    if (todayRecords.length > 0) {
-      const present = todayRecords.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
+    if (todayDedupedAttendance.length > 0) {
+      const present = todayDedupedAttendance.filter((r) => r.status === 'Present' || r.status === 'Late').length;
       return Math.round((present / activeStudents.length) * 100);
     }
     // Fall back to historical average attendance rate
     const present = attendance.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
     return Math.round((present / attendance.length) * 100);
-  }, [attendance, activeStudents]);
+  }, [attendance, todayDedupedAttendance, activeStudents]);
 
   const totalStaff = staff?.length || 0;
 
@@ -3370,19 +3365,14 @@ function DirectorDashboard({
   const attendanceRate = useMemo(() => {
     if (summaryAttendanceRate !== undefined) return summaryAttendanceRate;
     if (!attendance || attendance.length === 0 || activeStudents.length === 0) return null; // no records: show "—" (was an invented 66%)
-    const today = startOfDay(new Date());
-    const todayRecords = attendance.filter((r: any) => {
-      const d = r.date?.toDate ? r.date.toDate() : new Date(r.date);
-      return startOfDay(d).getTime() === today.getTime();
-    });
-    if (todayRecords.length > 0) {
-      const present = todayRecords.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
+    if (todayDedupedAttendance.length > 0) {
+      const present = todayDedupedAttendance.filter((r) => r.status === 'Present' || r.status === 'Late').length;
       return Math.round((present / activeStudents.length) * 100);
     }
     // Fall back to historical average attendance rate
     const present = attendance.filter((r: any) => r.status === 'Present' || r.status === 'Late').length;
     return Math.round((present / attendance.length) * 100);
-  }, [attendance, activeStudents, summaryAttendanceRate]);
+  }, [attendance, todayDedupedAttendance, activeStudents, summaryAttendanceRate]);
 
   const totalStaff = staff?.length || 0;
 
