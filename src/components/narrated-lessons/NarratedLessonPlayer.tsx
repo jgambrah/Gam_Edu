@@ -212,6 +212,19 @@ export function NarratedLessonPlayer({
     }
   }, [lesson.lessonId, pronAudit]);
 
+  // Close Guide modal or Ask Teacher drawer on Escape key
+  useEffect(() => {
+    if (!showReviewerPanel && !askOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showReviewerPanel) setShowReviewerPanel(false);
+        if (askOpen) setAskOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [showReviewerPanel, askOpen]);
+
   const updateSlidePronAudit = (slideId: string, term: string, patch: Partial<SlidePronEntry>) => {
     const key = `${slideId}:${term}`;
     setPronAudit((old) => ({
@@ -1620,8 +1633,14 @@ export function NarratedLessonPlayer({
 
       {/* Ask Teacher Slide-Over Drawer */}
       {askOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 backdrop-blur-[1px]">
-          <div className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl">
+        <div
+          className="fixed inset-0 z-[100] flex justify-end bg-slate-900/40 backdrop-blur-[1px]"
+          onClick={() => setAskOpen(false)}
+        >
+          <div
+            className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3.5">
               <div>
                 <h3 className="text-sm font-extrabold text-slate-900">Ask Your Science Teacher</h3>
@@ -1712,10 +1731,19 @@ export function NarratedLessonPlayer({
 
       {/* Teacher / Reviewer Guide Modal */}
       {showReviewerPanel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[1px]">
-          <div className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-              <div>
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Teacher and Reviewer Guide"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[1px]"
+          onClick={() => setShowReviewerPanel(false)}
+        >
+          <div
+            className="flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-5 py-4">
+              <div className="min-w-0">
                 <h3 className="text-base font-extrabold text-slate-900">
                   Teacher &amp; Reviewer Guide ({lesson.schemaVersion})
                 </h3>
@@ -1726,9 +1754,11 @@ export function NarratedLessonPlayer({
               <button
                 type="button"
                 onClick={() => setShowReviewerPanel(false)}
-                className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
+                aria-label="Close Teacher Guide"
+                className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
+                <span>Close</span>
               </button>
             </div>
 
@@ -1784,6 +1814,16 @@ export function NarratedLessonPlayer({
                   ))}
                 </div>
               </section>
+            </div>
+            <div className="flex shrink-0 justify-end border-t border-slate-200 bg-slate-50 px-5 py-3">
+              <button
+                type="button"
+                onClick={() => setShowReviewerPanel(false)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+              >
+                <X className="h-4 w-4" />
+                Close Guide
+              </button>
             </div>
           </div>
         </div>
