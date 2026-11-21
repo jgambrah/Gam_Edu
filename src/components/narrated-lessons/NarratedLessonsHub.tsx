@@ -349,8 +349,11 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wide text-sky-700">
           <span>{entry.subject}</span>
-          <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-600">
-            {entry.contentStandard}
+          <span
+            title={`Content Standard: ${entry.contentStandard}`}
+            className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-600"
+          >
+            {entry.indicators?.length ? entry.indicators.join(' · ') : entry.contentStandard}
           </span>
         </div>
 

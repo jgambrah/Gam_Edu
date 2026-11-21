@@ -830,7 +830,10 @@ export function NarratedLessonPlayer({
                 )}
               </div>
               <p className="truncate text-[11px] text-slate-500">
-                {lesson.meta.class} {lesson.meta.subject} · {lesson.meta.contentStandard}
+                {lesson.meta.class} {lesson.meta.subject} ·{' '}
+                {lesson.meta.indicators?.length
+                  ? lesson.meta.indicators.join(' · ')
+                  : lesson.meta.contentStandard}
               </p>
             </div>
           </div>
@@ -1748,7 +1751,11 @@ export function NarratedLessonPlayer({
                   Teacher &amp; Reviewer Guide ({lesson.schemaVersion})
                 </h3>
                 <p className="text-xs text-slate-500">
-                  {lesson.meta.class} {lesson.meta.subject} · {lesson.meta.contentStandard} · {lesson.meta.narrationWordCount} narration words
+                  {lesson.meta.class} {lesson.meta.subject} ·{' '}
+                  {lesson.meta.indicators?.length
+                    ? lesson.meta.indicators.join(' · ')
+                    : lesson.meta.contentStandard}{' '}
+                  · {lesson.meta.narrationWordCount} narration words
                 </p>
               </div>
               <button
