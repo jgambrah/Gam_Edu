@@ -121,31 +121,38 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
 
         try {
             const element = printRef.current;
-            const cssWidth = element.scrollWidth;
-            const cssHeight = element.scrollHeight;
+            const liveRect = element.getBoundingClientRect();
+            const cssWidth = Math.ceil(liveRect.width);
+            const liveHeight = Math.max(element.scrollHeight, Math.ceil(liveRect.height));
 
-            // Keep the bitmap small: 1.5x is sharp enough for A4 text; shrink further for very long
-            // statements so the canvas stays inside browser limits.
-            const scale = Math.max(1, Math.min(1.5, 16000 / cssHeight));
+            // Keep the bitmap small: 1.5x is sharp enough for A4 text; shrink for very long statements so the
+            // canvas stays under the ~16M pixel limit of mobile/Safari browsers (a bigger canvas silently
+            // truncates the bottom of the page - i.e. the final balance).
+            const scale = Math.max(0.8, Math.min(1.5, Math.sqrt(16_000_000 / (cssWidth * liveHeight))));
+
+            // Row / block bottoms are measured inside html2canvas's own clone, so they match the rendered
+            // bitmap exactly even if the clone lays out slightly differently from the live preview.
+            let breakPoints: number[] = [];
             const canvas = await html2canvas(element, {
                 scale,
                 useCORS: true,
                 logging: false,
                 backgroundColor: '#ffffff',
                 windowWidth: cssWidth,
+                onclone: (_doc, clonedEl) => {
+                    const top = clonedEl.getBoundingClientRect().top;
+                    breakPoints = Array.from(clonedEl.querySelectorAll('tr, [data-pdf-keep]'))
+                        .map(n => n.getBoundingClientRect().bottom - top)
+                        .filter(b => b > 0)
+                        .sort((a, b) => a - b);
+                },
             });
             const ratio = canvas.width / cssWidth; // canvas px per CSS px
+            // The bitmap itself is the source of truth for total height, so the last page can never be dropped.
+            const cssHeight = canvas.height / ratio;
 
             // A4 page height expressed in CSS px (page width = element width).
             const pageCssHeight = Math.floor((cssWidth * 297) / 210);
-
-            // Safe places to break a page: the bottom edge of every table row / keep-together block,
-            // so a row is never sliced in half.
-            const elTop = element.getBoundingClientRect().top;
-            const breakPoints = Array.from(element.querySelectorAll('tr, [data-pdf-keep]'))
-                .map(n => n.getBoundingClientRect().bottom - elTop)
-                .filter(b => b > 0)
-                .sort((a, b) => a - b);
 
             const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
             const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -166,7 +173,7 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
                 const sliceCssHeight = end - start;
                 const sliceCanvas = document.createElement('canvas');
                 sliceCanvas.width = canvas.width;
-                sliceCanvas.height = Math.max(1, Math.round(sliceCssHeight * ratio));
+                sliceCanvas.height = Math.max(1, Math.min(canvas.height - Math.round(start * ratio), Math.round(sliceCssHeight * ratio)));
                 const ctx = sliceCanvas.getContext('2d');
                 if (!ctx) throw new Error('Canvas context unavailable');
                 ctx.fillStyle = '#ffffff';
