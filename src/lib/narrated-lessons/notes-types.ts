@@ -24,6 +24,7 @@ export interface ComprehensiveNoteBlock {
   paragraphs: string[];
   keyTerms?: NoteKeyTerm[];
   enrichment?: boolean;
+  enrichmentNote?: string;
   exampleTable?: NoteExampleTable;
 }
 
@@ -40,6 +41,9 @@ export interface WorkedQuestion {
   commonConfusion?: string;
   misconceptionRef?: string;
   enrichment?: boolean;
+  enrichmentNote?: string;
+  assessmentMode?: string;
+  checkCriteria?: string[];
   /** Internal author review flag — NEVER rendered to pupils. */
   verify?: string;
 }
@@ -47,6 +51,7 @@ export interface WorkedQuestion {
 export interface QuestionSeriesGroup {
   exemplarId: string;
   exemplarText: string;
+  indicatorId?: string;
   slideIds?: string[];
   questions: WorkedQuestion[];
 }
