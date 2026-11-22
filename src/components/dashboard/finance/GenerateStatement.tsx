@@ -121,20 +121,74 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
 
         try {
             const element = printRef.current;
-            const canvas = await html2canvas(element, { 
-                scale: 2, 
+            const cssWidth = element.scrollWidth;
+            const cssHeight = element.scrollHeight;
+
+            // Keep the bitmap small: 1.5x is sharp enough for A4 text; shrink further for very long
+            // statements so the canvas stays inside browser limits.
+            const scale = Math.max(1, Math.min(1.5, 16000 / cssHeight));
+            const canvas = await html2canvas(element, {
+                scale,
                 useCORS: true,
                 logging: false,
-                backgroundColor: '#ffffff'
+                backgroundColor: '#ffffff',
+                windowWidth: cssWidth,
             });
-            const imgData = canvas.toDataURL('image/png');
-            
-            const pdf = new jsPDF('p', 'mm', 'a4');
+            const ratio = canvas.width / cssWidth; // canvas px per CSS px
+
+            // A4 page height expressed in CSS px (page width = element width).
+            const pageCssHeight = Math.floor((cssWidth * 297) / 210);
+
+            // Safe places to break a page: the bottom edge of every table row / keep-together block,
+            // so a row is never sliced in half.
+            const elTop = element.getBoundingClientRect().top;
+            const breakPoints = Array.from(element.querySelectorAll('tr, [data-pdf-keep]'))
+                .map(n => n.getBoundingClientRect().bottom - elTop)
+                .filter(b => b > 0)
+                .sort((a, b) => a - b);
+
+            const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+
+            let start = 0;
+            let pageIndex = 0;
+            while (start < cssHeight - 1) {
+                const limit = start + pageCssHeight;
+                let end = limit;
+                if (limit >= cssHeight) {
+                    end = cssHeight;
+                } else {
+                    const candidates = breakPoints.filter(b => b > start + pageCssHeight * 0.5 && b <= limit);
+                    if (candidates.length > 0) end = candidates[candidates.length - 1];
+                }
+
+                const sliceCssHeight = end - start;
+                const sliceCanvas = document.createElement('canvas');
+                sliceCanvas.width = canvas.width;
+                sliceCanvas.height = Math.max(1, Math.round(sliceCssHeight * ratio));
+                const ctx = sliceCanvas.getContext('2d');
+                if (!ctx) throw new Error('Canvas context unavailable');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+                ctx.drawImage(
+                    canvas,
+                    0, Math.round(start * ratio), canvas.width, sliceCanvas.height,
+                    0, 0, sliceCanvas.width, sliceCanvas.height
+                );
+
+                if (pageIndex > 0) pdf.addPage();
+                const sliceMmHeight = Math.min(pdfHeight, (sliceCssHeight * pdfWidth) / cssWidth);
+                pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, pdfWidth, sliceMmHeight, undefined, 'FAST');
+
+                sliceCanvas.width = 0; // release memory
+                sliceCanvas.height = 0;
+                start = end;
+                pageIndex++;
+            }
+            canvas.width = 0;
+            canvas.height = 0;
+
             pdf.save(`Statement_${student.firstName}_${student.lastName}.pdf`);
         } catch (error) {
             console.error('PDF Generation Failed:', error);

@@ -246,7 +246,7 @@ export function StatementDocument({ student, records, payments, dateRange, summa
         </section>
         
         {/* Summary Totals */}
-        <section className="flex justify-end mt-10">
+        <section className="flex justify-end mt-10" data-pdf-keep>
             <div className="w-1/2 space-y-2.5">
                 <div className="flex justify-between py-1.5 border-b border-dashed text-[9px] font-black uppercase text-slate-400 tracking-widest pl-2">
                     <span>Charges this Period</span>
