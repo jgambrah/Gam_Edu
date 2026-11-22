@@ -14,6 +14,7 @@ import {
   Crosshair,
   Download,
   Eye,
+  FileText,
   FlaskConical,
   HelpCircle,
   MessageCircleQuestion,
@@ -41,8 +42,10 @@ import type {
   TapDiagramItem,
 } from '@/lib/narrated-lessons/types';
 import { lessonMediaUrl } from '@/lib/narrated-lessons/types';
+import type { LessonNotesPackage, LessonStage } from '@/lib/narrated-lessons/notes-types';
 import { TeacherPointerOverlay } from './TeacherPointerOverlay';
 import { PointerCueEditor } from './PointerCueEditor';
+import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -103,9 +106,13 @@ function deterministicShuffleIds(ids: string[]): string[] {
 
 export function NarratedLessonPlayer({
   lesson,
+  notes = null,
+  initialStage = 'listen',
   allowReviewerTools = false,
 }: {
   lesson: NarratedLesson;
+  notes?: LessonNotesPackage | null;
+  initialStage?: LessonStage;
   allowReviewerTools?: boolean;
 }) {
   const steps = useMemo<PlayerStep[]>(() => {
@@ -144,7 +151,46 @@ export function NarratedLessonPlayer({
   }, [lesson.slides]);
 
   const [stepIdx, setStepIdx] = useState(0);
+  const [activeStage, setActiveStage] = useState<LessonStage>(notes ? initialStage : 'listen');
   const [lowDataMode, setLowDataMode] = useState(false);
+
+  const validSlideIds = useMemo(() => new Set(lesson.slides.map((s) => s.id)), [lesson.slides]);
+
+  useEffect(() => {
+    setActiveStage(notes ? initialStage : 'listen');
+  }, [notes, initialStage]);
+
+  const handleChangeStage = useCallback(
+    (next: LessonStage) => {
+      if (!notes && next !== 'listen') return;
+      if (next !== 'listen' && audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+      setActiveStage(next);
+      try {
+        const url = new URL(window.location.href);
+        if (next === 'listen') url.searchParams.delete('stage');
+        else url.searchParams.set('stage', next);
+        window.history.replaceState({}, '', url.toString());
+      } catch {
+        // ignore URL update errors
+      }
+    },
+    [notes],
+  );
+
+  const handleJumpToSlide = useCallback(
+    (slideId: string) => {
+      const targetIdx = steps.findIndex((s) => s.kind === 'slide' && s.id === slideId);
+      if (targetIdx !== -1) {
+        setStepIdx(targetIdx);
+        handleChangeStage('listen');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    },
+    [steps, handleChangeStage],
+  );
   const [pointerEnabled, setPointerEnabled] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [canUseReviewerTools, setCanUseReviewerTools] = useState(allowReviewerTools);
@@ -948,6 +994,59 @@ export function NarratedLessonPlayer({
           />
         </div>
 
+        {/* Stage Switcher Bar (Listen · Notes · Questions) — shown only when notes package exists */}
+        {notes && (
+          <div className="border-t border-slate-100 bg-slate-50/90 px-3 py-1.5 sm:px-4">
+            <div className="mx-auto flex max-w-5xl items-center justify-between gap-2">
+              <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => handleChangeStage('listen')}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                    activeStage === 'listen'
+                      ? 'bg-sky-600 text-white shadow-2xs'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <BookOpen className="h-3.5 w-3.5" />
+                  Listen
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleChangeStage('notes')}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                    activeStage === 'notes'
+                      ? 'bg-teal-600 text-white shadow-2xs'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  Notes
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleChangeStage('questions')}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-bold transition ${
+                    activeStage === 'questions'
+                      ? 'bg-indigo-600 text-white shadow-2xs'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <HelpCircle className="h-3.5 w-3.5" />
+                  Questions
+                </button>
+              </div>
+              <span className="hidden text-[11px] font-medium text-slate-500 sm:inline">
+                {activeStage === 'listen'
+                  ? 'Narrated Lesson'
+                  : activeStage === 'notes'
+                    ? 'Study Notes & Summaries'
+                    : 'Worked Question Series'}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Reviewer Free-Jump Strip */}
         {reviewerMode && (
           <div className="border-t border-indigo-100 bg-indigo-50/70 px-4 py-2">
@@ -995,6 +1094,16 @@ export function NarratedLessonPlayer({
 
       {/* Main Content */}
       <main className="mx-auto max-w-4xl px-4 py-6 pb-24">
+        {notes && activeStage !== 'listen' ? (
+          <LessonNotesAndQuestions
+            notes={notes}
+            stage={activeStage}
+            onChangeStage={handleChangeStage}
+            onJumpToSlide={handleJumpToSlide}
+            validSlideIds={validSlideIds}
+          />
+        ) : (
+          <>
         {/* INTRO STEP */}
         {currentStep.kind === 'intro' && (
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -1461,7 +1570,7 @@ export function NarratedLessonPlayer({
                     Final Mastery Check · Pass Mark {lesson.masteryCheck.passMark} / {lesson.masteryCheck.items.length}
                   </span>
                   <h2 className="text-xl font-extrabold text-slate-900">
-                    Show What You Know About the Water Cycle
+                    Show What You Know: {lesson.meta.title || 'Mastery Check'}
                   </h2>
                 </div>
                 <div className="rounded-xl bg-white px-3.5 py-1.5 text-sm font-extrabold text-emerald-800 shadow-2xs">
@@ -1584,6 +1693,51 @@ export function NarratedLessonPlayer({
               </div>
             </div>
 
+            {/* Post-lesson Next Stage: Study Notes & Worked Question Series */}
+            {notes && (
+              <div className="rounded-2xl border border-indigo-200 bg-gradient-to-br from-indigo-50 via-sky-50 to-teal-50 p-6 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2.5 py-0.5 text-[11px] font-bold text-indigo-800">
+                      Next Stage · Exam Revision
+                    </span>
+                    <h3 className="mt-1.5 text-lg font-extrabold text-slate-900">
+                      Study Notes &amp; Worked Question Series
+                    </h3>
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">
+                      Review short section summaries, full study notes, and{' '}
+                      {notes.questionSeries.reduce((sum, g) => sum + g.questions.length, 0)}{' '}
+                      teacher-explained questions with memory tricks and common exam traps.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleChangeStage('notes');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-teal-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-xs hover:bg-teal-700"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Open Study Notes
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleChangeStage('questions');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-xs hover:bg-indigo-700"
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                      Practice Question Series
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-center pt-2">
               <button
                 type="button"
@@ -1596,10 +1750,12 @@ export function NarratedLessonPlayer({
             </div>
           </div>
         )}
+          </>
+        )}
       </main>
 
       {/* Bottom Sticky Navigation Footer */}
-      {currentStep.kind !== 'intro' && (
+      {activeStage === 'listen' && currentStep.kind !== 'intro' && (
         <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
           <div className="mx-auto flex max-w-4xl items-center justify-between gap-3">
             <button

@@ -3,6 +3,7 @@ import {
   NARRATED_LESSON_CDN_PREFIX,
   type NarratedLesson,
 } from './types';
+import type { LessonNotesPackage } from './notes-types';
 
 export interface ClassBand {
   id: 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
@@ -74,6 +75,8 @@ export interface LessonCatalogueEntry {
   schemaVersion: string;
   packagePath: string; // e.g. packages/bs7-sci-t1-water-cycle.<hash12>.json
   packageHash: string;
+  notesPath?: string; // e.g. packages/b7-sci-t3-systems-ecosystem.notes.<hash12>.json
+  notesHash?: string;
   coverImagePath?: string; // e.g. bs7-sci-t1-water-cycle/images/s01.webp
   status: 'published' | 'pilot' | 'draft';
   updatedAt: string;
@@ -107,6 +110,7 @@ export async function fetchLessonCatalogue(): Promise<LessonCatalogue> {
 export async function fetchLessonPackageById(lessonIdOrSlug: string): Promise<{
   entry: LessonCatalogueEntry;
   lesson: NarratedLesson;
+  notes: LessonNotesPackage | null;
 } | null> {
   const cat = await fetchLessonCatalogue();
   const entry = cat.entries.find(
@@ -114,10 +118,24 @@ export async function fetchLessonPackageById(lessonIdOrSlug: string): Promise<{
   );
   if (!entry) return null;
 
-  const pkgRes = await fetch(cdnObjectUrl(entry.packagePath), { cache: 'force-cache' });
+  const pkgPromise = fetch(cdnObjectUrl(entry.packagePath), { cache: 'force-cache' });
+  const notesPromise = entry.notesPath
+    ? fetch(cdnObjectUrl(entry.notesPath), { cache: 'force-cache' }).catch(() => null)
+    : Promise.resolve(null);
+
+  const [pkgRes, notesRes] = await Promise.all([pkgPromise, notesPromise]);
   if (!pkgRes.ok) {
     throw new Error(`Failed to load lesson package ${entry.lessonId} (HTTP ${pkgRes.status})`);
   }
   const lesson = (await pkgRes.json()) as NarratedLesson;
-  return { entry, lesson };
+
+  let notes: LessonNotesPackage | null = null;
+  if (notesRes && notesRes.ok) {
+    try {
+      notes = (await notesRes.json()) as LessonNotesPackage;
+    } catch {
+      notes = null;
+    }
+  }
+  return { entry, lesson, notes };
 }

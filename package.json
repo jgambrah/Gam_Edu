@@ -15,7 +15,8 @@
     "test:rules": "npx --yes firebase-tools@15.35.0 emulators:exec --only firestore,storage --project demo-gam-edu --config firebase.emulators.json \"vitest run --config vitest.rules.config.ts\"",
     "story:media": "tsx scripts/library/seed-batch-media.ts",
     "story:publish": "tsx scripts/library/publish-to-storage.ts",
-    "lesson:publish": "tsx scripts/lessons/publish-lesson.ts"
+    "lesson:publish": "tsx scripts/lessons/publish-lesson.ts",
+    "lesson:publish-notes": "tsx scripts/lessons/publish-notes.ts"
   },
   "dependencies": {
     "@blockly/field-colour": "^5.0.2",

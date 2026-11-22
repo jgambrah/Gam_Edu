@@ -5,7 +5,9 @@ import Link from 'next/link';
 import {
   BookOpen,
   Clock,
+  FileText,
   GraduationCap,
+  HelpCircle,
   Layers,
   Loader2,
   PlayCircle,
@@ -322,64 +324,108 @@ export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }:
 function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath: string }) {
   const coverUrl = entry.coverImagePath ? cdnObjectUrl(entry.coverImagePath) : null;
   const href = `${basePath}/${encodeURIComponent(entry.lessonId)}`;
+  const hasNotes = Boolean(entry.notesPath);
 
   return (
-    <Link
-      href={href}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xs transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md"
-    >
-      <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
-        {coverUrl ? (
-          <img
-            src={coverUrl}
-            alt={entry.title}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xs transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md">
+      <Link href={href} className="flex flex-1 flex-col">
+        <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
+          {coverUrl ? (
+            <img
+              src={coverUrl}
+              alt={entry.title}
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-sky-100 to-teal-100">
+              <BookOpen className="h-10 w-10 text-sky-600" />
+            </div>
+          )}
+          <span className="absolute left-3 top-3 rounded-full bg-slate-900/80 px-2.5 py-0.5 text-[11px] font-bold text-white backdrop-blur-xs">
+            {classDisplayLabel(entry.class)} · Term {entry.term}
+          </span>
+          {hasNotes && (
+            <span className="absolute right-3 top-3 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
+              + Notes &amp; Q&amp;A
+            </span>
+          )}
+        </div>
+
+        <div className="flex flex-1 flex-col p-4 pb-3">
+          <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wide text-sky-700">
+            <span>{entry.subject}</span>
+            <span
+              title={`Content Standard: ${entry.contentStandard}`}
+              className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-600"
+            >
+              {entry.indicators?.length ? entry.indicators.join(' · ') : entry.contentStandard}
+            </span>
+          </div>
+
+          <h3 className="mt-1.5 text-base font-extrabold text-slate-900 group-hover:text-sky-700">
+            {entry.title}
+          </h3>
+          <p className="mt-1 line-clamp-2 flex-1 text-xs leading-relaxed text-slate-600">
+            {entry.summary}
+          </p>
+        </div>
+      </Link>
+
+      <div className="border-t border-slate-100 px-4 py-3 text-xs text-slate-500">
+        {hasNotes ? (
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-3 text-[11px] text-slate-500">
+              <span className="inline-flex items-center gap-1">
+                <Layers className="h-3.5 w-3.5" />
+                {entry.slideCount} slides
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" />~{entry.estimatedTotalMinutes}m
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              <Link
+                href={href}
+                className="inline-flex items-center justify-center gap-1 rounded-lg bg-sky-600 px-2 py-1.5 text-[11px] font-bold text-white transition hover:bg-sky-700"
+              >
+                <PlayCircle className="h-3.5 w-3.5 shrink-0" />
+                Listen
+              </Link>
+              <Link
+                href={`${href}?stage=notes`}
+                className="inline-flex items-center justify-center gap-1 rounded-lg border border-teal-200 bg-teal-50 px-2 py-1.5 text-[11px] font-bold text-teal-800 transition hover:bg-teal-100"
+              >
+                <FileText className="h-3.5 w-3.5 shrink-0" />
+                Notes
+              </Link>
+              <Link
+                href={`${href}?stage=questions`}
+                className="inline-flex items-center justify-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-1.5 text-[11px] font-bold text-indigo-800 transition hover:bg-indigo-100"
+              >
+                <HelpCircle className="h-3.5 w-3.5 shrink-0" />
+                Questions
+              </Link>
+            </div>
+          </div>
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-sky-100 to-teal-100">
-            <BookOpen className="h-10 w-10 text-sky-600" />
-          </div>
+          <Link href={href} className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center gap-1">
+                <Layers className="h-3.5 w-3.5" />
+                {entry.slideCount} slides
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <Clock className="h-3.5 w-3.5" />~{entry.estimatedTotalMinutes}m
+              </span>
+            </div>
+            <span className="inline-flex items-center gap-1 font-bold text-sky-600">
+              <PlayCircle className="h-4 w-4" />
+              Start
+            </span>
+          </Link>
         )}
-        <span className="absolute left-3 top-3 rounded-full bg-slate-900/80 px-2.5 py-0.5 text-[11px] font-bold text-white backdrop-blur-xs">
-          {classDisplayLabel(entry.class)} · Term {entry.term}
-        </span>
       </div>
-
-      <div className="flex flex-1 flex-col p-4">
-        <div className="flex items-center justify-between gap-2 text-[11px] font-bold uppercase tracking-wide text-sky-700">
-          <span>{entry.subject}</span>
-          <span
-            title={`Content Standard: ${entry.contentStandard}`}
-            className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-600"
-          >
-            {entry.indicators?.length ? entry.indicators.join(' · ') : entry.contentStandard}
-          </span>
-        </div>
-
-        <h3 className="mt-1.5 text-base font-extrabold text-slate-900 group-hover:text-sky-700">
-          {entry.title}
-        </h3>
-        <p className="mt-1 line-clamp-2 flex-1 text-xs leading-relaxed text-slate-600">
-          {entry.summary}
-        </p>
-
-        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center gap-1">
-              <Layers className="h-3.5 w-3.5" />
-              {entry.slideCount} slides
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <Clock className="h-3.5 w-3.5" />~{entry.estimatedTotalMinutes}m
-            </span>
-          </div>
-          <span className="inline-flex items-center gap-1 font-bold text-sky-600">
-            <PlayCircle className="h-4 w-4" />
-            Start
-          </span>
-        </div>
-      </div>
-    </Link>
+    </div>
   );
 }

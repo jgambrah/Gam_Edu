@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
 import type { NarratedLesson } from '@/lib/narrated-lessons/types';
+import type { LessonNotesPackage, LessonStage } from '@/lib/narrated-lessons/notes-types';
 import { NarratedLessonPlayer } from './NarratedLessonPlayer';
 
 interface CdnLessonPlayerLoaderProps {
@@ -21,8 +22,23 @@ export function CdnLessonPlayerLoader({
   allowReviewerTools = false,
 }: CdnLessonPlayerLoaderProps) {
   const [lesson, setLesson] = useState<NarratedLesson | null>(null);
+  const [notes, setNotes] = useState<LessonNotesPackage | null>(null);
+  const [initialStage, setInitialStage] = useState<LessonStage>('listen');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const stageParam = new URLSearchParams(window.location.search).get('stage');
+      if (stageParam === 'notes' || stageParam === 'questions') {
+        setInitialStage(stageParam);
+      } else {
+        setInitialStage('listen');
+      }
+    } catch {
+      setInitialStage('listen');
+    }
+  }, [lessonIdOrSlug]);
 
   useEffect(() => {
     let active = true;
@@ -33,8 +49,10 @@ export function CdnLessonPlayerLoader({
         if (!res) {
           setError(`Lesson "${lessonIdOrSlug}" was not found in the central library.`);
           setLesson(null);
+          setNotes(null);
         } else {
           setLesson(res.lesson);
+          setNotes(res.notes);
           setError(null);
         }
       })
@@ -93,7 +111,12 @@ export function CdnLessonPlayerLoader({
           </div>
         </div>
       )}
-      <NarratedLessonPlayer lesson={lesson} allowReviewerTools={allowReviewerTools} />
+      <NarratedLessonPlayer
+        lesson={lesson}
+        notes={notes}
+        initialStage={notes ? initialStage : 'listen'}
+        allowReviewerTools={allowReviewerTools}
+      />
     </div>
   );
 }
