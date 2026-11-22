@@ -7,6 +7,7 @@ import { formatStudentId } from '@/lib/student-utils';
 import { DateRange } from 'react-day-picker';
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
+import { buildStatementLedger, statementPeriodTotals } from '@/lib/statement-ledger';
 
 interface StatementDocumentProps {
   student?: Student;
@@ -26,93 +27,19 @@ export function StatementDocument({ student, records, payments, dateRange, summa
   const primaryTheme = schoolProfile?.brandColor || '#1e293b';
   const secondaryTheme = schoolProfile?.secondaryColor || primaryTheme;
 
-  // Compile all transaction entries chronologically
-  const ledgerEntries = useMemo(() => {
-    const entries: Array<{
-      id: string;
-      date: Date;
-      description: string;
-      debit: number;
-      credit: number;
-      type: 'Charge' | 'Payment' | 'Reversal' | 'Waiver';
-      originalRecord?: any;
-    }> = [];
+  // Compile all transaction entries chronologically (shared with the PDF builder)
+  const ledgerEntries = useMemo(
+    () => buildStatementLedger(records, payments, dateRange),
+    [records, payments, dateRange]
+  );
 
-    // 1. Process Charges (Debits) and Waivers (Credits)
-    (records || []).forEach(rec => {
-      const recDate = rec.createdAt?.toDate ? rec.createdAt.toDate() : new Date();
-      entries.push({
-        id: `charge-${rec.id}`,
-        date: recDate,
-        description: rec.description || 'Service Charge',
-        debit: rec.billedAmount || 0,
-        credit: 0,
-        type: 'Charge',
-        originalRecord: rec
-      });
-
-      if (rec.waiverAmount && rec.waiverAmount > 0) {
-        entries.push({
-          id: `waiver-${rec.id}`,
-          date: recDate,
-          description: `Waiver Applied for ${rec.description || 'Charge'}`,
-          debit: 0,
-          credit: rec.waiverAmount,
-          type: 'Waiver',
-          originalRecord: rec
-        });
-      }
-    });
-
-    // 2. Process Payments (Credits) and Reversals (Negative Credits)
-    (payments || []).forEach(pay => {
-      const payDate = pay.paidAt?.toDate ? pay.paidAt.toDate() : (pay.paidAt?.seconds ? new Date(pay.paidAt.seconds * 1000) : new Date());
-      
-      // Filter payments by dateRange if present
-      if (dateRange?.from || dateRange?.to) {
-        if (dateRange.from && payDate < dateRange.from) return;
-        if (dateRange.to && payDate > dateRange.to) return;
-      }
-
-      if (pay.amount > 0) {
-        entries.push({
-          id: pay.id,
-          date: payDate,
-          description: `${pay.description || 'Payment Received'} (Receipt #${pay.id})` + (pay.status === 'Reversed' ? ' - [REVERSED]' : ''),
-          debit: 0,
-          credit: pay.amount,
-          type: 'Payment',
-          originalRecord: pay
-        });
-      } else if (pay.amount < 0) {
-        entries.push({
-          id: pay.id,
-          date: payDate,
-          description: `${pay.notes || pay.description || 'Reversal of Payment'} (${pay.processedByName ? `by ${pay.processedByName}` : ''})`,
-          debit: 0,
-          credit: pay.amount,
-          type: 'Reversal',
-          originalRecord: pay
-        });
-      }
-    });
-
-    // Sort entries oldest first (ascending chronological order)
-    return entries.sort((a, b) => a.date.getTime() - b.date.getTime());
-  }, [records, payments, dateRange]);
-
-  // Calculate summary for the PERIOD being displayed based on compiled entries
-  const periodSummary = useMemo(() => {
-    const totalBilled = ledgerEntries.reduce((acc, r) => acc + r.debit, 0);
-    const totalPaid = ledgerEntries.reduce((acc, r) => acc + r.credit, 0);
-    return { totalBilled, totalPaid };
-  }, [ledgerEntries]);
-  
-  // Running balance calculation needs to account for the starting balance of the period
-  const balanceBroughtForward = useMemo(() => {
-    const periodNetChange = periodSummary.totalBilled - periodSummary.totalPaid;
-    return summary.balance - periodNetChange;
-  }, [summary, periodSummary]);
+  const { periodSummary, balanceBroughtForward } = useMemo(() => {
+    const t = statementPeriodTotals(ledgerEntries, summary.balance);
+    return {
+      periodSummary: { totalBilled: t.totalBilled, totalPaid: t.totalPaid },
+      balanceBroughtForward: t.balanceBroughtForward,
+    };
+  }, [ledgerEntries, summary.balance]);
 
 
   let runningBalance = balanceBroughtForward;
@@ -246,7 +173,7 @@ export function StatementDocument({ student, records, payments, dateRange, summa
         </section>
         
         {/* Summary Totals */}
-        <section className="flex justify-end mt-10" data-pdf-keep>
+        <section className="flex justify-end mt-10">
             <div className="w-1/2 space-y-2.5">
                 <div className="flex justify-between py-1.5 border-b border-dashed text-[9px] font-black uppercase text-slate-400 tracking-widest pl-2">
                     <span>Charges this Period</span>

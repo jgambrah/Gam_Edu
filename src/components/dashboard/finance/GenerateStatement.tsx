@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
+import { useState, useEffect } from 'react';
+import { buildStatementPdf } from '@/lib/statement-pdf';
+import { formatStudentId } from '@/lib/student-utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
-import { Download, Loader2, Printer } from 'lucide-react';
+import { Download, Loader2, Printer, Share2 } from 'lucide-react';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc, collection, getDocs } from 'firebase/firestore';
 import { FinancialRecord, Student } from '@/lib/types';
@@ -53,7 +53,6 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
     const [logoBase64, setLogoBase64] = useState<string>('');
     const firestore = useFirestore();
     const { schoolId } = useCurrentSchool();
-    const printRef = useRef<HTMLDivElement>(null);
 
     // FETCH BRANDING FROM PUBLIC PATH
     const schoolProfileRef = useMemoFirebase(
@@ -115,91 +114,71 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
 
     const isLoadingData = isLoadingProfile || isLoadingPayments;
 
-    const handleDownloadPdf = async () => {
-        if (!printRef.current || !student) return;
+    const fileName = student
+        ? `Statement_${student.firstName}_${student.lastName}.pdf`.replace(/\s+/g, '_')
+        : 'Statement.pdf';
+
+    // Builds a real text PDF (not a screenshot): sharp, searchable, small, and paginated between rows.
+    const makePdf = () => {
+        if (!student) return null;
+        const contactLine = [schoolProfile?.phone, schoolProfile?.email, schoolProfile?.website || schoolProfile?.schoolWebsite]
+            .filter(Boolean)
+            .join(' | ');
+        return buildStatementPdf({
+            studentName: `${student.firstName || ''} ${student.lastName || ''}`.trim(),
+            studentCode: formatStudentId(student),
+            records,
+            payments: payments || [],
+            dateRange,
+            closingBalance: summary.balance,
+            school: {
+                name: schoolProfile?.name,
+                motto: schoolProfile?.motto,
+                address: schoolProfile?.address,
+                contactLine,
+                logoDataUrl: logoBase64 || undefined,
+                primaryColor: schoolProfile?.brandColor,
+                secondaryColor: schoolProfile?.secondaryColor,
+            },
+        });
+    };
+
+    const runPdfAction = async (action: 'download' | 'print' | 'share') => {
+        if (!student) return;
         setLoading(true);
-
         try {
-            const element = printRef.current;
-            const liveRect = element.getBoundingClientRect();
-            const cssWidth = Math.ceil(liveRect.width);
-            const liveHeight = Math.max(element.scrollHeight, Math.ceil(liveRect.height));
+            const pdf = makePdf();
+            if (!pdf) return;
 
-            // Keep the bitmap small: 1.5x is sharp enough for A4 text; shrink for very long statements so the
-            // canvas stays under the ~16M pixel limit of mobile/Safari browsers (a bigger canvas silently
-            // truncates the bottom of the page - i.e. the final balance).
-            const scale = Math.max(0.8, Math.min(1.5, Math.sqrt(16_000_000 / (cssWidth * liveHeight))));
-
-            // Row / block bottoms are measured inside html2canvas's own clone, so they match the rendered
-            // bitmap exactly even if the clone lays out slightly differently from the live preview.
-            let breakPoints: number[] = [];
-            const canvas = await html2canvas(element, {
-                scale,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff',
-                windowWidth: cssWidth,
-                onclone: (_doc, clonedEl) => {
-                    const top = clonedEl.getBoundingClientRect().top;
-                    breakPoints = Array.from(clonedEl.querySelectorAll('tr, [data-pdf-keep]'))
-                        .map(n => n.getBoundingClientRect().bottom - top)
-                        .filter(b => b > 0)
-                        .sort((a, b) => a - b);
-                },
-            });
-            const ratio = canvas.width / cssWidth; // canvas px per CSS px
-            // The bitmap itself is the source of truth for total height, so the last page can never be dropped.
-            const cssHeight = canvas.height / ratio;
-
-            // A4 page height expressed in CSS px (page width = element width).
-            const pageCssHeight = Math.floor((cssWidth * 297) / 210);
-
-            const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-
-            let start = 0;
-            let pageIndex = 0;
-            while (start < cssHeight - 1) {
-                const limit = start + pageCssHeight;
-                let end = limit;
-                if (limit >= cssHeight) {
-                    end = cssHeight;
-                } else {
-                    const candidates = breakPoints.filter(b => b > start + pageCssHeight * 0.5 && b <= limit);
-                    if (candidates.length > 0) end = candidates[candidates.length - 1];
-                }
-
-                const sliceCssHeight = end - start;
-                const sliceCanvas = document.createElement('canvas');
-                sliceCanvas.width = canvas.width;
-                sliceCanvas.height = Math.max(1, Math.min(canvas.height - Math.round(start * ratio), Math.round(sliceCssHeight * ratio)));
-                const ctx = sliceCanvas.getContext('2d');
-                if (!ctx) throw new Error('Canvas context unavailable');
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
-                ctx.drawImage(
-                    canvas,
-                    0, Math.round(start * ratio), canvas.width, sliceCanvas.height,
-                    0, 0, sliceCanvas.width, sliceCanvas.height
-                );
-
-                if (pageIndex > 0) pdf.addPage();
-                const sliceMmHeight = Math.min(pdfHeight, (sliceCssHeight * pdfWidth) / cssWidth);
-                pdf.addImage(sliceCanvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, pdfWidth, sliceMmHeight, undefined, 'FAST');
-
-                sliceCanvas.width = 0; // release memory
-                sliceCanvas.height = 0;
-                start = end;
-                pageIndex++;
+            if (action === 'download') {
+                pdf.save(fileName);
+                return;
             }
-            canvas.width = 0;
-            canvas.height = 0;
 
-            pdf.save(`Statement_${student.firstName}_${student.lastName}.pdf`);
+            if (action === 'print') {
+                pdf.autoPrint();
+                const url = pdf.output('bloburl') as unknown as string;
+                const win = window.open(url, '_blank');
+                if (!win) pdf.save(fileName); // pop-up blocked: fall back to download
+                return;
+            }
+
+            // share: use the phone's share sheet (WhatsApp, email, ...) when the browser supports files
+            const blob = pdf.output('blob');
+            const file = new File([blob], fileName, { type: 'application/pdf' });
+            const nav = navigator as Navigator & { canShare?: (data: ShareData) => boolean };
+            if (nav.share && nav.canShare?.({ files: [file] })) {
+                try {
+                    await nav.share({ files: [file], title: 'Student Financial Statement' });
+                } catch (err: any) {
+                    if (err?.name !== 'AbortError') throw err; // user closing the share sheet is not an error
+                }
+            } else {
+                pdf.save(fileName);
+            }
         } catch (error) {
             console.error('PDF Generation Failed:', error);
-            alert("Failed to generate PDF. Please try again.");
+            alert('Failed to generate PDF. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -225,7 +204,7 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
                             <Skeleton className="h-48 w-full" />
                         </div>
                     ) : (
-                         <div ref={printRef}>
+                         <div>
                             <StatementDocument 
                                 student={student}
                                 records={records}
@@ -238,8 +217,14 @@ export function GenerateStatement({ student, records, dateRange, summary }: Gene
                     )}
                 </div>
 
-                <div className="flex justify-end">
-                    <Button onClick={handleDownloadPdf} disabled={loading || isLoadingData} className="bg-indigo-600 hover:bg-indigo-700">
+                <div className="flex flex-wrap justify-end gap-2">
+                    <Button variant="outline" onClick={() => runPdfAction('share')} disabled={loading || isLoadingData}>
+                        <Share2 className="mr-2 h-4 w-4"/> Share
+                    </Button>
+                    <Button variant="outline" onClick={() => runPdfAction('print')} disabled={loading || isLoadingData}>
+                        <Printer className="mr-2 h-4 w-4"/> Print
+                    </Button>
+                    <Button onClick={() => runPdfAction('download')} disabled={loading || isLoadingData} className="bg-indigo-600 hover:bg-indigo-700">
                         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Download className="mr-2 h-4 w-4"/>}
                         {loading ? 'Generating...' : 'Download PDF'}
                     </Button>
