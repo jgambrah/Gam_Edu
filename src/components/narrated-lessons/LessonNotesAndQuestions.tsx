@@ -536,9 +536,13 @@ function WorkedQuestionCard({
               Extra
             </span>
           )}
-          {question.assessmentMode === 'teacher-checked-drawing' && (
+          {question.assessmentMode?.startsWith('teacher-checked') && (
             <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-[11px] font-bold text-teal-800">
-              Drawing · Teacher Check
+              {question.assessmentMode === 'teacher-checked-drawing'
+                ? 'Drawing · Teacher Check'
+                : question.assessmentMode === 'teacher-checked-model'
+                  ? 'Model · Teacher Check'
+                  : 'Activity · Teacher Check'}
             </span>
           )}
         </div>
@@ -612,7 +616,11 @@ function WorkedQuestionCard({
           {question.checkCriteria && question.checkCriteria.length > 0 && (
             <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-3.5">
               <p className="text-[11px] font-extrabold uppercase tracking-wide text-teal-800">
-                Drawing Checklist (Show Your Teacher)
+                {question.assessmentMode === 'teacher-checked-drawing'
+                  ? 'Drawing Checklist (Show Your Teacher)'
+                  : question.assessmentMode === 'teacher-checked-model'
+                    ? 'Model Checklist (Show Your Teacher)'
+                    : 'Activity Checklist (Show Your Teacher)'}
               </p>
               <ul className="mt-1.5 space-y-1 text-xs leading-relaxed text-teal-950">
                 {question.checkCriteria.map((item, i) => (
