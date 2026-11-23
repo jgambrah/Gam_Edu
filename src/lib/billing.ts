@@ -288,104 +288,294 @@ export async function billMultipleStudents(
   totalBilled: number;
   errors: string[];
 }> {
-  
-  // 1. Fetch Canteen Settings (Dynamic Model)
+  if (!students.length || !schoolId) {
+    return { successful: 0, failed: 0, totalBilled: 0, errors: [] };
+  }
+
+  const displayDate = startOfDay(attendanceDate);
+  const normalizedUtcDate = schoolDayStartUtc(attendanceDate);
+  const dateStr = schoolDayDateStr(attendanceDate);
+
+  // 1. Run all setup reads in parallel (1 network round-trip instead of 4+ sequential reads):
+  //    canteen rates, transport routes, current term stamp, and existing daily bill IDs (in 30-ID chunks).
+  const ids = students.flatMap(st => st?.uid ? [`canteen-${st.uid}-${dateStr}`, `transport-${st.uid}-${dateStr}`] : []);
+  const idChunks: string[][] = [];
+  for (let i = 0; i < ids.length; i += 30) {
+    idChunks.push(ids.slice(i, i + 30));
+  }
+
+  const [canteenResult, routesResult, termStamp, existingBillsResult] = await Promise.all([
+    getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen')).catch(err => {
+      console.warn("Could not fetch canteen rates:", err);
+      return null;
+    }),
+    getDocs(query(collection(firestore, 'routes'), where('schoolId', '==', schoolId))).catch(err => {
+      console.warn("Could not fetch transport routes:", err);
+      return null;
+    }),
+    fetchCurrentTermStamp(firestore, schoolId),
+    Promise.all(
+      idChunks.map(chunk =>
+        getDocs(query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where(documentId(), 'in', chunk)))
+      )
+    ).catch((err: any) => {
+      if (err?.message !== 'small-batch') console.warn("Could not fetch existing daily bills; checking per student instead:", err);
+      return null;
+    }),
+  ]);
+
   let canteenModel = 'Flat';
   let globalCanteenRate = 0;
   let classCanteenRates: Record<string, number> = {};
-  try {
-      const canteenSettingsSnap = await getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen'));
-      if (canteenSettingsSnap.exists()) {
-          const canteenData = canteenSettingsSnap.data();
-          canteenModel = canteenData?.pricingModel || 'Flat';
-          globalCanteenRate = Number(canteenData?.dailyRate) || 0;
-          classCanteenRates = canteenData?.classRates || {};
-      }
-  } catch (err) {
-      console.warn("Could not fetch canteen rates:", err);
+  if (canteenResult?.exists()) {
+    const canteenData = canteenResult.data();
+    canteenModel = canteenData?.pricingModel || 'Flat';
+    globalCanteenRate = Number(canteenData?.dailyRate) || 0;
+    classCanteenRates = canteenData?.classRates || {};
   }
 
-  // 2. Fetch ALL Transport Routes for this school and build a Student -> Rate Map
   const studentToTransportRateMap = new Map<string, number>();
-  try {
-      const routesQuery = query(collection(firestore, 'routes'), where('schoolId', '==', schoolId));
-      const routesSnap = await getDocs(routesQuery);
-      routesSnap.docs.forEach(d => {
-          const data = d.data();
-          const dailyRate = Number(data.dailyRate) || 0;
-          data.stops?.forEach((stop: any) => {
-              stop.assignedStudentIds?.forEach((sid: string) => {
-                  studentToTransportRateMap.set(sid, dailyRate);
-              });
-          });
+  if (routesResult) {
+    routesResult.docs.forEach(d => {
+      const data = d.data();
+      const dailyRate = Number(data.dailyRate) || 0;
+      data.stops?.forEach((stop: any) => {
+        stop.assignedStudentIds?.forEach((sid: string) => {
+          studentToTransportRateMap.set(sid, dailyRate);
+        });
       });
-  } catch (err) {
-      console.warn("Could not fetch transport routes:", err);
+    });
   }
 
-  // 2b. Current term (one read for the whole batch)
-  const termStamp = await fetchCurrentTermStamp(firestore, schoolId);
-
-  // 3. Fetch existing bills for this date and school to avoid overwriting them
-  let existingBillIds: Set<string> | undefined = new Set<string>();
+  let existingBillIds: Set<string> | undefined;
   const voidedBills = new Map<string, any>();
-  try {
-      // READ COST: look up exactly this list's daily bills by their (deterministic) ids, 30 at a time — only
-      // bills that exist are read. (Was: every bill of the WHOLE SCHOOL due that day, read again for every
-      // class whose attendance was saved.)
-      const dateStr = schoolDayDateStr(attendanceDate);
-      const ids = students.flatMap(st => st?.uid ? [`canteen-${st.uid}-${dateStr}`, `transport-${st.uid}-${dateStr}`] : []);
-      for (let i = 0; i < ids.length; i += 30) {
-          // (schoolId filter: the security rules only allow reading the school's own bills)
-          const snap = await getDocs(query(collection(firestore, 'financialRecords'), where('schoolId', '==', schoolId), where(documentId(), 'in', ids.slice(i, i + 30))));
-          snap.docs.forEach(d => {
-              if ((d.data() as any)?.voided) voidedBills.set(d.id, d.data());
-              else existingBillIds!.add(d.id);
-          });
-      }
-  } catch (err: any) {
-      if (err?.message !== 'small-batch') console.warn("Could not fetch existing daily bills; checking per student instead:", err);
-      existingBillIds = undefined; // forces a per-student existence check so paid bills are never overwritten
+  if (existingBillsResult) {
+    existingBillIds = new Set<string>();
+    existingBillsResult.forEach(snap => {
+      snap.docs.forEach(d => {
+        if ((d.data() as any)?.voided) voidedBills.set(d.id, d.data());
+        else existingBillIds!.add(d.id);
+      });
+    });
   }
+
+  const resolveRates = (student: Student) => ({
+    canteen: canteenModel === 'Flat' ? globalCanteenRate : (classCanteenRates[student.classId] || 0),
+    transport: studentToTransportRateMap.get(student.uid) || 0,
+  });
 
   let successful = 0;
   let failed = 0;
   let totalBilled = 0;
   const errors: string[] = [];
 
+  // 2. Fast atomic path: commit all daily bills in a single writeBatch (chunked at 200 writes)
+  //    instead of N sequential commits. Eliminates partial-class billing when teachers close their phone/tab.
+  if (existingBillIds) {
+    const termFields = termStamp ? { ...termStamp, isArchived: false } : { isArchived: false };
+    const formattedDate = format(displayDate, 'PPP');
+    const dueTimestamp = Timestamp.fromDate(normalizedUtcDate);
+
+    type PlannedWrite =
+      | { kind: 'set'; ref: ReturnType<typeof doc>; data: Record<string, any> }
+      | { kind: 'update'; ref: ReturnType<typeof doc>; data: Record<string, any> };
+    type PlannedStudent = { student: Student; writes: PlannedWrite[]; amountBilled: number };
+
+    const planned: PlannedStudent[] = [];
+
+    for (let i = 0; i < students.length; i++) {
+      const student = students[i];
+      if (!student || !student.uid) {
+        failed++;
+        errors.push(`${student?.firstName || 'Student'}: Invalid student or school data`);
+        continue;
+      }
+
+      const shouldBillCanteen = shouldBillDailyCanteen(student);
+      const shouldBillTransport = isDailyTransportSubscriber(student);
+      if (!shouldBillCanteen && !shouldBillTransport) {
+        successful++;
+        continue;
+      }
+
+      const { canteen: canteenRate, transport: transportRate } = resolveRates(student);
+      const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+      const transportRecordId = `transport-${student.uid}-${dateStr}`;
+      const writes: PlannedWrite[] = [];
+      let studentBilled = 0;
+
+      if (shouldBillCanteen && canteenRate > 0 && voidedBills.has(canteenRecordId)) {
+        writes.push({
+          kind: 'update',
+          ref: doc(firestore, 'financialRecords', canteenRecordId),
+          data: restoreVoidedBill(voidedBills.get(canteenRecordId), canteenRate),
+        });
+        studentBilled += canteenRate;
+      } else if (shouldBillCanteen && canteenRate > 0 && !existingBillIds.has(canteenRecordId)) {
+        writes.push({
+          kind: 'set',
+          ref: doc(firestore, 'financialRecords', canteenRecordId),
+          data: {
+            studentId: student.uid,
+            studentName: `${student.firstName} ${student.lastName}`,
+            classId: student.classId || '',
+            type: 'Canteen Fee (Daily)',
+            description: `Canteen - ${formattedDate}`,
+            billedAmount: canteenRate,
+            amountPaid: 0,
+            waiverAmount: 0,
+            status: 'Unpaid',
+            dueDate: dueTimestamp,
+            createdAt: serverTimestamp(),
+            schoolId,
+            ...termFields,
+          },
+        });
+        studentBilled += canteenRate;
+      }
+
+      if (shouldBillTransport && transportRate > 0 && voidedBills.has(transportRecordId)) {
+        writes.push({
+          kind: 'update',
+          ref: doc(firestore, 'financialRecords', transportRecordId),
+          data: restoreVoidedBill(voidedBills.get(transportRecordId), transportRate),
+        });
+        studentBilled += transportRate;
+      } else if (shouldBillTransport && transportRate > 0 && !existingBillIds.has(transportRecordId)) {
+        writes.push({
+          kind: 'set',
+          ref: doc(firestore, 'financialRecords', transportRecordId),
+          data: {
+            studentId: student.uid,
+            studentName: `${student.firstName} ${student.lastName}`,
+            classId: student.classId || '',
+            type: 'Transport Fee (Daily)',
+            description: `Transport - ${formattedDate}`,
+            billedAmount: transportRate,
+            amountPaid: 0,
+            waiverAmount: 0,
+            status: 'Unpaid',
+            dueDate: dueTimestamp,
+            createdAt: serverTimestamp(),
+            schoolId,
+            ...termFields,
+          },
+        });
+        studentBilled += transportRate;
+      }
+
+      if (writes.length > 0) {
+        planned.push({ student, writes, amountBilled: studentBilled });
+      } else {
+        successful++;
+      }
+    }
+
+    if (onProgress) onProgress(students.length, students.length, `${planned.length} bill(s) committing...`);
+
+    // Chunk into batches of at most 200 Firestore writes (well below the 500-write limit; 1 batch for typical classes)
+    const MAX_OPS_PER_BATCH = 200;
+    const batches: PlannedStudent[][] = [];
+    let currentGroup: PlannedStudent[] = [];
+    let currentOps = 0;
+    for (const item of planned) {
+      if (currentGroup.length > 0 && currentOps + item.writes.length > MAX_OPS_PER_BATCH) {
+        batches.push(currentGroup);
+        currentGroup = [];
+        currentOps = 0;
+      }
+      currentGroup.push(item);
+      currentOps += item.writes.length;
+    }
+    if (currentGroup.length > 0) batches.push(currentGroup);
+
+    const studentsToApplyCredit: Student[] = [];
+
+    for (const group of batches) {
+      const batch = writeBatch(firestore);
+      for (const item of group) {
+        for (const w of item.writes) {
+          if (w.kind === 'set') batch.set(w.ref, w.data, { merge: true });
+          else batch.update(w.ref, w.data);
+        }
+      }
+
+      try {
+        await batch.commit();
+        for (const item of group) {
+          successful++;
+          totalBilled += item.amountBilled;
+          if ((item.student as any)?.hasAccountCredit) {
+            studentsToApplyCredit.push(item.student);
+          }
+        }
+      } catch (batchErr: any) {
+        // Fallback: if a batch fails (e.g. one student's doc violates a rule), bill each student individually
+        // so the remaining students in the class are still billed.
+        console.warn('Batched daily billing commit failed; falling back to per-student billing:', batchErr);
+        for (const item of group) {
+          try {
+            const result = await billStudentForAttendance(
+              firestore,
+              item.student,
+              attendanceDate,
+              schoolId,
+              resolveRates(item.student),
+              existingBillIds,
+              voidedBills,
+              termStamp
+            );
+            if (result.success) {
+              successful++;
+              totalBilled += result.amountBilled;
+            } else {
+              failed++;
+              errors.push(`${item.student.firstName || 'Student'}: ${result.message}`);
+            }
+          } catch (err: any) {
+            failed++;
+            errors.push(`${item.student.firstName || 'Student'}: ${err.message || 'Billing error'}`);
+          }
+        }
+      }
+    }
+
+    // 3. Apply held account credit in parallel ONLY for students marked with credit (0 reads for everyone else).
+    if (studentsToApplyCredit.length > 0) {
+      await Promise.allSettled(
+        studentsToApplyCredit.map(st => applyHeldCreditAfterBilling(firestore, schoolId, st))
+      );
+    }
+
+    return { successful, failed, totalBilled, errors };
+  }
+
+  // Fallback path (only if existingBillIds pre-fetch failed): per-student billing with existence check
   for (let i = 0; i < students.length; i++) {
     const student = students[i];
     if (onProgress) onProgress(i + 1, students.length, `${student.firstName || ''} ${student.lastName || ''}`);
 
     try {
-        let studentCanteenRate = 0;
-        if (canteenModel === 'Flat') {
-            studentCanteenRate = globalCanteenRate;
-        } else {
-            studentCanteenRate = classCanteenRates[student.classId] || 0;
-        }
-
-        const transportRate = studentToTransportRateMap.get(student.uid) || 0;
-
-        const result = await billStudentForAttendance(firestore, student, attendanceDate, schoolId, { 
-            canteen: studentCanteenRate, 
-            transport: transportRate 
-        }, existingBillIds, existingBillIds ? voidedBills : undefined, termStamp);
-        
-        if (result.success) {
-          if (result.amountBilled > 0) {
-            successful++;
-            totalBilled += result.amountBilled;
-          } else {
-            successful++; 
-          }
-        } else {
-          failed++;
-          errors.push(`${student.firstName || 'Student'}: ${result.message}`);
-        }
-    } catch (err: any) {
+      const result = await billStudentForAttendance(
+        firestore,
+        student,
+        attendanceDate,
+        schoolId,
+        resolveRates(student),
+        undefined,
+        undefined,
+        termStamp
+      );
+      if (result.success) {
+        successful++;
+        totalBilled += result.amountBilled;
+      } else {
         failed++;
-        errors.push(`${student.firstName || 'Student'}: ${err.message || 'Billing error'}`);
+        errors.push(`${student.firstName || 'Student'}: ${result.message}`);
+      }
+    } catch (err: any) {
+      failed++;
+      errors.push(`${student.firstName || 'Student'}: ${err.message || 'Billing error'}`);
     }
   }
 

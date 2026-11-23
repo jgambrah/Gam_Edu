@@ -217,17 +217,41 @@ export async function billMultipleStudentsServer(
   totalBilled: number;
   errors: string[];
 }> {
-  // 1. Fetch Canteen Settings
-  const canteenSettingsSnap = await db.collection('schoolSettings').doc(schoolId).collection('rates').doc('canteen').get();
+  if (!students.length || !schoolId) {
+    return { successful: 0, failed: 0, totalBilled: 0, errors: [] };
+  }
+
+  const normalizedUtcDate = schoolDayStartUtcFromInstant(attendanceDate);
+  const dateStr = schoolDayDateStrUtc(attendanceDate);
+  const displayDate = new Date(
+    normalizedUtcDate.getUTCFullYear(),
+    normalizedUtcDate.getUTCMonth(),
+    normalizedUtcDate.getUTCDate(),
+  );
+
+  // 1. Run all setup reads in parallel (canteen rates, routes, current term, existing daily bills)
+  const billRefs = students.flatMap(st =>
+    st?.uid
+      ? [
+          db.collection('financialRecords').doc(`canteen-${st.uid}-${dateStr}`),
+          db.collection('financialRecords').doc(`transport-${st.uid}-${dateStr}`),
+        ]
+      : []
+  );
+
+  const [canteenSettingsSnap, routesSnap, termStamp, existingSnaps] = await Promise.all([
+    db.collection('schoolSettings').doc(schoolId).collection('rates').doc('canteen').get(),
+    db.collection('routes').where('schoolId', '==', schoolId).get(),
+    fetchCurrentTermStampServer(db, schoolId),
+    billRefs.length > 0 ? db.getAll(...billRefs) : Promise.resolve([]),
+  ]);
+
   const canteenData = canteenSettingsSnap.data();
   const canteenModel = canteenData?.pricingModel || 'Flat';
-  const globalCanteenRate = canteenData?.dailyRate || 0;
+  const globalCanteenRate = Number(canteenData?.dailyRate) || 0;
   const classCanteenRates = canteenData?.classRates || {};
 
-  // 2. Fetch ALL Transport Routes for this school and build a Student -> Rate Map
-  const routesSnap = await db.collection('routes').where('schoolId', '==', schoolId).get();
   const studentToTransportRateMap = new Map<string, number>();
-
   routesSnap.docs.forEach(d => {
     const data = d.data();
     const dailyRate = Number(data.dailyRate) || 0;
@@ -238,43 +262,186 @@ export async function billMultipleStudentsServer(
     });
   });
 
-  const termStamp = await fetchCurrentTermStampServer(db, schoolId);
+  const existingBillIds = new Set<string>();
+  const voidedBills = new Map<string, any>();
+  for (const s of existingSnaps) {
+    if (!s.exists) continue;
+    if ((s.data() as any)?.voided) voidedBills.set(s.id, s.data());
+    else existingBillIds.add(s.id);
+  }
+
+  const termFields = termStamp ? { ...termStamp, isArchived: false } : { isArchived: false };
+  const formattedDate = format(displayDate, 'PPP');
+  const dueTimestamp = Timestamp.fromDate(normalizedUtcDate);
+
+  const restoreVoided = (prev: any, rate: number) => {
+    const paid = Number(prev?.amountPaid) || 0;
+    const waiver = Number(prev?.originalWaiverAmount ?? prev?.waiverAmount) || 0;
+    return {
+      billedAmount: rate,
+      waiverAmount: waiver,
+      voided: false,
+      voidReason: null,
+      restoredAt: FieldValue.serverTimestamp(),
+      status: rate - paid - waiver <= 0.001 ? 'Paid' : 'Unpaid',
+    };
+  };
+
+  type PlannedWrite =
+    | { kind: 'set'; ref: FirebaseFirestore.DocumentReference; data: Record<string, any> }
+    | { kind: 'update'; ref: FirebaseFirestore.DocumentReference; data: Record<string, any> };
+  type PlannedStudent = { student: any; writes: PlannedWrite[]; amountBilled: number; rates: { canteen: number; transport: number } };
 
   let successful = 0;
   let failed = 0;
   let totalBilled = 0;
   const errors: string[] = [];
+  const planned: PlannedStudent[] = [];
 
-  for (let i = 0; i < students.length; i++) {
-    const student = students[i];
-
-    // A. Resolve Canteen Rate
-    let studentCanteenRate = 0;
-    if (canteenModel === 'Flat') {
-      studentCanteenRate = globalCanteenRate;
-    } else {
-      studentCanteenRate = classCanteenRates[student.classId] || 0;
+  for (const student of students) {
+    if (!student || !student.uid) {
+      failed++;
+      errors.push(`${student?.firstName || 'Student'}: Invalid student or school data`);
+      continue;
     }
 
-    // B. Resolve Transport Rate
+    const shouldBillCanteen = shouldBillDailyCanteen(student);
+    const shouldBillTransport = isDailyTransportSubscriber(student);
+    if (!shouldBillCanteen && !shouldBillTransport) {
+      successful++;
+      continue;
+    }
+
+    const canteenRate = canteenModel === 'Flat' ? globalCanteenRate : (Number(classCanteenRates[student.classId]) || 0);
     const transportRate = studentToTransportRateMap.get(student.uid) || 0;
 
-    const result = await billStudentForAttendanceServer(db, student, attendanceDate, schoolId, { 
-      canteen: studentCanteenRate, 
-      transport: transportRate 
-    }, termStamp);
-    
-    if (result.success) {
-      if (result.amountBilled > 0) {
-        successful++;
-        totalBilled += result.amountBilled;
-      } else {
-        successful++; 
-      }
-    } else {
-      failed++;
-      errors.push(`${student.firstName}: ${result.message}`);
+    const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
+    const transportRecordId = `transport-${student.uid}-${dateStr}`;
+    const writes: PlannedWrite[] = [];
+    let studentBilled = 0;
+
+    if (shouldBillCanteen && canteenRate > 0 && voidedBills.has(canteenRecordId)) {
+      writes.push({
+        kind: 'update',
+        ref: db.collection('financialRecords').doc(canteenRecordId),
+        data: restoreVoided(voidedBills.get(canteenRecordId), canteenRate),
+      });
+      studentBilled += canteenRate;
+    } else if (shouldBillCanteen && canteenRate > 0 && !existingBillIds.has(canteenRecordId)) {
+      writes.push({
+        kind: 'set',
+        ref: db.collection('financialRecords').doc(canteenRecordId),
+        data: {
+          studentId: student.uid,
+          studentName: `${student.firstName} ${student.lastName}`,
+          classId: student.classId || '',
+          type: 'Canteen Fee (Daily)',
+          description: `Canteen - ${formattedDate}`,
+          billedAmount: canteenRate,
+          amountPaid: 0,
+          waiverAmount: 0,
+          status: 'Unpaid',
+          dueDate: dueTimestamp,
+          createdAt: FieldValue.serverTimestamp(),
+          schoolId,
+          ...termFields,
+        },
+      });
+      studentBilled += canteenRate;
     }
+
+    if (shouldBillTransport && transportRate > 0 && voidedBills.has(transportRecordId)) {
+      writes.push({
+        kind: 'update',
+        ref: db.collection('financialRecords').doc(transportRecordId),
+        data: restoreVoided(voidedBills.get(transportRecordId), transportRate),
+      });
+      studentBilled += transportRate;
+    } else if (shouldBillTransport && transportRate > 0 && !existingBillIds.has(transportRecordId)) {
+      writes.push({
+        kind: 'set',
+        ref: db.collection('financialRecords').doc(transportRecordId),
+        data: {
+          studentId: student.uid,
+          studentName: `${student.firstName} ${student.lastName}`,
+          classId: student.classId || '',
+          type: 'Transport Fee (Daily)',
+          description: `Transport - ${formattedDate}`,
+          billedAmount: transportRate,
+          amountPaid: 0,
+          waiverAmount: 0,
+          status: 'Unpaid',
+          dueDate: dueTimestamp,
+          createdAt: FieldValue.serverTimestamp(),
+          schoolId,
+          ...termFields,
+        },
+      });
+      studentBilled += transportRate;
+    }
+
+    if (writes.length > 0) {
+      planned.push({ student, writes, amountBilled: studentBilled, rates: { canteen: canteenRate, transport: transportRate } });
+    } else {
+      successful++;
+    }
+  }
+
+  // 2. Commit all planned writes in batches of at most 200 ops
+  const MAX_OPS_PER_BATCH = 200;
+  const batches: PlannedStudent[][] = [];
+  let currentGroup: PlannedStudent[] = [];
+  let currentOps = 0;
+  for (const item of planned) {
+    if (currentGroup.length > 0 && currentOps + item.writes.length > MAX_OPS_PER_BATCH) {
+      batches.push(currentGroup);
+      currentGroup = [];
+      currentOps = 0;
+    }
+    currentGroup.push(item);
+    currentOps += item.writes.length;
+  }
+  if (currentGroup.length > 0) batches.push(currentGroup);
+
+  const studentsToApplyCredit: any[] = [];
+
+  for (const group of batches) {
+    const batch = db.batch();
+    for (const item of group) {
+      for (const w of item.writes) {
+        if (w.kind === 'set') batch.set(w.ref, w.data, { merge: true });
+        else batch.update(w.ref, w.data);
+      }
+    }
+
+    try {
+      await batch.commit();
+      for (const item of group) {
+        successful++;
+        totalBilled += item.amountBilled;
+        if (item.student?.hasAccountCredit) {
+          studentsToApplyCredit.push(item.student);
+        }
+      }
+    } catch (batchErr: any) {
+      console.warn('Batched server daily billing commit failed; falling back to per-student billing:', batchErr);
+      for (const item of group) {
+        const result = await billStudentForAttendanceServer(db, item.student, attendanceDate, schoolId, item.rates, termStamp);
+        if (result.success) {
+          successful++;
+          totalBilled += result.amountBilled;
+        } else {
+          failed++;
+          errors.push(`${item.student.firstName}: ${result.message}`);
+        }
+      }
+    }
+  }
+
+  if (studentsToApplyCredit.length > 0) {
+    await Promise.allSettled(
+      studentsToApplyCredit.map(st => applyHeldCreditAfterBillingServer(db, schoolId, st))
+    );
   }
 
   return { successful, failed, totalBilled, errors };

@@ -117,6 +117,17 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [pendingData, setPendingData] = useState<AttendanceFormData | null>(null);
 
+    // Prevent accidental tab close / refresh while attendance & daily bills are still committing
+    useEffect(() => {
+        if (!isLoading) return;
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isLoading]);
+
     const canOverwrite = useMemo(() => {
         const lowerRole = role?.toLowerCase();
         if (lowerRole === 'director' || lowerRole === 'administrator' || lowerRole === 'admin') return true;
@@ -445,6 +456,35 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             const previouslySaved = savedStatusRef.current;
             const changedRecords = data.records.filter(r => previouslySaved[r.studentId] !== r.status);
             savedStatusRef.current = Object.fromEntries(data.records.map(r => [r.studentId, r.status]));
+
+            // 4. Run daily billing IMMEDIATELY after attendance commits (batched into a single commit)
+            //    so locking the phone or switching apps never leaves a class half-billed.
+            const studentsToBill = data.records
+                .filter(r => r.status === 'Present' || r.status === 'Late')
+                .map(r => students.find(s => s.uid === r.studentId))
+                .filter((s): s is Student => s !== undefined);
+
+            let billingResult: { successful: number; failed: number; totalBilled: number; errors: string[] } | null = null;
+            let billingError: string | null = null;
+
+            if (studentsToBill.length > 0) {
+                setBillingProgress(`Generating daily bills for ${studentsToBill.length} students...`);
+                try {
+                    billingResult = await billMultipleStudents(
+                        firestore,
+                        studentsToBill,
+                        selectedDate,
+                        schoolId,
+                        (current, total, name) => {
+                            setBillingProgress(`Billing: ${current}/${total} (${name})`);
+                        }
+                    );
+                } catch (billingErr: any) {
+                    console.error("Billing post-processing failed:", billingErr);
+                    billingError = billingErr?.message || 'Daily billing could not complete.';
+                }
+            }
+
             // Absence corrections: unpaid daily bills are removed; already-paid ones are voided and the money
             // becomes account credit. Best-effort — never fails the attendance save.
             // Only students who were not already saved as absent/excused can have a bill to correct (2 reads each).
@@ -472,7 +512,32 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 console.error("Failed to remove draft from sessionStorage", e);
             }
 
-            // Trigger gamification badge updates — only for changed statuses (no points for re-saving)
+            // Only show "Attendance Saved" AFTER both attendance and daily billing have finished committing
+            if (billingError) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Attendance Saved — Billing Incomplete',
+                    description: `Attendance was saved, but daily billing failed (${billingError}). Please ask Finance to run Manual Reconciliation.`
+                });
+            } else if (billingResult && billingResult.failed > 0) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Attendance Saved — Partial Billing Warning',
+                    description: `${billingResult.successful} billed, ${billingResult.failed} failed. Please ask Finance to run Manual Reconciliation.`
+                });
+            } else if (billingResult) {
+                toast({
+                    title: 'Attendance Saved 📅',
+                    description: `Attendance updated successfully. ${billingResult.successful} billed for daily services. Canteen headcount synced (${canteenMealsCount} meals).`
+                });
+            } else {
+                toast({
+                    title: 'Attendance Saved 📅',
+                    description: `Attendance status updated successfully. Canteen headcount synced (${canteenMealsCount} meals).`
+                });
+            }
+
+            // Non-critical post-save work (badges, audit log, push & WhatsApp alerts) runs AFTER billing is safely committed
             changedRecords.forEach(record => {
                 if (record.status === 'Present') {
                     triggerStudentBadgeEvent(firestore, record.studentId, { type: 'ATTENDANCE_PRESENT' });
@@ -481,18 +546,16 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 }
             });
 
-            try {
-                await logAuditEvent({
-                    firestore,
-                    schoolId,
-                    userName: user?.displayName || user?.email || 'Staff Member',
-                    action: 'STUDENT_ATTENDANCE_TAKEN',
-                    details: `Class: ${className} | Date: ${dateStr} | Summary - Present: ${presentCount}, Absent: ${absentCount}, Late: ${lateCount}, Excused: ${excusedCount} | Canteen Meals: ${canteenMealsCount}`,
-                    userId: user?.uid
-                });
-            } catch (auditErr) {
+            void logAuditEvent({
+                firestore,
+                schoolId,
+                userName: user?.displayName || user?.email || 'Staff Member',
+                action: 'STUDENT_ATTENDANCE_TAKEN',
+                details: `Class: ${className} | Date: ${dateStr} | Summary - Present: ${presentCount}, Absent: ${absentCount}, Late: ${lateCount}, Excused: ${excusedCount} | Canteen Meals: ${canteenMealsCount}`,
+                userId: user?.uid
+            }).catch(auditErr => {
                 console.error("Failed to log attendance audit event:", auditErr);
-            }
+            });
 
             // Notify parents via Push asynchronously
             const gradedStudentIds = changedRecords.map(r => r.studentId);
@@ -503,127 +566,96 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 "/dashboard/my-attendance"
             ).catch(err => console.error("Notification failed:", err));
 
-            // --- ABSENCE NOTIFICATION QUEUE & DEDUPLICATED WHATSAPP ALERTS ---
+            // --- ABSENCE NOTIFICATION QUEUE & DEDUPLICATED WHATSAPP ALERTS (background) ---
             const alertRecords = changedRecords.filter(r => r.status === 'Absent' || r.status === 'Late');
             
             if (alertRecords.length > 0) {
-                const alertedStudentIds = alertRecords.map(r => r.studentId);
-                
-                // Chunk IDs into groups of 30 to respect Firestore query limits
-                const chunks: string[][] = [];
-                for (let i = 0; i < alertedStudentIds.length; i += 30) {
-                    chunks.push(alertedStudentIds.slice(i, i + 30));
-                }
-
-                // Execute queries in parallel to find parents
-                const parentResults = await Promise.all(chunks.map(chunk => 
-                    getDocs(query(
-                        collection(firestore, 'parents'), 
-                        where('schoolId', '==', schoolId), 
-                        where('studentIds', 'array-contains-any', chunk)
-                    ))
-                ));
-                
-                // Flatten and deduplicate parents
-                const parentsMap = new Map();
-                parentResults.forEach(snap => {
-                    snap.docs.forEach(d => parentsMap.set(d.id, d.data()));
-                });
-
-                // Deduplicated queue write & WhatsApp dispatch
-                for (const alert of alertRecords) {
-                    const queueDocId = `absent_${schoolId}_${alert.studentId}_${dateStr}`;
-                    const queueDocRef = doc(firestore, 'notification_queue', queueDocId);
-                    
+                void (async () => {
                     try {
-                        const existingQueueDoc = await getDoc(queueDocRef);
-                        const alreadyAlerted = existingQueueDoc.exists();
+                        const alertedStudentIds = alertRecords.map(r => r.studentId);
+                        
+                        // Chunk IDs into groups of 30 to respect Firestore query limits
+                        const chunks: string[][] = [];
+                        for (let i = 0; i < alertedStudentIds.length; i += 30) {
+                            chunks.push(alertedStudentIds.slice(i, i + 30));
+                        }
 
-                        // Find parent contact
-                        let matchedParentId: string | null = null;
-                        let matchedParentPhone: string | null = null;
-                        for (const [parentId, parentData] of parentsMap.entries()) {
-                            if (parentData.studentIds?.includes(alert.studentId)) {
-                                matchedParentId = parentId;
-                                matchedParentPhone = parentData.phone || null;
-                                break;
+                        // Execute queries in parallel to find parents
+                        const parentResults = await Promise.all(chunks.map(chunk => 
+                            getDocs(query(
+                                collection(firestore, 'parents'), 
+                                where('schoolId', '==', schoolId), 
+                                where('studentIds', 'array-contains-any', chunk)
+                            ))
+                        ));
+                        
+                        // Flatten and deduplicate parents
+                        const parentsMap = new Map();
+                        parentResults.forEach(snap => {
+                            snap.docs.forEach(d => parentsMap.set(d.id, d.data()));
+                        });
+
+                        // Deduplicated queue write & WhatsApp dispatch
+                        for (const alert of alertRecords) {
+                            const queueDocId = `absent_${schoolId}_${alert.studentId}_${dateStr}`;
+                            const queueDocRef = doc(firestore, 'notification_queue', queueDocId);
+                            
+                            try {
+                                const existingQueueDoc = await getDoc(queueDocRef);
+                                const alreadyAlerted = existingQueueDoc.exists();
+
+                                // Find parent contact
+                                let matchedParentId: string | null = null;
+                                let matchedParentPhone: string | null = null;
+                                for (const [parentId, parentData] of parentsMap.entries()) {
+                                    if (parentData.studentIds?.includes(alert.studentId)) {
+                                        matchedParentId = parentId;
+                                        matchedParentPhone = parentData.phone || null;
+                                        break;
+                                    }
+                                }
+
+                                // Write/upsert to notification_queue
+                                await setDoc(queueDocRef, {
+                                    schoolId,
+                                    date: dateStr,
+                                    studentId: alert.studentId,
+                                    studentName: alert.studentName,
+                                    classId: selectedClassId,
+                                    className,
+                                    status: alert.status,
+                                    queueStatus: alreadyAlerted ? (existingQueueDoc.data()?.queueStatus || "sent") : "pending",
+                                    parentId: matchedParentId,
+                                    parentContact: matchedParentPhone,
+                                    type: "ABSENCE_ALERT",
+                                    createdAt: serverTimestamp(),
+                                    queuedBy: user?.uid || 'teacher'
+                                }, { merge: true });
+
+                                // Send WhatsApp only if NOT already alerted today (Duplicate prevention)
+                                if (!alreadyAlerted && matchedParentPhone) {
+                                    const timeStr = format(new Date(), 'h:mm a');
+                                    const message = alert.status === 'Absent' 
+                                        ? `🚨 *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, was marked *ABSENT* today at ${timeStr}. Please contact the school if you are unaware of this.`
+                                        : `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, arrived *LATE* to school today at ${timeStr}.`;
+
+                                    (user ? user.getIdToken() : Promise.resolve(undefined)).then(token => sendSchoolWhatsApp(schoolId, matchedParentPhone, message, token))
+                                        .then(async () => {
+                                            await setDoc(queueDocRef, { queueStatus: "sent", sentAt: serverTimestamp() }, { merge: true });
+                                        })
+                                        .catch(async (err) => {
+                                            console.error("WhatsApp Send Failed:", err);
+                                            await setDoc(queueDocRef, { queueStatus: "failed", error: String(err) }, { merge: true });
+                                        });
+                                }
+                            } catch (queueErr) {
+                                console.error("Error writing to notification_queue:", queueErr);
                             }
                         }
-
-                        // Write/upsert to notification_queue
-                        await setDoc(queueDocRef, {
-                            schoolId,
-                            date: dateStr,
-                            studentId: alert.studentId,
-                            studentName: alert.studentName,
-                            classId: selectedClassId,
-                            className,
-                            status: alert.status,
-                            queueStatus: alreadyAlerted ? (existingQueueDoc.data()?.queueStatus || "sent") : "pending",
-                            parentId: matchedParentId,
-                            parentContact: matchedParentPhone,
-                            type: "ABSENCE_ALERT",
-                            createdAt: serverTimestamp(),
-                            queuedBy: user?.uid || 'teacher'
-                        }, { merge: true });
-
-                        // Send WhatsApp only if NOT already alerted today (Duplicate prevention)
-                        if (!alreadyAlerted && matchedParentPhone) {
-                            const timeStr = format(new Date(), 'h:mm a');
-                            const message = alert.status === 'Absent' 
-                                ? `🚨 *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, was marked *ABSENT* today at ${timeStr}. Please contact the school if you are unaware of this.`
-                                : `⚠️ *GAM Edu Alert*\n\nDear Parent, please be informed that your ward, *${alert.studentName}*, arrived *LATE* to school today at ${timeStr}.`;
-
-                            (user ? user.getIdToken() : Promise.resolve(undefined)).then(token => sendSchoolWhatsApp(schoolId, matchedParentPhone, message, token))
-                                .then(async () => {
-                                    await setDoc(queueDocRef, { queueStatus: "sent", sentAt: serverTimestamp() }, { merge: true });
-                                })
-                                .catch(async (err) => {
-                                    console.error("WhatsApp Send Failed:", err);
-                                    await setDoc(queueDocRef, { queueStatus: "failed", error: String(err) }, { merge: true });
-                                });
-                        }
-                    } catch (queueErr) {
-                        console.error("Error writing to notification_queue:", queueErr);
+                    } catch (alertErr) {
+                        console.error("Absence notification background dispatch failed:", alertErr);
                     }
-                }
-            }
-
-            toast({ title: 'Attendance Saved!', description: 'Now processing financial records...' });
-
-            const studentsToBill = data.records
-                .filter(r => r.status === 'Present' || r.status === 'Late')
-                .map(r => students.find(s => s.uid === r.studentId))
-                .filter((s): s is Student => s !== undefined);
-
-            if (studentsToBill.length > 0) {
-                try {
-                    const billingResult = await billMultipleStudents(
-                        firestore,
-                        studentsToBill,
-                        selectedDate,
-                        schoolId,
-                        (current, total, name) => {
-                            setBillingProgress(`Billing: ${current}/${total} (${name})`);
-                        }
-                    );
-                    
-                    toast({
-                        title: 'Attendance Saved 📅',
-                        description: `Attendance updated successfully. ${billingResult.successful} billed for daily services. Canteen headcount synced (${canteenMealsCount} meals).`
-                    });
-                } catch (billingErr: any) {
-                    console.error("Billing post-processing failed:", billingErr);
-                    toast({
-                        title: 'Attendance Saved 📅',
-                        description: `Student attendance status updated. Canteen headcount synced (${canteenMealsCount} meals).`
-                    });
-                }
-            } else {
-                toast({ 
-                    title: 'Attendance Saved 📅', 
-                    description: `Attendance status updated successfully. Canteen headcount synced (${canteenMealsCount} meals).` 
-                });
+                })();
             }
         } catch (error: any) {
             toast({ variant: 'destructive', title: 'Error', description: error.message });
