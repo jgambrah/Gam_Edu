@@ -1110,7 +1110,9 @@ export function NarratedLessonPlayer({
             <div className="bg-gradient-to-br from-sky-700 via-sky-600 to-teal-600 px-6 py-8 text-white">
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
                 <Sparkles className="h-3.5 w-3.5" />
-                {lesson.meta.class} {lesson.meta.subject} · GES / NaCCA {lesson.meta.indicators.join(' & ')}
+                {lesson.meta.class} {lesson.meta.subject} ·{' '}
+                {lesson.meta.curriculum === 'cambridge' ? 'Cambridge' : 'GES / NaCCA'}{' '}
+                {lesson.meta.indicators.join(' & ')}
               </div>
               <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
                 {lesson.meta.title || lesson.slides[0]?.title || 'Narrated Lesson'}

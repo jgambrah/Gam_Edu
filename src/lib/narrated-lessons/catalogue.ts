@@ -5,8 +5,10 @@ import {
 } from './types';
 import type { LessonNotesPackage } from './notes-types';
 
+export type CurriculumSystem = 'ges' | 'cambridge';
+
 export interface ClassBand {
-  id: 'early-years' | 'lower-primary' | 'upper-primary' | 'jhs';
+  id: string;
   label: string;
   classes: string[];
 }
@@ -34,7 +36,47 @@ export const CLASS_BANDS: readonly ClassBand[] = [
   },
 ];
 
+export const CAMBRIDGE_CLASS_BANDS: readonly ClassBand[] = [
+  {
+    id: 'cam-primary',
+    label: 'Cambridge Primary',
+    classes: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6'],
+  },
+  {
+    id: 'cam-lower-secondary',
+    label: 'Lower Secondary',
+    classes: ['Year 7', 'Year 8', 'Year 9'],
+  },
+  {
+    id: 'cam-igcse',
+    label: 'Upper Secondary',
+    classes: ['IGCSE'],
+  },
+  {
+    id: 'cam-advanced',
+    label: 'Cambridge Advanced',
+    classes: ['AS Level', 'A Level'],
+  },
+];
+
 export const ALL_CLASS_LEVELS: readonly string[] = CLASS_BANDS.flatMap((b) => b.classes);
+
+export function normalizeCambridgeLevel(raw?: string | null): string | null {
+  if (!raw) return null;
+  const s = raw.trim().toLowerCase();
+  if (/a[\s-]*level|\ba2\b|year\s*13|yr\s*13|stage\s*13/.test(s) && !/as[\s-]*level/.test(s)) {
+    return 'A Level';
+  }
+  if (/as[\s-]*level|year\s*12|yr\s*12|stage\s*12/.test(s)) {
+    return 'AS Level';
+  }
+  if (/igcse|o[\s-]*level|year\s*1[01]|yr\s*1[01]|stage\s*1[01]/.test(s)) {
+    return 'IGCSE';
+  }
+  const yr = s.match(/(?:year|yr|stage|grade|primary)\s*([1-9])\b/);
+  if (yr) return `Year ${yr[1]}`;
+  return null;
+}
 
 export function normalizeClassLevel(raw?: string | null): string | null {
   if (!raw) return null;
@@ -61,6 +103,7 @@ export function classDisplayLabel(classLevel: string): string {
 export interface LessonCatalogueEntry {
   lessonId: string;
   slug?: string;
+  curriculum?: CurriculumSystem;
   title: string;
   summary: string;
   class: string;

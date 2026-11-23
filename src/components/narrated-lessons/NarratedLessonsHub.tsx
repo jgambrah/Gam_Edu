@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
+  ArrowLeftRight,
   BookOpen,
   Clock,
   FileText,
@@ -15,22 +16,32 @@ import {
   Sparkles,
 } from 'lucide-react';
 import {
+  CAMBRIDGE_CLASS_BANDS,
   CLASS_BANDS,
   cdnObjectUrl,
   classDisplayLabel,
   fetchLessonCatalogue,
+  normalizeCambridgeLevel,
   normalizeClassLevel,
+  type CurriculumSystem,
   type LessonCatalogue,
   type LessonCatalogueEntry,
 } from '@/lib/narrated-lessons/catalogue';
 import { useRole } from '@/context/role-context';
 
 interface NarratedLessonsHubProps {
-  /** Base path for opening a lesson, e.g. '/dashboard/narrated-lessons' or '/narrated-lessons' */
+  /** Base path for opening a lesson, e.g. '/dashboard/narrated-lessons' or '/dashboard/cambridge-lessons' */
   basePath?: string;
+  /** Which curriculum space to show: 'ges' (default) or 'cambridge' */
+  curriculum?: CurriculumSystem;
 }
 
-export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }: NarratedLessonsHubProps) {
+export function NarratedLessonsHub({
+  basePath = '/dashboard/narrated-lessons',
+  curriculum = 'ges',
+}: NarratedLessonsHubProps) {
+  const isCambridge = curriculum === 'cambridge';
+  const classBands = isCambridge ? CAMBRIDGE_CLASS_BANDS : CLASS_BANDS;
   const { profile, role } = useRole();
   const [catalogue, setCatalogue] = useState<LessonCatalogue | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,10 +61,10 @@ export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }:
         (typeof p.class === 'string' && p.class) ||
         (typeof p.grade === 'string' && p.grade) ||
         null;
-      const norm = normalizeClassLevel(rawClass);
+      const norm = isCambridge ? normalizeCambridgeLevel(rawClass) : normalizeClassLevel(rawClass);
       if (norm) setSelectedClass(norm);
     }
-  }, [profile, role]);
+  }, [profile, role, isCambridge]);
 
   useEffect(() => {
     let active = true;
@@ -76,7 +87,10 @@ export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }:
     };
   }, []);
 
-  const entries = catalogue?.entries ?? [];
+  const entries = useMemo(() => {
+    const all = catalogue?.entries ?? [];
+    return all.filter((e) => (e.curriculum ?? 'ges') === curriculum);
+  }, [catalogue, curriculum]);
 
   const countByClass = useMemo(() => {
     const m = new Map<string, number>();
@@ -121,23 +135,44 @@ export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }:
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-6">
       {/* Hero Banner */}
-      <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-sky-700 via-sky-600 to-teal-600 p-6 text-white shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      <section
+        className={`overflow-hidden rounded-2xl p-6 text-white shadow-sm ${
+          isCambridge
+            ? 'bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700'
+            : 'bg-gradient-to-br from-sky-700 via-sky-600 to-teal-600'
+        }`}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
             <div className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
               <Sparkles className="h-3.5 w-3.5" />
-              GES / NaCCA Interactive Audio-Visual Lessons · Creche to JHS 3
+              {isCambridge
+                ? 'Cambridge International Curriculum · Year 1 to A Level'
+                : 'GES / NaCCA Interactive Audio-Visual Lessons · Creche to JHS 3'}
             </div>
             <h1 className="mt-2.5 text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Narrated Lessons Library
+              {isCambridge ? 'Cambridge Lessons Library' : 'Narrated Lessons Library'}
             </h1>
-            <p className="mt-1.5 text-sm text-sky-100">
-              Choose your class, pick a subject, and learn step-by-step with Teacher Kore, interactive concept checks, and Ask Teacher.
+            <p className={`mt-1.5 text-sm ${isCambridge ? 'text-indigo-100' : 'text-sky-100'}`}>
+              {isCambridge
+                ? 'Choose your Cambridge stage (Primary, Lower Secondary, IGCSE, or AS & A Level) for narrated lessons, study notes, and worked question series.'
+                : 'Choose your class, pick a subject, and learn step-by-step with Teacher Kore, interactive concept checks, and Ask Teacher.'}
             </p>
           </div>
-          <div className="rounded-xl bg-white/15 px-4 py-3 text-right backdrop-blur-xs">
-            <p className="text-xs font-medium text-sky-100">Available Topics</p>
-            <p className="text-2xl font-extrabold">{entries.length}</p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              href={isCambridge ? '/dashboard/narrated-lessons' : '/dashboard/cambridge-lessons'}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2.5 text-xs font-extrabold text-slate-900 shadow-xs transition hover:bg-slate-100"
+            >
+              <ArrowLeftRight className="h-3.5 w-3.5" />
+              {isCambridge ? 'Switch to GES / NaCCA' : 'Switch to Cambridge'}
+            </Link>
+            <div className="rounded-xl bg-white/15 px-4 py-2.5 text-right backdrop-blur-xs">
+              <p className={`text-[11px] font-medium ${isCambridge ? 'text-indigo-100' : 'text-sky-100'}`}>
+                Available Topics
+              </p>
+              <p className="text-xl font-extrabold leading-tight">{entries.length}</p>
+            </div>
           </div>
         </div>
 
@@ -148,19 +183,25 @@ export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }:
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by topic, subject, or NaCCA code (e.g. Water Cycle, Science, B7.2.1.1)..."
+            placeholder={
+              isCambridge
+                ? 'Search by topic, subject, or syllabus code (e.g. IGCSE Biology, Year 6, A Level Chemistry)...'
+                : 'Search by topic, subject, or NaCCA code (e.g. Water Cycle, Science, B7.2.1.1)...'
+            }
             className="w-full rounded-xl border-0 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
           />
         </div>
       </section>
 
-      {/* Class Selector (Creche -> JHS 3) */}
+      {/* Class / Stage Selector */}
       <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-2xs">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <GraduationCap className="h-4 w-4 text-sky-600" />
+            <GraduationCap className={`h-4 w-4 ${isCambridge ? 'text-indigo-600' : 'text-sky-600'}`} />
             <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-600">
-              1. Select Class (Creche – JHS 3)
+              {isCambridge
+                ? '1. Select Cambridge Level (Year 1 – A Level)'
+                : '1. Select Class (Creche – JHS 3)'}
             </h2>
           </div>
           <button
@@ -171,16 +212,18 @@ export function NarratedLessonsHub({ basePath = '/dashboard/narrated-lessons' }:
             }}
             className={`rounded-lg px-3 py-1 text-xs font-bold transition ${
               selectedClass === 'ALL'
-                ? 'bg-sky-600 text-white'
+                ? isCambridge
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-sky-600 text-white'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            All Classes ({entries.length})
+            {isCambridge ? `All Levels (${entries.length})` : `All Classes (${entries.length})`}
           </button>
         </div>
 
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-          {CLASS_BANDS.map((band) => (
+          {classBands.map((band) => (
             <div key={band.id} className="rounded-xl border border-slate-100 bg-slate-50/70 p-2.5">
               <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
                 {band.label}
@@ -343,7 +386,8 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
             </div>
           )}
           <span className="absolute left-3 top-3 rounded-full bg-slate-900/80 px-2.5 py-0.5 text-[11px] font-bold text-white backdrop-blur-xs">
-            {classDisplayLabel(entry.class)} · Term {entry.term}
+            {classDisplayLabel(entry.class)}
+            {entry.term > 0 ? ` · Term ${entry.term}` : ''}
           </span>
           {hasNotes && (
             <span className="absolute right-3 top-3 rounded-full bg-emerald-600/95 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-xs">

@@ -34,7 +34,9 @@ import {
   computeTtsCacheKey,
 } from '../../src/lib/narrated-lessons/pronunciation';
 import {
+  normalizeCambridgeLevel,
   normalizeClassLevel,
+  type CurriculumSystem,
   type LessonCatalogue,
   type LessonCatalogueEntry,
 } from '../../src/lib/narrated-lessons/catalogue';
@@ -603,8 +605,22 @@ async function main() {
     console.log(`[lesson:publish] Backed up prior catalogue (gen=${expectedGeneration}) -> ${backupPath}`);
   }
 
+  const currIdx = argv.indexOf('--curriculum');
+  const cliCurriculum = currIdx !== -1 ? argv[currIdx + 1]?.toLowerCase() : undefined;
+  const inferredCambridge =
+    cliCurriculum === 'cambridge' ||
+    lesson.meta.curriculum === 'cambridge' ||
+    /^(cam|igcse|alevel|aslevel)-/i.test(lesson.lessonId);
+  const curriculum: CurriculumSystem = inferredCambridge ? 'cambridge' : 'ges';
+  if (curriculum === 'cambridge' && !lesson.meta.curriculum) {
+    lesson.meta.curriculum = 'cambridge';
+  }
+
   const firstImgSlide = lesson.slides.find((s) => s.visual.type === 'illustration');
-  const normalizedClass = normalizeClassLevel(lesson.meta.class) ?? lesson.meta.class;
+  const normalizedClass =
+    curriculum === 'cambridge'
+      ? (normalizeCambridgeLevel(lesson.meta.class) ?? lesson.meta.class)
+      : (normalizeClassLevel(lesson.meta.class) ?? lesson.meta.class);
   const derivedTitle =
     lesson.meta.title?.trim() ||
     lesson.slides[0]?.title ||
@@ -616,6 +632,7 @@ async function main() {
   const entry: LessonCatalogueEntry = {
     lessonId: lesson.lessonId,
     ...(explicitSlug ? { slug: explicitSlug } : {}),
+    ...(curriculum === 'cambridge' ? { curriculum: 'cambridge' } : {}),
     title: derivedTitle,
     summary: lesson.learningOutcomes[0] ?? lesson.summary.takeaways[0] ?? '',
     class: normalizedClass,

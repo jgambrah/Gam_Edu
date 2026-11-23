@@ -335,6 +335,12 @@ export const navItems: NavItem[] = [
             roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
         },
         {
+            path: '/dashboard/cambridge-lessons',
+            title: 'Cambridge Lessons',
+            icon: GraduationCap,
+            roles: ['Student', 'Teacher', 'Administrator', 'Director', 'Parent'],
+        },
+        {
             path: '/dashboard/maths-club-v2',
             title: 'Maths Club',
             icon: Sigma,
