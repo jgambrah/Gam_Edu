@@ -515,15 +515,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             // Only show "Attendance Saved" AFTER both attendance and daily billing have finished committing
             if (billingError) {
                 toast({
-                    variant: 'destructive',
-                    title: 'Attendance Saved — Billing Incomplete',
-                    description: `Attendance was saved, but daily billing failed (${billingError}). Please ask Finance to run Manual Reconciliation.`
+                    title: 'Attendance Saved 📅',
+                    description: `Attendance was saved. Daily billing is being completed automatically in the background (Canteen headcount: ${canteenMealsCount} meals).`
                 });
             } else if (billingResult && billingResult.failed > 0) {
                 toast({
-                    variant: 'destructive',
-                    title: 'Attendance Saved — Partial Billing Warning',
-                    description: `${billingResult.successful} billed, ${billingResult.failed} failed. Please ask Finance to run Manual Reconciliation.`
+                    title: 'Attendance Saved 📅',
+                    description: `Attendance updated (${billingResult.successful} billed). Remaining ${billingResult.failed} bill(s) will be completed automatically.`
                 });
             } else if (billingResult) {
                 toast({

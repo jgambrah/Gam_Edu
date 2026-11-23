@@ -33,6 +33,8 @@ interface BillingResult {
 /**
  * Server-side implementation of billing a student for canteen and/or bus services when they attend school.
  * Uses admin SDK to perform writes.
+ * PARITY NOTICE: Mirrored in `functions/src/daily-billing.ts` (isolated Cloud Functions package)
+ * and verified by `src/lib/daily-billing.parity.test.ts`. Keep IDs, rates, and restore logic in sync.
  */
 export async function billStudentForAttendanceServer(
   db: FirebaseFirestore.Firestore,

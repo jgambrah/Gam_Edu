@@ -1356,6 +1356,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Server-written daily billing reconciliation summaries. Finance/admins may read; clients never write.
+    match /billingReconciliation/{docId} {
+      allow read: if isFinanceRole() && readMySchool();
+      allow write: if false;
+    }
+
     match /waiverRequests/{requestId} {
       allow read, get, list: if isSignedIn();
       allow create: if isFinanceRole() && newDocInMySchool() && request.resource.data.get('status', 'Pending') == 'Pending';

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { collection, query, where, getDocs, writeBatch, doc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
+import { collection, query, where, getDocs, writeBatch, doc, updateDoc, serverTimestamp, Timestamp, increment } from 'firebase/firestore';
 import { useCurrentSchool } from '@/hooks/use-current-school';
 import { termStampOfRecord } from '@/lib/term';
 import { format } from 'date-fns';
@@ -20,7 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Search, CheckCircle2, CalendarIcon, Coins, AlertCircle, RefreshCw, Users, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { generateNextReceiptId, sendPaymentNotificationToParent } from '@/lib/student-utils';
-import { reallocateExistingOverpayments } from '@/lib/credit-allocation';
+import { reallocateExistingOverpayments, setStudentCreditMarker } from '@/lib/credit-allocation';
 import { sendBulkPaymentSMSNotificationAction } from '@/app/actions/sms';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import Link from 'next/link';
@@ -35,6 +35,7 @@ type BillRecord = {
     amountPaid: number;
     waiverAmount?: number;
     type: string;
+    creditPending?: boolean;
 };
 
 interface AuditSummary {
@@ -65,6 +66,7 @@ export default function BulkDailyReceiptsPage() {
     
     const [isLoading, setIsLoading] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isApplyingCredits, setIsApplyingCredits] = useState(false);
     const [auditSummary, setAuditSummary] = useState<AuditSummary | null>(null);
     const [showMissingNames, setShowMissingNames] = useState(false);
 
@@ -271,6 +273,77 @@ export default function BulkDailyReceiptsPage() {
             bill.description.toLowerCase().includes(term)
         );
     }, [pendingBills, searchTerm]);
+
+    const creditPendingBills = useMemo(
+        () => pendingBills.filter(b => b.creditPending === true),
+        [pendingBills]
+    );
+
+    const creditPendingStudentCount = useMemo(
+        () => new Set(creditPendingBills.map(b => b.studentId).filter(Boolean)).size,
+        [creditPendingBills]
+    );
+
+    // Idempotent consumer for server-created bills flagged `creditPending: true`.
+    // Clears `creditPending` ONLY after `reallocateExistingOverpayments` succeeds for that student.
+    const handleApplyHeldCredits = async () => {
+        if (!firestore || !schoolId || !user || isApplyingCredits || creditPendingBills.length === 0) return;
+
+        setIsApplyingCredits(true);
+        const billsByStudent = new Map<string, BillRecord[]>();
+        for (const bill of creditPendingBills) {
+            if (!bill.studentId) continue;
+            const list = billsByStudent.get(bill.studentId) || [];
+            list.push(bill);
+            billsByStudent.set(bill.studentId, list);
+        }
+
+        const performedBy = user.displayName || user.email || 'Accountant';
+        let studentsProcessed = 0;
+        let totalMoved = 0;
+        let failedCount = 0;
+
+        try {
+            for (const [studentId, studentBills] of billsByStudent.entries()) {
+                try {
+                    const res = await reallocateExistingOverpayments({
+                        firestore,
+                        schoolId,
+                        studentKeys: [studentId],
+                        performedBy,
+                    });
+                    await setStudentCreditMarker(firestore, studentId, res.remainingCredit);
+                    // Clear creditPending ONLY after reallocation succeeds
+                    await Promise.all(
+                        studentBills.map(b =>
+                            updateDoc(doc(firestore, 'financialRecords', b.id), { creditPending: false })
+                        )
+                    );
+                    studentsProcessed++;
+                    totalMoved += res.moved;
+                } catch (err) {
+                    failedCount++;
+                    console.warn('Could not apply held credit for student', studentId, err);
+                }
+            }
+
+            if (failedCount > 0) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Held Credits Partially Applied',
+                    description: `Applied GHS ${totalMoved.toFixed(2)} across ${studentsProcessed} student(s); ${failedCount} failed and remain flagged.`,
+                });
+            } else {
+                toast({
+                    title: 'Held Credits Applied',
+                    description: `Applied GHS ${totalMoved.toFixed(2)} across ${studentsProcessed} student(s).`,
+                });
+            }
+            await handleLoadBills();
+        } finally {
+            setIsApplyingCredits(false);
+        }
+    };
 
     const handleProcessPayments = async () => {
         if (!firestore || !schoolId || !user) return;
@@ -639,6 +712,31 @@ export default function BulkDailyReceiptsPage() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                </Alert>
+            )}
+
+            {creditPendingBills.length > 0 && (
+                <Alert className="bg-indigo-50 border-indigo-200 border-2 rounded-2xl animate-in slide-in-from-top-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                        <div className="flex items-start gap-3">
+                            <Coins className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+                            <div>
+                                <AlertTitle className="font-black text-indigo-900 uppercase text-xs tracking-tight">Held Account Credit Pending</AlertTitle>
+                                <AlertDescription className="text-indigo-800 text-xs font-medium mt-1">
+                                    {creditPendingStudentCount} student(s) have held account credit waiting to be applied to {creditPendingBills.length} bill(s).
+                                </AlertDescription>
+                            </div>
+                        </div>
+                        <Button
+                            size="sm"
+                            onClick={handleApplyHeldCredits}
+                            disabled={isApplyingCredits || isProcessing}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl h-9 px-4 shrink-0"
+                        >
+                            {isApplyingCredits ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Coins className="mr-2 h-3.5 w-3.5" />}
+                            {isApplyingCredits ? 'Applying Credits...' : 'Apply Held Credits'}
+                        </Button>
                     </div>
                 </Alert>
             )}

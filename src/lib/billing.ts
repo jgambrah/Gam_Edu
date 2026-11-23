@@ -25,7 +25,11 @@ export async function fetchCurrentTermStamp(firestore: Firestore, schoolId: stri
   }
 }
 
-/** Fields that bring a bill voided by an absence correction back to life (student re-marked present). */
+/**
+ * Fields that bring a bill voided by an absence correction back to life (student re-marked present).
+ * PARITY NOTICE: Mirrored in `functions/src/daily-billing.ts` (`buildRestoreVoidedPatch`) and
+ * verified by `src/lib/daily-billing.parity.test.ts`. Keep IDs, rates, and restore logic in sync.
+ */
 const restoreVoidedBill = (prev: any, rate: number) => {
   const paid = Number(prev?.amountPaid) || 0;
   const waiver = Number(prev?.originalWaiverAmount ?? prev?.waiverAmount) || 0;
