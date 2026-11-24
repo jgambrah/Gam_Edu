@@ -39,6 +39,8 @@ import { notifyParents } from '@/app/actions/notifications';
 import { sendSchoolWhatsApp } from '@/app/actions/whatsapp';
 import { logAuditEvent } from '@/lib/audit';
 import { triggerStudentBadgeEvent } from '@/lib/achievement-utils';
+import { findPauseForDate, isServicePausedOnDate } from '@/lib/billing-pause';
+import { useBillingPauses } from './billing-pause-card';
 
 const attendanceRecordSchema = z.object({
   id: z.string().optional(),
@@ -112,6 +114,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     // — re-saving a sheet used to re-notify every parent and re-award every badge each time.
     const savedStatusRef = useRef<Record<string, string>>({});
     
+    // Director billing pause: attendance is still taken, but paused services are not billed for the selected date.
+    const billingPauses = useBillingPauses();
+    const selectedDateStr = schoolDayDateStr(selectedDate);
+    const activePause = findPauseForDate(billingPauses, selectedDateStr);
+    const canteenPausedToday = isServicePausedOnDate(billingPauses, selectedDateStr, 'canteen');
+    const transportPausedToday = isServicePausedOnDate(billingPauses, selectedDateStr, 'transport');
+
     const [billingProgress, setBillingProgress] = useState<string | null>(null);
     const [hasExistingRecords, setHasExistingRecords] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -513,7 +522,12 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
             }
 
             // Only show "Attendance Saved" AFTER both attendance and daily billing have finished committing
-            if (billingError) {
+            if (canteenPausedToday && transportPausedToday) {
+                toast({
+                    title: 'Attendance Saved 📅',
+                    description: `Attendance updated. Daily billing is paused for this date, so no bills were generated${activePause?.reason ? ` (${activePause.reason})` : ''}.`
+                });
+            } else if (billingError) {
                 toast({
                     title: 'Attendance Saved 📅',
                     description: `Attendance was saved. Daily billing is being completed automatically in the background (Canteen headcount: ${canteenMealsCount} meals).`
@@ -738,13 +752,13 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
     const billingBusCount = records.filter((r) => {
         const student = students.find(s => s.uid === r.studentId);
         const transportMode = (student as any)?.transportBillingModel || 'Daily';
-        return (r.status === 'Present' || r.status === 'Late') && student?.usesBusService && transportMode === 'Daily';
+        return !transportPausedToday && (r.status === 'Present' || r.status === 'Late') && student?.usesBusService && transportMode === 'Daily';
     }).length;
 
     const billingCanteenCount = records.filter((r) => {
         const student = students.find(s => s.uid === r.studentId);
         const canteenMode = (student as any)?.canteenBillingMode || 'Daily';
-        return (r.status === 'Present' || r.status === 'Late') && (student?.usesCanteen !== false) && canteenMode === 'Daily';
+        return !canteenPausedToday && (r.status === 'Present' || r.status === 'Late') && (student?.usesCanteen !== false) && canteenMode === 'Daily';
     }).length;
 
     return (
@@ -759,6 +773,18 @@ export function DailyAttendanceSheet({ classId: propClassId }: { classId?: strin
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-0 flex-1 flex flex-col pb-0">
+                {activePause && (
+                    <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                        <p>
+                            <span className="font-bold">
+                                {[activePause.canteen && 'Canteen', activePause.transport && 'Transport'].filter(Boolean).join(' & ')} billing is paused
+                            </span>{' '}
+                            for {activePause.fromDate === activePause.toDate ? activePause.fromDate : `${activePause.fromDate} to ${activePause.toDate}`}
+                            {activePause.reason ? ` (${activePause.reason})` : ''}. Attendance is still recorded, but students will not be billed for {activePause.canteen && activePause.transport ? 'these services' : 'the paused service'}.
+                        </p>
+                    </div>
+                )}
                 <div className="flex flex-col md:flex-row gap-4 mb-6 flex-shrink-0 bg-white/60 backdrop-blur-sm p-4 rounded-2xl border border-slate-100 shadow-sm">
                     {!propClassId && (
                         <div className="flex-1">

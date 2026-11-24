@@ -4,6 +4,7 @@ import { schoolDayDateStrUtc, schoolDayStartUtcFromInstant } from '@/lib/attenda
 import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing-predicates';
 import { applyHeldCreditAfterBillingServer } from '@/lib/credit-allocation-server';
 import { currentTermFromProfile, type TermStamp } from '@/lib/term';
+import { BILLING_PAUSE_DOC_PATH, isServicePausedOnDate, parseBillingPauses } from '@/lib/billing-pause';
 
 /** Reads the school's current term from the school profile. Returns null if it isn't set. Never throws. */
 export async function fetchCurrentTermStampServer(db: FirebaseFirestore.Firestore, schoolId: string): Promise<TermStamp | null> {
@@ -241,12 +242,22 @@ export async function billMultipleStudentsServer(
       : []
   );
 
-  const [canteenSettingsSnap, routesSnap, termStamp, existingSnaps] = await Promise.all([
+  const [canteenSettingsSnap, routesSnap, termStamp, existingSnaps, pausesSnap] = await Promise.all([
     db.collection('schoolSettings').doc(schoolId).collection('rates').doc('canteen').get(),
     db.collection('routes').where('schoolId', '==', schoolId).get(),
     fetchCurrentTermStampServer(db, schoolId),
     billRefs.length > 0 ? db.getAll(...billRefs) : Promise.resolve([]),
+    // Director billing pause (kitchen closed, buses off the road...): attendance counts, billing is skipped.
+    db.collection('schoolSettings').doc(schoolId).collection(BILLING_PAUSE_DOC_PATH[0]).doc(BILLING_PAUSE_DOC_PATH[1]).get()
+      .catch(() => null),
   ]);
+
+  const pauses = pausesSnap?.exists ? parseBillingPauses(pausesSnap.data()) : [];
+  const canteenPaused = isServicePausedOnDate(pauses, dateStr, 'canteen');
+  const transportPaused = isServicePausedOnDate(pauses, dateStr, 'transport');
+  if (canteenPaused && transportPaused) {
+    return { successful: students.length, failed: 0, totalBilled: 0, errors: [] };
+  }
 
   const canteenData = canteenSettingsSnap.data();
   const canteenModel = canteenData?.pricingModel || 'Flat';
@@ -314,8 +325,9 @@ export async function billMultipleStudentsServer(
       continue;
     }
 
-    const canteenRate = canteenModel === 'Flat' ? globalCanteenRate : (Number(classCanteenRates[student.classId]) || 0);
-    const transportRate = studentToTransportRateMap.get(student.uid) || 0;
+    // A paused service resolves to rate 0 (treated as "do not bill / do not restore" below).
+    const canteenRate = canteenPaused ? 0 : (canteenModel === 'Flat' ? globalCanteenRate : (Number(classCanteenRates[student.classId]) || 0));
+    const transportRate = transportPaused ? 0 : (studentToTransportRateMap.get(student.uid) || 0);
 
     const canteenRecordId = `canteen-${student.uid}-${dateStr}`;
     const transportRecordId = `transport-${student.uid}-${dateStr}`;

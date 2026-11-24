@@ -47,6 +47,8 @@ exports.shouldBillDailyCanteen = shouldBillDailyCanteen;
 exports.isDailyTransportSubscriber = isDailyTransportSubscriber;
 exports.canteenBillId = canteenBillId;
 exports.transportBillId = transportBillId;
+exports.parseBillingPauses = parseBillingPauses;
+exports.isServicePausedOnDate = isServicePausedOnDate;
 exports.schoolDayStartUtcFromDateStr = schoolDayStartUtcFromDateStr;
 exports.schoolTodayDateStrUtc = schoolTodayDateStrUtc;
 exports.formatBillDisplayDate = formatBillDisplayDate;
@@ -142,6 +144,34 @@ function canteenBillId(studentUid, dateStr) {
 /** Deterministic daily transport bill ID (mirrors src/lib/billing.ts & src/lib/billing-server.ts). */
 function transportBillId(studentUid, dateStr) {
     return `transport-${studentUid}-${dateStr}`;
+}
+function parseBillingPauses(data) {
+    const raw = data === null || data === void 0 ? void 0 : data.pauses;
+    if (!Array.isArray(raw))
+        return [];
+    const re = /^\d{4}-\d{2}-\d{2}$/;
+    const out = [];
+    for (const p of raw) {
+        if (!p || typeof p !== 'object')
+            continue;
+        const e = p;
+        if (typeof e.fromDate !== 'string' || !re.test(e.fromDate))
+            continue;
+        if (typeof e.toDate !== 'string' || !re.test(e.toDate))
+            continue;
+        out.push({
+            fromDate: e.fromDate,
+            toDate: e.toDate,
+            canteen: e.canteen !== false,
+            transport: e.transport !== false,
+        });
+    }
+    return out;
+}
+function isServicePausedOnDate(pauses, dateStr, service) {
+    if (!pauses || pauses.length === 0 || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr))
+        return false;
+    return pauses.some(p => p[service] && p.fromDate <= dateStr && dateStr <= p.toDate);
 }
 /** Canonical UTC midnight for a YYYY-MM-DD school calendar date (mirrors schoolDayStartUtc). */
 function schoolDayStartUtcFromDateStr(dateStr) {
@@ -285,6 +315,8 @@ function extractNewlyAbsentStudentIds(beforeMap, afterMap) {
 function planDailyBillsForStudents(params) {
     var _a, _b;
     const { students, schoolId, dateStr, canteenConfig, transportRateMap, existingBills, termStamp, } = params;
+    const canteenPaused = isServicePausedOnDate(params.pauses, dateStr, 'canteen');
+    const transportPaused = isServicePausedOnDate(params.pauses, dateStr, 'transport');
     const dueDateValue = (_a = params.dueDateValue) !== null && _a !== void 0 ? _a : firestore_2.Timestamp.fromDate(schoolDayStartUtcFromDateStr(dateStr));
     const createdAtValue = (_b = params.createdAtValue) !== null && _b !== void 0 ? _b : firestore_2.FieldValue.serverTimestamp();
     const formattedDate = formatBillDisplayDate(dateStr);
@@ -305,8 +337,8 @@ function planDailyBillsForStudents(params) {
             skippedCount++;
             continue;
         }
-        const billCanteen = shouldBillDailyCanteen(student);
-        const billTransport = isDailyTransportSubscriber(student);
+        const billCanteen = !canteenPaused && shouldBillDailyCanteen(student);
+        const billTransport = !transportPaused && isDailyTransportSubscriber(student);
         const { canteen: canteenRate, transport: transportRate } = resolveStudentDailyRates(student, canteenConfig, transportRateMap);
         const hasCredit = student.hasAccountCredit === true;
         const studentName = `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Student';
@@ -408,12 +440,14 @@ function isAlreadyExistsError(err) {
 }
 async function loadSchoolBillingContext(db, schoolId, config) {
     var _a;
-    const [settingsSnap, schoolSnap, canteenSnap, routesSnap] = await Promise.all([
+    const [settingsSnap, schoolSnap, canteenSnap, routesSnap, pauseSnap] = await Promise.all([
         db.collection('schoolSettings').doc(schoolId).get(),
         db.collection('schools').doc(schoolId).get(),
         db.collection('schoolSettings').doc(schoolId).collection('rates').doc('canteen').get(),
         db.collection('routes').where('schoolId', '==', schoolId).get(),
+        db.collection('schoolSettings').doc(schoolId).collection('rates').doc('billingPause').get(),
     ]);
+    const pauses = pauseSnap.exists ? parseBillingPauses(pauseSnap.data()) : [];
     const settingsData = settingsSnap.exists ? settingsSnap.data() : null;
     const schoolData = schoolSnap.exists ? schoolSnap.data() : null;
     const mode = resolveSchoolBillingMode(settingsData, schoolId, config);
@@ -437,7 +471,7 @@ async function loadSchoolBillingContext(db, schoolId, config) {
     }
     // Share the exact canonical term stamp logic with the web app (`./term-utils`).
     const termStamp = (_a = (0, term_utils_1.currentTermFromProfile)(schoolData)) !== null && _a !== void 0 ? _a : (0, term_utils_1.currentTermFromProfile)(settingsData);
-    return { mode, canteenConfig, transportRateMap, termStamp };
+    return { mode, canteenConfig, transportRateMap, termStamp, pauses };
 }
 async function fetchStudentsByIds(db, studentIds) {
     if (studentIds.length === 0)
@@ -663,6 +697,7 @@ async function handleAggregatedAttendanceWrite(params) {
             transportRateMap: ctx.transportRateMap,
             existingBills,
             termStamp: ctx.termStamp,
+            pauses: ctx.pauses,
         });
         counters = await executePlannedBillOps({ db, plan, dryRun });
     }
@@ -800,6 +835,7 @@ async function runDailyReconciliation(params) {
             transportRateMap: ctx.transportRateMap,
             existingBills: new Map(),
             termStamp: ctx.termStamp,
+            pauses: ctx.pauses,
         });
         if (!forceFullLookup) {
             const countCheck = await checkSchoolBillCounts({
@@ -867,6 +903,7 @@ async function runDailyReconciliation(params) {
             transportRateMap: ctx.transportRateMap,
             existingBills,
             termStamp: ctx.termStamp,
+            pauses: ctx.pauses,
         });
         const counters = await executePlannedBillOps({ db, plan, dryRun });
         const summary = {

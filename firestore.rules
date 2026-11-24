@@ -628,11 +628,12 @@ service cloud.firestore {
       allow write: if isSuperAdmin() || (isFinanceRole() && getUserSchoolId() == docId);
 
       // Rates (canteen, transport...) — finance staff; the BUDGET control policy — the Director only, so
-      // staff cannot loosen the check on their own spending.
+      // staff cannot loosen the check on their own spending. Likewise the BILLING PAUSE (skip daily canteen /
+      // transport billing while attendance is still taken, e.g. kitchen closed) is the Director's call only.
       match /{sub}/{subDoc} {
         allow read, get, list: if isSignedIn();
         allow write: if isSuperAdmin() || (getUserSchoolId() == docId
-          && ((sub == 'rates' && subDoc == 'budget') ? isReviewDirector() : isFinanceRole()));
+          && ((sub == 'rates' && (subDoc == 'budget' || subDoc == 'billingPause')) ? isReviewDirector() : isFinanceRole()));
       }
       match /{sub}/{subDoc}/{rest=**} {
         allow read, get, list: if isSignedIn();

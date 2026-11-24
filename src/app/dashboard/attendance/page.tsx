@@ -5,6 +5,7 @@ import { Loader2, UserCheck, Fingerprint, FileText } from 'lucide-react';
 import { DailyAttendanceSheet } from './daily-attendance-sheet';
 import { BiometricIntegrationSheet } from './biometric-integration-sheet';
 import { AttendanceAuditLogs } from './attendance-audit-logs';
+import { BillingPauseCard } from './billing-pause-card';
 import { useRole } from '@/context/role-context';
 import { useRouter } from 'next/navigation';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -106,7 +107,8 @@ export default function AttendancePage() {
       />
 
       <Tabs value={activeTab} onValueChange={(val: any) => setActiveTab(val)} className="w-full">
-        <TabsContent value="manual" className="outline-none mt-0">
+        <TabsContent value="manual" className="outline-none mt-0 space-y-6">
+          <BillingPauseCard />
           <Suspense fallback={<div className="flex min-h-[80vh] w-full items-center justify-center"><Loader2 className="h-16 w-16 animate-spin text-teal-650" /></div>}>
               <DailyAttendanceSheet />
           </Suspense>

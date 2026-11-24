@@ -8,8 +8,24 @@ import { schoolDayDateStr, schoolDayStartUtc } from '@/lib/attendance-date';
 import { applyHeldCreditAfterBilling, reallocateExistingOverpayments, setStudentCreditMarker } from '@/lib/credit-allocation';
 import { currentTermFromProfile, type TermStamp } from '@/lib/term';
 import { isDailyTransportSubscriber, shouldBillDailyCanteen } from '@/lib/billing-predicates';
+import { BILLING_PAUSE_DOC_PATH, isServicePausedOnDate, parseBillingPauses, type BillingPause } from '@/lib/billing-pause';
 
 export { isDailyTransportSubscriber, shouldBillDailyCanteen };
+
+/**
+ * Director-set billing pauses (kitchen closed, buses off the road...). Attendance is still recorded,
+ * but daily bills for a paused service are not generated. Never throws: on a read error we return []
+ * (billing continues as before) rather than blocking attendance.
+ */
+export async function fetchBillingPauses(firestore: Firestore, schoolId: string): Promise<BillingPause[]> {
+  try {
+    const snap = await getDoc(doc(firestore, 'schoolSettings', schoolId, ...BILLING_PAUSE_DOC_PATH));
+    return snap.exists() ? parseBillingPauses(snap.data()) : [];
+  } catch (e) {
+    console.warn('Could not read billing pauses; billing continues as normal:', e);
+    return [];
+  }
+}
 
 /** Reads the school's current term from the school profile. Returns null if it isn't set. Never throws. */
 export async function fetchCurrentTermStamp(firestore: Firestore, schoolId: string): Promise<TermStamp | null> {
@@ -126,7 +142,8 @@ export async function billStudentForAttendance(
   providedRates?: { canteen: number, transport: number },
   existingBillIds?: Set<string>,
   voidedBills?: Map<string, any>,
-  termStamp?: TermStamp | null
+  termStamp?: TermStamp | null,
+  pauses?: BillingPause[]
 ): Promise<BillingResult> {
   
   try {
@@ -156,11 +173,16 @@ export async function billStudentForAttendance(
     }
 
     // 2. Resolve Rates
-    const canteenRate = (providedRates && providedRates.canteen !== undefined) 
-      ? providedRates.canteen 
+    // Director billing pause: a paused service has rate 0, so nothing is created or restored for it.
+    const activePauses = pauses ?? await fetchBillingPauses(firestore, schoolId);
+    const canteenPaused = isServicePausedOnDate(activePauses, dateStr, 'canteen');
+    const transportPaused = isServicePausedOnDate(activePauses, dateStr, 'transport');
+
+    const canteenRate = canteenPaused ? 0 : (providedRates && providedRates.canteen !== undefined)
+      ? providedRates.canteen
       : DAILY_RATES.CANTEEN;
-      
-    const transportRate = (providedRates && providedRates.transport !== undefined)
+
+    const transportRate = transportPaused ? 0 : (providedRates && providedRates.transport !== undefined)
       ? providedRates.transport
       : DAILY_RATES.BUS;
 
@@ -263,7 +285,9 @@ export async function billStudentForAttendance(
 
     return {
         success: true,
-        message: 'No bills generated (rates are 0 or student already billed)',
+        message: (canteenPaused || transportPaused)
+          ? 'No bills generated: daily billing is paused for this date by the Director'
+          : 'No bills generated (rates are 0 or student already billed)',
         amountBilled: 0
     };
 
@@ -308,7 +332,7 @@ export async function billMultipleStudents(
     idChunks.push(ids.slice(i, i + 30));
   }
 
-  const [canteenResult, routesResult, termStamp, existingBillsResult] = await Promise.all([
+  const [canteenResult, routesResult, termStamp, existingBillsResult, pauses] = await Promise.all([
     getDoc(doc(firestore, 'schoolSettings', schoolId, 'rates', 'canteen')).catch(err => {
       console.warn("Could not fetch canteen rates:", err);
       return null;
@@ -326,7 +350,15 @@ export async function billMultipleStudents(
       if (err?.message !== 'small-batch') console.warn("Could not fetch existing daily bills; checking per student instead:", err);
       return null;
     }),
+    fetchBillingPauses(firestore, schoolId),
   ]);
+
+  const canteenPaused = isServicePausedOnDate(pauses, dateStr, 'canteen');
+  const transportPaused = isServicePausedOnDate(pauses, dateStr, 'transport');
+  // Everything paused for the day: attendance is still recorded, but there is nothing to bill.
+  if (canteenPaused && transportPaused) {
+    return { successful: students.length, failed: 0, totalBilled: 0, errors: [] };
+  }
 
   let canteenModel = 'Flat';
   let globalCanteenRate = 0;
@@ -363,9 +395,10 @@ export async function billMultipleStudents(
     });
   }
 
+  // A paused service resolves to rate 0, which the planners below treat as "do not bill / do not restore".
   const resolveRates = (student: Student) => ({
-    canteen: canteenModel === 'Flat' ? globalCanteenRate : (classCanteenRates[student.classId] || 0),
-    transport: studentToTransportRateMap.get(student.uid) || 0,
+    canteen: canteenPaused ? 0 : (canteenModel === 'Flat' ? globalCanteenRate : (classCanteenRates[student.classId] || 0)),
+    transport: transportPaused ? 0 : (studentToTransportRateMap.get(student.uid) || 0),
   });
 
   let successful = 0;
@@ -527,7 +560,8 @@ export async function billMultipleStudents(
               resolveRates(item.student),
               existingBillIds,
               voidedBills,
-              termStamp
+              termStamp,
+              pauses
             );
             if (result.success) {
               successful++;
@@ -568,7 +602,8 @@ export async function billMultipleStudents(
         resolveRates(student),
         undefined,
         undefined,
-        termStamp
+        termStamp,
+        pauses
       );
       if (result.success) {
         successful++;
