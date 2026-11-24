@@ -17,6 +17,7 @@ import {
   FileText,
   FlaskConical,
   HelpCircle,
+  Maximize2,
   MessageCircleQuestion,
   Mic,
   Pause,
@@ -30,6 +31,8 @@ import {
   VolumeX,
   WifiOff,
   X,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react';
 import type {
   AssessmentItem,
@@ -237,6 +240,32 @@ export function NarratedLessonPlayer({
   const [chatBySlide, setChatBySlide] = useState<Record<string, ChatMessage[]>>({});
   const [askInput, setAskInput] = useState('');
   const [askLoading, setAskLoading] = useState(false);
+
+  // Enlarged visual lightbox state (works for both GES / NaCCA and Cambridge slides)
+  const [visualZoomOpen, setVisualZoomOpen] = useState(false);
+  const [visualZoomScale, setVisualZoomScale] = useState(1);
+
+  useEffect(() => {
+    setVisualZoomOpen(false);
+    setVisualZoomScale(1);
+  }, [stepIdx]);
+
+  useEffect(() => {
+    if (!visualZoomOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setVisualZoomOpen(false);
+      } else if (e.key === '+' || e.key === '=') {
+        setVisualZoomScale((s) => Math.min(2.5, Number((s + 0.25).toFixed(2))));
+      } else if (e.key === '-') {
+        setVisualZoomScale((s) => Math.max(1, Number((s - 0.25).toFixed(2))));
+      } else if (e.key === '0') {
+        setVisualZoomScale(1);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [visualZoomOpen]);
 
   // Reviewer-mode per-slide pronunciation audit state (Step 7)
   const [pronAudit, setPronAudit] = useState<Record<string, SlidePronEntry>>({});
@@ -1242,7 +1271,16 @@ export function NarratedLessonPlayer({
               </div>
 
               {/* 16:9 Visual Stage */}
-              <div className="relative aspect-video w-full overflow-hidden bg-slate-100">
+              <div
+                onClick={() => {
+                  if (reviewerMode && selectedCueId) return;
+                  setVisualZoomScale(1);
+                  setVisualZoomOpen(true);
+                }}
+                className={`group relative aspect-video w-full overflow-hidden bg-slate-100 ${
+                  reviewerMode && selectedCueId ? '' : 'cursor-zoom-in'
+                }`}
+              >
                 {currentStep.slide.visual.type === 'svg' && currentStep.slide.visual.svgCode ? (
                   <div
                     className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
@@ -1267,6 +1305,22 @@ export function NarratedLessonPlayer({
                   editable={reviewerMode && Boolean(selectedCueId)}
                   onUpdateRegion={handleDragCueRegion}
                 />
+
+                {/* Enlarge / Fullscreen Visual Button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setVisualZoomScale(1);
+                    setVisualZoomOpen(true);
+                  }}
+                  aria-label="Enlarge visual"
+                  title="Enlarge for a clearer view"
+                  className="absolute right-2.5 top-2.5 z-20 inline-flex items-center gap-1.5 rounded-full bg-slate-900/75 px-3 py-1.5 text-xs font-bold text-white shadow-md backdrop-blur-xs transition hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                >
+                  <Maximize2 className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Enlarge</span>
+                </button>
 
                 {/* Off-screen chip nudge (no auto-scroll on phones) */}
                 {activeCue?.target.type === 'chip' && !chipsInView && (
@@ -1886,6 +1940,113 @@ export function NarratedLessonPlayer({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Enlarged Visual Lightbox Modal (GES / NaCCA & Cambridge) */}
+      {visualZoomOpen && currentStep.kind === 'slide' && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Enlarged visual: ${currentStep.slide.title}`}
+          onClick={() => setVisualZoomOpen(false)}
+          className="fixed inset-0 z-50 flex flex-col bg-slate-950/92 backdrop-blur-sm"
+        >
+          {/* Top toolbar */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-slate-950/80 px-4 py-3 text-white"
+          >
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="shrink-0 rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-200">
+                  {lesson.meta.curriculum === 'cambridge' ? 'Cambridge' : 'GES / NaCCA'}
+                </span>
+                <h3 className="truncate text-sm font-extrabold sm:text-base">
+                  {currentStep.slide.title}
+                </h3>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setVisualZoomScale((s) => Math.max(1, Number((s - 0.25).toFixed(2))))}
+                disabled={visualZoomScale <= 1}
+                aria-label="Zoom out"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white hover:bg-white/20 disabled:opacity-40"
+              >
+                <ZoomOut className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisualZoomScale(1)}
+                aria-label="Reset zoom"
+                title="Reset to 100%"
+                className="min-w-[3.5rem] rounded-lg border border-white/15 bg-white/10 px-2 py-1 text-center text-xs font-bold tabular-nums text-white hover:bg-white/20"
+              >
+                {Math.round(visualZoomScale * 100)}%
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisualZoomScale((s) => Math.min(2.5, Number((s + 0.25).toFixed(2))))}
+                disabled={visualZoomScale >= 2.5}
+                aria-label="Zoom in"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-white/10 text-white hover:bg-white/20 disabled:opacity-40"
+              >
+                <ZoomIn className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisualZoomOpen(false)}
+                aria-label="Close enlarged view"
+                className="ml-2 inline-flex h-8 items-center gap-1 rounded-lg bg-white px-2.5 text-xs font-extrabold text-slate-900 hover:bg-slate-200"
+              >
+                <X className="h-4 w-4" />
+                <span className="hidden sm:inline">Close</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Scrollable / Pannable Enlarged Stage */}
+          <div className="flex-1 overflow-auto p-3 sm:p-6">
+            <div className="mx-auto flex min-h-full max-w-6xl items-center justify-center">
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{ width: `${visualZoomScale * 100}%` }}
+                className="relative aspect-video shrink-0 overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-white/20 transition-[width] duration-150"
+              >
+                {currentStep.slide.visual.type === 'svg' && currentStep.slide.visual.svgCode ? (
+                  <div
+                    className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
+                    dangerouslySetInnerHTML={{ __html: currentStep.slide.visual.svgCode }}
+                  />
+                ) : (
+                  <img
+                    src={
+                      currentStep.slide.visual.imageUrl
+                        ? lessonMediaUrl(lesson.lessonId, currentStep.slide.visual.imageUrl)
+                        : lessonMediaUrl(lesson.lessonId, `images/${currentStep.slide.id}.webp`, lesson.schemaVersion)
+                    }
+                    alt={currentStep.slide.visual.altText}
+                    className="h-full w-full object-contain bg-slate-900"
+                  />
+                )}
+                <TeacherPointerOverlay cue={activeCue} editable={false} />
+              </div>
+            </div>
+          </div>
+
+          {/* Caption Footer */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="border-t border-white/10 bg-slate-950/80 px-4 py-2.5 text-center text-xs text-slate-300"
+          >
+            <p className="mx-auto max-w-4xl truncate">{currentStep.slide.visual.altText}</p>
+            <p className="mt-0.5 text-[11px] text-slate-400">
+              Use + / − to zoom up to 250% · Scroll or swipe to pan · Tap outside or press Esc to close
+            </p>
           </div>
         </div>
       )}
