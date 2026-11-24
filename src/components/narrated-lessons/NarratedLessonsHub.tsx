@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
+  ArrowUpRight,
   BookOpen,
   Clock,
   FileText,
@@ -12,9 +13,11 @@ import {
   Layers,
   Loader2,
   PlayCircle,
+  Rocket,
   Search,
   Sparkles,
 } from 'lucide-react';
+import { getSeniorAcademyLinkForLesson } from '@/lib/narrated-lessons/senior-academy-map';
 import {
   CAMBRIDGE_CLASS_BANDS,
   CLASS_BANDS,
@@ -463,6 +466,7 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
   const coverUrl = entry.coverImagePath ? cdnObjectUrl(entry.coverImagePath) : null;
   const href = `${basePath}/${encodeURIComponent(entry.lessonId)}`;
   const hasNotes = Boolean(entry.notesPath);
+  const seniorLink = getSeniorAcademyLinkForLesson(entry.lessonId);
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xs transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md">
@@ -562,6 +566,19 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
               <PlayCircle className="h-4 w-4" />
               Start
             </span>
+          </Link>
+        )}
+        {seniorLink && (
+          <Link
+            href={seniorLink.href}
+            className="mt-2 flex items-center justify-between gap-1.5 rounded-lg border border-indigo-200/80 bg-indigo-50/70 px-2.5 py-1.5 text-[11px] font-bold text-indigo-800 transition hover:bg-indigo-100"
+            title={`Open ${seniorLink.seniorHubTitle} in Senior Academy`}
+          >
+            <span className="inline-flex items-center gap-1.5 truncate">
+              <Rocket className="h-3.5 w-3.5 shrink-0 text-indigo-600" />
+              <span className="truncate">Senior Academy · Past Questions &amp; Lab</span>
+            </span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
           </Link>
         )}
       </div>

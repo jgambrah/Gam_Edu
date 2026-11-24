@@ -6279,6 +6279,9 @@ function MathLab({
     filterFormat = 'ALL',
     targetExamId,
     targetPaperType,
+    targetTopicId,
+    targetLevel,
+    onClearTargetTopic,
     assignmentId,
     initialSubject = 'math',
     onSubjectChange,
@@ -6295,6 +6298,9 @@ function MathLab({
     filterFormat?: string;
     targetExamId?: string;
     targetPaperType?: string | number;
+    targetTopicId?: string;
+    targetLevel?: 'b7' | 'b8' | 'b9';
+    onClearTargetTopic?: () => void;
     assignmentId?: string;
     initialSubject?: 'math' | 'science' | 'english';
     onSubjectChange?: (sub: 'math' | 'science' | 'english') => void;
@@ -6356,6 +6362,36 @@ function MathLab({
             handleLaunchModule(match);
         }
     }, [targetExamId, targetPaperType, autoLaunchedExamId, dynamicSets, activeQuestionSet, activeTopicMeta, isLoadingSet]);
+
+    // Deep-link auto-launcher for Topical Practice Labs (e.g. from Narrated Lessons)
+    const [autoLaunchedTopicId, setAutoLaunchedTopicId] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!targetTopicId || autoLaunchedTopicId === targetTopicId || activeTopicalLab || isLoadingSet) {
+            return;
+        }
+        let cancelled = false;
+        setAutoLaunchedTopicId(targetTopicId);
+        setIsLoadingSet(true);
+        const isEng = subject === 'english' || targetTopicId.startsWith('oral_') || targetTopicId.startsWith('grammar_') || targetTopicId.startsWith('reading_') || targetTopicId.startsWith('writing_') || targetTopicId.startsWith('literature_');
+        const isSci = subject === 'science' || targetTopicId.startsWith('sci_strand') || targetTopicId.startsWith('b7_sci_') || targetTopicId.startsWith('CARD_');
+        const labSubject = isSci ? 'science' : (isEng ? 'english' : 'math');
+        getTopicalLabDoc(targetTopicId, 'jhs', labSubject, true)
+            .then((labDoc) => {
+                if (!cancelled && labDoc) {
+                    setActiveTopicalLab(labDoc);
+                }
+            })
+            .catch((err) => {
+                console.warn('[MathLab] Deep-link topical lab load failed:', err);
+            })
+            .finally(() => {
+                if (!cancelled) setIsLoadingSet(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [targetTopicId, autoLaunchedTopicId, activeTopicalLab, isLoadingSet, subject]);
 
 
     const [selectedEra, setSelectedEra] = useState<'all' | 'modern' | 'prep' | 'legacy' | 'classic'>('all');
@@ -8539,13 +8575,18 @@ if (
                     studentId={studentId}
                     tenantId={tenantId}
                     initialLevel={
-                        activeTopicalLab.levels?.b7 && ((activeTopicalLab.levels.b7 as any)?.notes?.length > 150 || ((activeTopicalLab.levels.b7 as any)?.practicePool?.low?.length ?? 0) > 0)
+                        targetLevel && activeTopicalLab.levels?.[targetLevel]
+                            ? targetLevel
+                            : activeTopicalLab.levels?.b7 && ((activeTopicalLab.levels.b7 as any)?.notes?.length > 150 || ((activeTopicalLab.levels.b7 as any)?.practicePool?.low?.length ?? 0) > 0)
                             ? 'b7'
                             : activeTopicalLab.levels?.b8 && ((activeTopicalLab.levels.b8 as any)?.notes?.length > 150 || ((activeTopicalLab.levels.b8 as any)?.practicePool?.low?.length ?? 0) > 0)
                             ? 'b8'
                             : 'b9'
                     }
-                    onBack={() => setActiveTopicalLab(null)}
+                    onBack={() => {
+                        setActiveTopicalLab(null);
+                        onClearTargetTopic?.();
+                    }}
                     onNavigateToSet={(targetSetId) => {
                         setActiveTopicalLab(null);
                         handleLaunchModule({
@@ -10261,12 +10302,17 @@ function SeniorAcademyPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    // URL sync for active view mode (?view=topical vs ?view=exam_series)
+    // URL sync for active view mode (?view=topical vs ?view=exam_series) & topical deep-links
     const urlView = searchParams.get('view');
     const urlTab = searchParams.get('tab');
     const urlExamId = searchParams.get('examId');
     const urlPaperType = searchParams.get('paperType');
     const urlAssignmentId = searchParams.get('assignmentId');
+    const urlSubject = searchParams.get('subject');
+    const urlTopicId = searchParams.get('topicId');
+    const urlLevel = searchParams.get('level');
+    const normalizedUrlLevel: 'b7' | 'b8' | 'b9' | undefined =
+        urlLevel === 'b7' || urlLevel === 'b8' || urlLevel === 'b9' ? urlLevel : undefined;
 
     const isExamRequested = urlView === 'exam_series' || urlTab === 'past-papers' || !!urlExamId || !!urlAssignmentId;
     const isMockRequested = urlView === 'predictive_mocks' || urlTab === 'mocks';
@@ -10316,7 +10362,25 @@ function SeniorAcademyPageContent() {
     }, [rawSearchQuery]);
 
     const [activeGradeTier, setActiveGradeTier] = useState<SecondaryGradeTier>('Junior Secondary (JHS)');
-    const [activeSubject, setActiveSubject] = useState<'math' | 'english' | 'science'>('math');
+    const initialSubjectFromUrl: 'math' | 'english' | 'science' =
+        urlSubject === 'science' || urlSubject === 'english' || urlSubject === 'math'
+            ? urlSubject
+            : 'math';
+    const [activeSubject, setActiveSubject] = useState<'math' | 'english' | 'science'>(initialSubjectFromUrl);
+
+    useEffect(() => {
+        if (urlSubject === 'science' || urlSubject === 'english' || urlSubject === 'math') {
+            setActiveSubject(urlSubject);
+        }
+    }, [urlSubject]);
+
+    const handleClearTargetTopic = useCallback(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete('topicId');
+        params.delete('level');
+        const qs = params.toString();
+        router.replace(qs ? `?${qs}` : '/dashboard/senior-academy', { scroll: false });
+    }, [searchParams, router]);
 
     const schoolRef = useMemoFirebase(() => (firestore && schoolId) ? doc(firestore, 'schools', schoolId) : null, [firestore, schoolId]);
     const { data: schoolData } = useDoc<any>(schoolRef);
@@ -10599,6 +10663,9 @@ function SeniorAcademyPageContent() {
                     filterFormat={filterFormat}
                     targetExamId={urlExamId || undefined}
                     targetPaperType={urlPaperType || undefined}
+                    targetTopicId={urlTopicId || undefined}
+                    targetLevel={normalizedUrlLevel}
+                    onClearTargetTopic={handleClearTargetTopic}
                     assignmentId={urlAssignmentId || undefined}
                     initialSubject={activeSubject as 'math' | 'science' | 'english'}
                     onSubjectChange={(newSub) => {
