@@ -12,8 +12,14 @@ const PYODIDE_VERSION = '0.25.1';
 const PYODIDE_BASE = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
 
 export type PythonRunOptions = {
-  /** Lines fed to input(), one per call. When they run out, input() gets an empty line... then EOF. */
+  /** Lines fed to input(), one per call. */
   stdin?: string;
+  /**
+   * When true, never invent fallback inputs ('18', 'blue', 'quit') when supplied stdin is exhausted,
+   * and preserve empty supplied lines (e.g. `""` or `"\n"`). Exhausted input signals EOF (EOFError).
+   * Defaults to false to preserve legacy Python Academy missions.
+   */
+  strictInput?: boolean;
   /** A Python expression checked after the program runs, in the program's own variables. */
   validation?: string;
   /** Folder to start in (os.getcwd()). */
@@ -21,6 +27,36 @@ export type PythonRunOptions = {
   /** Stop the program after this long (milliseconds), not counting package downloads. */
   timeoutMs?: number;
 };
+
+/**
+ * Builds a deterministic stdin line reader matching the worker's `py.setStdin` contract.
+ * Exported for unit tests (sufficient, exhausted, empty supplied lines, and multiline input).
+ */
+export function createStdinReader(
+  stdin: string | undefined,
+  strictInput: boolean,
+  code: string
+): () => string | undefined {
+  if (strictInput) {
+    // Preserve intentional empty lines; only undefined means zero supplied lines.
+    const lines = stdin === undefined ? [] : stdin.replace(/\r\n/g, '\n').split('\n');
+    let next = 0;
+    return () => {
+      if (next < lines.length) return lines[next++];
+      return undefined; // Pyodide treats undefined as EOF -> raises EOFError
+    };
+  }
+  const rawStdin = (stdin || '').trim();
+  const inputs = rawStdin ? rawStdin.split('\n') : [];
+  let next = 0;
+  return () => {
+    if (next < inputs.length) return inputs[next++];
+    next++;
+    if (next > 2 && /'quit'|"quit"/.test(code)) return 'quit';
+    if (/int\s*\(\s*input|float\s*\(\s*input|old|age|number|tall|many/i.test(code)) return '18';
+    return 'blue';
+  };
+}
 
 export type PythonRunResult = {
   ok: boolean;
@@ -569,22 +605,28 @@ function friendlyError(msg) {
 onmessage = async (e) => {
   const msg = e.data || {};
   if (msg.type !== 'run') return;
-  const { id, code, stdin, validation, cwd } = msg;
+  const { id, code, stdin, strictInput, validation, cwd } = msg;
   await ready;
   if (!py) { postMessage({ type: 'result', id, ok: false, output: '', error: 'Python could not start. Check your internet connection and reload.', passed: null, image: null }); return; }
   const out = [];
   py.setStdout({ batched: s => out.push(s) });
   py.setStderr({ batched: s => out.push(s) });
-  const rawStdin = (stdin || '').trim();
-  const inputs = rawStdin ? rawStdin.split('\\n') : [];
-  let next = 0;
-  py.setStdin({ stdin: () => {
-    if (next < inputs.length) return inputs[next++];
-    next++;
-    if (next > 2 && /'quit'|"quit"/.test(code)) return 'quit';
-    if (/int\\s*\\(\\s*input|float\\s*\\(\\s*input|old|age|number|tall|many/i.test(code)) return '18';
-    return 'blue';
-  } });
+  if (strictInput) {
+    const lines = stdin === undefined ? [] : String(stdin).replace(/\\r\\n/g, '\\n').split('\\n');
+    let next = 0;
+    py.setStdin({ stdin: () => (next < lines.length ? lines[next++] : undefined) });
+  } else {
+    const rawStdin = (stdin || '').trim();
+    const inputs = rawStdin ? rawStdin.split('\\n') : [];
+    let next = 0;
+    py.setStdin({ stdin: () => {
+      if (next < inputs.length) return inputs[next++];
+      next++;
+      if (next > 2 && /'quit'|"quit"/.test(code)) return 'quit';
+      if (/int\\s*\\(\\s*input|float\\s*\\(\\s*input|old|age|number|tall|many/i.test(code)) return '18';
+      return 'blue';
+    } });
+  }
   let ns = null;
   try {
     await py.loadPackagesFromImports(code);
@@ -705,7 +747,7 @@ export async function runPython(code: string, opts: PythonRunOptions = {}): Prom
   const id = ++runSeq;
   return new Promise<PythonRunResult>((resolve) => {
     pending.set(id, { resolve, timeoutMs: opts.timeoutMs ?? 8000, timer: null });
-    worker!.postMessage({ type: 'run', id, code, stdin: opts.stdin ?? '', validation: opts.validation, cwd: opts.cwd });
+    worker!.postMessage({ type: 'run', id, code, stdin: opts.strictInput ? opts.stdin : (opts.stdin ?? ''), strictInput: Boolean(opts.strictInput), validation: opts.validation, cwd: opts.cwd });
   });
 }
 

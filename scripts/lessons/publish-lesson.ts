@@ -462,6 +462,19 @@ async function main() {
       if (slide.visual.type === 'illustration' && !slide.visual.imageUrl && prevSlide?.visual?.imageUrl) {
         slide.visual.imageUrl = prevSlide.visual.imageUrl;
       }
+      if (
+        Array.isArray(slide.cues) &&
+        slide.cues.length > 0 &&
+        slide.cues.every((c) => c.startSec === 0 && c.endSec === 0) &&
+        Array.isArray(prevSlide?.cues) &&
+        prevSlide.cues.length === slide.cues.length
+      ) {
+        slide.cues = slide.cues.map((c, idx) => ({
+          ...c,
+          startSec: prevSlide.cues![idx].startSec,
+          endSec: prevSlide.cues![idx].endSec,
+        }));
+      }
       if (!slide.narration.audioUrl) {
         throw new Error(`--skip-media refused: slide ${slide.id} has no existing hashed audioUrl. Republish without --skip-media first.`);
       }
@@ -616,6 +629,27 @@ async function main() {
     lesson.meta.curriculum = 'cambridge';
   }
 
+  const coverImgIdx = argv.indexOf('--cover-image');
+  const coverImageArg = coverImgIdx !== -1 ? argv[coverImgIdx + 1] : undefined;
+  let explicitCoverRel: string | undefined;
+  if (coverImageArg) {
+    const absCover = path.resolve(coverImageArg);
+    if (!fs.existsSync(absCover)) {
+      throw new Error(`--cover-image file not found: ${absCover}`);
+    }
+    const sharp = createRequire(path.join(REPO_ROOT, 'package.json'))('sharp') as typeof import('sharp');
+    const webpBuf = await sharp(absCover)
+      .resize(1280, 720, { fit: 'cover' })
+      .webp({ quality: 88 })
+      .toBuffer();
+    const coverHash = createHash('sha256').update(webpBuf).digest('hex').slice(0, 12);
+    const relImg = `images/cover.${coverHash}.webp`;
+    const remoteImg = `${NARRATED_LESSON_CDN_PREFIX}/${lesson.lessonId}/${relImg}`;
+    await uploadObject(token, remoteImg, webpBuf, 'image/webp', IMMUTABLE_CACHE);
+    console.log(`  [upload] ${remoteImg}`);
+    explicitCoverRel = `${lesson.lessonId}/${relImg}`;
+  }
+
   const firstImgSlide = lesson.slides.find((s) => s.visual.type === 'illustration');
   const normalizedClass =
     curriculum === 'cambridge'
@@ -625,9 +659,11 @@ async function main() {
     lesson.meta.title?.trim() ||
     lesson.slides[0]?.title ||
     lesson.lessonId;
-  const coverRel = firstImgSlide
-    ? `${lesson.lessonId}/${firstImgSlide.visual.imageUrl || `images/${firstImgSlide.id}.webp`}`
-    : undefined;
+  const coverRel =
+    explicitCoverRel ??
+    (firstImgSlide
+      ? `${lesson.lessonId}/${firstImgSlide.visual.imageUrl || `images/${firstImgSlide.id}.webp`}`
+      : undefined);
 
   const entry: LessonCatalogueEntry = {
     lessonId: lesson.lessonId,

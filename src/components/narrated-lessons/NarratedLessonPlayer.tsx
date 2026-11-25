@@ -1330,6 +1330,11 @@ export function NarratedLessonPlayer({
                 )}
               </div>
 
+              {/* Compact portrait-screen zoom hint (non-intrusive; never auto-opens or forces rotation) */}
+              <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50 px-4 py-1.5 text-[11px] text-slate-500 sm:hidden">
+                <span>Tap the visual or Enlarge to zoom up to 250% &amp; pan.</span>
+              </div>
+
               {/* Minimal On-Screen Key Takeaways */}
               <div
                 ref={chipsContainerRef}
@@ -1662,7 +1667,7 @@ export function NarratedLessonPlayer({
                     <CheckCircle2 className="h-3.5 w-3.5" />
                     Lesson Complete!
                   </span>
-                  <h2 className="mt-2 text-2xl font-extrabold">Well Done, Scientist!</h2>
+                  <h2 className="mt-2 text-2xl font-extrabold">Well Done! Lesson Completed.</h2>
                   <p className="mt-1 text-sm text-emerald-50">
                     Mastery Score: <strong>{masteryScore} / {lesson.masteryCheck.items.length}</strong>{' '}
                     {masteryScore >= lesson.masteryCheck.passMark
@@ -1735,7 +1740,7 @@ export function NarratedLessonPlayer({
 
             {/* Vocabulary */}
             <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h3 className="text-base font-extrabold text-slate-900">Key Science Words</h3>
+              <h3 className="text-base font-extrabold text-slate-900">Key Vocabulary</h3>
               <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
                 {lesson.vocabulary.map((v) => (
                   <div key={v.term} className="rounded-xl border border-slate-100 bg-slate-50 p-3">
