@@ -1,5 +1,6 @@
 export interface LessonMeta {
   title?: string;
+  topic?: string;
   curriculum?: 'ges' | 'cambridge';
   class: string;
   subject: string;

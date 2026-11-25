@@ -50,6 +50,7 @@ import { TeacherPointerOverlay } from './TeacherPointerOverlay';
 import { PointerCueEditor } from './PointerCueEditor';
 import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
 import { InlineCodePlayground } from './InlineCodePlayground';
+import { BooleanCircuitLab } from './BooleanCircuitLab';
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -1472,6 +1473,9 @@ export function NarratedLessonPlayer({
                 )}
               </div>
             </div>
+
+            {/* Interactive Boolean Logic Circuit Lab (Chapter 10 Boolean Logic lessons only) */}
+            <BooleanCircuitLab lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
 
             {/* Collapsible Inline Runner (Pseudocode / Python / SQL) for Computer Science lessons */}
             <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />

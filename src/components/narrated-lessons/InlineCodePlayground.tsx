@@ -19,6 +19,7 @@ import {
   getWorkshopActivitiesForLesson,
   type InlineWorkshopActivity,
 } from '@/lib/narrated-lessons/ch11-workshop-activities';
+import { getCh10ActivitiesForLesson } from '@/lib/narrated-lessons/ch10-boolean-activities';
 import { runPseudocode } from '@/lib/pseudocode-runner';
 import { outputMatches, runPython } from '@/lib/python-runner';
 import { executeIgcseSql, type SqlExecutionResult } from '@/lib/sql-practice/igcse-sql-engine';
@@ -53,6 +54,12 @@ function defaultModeForLesson(lesson: NarratedLesson): PlaygroundMode {
 function starterForSandbox(lesson: NarratedLesson, mode: PlaygroundMode): { code: string; stdin: string } {
   const id = (lesson.lessonId || '').toLowerCase();
   if (mode === 'sql') {
+    if (id.includes('boolean-logic')) {
+      return {
+        code: '-- Enrichment only (isolated Sensors table: id, a, b)\nSELECT id\nFROM Sensors\nWHERE a = 1 AND b = 1\nORDER BY id;',
+        stdin: '',
+      };
+    }
     if (id.includes('scenarios-b')) {
       return {
         code: 'SELECT Product, PricePesewas, Quantity\nFROM Sales;',
@@ -128,10 +135,22 @@ function draftStorageKey(lessonId: string, activityId: string, mode: PlaygroundM
 
 export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundProps) {
   const enabled = useMemo(() => isComputerScienceLesson(lesson), [lesson]);
-  const lessonActivities = useMemo(
-    () => getWorkshopActivitiesForLesson(lesson.lessonId),
-    [lesson.lessonId]
-  );
+  const lessonActivities = useMemo<InlineWorkshopActivity[]>(() => {
+    const ch11 = getWorkshopActivitiesForLesson(lesson.lessonId);
+    const ch10: InlineWorkshopActivity[] = getCh10ActivitiesForLesson(lesson.lessonId).map((a) => ({
+      id: a.id,
+      lessonId: a.lessonId,
+      afterSlideId: a.afterSlideId,
+      title: a.title,
+      task: a.task,
+      languages: ['pseudocode', 'python', 'sql'],
+      pythonStarter: a.pythonStarter,
+      pseudocodeStarter: a.pseudocodeStarter,
+      sqlStarter: a.sqlStarter,
+      publicTests: [a.publicSample],
+    }));
+    return [...ch11, ...ch10];
+  }, [lesson.lessonId]);
   const slideActivities = useMemo(
     () => (slideId ? lessonActivities.filter((a) => a.afterSlideId === slideId) : []),
     [lessonActivities, slideId]

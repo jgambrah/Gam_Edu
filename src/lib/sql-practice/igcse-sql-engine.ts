@@ -84,6 +84,21 @@ export const CH9_TABLES: Record<string, SqlTableDef> = {
       { Product: 'Ruler', PricePesewas: 300, Quantity: 0 },
     ],
   },
+  Sensors: {
+    name: 'Sensors',
+    primaryKey: ['id'],
+    columns: [
+      { name: 'id', type: 'INTEGER' },
+      { name: 'a', type: 'INTEGER' },
+      { name: 'b', type: 'INTEGER' },
+    ],
+    rows: [
+      { id: 1, a: 0, b: 0 },
+      { id: 2, a: 0, b: 1 },
+      { id: 3, a: 1, b: 0 },
+      { id: 4, a: 1, b: 1 },
+    ],
+  },
 };
 
 export interface SqlExecutionResult {
