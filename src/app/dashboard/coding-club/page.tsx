@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import LogicLabPage from './logic-lab/page';
 import PythonAcademyPage from './python-academy/page';
-import { Code, Bot, Puzzle, ExternalLink, Play, Maximize2, Sparkles, Terminal } from 'lucide-react';
+import SqlLabPage from './sql-lab/page';
+import { Code, Bot, Puzzle, ExternalLink, Play, Maximize2, Sparkles, Terminal, Database } from 'lucide-react';
 import CreditBalance from '@/components/CreditBalance';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -70,7 +71,7 @@ export default function CodingClubPage() {
         </div>
 
         <Tabs defaultValue="scratch" className="w-full flex-1 flex flex-col min-h-0">
-          <TabsList className="grid w-full grid-cols-3 p-1 bg-slate-900 border border-slate-800/60 rounded-2xl shrink-0">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 p-1 bg-slate-900 border border-slate-800/60 rounded-2xl shrink-0">
             <TabsTrigger value="scratch" className="rounded-xl font-bold py-2.5 text-xs sm:text-sm text-slate-400 hover:text-white transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-fuchsia-600 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-fuchsia-500/20">
               <Puzzle className="mr-2 h-4 w-4" /> Scratch Playground
             </TabsTrigger>
@@ -79,6 +80,9 @@ export default function CodingClubPage() {
             </TabsTrigger>
             <TabsTrigger value="python_academy" className="rounded-xl font-bold py-2.5 text-xs sm:text-sm text-slate-400 hover:text-white transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-fuchsia-600 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-fuchsia-500/20">
               <Code className="mr-2 h-4 w-4" /> Python Academy
+            </TabsTrigger>
+            <TabsTrigger value="sql_lab" className="rounded-xl font-bold py-2.5 text-xs sm:text-sm text-slate-400 hover:text-white transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-600 data-[state=active]:to-teal-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/20">
+              <Database className="mr-2 h-4 w-4" /> SQL Lab (Databases)
             </TabsTrigger>
           </TabsList>
 
@@ -228,6 +232,14 @@ export default function CodingClubPage() {
             className="mt-6 data-[state=inactive]:hidden flex-grow"
           >
             <PythonAcademyPage />
+          </TabsContent>
+
+          {/* ===== SQL LAB TAB ===== */}
+          <TabsContent
+            value="sql_lab"
+            className="mt-6 data-[state=inactive]:hidden flex-grow"
+          >
+            <SqlLabPage />
           </TabsContent>
         </Tabs>
       </div>

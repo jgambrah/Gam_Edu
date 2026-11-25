@@ -8,6 +8,8 @@ export interface PythonAcademyLesson {
   expectOutput?: string;
   mustUse?: string[];
   needsPlot?: boolean;
+  strictInput?: boolean;
+  defaultStdin?: string;
 }
 
 export interface PythonAcademyTopic {

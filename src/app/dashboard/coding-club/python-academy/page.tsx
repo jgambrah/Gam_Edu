@@ -11,6 +11,7 @@ import {
   type PythonAcademyPhase,
   type CheatSheetSection,
 } from '@/lib/python-academy-data';
+import { IGCSE_CH8_PYTHON_PHASE } from '@/lib/python-ch8-missions';
 import { useOnceQuery } from '@/lib/firestore-once';
 import { seedPythonAcademyCentralCurriculumAction } from '@/app/actions/python-academy-seed';
 import { 
@@ -52,6 +53,8 @@ interface Mission {
   mustUse?: string[];
   /** The program must draw a Matplotlib chart. */
   needsPlot?: boolean;
+  strictInput?: boolean;
+  defaultStdin?: string;
 }
 
 // --- SECTION: CONSISTENCY (REAL PRACTICE DAYS) ---
@@ -133,10 +136,12 @@ function PythonAcademy() {
 
   const curriculumPhases: PythonAcademyPhase[] = useMemo(() => {
     const remotePhases = centralDoc?.phases || centralDoc?.curriculum;
-    if (Array.isArray(remotePhases) && remotePhases.length > 0) {
-      return remotePhases;
-    }
-    return PYTHON_ACADEMY_CURRICULUM;
+    const base =
+      Array.isArray(remotePhases) && remotePhases.length > 0
+        ? remotePhases
+        : PYTHON_ACADEMY_CURRICULUM;
+    const hasCh8 = base.some((p) => p.phase === IGCSE_CH8_PYTHON_PHASE.phase);
+    return hasCh8 ? base : [...base, IGCSE_CH8_PYTHON_PHASE];
   }, [centralDoc]);
 
   const cheatSheets: CheatSheetSection[] = useMemo(() => {
@@ -243,6 +248,18 @@ function PythonAcademy() {
     window.speechSynthesis.speak(u);
   };
 
+  // Support deep-linking directly to a mission via ?mission=<id> (e.g. Cambridge IGCSE Ch. 8)
+  useEffect(() => {
+    try {
+      const m = new URLSearchParams(window.location.search).get('mission');
+      if (m && allMissions.some((item) => item.id === m)) {
+        setCurrentMissionId(m);
+      }
+    } catch {
+      // ignore URL errors
+    }
+  }, [allMissions]);
+
   // Python loads once per browser tab, in the background (it survives switching tabs on this page).
   useEffect(() => {
     let alive = true;
@@ -284,7 +301,7 @@ function PythonAcademy() {
     setCheckNote(null);
     setOutput([]);
     setPlotImage(null);
-    setStdinText('');
+    setStdinText(activeLesson.defaultStdin ?? '');
     setTutorResponse(null);
     setConsoleTab('console');
   }, [activeLesson, user?.uid]);
@@ -322,6 +339,7 @@ function PythonAcademy() {
             const result = await runPython(code, {
                 validation: isCheatSheetSnippet ? undefined : activeLesson.validation,
                 stdin: stdinText,
+                strictInput: Boolean(activeLesson.strictInput),
                 timeoutMs: 10000
             });
             const lines = result.output ? result.output.split('\n') : [];
