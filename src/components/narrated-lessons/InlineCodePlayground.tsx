@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
+  CheckCircle2,
   ChevronDown,
   ChevronUp,
   Code2,
@@ -9,17 +10,24 @@ import {
   Loader2,
   Play,
   RotateCcw,
+  Sparkles,
   Terminal,
+  XCircle,
 } from 'lucide-react';
 import type { NarratedLesson } from '@/lib/narrated-lessons/types';
+import {
+  getWorkshopActivitiesForLesson,
+  type InlineWorkshopActivity,
+} from '@/lib/narrated-lessons/ch11-workshop-activities';
 import { runPseudocode } from '@/lib/pseudocode-runner';
-import { runPython } from '@/lib/python-runner';
+import { outputMatches, runPython } from '@/lib/python-runner';
 import { executeIgcseSql, type SqlExecutionResult } from '@/lib/sql-practice/igcse-sql-engine';
 
 type PlaygroundMode = 'pseudocode' | 'python' | 'sql';
 
 interface InlineCodePlaygroundProps {
   lesson: NarratedLesson;
+  slideId?: string;
 }
 
 function isComputerScienceLesson(lesson: NarratedLesson): boolean {
@@ -42,12 +50,18 @@ function defaultModeForLesson(lesson: NarratedLesson): PlaygroundMode {
   return 'pseudocode';
 }
 
-function starterFor(lesson: NarratedLesson, mode: PlaygroundMode): { code: string; stdin: string } {
+function starterForSandbox(lesson: NarratedLesson, mode: PlaygroundMode): { code: string; stdin: string } {
   const id = (lesson.lessonId || '').toLowerCase();
   if (mode === 'sql') {
+    if (id.includes('scenarios-b')) {
+      return {
+        code: 'SELECT Product, PricePesewas, Quantity\nFROM Sales;',
+        stdin: '',
+      };
+    }
     if (id.includes('databases-b')) {
       return {
-        code: "SELECT ItemName, Price\nFROM Stock\nWHERE Quantity < 6\nORDER BY Price DESC;",
+        code: 'SELECT ItemName, Price\nFROM Stock\nWHERE Quantity < 6\nORDER BY Price DESC;',
         stdin: '',
       };
     }
@@ -76,7 +90,6 @@ function starterFor(lesson: NarratedLesson, mode: PlaygroundMode): { code: strin
     };
   }
 
-  // Cambridge IGCSE 0478 Pseudocode starters
   if (id.includes('programming-2')) {
     return {
       code: 'DECLARE Mark : INTEGER\nINPUT Mark\nIF Mark >= 50 THEN\n  OUTPUT "Pass"\nELSE\n  OUTPUT "Retry"\nENDIF',
@@ -95,30 +108,111 @@ function starterFor(lesson: NarratedLesson, mode: PlaygroundMode): { code: strin
   };
 }
 
-export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
-  const enabled = useMemo(() => isComputerScienceLesson(lesson), [lesson]);
-  const initialMode = useMemo(() => defaultModeForLesson(lesson), [lesson]);
-  const initialStarter = useMemo(() => starterFor(lesson, initialMode), [lesson, initialMode]);
+function starterForActivity(activity: InlineWorkshopActivity, mode: PlaygroundMode): { code: string; stdin: string } {
+  const sampleStdin = activity.publicTests[0]?.stdin ?? '';
+  if (mode === 'python') {
+    return { code: activity.pythonStarter ?? '# Write your Python solution here.\n', stdin: sampleStdin };
+  }
+  if (mode === 'pseudocode') {
+    return {
+      code: activity.pseudocodeStarter ?? '// Write your Cambridge 0478 pseudocode here.\n',
+      stdin: sampleStdin,
+    };
+  }
+  return { code: activity.sqlStarter ?? '-- Write your SELECT query here.\nSELECT ', stdin: '' };
+}
 
+function draftStorageKey(lessonId: string, activityId: string, mode: PlaygroundMode): string {
+  return `gam:inline-code:v1:${lessonId}:${activityId}:${mode}`;
+}
+
+export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundProps) {
+  const enabled = useMemo(() => isComputerScienceLesson(lesson), [lesson]);
+  const lessonActivities = useMemo(
+    () => getWorkshopActivitiesForLesson(lesson.lessonId),
+    [lesson.lessonId]
+  );
+  const slideActivities = useMemo(
+    () => (slideId ? lessonActivities.filter((a) => a.afterSlideId === slideId) : []),
+    [lessonActivities, slideId]
+  );
+
+  const initialMode = useMemo(() => defaultModeForLesson(lesson), [lesson]);
   const [open, setOpen] = useState(false);
+  const [activeActivityId, setActiveActivityId] = useState<string>('sandbox');
   const [mode, setMode] = useState<PlaygroundMode>(initialMode);
-  const [code, setCode] = useState<string>(initialStarter.code);
-  const [stdinText, setStdinText] = useState<string>(initialStarter.stdin);
+  const [code, setCode] = useState<string>(() => starterForSandbox(lesson, initialMode).code);
+  const [stdinText, setStdinText] = useState<string>(() => starterForSandbox(lesson, initialMode).stdin);
   const [running, setRunning] = useState(false);
   const [textOutput, setTextOutput] = useState<string[]>([]);
   const [sqlResult, setSqlResult] = useState<SqlExecutionResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [checkBanner, setCheckBanner] = useState<{ passed: boolean; message: string } | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
 
-  if (!enabled) return null;
+  const activeActivity = useMemo(
+    () => lessonActivities.find((a) => a.id === activeActivityId) ?? null,
+    [lessonActivities, activeActivityId]
+  );
 
-  const switchMode = (nextMode: PlaygroundMode) => {
-    setMode(nextMode);
-    const s = starterFor(lesson, nextMode);
-    setCode(s.code);
-    setStdinText(s.stdin);
+  // When navigating onto a slide with a mapped workshop activity, select it automatically
+  useEffect(() => {
+    if (slideActivities.length > 0) {
+      const target = slideActivities[0];
+      const nextMode: PlaygroundMode = target.languages.includes('python')
+        ? 'python'
+        : target.languages[0] ?? initialMode;
+      setActiveActivityId(target.id);
+      setMode(nextMode);
+    }
+  }, [slideId, slideActivities, initialMode]);
+
+  // Load saved draft or starter whenever activity or mode changes
+  useEffect(() => {
+    const starter = activeActivity
+      ? starterForActivity(activeActivity, mode)
+      : starterForSandbox(lesson, mode);
+    let saved: string | null = null;
+    try {
+      saved = localStorage.getItem(draftStorageKey(lesson.lessonId, activeActivityId, mode));
+    } catch {
+      // ignore storage errors
+    }
+    setCode(saved ?? starter.code);
+    setStdinText(starter.stdin);
     setTextOutput([]);
     setSqlResult(null);
     setErrorMsg(null);
+    setCheckBanner(null);
+    setConfirmReset(false);
+  }, [lesson, activeActivity, activeActivityId, mode]);
+
+  // Persist learner draft per lesson/activity/language
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(draftStorageKey(lesson.lessonId, activeActivityId, mode), code);
+      } catch {
+        // ignore storage errors
+      }
+    }, 400);
+    return () => clearTimeout(t);
+  }, [lesson.lessonId, activeActivityId, mode, code]);
+
+  if (!enabled) return null;
+
+  const availableModes: PlaygroundMode[] = activeActivity
+    ? activeActivity.languages
+    : ['pseudocode', 'python', 'sql'];
+
+  const handleSelectActivity = (actId: string) => {
+    setActiveActivityId(actId);
+    const found = lessonActivities.find((a) => a.id === actId);
+    if (found) {
+      if (!found.languages.includes(mode)) {
+        setMode(found.languages[0]);
+      }
+    }
   };
 
   const handleRun = async () => {
@@ -127,6 +221,7 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
     setTextOutput([]);
     setSqlResult(null);
     setErrorMsg(null);
+    setCheckBanner(null);
 
     try {
       if (mode === 'pseudocode') {
@@ -163,6 +258,105 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
     }
   };
 
+  const handleCheck = async () => {
+    if (!activeActivity || running) return;
+    if (mode === 'pseudocode') {
+      await handleRun();
+      setCheckBanner({
+        passed: false,
+        message:
+          activeActivity.pseudocodeNote ||
+          'Pseudocode runs live for testing, and is marked by teacher review (Python sample stdout tests are not applied blindly to pseudocode).',
+      });
+      return;
+    }
+
+    setRunning(true);
+    setTextOutput([]);
+    setSqlResult(null);
+    setErrorMsg(null);
+    setCheckBanner(null);
+
+    try {
+      if (mode === 'sql') {
+        const res = executeIgcseSql(code);
+        if (!res.ok) {
+          setErrorMsg(res.error || 'SQL syntax error.');
+          return;
+        }
+        setSqlResult(res);
+        if (activeActivity.expectedSqlRows) {
+          const actual = JSON.stringify(res.rows);
+          const expected = JSON.stringify(activeActivity.expectedSqlRows);
+          if (actual === expected) {
+            setCheckBanner({ passed: true, message: 'Sample SQL check passed!' });
+          } else {
+            setCheckBanner({
+              passed: false,
+              message: `Returned ${res.rows.length} row(s), which did not match the expected result yet. Check your SELECT/WHERE clause.`,
+            });
+          }
+        }
+        return;
+      }
+
+      // Python check against visible publicTests
+      const tests = activeActivity.publicTests;
+      if (!tests.length) {
+        await handleRun();
+        return;
+      }
+      for (let idx = 0; idx < tests.length; idx++) {
+        const t = tests[idx];
+        const res = await runPython(code, {
+          stdin: t.stdin,
+          strictInput: true,
+          timeoutMs: 10000,
+        });
+        if (!res.ok) {
+          setErrorMsg(res.error || 'Runtime error during sample check.');
+          setCheckBanner({ passed: false, message: `Sample test ${idx + 1} raised an error.` });
+          return;
+        }
+        const lines = res.output ? res.output.split('\n') : [];
+        setTextOutput(lines);
+        if (!outputMatches(res.output, t.expectedStdout)) {
+          setCheckBanner({
+            passed: false,
+            message: `Sample test ${idx + 1} failed. Expected "${t.expectedStdout}", got "${res.output.trim()}".`,
+          });
+          return;
+        }
+      }
+      setCheckBanner({
+        passed: true,
+        message: `Passed all ${tests.length} public sample test(s)!`,
+      });
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Check failed.');
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const handleConfirmedReset = () => {
+    const s = activeActivity
+      ? starterForActivity(activeActivity, mode)
+      : starterForSandbox(lesson, mode);
+    setCode(s.code);
+    setStdinText(s.stdin);
+    setTextOutput([]);
+    setSqlResult(null);
+    setErrorMsg(null);
+    setCheckBanner(null);
+    setConfirmReset(false);
+    try {
+      localStorage.removeItem(draftStorageKey(lesson.lessonId, activeActivityId, mode));
+    } catch {
+      // ignore
+    }
+  };
+
   const insertArrow = () => {
     setCode((prev) => `${prev}${prev.endsWith(' ') || prev === '' ? '' : ' '}← `);
   };
@@ -175,20 +369,22 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
         aria-expanded={open}
         className="flex w-full items-center justify-between px-4 py-2.5 text-left transition hover:bg-slate-900"
       >
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
             {mode === 'sql' ? <Database className="h-4 w-4" /> : <Terminal className="h-4 w-4" />}
           </span>
-          <div>
-            <span className="text-xs font-extrabold text-white">
-              Try It Live — Run Pseudocode, Python &amp; SQL right here
+          <span className="text-xs font-extrabold text-white">
+            {slideActivities.length > 0
+              ? `Workshop Activity: ${slideActivities[0].title}`
+              : 'Try It Live — Run Pseudocode, Python & SQL right here'}
+          </span>
+          {slideActivities.length > 0 && (
+            <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
+              {slideActivities.length} task{slideActivities.length > 1 ? 's' : ''} for this slide
             </span>
-            <span className="ml-2 hidden sm:inline text-[11px] text-slate-400">
-              Type &amp; test code without leaving this slide
-            </span>
-          </div>
+          )}
         </div>
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400">
+        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 shrink-0">
           {open ? 'Hide' : 'Open Runner'}
           {open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </span>
@@ -196,32 +392,91 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
 
       {open && (
         <div className="border-t border-slate-800 p-3.5 space-y-3">
+          {/* Workshop Index (when lesson has mapped activities) */}
+          {lessonActivities.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5 pb-1 border-b border-slate-800/80">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">
+                Workshop:
+              </span>
+              {lessonActivities.map((act) => {
+                const isSlideMatch = slideId && act.afterSlideId === slideId;
+                const isSelected = activeActivityId === act.id;
+                return (
+                  <button
+                    key={act.id}
+                    type="button"
+                    onClick={() => handleSelectActivity(act.id)}
+                    className={`rounded-lg px-2 py-1 text-[11px] font-bold transition ${
+                      isSelected
+                        ? 'bg-sky-600 text-white'
+                        : isSlideMatch
+                          ? 'border border-emerald-500/50 bg-emerald-950/40 text-emerald-200 hover:bg-emerald-900/50'
+                          : 'border border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {act.title} ({act.afterSlideId})
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => handleSelectActivity('sandbox')}
+                className={`rounded-lg px-2 py-1 text-[11px] font-bold transition ${
+                  activeActivityId === 'sandbox'
+                    ? 'bg-sky-600 text-white'
+                    : 'border border-slate-800 bg-slate-900 text-slate-400 hover:text-white'
+                }`}
+              >
+                Free Sandbox
+              </button>
+            </div>
+          )}
+
+          {/* Active Activity Instructions & Public Sample */}
+          {activeActivity && (
+            <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-3 space-y-1.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-xs font-extrabold text-white">{activeActivity.title}</span>
+                <span className="text-[10px] font-mono text-slate-400">
+                  Mapped to slide {activeActivity.afterSlideId}
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">{activeActivity.task}</p>
+              {activeActivity.publicTests.length > 0 && (
+                <div className="mt-1.5 grid gap-2 sm:grid-cols-2 text-[11px] font-mono">
+                  <div className="rounded-lg bg-slate-950/80 p-2 border border-slate-800">
+                    <span className="block text-[10px] font-sans font-bold text-slate-400">Sample Input</span>
+                    <pre className="whitespace-pre-wrap text-sky-300">{activeActivity.publicTests[0].stdin}</pre>
+                  </div>
+                  <div className="rounded-lg bg-slate-950/80 p-2 border border-slate-800">
+                    <span className="block text-[10px] font-sans font-bold text-slate-400">Expected Output</span>
+                    <pre className="whitespace-pre-wrap text-emerald-300">{activeActivity.publicTests[0].expectedStdout}</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Mode Tabs + Quick Actions */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="inline-flex rounded-xl border border-slate-800 bg-slate-900 p-0.5">
-              {(
-                [
-                  { id: 'pseudocode', label: 'Pseudocode' },
-                  { id: 'python', label: 'Python 3' },
-                  { id: 'sql', label: 'SQL (Stock / Equipment)' },
-                ] as const
-              ).map((tab) => (
+              {availableModes.map((tabId) => (
                 <button
-                  key={tab.id}
+                  key={tabId}
                   type="button"
-                  onClick={() => switchMode(tab.id)}
+                  onClick={() => setMode(tabId)}
                   className={`rounded-lg px-2.5 py-1 text-xs font-bold transition ${
-                    mode === tab.id
+                    mode === tabId
                       ? 'bg-emerald-600 text-white shadow-sm'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
-                  {tab.label}
+                  {tabId === 'pseudocode' ? 'Pseudocode' : tabId === 'python' ? 'Python 3' : 'SQL'}
                 </button>
               ))}
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
               {mode === 'pseudocode' && (
                 <button
                   type="button"
@@ -232,21 +487,34 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
                   + ←
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => {
-                  const s = starterFor(lesson, mode);
-                  setCode(s.code);
-                  setStdinText(s.stdin);
-                  setTextOutput([]);
-                  setSqlResult(null);
-                  setErrorMsg(null);
-                }}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-300 hover:bg-slate-800"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Example
-              </button>
+              {!confirmReset ? (
+                <button
+                  type="button"
+                  onClick={() => setConfirmReset(true)}
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-900 px-2 py-1 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+                >
+                  <RotateCcw className="h-3 w-3" />
+                  Reset
+                </button>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-950/60 px-2 py-0.5 text-[11px] text-amber-200">
+                  Reset code?
+                  <button
+                    type="button"
+                    onClick={handleConfirmedReset}
+                    className="font-bold text-amber-300 underline hover:text-white"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmReset(false)}
+                    className="text-slate-300 hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                </span>
+              )}
               <button
                 type="button"
                 onClick={handleRun}
@@ -256,6 +524,17 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
                 {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
                 {running ? 'Running...' : 'Run'}
               </button>
+              {activeActivity && (
+                <button
+                  type="button"
+                  onClick={handleCheck}
+                  disabled={running}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold text-white hover:bg-sky-500 disabled:opacity-60"
+                >
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Check
+                </button>
+              )}
             </div>
           </div>
 
@@ -275,18 +554,18 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
             className="w-full resize-y rounded-xl border border-slate-800 bg-slate-900/90 p-3 font-mono text-xs sm:text-sm text-emerald-200 placeholder:text-slate-600 focus:border-emerald-500 focus:outline-none"
             placeholder={
               mode === 'sql'
-                ? 'SELECT ItemName, Price FROM Stock;'
+                ? 'SELECT SUM(Quantity) FROM Sales;'
                 : mode === 'python'
                   ? 'print("Hello IGCSE!")'
                   : 'OUTPUT "Hello IGCSE!"'
             }
           />
 
-          {/* Program Input (for Pseudocode INPUT / Python input()) */}
+          {/* Program Input */}
           {mode !== 'sql' && (
             <div className="space-y-1">
               <label className="block text-[11px] font-bold text-slate-400">
-                Program Input (optional — one value per line for {mode === 'pseudocode' ? 'INPUT' : 'input()'}):
+                Program Input (one value per line for {mode === 'pseudocode' ? 'INPUT' : 'input()'}):
               </label>
               <textarea
                 value={stdinText}
@@ -301,10 +580,28 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
 
           {mode === 'sql' && (
             <p className="text-[11px] text-slate-400">
-              Available tables: <code className="text-sky-300">Stock</code> (ItemID, ItemName, Colour, Quantity, Price, Ordered),{' '}
-              <code className="text-sky-300">Equipment</code> (EquipmentID, EquipmentName, Quantity, Available),{' '}
-              <code className="text-sky-300">Weather</code> (ReadingDate, ReadingTime, Temperature).
+              Isolated tables: <code className="text-sky-300">Sales</code> (Product, PricePesewas, Quantity),{' '}
+              <code className="text-sky-300">Stock</code>, <code className="text-sky-300">Equipment</code>,{' '}
+              <code className="text-sky-300">Weather</code> (read-only).
             </p>
+          )}
+
+          {/* Check Feedback */}
+          {checkBanner && (
+            <div
+              className={`flex items-start gap-2 rounded-xl border px-3 py-2 text-xs font-medium ${
+                checkBanner.passed
+                  ? 'border-emerald-500/40 bg-emerald-950/50 text-emerald-200'
+                  : 'border-amber-500/40 bg-amber-950/50 text-amber-200'
+              }`}
+            >
+              {checkBanner.passed ? (
+                <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-emerald-400" />
+              ) : (
+                <XCircle className="h-4 w-4 mt-0.5 shrink-0 text-amber-400" />
+              )}
+              <span>{checkBanner.message}</span>
+            </div>
           )}
 
           {/* Error Display */}
@@ -314,7 +611,7 @@ export function InlineCodePlayground({ lesson }: InlineCodePlaygroundProps) {
             </div>
           )}
 
-          {/* Text Output (Pseudocode / Python) */}
+          {/* Text Output */}
           {textOutput.length > 0 && (
             <div className="rounded-xl border border-slate-800 bg-black/70 p-3">
               <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">

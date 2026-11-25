@@ -70,6 +70,20 @@ export const CH9_TABLES: Record<string, SqlTableDef> = {
       { ReadingDate: '2026-11-25', ReadingTime: '15:00', Temperature: 28.5 },
     ],
   },
+  Sales: {
+    name: 'Sales',
+    primaryKey: ['Product'],
+    columns: [
+      { name: 'Product', type: 'TEXT' },
+      { name: 'PricePesewas', type: 'INTEGER' },
+      { name: 'Quantity', type: 'INTEGER' },
+    ],
+    rows: [
+      { Product: 'Pen', PricePesewas: 200, Quantity: 5 },
+      { Product: 'Book', PricePesewas: 800, Quantity: 10 },
+      { Product: 'Ruler', PricePesewas: 300, Quantity: 0 },
+    ],
+  },
 };
 
 export interface SqlExecutionResult {
@@ -171,6 +185,7 @@ interface SelectItem {
   kind: 'star' | 'column' | 'agg';
   fn?: 'COUNT' | 'SUM' | 'AVG' | 'MIN' | 'MAX';
   column?: string; // '*' or canonical column name
+  mulColumn?: string; // optional second column for SUM(colA * colB)
   alias?: string;
 }
 
@@ -270,21 +285,32 @@ export function executeIgcseSql(rawSql: string): SqlExecutionResult {
           return { ok: false, columns: [], rows: [], error: `Incomplete ${fn}(...) expression.` };
         }
         let colArg: string;
+        let mulColArg: string | undefined;
         if (argTok.type === 'STAR') {
           if (fn !== 'COUNT') {
             return { ok: false, columns: [], rows: [], error: `${fn}(*) is not valid — pass a numeric column name.` };
           }
           colArg = '*';
+          sPos++;
         } else if (argTok.type === 'WORD') {
           const canonical = findColumn(table, argTok.value);
           if (!canonical) {
             return { ok: false, columns: [], rows: [], error: `Unknown field "${argTok.value}" in table ${table.name}.` };
           }
           colArg = canonical;
+          sPos++;
+          // Support SUM(ColA * ColB) e.g. SUM(PricePesewas * Quantity)
+          if (selectTokens[sPos]?.type === 'STAR' && selectTokens[sPos + 1]?.type === 'WORD') {
+            const canonical2 = findColumn(table, selectTokens[sPos + 1].value);
+            if (!canonical2) {
+              return { ok: false, columns: [], rows: [], error: `Unknown field "${selectTokens[sPos + 1].value}" in table ${table.name}.` };
+            }
+            mulColArg = canonical2;
+            sPos += 2;
+          }
         } else {
           return { ok: false, columns: [], rows: [], error: `Invalid argument inside ${fn}(...).` };
         }
-        sPos++;
         if (selectTokens[sPos]?.type !== 'RPAREN') {
           return { ok: false, columns: [], rows: [], error: `Missing closing ")" in ${fn}(${colArg}).` };
         }
@@ -298,7 +324,7 @@ export function executeIgcseSql(rawSql: string): SqlExecutionResult {
           alias = selectTokens[sPos].value;
           sPos++;
         }
-        selectItems.push({ kind: 'agg', fn, column: colArg, alias });
+        selectItems.push({ kind: 'agg', fn, column: colArg, mulColumn: mulColArg, alias });
       } else if (tok.type === 'WORD') {
         const canonical = findColumn(table, tok.value);
         if (!canonical) {
@@ -535,7 +561,8 @@ export function executeIgcseSql(rawSql: string): SqlExecutionResult {
       const columns: string[] = [];
       const rowOut: SqlValue[] = [];
       for (const item of selectItems) {
-        const label = item.alias ?? `${item.fn}(${item.column})`;
+        const exprLabel = item.mulColumn ? `${item.column} * ${item.mulColumn}` : item.column;
+        const label = item.alias ?? `${item.fn}(${exprLabel})`;
         columns.push(label);
         if (item.fn === 'COUNT') {
           if (item.column === '*') {
@@ -545,7 +572,15 @@ export function executeIgcseSql(rawSql: string): SqlExecutionResult {
           }
         } else {
           const nums = filteredRows
-            .map((r) => r[item.column!])
+            .map((r) => {
+              const a = r[item.column!];
+              if (typeof a !== 'number') return null;
+              if (item.mulColumn) {
+                const b = r[item.mulColumn];
+                return typeof b === 'number' ? a * b : null;
+              }
+              return a;
+            })
             .filter((v): v is number => typeof v === 'number');
           if (nums.length === 0) {
             rowOut.push(null);

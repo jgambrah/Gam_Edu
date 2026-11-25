@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { executeIgcseSql } from './igcse-sql-engine';
 import { CH9_SQL_MISSIONS, checkCh9SqlMission } from './ch9-sql-missions';
+import { CH11_WORKSHOP_ACTIVITIES } from '../narrated-lessons/ch11-workshop-activities';
 
 describe('IGCSE Chapter 9 SQL Engine & Student Practice Missions', () => {
   it('blocks non-SELECT statements safely', () => {
@@ -66,5 +67,17 @@ describe('IGCSE Chapter 9 SQL Engine & Student Practice Missions', () => {
 
     const mB10 = CH9_SQL_MISSIONS.find((m) => m.id === 'ch9b-10')!;
     expect(checkCh9SqlMission(mB10, 'SELECT COUNT(Quantity) FROM Stock;').passed).toBe(false);
+  });
+
+  it('executes Chapter 11 Sales SQL enrichment queries and keeps teacher solutions out of client manifest', () => {
+    expect(executeIgcseSql('SELECT SUM(Quantity) FROM Sales;').rows).toEqual([[15]]);
+    expect(executeIgcseSql('SELECT SUM(PricePesewas * Quantity) FROM Sales;').rows).toEqual([[9000]]);
+    expect(executeIgcseSql('SELECT COUNT(*) FROM Sales WHERE Quantity < 10;').rows).toEqual([[2]]);
+
+    expect(CH11_WORKSHOP_ACTIVITIES.length).toBe(16);
+    const serialized = JSON.stringify(CH11_WORKSHOP_ACTIVITIES);
+    expect(serialized).not.toContain('teacherReference');
+    expect(serialized).not.toContain('teacherPseudocode');
+    expect(serialized).not.toContain('gradingTests');
   });
 });

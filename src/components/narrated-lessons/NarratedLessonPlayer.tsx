@@ -1474,7 +1474,7 @@ export function NarratedLessonPlayer({
             </div>
 
             {/* Collapsible Inline Runner (Pseudocode / Python / SQL) for Computer Science lessons */}
-            <InlineCodePlayground lesson={lesson} />
+            <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />
 
             {/* Reviewer-Mode Pointer Cues Editor */}
             {reviewerMode && (
