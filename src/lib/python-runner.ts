@@ -642,6 +642,8 @@ onmessage = async (e) => {
     } catch (runErr) {
       // Allow sys.exit() inside pygame loops without treating it as a crash
       if (!/SystemExit/.test(String(runErr && runErr.message || runErr))) throw runErr;
+    } finally {
+      try { py.runPython('import sys\\nsys.stdout.flush()\\nsys.stderr.flush()'); } catch (_) {}
     }
     let passed = null;
     if (validation) {
@@ -682,10 +684,38 @@ function startWorker() {
   const w = new Worker(url);
   URL.revokeObjectURL(url);
   readyPromise = new Promise<void>((resolve, reject) => {
+    let settled = false;
+    const failBoot = (errMsg: string) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(bootTimer);
+      try { w.terminate(); } catch {}
+      if (worker === w) {
+        worker = null;
+        readyPromise = null;
+      }
+      reject(new Error(errMsg));
+      readyListeners.forEach(f => f(false));
+    };
+    const bootTimer = setTimeout(() => {
+      failBoot('Python runtime took too long to load. Check your internet connection and try again.');
+    }, 30000);
+
     w.onmessage = (e: MessageEvent) => {
       const m = e.data || {};
-      if (m.type === 'ready') { resolve(); readyListeners.forEach(f => f(true)); return; }
-      if (m.type === 'failed') { reject(new Error(m.error)); readyListeners.forEach(f => f(false)); return; }
+      if (m.type === 'ready') {
+        if (!settled) {
+          settled = true;
+          clearTimeout(bootTimer);
+          resolve();
+          readyListeners.forEach(f => f(true));
+        }
+        return;
+      }
+      if (m.type === 'failed') {
+        failBoot(m.error || 'Python runtime failed to initialize.');
+        return;
+      }
       const p = pending.get(m.id);
       if (!p) return;
       if (m.type === 'started') {
@@ -701,8 +731,7 @@ function startWorker() {
     };
     w.onerror = (ev) => {
       ev.preventDefault?.();
-      reject(new Error('Python worker failed to load'));
-      readyListeners.forEach(f => f(false));
+      failBoot('Python worker failed to load.');
     };
   });
   readyPromise.catch(() => {});
