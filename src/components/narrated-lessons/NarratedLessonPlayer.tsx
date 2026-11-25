@@ -49,6 +49,7 @@ import type { LessonNotesPackage, LessonStage } from '@/lib/narrated-lessons/not
 import { TeacherPointerOverlay } from './TeacherPointerOverlay';
 import { PointerCueEditor } from './PointerCueEditor';
 import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
+import { InlineCodePlayground } from './InlineCodePlayground';
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -1471,6 +1472,9 @@ export function NarratedLessonPlayer({
                 )}
               </div>
             </div>
+
+            {/* Collapsible Inline Runner (Pseudocode / Python / SQL) for Computer Science lessons */}
+            <InlineCodePlayground lesson={lesson} />
 
             {/* Reviewer-Mode Pointer Cues Editor */}
             {reviewerMode && (
