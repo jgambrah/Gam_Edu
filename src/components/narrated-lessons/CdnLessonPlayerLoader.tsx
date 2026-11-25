@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Loader2, Rocket } from 'lucide-react';
 import { fetchLessonPackageById } from '@/lib/narrated-lessons/catalogue';
+import { getSeniorAcademyLinkForLesson } from '@/lib/narrated-lessons/senior-academy-map';
 import type { NarratedLesson } from '@/lib/narrated-lessons/types';
 import type { LessonNotesPackage, LessonStage } from '@/lib/narrated-lessons/notes-types';
 import { NarratedLessonPlayer } from './NarratedLessonPlayer';
@@ -96,18 +97,35 @@ export function CdnLessonPlayerLoader({
     );
   }
 
+  const seniorLink = getSeniorAcademyLinkForLesson(lesson.lessonId);
+
   return (
     <div>
-      {backHref && (
+      {(backHref || seniorLink) && (
         <div className="border-b border-slate-200 bg-white px-4 py-2">
-          <div className="mx-auto max-w-5xl">
-            <Link
-              href={backHref}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:underline"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              {backLabel}
-            </Link>
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2">
+            {backHref ? (
+              <Link
+                href={backHref}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 hover:underline"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                {backLabel}
+              </Link>
+            ) : (
+              <span />
+            )}
+            {seniorLink && (
+              <Link
+                href={seniorLink.href}
+                className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-800 transition hover:bg-indigo-100"
+                title={`Open ${seniorLink.seniorHubTitle} in Senior Academy`}
+              >
+                <Rocket className="h-3.5 w-3.5 text-indigo-600" />
+                <span>Senior Academy: Deep Notes &amp; Past Questions</span>
+                <ArrowUpRight className="h-3.5 w-3.5" />
+              </Link>
+            )}
           </div>
         </div>
       )}

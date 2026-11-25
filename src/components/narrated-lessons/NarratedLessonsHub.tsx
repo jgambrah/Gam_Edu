@@ -3,18 +3,21 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  ArrowLeftRight,
+  ArrowUpRight,
   BookOpen,
   Clock,
   FileText,
+  Globe2,
   GraduationCap,
   HelpCircle,
   Layers,
   Loader2,
   PlayCircle,
+  Rocket,
   Search,
   Sparkles,
 } from 'lucide-react';
+import { getSeniorAcademyLinkForLesson } from '@/lib/narrated-lessons/senior-academy-map';
 import {
   CAMBRIDGE_CLASS_BANDS,
   CLASS_BANDS,
@@ -36,11 +39,16 @@ interface NarratedLessonsHubProps {
   curriculum?: CurriculumSystem;
 }
 
+const CURRICULUM_STORAGE_KEY = 'gam_edu_narrated_curriculum';
+
 export function NarratedLessonsHub({
-  basePath = '/dashboard/narrated-lessons',
+  basePath,
   curriculum = 'ges',
 }: NarratedLessonsHubProps) {
-  const isCambridge = curriculum === 'cambridge';
+  const [activeCurriculum, setActiveCurriculum] = useState<CurriculumSystem>(curriculum);
+  const isCambridge = activeCurriculum === 'cambridge';
+  const effectiveBasePath =
+    basePath ?? (isCambridge ? '/dashboard/cambridge-lessons' : '/dashboard/narrated-lessons');
   const classBands = isCambridge ? CAMBRIDGE_CLASS_BANDS : CLASS_BANDS;
   const { profile, role } = useRole();
   const [catalogue, setCatalogue] = useState<LessonCatalogue | null>(null);
@@ -51,6 +59,42 @@ export function NarratedLessonsHub({
   const [selectedSubject, setSelectedSubject] = useState<string>('ALL');
   const [selectedTerm, setSelectedTerm] = useState<number | 'ALL'>('ALL');
   const [query, setQuery] = useState('');
+
+  // Restore last-selected curriculum when visiting the shared /dashboard/narrated-lessons hub;
+  // direct /dashboard/cambridge-lessons links always open straight into Cambridge.
+  useEffect(() => {
+    if (curriculum === 'cambridge') {
+      setActiveCurriculum('cambridge');
+      try {
+        window.localStorage.setItem(CURRICULUM_STORAGE_KEY, 'cambridge');
+      } catch {
+        // Ignore storage errors in private browsing
+      }
+      return;
+    }
+    try {
+      const saved = window.localStorage.getItem(CURRICULUM_STORAGE_KEY);
+      if (saved === 'cambridge' || saved === 'ges') {
+        setActiveCurriculum(saved);
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }, [curriculum]);
+
+  const handleCurriculumSwitch = (next: CurriculumSystem) => {
+    if (next === activeCurriculum) return;
+    setActiveCurriculum(next);
+    setSelectedClass('ALL');
+    setSelectedSubject('ALL');
+    setSelectedTerm('ALL');
+    setQuery('');
+    try {
+      window.localStorage.setItem(CURRICULUM_STORAGE_KEY, next);
+    } catch {
+      // Ignore storage errors
+    }
+  };
 
   // Auto-select the signed-in student's class when available
   useEffect(() => {
@@ -87,10 +131,21 @@ export function NarratedLessonsHub({
     };
   }, []);
 
+  const curriculumCounts = useMemo(() => {
+    const all = catalogue?.entries ?? [];
+    let ges = 0;
+    let cambridge = 0;
+    for (const e of all) {
+      if ((e.curriculum ?? 'ges') === 'cambridge') cambridge++;
+      else ges++;
+    }
+    return { ges, cambridge };
+  }, [catalogue]);
+
   const entries = useMemo(() => {
     const all = catalogue?.entries ?? [];
-    return all.filter((e) => (e.curriculum ?? 'ges') === curriculum);
-  }, [catalogue, curriculum]);
+    return all.filter((e) => (e.curriculum ?? 'ges') === activeCurriculum);
+  }, [catalogue, activeCurriculum]);
 
   const countByClass = useMemo(() => {
     const m = new Map<string, number>();
@@ -134,6 +189,56 @@ export function NarratedLessonsHub({
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+      {/* Curriculum Switcher (GES / NaCCA vs Cambridge International) */}
+      <div
+        role="tablist"
+        aria-label="Curriculum System"
+        className="grid grid-cols-2 gap-2 rounded-2xl border border-slate-200 bg-slate-100/90 p-1.5 shadow-2xs sm:inline-grid sm:w-auto"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={!isCambridge}
+          onClick={() => handleCurriculumSwitch('ges')}
+          className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
+            !isCambridge
+              ? 'bg-sky-600 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-white/70 hover:text-slate-900'
+          }`}
+        >
+          <BookOpen className="h-4 w-4 shrink-0" />
+          <span>GES / NaCCA</span>
+          <span
+            className={`rounded-full px-2 py-0.5 text-[11px] font-extrabold ${
+              !isCambridge ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-600'
+            }`}
+          >
+            {curriculumCounts.ges}
+          </span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isCambridge}
+          onClick={() => handleCurriculumSwitch('cambridge')}
+          className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition ${
+            isCambridge
+              ? 'bg-indigo-600 text-white shadow-sm'
+              : 'text-slate-600 hover:bg-white/70 hover:text-slate-900'
+          }`}
+        >
+          <Globe2 className="h-4 w-4 shrink-0" />
+          <span>Cambridge International</span>
+          <span
+            className={`rounded-full px-2 py-0.5 text-[11px] font-extrabold ${
+              isCambridge ? 'bg-white/20 text-white' : 'bg-slate-200/80 text-slate-600'
+            }`}
+          >
+            {curriculumCounts.cambridge}
+          </span>
+        </button>
+      </div>
+
       {/* Hero Banner */}
       <section
         className={`overflow-hidden rounded-2xl p-6 text-white shadow-sm ${
@@ -160,13 +265,6 @@ export function NarratedLessonsHub({
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <Link
-              href={isCambridge ? '/dashboard/narrated-lessons' : '/dashboard/cambridge-lessons'}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2.5 text-xs font-extrabold text-slate-900 shadow-xs transition hover:bg-slate-100"
-            >
-              <ArrowLeftRight className="h-3.5 w-3.5" />
-              {isCambridge ? 'Switch to GES / NaCCA' : 'Switch to Cambridge'}
-            </Link>
             <div className="rounded-xl bg-white/15 px-4 py-2.5 text-right backdrop-blur-xs">
               <p className={`text-[11px] font-medium ${isCambridge ? 'text-indigo-100' : 'text-sky-100'}`}>
                 Available Topics
@@ -356,7 +454,7 @@ export function NarratedLessonsHub({
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filteredEntries.map((entry) => (
-            <LessonCard key={entry.lessonId} entry={entry} basePath={basePath} />
+            <LessonCard key={entry.lessonId} entry={entry} basePath={effectiveBasePath} />
           ))}
         </div>
       )}
@@ -368,6 +466,7 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
   const coverUrl = entry.coverImagePath ? cdnObjectUrl(entry.coverImagePath) : null;
   const href = `${basePath}/${encodeURIComponent(entry.lessonId)}`;
   const hasNotes = Boolean(entry.notesPath);
+  const seniorLink = getSeniorAcademyLinkForLesson(entry.lessonId);
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xs transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md">
@@ -467,6 +566,19 @@ function LessonCard({ entry, basePath }: { entry: LessonCatalogueEntry; basePath
               <PlayCircle className="h-4 w-4" />
               Start
             </span>
+          </Link>
+        )}
+        {seniorLink && (
+          <Link
+            href={seniorLink.href}
+            className="mt-2 flex items-center justify-between gap-1.5 rounded-lg border border-indigo-200/80 bg-indigo-50/70 px-2.5 py-1.5 text-[11px] font-bold text-indigo-800 transition hover:bg-indigo-100"
+            title={`Open ${seniorLink.seniorHubTitle} in Senior Academy`}
+          >
+            <span className="inline-flex items-center gap-1.5 truncate">
+              <Rocket className="h-3.5 w-3.5 shrink-0 text-indigo-600" />
+              <span className="truncate">Senior Academy · Past Questions &amp; Lab</span>
+            </span>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
           </Link>
         )}
       </div>
