@@ -1,10 +1,14 @@
 import React from 'react';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import {
   assertValidLessonInteractives,
+  compareSemver,
   evaluateDeclarativeRule,
   validateSlideInteractiveConfig,
+  type DeclarativeRuleNode,
   type RuleExplorerInteractiveConfig,
 } from './interactive-schema';
 import { RuleExplorerEngine } from '@/components/narrated-lessons/RuleExplorerEngine';
@@ -16,12 +20,13 @@ const CS_LAB_ACCESS_CONFIG: RuleExplorerInteractiveConfig = {
   id: 'cs-lab-access-rule',
   engine: 'rule-explorer',
   schemaVersion: 1,
+  minEngineVersion: '1.0.0',
   subjectTag: 'Computer Science',
   title: 'Computer Laboratory Access Rule',
   instructions: 'Toggle the two entry conditions to see when access is granted.',
   accessibilityLabel: 'Computer laboratory access condition explorer',
   fallbackText: 'A pupil enters the computer laboratory only when they have BOTH a valid student ID card AND teacher permission.',
-  hints: ['Try turning both conditions to YES to satisfy the AND rule.'],
+  hints: ['Try turning both conditions to Present / Granted to satisfy the AND rule.'],
   inputs: [
     { id: 'idCard', label: 'Valid student ID card', defaultValue: true, trueText: 'Present', falseText: 'Missing' },
     { id: 'permission', label: 'Teacher permission', defaultValue: false, trueText: 'Granted', falseText: 'Not granted' },
@@ -44,6 +49,7 @@ const CHEMISTRY_COMBUSTION_CONFIG: RuleExplorerInteractiveConfig = {
   id: 'chem-fire-triangle-rule',
   engine: 'rule-explorer',
   schemaVersion: 1,
+  minEngineVersion: '1.0.0',
   subjectTag: 'Chemistry',
   title: 'Combustion Conditions (Fire Triangle)',
   instructions: 'Toggle Fuel, Oxygen, and Heat to observe when combustion can occur.',
@@ -83,9 +89,9 @@ const STUB_LESSON = {
   summary: { recapScript: 'Recap' },
 } as unknown as NarratedLesson;
 
-function makeStubSlide(interactive?: LessonSlide['interactive']): LessonSlide {
+function makeStubSlide(interactive?: LessonSlide['interactive'], id = 's01'): LessonSlide {
   return {
-    id: 's01',
+    id,
     order: 1,
     title: 'Pilot Slide',
     purpose: 'Demonstrate cross-subject interactive engine reuse',
@@ -116,39 +122,47 @@ function makeStubSlide(interactive?: LessonSlide['interactive']): LessonSlide {
   };
 }
 
-describe('Interactive Schema Validation & Security Gates (Step 3)', () => {
-  it('accepts valid cross-subject rule-explorer, code-playground, and construction-lab configs', () => {
-    expect(validateSlideInteractiveConfig(CS_LAB_ACCESS_CONFIG).ok).toBe(true);
-    expect(validateSlideInteractiveConfig(CHEMISTRY_COMBUSTION_CONFIG).ok).toBe(true);
-
-    expect(
-      validateSlideInteractiveConfig({
-        id: 'py-sandbox-1',
-        engine: 'code-playground',
-        schemaVersion: 1,
-        title: 'Try Python Loops',
-        instructions: 'Run the starter code and modify the loop limit.',
-        accessibilityLabel: 'Inline Python playground',
-        fallbackText: 'Read the loop example in the slide diagram above.',
-        languages: ['python', 'pseudocode'],
-      }).ok,
-    ).toBe(true);
-
-    expect(
-      validateSlideInteractiveConfig({
-        id: 'gate-lab-1',
-        engine: 'construction-lab',
-        schemaVersion: 1,
-        labKind: 'boolean-circuit',
-        title: 'Build an AND-NOT Circuit',
-        instructions: 'Wire inputs A and B to verify the truth table.',
-        accessibilityLabel: 'Boolean circuit construction lab',
-        fallbackText: 'Inspect the circuit truth table in the slide.',
-      }).ok,
-    ).toBe(true);
+describe('Interactive Schema Validation, Security Boundaries & Versioning (Step 3)', () => {
+  it('validates all machine-readable authoring examples in docs/examples/interactive-lesson-examples.json', () => {
+    const examplesPath = path.resolve(process.cwd(), 'docs/examples/interactive-lesson-examples.json');
+    const parsed = JSON.parse(fs.readFileSync(examplesPath, 'utf8')) as {
+      examples: Record<string, unknown>;
+    };
+    const entries = Object.entries(parsed.examples);
+    expect(entries.length).toBeGreaterThanOrEqual(6);
+    for (const [name, cfg] of entries) {
+      const res = validateSlideInteractiveConfig(cfg, { requireImplemented: true });
+      expect(res.ok, `Example "${name}" failed: ${res.errors.join('; ')}`).toBe(true);
+    }
   });
 
-  it('rejects unknown engines and unsupported schema versions', () => {
+  it('validates slides p01-p07 of the preview fixture under strict publish rules and confirms p08 exercises fallback', () => {
+    const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step3-registry-pilot.json');
+    const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as NarratedLesson;
+    expect(fixture.slides.length).toBe(8);
+
+    // Slides p01-p07 must pass strict publish validation (requireImplemented: true)
+    expect(() =>
+      assertValidLessonInteractives({
+        lessonId: fixture.lessonId,
+        slides: fixture.slides.slice(0, 7),
+      }),
+    ).not.toThrow();
+
+    // Slide p08 intentionally includes a reserved engine + incompatible minEngineVersion
+    expect(() =>
+      assertValidLessonInteractives({
+        lessonId: fixture.lessonId,
+        slides: [fixture.slides[7]],
+      }),
+    ).toThrow(/reserved for future development|Incompatible minEngineVersion/i);
+  });
+
+  it('rejects unknown engines, unsupported schemaVersion, and incompatible minEngineVersion', () => {
+    expect(compareSemver('1.0.0', '1.0.0')).toBe(0);
+    expect(compareSemver('1.0.0', '2.0.0')).toBe(-1);
+    expect(compareSemver('1.2.0', '1.0.5')).toBe(1);
+
     const badEngine = validateSlideInteractiveConfig({
       ...CS_LAB_ACCESS_CONFIG,
       engine: 'arbitrary-widget',
@@ -162,38 +176,131 @@ describe('Interactive Schema Validation & Security Gates (Step 3)', () => {
     });
     expect(badVersion.ok).toBe(false);
     expect(badVersion.errors.join(' ')).toMatch(/Unsupported schemaVersion/i);
+
+    const badMinVer = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      minEngineVersion: '2.0.0',
+    });
+    expect(badMinVer.ok).toBe(false);
+    expect(badMinVer.errors.join(' ')).toMatch(/Incompatible minEngineVersion/i);
   });
 
-  it('rejects unsafe executable payloads (script tags, eval, Function, javascript:)', () => {
-    const payloads = [
-      '<script>alert(1)</script>',
-      'eval("document.cookie")',
-      'new Function("return 1")',
-      'javascript:alert(1)',
-    ];
-    for (const payload of payloads) {
-      const res = validateSlideInteractiveConfig({
-        ...CS_LAB_ACCESS_CONFIG,
-        instructions: `Run this: ${payload}`,
-      });
-      expect(res.ok).toBe(false);
-      expect(res.errors.join(' ')).toMatch(/Unsafe executable payload/i);
+  it('rejects unknown configuration fields, invalid types, oversized payloads, and unsafe URL protocols', () => {
+    const unknownTop = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      customHtml: '<div>nope</div>',
+    });
+    expect(unknownTop.ok).toBe(false);
+    expect(unknownTop.errors.join(' ')).toMatch(/Unknown configuration field/i);
+
+    const invalidType = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      persistCompletion: 'yes' as unknown as boolean,
+    });
+    expect(invalidType.ok).toBe(false);
+    expect(invalidType.errors.join(' ')).toMatch(/persistCompletion.*boolean/i);
+
+    const oversized = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      fallbackText: 'A'.repeat(26_000),
+    });
+    expect(oversized.ok).toBe(false);
+    expect(oversized.errors.join(' ')).toMatch(/exceeds maximum allowed size/i);
+
+    const badProto = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      instructions: 'Open javascript:alert(1) to continue.',
+    });
+    expect(badProto.ok).toBe(false);
+    expect(badProto.errors.join(' ')).toMatch(/Unsafe executable URL protocol/i);
+  });
+
+  it('rejects invalid input references, invalid operator arity, excessive nesting depth, and excessive AST nodes', () => {
+    const badInputRef = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      rule: { operator: 'AND', operands: [{ input: 'idCard' }, { input: 'nonExistent' }] },
+    });
+    expect(badInputRef.ok).toBe(false);
+    expect(badInputRef.errors.join(' ')).toMatch(/unknown input "nonExistent"/i);
+
+    const badNotArity = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      rule: { operator: 'NOT', operands: [{ input: 'idCard' }, { input: 'permission' }] },
+    });
+    expect(badNotArity.ok).toBe(false);
+    expect(badNotArity.errors.join(' ')).toMatch(/NOT operator must have exactly 1 operand/i);
+
+    const badAndArity = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      rule: { operator: 'AND', operands: [{ input: 'idCard' }] },
+    });
+    expect(badAndArity.ok).toBe(false);
+    expect(badAndArity.errors.join(' ')).toMatch(/between 2 and 8 operands/i);
+
+    // Build depth 8 nested NOT chain (> max 6)
+    let deepRule: DeclarativeRuleNode = { input: 'idCard' };
+    for (let i = 0; i < 8; i++) {
+      deepRule = { operator: 'NOT', operands: [deepRule] };
     }
+    const tooDeep = validateSlideInteractiveConfig({
+      ...CS_LAB_ACCESS_CONFIG,
+      rule: deepRule,
+    });
+    expect(tooDeep.ok).toBe(false);
+    expect(tooDeep.errors.join(' ')).toMatch(/nesting depth exceeds maximum/i);
   });
 
-  it('rejects protected teacher-only fields inside public interactive configs', () => {
-    const res = validateSlideInteractiveConfig({
+  it('distinguishes legitimate CS educational explanations & isolated starter code from protected teacher content and destructive SQL', () => {
+    // Legitimate CS lesson explaining why eval() or <script> is unsafe MUST be allowed
+    const legitCsExplanation = validateSlideInteractiveConfig({
+      id: 'cs-security-lesson',
+      engine: 'code-playground',
+      schemaVersion: 1,
+      title: 'Why Safe Parsing Beats eval()',
+      instructions: 'Explain why avoiding eval() and sanitizing <script> tags protects web apps.',
+      accessibilityLabel: 'Python safe parsing sandbox',
+      fallbackText: 'Use int() instead of eval() to convert numeric input safely.',
+      languages: ['python'],
+      pythonStarter: '# Safe conversion instead of eval()\nval = int(input())\nprint(val * 2)',
+      publicTests: [{ stdin: '5', expectedStdout: '10' }],
+    });
+    expect(legitCsExplanation.ok).toBe(true);
+
+    // Destructive SQL in read-only inline runner MUST be rejected
+    const badSql = validateSlideInteractiveConfig({
+      id: 'bad-sql-ddl',
+      engine: 'code-playground',
+      schemaVersion: 1,
+      title: 'Unsafe SQL',
+      instructions: 'Do not allow DROP TABLE.',
+      accessibilityLabel: 'SQL playground',
+      fallbackText: 'Read-only SELECT only.',
+      languages: ['sql'],
+      sqlStarter: 'DROP TABLE Stock;',
+    });
+    expect(badSql.ok).toBe(false);
+    expect(badSql.errors.join(' ')).toMatch(/read-only SELECT/i);
+
+    // Protected teacher-only fields MUST be rejected
+    const leakedTeacherKey = validateSlideInteractiveConfig({
       ...CS_LAB_ACCESS_CONFIG,
       answerKey: 'SECRET',
     });
-    expect(res.ok).toBe(false);
-    expect(res.errors.join(' ')).toMatch(/Protected teacher-only field/i);
+    expect(leakedTeacherKey.ok).toBe(false);
+    expect(leakedTeacherKey.errors.join(' ')).toMatch(/Protected teacher-only field/i);
   });
 
-  it('rejects duplicate interactive IDs across slides at publish time', () => {
+  it('rejects duplicate interactive IDs both on the same slide and across slides', () => {
     expect(() =>
       assertValidLessonInteractives({
-        lessonId: 'test-lesson',
+        lessonId: 'dup-same-slide',
+        slides: [{ id: 's01', interactive: [CS_LAB_ACCESS_CONFIG, CS_LAB_ACCESS_CONFIG] }],
+      }),
+    ).toThrow(/duplicate interactive activity id/i);
+
+    expect(() =>
+      assertValidLessonInteractives({
+        lessonId: 'dup-cross-slide',
         slides: [
           { id: 's01', interactive: CS_LAB_ACCESS_CONFIG },
           { id: 's02', interactive: CS_LAB_ACCESS_CONFIG },
@@ -202,12 +309,40 @@ describe('Interactive Schema Validation & Security Gates (Step 3)', () => {
     ).toThrow(/duplicate interactive activity id/i);
   });
 
+  it('rejects reserved Step 4 engines at publish time while allowing explicit preview opt-in', () => {
+    const reservedLesson = {
+      lessonId: 'reserved-test',
+      slides: [
+        {
+          id: 's01',
+          interactive: {
+            id: 'future-graph',
+            engine: 'graph-slider',
+            schemaVersion: 1,
+            title: 'Gradient Explorer',
+            instructions: 'Adjust gradient m.',
+            accessibilityLabel: 'Gradient slider',
+            fallbackText: 'Higher m yields a steeper line.',
+          },
+        },
+      ],
+    };
+
+    // Production publish gate rejects reserved engine
+    expect(() => assertValidLessonInteractives(reservedLesson)).toThrow(/reserved for future development/i);
+
+    // Explicit preview-only fallback opt-in succeeds
+    expect(() =>
+      assertValidLessonInteractives(reservedLesson, { allowUnimplementedEngines: true }),
+    ).not.toThrow();
+  });
+
   it('evaluates nested NOT / OR / XOR declarative rules safely', () => {
-    const rule = {
-      operator: 'AND' as const,
+    const rule: DeclarativeRuleNode = {
+      operator: 'AND',
       operands: [
-        { operator: 'OR' as const, operands: [{ input: 'a' }, { input: 'b' }] },
-        { operator: 'NOT' as const, operands: [{ input: 'c' }] },
+        { operator: 'OR', operands: [{ input: 'a' }, { input: 'b' }] },
+        { operator: 'NOT', operands: [{ input: 'c' }] },
       ],
     };
     expect(evaluateDeclarativeRule(rule, { a: true, b: false, c: false })).toBe(true);
@@ -216,9 +351,8 @@ describe('Interactive Schema Validation & Security Gates (Step 3)', () => {
   });
 });
 
-describe('Cross-Subject Pilot: RuleExplorerEngine (Zero Engine Code Duplication)', () => {
-  it('runs Computer Science (Lab Access) and Chemistry (Combustion) through the exact same engine component', () => {
-    // 1. Computer Science pilot
+describe('Cross-Subject Pilot, Multi-Activity Independence & State Behaviour', () => {
+  it('runs Computer Science (Lab Access) and Chemistry (Combustion) through the exact same RuleExplorerEngine', () => {
     const csView = render(<RuleExplorerEngine config={CS_LAB_ACCESS_CONFIG} />);
     expect(screen.getByText('Computer Laboratory Access Rule')).toBeTruthy();
     expect(screen.getByText('Access Denied')).toBeTruthy();
@@ -235,20 +369,56 @@ describe('Cross-Subject Pilot: RuleExplorerEngine (Zero Engine Code Duplication)
     expect(screen.getByText('Access Denied')).toBeTruthy();
     csView.unmount();
 
-    // 2. Chemistry pilot (exact same RuleExplorerEngine, pure JSON change)
     render(<RuleExplorerEngine config={CHEMISTRY_COMBUSTION_CONFIG} />);
     expect(screen.getByText('Combustion Conditions (Fire Triangle)')).toBeTruthy();
     expect(screen.getByText('No Combustion')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: /Heat above ignition temperature/i }));
     expect(screen.getByText('Combustion Occurs')).toBeTruthy();
+  });
 
-    fireEvent.click(screen.getByRole('button', { name: /Oxygen supply/i }));
+  it('maintains completely independent state & reset controls for two activities on one slide', () => {
+    const { container } = render(
+      <div>
+        <RuleExplorerEngine config={CS_LAB_ACCESS_CONFIG} />
+        <RuleExplorerEngine config={CHEMISTRY_COMBUSTION_CONFIG} />
+      </div>,
+    );
+
+    const sections = container.querySelectorAll('section[data-interactive-engine="rule-explorer"]');
+    expect(sections.length).toBe(2);
+    const csSection = sections[0] as HTMLElement;
+    const chemSection = sections[1] as HTMLElement;
+
+    // Activate CS activity only -> Chemistry must remain untouched
+    fireEvent.click(within(csSection).getByRole('button', { name: /Teacher permission/i }));
+    expect(within(csSection).getByText('Access Granted')).toBeTruthy();
+    expect(within(chemSection).getByText('No Combustion')).toBeTruthy();
+
+    // Activate Chemistry -> Reset CS -> Chemistry must remain active
+    fireEvent.click(within(chemSection).getByRole('button', { name: /Heat above ignition temperature/i }));
+    expect(within(chemSection).getByText('Combustion Occurs')).toBeTruthy();
+
+    fireEvent.click(within(csSection).getByRole('button', { name: /Reset/i }));
+    expect(within(csSection).getByText('Access Denied')).toBeTruthy();
+    expect(within(chemSection).getByText('Combustion Occurs')).toBeTruthy();
+  });
+
+  it('resets ephemeral state cleanly on slide navigation away and return', () => {
+    const { rerender } = render(<RuleExplorerEngine config={CS_LAB_ACCESS_CONFIG} />);
+    fireEvent.click(screen.getByRole('button', { name: /Teacher permission/i }));
+    expect(screen.getByText('Access Granted')).toBeTruthy();
+
+    // Navigate to another slide's config and back
+    rerender(<RuleExplorerEngine config={CHEMISTRY_COMBUSTION_CONFIG} />);
     expect(screen.getByText('No Combustion')).toBeTruthy();
+
+    rerender(<RuleExplorerEngine config={CS_LAB_ACCESS_CONFIG} />);
+    expect(screen.getByText('Access Denied')).toBeTruthy();
   });
 });
 
-describe('InteractiveEngineRegistry Graceful Fallbacks & Backward Compatibility', () => {
+describe('InteractiveEngineRegistry Fallbacks, Low-Data Opt-In & Backward Compatibility', () => {
   it('renders nothing when slide.interactive is omitted (backward compatible with all 49 existing lessons)', () => {
     const { container } = render(
       <InteractiveEngineRegistry lesson={STUB_LESSON} slide={makeStubSlide(undefined)} />,
@@ -256,36 +426,37 @@ describe('InteractiveEngineRegistry Graceful Fallbacks & Backward Compatibility'
     expect(container.firstChild).toBeNull();
   });
 
-  it('renders a graceful fallback card for invalid configs or unsupported schemaVersion without crashing', () => {
-    const invalidSlide = makeStubSlide({
-      ...CS_LAB_ACCESS_CONFIG,
-      schemaVersion: 99 as unknown as 1,
-    });
-    render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={invalidSlide} />);
+  it('renders a graceful fallback card for invalid configs, incompatible minEngineVersion, or reserved Step 4 engines', () => {
+    const multiFallbackSlide = makeStubSlide([
+      {
+        ...CS_LAB_ACCESS_CONFIG,
+        minEngineVersion: '9.0.0',
+      },
+      {
+        id: 'math-linear-graph',
+        engine: 'graph-slider',
+        schemaVersion: 1,
+        title: 'Gradient & Intercept Explorer',
+        instructions: 'Adjust m and c to inspect y = mx + c.',
+        accessibilityLabel: 'Linear equation graph explorer',
+        fallbackText: 'Increasing gradient m makes the line steeper; c shifts the y-intercept.',
+      },
+    ]);
+    render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={multiFallbackSlide} />);
     expect(screen.getByText('Computer Laboratory Access Rule')).toBeTruthy();
-    expect(screen.getByText(/BOTH a valid student ID card AND teacher permission/i)).toBeTruthy();
-  });
-
-  it('renders a graceful fallback card for planned Step 4 engines (e.g. graph-slider)', () => {
-    const plannedSlide = makeStubSlide({
-      id: 'math-linear-graph',
-      engine: 'graph-slider',
-      schemaVersion: 1,
-      title: 'Gradient & Intercept Explorer',
-      instructions: 'Adjust m and c to inspect y = mx + c.',
-      accessibilityLabel: 'Linear equation graph explorer',
-      fallbackText: 'Increasing gradient m makes the line steeper; c shifts the y-intercept.',
-    });
-    render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={plannedSlide} />);
     expect(screen.getByText('Gradient & Intercept Explorer')).toBeTruthy();
     expect(screen.getByText(/Increasing gradient m makes the line steeper/i)).toBeTruthy();
   });
 
-  it('respects Low-Data Mode by showing the text fallback before loading the interactive engine', () => {
+  it('respects Low-Data Mode with text summary first and allows manual opt-in loading', () => {
     const slide = makeStubSlide(CHEMISTRY_COMBUSTION_CONFIG);
     render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={slide} lowDataMode={true} />);
     expect(screen.getByText(/Low-Data Summary/i)).toBeTruthy();
     expect(screen.getByText(/all three sides of the fire triangle/i)).toBeTruthy();
-    expect(screen.getByRole('button', { name: /Load interactive activity anyway/i })).toBeTruthy();
+
+    const optInBtn = screen.getByRole('button', { name: /Load interactive activity anyway/i });
+    fireEvent.click(optInBtn);
+    // Fallback card is dismissed once the learner opts in
+    expect(screen.queryByText(/Low-Data Summary/i)).toBeNull();
   });
 });

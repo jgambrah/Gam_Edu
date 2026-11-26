@@ -1,0 +1,475 @@
+{
+  "lessonId": "step3-registry-pilot-preview",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 3 Preview Pilot — Reusable Interactive Engine Registry",
+    "subject": "Cross-Subject Pilot (CS & Integrated Science)",
+    "class": "Preview Pilot",
+    "topic": "InteractiveEngineRegistry Verification",
+    "contentStandard": "STEP3.PILOT",
+    "indicators": ["STEP3.1", "STEP3.2"],
+    "estMinutes": 8
+  },
+  "slides": [
+    {
+      "id": "p01",
+      "order": 1,
+      "title": "Rule Explorer — Computer Laboratory Access (CS)",
+      "purpose": "Demonstrate JSON-configured Rule Explorer for Computer Science with binary output.",
+      "onScreenText": [
+        "Engine: rule-explorer (v1.0.0)",
+        "Rule: Valid ID AND Teacher Permission",
+        "Zero lesson-specific React code"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Diagram showing two conditions entering an AND decision box for laboratory access",
+        "description": "Schematic of two entry requirements feeding an AND condition.",
+        "labels": ["Student ID", "Permission", "Access"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><rect x=\"60\" y=\"90\" width=\"200\" height=\"80\" rx=\"14\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"3\"/><text x=\"160\" y=\"138\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" font-weight=\"bold\" fill=\"#0c4a6e\">Student ID</text><rect x=\"60\" y=\"260\" width=\"200\" height=\"80\" rx=\"14\" fill=\"#e0f2fe\" stroke=\"#0284c7\" stroke-width=\"3\"/><text x=\"160\" y=\"308\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" font-weight=\"bold\" fill=\"#0c4a6e\">Permission</text><rect x=\"340\" y=\"165\" width=\"150\" height=\"100\" rx=\"18\" fill=\"#1e293b\"/><text x=\"415\" y=\"223\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"26\" font-weight=\"bold\" fill=\"#38bdf8\">AND</text><rect x=\"560\" y=\"175\" width=\"190\" height=\"80\" rx=\"14\" fill=\"#dcfce7\" stroke=\"#16a34a\" stroke-width=\"3\"/><text x=\"655\" y=\"223\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" font-weight=\"bold\" fill=\"#14532d\">Lab Access</text><line x1=\"260\" y1=\"130\" x2=\"340\" y2=\"195\" stroke=\"#475569\" stroke-width=\"4\"/><line x1=\"260\" y1=\"300\" x2=\"340\" y2=\"235\" stroke=\"#475569\" stroke-width=\"4\"/><line x1=\"490\" y1=\"215\" x2=\"560\" y2=\"215\" stroke=\"#16a34a\" stroke-width=\"4\"/></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "This preview slide demonstrates the reusable Rule Explorer engine configured purely from JSON for a Computer Science access rule.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear classroom teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Both inputs must be true for an AND rule to output 1."],
+      "indicatorIds": ["STEP3.1"],
+      "askTeacherContext": {
+        "focus": "AND logic rule",
+        "keyTerms": ["AND", "Binary"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p01 (not published to live CDN).",
+      "interactive": {
+        "id": "pilot-cs-lab-access",
+        "engine": "rule-explorer",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Computer Science",
+        "title": "Computer Laboratory Access Rule",
+        "instructions": "Toggle the two entry conditions to see when access is granted.",
+        "accessibilityLabel": "Computer laboratory access condition explorer",
+        "fallbackText": "A student enters the computer laboratory only when they have BOTH a valid student ID card AND teacher permission.",
+        "hints": ["Turn both switches to Present / Granted to satisfy the AND rule."],
+        "inputs": [
+          { "id": "idCard", "label": "Valid student ID card", "defaultValue": true, "trueText": "Present", "falseText": "Missing" },
+          { "id": "permission", "label": "Teacher permission", "defaultValue": false, "trueText": "Granted", "falseText": "Not granted" }
+        ],
+        "rule": {
+          "operator": "AND",
+          "operands": [{ "input": "idCard" }, { "input": "permission" }]
+        },
+        "output": {
+          "trueLabel": "Access Granted",
+          "falseLabel": "Access Denied",
+          "explanationTrue": "Both required conditions are satisfied, so entry is allowed.",
+          "explanationFalse": "At least one required condition is missing, so entry is blocked.",
+          "showBinaryValues": true
+        }
+      }
+    },
+    {
+      "id": "p02",
+      "order": 2,
+      "title": "Rule Explorer — The Fire Triangle (Chemistry / Science)",
+      "purpose": "Demonstrate the exact same Rule Explorer engine reused for Chemistry with zero component code changes.",
+      "onScreenText": [
+        "Same rule-explorer engine, different subject",
+        "Combustion requires Fuel + Oxygen + Heat",
+        "Zero React component duplication"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Fire triangle diagram showing Fuel, Oxygen, and Heat required for combustion",
+        "description": "Equilateral triangle labelled Fuel, Oxygen, and Heat.",
+        "labels": ["Fuel", "Oxygen", "Heat"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fffbeb\"/><polygon points=\"400,70 210,360 590,360\" fill=\"#fef3c7\" stroke=\"#ea580c\" stroke-width=\"6\"/><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#9a3412\">COMBUSTION</text><text x=\"400\" y=\"52\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" font-weight=\"bold\" fill=\"#c2410c\">HEAT</text><text x=\"165\" y=\"385\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" font-weight=\"bold\" fill=\"#c2410c\">FUEL</text><text x=\"635\" y=\"385\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" font-weight=\"bold\" fill=\"#c2410c\">OXYGEN</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "This slide reuses the exact same Rule Explorer engine for Integrated Science and Chemistry without writing a single line of new React code.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Removing any side of the fire triangle stops combustion."],
+      "indicatorIds": ["STEP3.1"],
+      "askTeacherContext": {
+        "focus": "Fire triangle",
+        "keyTerms": ["Fuel", "Oxygen", "Heat"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p02.",
+      "interactive": {
+        "id": "pilot-chem-fire-triangle",
+        "engine": "rule-explorer",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Chemistry",
+        "title": "Combustion Conditions (Fire Triangle)",
+        "instructions": "Toggle Fuel, Oxygen, and Heat to observe when combustion can occur.",
+        "accessibilityLabel": "Chemistry fire triangle condition explorer",
+        "fallbackText": "Combustion occurs only when Fuel, Oxygen, and sufficient Heat are all present.",
+        "hints": ["Switch Heat ON while Fuel and Oxygen are ON to sustain combustion."],
+        "inputs": [
+          { "id": "fuel", "label": "Fuel present (e.g. dry wood)", "defaultValue": true },
+          { "id": "oxygen", "label": "Oxygen supply present", "defaultValue": true },
+          { "id": "heat", "label": "Heat above ignition temperature", "defaultValue": false }
+        ],
+        "rule": {
+          "operator": "AND",
+          "operands": [{ "input": "fuel" }, { "input": "oxygen" }, { "input": "heat" }]
+        },
+        "output": {
+          "trueLabel": "Conditions Support Combustion",
+          "falseLabel": "No Combustion",
+          "explanationTrue": "All three fire triangle requirements are present.",
+          "explanationFalse": "Removing fuel, oxygen, or heat prevents or extinguishes combustion.",
+          "showBinaryValues": false
+        }
+      }
+    },
+    {
+      "id": "p03",
+      "order": 3,
+      "title": "Code Playground — Python 3 Activity",
+      "purpose": "Demonstrate code-playground configured for Python via slide.interactive JSON.",
+      "onScreenText": [
+        "Engine: code-playground (Python)",
+        "Isolated Pyodide sandbox runner",
+        "Configured via slide.interactive JSON"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Python code execution diagram showing input, processing, and printed output",
+        "description": "IPO diagram for Python execution.",
+        "labels": ["Input", "Python", "Output"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><rect x=\"80\" y=\"170\" width=\"170\" height=\"100\" rx=\"14\" fill=\"#1e293b\" stroke=\"#38bdf8\" stroke-width=\"3\"/><text x=\"165\" y=\"228\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"20\" fill=\"#e2e8f0\">mark = 72</text><rect x=\"315\" y=\"170\" width=\"170\" height=\"100\" rx=\"14\" fill=\"#1e293b\" stroke=\"#22c55e\" stroke-width=\"3\"/><text x=\"400\" y=\"228\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"20\" fill=\"#86efac\">Python 3</text><rect x=\"550\" y=\"170\" width=\"170\" height=\"100\" rx=\"14\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"3\"/><text x=\"635\" y=\"228\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"20\" fill=\"#fde68a\">Pass</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Run the Python selection snippet below using the existing inline code playground mounted via the interactive registry.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear CS teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Starter code runs inside the isolated Pyodide Web Worker."],
+      "indicatorIds": ["STEP3.1"],
+      "askTeacherContext": {
+        "focus": "Python selection",
+        "keyTerms": ["if", "else"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p03.",
+      "interactive": {
+        "id": "pilot-python-grade",
+        "engine": "code-playground",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "title": "Python Pass/Retry Check",
+        "instructions": "Run the Python code with input 72, then test with a score below 50.",
+        "accessibilityLabel": "Python selection code playground",
+        "fallbackText": "If mark is 50 or higher, print Pass; otherwise print Retry.",
+        "languages": ["python"],
+        "pythonStarter": "mark = int(input())\nif mark >= 50:\n    print(\"Pass\")\nelse:\n    print(\"Retry\")",
+        "publicTests": [
+          { "stdin": "72", "expectedStdout": "Pass" }
+        ]
+      }
+    },
+    {
+      "id": "p04",
+      "order": 4,
+      "title": "Code Playground — Cambridge Pseudocode Activity",
+      "purpose": "Demonstrate code-playground configured for Cambridge Pseudocode.",
+      "onScreenText": [
+        "Engine: code-playground (Pseudocode)",
+        "Uses existing pseudocode-runner.ts",
+        "Instant zero-server execution"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Cambridge Pseudocode loop schematic",
+        "description": "FOR loop accumulator schematic.",
+        "labels": ["FOR", "Total", "OUTPUT"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"26\" fill=\"#38bdf8\">Total ← 0</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"26\" fill=\"#a7f3d0\">FOR Count ← 1 TO 5</text><text x=\"400\" y=\"300\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"26\" fill=\"#fde68a\">OUTPUT Total</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Run this Cambridge IGCSE pseudocode loop to compute the sum of integers from 1 to 5.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear CS teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Cambridge Pseudocode runs directly in the browser AST runner."],
+      "indicatorIds": ["STEP3.1"],
+      "askTeacherContext": {
+        "focus": "FOR loop",
+        "keyTerms": ["FOR", "NEXT"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p04.",
+      "interactive": {
+        "id": "pilot-pseudocode-sum",
+        "engine": "code-playground",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "title": "Cambridge Pseudocode Sum Loop",
+        "instructions": "Run the pseudocode loop to output the sum of 1 to 5 (15).",
+        "accessibilityLabel": "Cambridge pseudocode loop playground",
+        "fallbackText": "Adding 1 + 2 + 3 + 4 + 5 in a FOR loop produces Total = 15.",
+        "languages": ["pseudocode"],
+        "pseudocodeStarter": "Total ← 0\nFOR Count ← 1 TO 5\n    Total ← Total + Count\nNEXT Count\nOUTPUT Total",
+        "publicTests": [
+          { "stdin": "", "expectedStdout": "15" }
+        ]
+      }
+    },
+    {
+      "id": "p05",
+      "order": 5,
+      "title": "Code Playground — Read-Only SQL Activity",
+      "purpose": "Demonstrate code-playground configured for read-only IGCSE SQL.",
+      "onScreenText": [
+        "Engine: code-playground (SQL)",
+        "Read-only SELECT against Stock fixture",
+        "DDL/DML blocked at schema & runtime"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "SQL SELECT query filtering rows from a Stock table",
+        "description": "SQL query diagram.",
+        "labels": ["SELECT", "FROM Stock", "WHERE"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"195\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"26\" fill=\"#38bdf8\">SELECT ItemName, Price</text><text x=\"400\" y=\"240\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"26\" fill=\"#a7f3d0\">FROM Stock</text><text x=\"400\" y=\"285\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"26\" fill=\"#fde68a\">WHERE Quantity &lt; 6;</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Run the read-only SQL query below to list low-stock items ordered by price.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear CS teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Inline SQL executes strictly against isolated read-only sample tables."],
+      "indicatorIds": ["STEP3.1"],
+      "askTeacherContext": {
+        "focus": "SQL SELECT",
+        "keyTerms": ["SELECT", "WHERE", "ORDER BY"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p05.",
+      "interactive": {
+        "id": "pilot-sql-stock",
+        "engine": "code-playground",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "title": "Low-Stock Items SQL Query",
+        "instructions": "Run the SELECT query to find Stock items with Quantity < 6 ordered by Price descending.",
+        "accessibilityLabel": "Read-only SQL query playground",
+        "fallbackText": "SELECT ItemName, Price FROM Stock WHERE Quantity < 6 ORDER BY Price DESC returns low-stock items.",
+        "languages": ["sql"],
+        "sqlStarter": "SELECT ItemName, Price\nFROM Stock\nWHERE Quantity < 6\nORDER BY Price DESC;"
+      }
+    },
+    {
+      "id": "p06",
+      "order": 6,
+      "title": "Construction Lab — Boolean Circuit Activity",
+      "purpose": "Demonstrate construction-lab mounting existing BooleanCircuitLab via InteractiveEngineRegistry.",
+      "onScreenText": [
+        "Engine: construction-lab (boolean-circuit)",
+        "Reuses BooleanCircuitLab with zero duplication",
+        "Lazy-loaded only on slides that declare it"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Boolean logic gate construction lab schematic",
+        "description": "Logic gate symbols.",
+        "labels": ["AND", "OR", "NOT"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"230\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">Boolean Circuit Construction Lab</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Explore the Boolean Circuit Construction Lab below, loaded on demand via the Interactive Engine Registry.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear CS teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["BooleanCircuitLab is reused through the registry without duplicating code."],
+      "indicatorIds": ["STEP3.1"],
+      "askTeacherContext": {
+        "focus": "Logic circuits",
+        "keyTerms": ["AND", "OR", "NOT"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p06.",
+      "interactive": {
+        "id": "pilot-boolean-circuit-lab",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "labKind": "boolean-circuit",
+        "title": "Interactive Logic Circuit Builder",
+        "instructions": "Wire logic gates and toggle inputs A and B to verify the live output.",
+        "accessibilityLabel": "Boolean logic circuit construction lab",
+        "fallbackText": "Inspect how AND, OR, and NOT gates transform binary inputs 0 and 1."
+      }
+    },
+    {
+      "id": "p07",
+      "order": 7,
+      "title": "Multiple Independent Activities on One Slide",
+      "purpose": "Verify two interactive activities on one slide maintain completely independent state and reset controls.",
+      "onScreenText": [
+        "Two activities in slide.interactive[]",
+        "Independent toggle and reset state",
+        "Zero state bleeding between activities"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Diagram comparing two independent rules side by side: OR alarm rule and AND photosynthesis rule",
+        "description": "Two independent rule panels.",
+        "labels": ["Activity A (OR)", "Activity B (AND)"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><rect x=\"60\" y=\"110\" width=\"310\" height=\"230\" rx=\"18\" fill=\"#eff6ff\" stroke=\"#2563eb\" stroke-width=\"3\"/><text x=\"215\" y=\"235\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" font-weight=\"bold\" fill=\"#1e3a8a\">Activity A: Alarm (OR)</text><rect x=\"430\" y=\"110\" width=\"310\" height=\"230\" rx=\"18\" fill=\"#f0fdf4\" stroke=\"#16a34a\" stroke-width=\"3\"/><text x=\"585\" y=\"235\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" font-weight=\"bold\" fill=\"#14532d\">Activity B: Plant (AND)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "This slide renders two independent Rule Explorer activities together. Toggling or resetting one must never affect the other.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Each activity has its own unique id and isolated React state."],
+      "indicatorIds": ["STEP3.2"],
+      "askTeacherContext": {
+        "focus": "Independent interactive state",
+        "keyTerms": ["OR", "AND"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p07.",
+      "interactive": [
+        {
+          "id": "pilot-multi-alarm-or",
+          "engine": "rule-explorer",
+          "schemaVersion": 1,
+          "subjectTag": "Physics / Systems",
+          "title": "Activity A: Security Alarm Trigger (OR Rule)",
+          "instructions": "Trigger either the door sensor OR the motion sensor to sound the alarm.",
+          "accessibilityLabel": "Security alarm OR rule explorer",
+          "fallbackText": "The alarm sounds when either the door sensor OR the motion sensor is triggered.",
+          "inputs": [
+            { "id": "door", "label": "Door sensor opened", "defaultValue": false },
+            { "id": "motion", "label": "Motion detected", "defaultValue": false }
+          ],
+          "rule": {
+            "operator": "OR",
+            "operands": [{ "input": "door" }, { "input": "motion" }]
+          },
+          "output": {
+            "trueLabel": "Alarm Active",
+            "falseLabel": "System Quiet",
+            "explanationTrue": "At least one sensor triggered, activating the OR alarm.",
+            "explanationFalse": "Neither sensor is active, so the alarm stays quiet.",
+            "showBinaryValues": true
+          }
+        },
+        {
+          "id": "pilot-multi-plant-and",
+          "engine": "rule-explorer",
+          "schemaVersion": 1,
+          "subjectTag": "Biology",
+          "title": "Activity B: Photosynthesis Check (AND Rule)",
+          "instructions": "Toggle Sunlight and Water to check if photosynthesis can proceed.",
+          "accessibilityLabel": "Photosynthesis condition explorer",
+          "fallbackText": "Photosynthesis requires both sunlight and water (alongside carbon dioxide).",
+          "inputs": [
+            { "id": "sunlight", "label": "Sunlight available", "defaultValue": true },
+            { "id": "water", "label": "Water available", "defaultValue": false }
+          ],
+          "rule": {
+            "operator": "AND",
+            "operands": [{ "input": "sunlight" }, { "input": "water" }]
+          },
+          "output": {
+            "trueLabel": "Photosynthesis Active",
+            "falseLabel": "Photosynthesis Paused",
+            "explanationTrue": "Both sunlight and water are present for the plant.",
+            "explanationFalse": "Without both sunlight and water, photosynthesis cannot proceed.",
+            "showBinaryValues": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "p08",
+      "order": 8,
+      "title": "Graceful Fallback — Reserved & Incompatible Configs",
+      "purpose": "Verify runtime fallback cards for reserved Step 4 engines and incompatible minEngineVersion without crashing.",
+      "onScreenText": [
+        "Reserved engine: graph-slider (Step 4)",
+        "Incompatible minEngineVersion: 9.0.0",
+        "Slide and narration remain 100% functional"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Safe fallback diagram showing graceful degradation when an engine is unavailable",
+        "description": "Graceful fallback schematic.",
+        "labels": ["Validation", "Fallback Card", "No Crash"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fefce8\"/><text x=\"400\" y=\"215\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#854d0e\">Graceful Fallback Demonstration</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#713f12\">Reserved Step 4 engines and unsupported versions degrade safely.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "This slide intentionally contains a reserved Step 4 engine and an incompatible engine version to prove the player falls back gracefully without crashing.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Invalid or future configs never break slide rendering or narration."],
+      "indicatorIds": ["STEP3.2"],
+      "askTeacherContext": {
+        "focus": "Graceful fallback",
+        "keyTerms": ["Fallback", "Schema version"],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Preview-only fixture slide p08.",
+      "interactive": [
+        {
+          "id": "pilot-reserved-graph-slider",
+          "engine": "graph-slider",
+          "schemaVersion": 1,
+          "title": "Reserved Step 4 Engine: Linear Graph Explorer",
+          "instructions": "Adjust gradient m and intercept c.",
+          "accessibilityLabel": "Reserved graph slider fallback",
+          "fallbackText": "Increasing gradient m makes y = mx + c steeper; changing c shifts the y-intercept. (Reserved for Step 4.)"
+        },
+        {
+          "id": "pilot-incompatible-version",
+          "engine": "rule-explorer",
+          "schemaVersion": 1,
+          "minEngineVersion": "9.0.0",
+          "title": "Future Engine Version Fallback (minEngineVersion 9.0.0)",
+          "instructions": "Requires a future version of rule-explorer.",
+          "accessibilityLabel": "Future engine version fallback",
+          "fallbackText": "This activity requires rule-explorer v9.0.0, so the player safely displays this fallback summary instead.",
+          "inputs": [{ "id": "x", "label": "Sample input" }],
+          "rule": { "input": "x" },
+          "output": {
+            "trueLabel": "True",
+            "falseLabel": "False",
+            "explanationTrue": "True",
+            "explanationFalse": "False"
+          }
+        }
+      ]
+    }
+  ],
+  "checkpoints": [],
+  "masteryCheck": {
+    "items": []
+  },
+  "summary": {
+    "recapScript": "You have verified all implemented Step 3 engines, multi-activity independence, and graceful fallbacks through the live NarratedLessonPlayer."
+  }
+}

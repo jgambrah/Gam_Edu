@@ -1,0 +1,135 @@
+{
+  "$comment": "Machine-readable valid slide.interactive examples for GAM EDU InteractiveEngineRegistry (schemaVersion 1). All examples below pass strict publish-time validation.",
+  "schemaVersion": 1,
+  "examples": {
+    "ruleExplorerComputerScience": {
+      "id": "cs-lab-access-example",
+      "engine": "rule-explorer",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Computer Science",
+      "title": "Computer Laboratory Access Rule",
+      "instructions": "Toggle the two conditions to see when entry is granted.",
+      "accessibilityLabel": "Computer laboratory access AND rule explorer",
+      "fallbackText": "Entry is granted only when both a valid student ID card and teacher permission are present.",
+      "hints": [
+        "Set both inputs to Present / Granted to see Output = 1."
+      ],
+      "inputs": [
+        {
+          "id": "idCard",
+          "label": "Valid student ID card",
+          "defaultValue": true,
+          "trueText": "Present",
+          "falseText": "Missing"
+        },
+        {
+          "id": "permission",
+          "label": "Teacher permission",
+          "defaultValue": false,
+          "trueText": "Granted",
+          "falseText": "Not granted"
+        }
+      ],
+      "rule": {
+        "operator": "AND",
+        "operands": [
+          { "input": "idCard" },
+          { "input": "permission" }
+        ]
+      },
+      "output": {
+        "trueLabel": "Access Granted",
+        "falseLabel": "Access Denied",
+        "explanationTrue": "Both required conditions are satisfied.",
+        "explanationFalse": "At least one required condition is missing.",
+        "showBinaryValues": true
+      }
+    },
+    "ruleExplorerChemistry": {
+      "id": "chem-fire-triangle-example",
+      "engine": "rule-explorer",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Chemistry",
+      "title": "Combustion Conditions (Fire Triangle)",
+      "instructions": "Toggle Fuel, Oxygen, and Heat to test when combustion can occur.",
+      "accessibilityLabel": "Chemistry fire triangle condition explorer",
+      "fallbackText": "Combustion requires Fuel, Oxygen, and Heat above ignition temperature.",
+      "inputs": [
+        { "id": "fuel", "label": "Fuel present", "defaultValue": true },
+        { "id": "oxygen", "label": "Oxygen present", "defaultValue": true },
+        { "id": "heat", "label": "Heat above ignition point", "defaultValue": false }
+      ],
+      "rule": {
+        "operator": "AND",
+        "operands": [
+          { "input": "fuel" },
+          { "input": "oxygen" },
+          { "input": "heat" }
+        ]
+      },
+      "output": {
+        "trueLabel": "Conditions Support Combustion",
+        "falseLabel": "No Combustion",
+        "explanationTrue": "All three fire triangle requirements are satisfied.",
+        "explanationFalse": "Removing any one side of the fire triangle prevents combustion.",
+        "showBinaryValues": false
+      }
+    },
+    "codePlaygroundPython": {
+      "id": "py-selection-example",
+      "engine": "code-playground",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "title": "Python Pass/Retry Check",
+      "instructions": "Run the Python snippet and try changing the input mark.",
+      "accessibilityLabel": "Inline Python 3 code playground",
+      "fallbackText": "When mark >= 50 the program prints Pass; otherwise it prints Retry.",
+      "languages": ["python"],
+      "pythonStarter": "mark = int(input())\nif mark >= 50:\n    print(\"Pass\")\nelse:\n    print(\"Retry\")",
+      "publicTests": [
+        { "stdin": "72", "expectedStdout": "Pass" },
+        { "stdin": "41", "expectedStdout": "Retry" }
+      ]
+    },
+    "codePlaygroundPseudocode": {
+      "id": "pseudo-loop-example",
+      "engine": "code-playground",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "title": "Cambridge Pseudocode Accumulator Loop",
+      "instructions": "Run the FOR loop to compute the sum of 1 to 5.",
+      "accessibilityLabel": "Cambridge IGCSE pseudocode playground",
+      "fallbackText": "Summing 1 through 5 in a FOR loop outputs 15.",
+      "languages": ["pseudocode"],
+      "pseudocodeStarter": "Total ← 0\nFOR Count ← 1 TO 5\n    Total ← Total + Count\nNEXT Count\nOUTPUT Total",
+      "publicTests": [
+        { "stdin": "", "expectedStdout": "15" }
+      ]
+    },
+    "codePlaygroundSql": {
+      "id": "sql-readonly-example",
+      "engine": "code-playground",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "title": "Read-Only Stock Filter Query",
+      "instructions": "Run the SELECT query to filter items with Quantity < 6.",
+      "accessibilityLabel": "Read-only SQL query playground",
+      "fallbackText": "SELECT ItemName, Price FROM Stock WHERE Quantity < 6 lists low-stock items.",
+      "languages": ["sql"],
+      "sqlStarter": "SELECT ItemName, Price\nFROM Stock\nWHERE Quantity < 6\nORDER BY Price DESC;"
+    },
+    "constructionLabBooleanCircuit": {
+      "id": "circuit-builder-example",
+      "engine": "construction-lab",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "labKind": "boolean-circuit",
+      "title": "Boolean Circuit Construction Lab",
+      "instructions": "Wire logic gates and toggle inputs A and B to verify the circuit output.",
+      "accessibilityLabel": "Interactive Boolean circuit construction lab",
+      "fallbackText": "Inspect the truth table of AND, OR, and NOT logic gates."
+    }
+  }
+}

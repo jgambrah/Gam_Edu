@@ -136,7 +136,13 @@ function InteractiveItemRenderer({
     case 'rule-explorer':
       return <LazyRuleExplorerEngine config={config} />;
     case 'code-playground':
-      return <LazyInlineCodePlayground lesson={lesson} slideId={slideId} />;
+      return (
+        <LazyInlineCodePlayground
+          lesson={lesson}
+          slideId={slideId}
+          interactiveConfig={config}
+        />
+      );
     case 'construction-lab':
       return <LazyBooleanCircuitLab lessonId={lesson.lessonId} slideId={slideId} />;
     default:

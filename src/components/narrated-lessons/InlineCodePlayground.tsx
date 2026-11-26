@@ -15,6 +15,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { NarratedLesson } from '@/lib/narrated-lessons/types';
+import type { CodePlaygroundInteractiveConfig } from '@/lib/narrated-lessons/interactive-schema';
 import {
   getWorkshopActivitiesForLesson,
   type InlineWorkshopActivity,
@@ -29,6 +30,7 @@ type PlaygroundMode = 'pseudocode' | 'python' | 'sql';
 interface InlineCodePlaygroundProps {
   lesson: NarratedLesson;
   slideId?: string;
+  interactiveConfig?: CodePlaygroundInteractiveConfig;
 }
 
 function isComputerScienceLesson(lesson: NarratedLesson): boolean {
@@ -133,9 +135,28 @@ function draftStorageKey(lessonId: string, activityId: string, mode: PlaygroundM
   return `gam:inline-code:v1:${lessonId}:${activityId}:${mode}`;
 }
 
-export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundProps) {
-  const enabled = useMemo(() => isComputerScienceLesson(lesson), [lesson]);
+export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: InlineCodePlaygroundProps) {
+  const enabled = useMemo(
+    () => Boolean(interactiveConfig) || isComputerScienceLesson(lesson),
+    [interactiveConfig, lesson]
+  );
   const lessonActivities = useMemo<InlineWorkshopActivity[]>(() => {
+    if (interactiveConfig) {
+      return [
+        {
+          id: interactiveConfig.id,
+          lessonId: lesson.lessonId,
+          afterSlideId: slideId ?? 's01',
+          title: interactiveConfig.title,
+          task: interactiveConfig.instructions,
+          languages: interactiveConfig.languages,
+          pythonStarter: interactiveConfig.pythonStarter ?? '',
+          pseudocodeStarter: interactiveConfig.pseudocodeStarter ?? '',
+          sqlStarter: interactiveConfig.sqlStarter ?? '',
+          publicTests: interactiveConfig.publicTests ?? [],
+        },
+      ];
+    }
     const ch11 = getWorkshopActivitiesForLesson(lesson.lessonId);
     const ch10: InlineWorkshopActivity[] = getCh10ActivitiesForLesson(lesson.lessonId).map((a) => ({
       id: a.id,
@@ -150,15 +171,18 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
       publicTests: [a.publicSample],
     }));
     return [...ch11, ...ch10];
-  }, [lesson.lessonId]);
+  }, [interactiveConfig, lesson.lessonId, slideId]);
   const slideActivities = useMemo(
     () => (slideId ? lessonActivities.filter((a) => a.afterSlideId === slideId) : []),
     [lessonActivities, slideId]
   );
 
-  const initialMode = useMemo(() => defaultModeForLesson(lesson), [lesson]);
-  const [open, setOpen] = useState(false);
-  const [activeActivityId, setActiveActivityId] = useState<string>('sandbox');
+  const initialMode = useMemo<PlaygroundMode>(
+    () => interactiveConfig?.languages[0] ?? defaultModeForLesson(lesson),
+    [interactiveConfig, lesson]
+  );
+  const [open, setOpen] = useState(Boolean(interactiveConfig));
+  const [activeActivityId, setActiveActivityId] = useState<string>(interactiveConfig?.id ?? 'sandbox');
   const [mode, setMode] = useState<PlaygroundMode>(initialMode);
   const [code, setCode] = useState<string>(() => starterForSandbox(lesson, initialMode).code);
   const [stdinText, setStdinText] = useState<string>(() => starterForSandbox(lesson, initialMode).stdin);
