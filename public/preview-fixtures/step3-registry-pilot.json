@@ -110,14 +110,14 @@
         "minEngineVersion": "1.0.0",
         "subjectTag": "Chemistry",
         "title": "Combustion Conditions (Fire Triangle)",
-        "instructions": "Toggle Fuel, Oxygen, and Heat to observe when combustion can occur.",
+        "instructions": "Toggle Fuel, Oxygen, and Sufficient Heat to observe when ordinary combustion can occur.",
         "accessibilityLabel": "Chemistry fire triangle condition explorer",
-        "fallbackText": "Combustion occurs only when Fuel, Oxygen, and sufficient Heat are all present.",
-        "hints": ["Switch Heat ON while Fuel and Oxygen are ON to sustain combustion."],
+        "fallbackText": "In the fire triangle model, ordinary combustion requires fuel, oxygen and sufficient heat to initiate and sustain burning.",
+        "hints": ["Switch Sufficient Heat ON while Fuel and Oxygen are ON to initiate and sustain combustion."],
         "inputs": [
           { "id": "fuel", "label": "Fuel present (e.g. dry wood)", "defaultValue": true },
           { "id": "oxygen", "label": "Oxygen supply present", "defaultValue": true },
-          { "id": "heat", "label": "Heat above ignition temperature", "defaultValue": false }
+          { "id": "heat", "label": "Sufficient heat to initiate and sustain burning", "defaultValue": false }
         ],
         "rule": {
           "operator": "AND",
@@ -170,13 +170,16 @@
         "schemaVersion": 1,
         "minEngineVersion": "1.0.0",
         "title": "Python Pass/Retry Check",
-        "instructions": "Run the Python code with input 72, then test with a score below 50.",
+        "instructions": "Run the Python code with marks 49, 50, and 51 to test boundary behaviour.",
         "accessibilityLabel": "Python selection code playground",
-        "fallbackText": "If mark is 50 or higher, print Pass; otherwise print Retry.",
+        "fallbackText": "If mark is 50 or higher, print Pass; otherwise print Retry (49 -> Retry, 50 -> Pass, 51 -> Pass).",
         "languages": ["python"],
         "pythonStarter": "mark = int(input())\nif mark >= 50:\n    print(\"Pass\")\nelse:\n    print(\"Retry\")",
         "publicTests": [
-          { "stdin": "72", "expectedStdout": "Pass" }
+          { "stdin": "72", "expectedStdout": "Pass" },
+          { "stdin": "49", "expectedStdout": "Retry" },
+          { "stdin": "50", "expectedStdout": "Pass" },
+          { "stdin": "51", "expectedStdout": "Pass" }
         ]
       }
     },
@@ -222,7 +225,7 @@
         "accessibilityLabel": "Cambridge pseudocode loop playground",
         "fallbackText": "Adding 1 + 2 + 3 + 4 + 5 in a FOR loop produces Total = 15.",
         "languages": ["pseudocode"],
-        "pseudocodeStarter": "Total ← 0\nFOR Count ← 1 TO 5\n    Total ← Total + Count\nNEXT Count\nOUTPUT Total",
+        "pseudocodeStarter": "DECLARE Total : INTEGER\nDECLARE Count : INTEGER\nTotal ← 0\nFOR Count ← 1 TO 5\n    Total ← Total + Count\nNEXT Count\nOUTPUT Total",
         "publicTests": [
           { "stdin": "", "expectedStdout": "15" }
         ]
@@ -311,10 +314,10 @@
         "schemaVersion": 1,
         "minEngineVersion": "1.0.0",
         "labKind": "boolean-circuit",
-        "title": "Interactive Logic Circuit Builder",
-        "instructions": "Wire logic gates and toggle inputs A and B to verify the live output.",
-        "accessibilityLabel": "Boolean logic circuit construction lab",
-        "fallbackText": "Inspect how AND, OR, and NOT gates transform binary inputs 0 and 1."
+        "title": "Boolean Circuit Challenge: A AND (NOT B)",
+        "instructions": "Construct a circuit that produces an output of 1 only when input A is 1 and input B is 0. Test all four possible input combinations and verify your circuit using a truth table.",
+        "accessibilityLabel": "Boolean logic circuit construction challenge",
+        "fallbackText": "Connect input B through a NOT gate, then combine input A and (NOT B) in an AND gate so Output = 1 only when A = 1 and B = 0."
       }
     },
     {

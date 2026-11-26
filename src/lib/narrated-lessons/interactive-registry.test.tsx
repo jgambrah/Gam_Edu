@@ -7,12 +7,16 @@ import {
   assertValidLessonInteractives,
   compareSemver,
   evaluateDeclarativeRule,
+  SUPPORTED_INTERACTIVE_ENGINES,
   validateSlideInteractiveConfig,
   type DeclarativeRuleNode,
   type RuleExplorerInteractiveConfig,
 } from './interactive-schema';
 import { RuleExplorerEngine } from '@/components/narrated-lessons/RuleExplorerEngine';
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
+import { resolveInlineCodeDraftStorage } from '@/components/narrated-lessons/InlineCodePlayground';
+import { runPseudocode } from '@/lib/pseudocode-runner';
+import { executeIgcseSql } from '@/lib/sql-practice/igcse-sql-engine';
 import type { LessonSlide, NarratedLesson } from './types';
 
 // Cross-Subject Pilot Config 1: Computer Science (IGCSE Boolean Logic)
@@ -458,5 +462,121 @@ describe('InteractiveEngineRegistry Fallbacks, Low-Data Opt-In & Backward Compat
     fireEvent.click(optInBtn);
     // Fallback card is dismissed once the learner opts in
     expect(screen.queryByText(/Low-Data Summary/i)).toBeNull();
+  });
+});
+
+describe('Step 3 Closure Guards: Shared-Computer Draft Isolation, Production Compatibility & Authoring Examples', () => {
+  it('isolates student code drafts by schoolId + userId in localStorage and uses tab-only sessionStorage when anonymous', () => {
+    const studentA = resolveInlineCodeDraftStorage('lesson-1', 'act-1', 'python', {
+      userId: 'uid-alice',
+      schoolId: 'school-knust',
+    });
+    const studentB = resolveInlineCodeDraftStorage('lesson-1', 'act-1', 'python', {
+      userId: 'uid-kwame',
+      schoolId: 'school-knust',
+    });
+    const studentOtherSchool = resolveInlineCodeDraftStorage('lesson-1', 'act-1', 'python', {
+      userId: 'uid-alice',
+      schoolId: 'school-accra',
+    });
+
+    expect(studentA.scopedToUser).toBe(true);
+    expect(studentA.storage).toBe(window.localStorage);
+    expect(studentA.key).not.toBe(studentB.key);
+    expect(studentA.key).not.toBe(studentOtherSchool.key);
+
+    // Anonymous / unauthenticated preview uses sessionStorage (cleared on tab close), never localStorage
+    window.sessionStorage.removeItem('gam_cached_uid');
+    const anon = resolveInlineCodeDraftStorage('lesson-1', 'act-1', 'python', {
+      userId: null,
+      schoolId: null,
+    });
+    expect(anon.scopedToUser).toBe(false);
+    expect(anon.storage).toBe(window.sessionStorage);
+    expect(anon.key).toContain(':session:');
+  });
+
+  it('blocks production publication of dev-branch-only engines (implemented=true, productionVersion=null or behind minEngineVersion)', () => {
+    const devOnlyRegistry = {
+      ...SUPPORTED_INTERACTIVE_ENGINES,
+      'graph-slider': {
+        ...SUPPORTED_INTERACTIVE_ENGINES['graph-slider'],
+        engineVersion: '1.0.0',
+        productionVersion: null,
+        implemented: true,
+      },
+      'rule-explorer': {
+        ...SUPPORTED_INTERACTIVE_ENGINES['rule-explorer'],
+        engineVersion: '1.1.0',
+        productionVersion: '1.0.0',
+        implemented: true,
+      },
+    };
+
+    // Dev-branch-only engine (productionVersion: null) MUST fail production publish gate
+    expect(() =>
+      assertValidLessonInteractives(
+        {
+          lessonId: 'dev-only-lesson',
+          slides: [
+            {
+              id: 's01',
+              interactive: {
+                id: 'dev-graph-1',
+                engine: 'graph-slider',
+                schemaVersion: 1,
+                title: 'Dev Graph',
+                instructions: 'Adjust m.',
+                accessibilityLabel: 'Graph slider',
+                fallbackText: 'Fallback summary.',
+              },
+            },
+          ],
+        },
+        { engineRegistry: devOnlyRegistry },
+      ),
+    ).toThrow(/not yet deployed in production/i);
+
+    // Engine requiring minEngineVersion 1.1.0 when productionVersion is 1.0.0 MUST fail production publish gate
+    expect(() =>
+      assertValidLessonInteractives(
+        {
+          lessonId: 'newer-version-lesson',
+          slides: [
+            {
+              id: 's01',
+              interactive: {
+                ...CS_LAB_ACCESS_CONFIG,
+                minEngineVersion: '1.1.0',
+              },
+            },
+          ],
+        },
+        { engineRegistry: devOnlyRegistry },
+      ),
+    ).toThrow(/exceeds productionVersion/i);
+  });
+
+  it('verifies refined authoring examples execute accurately (Cambridge DECLARE pseudocode -> 15; Stock SQL -> Bag, Ruler, Pencil)', () => {
+    const examplesPath = path.resolve(process.cwd(), 'docs/examples/interactive-lesson-examples.json');
+    const parsed = JSON.parse(fs.readFileSync(examplesPath, 'utf8')) as {
+      examples: {
+        codePlaygroundPseudocode: { pseudocodeStarter: string };
+        codePlaygroundSql: { sqlStarter: string };
+      };
+    };
+
+    const pseudoRes = runPseudocode(parsed.examples.codePlaygroundPseudocode.pseudocodeStarter);
+    expect(pseudoRes.error).toBeUndefined();
+    expect(pseudoRes.output.join('\n').trim()).toBe('15');
+
+    const sqlRes = executeIgcseSql(parsed.examples.codePlaygroundSql.sqlStarter);
+    expect(sqlRes.error).toBeUndefined();
+    expect(sqlRes.columns).toEqual(['ItemName', 'Price']);
+    expect(sqlRes.rows).toEqual([
+      ['Bag', 35],
+      ['Ruler', 4],
+      ['Pencil', 1.5],
+    ]);
   });
 });

@@ -118,13 +118,45 @@ Extra allowed top-level fields: `labKind`, `activityId`.
 ## 7. State, Reset & Progress Behaviour
 
 - **Ephemeral Local State**: `rule-explorer` holds toggle state in local React state (resettable via the Reset button; **0 Firestore reads/writes**).
-- **Slide Navigation**: Navigating away from a slide unmounts its interactive widget; returning restores the configured `defaultValue` state cleanly. `code-playground` drafts are stored locally in `localStorage` scoped by `lessonId:activityId:language`.
+- **Slide Navigation**: Navigating away from a slide unmounts its interactive widget; returning restores the configured `defaultValue` state cleanly.
+- **Shared-Computer Draft Isolation (`code-playground`)**:
+  - For authenticated users, drafts are stored in `localStorage` scoped strictly by school and user: `gam:inline-code:v2:${schoolId}:${userId}:${lessonId}:${activityId}:${mode}` (students sharing a school computer never see another student's drafts; 0 Firestore writes).
+  - For unauthenticated/public preview sessions, drafts are stored in tab-scoped `sessionStorage` (`gam:inline-code:v2:session:...`) and cleared automatically when the tab closes.
 - **Multiple Activities per Slide**: Each item in `slide.interactive[]` mounts with its own `id` key and completely isolated state.
 - **`persistCompletion` Status**: **Reserved (not yet implemented).** Existing lesson step/checkpoint/mastery progress restoration (`localStorage` + `resolveRestoredStepIndex`) continues working unchanged.
 
 ---
 
-## 8. Valid & Invalid Configuration Examples
+## 8. Built-in Read-Only SQL Fixture (`Stock` Table)
+
+The inline SQL runner executes read-only `SELECT` queries against GAM EDU's built-in `Stock` table (`src/lib/sql-practice/igcse-sql-engine.ts`):
+
+| ItemID | ItemName | Colour | Quantity | Price | Ordered |
+| :--- | :--- | :--- | :-: | :-: | :-: |
+| `A01` | Pen | Blue | 12 | 2.5 | 0 |
+| `A02` | Ruler | Red | 5 | 4.0 | 1 |
+| `A03` | Book | Blue | 20 | 8.0 | 0 |
+| `A04` | Bag | Red | 5 | 35.0 | 0 |
+| `A05` | Pencil | Green | 0 | 1.5 | 1 |
+
+**Expected result** for `SELECT ItemName, Price FROM Stock WHERE Quantity < 6 ORDER BY Price DESC;`:
+
+| ItemName | Price |
+| :--- | :-: |
+| Bag | 35 |
+| Ruler | 4 |
+| Pencil | 1.5 |
+
+---
+
+## 9. Production Engine Compatibility & Rollback Policy
+
+- **Production-First Rule**: Never publish a live CDN lesson requiring an engine or `minEngineVersion` that has not yet been deployed and verified in production. `SUPPORTED_INTERACTIVE_ENGINES[id].productionVersion` tracks the highest version verified in production (`null` for dev-branch-only or Step 4 reserved engines), and `assertValidLessonInteractives` rejects any lesson whose engine or `minEngineVersion` exceeds `productionVersion`.
+- **Rollback Implications**: Once live CDN lessons depend on `slide.interactive`, reverting the web app to a revision prior to `InteractiveEngineRegistry` (or prior to a newly published engine) would prevent those interactive widgets from mounting. Always keep `InteractiveEngineRegistry` forward-compatible (additive schema changes only) and rely on each activity's mandatory `fallbackText` for graceful degradation if an older client ever encounters a newer engine.
+
+---
+
+## 10. Valid & Invalid Configuration Examples
 
 See machine-readable valid examples for every implemented engine in [interactive-lesson-examples.json](file:///c:/Users/LENOVO/OneDrive%20-%20Kwame%20Nkrumah%20Uni.%20of%20Sci.%20and%20Tech/Documents/GitHub/Gam_Edu/docs/examples/interactive-lesson-examples.json).
 

@@ -24,6 +24,7 @@ import { getCh10ActivitiesForLesson } from '@/lib/narrated-lessons/ch10-boolean-
 import { runPseudocode } from '@/lib/pseudocode-runner';
 import { outputMatches, preparePython, runPython } from '@/lib/python-runner';
 import { executeIgcseSql, type SqlExecutionResult } from '@/lib/sql-practice/igcse-sql-engine';
+import { storedSchoolFor } from '@/lib/session-school';
 
 type PlaygroundMode = 'pseudocode' | 'python' | 'sql';
 
@@ -131,8 +132,57 @@ function starterForActivity(activity: InlineWorkshopActivity, mode: PlaygroundMo
   return { code: activity.sqlStarter ?? '-- Write your SELECT query here.\nSELECT ', stdin: '' };
 }
 
-function draftStorageKey(lessonId: string, activityId: string, mode: PlaygroundMode): string {
-  return `gam:inline-code:v1:${lessonId}:${activityId}:${mode}`;
+export interface InlineCodeDraftScope {
+  userId?: string | null;
+  schoolId?: string | null;
+}
+
+/**
+ * Resolves isolated browser storage for student programming drafts (zero Firestore writes):
+ * - Authenticated user: `localStorage` scoped strictly by `schoolId` + `userId` so
+ *   students on shared school computers never see another student's drafts.
+ * - Unauthenticated / public preview: tab-scoped `sessionStorage` (cleared when tab closes),
+ *   never written to shared `localStorage`.
+ */
+export function resolveInlineCodeDraftStorage(
+  lessonId: string,
+  activityId: string,
+  mode: PlaygroundMode,
+  explicitScope?: InlineCodeDraftScope
+): { storage: Storage | null; key: string; scopedToUser: boolean } {
+  let uid = explicitScope?.userId ?? null;
+  let schoolId = explicitScope?.schoolId ?? null;
+
+  if (typeof window !== 'undefined') {
+    if (!uid) {
+      try {
+        uid = window.sessionStorage.getItem('gam_cached_uid');
+      } catch {
+        uid = null;
+      }
+    }
+    if (uid && !schoolId) {
+      schoolId = storedSchoolFor(uid);
+    }
+    if (uid) {
+      return {
+        storage: window.localStorage,
+        key: `gam:inline-code:v2:${schoolId || 'unassigned'}:${uid}:${lessonId}:${activityId}:${mode}`,
+        scopedToUser: true,
+      };
+    }
+    return {
+      storage: window.sessionStorage,
+      key: `gam:inline-code:v2:session:${lessonId}:${activityId}:${mode}`,
+      scopedToUser: false,
+    };
+  }
+
+  return {
+    storage: null,
+    key: `gam:inline-code:v2:session:${lessonId}:${activityId}:${mode}`,
+    scopedToUser: false,
+  };
 }
 
 export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: InlineCodePlaygroundProps) {
@@ -218,7 +268,8 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
       : starterForSandbox(lesson, mode);
     let saved: string | null = null;
     try {
-      saved = localStorage.getItem(draftStorageKey(lesson.lessonId, activeActivityId, mode));
+      const target = resolveInlineCodeDraftStorage(lesson.lessonId, activeActivityId, mode);
+      saved = target.storage ? target.storage.getItem(target.key) : null;
     } catch {
       // ignore storage errors
     }
@@ -249,11 +300,12 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
     };
   }, [open, mode, pyStatus]);
 
-  // Persist learner draft per lesson/activity/language
+  // Persist learner draft scoped to student + school (or tab-only sessionStorage if anonymous)
   useEffect(() => {
     const t = setTimeout(() => {
       try {
-        localStorage.setItem(draftStorageKey(lesson.lessonId, activeActivityId, mode), code);
+        const target = resolveInlineCodeDraftStorage(lesson.lessonId, activeActivityId, mode);
+        target.storage?.setItem(target.key, code);
       } catch {
         // ignore storage errors
       }
@@ -420,7 +472,8 @@ export function InlineCodePlayground({ lesson, slideId, interactiveConfig }: Inl
     setCheckBanner(null);
     setConfirmReset(false);
     try {
-      localStorage.removeItem(draftStorageKey(lesson.lessonId, activeActivityId, mode));
+      const target = resolveInlineCodeDraftStorage(lesson.lessonId, activeActivityId, mode);
+      target.storage?.removeItem(target.key);
     } catch {
       // ignore
     }

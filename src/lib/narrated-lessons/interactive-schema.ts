@@ -23,6 +23,11 @@ export type InteractiveEngineId =
 export interface InteractiveEngineMeta {
   id: InteractiveEngineId;
   engineVersion: string;
+  /**
+   * Highest version of this engine currently verified & deployed in production (`null` if not yet in production).
+   * Prevents publishing live CDN lessons that require an engine only present on a development branch.
+   */
+  productionVersion: string | null;
   supportedSchemaVersions: readonly number[];
   implemented: boolean;
   description: string;
@@ -42,6 +47,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'code-playground': {
     id: 'code-playground',
     engineVersion: '1.0.0',
+    productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Reuses InlineCodePlayground (Python 3, Cambridge Pseudocode, Read-Only SQL).',
@@ -49,6 +55,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'construction-lab': {
     id: 'construction-lab',
     engineVersion: '1.0.0',
+    productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Reuses BooleanCircuitLab (interactive logic gate circuit builder).',
@@ -56,6 +63,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'rule-explorer': {
     id: 'rule-explorer',
     engineVersion: '1.0.0',
+    productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Cross-subject declarative condition/rule explorer (CS, Chemistry, Biology, Physics).',
@@ -63,6 +71,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'graph-slider': {
     id: 'graph-slider',
     engineVersion: '0.0.0-planned',
+    productionVersion: null,
     supportedSchemaVersions: [1],
     implemented: false,
     description: 'Reserved for Step 4: Dynamic graph, parameter slider, and waveform/orbital explorer.',
@@ -70,6 +79,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'process-stepper': {
     id: 'process-stepper',
     engineVersion: '0.0.0-planned',
+    productionVersion: null,
     supportedSchemaVersions: [1],
     implemented: false,
     description: 'Reserved for Step 4: Step-by-step process and mechanism explorer.',
@@ -77,6 +87,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'diagram-hotspots': {
     id: 'diagram-hotspots',
     engineVersion: '0.0.0-planned',
+    productionVersion: null,
     supportedSchemaVersions: [1],
     implemented: false,
     description: 'Reserved for Step 4: Non-graded interactive diagram hotspot explorer.',
@@ -345,6 +356,13 @@ function checkAllowedKeys(
 export interface ValidateInteractiveOptions {
   /** When true (publish-time gate), rejects reserved/unimplemented engines. */
   requireImplemented?: boolean;
+  /**
+   * When true (production CDN publish gate), requires the engine and requested `minEngineVersion`
+   * to be available in `productionVersion` (prevents publishing lessons for dev-branch-only engines).
+   */
+  requireProduction?: boolean;
+  /** Optional custom engine registry map for testing production vs dev-branch availability. */
+  engineRegistry?: Record<InteractiveEngineId, InteractiveEngineMeta>;
 }
 
 export interface InteractiveValidationResult {
@@ -381,17 +399,24 @@ export function validateSlideInteractiveConfig(
     errors.push('Invalid or missing interactive "id" (expected 2-64 alphanumeric/hyphen/underscore chars).');
   }
 
+  const registry = options.engineRegistry ?? SUPPORTED_INTERACTIVE_ENGINES;
   let engineMeta: InteractiveEngineMeta | null = null;
-  if (typeof obj.engine !== 'string' || !(obj.engine in SUPPORTED_INTERACTIVE_ENGINES)) {
+  if (typeof obj.engine !== 'string' || !(obj.engine in registry)) {
     errors.push(`Unknown or unsupported interactive engine "${String(obj.engine)}".`);
   } else {
-    engineMeta = SUPPORTED_INTERACTIVE_ENGINES[obj.engine as InteractiveEngineId];
+    engineMeta = registry[obj.engine as InteractiveEngineId];
     const allowedTopLevel = new Set([...BASE_ALLOWED_KEYS, ...ENGINE_EXTRA_KEYS[engineMeta.id]]);
     checkAllowedKeys(obj, allowedTopLevel, 'interactive', errors);
 
     if (options.requireImplemented && !engineMeta.implemented) {
       errors.push(
         `Engine "${engineMeta.id}" is reserved for future development and is not yet implemented for production publishing.`
+      );
+    }
+
+    if (options.requireProduction && !engineMeta.productionVersion) {
+      errors.push(
+        `Engine "${engineMeta.id}" is not yet deployed in production (productionVersion: none). Deploy the engine to production before publishing live CDN lessons.`
       );
     }
 
@@ -404,12 +429,22 @@ export function validateSlideInteractiveConfig(
     if (obj.minEngineVersion !== undefined) {
       if (typeof obj.minEngineVersion !== 'string' || !SEMVER_RE.test(obj.minEngineVersion.trim())) {
         errors.push(`Invalid minEngineVersion "${String(obj.minEngineVersion)}" (expected SemVer MAJOR.MINOR.PATCH).`);
-      } else if (engineMeta.implemented) {
-        const cmp = compareSemver(engineMeta.engineVersion, obj.minEngineVersion);
-        if (cmp === null || cmp < 0) {
-          errors.push(
-            `Incompatible minEngineVersion "${obj.minEngineVersion}" for engine "${engineMeta.id}" (installed: ${engineMeta.engineVersion}).`
-          );
+      } else {
+        if (engineMeta.implemented) {
+          const cmp = compareSemver(engineMeta.engineVersion, obj.minEngineVersion);
+          if (cmp === null || cmp < 0) {
+            errors.push(
+              `Incompatible minEngineVersion "${obj.minEngineVersion}" for engine "${engineMeta.id}" (installed: ${engineMeta.engineVersion}).`
+            );
+          }
+        }
+        if (options.requireProduction && engineMeta.productionVersion) {
+          const prodCmp = compareSemver(engineMeta.productionVersion, obj.minEngineVersion);
+          if (prodCmp === null || prodCmp < 0) {
+            errors.push(
+              `Engine "${engineMeta.id}" requires minEngineVersion "${obj.minEngineVersion}" which exceeds productionVersion "${engineMeta.productionVersion}". Deploy the newer engine to production before publishing.`
+            );
+          }
         }
       }
     }
@@ -560,6 +595,12 @@ export interface AssertLessonInteractivesOptions {
    * May be set to true ONLY for explicit preview-only fallback demonstrations.
    */
   allowUnimplementedEngines?: boolean;
+  /**
+   * Defaults to false (production publish gate rejects engines/versions not yet in production).
+   */
+  allowDevOnlyEngines?: boolean;
+  /** Optional custom engine registry map for testing. */
+  engineRegistry?: Record<InteractiveEngineId, InteractiveEngineMeta>;
 }
 
 /**
@@ -586,6 +627,8 @@ export function assertValidLessonInteractives(
     for (const raw of list) {
       const res = validateSlideInteractiveConfig(raw, {
         requireImplemented: !options.allowUnimplementedEngines,
+        requireProduction: !options.allowUnimplementedEngines && !options.allowDevOnlyEngines,
+        engineRegistry: options.engineRegistry,
       });
       if (!res.ok) {
         errors.push(`Slide ${slide.id}: ${res.errors.join(' ')}`);
