@@ -103,7 +103,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'process-stepper': {
     id: 'process-stepper',
     engineVersion: '1.0.0',
-    productionVersion: null,
+    productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Cross-subject step-by-step process & mechanism explorer with state tracking, highlights, and discovery checks (Step 4B).',
