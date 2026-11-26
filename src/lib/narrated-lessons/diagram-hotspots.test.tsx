@@ -45,15 +45,24 @@ describe('Step 4C Schema Validation & Production Compatibility Gate', () => {
   const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step4c-diagram-hotspots-pilot.json');
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as NarratedLesson;
 
-  it('validates all 8 cross-subject pilot slides under dev validation and blocks them at production publish gate (productionVersion: null)', () => {
+  it('validates all 8 cross-subject pilot slides under production publish gate (productionVersion: 1.0.0) and still blocks unsupported future versions', () => {
     expect(fixture.slides.length).toBe(8);
 
-    expect(() =>
-      assertValidLessonInteractives(fixture, { allowDevOnlyEngines: true }),
-    ).not.toThrow();
+    expect(() => assertValidLessonInteractives(fixture)).not.toThrow();
 
-    // MUST be blocked at production publish gate because diagram-hotspots productionVersion is null
-    expect(() => assertValidLessonInteractives(fixture)).toThrow(/not yet deployed in production/i);
+    const futureLesson: NarratedLesson = {
+      ...fixture,
+      slides: [
+        {
+          ...fixture.slides[0],
+          interactive: {
+            ...(fixture.slides[0].interactive as DiagramHotspotsInteractiveConfig),
+            minEngineVersion: '2.0.0',
+          },
+        },
+      ],
+    };
+    expect(() => assertValidLessonInteractives(futureLesson)).toThrow(/exceeds productionVersion "1\.0\.0"/i);
   });
 
   it('rejects out-of-bounds coordinates, duplicate IDs, self-links, unknown linked IDs, and invalid identify targetHotspotId', () => {

@@ -136,9 +136,9 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `mode`, `visualMode`,
 - `sequenceChallenge` *(optional, max 1)*: `{ id, prompt, stageIdsToOrder (2..6 valid stage IDs), explanation }` — keyboard-accessible `Move Up`/`Move Down` controls (zero drag-and-drop).
 - **Deferred in v1.0:** Stage-specific audio tracks (deferred to avoid competing with `NarratedLessonPlayer` main narration audio), branching state machines, and continuous animation.
 
-### F. `diagram-hotspots` (Step 4C Preview — Cross-Subject Diagram & Hotspots Engine)
+### F. `diagram-hotspots` (Step 4C — Production LIVE `1.0.0`)
 
-> **Production Gate Notice:** On the Step 4C feature branch, `diagram-hotspots` has `implemented: true, engineVersion: "1.0.0", productionVersion: null`. Do **not** publish live CDN lessons using `diagram-hotspots` until Step 4C is merged and verified in production.
+> **Production Status:** `diagram-hotspots` is verified live in production (`implemented: true, engineVersion: "1.0.0", productionVersion: "1.0.0"`).
 
 Extra allowed top-level fields: `subjectTag`, `modelNote`, `diagram`, `defaultMode`, `progressiveDisclosure`, `guidedOrder`, `hotspots`, `identifyPrompts`.
 
