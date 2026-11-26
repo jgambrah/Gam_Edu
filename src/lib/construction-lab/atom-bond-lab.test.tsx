@@ -233,13 +233,20 @@ describe('Step 4E Module 4: VSEPR Molecular Geometry & 3D Vector Polarity', () =
   });
 });
 
-describe('Step 4E Schema Validation, Version Gate (productionVersion 1.1.0 < 1.2.0) & UI', () => {
-  it('validates all 12 slides (13 activities) in dev mode, blocks at production gate, and rejects 1.1.0 downgrade bypasses, radicals, and formula mismatches', () => {
+describe('Step 4E Schema Validation, Production Gate (productionVersion 1.2.0) & UI', () => {
+  it('validates all 12 slides (13 activities) under both dev and strict production gates, while rejecting future versions (2.0.0), 1.1.0 downgrade bypasses, radicals, and formula mismatches', () => {
     expect(fixture.slides.length).toBe(12);
     expect(() => assertValidLessonInteractives(fixture, { allowDevOnlyEngines: true })).not.toThrow();
-    expect(() => assertValidLessonInteractives(fixture)).toThrow(/exceeds productionVersion "1\.1\.0"/i);
+    expect(() => assertValidLessonInteractives(fixture)).not.toThrow();
 
     const a01 = fixture.slides[0].interactive as AtomBondBuilderConstructionConfig;
+    const futureVer = validateSlideInteractiveConfig(
+      { ...a01, minEngineVersion: '2.0.0' },
+      { requireImplemented: true, requireProduction: true },
+    );
+    expect(futureVer.ok).toBe(false);
+    expect(futureVer.errors.join(' ')).toMatch(/exceeds.*1\.2\.0/i);
+
     const downgrade = validateSlideInteractiveConfig({ ...a01, minEngineVersion: '1.1.0' });
     expect(downgrade.ok).toBe(false);
     expect(downgrade.errors.join(' ')).toMatch(/requires minEngineVersion >= "1\.2\.0"/i);

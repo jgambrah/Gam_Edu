@@ -250,7 +250,7 @@ describe('Step 4D Strict Schema Validation, Domain Version Gates & Legacy Compat
       { requireImplemented: true, requireProduction: true },
     );
     expect(futureVersionAttempt.ok).toBe(false);
-    expect(futureVersionAttempt.errors.join(' ')).toMatch(/exceeds.*1\.1\.0/i);
+    expect(futureVersionAttempt.errors.join(' ')).toMatch(/exceeds productionVersion/i);
   });
 
   it('prevents Step 4D domains from bypassing the version gate with minEngineVersion 1.0.0 while keeping legacy boolean-circuit valid', () => {
