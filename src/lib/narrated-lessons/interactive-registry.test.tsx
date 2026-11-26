@@ -320,13 +320,13 @@ describe('Interactive Schema Validation, Security Boundaries & Versioning (Step 
         {
           id: 's01',
           interactive: {
-            id: 'future-graph',
-            engine: 'graph-slider',
+            id: 'future-process',
+            engine: 'process-stepper',
             schemaVersion: 1,
-            title: 'Gradient Explorer',
-            instructions: 'Adjust gradient m.',
-            accessibilityLabel: 'Gradient slider',
-            fallbackText: 'Higher m yields a steeper line.',
+            title: 'Mitosis Stepper',
+            instructions: 'Step through the phases of mitosis.',
+            accessibilityLabel: 'Mitosis process stepper',
+            fallbackText: 'Prophase, Metaphase, Anaphase, Telophase.',
           },
         },
       ],
@@ -437,19 +437,19 @@ describe('InteractiveEngineRegistry Fallbacks, Low-Data Opt-In & Backward Compat
         minEngineVersion: '9.0.0',
       },
       {
-        id: 'math-linear-graph',
-        engine: 'graph-slider',
+        id: 'bio-process-stepper',
+        engine: 'process-stepper',
         schemaVersion: 1,
-        title: 'Gradient & Intercept Explorer',
-        instructions: 'Adjust m and c to inspect y = mx + c.',
-        accessibilityLabel: 'Linear equation graph explorer',
-        fallbackText: 'Increasing gradient m makes the line steeper; c shifts the y-intercept.',
+        title: 'Mitosis Process Explorer',
+        instructions: 'Step through cell division phases.',
+        accessibilityLabel: 'Cell division process stepper',
+        fallbackText: 'Cell division progresses through Prophase, Metaphase, Anaphase, and Telophase.',
       },
     ]);
     render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={multiFallbackSlide} />);
     expect(screen.getByText('Computer Laboratory Access Rule')).toBeTruthy();
-    expect(screen.getByText('Gradient & Intercept Explorer')).toBeTruthy();
-    expect(screen.getByText(/Increasing gradient m makes the line steeper/i)).toBeTruthy();
+    expect(screen.getByText('Mitosis Process Explorer')).toBeTruthy();
+    expect(screen.getByText(/Prophase, Metaphase, Anaphase, and Telophase/i)).toBeTruthy();
   });
 
   it('respects Low-Data Mode with text summary first and allows manual opt-in loading', () => {

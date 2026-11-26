@@ -439,13 +439,13 @@
       "teacherNote": "Preview-only fixture slide p08.",
       "interactive": [
         {
-          "id": "pilot-reserved-graph-slider",
-          "engine": "graph-slider",
+          "id": "pilot-reserved-process-stepper",
+          "engine": "process-stepper",
           "schemaVersion": 1,
-          "title": "Reserved Step 4 Engine: Linear Graph Explorer",
-          "instructions": "Adjust gradient m and intercept c.",
-          "accessibilityLabel": "Reserved graph slider fallback",
-          "fallbackText": "Increasing gradient m makes y = mx + c steeper; changing c shifts the y-intercept. (Reserved for Step 4.)"
+          "title": "Reserved Step 4B Engine: Process Stepper",
+          "instructions": "Step through the stages of a biological process.",
+          "accessibilityLabel": "Reserved process stepper fallback",
+          "fallbackText": "Step-by-step process exploration is reserved for Step 4B."
         },
         {
           "id": "pilot-incompatible-version",

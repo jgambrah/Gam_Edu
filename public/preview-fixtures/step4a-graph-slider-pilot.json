@@ -1,0 +1,554 @@
+{
+  "lessonId": "step4a-graph-slider-pilot-preview",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 4A Preview Pilot — Reusable Graph & Slider Engine",
+    "subject": "Cross-Subject Discovery (Maths, Physics, Science, Economics, CS)",
+    "class": "Preview Pilot",
+    "topic": "GraphSliderEngine v1.0.0 Verification",
+    "contentStandard": "STEP4A.PILOT",
+    "indicators": ["STEP4A.1", "STEP4A.2"],
+    "estMinutes": 12
+  },
+  "slides": [
+    {
+      "id": "g01",
+      "order": 1,
+      "title": "Mathematics — Quadratic Vertex-Form Transformations",
+      "purpose": "Explore how a, h, and k transform y = a(x - h)^2 + k compared to the reference curve y = x^2.",
+      "onScreenText": [
+        "y = a(x - h)² + k vs reference y = x²",
+        "h shifts horizontally; k shifts vertically",
+        "a controls width and opening direction"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Quadratic vertex form equation y = a(x - h)^2 + k with vertex at (h, k)",
+        "description": "Vertex form formula header.",
+        "labels": ["a", "h", "k"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"42\" font-weight=\"bold\" fill=\"#0f172a\">y = a(x - h)² + k</text><text x=\"400\" y=\"265\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" fill=\"#0284c7\">Vertex at (h, k) · Compare directly against y = x²</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Adjust a, h, and k in the Graph and Slider Lab below to compare the transformed parabola against the dashed reference parabola y equals x squared.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Changing h shifts the vertex horizontally; k shifts vertically; a stretches or reflects."],
+      "indicatorIds": ["STEP4A.1"],
+      "askTeacherContext": { "focus": "Quadratic transformations", "keyTerms": ["Vertex", "Parabola"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 1 of 8.",
+      "interactive": {
+        "id": "pilot4a-math-quadratic",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Mathematics",
+        "title": "Discover Quadratic Vertex Form",
+        "instructions": "Move a, h, and k to see how the vertex (h, k) and curvature compare with the reference parabola y = x².",
+        "accessibilityLabel": "Quadratic vertex form graph and parameter sliders",
+        "fallbackText": "In y = a(x - h)^2 + k, the vertex sits at (h, k). Negative a flips the parabola upside down; |a| > 1 narrows it.",
+        "modelNote": "Real-valued quadratic function plotted over x in [-6, 6].",
+        "axes": { "xLabel": "x", "xMin": -6, "xMax": 6, "yLabel": "y", "yMin": -8, "yMax": 12 },
+        "sliders": [
+          { "id": "a", "label": "Stretch / Direction (a)", "min": -3, "max": 3, "step": 0.5, "defaultValue": 1, "presets": [-2, -1, 0.5, 1, 2] },
+          { "id": "h", "label": "Horizontal Shift (h)", "min": -4, "max": 4, "step": 1, "defaultValue": 2, "presets": [-2, 0, 2] },
+          { "id": "k", "label": "Vertical Shift (k)", "min": -5, "max": 5, "step": 1, "defaultValue": -3, "presets": [-3, 0, 3] }
+        ],
+        "curves": [
+          { "id": "ref-parabola", "label": "y = x²", "expr": "x^2", "color": "#94a3b8", "style": "dashed", "isReference": true },
+          { "id": "transformed", "label": "y = a(x - h)² + k", "expr": "a * (x - h)^2 + k", "color": "#0284c7", "style": "solid" }
+        ],
+        "readouts": [
+          { "id": "yIntercept", "label": "y-intercept (at x = 0)", "expr": "a * (0 - h)^2 + k", "precision": 2 }
+        ],
+        "challenges": [
+          {
+            "id": "flip-and-shift",
+            "prompt": "Make the parabola open downward (a < 0) with its vertex at (2, 4).",
+            "check": {
+              "operator": "AND",
+              "conditions": [
+                { "sliderId": "a", "max": -0.5 },
+                { "sliderId": "h", "target": 2, "tolerance": 0.01 },
+                { "sliderId": "k", "target": 4, "tolerance": 0.01 }
+              ]
+            },
+            "successText": "Well done! Because a < 0, the vertex (2, 4) is a maximum point.",
+            "hintText": "Set a to a negative value, h = 2, and k = 4."
+          }
+        ],
+        "showDataTable": true
+      }
+    },
+    {
+      "id": "g02",
+      "order": 2,
+      "title": "Physics — Projectile Motion Trajectory & Range",
+      "purpose": "Investigate how launch angle and initial speed control horizontal range and maximum height.",
+      "onScreenText": [
+        "Idealised trajectory with landing bisection",
+        "Complementary angles (30° & 60°) share equal range",
+        "45° maximises horizontal range on level ground"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Projectile launch schematic showing angle theta and initial speed v0",
+        "description": "Projectile launch parameters.",
+        "labels": ["Angle θ", "Speed v0", "Range R"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0f9ff\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#0c4a6e\">Projectile Motion Lab</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#0369a1\">R = v₀² sin(2θ) / g · H = v₀² sin²(θ) / (2g)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Experiment with launch angle and initial speed. Compare 30 degrees, 45 degrees, and 60 degrees while keeping initial speed fixed at 26 metres per second.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear physics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Horizontal range is maximised at 45°; 30° and 60° give identical horizontal range."],
+      "indicatorIds": ["STEP4A.1"],
+      "askTeacherContext": { "focus": "Projectile motion", "keyTerms": ["Range", "Trajectory"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 2 of 8.",
+      "interactive": {
+        "id": "pilot4a-phys-projectile",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Physics",
+        "title": "Discover Projectile Motion",
+        "instructions": "Adjust launch angle and initial speed to observe how the trajectory, range, and maximum height respond.",
+        "accessibilityLabel": "Projectile motion trajectory graph and sliders",
+        "fallbackText": "With constant g = 9.81 m/s² and no air resistance on level ground, horizontal range is maximised at 45° and complementary angles (30° and 60°) yield equal range.",
+        "modelNote": "Idealised projectile motion: g = 9.81 m/s², no air resistance, equal launch and landing heights.",
+        "axes": { "xLabel": "Horizontal distance", "xUnit": "m", "xMin": 0, "xMax": 100, "yLabel": "Height", "yUnit": "m", "yMin": 0, "yMax": 50 },
+        "sliders": [
+          { "id": "theta", "label": "Launch angle", "min": 15, "max": 75, "step": 5, "defaultValue": 60, "unit": "°", "presets": [15, 30, 45, 60, 75] },
+          { "id": "v0", "label": "Initial speed", "min": 10, "max": 30, "step": 2, "defaultValue": 26, "unit": "m/s", "presets": [16, 20, 26, 30] }
+        ],
+        "curves": [
+          {
+            "id": "trajectory",
+            "label": "Projectile trajectory",
+            "expr": "x * tan(deg2rad(theta)) - (9.81 * x^2) / (2 * v0^2 * cos(deg2rad(theta))^2)",
+            "color": "#0284c7",
+            "style": "solid",
+            "stopAtYZero": true
+          }
+        ],
+        "readouts": [
+          { "id": "range", "label": "Horizontal range", "expr": "(v0^2 * sin(2 * deg2rad(theta))) / 9.81", "unit": "m", "precision": 2 },
+          { "id": "maxHeight", "label": "Maximum height", "expr": "(v0^2 * sin(deg2rad(theta))^2) / (2 * 9.81)", "unit": "m", "precision": 2 }
+        ],
+        "challenges": [
+          {
+            "id": "max-range-at-26",
+            "prompt": "Keep initial speed at 26 m/s and set the launch angle that gives the greatest horizontal range.",
+            "check": {
+              "operator": "AND",
+              "conditions": [
+                { "sliderId": "theta", "min": 44, "max": 46 },
+                { "sliderId": "v0", "target": 26, "tolerance": 0.05 }
+              ]
+            },
+            "successText": "Exact! At θ = 45° and v₀ = 26 m/s, sin(2θ) = 1, giving the maximum range of 68.91 m.",
+            "hintText": "Make sure initial speed stays at 26 m/s and compare 30°, 45°, and 60°."
+          }
+        ]
+      }
+    },
+    {
+      "id": "g03",
+      "order": 3,
+      "title": "Physics — Discover Ohm's Law (Predict → Experiment)",
+      "purpose": "Demonstrate Predict -> Experiment -> Observe -> Compare -> Explain flow with reference resistance curve.",
+      "onScreenText": [
+        "I = V / R for an ideal ohmic resistor",
+        "Predict before testing resistance doubling",
+        "Compare against dashed 3 Ω reference line"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Ohm's Law relationship I = V / R",
+        "description": "Ohm's Law header.",
+        "labels": ["V", "I", "R"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fefce8\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"44\" font-weight=\"bold\" fill=\"#713f12\">I = V / R</text><text x=\"400\" y=\"262\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"22\" fill=\"#a16207\">Predict, then test how resistance affects current</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "First predict what happens to current when resistance doubles at constant voltage, then test your prediction with the Voltage and Resistance sliders.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear physics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["At constant voltage, doubling resistance halves the current."],
+      "indicatorIds": ["STEP4A.1"],
+      "askTeacherContext": { "focus": "Ohm's Law", "keyTerms": ["Voltage", "Resistance", "Current"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 3 of 8.",
+      "interactive": {
+        "id": "pilot4a-phys-ohms-law",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Physics",
+        "title": "How Does Resistance Affect Current?",
+        "instructions": "Compare the current-voltage graph for your chosen resistance R against the dashed 3 Ω reference resistor.",
+        "accessibilityLabel": "Ohm's Law current versus voltage graph and sliders",
+        "fallbackText": "By Ohm's Law (I = V / R), keeping voltage at 6 V and doubling resistance from 3 Ω to 6 Ω halves the current from 2.00 A to 1.00 A.",
+        "modelNote": "Ideal ohmic resistor with constant resistance at each setting.",
+        "xVar": "V",
+        "axes": { "xLabel": "Voltage", "xUnit": "V", "xMin": 0, "xMax": 12, "yLabel": "Current", "yUnit": "A", "yMin": 0, "yMax": 6 },
+        "prediction": {
+          "prompt": "A circuit has V = 6 V and R = 3 Ω (current = 2 A). What happens to current if resistance doubles to 6 Ω at constant 6 V?",
+          "options": ["The current doubles to 4 A", "The current stays 2 A", "The current halves to 1 A"],
+          "correctIndex": 2,
+          "explanation": "Current is inversely proportional to resistance (I = V / R), so doubling R halves I."
+        },
+        "sliders": [
+          { "id": "Vset", "label": "Test Voltage", "min": 2, "max": 12, "step": 2, "defaultValue": 6, "unit": "V", "presets": [6, 12] },
+          { "id": "R", "label": "Resistance", "min": 2, "max": 12, "step": 1, "defaultValue": 3, "unit": "Ω", "presets": [3, 6, 12] }
+        ],
+        "curves": [
+          { "id": "ref-3ohm", "label": "Reference (R = 3 Ω)", "expr": "V / 3", "color": "#94a3b8", "style": "dashed", "isReference": true },
+          { "id": "current-line", "label": "I = V / R", "expr": "V / R", "color": "#ea580c", "style": "solid" }
+        ],
+        "readouts": [
+          { "id": "current", "label": "Current at Test Voltage", "expr": "Vset / R", "unit": "A", "precision": 2 },
+          { "id": "power", "label": "Power (V² / R)", "expr": "Vset^2 / R", "unit": "W", "precision": 2 }
+        ],
+        "challenges": [
+          {
+            "id": "verify-halving",
+            "prompt": "Set Test Voltage to 6 V and Resistance to 6 Ω to confirm the current drops to 1.00 A.",
+            "check": {
+              "operator": "AND",
+              "conditions": [
+                { "sliderId": "Vset", "target": 6, "tolerance": 0.01 },
+                { "sliderId": "R", "target": 6, "tolerance": 0.01 },
+                { "readoutId": "current", "target": 1, "tolerance": 0.01 }
+              ]
+            },
+            "successText": "Confirmed! At 6 V and 6 Ω, I = 6 / 6 = 1.00 A — half the original 2.00 A.",
+            "hintText": "Set Test Voltage = 6 V and Resistance = 6 Ω."
+          }
+        ]
+      }
+    },
+    {
+      "id": "g04",
+      "order": 4,
+      "title": "NaCCA Science — Transverse Wave Properties",
+      "purpose": "Explore spatial wave snapshot y(x) = A sin(2πx / λ) and wave speed v = fλ.",
+      "onScreenText": [
+        "Spatial snapshot: y(x) = A sin(2πx / λ)",
+        "Amplitude A changes height, not wavelength λ",
+        "Wave speed v = fλ and Period T = 1/f"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Transverse wave equation y(x) = A sin(2 pi x / lambda)",
+        "description": "Transverse wave spatial equation.",
+        "labels": ["Amplitude A", "Wavelength λ", "Wave speed v = fλ"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#ecfeff\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#155e75\">y(x) = A sin(2πx / λ)</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#0e7490\">Spatial snapshot at fixed time · v = fλ · T = 1/f</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Explore this spatial snapshot of a transverse wave. Notice how amplitude changes crest height while wavelength changes the distance between consecutive crests.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Warm Ghanaian science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Amplitude and wavelength are independent properties of a spatial wave snapshot."],
+      "indicatorIds": ["STEP4A.1"],
+      "askTeacherContext": { "focus": "Transverse waves", "keyTerms": ["Amplitude", "Wavelength", "Frequency"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 4 of 8.",
+      "interactive": {
+        "id": "pilot4a-sci-wave",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "NaCCA Science",
+        "title": "Discover the Properties of a Transverse Wave",
+        "instructions": "Vary Amplitude (A), Wavelength (λ), and Frequency (f) to observe the spatial wave snapshot and calculated wave speed.",
+        "accessibilityLabel": "Transverse wave spatial snapshot graph and sliders",
+        "fallbackText": "In a spatial wave snapshot y(x) = A sin(2πx / λ), amplitude A sets peak height, wavelength λ sets crest-to-crest distance, wave speed is v = fλ, and period is T = 1/f.",
+        "modelNote": "Spatial snapshot at a fixed instant in time (not a time graph). Frequency changes the calculated wave speed v = fλ and period T = 1/f rather than the frozen spatial shape.",
+        "axes": { "xLabel": "Position x", "xUnit": "m", "xMin": 0, "xMax": 8, "yLabel": "Displacement y", "yUnit": "m", "yMin": -2.5, "yMax": 2.5 },
+        "sliders": [
+          { "id": "A", "label": "Amplitude (A)", "min": 0.5, "max": 2, "step": 0.25, "defaultValue": 1, "unit": "m", "presets": [0.5, 1, 2] },
+          { "id": "lambda", "label": "Wavelength (λ)", "min": 1, "max": 4, "step": 0.5, "defaultValue": 2, "unit": "m", "presets": [1, 2, 4] },
+          { "id": "f", "label": "Frequency (f)", "min": 0.5, "max": 4, "step": 0.5, "defaultValue": 1.5, "unit": "Hz", "presets": [1, 1.5, 3] }
+        ],
+        "curves": [
+          { "id": "ref-wave", "label": "Reference (A = 1 m, λ = 2 m)", "expr": "sin(2 * PI * x / 2)", "color": "#94a3b8", "style": "dashed", "isReference": true },
+          { "id": "wave", "label": "y(x) = A sin(2πx / λ)", "expr": "A * sin(2 * PI * x / lambda)", "color": "#0891b2", "style": "solid" }
+        ],
+        "readouts": [
+          { "id": "waveSpeed", "label": "Wave speed (v = fλ)", "expr": "f * lambda", "unit": "m/s", "precision": 2 },
+          { "id": "period", "label": "Period (T = 1/f)", "expr": "1 / f", "unit": "s", "precision": 2 }
+        ],
+        "challenges": [
+          {
+            "id": "double-amplitude-only",
+            "prompt": "Double the amplitude to 2 m while keeping wavelength at 2 m. Notice the crests stay 2 m apart.",
+            "check": {
+              "operator": "AND",
+              "conditions": [
+                { "sliderId": "A", "target": 2, "tolerance": 0.01 },
+                { "sliderId": "lambda", "target": 2, "tolerance": 0.01 }
+              ]
+            },
+            "successText": "Exactly! Increasing amplitude makes the wave taller without changing its wavelength.",
+            "hintText": "Set Amplitude = 2 m and keep Wavelength = 2 m."
+          }
+        ]
+      }
+    },
+    {
+      "id": "g05",
+      "order": 5,
+      "title": "Economics — Supply & Demand Market Equilibrium",
+      "purpose": "Demonstrate Economics applicability with two intersecting curves and live equilibrium price/quantity readouts.",
+      "onScreenText": [
+        "Demand: P = d₀ - Q · Supply: P = s₀ + Q",
+        "Equilibrium where Supply meets Demand",
+        "Shift demand upward to observe price & quantity rise"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Supply and demand equilibrium schematic",
+        "description": "Market equilibrium formula.",
+        "labels": ["Demand", "Supply", "Equilibrium"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0fdf4\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#14532d\">Supply &amp; Demand Equilibrium</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#166534\">P_d = d₀ - Q · P_s = s₀ + Q</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Shift the demand and supply intercepts to observe how market equilibrium price and quantity respond.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear economics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Higher demand with unchanged supply raises both equilibrium price and equilibrium quantity."],
+      "indicatorIds": ["STEP4A.1"],
+      "askTeacherContext": { "focus": "Market equilibrium", "keyTerms": ["Demand", "Supply", "Equilibrium"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 5 of 8.",
+      "interactive": {
+        "id": "pilot4a-econ-equilibrium",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Economics",
+        "title": "Explore Market Equilibrium",
+        "instructions": "Adjust the demand and supply intercepts to watch the intersection point and equilibrium readouts shift.",
+        "accessibilityLabel": "Supply and demand market equilibrium graph",
+        "fallbackText": "For linear curves P_d = d₀ - Q and P_s = s₀ + Q, equilibrium occurs at Q* = (d₀ - s₀)/2 and P* = (d₀ + s₀)/2.",
+        "modelNote": "Simplified linear market model with all other market conditions held constant (ceteris paribus).",
+        "xVar": "Q",
+        "axes": { "xLabel": "Quantity", "xUnit": "units", "xMin": 0, "xMax": 80, "yLabel": "Price", "yUnit": "GH₵", "yMin": 0, "yMax": 120 },
+        "sliders": [
+          { "id": "d0", "label": "Demand intercept (d₀)", "min": 60, "max": 110, "step": 10, "defaultValue": 80, "unit": "GH₵", "presets": [60, 80, 100] },
+          { "id": "s0", "label": "Supply intercept (s₀)", "min": 10, "max": 50, "step": 10, "defaultValue": 20, "unit": "GH₵", "presets": [10, 20, 40] }
+        ],
+        "curves": [
+          { "id": "demand", "label": "Demand (P = d₀ - Q)", "expr": "d0 - Q", "color": "#2563eb", "style": "solid" },
+          { "id": "supply", "label": "Supply (P = s₀ + Q)", "expr": "s0 + Q", "color": "#16a34a", "style": "dashed" }
+        ],
+        "readouts": [
+          { "id": "eqPrice", "label": "Equilibrium price (P*)", "expr": "(d0 + s0) / 2", "unit": "GH₵", "precision": 2 },
+          { "id": "eqQty", "label": "Equilibrium quantity (Q*)", "expr": "(d0 - s0) / 2", "unit": "units", "precision": 2 }
+        ],
+        "challenges": [
+          {
+            "id": "demand-shift",
+            "prompt": "Hold Supply intercept at 20 GH₵ and raise Demand intercept to 100 GH₵. Confirm equilibrium price reaches 60 GH₵.",
+            "check": {
+              "operator": "AND",
+              "conditions": [
+                { "sliderId": "s0", "target": 20, "tolerance": 0.01 },
+                { "sliderId": "d0", "target": 100, "tolerance": 0.01 },
+                { "readoutId": "eqPrice", "target": 60, "tolerance": 0.01 }
+              ]
+            },
+            "successText": "Correct! With stronger demand (d₀ = 100) and unchanged supply (s₀ = 20), P* rises from 50 to 60 GH₵ and Q* rises from 30 to 40 units.",
+            "hintText": "Keep Supply = 20 GH₵ and move Demand to 100 GH₵."
+          }
+        ]
+      }
+    },
+    {
+      "id": "g06",
+      "order": 6,
+      "title": "NaCCA Science — Piecewise Distance–Time Graph",
+      "purpose": "Demonstrate bounded declarative piecewise plotting (walk -> stationary rest -> walk faster).",
+      "onScreenText": [
+        "0–4 s: steady walk (10 m/s)",
+        "4–7 s: stationary rest (0 m/s, flat line)",
+        "7–10 s: faster walk (20 m/s, steeper slope)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Distance-time piecewise motion stages summary",
+        "description": "Three motion stages.",
+        "labels": ["Walk", "Rest", "Faster walk"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#0f172a\">Piecewise Distance–Time Graph</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#475569\">Gradient = Speed · Horizontal line = Stationary</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Inspect the three stages of this pupil's walk using the coordinate inspector and data table. A horizontal segment means the pupil is stationary.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Steeper gradient on a distance-time graph represents greater speed; flat segment means zero speed."],
+      "indicatorIds": ["STEP4A.2"],
+      "askTeacherContext": { "focus": "Distance-time graphs", "keyTerms": ["Gradient", "Stationary"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 6 of 8.",
+      "interactive": {
+        "id": "pilot4a-sci-distance-time",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "NaCCA Science",
+        "title": "Piecewise Distance–Time Journey",
+        "instructions": "Scrub the coordinate inspector across 0 to 10 seconds and open the data table to compare speeds in each stage.",
+        "accessibilityLabel": "Piecewise distance-time graph of a three-stage journey",
+        "fallbackText": "Stage 1 (0–4 s): 40 m at 10 m/s. Stage 2 (4–7 s): stationary at 40 m (0 m/s). Stage 3 (7–10 s): 60 m in 3 s (20 m/s).",
+        "modelNote": "Declarative piecewise linear segments (no executable conditions).",
+        "xVar": "t",
+        "axes": { "xLabel": "Time", "xUnit": "s", "xMin": 0, "xMax": 10, "yLabel": "Distance", "yUnit": "m", "yMin": 0, "yMax": 110 },
+        "curves": [
+          {
+            "id": "journey",
+            "label": "Pupil's journey",
+            "kind": "piecewise",
+            "color": "#7c3aed",
+            "style": "solid",
+            "points": [
+              { "x": 0, "y": 0 },
+              { "x": 4, "y": 40 },
+              { "x": 7, "y": 40 },
+              { "x": 10, "y": 100 }
+            ]
+          }
+        ],
+        "showDataTable": true
+      }
+    },
+    {
+      "id": "g07",
+      "order": 7,
+      "title": "Mathematics — Discontinuities: Reciprocal & Tangent",
+      "purpose": "Verify clean asymptote segmentation for y = k/x and y = tan(x) with zero false connecting lines.",
+      "onScreenText": [
+        "Reciprocal y = k / x has vertical asymptote at x = 0",
+        "Tangent y = tan(x) has asymptotes at x = ±π/2",
+        "Separate branches — zero false vertical connectors"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Reciprocal and tangent asymptote verification header",
+        "description": "Discontinuity handling.",
+        "labels": ["1/x", "tan(x)", "Asymptotes"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fdf2f8\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#831843\">y = k / x  and  y = tan(x)</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#9d174d\">Discontinuity segmentation across vertical asymptotes</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Observe how both the reciprocal curve and tangent curve separate cleanly across their vertical asymptotes without drawing false connecting lines.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Vertical asymptotes split curves into separate branches."],
+      "indicatorIds": ["STEP4A.2"],
+      "askTeacherContext": { "focus": "Asymptotes", "keyTerms": ["Reciprocal", "Tangent", "Asymptote"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 7 of 8.",
+      "interactive": {
+        "id": "pilot4a-math-discontinuity",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Mathematics",
+        "title": "Asymptote & Discontinuity Explorer",
+        "instructions": "Adjust k to scale y = k / x and inspect how both y = k / x and y = tan(x) break cleanly across asymptotes.",
+        "accessibilityLabel": "Reciprocal and tangent function discontinuity graph",
+        "fallbackText": "y = k / x is undefined at x = 0; y = tan(x) is undefined at odd multiples of π/2 (~ ±1.57). Branches do not connect across asymptotes.",
+        "modelNote": "Angles for tan(x) are in radians; SVG clipPath prevents false horizontal clamping.",
+        "axes": { "xLabel": "x", "xUnit": "rad", "xMin": -4, "xMax": 4, "yLabel": "y", "yMin": -6, "yMax": 6 },
+        "sliders": [
+          { "id": "k", "label": "Scale factor (k)", "min": -3, "max": 3, "step": 1, "defaultValue": 1, "presets": [-2, 1, 2] }
+        ],
+        "curves": [
+          { "id": "reciprocal", "label": "y = k / x", "expr": "k / x", "color": "#db2777", "style": "solid" },
+          { "id": "tangent", "label": "y = tan(x)", "expr": "tan(x)", "color": "#0284c7", "style": "dashed" }
+        ]
+      }
+    },
+    {
+      "id": "g08",
+      "order": 8,
+      "title": "Computer Science — Digital Signal Step Waveform",
+      "purpose": "Demonstrate step-line plotting (kind='step') for binary 0/1 digital signals without diagonal interpolation.",
+      "onScreenText": [
+        "Binary sequence: 0 1 1 0 1 0",
+        "Step-line plotting holds level across equal bits",
+        "Vertical transitions between 0 (LOW) and 1 (HIGH)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Digital signal binary waveform header",
+        "description": "Digital signal step plot.",
+        "labels": ["LOW (0)", "HIGH (1)", "Clock ticks"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"36\" font-weight=\"bold\" fill=\"#38bdf8\">Digital Signal: 0 1 1 0 1 0</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#94a3b8\">Step-line plotting — discrete binary states</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Inspect this digital logic signal plotted with step-line transitions. Consecutive ones stay flat at HIGH without diagonal sloping.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear computer science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Digital signals transition discretely between LOW (0) and HIGH (1)."],
+      "indicatorIds": ["STEP4A.2"],
+      "askTeacherContext": { "focus": "Digital signals", "keyTerms": ["Binary", "Step waveform"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4A Preview Pilot 8 of 8.",
+      "interactive": {
+        "id": "pilot4a-cs-digital-step",
+        "engine": "graph-slider",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Computer Science",
+        "title": "Digital Signal Step-Line Waveform",
+        "instructions": "Use the time inspector to read the discrete binary state (0 = LOW, 1 = HIGH) at each clock interval.",
+        "accessibilityLabel": "Digital signal binary step waveform graph",
+        "fallbackText": "Binary sequence 0, 1, 1, 0, 1, 0 switches cleanly between 0 (LOW) and 1 (HIGH) at clock edges.",
+        "modelNote": "Declarative step-line series (kind='step') — zero diagonal interpolation.",
+        "xVar": "t",
+        "axes": { "xLabel": "Clock cycle", "xUnit": "tick", "xMin": 0, "xMax": 6, "yLabel": "Signal level", "yUnit": "bit", "yMin": -0.2, "yMax": 1.4 },
+        "curves": [
+          {
+            "id": "bitstream",
+            "label": "Digital bit stream (0 1 1 0 1 0)",
+            "kind": "step",
+            "color": "#059669",
+            "style": "solid",
+            "points": [
+              { "x": 0, "y": 0 },
+              { "x": 1, "y": 1 },
+              { "x": 2, "y": 1 },
+              { "x": 3, "y": 0 },
+              { "x": 4, "y": 1 },
+              { "x": 5, "y": 0 },
+              { "x": 6, "y": 0 }
+            ]
+          }
+        ],
+        "showDataTable": true
+      }
+    }
+  ],
+  "checkpoints": [],
+  "masteryCheck": { "items": [] },
+  "summary": {
+    "recapScript": "You have tested all 8 cross-subject Step 4A Graph and Slider pilots through a single reusable lazy-loaded engine."
+  }
+}

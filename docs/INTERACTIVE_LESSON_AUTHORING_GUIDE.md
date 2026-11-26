@@ -21,9 +21,9 @@ Slides without `interactive` continue working identically as standard narrated s
 | `rule-explorer` | **Implemented (Publishable)** | `1.0.0` | `1` | Cross-subject condition/rule toggling (CS, Chemistry, Biology, Physics, Geography, Civics) |
 | `code-playground` | **Implemented (Publishable)** | `1.0.0` | `1` | Live sandboxed Python 3 (Pyodide), Cambridge Pseudocode, and Read-Only SQL (`SELECT`) |
 | `construction-lab` | **Implemented (Publishable)** | `1.0.0` | `1` | Interactive Boolean Logic Circuit Builder (`labKind: "boolean-circuit"`) |
-| `graph-slider` | **Reserved (Step 4 — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
-| `process-stepper` | **Reserved (Step 4 — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
-| `diagram-hotspots` | **Reserved (Step 4 — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
+| `graph-slider` | **Step 4A Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject dynamic graph, sliders, piecewise & step waveforms, readouts & discovery challenges *(blocked from production CDN publish until Step 4A is deployed to production)* |
+| `process-stepper` | **Reserved (Step 4B — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
+| `diagram-hotspots` | **Reserved (Step 4C — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
 
 > **Important:** Do **not** author production lessons using reserved Step 4 engines (`graph-slider`, `process-stepper`, `diagram-hotspots`). The publishing validator (`assertValidLessonInteractives`) explicitly rejects unimplemented engines.
 
@@ -89,6 +89,28 @@ Extra allowed top-level fields: `labKind`, `activityId`.
 
 - `labKind` *(required string)*: Currently must be `"boolean-circuit"`.
 - `activityId` *(optional string)*: Optional preset reference identifier.
+
+### D. `graph-slider` (Step 4A Preview — Cross-Subject Graph & Slider Discovery Engine)
+
+> **Production Gate Notice:** On the Step 4A feature branch, `graph-slider` has `implemented: true, engineVersion: "1.0.0", productionVersion: null`. Do **not** publish live CDN lessons using `graph-slider` until Step 4A is merged and verified in production.
+
+Extra allowed top-level fields: `subjectTag`, `modelNote`, `xVar`, `axes`, `sliders`, `curves`, `readouts`, `prediction`, `challenges`, `samples`, `showDataTable`.
+
+- `axes` *(required)*: `{ xLabel, xUnit?, xMin, xMax, yLabel, yUnit?, yMin, yMax }` (`xMax > xMin`, `yMax > yMin`).
+- `sliders` *(optional, 0–4 items)*: `{ id, label, min, max, step, defaultValue, unit?, presets? }` (`step > 0`, `min <= defaultValue <= max`, `presets` within `[min, max]`).
+- `curves` *(required, 1–4 items; max 8 total curves per slide)*:
+  - `kind`: `"formula"` (default), `"piecewise"` (2–24 `{ x, y }` points), or `"step"` (2–24 `{ x, y }` discrete step-line points).
+  - `color`: strict 6-digit hex (`#RRGGBB`); `style`: `"solid" | "dashed" | "dotted"`; `isReference?: boolean`; `domainMin?`, `domainMax?`; `stopAtYZero?: boolean` (for projectile landing root bisection — never stops at initial launch point).
+- `readouts` *(optional, 0–4 items)*: `{ id, label, expr, unit?, precision? (0..4) }`.
+- `prediction` *(optional Predict-before-Experiment prompt)*: `{ prompt, options (2..4), correctIndex, explanation }`.
+- `challenges` *(optional, 0–3 items)*: `{ id, prompt, check: { operator: "AND" | "OR", conditions (1..4) }, successText, hintText? }`. Each condition targets one `sliderId` or `readoutId` with `min`/`max` or `target` + `tolerance`.
+- **Safe Mathematical Expression Grammar** (`src/lib/narrated-lessons/math-expr.ts`, zero `eval()`):
+  - **Precedence (lowest → highest):** `+`/`-` (left) → `*`/`/` (left) → unary `+`/`-` (binds looser than `^`, so `-2^2 = -4`, `(-2)^2 = 4`) → `^` (right-associative, `2^3^2 = 512`, `2^-3 = 0.125`) → primary.
+  - **Constants:** `PI`, `E`.
+  - **Unary functions (arity = 1):** `abs`, `sin`, `cos`, `tan`, `sqrt`, `ln`, `log10`, `exp`, `deg2rad`, `rad2deg`, `floor`, `ceil`, `round`. (Trig uses radians internally; use `deg2rad(theta)` for degrees.)
+  - **Multi-arg functions (arity = 2..4):** `min`, `max`.
+  - **Limits:** Max AST depth **8**, max **48** AST nodes, max **200** sample points per curve, max `24,576` bytes per activity.
+  - **Deferred in v1.0:** Parametric plotting `(x(t), y(t))` and continuous animation loops (e.g., Solar System orbital animation) are intentionally deferred.
 
 ---
 

@@ -33,6 +33,11 @@ const LazyRuleExplorerEngine = dynamic(
   { ssr: false, loading: RegistryLoading },
 );
 
+const LazyGraphSliderEngine = dynamic(
+  () => import('./GraphSliderEngine').then((m) => m.GraphSliderEngine),
+  { ssr: false, loading: RegistryLoading },
+);
+
 export interface InteractiveEngineRegistryProps {
   lesson: NarratedLesson;
   slide: LessonSlide;
@@ -135,6 +140,8 @@ function InteractiveItemRenderer({
   switch (config.engine) {
     case 'rule-explorer':
       return <LazyRuleExplorerEngine config={config} />;
+    case 'graph-slider':
+      return <LazyGraphSliderEngine config={config} />;
     case 'code-playground':
       return (
         <LazyInlineCodePlayground

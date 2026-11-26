@@ -12,6 +12,9 @@
  *   duplicate activity IDs, and (at publish time) reserved/unimplemented engines.
  */
 
+import { MATH_EXPR_LIMITS, tryParseMathExpr } from './math-expr';
+import type { GraphChallengeCheck, GraphPoint } from './graph-sampler';
+
 export type InteractiveEngineId =
   | 'code-playground'
   | 'construction-lab'
@@ -41,6 +44,17 @@ export const INTERACTIVE_RESOURCE_LIMITS = {
   maxInputs: 8,
   maxHints: 6,
   maxPublicTests: 8,
+  maxGraphSliders: 4,
+  maxGraphCurves: 4,
+  maxGraphReadouts: 4,
+  maxGraphSamples: 200,
+  minGraphSamples: 20,
+  maxGraphChallenges: 3,
+  maxGraphChallengeConditions: 4,
+  maxGraphSeriesPoints: 24,
+  maxGraphCurvesPerSlide: 8,
+  maxMathAstDepth: MATH_EXPR_LIMITS.maxAstDepth,
+  maxMathAstNodes: MATH_EXPR_LIMITS.maxAstNodes,
 } as const;
 
 export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, InteractiveEngineMeta> = {
@@ -70,11 +84,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'graph-slider': {
     id: 'graph-slider',
-    engineVersion: '0.0.0-planned',
+    engineVersion: '1.0.0',
     productionVersion: null,
     supportedSchemaVersions: [1],
-    implemented: false,
-    description: 'Reserved for Step 4: Dynamic graph, parameter slider, and waveform/orbital explorer.',
+    implemented: true,
+    description: 'Cross-subject dynamic graph, parameter slider, piecewise, step-line, and discovery engine (Step 4A).',
   },
   'process-stepper': {
     id: 'process-stepper',
@@ -154,8 +168,85 @@ export interface RuleExplorerInteractiveConfig extends SlideInteractiveBase {
   };
 }
 
+export interface GraphSliderAxesDef {
+  xLabel: string;
+  xUnit?: string;
+  xMin: number;
+  xMax: number;
+  yLabel: string;
+  yUnit?: string;
+  yMin: number;
+  yMax: number;
+}
+
+export interface GraphSliderControlDef {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+  step: number;
+  defaultValue: number;
+  unit?: string;
+  presets?: number[];
+}
+
+export type GraphCurveKind = 'formula' | 'piecewise' | 'step';
+export type GraphCurveStyle = 'solid' | 'dashed' | 'dotted';
+
+export interface GraphCurveDef {
+  id: string;
+  label: string;
+  kind?: GraphCurveKind;
+  expr?: string;
+  points?: GraphPoint[];
+  color: string;
+  style?: GraphCurveStyle;
+  isReference?: boolean;
+  domainMin?: number;
+  domainMax?: number;
+  stopAtYZero?: boolean;
+}
+
+export interface GraphReadoutDef {
+  id: string;
+  label: string;
+  expr: string;
+  unit?: string;
+  precision?: number;
+}
+
+export interface GraphPredictionPromptDef {
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+export interface GraphChallengeDef {
+  id: string;
+  prompt: string;
+  check: GraphChallengeCheck;
+  successText: string;
+  hintText?: string;
+}
+
+export interface GraphSliderInteractiveConfig extends SlideInteractiveBase {
+  engine: 'graph-slider';
+  subjectTag?: string;
+  modelNote?: string;
+  xVar?: string;
+  axes: GraphSliderAxesDef;
+  sliders?: GraphSliderControlDef[];
+  curves: GraphCurveDef[];
+  readouts?: GraphReadoutDef[];
+  prediction?: GraphPredictionPromptDef;
+  challenges?: GraphChallengeDef[];
+  samples?: number;
+  showDataTable?: boolean;
+}
+
 export interface PlannedEngineInteractiveConfig extends SlideInteractiveBase {
-  engine: 'graph-slider' | 'process-stepper' | 'diagram-hotspots';
+  engine: 'process-stepper' | 'diagram-hotspots';
   params?: Record<string, unknown>;
 }
 
@@ -163,6 +254,7 @@ export type SlideInteractiveConfig =
   | CodePlaygroundInteractiveConfig
   | ConstructionLabInteractiveConfig
   | RuleExplorerInteractiveConfig
+  | GraphSliderInteractiveConfig
   | PlannedEngineInteractiveConfig;
 
 const ALLOWED_RULE_OPS = new Set<RuleOperator>(['AND', 'OR', 'NOT', 'XOR']);
@@ -199,10 +291,46 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
   'rule-explorer': new Set(['subjectTag', 'inputs', 'rule', 'output']),
   'code-playground': new Set(['languages', 'pythonStarter', 'pseudocodeStarter', 'sqlStarter', 'publicTests']),
   'construction-lab': new Set(['labKind', 'activityId']),
-  'graph-slider': new Set(['params']),
+  'graph-slider': new Set([
+    'subjectTag',
+    'modelNote',
+    'xVar',
+    'axes',
+    'sliders',
+    'curves',
+    'readouts',
+    'prediction',
+    'challenges',
+    'samples',
+    'showDataTable',
+  ]),
   'process-stepper': new Set(['params']),
   'diagram-hotspots': new Set(['params']),
 };
+
+const HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
+const GRAPH_VAR_RE = /^[A-Za-z][A-Za-z0-9_]{0,24}$/;
+const GRAPH_AXES_ALLOWED_KEYS = new Set(['xLabel', 'xUnit', 'xMin', 'xMax', 'yLabel', 'yUnit', 'yMin', 'yMax']);
+const GRAPH_SLIDER_ALLOWED_KEYS = new Set(['id', 'label', 'min', 'max', 'step', 'defaultValue', 'unit', 'presets']);
+const GRAPH_CURVE_ALLOWED_KEYS = new Set([
+  'id',
+  'label',
+  'kind',
+  'expr',
+  'points',
+  'color',
+  'style',
+  'isReference',
+  'domainMin',
+  'domainMax',
+  'stopAtYZero',
+]);
+const GRAPH_POINT_ALLOWED_KEYS = new Set(['x', 'y']);
+const GRAPH_READOUT_ALLOWED_KEYS = new Set(['id', 'label', 'expr', 'unit', 'precision']);
+const GRAPH_PREDICTION_ALLOWED_KEYS = new Set(['prompt', 'options', 'correctIndex', 'explanation']);
+const GRAPH_CHALLENGE_ALLOWED_KEYS = new Set(['id', 'prompt', 'check', 'successText', 'hintText']);
+const GRAPH_CHECK_ALLOWED_KEYS = new Set(['operator', 'conditions']);
+const GRAPH_CONDITION_ALLOWED_KEYS = new Set(['sliderId', 'readoutId', 'min', 'max', 'target', 'tolerance']);
 
 const RULE_INPUT_ALLOWED_KEYS = new Set(['id', 'label', 'defaultValue', 'trueText', 'falseText']);
 const RULE_OUTPUT_ALLOWED_KEYS = new Set([
@@ -575,6 +703,385 @@ export function validateSlideInteractiveConfig(
     if (obj.activityId !== undefined && typeof obj.activityId !== 'string') {
       errors.push('construction-lab "activityId" must be a string.');
     }
+  } else if (obj.engine === 'graph-slider') {
+    if (obj.subjectTag !== undefined && typeof obj.subjectTag !== 'string') {
+      errors.push('graph-slider "subjectTag" must be a string.');
+    }
+    if (obj.modelNote !== undefined && typeof obj.modelNote !== 'string') {
+      errors.push('graph-slider "modelNote" must be a string.');
+    }
+    if (obj.showDataTable !== undefined && typeof obj.showDataTable !== 'boolean') {
+      errors.push('graph-slider "showDataTable" must be a boolean.');
+    }
+    const xVar = obj.xVar === undefined ? 'x' : obj.xVar;
+    if (typeof xVar !== 'string' || !GRAPH_VAR_RE.test(xVar) || xVar === 'PI' || xVar === 'E') {
+      errors.push('graph-slider "xVar" must be a valid variable identifier (not PI or E).');
+    }
+    if (obj.samples !== undefined) {
+      if (
+        typeof obj.samples !== 'number' ||
+        !Number.isInteger(obj.samples) ||
+        obj.samples < INTERACTIVE_RESOURCE_LIMITS.minGraphSamples ||
+        obj.samples > INTERACTIVE_RESOURCE_LIMITS.maxGraphSamples
+      ) {
+        errors.push(
+          `graph-slider "samples" must be an integer between ${INTERACTIVE_RESOURCE_LIMITS.minGraphSamples} and ${INTERACTIVE_RESOURCE_LIMITS.maxGraphSamples}.`
+        );
+      }
+    }
+
+    // Axes
+    const axes = obj.axes as Record<string, unknown> | undefined;
+    if (!axes || typeof axes !== 'object' || Array.isArray(axes)) {
+      errors.push('graph-slider requires an "axes" object.');
+    } else {
+      checkAllowedKeys(axes, GRAPH_AXES_ALLOWED_KEYS, 'axes', errors);
+      if (typeof axes.xLabel !== 'string' || axes.xLabel.trim().length === 0) {
+        errors.push('graph-slider axes.xLabel must be a non-empty string.');
+      }
+      if (typeof axes.yLabel !== 'string' || axes.yLabel.trim().length === 0) {
+        errors.push('graph-slider axes.yLabel must be a non-empty string.');
+      }
+      if (axes.xUnit !== undefined && typeof axes.xUnit !== 'string') {
+        errors.push('graph-slider axes.xUnit must be a string.');
+      }
+      if (axes.yUnit !== undefined && typeof axes.yUnit !== 'string') {
+        errors.push('graph-slider axes.yUnit must be a string.');
+      }
+      if (
+        typeof axes.xMin !== 'number' ||
+        typeof axes.xMax !== 'number' ||
+        !Number.isFinite(axes.xMin) ||
+        !Number.isFinite(axes.xMax) ||
+        axes.xMax <= axes.xMin
+      ) {
+        errors.push('graph-slider axes.xMin and axes.xMax must be finite numbers with xMax > xMin.');
+      }
+      if (
+        typeof axes.yMin !== 'number' ||
+        typeof axes.yMax !== 'number' ||
+        !Number.isFinite(axes.yMin) ||
+        !Number.isFinite(axes.yMax) ||
+        axes.yMax <= axes.yMin
+      ) {
+        errors.push('graph-slider axes.yMin and axes.yMax must be finite numbers with yMax > yMin.');
+      }
+    }
+
+    // Sliders (0..4)
+    const sliderIds = new Set<string>();
+    if (obj.sliders !== undefined) {
+      if (!Array.isArray(obj.sliders) || obj.sliders.length > INTERACTIVE_RESOURCE_LIMITS.maxGraphSliders) {
+        errors.push(`graph-slider "sliders" must be an array of at most ${INTERACTIVE_RESOURCE_LIMITS.maxGraphSliders} items.`);
+      } else {
+        obj.sliders.forEach((s, idx) => {
+          if (!s || typeof s !== 'object' || Array.isArray(s)) {
+            errors.push(`graph-slider sliders[${idx}] must be an object.`);
+            return;
+          }
+          const rec = s as Record<string, unknown>;
+          checkAllowedKeys(rec, GRAPH_SLIDER_ALLOWED_KEYS, `sliders[${idx}]`, errors);
+          if (typeof rec.id !== 'string' || !GRAPH_VAR_RE.test(rec.id) || rec.id === 'PI' || rec.id === 'E' || rec.id === xVar) {
+            errors.push(`graph-slider sliders[${idx}].id must be a valid unique variable identifier (not PI, E, or xVar).`);
+          } else if (sliderIds.has(rec.id)) {
+            errors.push(`graph-slider duplicate slider id "${rec.id}".`);
+          } else {
+            sliderIds.add(rec.id);
+          }
+          if (typeof rec.label !== 'string' || rec.label.trim().length === 0) {
+            errors.push(`graph-slider sliders[${idx}].label must be a non-empty string.`);
+          }
+          if (
+            typeof rec.min !== 'number' ||
+            typeof rec.max !== 'number' ||
+            !Number.isFinite(rec.min) ||
+            !Number.isFinite(rec.max) ||
+            rec.max <= rec.min
+          ) {
+            errors.push(`graph-slider sliders[${idx}] requires finite min < max.`);
+          }
+          if (typeof rec.step !== 'number' || !Number.isFinite(rec.step) || rec.step <= 0) {
+            errors.push(`graph-slider sliders[${idx}].step must be a positive finite number.`);
+          }
+          if (
+            typeof rec.defaultValue !== 'number' ||
+            !Number.isFinite(rec.defaultValue) ||
+            (typeof rec.min === 'number' && rec.defaultValue < rec.min) ||
+            (typeof rec.max === 'number' && rec.defaultValue > rec.max)
+          ) {
+            errors.push(`graph-slider sliders[${idx}].defaultValue must be within [min, max].`);
+          }
+          if (rec.unit !== undefined && typeof rec.unit !== 'string') {
+            errors.push(`graph-slider sliders[${idx}].unit must be a string.`);
+          }
+          if (rec.presets !== undefined) {
+            if (
+              !Array.isArray(rec.presets) ||
+              rec.presets.length > 8 ||
+              rec.presets.some(
+                (p) =>
+                  typeof p !== 'number' ||
+                  !Number.isFinite(p) ||
+                  (typeof rec.min === 'number' && p < rec.min) ||
+                  (typeof rec.max === 'number' && p > rec.max)
+              )
+            ) {
+              errors.push(`graph-slider sliders[${idx}].presets must be up to 8 finite numbers within [min, max].`);
+            }
+          }
+        });
+      }
+    }
+
+    // Curves (1..4)
+    const curveAllowedVars = new Set<string>([...sliderIds, ...(typeof xVar === 'string' ? [xVar] : ['x'])]);
+    const curveIds = new Set<string>();
+    if (!Array.isArray(obj.curves) || obj.curves.length === 0 || obj.curves.length > INTERACTIVE_RESOURCE_LIMITS.maxGraphCurves) {
+      errors.push(`graph-slider requires 1 to ${INTERACTIVE_RESOURCE_LIMITS.maxGraphCurves} curves.`);
+    } else {
+      obj.curves.forEach((c, idx) => {
+        if (!c || typeof c !== 'object' || Array.isArray(c)) {
+          errors.push(`graph-slider curves[${idx}] must be an object.`);
+          return;
+        }
+        const rec = c as Record<string, unknown>;
+        checkAllowedKeys(rec, GRAPH_CURVE_ALLOWED_KEYS, `curves[${idx}]`, errors);
+        if (typeof rec.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(rec.id)) {
+          errors.push(`graph-slider curves[${idx}].id must be a 1-40 char identifier.`);
+        } else if (curveIds.has(rec.id)) {
+          errors.push(`graph-slider duplicate curve id "${rec.id}".`);
+        } else {
+          curveIds.add(rec.id);
+        }
+        if (typeof rec.label !== 'string' || rec.label.trim().length === 0) {
+          errors.push(`graph-slider curves[${idx}].label must be a non-empty string.`);
+        }
+        if (typeof rec.color !== 'string' || !HEX_COLOR_RE.test(rec.color)) {
+          errors.push(`graph-slider curves[${idx}].color must be a 6-digit hex color (e.g. "#0284c7").`);
+        }
+        if (rec.style !== undefined && !['solid', 'dashed', 'dotted'].includes(String(rec.style))) {
+          errors.push(`graph-slider curves[${idx}].style must be "solid", "dashed", or "dotted".`);
+        }
+        if (rec.isReference !== undefined && typeof rec.isReference !== 'boolean') {
+          errors.push(`graph-slider curves[${idx}].isReference must be a boolean.`);
+        }
+        if (rec.stopAtYZero !== undefined && typeof rec.stopAtYZero !== 'boolean') {
+          errors.push(`graph-slider curves[${idx}].stopAtYZero must be a boolean.`);
+        }
+        if (rec.domainMin !== undefined && (typeof rec.domainMin !== 'number' || !Number.isFinite(rec.domainMin))) {
+          errors.push(`graph-slider curves[${idx}].domainMin must be a finite number.`);
+        }
+        if (rec.domainMax !== undefined && (typeof rec.domainMax !== 'number' || !Number.isFinite(rec.domainMax))) {
+          errors.push(`graph-slider curves[${idx}].domainMax must be a finite number.`);
+        }
+        if (typeof rec.domainMin === 'number' && typeof rec.domainMax === 'number' && rec.domainMax <= rec.domainMin) {
+          errors.push(`graph-slider curves[${idx}] requires domainMax > domainMin.`);
+        }
+
+        const kind = rec.kind === undefined ? 'formula' : rec.kind;
+        if (kind === 'formula') {
+          if (typeof rec.expr !== 'string') {
+            errors.push(`graph-slider curves[${idx}] (kind="formula") requires a string "expr".`);
+          } else {
+            const parsed = tryParseMathExpr(rec.expr, curveAllowedVars);
+            if (!parsed.ok) {
+              errors.push(`graph-slider curves[${idx}].expr invalid: ${parsed.error}`);
+            }
+          }
+        } else if (kind === 'piecewise' || kind === 'step') {
+          if (
+            !Array.isArray(rec.points) ||
+            rec.points.length < 2 ||
+            rec.points.length > INTERACTIVE_RESOURCE_LIMITS.maxGraphSeriesPoints
+          ) {
+            errors.push(
+              `graph-slider curves[${idx}] (kind="${kind}") requires 2 to ${INTERACTIVE_RESOURCE_LIMITS.maxGraphSeriesPoints} points.`
+            );
+          } else {
+            let prevX = -Infinity;
+            rec.points.forEach((pt, pIdx) => {
+              if (!pt || typeof pt !== 'object' || Array.isArray(pt)) {
+                errors.push(`graph-slider curves[${idx}].points[${pIdx}] must be an object.`);
+                return;
+              }
+              const ptRec = pt as Record<string, unknown>;
+              checkAllowedKeys(ptRec, GRAPH_POINT_ALLOWED_KEYS, `curves[${idx}].points[${pIdx}]`, errors);
+              if (
+                typeof ptRec.x !== 'number' ||
+                typeof ptRec.y !== 'number' ||
+                !Number.isFinite(ptRec.x) ||
+                !Number.isFinite(ptRec.y)
+              ) {
+                errors.push(`graph-slider curves[${idx}].points[${pIdx}] requires finite numeric x and y.`);
+              } else if (ptRec.x < prevX) {
+                errors.push(`graph-slider curves[${idx}].points must have non-decreasing x values.`);
+              } else {
+                prevX = ptRec.x;
+              }
+            });
+          }
+        } else {
+          errors.push(`graph-slider curves[${idx}].kind must be "formula", "piecewise", or "step".`);
+        }
+      });
+    }
+
+    // Readouts (0..4)
+    const readoutIds = new Set<string>();
+    if (obj.readouts !== undefined) {
+      if (!Array.isArray(obj.readouts) || obj.readouts.length > INTERACTIVE_RESOURCE_LIMITS.maxGraphReadouts) {
+        errors.push(`graph-slider "readouts" must be an array of at most ${INTERACTIVE_RESOURCE_LIMITS.maxGraphReadouts} items.`);
+      } else {
+        obj.readouts.forEach((r, idx) => {
+          if (!r || typeof r !== 'object' || Array.isArray(r)) {
+            errors.push(`graph-slider readouts[${idx}] must be an object.`);
+            return;
+          }
+          const rec = r as Record<string, unknown>;
+          checkAllowedKeys(rec, GRAPH_READOUT_ALLOWED_KEYS, `readouts[${idx}]`, errors);
+          if (typeof rec.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(rec.id)) {
+            errors.push(`graph-slider readouts[${idx}].id must be a 1-40 char identifier.`);
+          } else if (readoutIds.has(rec.id)) {
+            errors.push(`graph-slider duplicate readout id "${rec.id}".`);
+          } else {
+            readoutIds.add(rec.id);
+          }
+          if (typeof rec.label !== 'string' || rec.label.trim().length === 0) {
+            errors.push(`graph-slider readouts[${idx}].label must be a non-empty string.`);
+          }
+          if (typeof rec.expr !== 'string') {
+            errors.push(`graph-slider readouts[${idx}].expr must be a string.`);
+          } else {
+            const parsed = tryParseMathExpr(rec.expr, sliderIds);
+            if (!parsed.ok) {
+              errors.push(`graph-slider readouts[${idx}].expr invalid: ${parsed.error}`);
+            }
+          }
+          if (rec.unit !== undefined && typeof rec.unit !== 'string') {
+            errors.push(`graph-slider readouts[${idx}].unit must be a string.`);
+          }
+          if (
+            rec.precision !== undefined &&
+            (typeof rec.precision !== 'number' || !Number.isInteger(rec.precision) || rec.precision < 0 || rec.precision > 4)
+          ) {
+            errors.push(`graph-slider readouts[${idx}].precision must be an integer between 0 and 4.`);
+          }
+        });
+      }
+    }
+
+    // Optional Prediction Prompt
+    if (obj.prediction !== undefined) {
+      const pred = obj.prediction as Record<string, unknown>;
+      if (!pred || typeof pred !== 'object' || Array.isArray(pred)) {
+        errors.push('graph-slider "prediction" must be an object.');
+      } else {
+        checkAllowedKeys(pred, GRAPH_PREDICTION_ALLOWED_KEYS, 'prediction', errors);
+        if (typeof pred.prompt !== 'string' || pred.prompt.trim().length < 4) {
+          errors.push('graph-slider prediction.prompt must be a non-empty string.');
+        }
+        if (
+          !Array.isArray(pred.options) ||
+          pred.options.length < 2 ||
+          pred.options.length > 4 ||
+          pred.options.some((o) => typeof o !== 'string' || o.trim().length === 0)
+        ) {
+          errors.push('graph-slider prediction.options must be 2 to 4 non-empty strings.');
+        } else if (
+          typeof pred.correctIndex !== 'number' ||
+          !Number.isInteger(pred.correctIndex) ||
+          pred.correctIndex < 0 ||
+          pred.correctIndex >= pred.options.length
+        ) {
+          errors.push('graph-slider prediction.correctIndex must be a valid option index.');
+        }
+        if (typeof pred.explanation !== 'string' || pred.explanation.trim().length < 4) {
+          errors.push('graph-slider prediction.explanation must be a non-empty string.');
+        }
+      }
+    }
+
+    // Optional Discovery Challenges (0..3)
+    if (obj.challenges !== undefined) {
+      if (!Array.isArray(obj.challenges) || obj.challenges.length > INTERACTIVE_RESOURCE_LIMITS.maxGraphChallenges) {
+        errors.push(`graph-slider "challenges" must be an array of at most ${INTERACTIVE_RESOURCE_LIMITS.maxGraphChallenges} items.`);
+      } else {
+        const challengeIds = new Set<string>();
+        obj.challenges.forEach((ch, idx) => {
+          if (!ch || typeof ch !== 'object' || Array.isArray(ch)) {
+            errors.push(`graph-slider challenges[${idx}] must be an object.`);
+            return;
+          }
+          const rec = ch as Record<string, unknown>;
+          checkAllowedKeys(rec, GRAPH_CHALLENGE_ALLOWED_KEYS, `challenges[${idx}]`, errors);
+          if (typeof rec.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(rec.id)) {
+            errors.push(`graph-slider challenges[${idx}].id must be a 1-40 char identifier.`);
+          } else if (challengeIds.has(rec.id)) {
+            errors.push(`graph-slider duplicate challenge id "${rec.id}".`);
+          } else {
+            challengeIds.add(rec.id);
+          }
+          if (typeof rec.prompt !== 'string' || rec.prompt.trim().length < 4) {
+            errors.push(`graph-slider challenges[${idx}].prompt must be a non-empty string.`);
+          }
+          if (typeof rec.successText !== 'string' || rec.successText.trim().length < 4) {
+            errors.push(`graph-slider challenges[${idx}].successText must be a non-empty string.`);
+          }
+          if (rec.hintText !== undefined && typeof rec.hintText !== 'string') {
+            errors.push(`graph-slider challenges[${idx}].hintText must be a string.`);
+          }
+          const chk = rec.check as Record<string, unknown> | undefined;
+          if (!chk || typeof chk !== 'object' || Array.isArray(chk)) {
+            errors.push(`graph-slider challenges[${idx}].check must be an object.`);
+          } else {
+            checkAllowedKeys(chk, GRAPH_CHECK_ALLOWED_KEYS, `challenges[${idx}].check`, errors);
+            if (chk.operator !== 'AND' && chk.operator !== 'OR') {
+              errors.push(`graph-slider challenges[${idx}].check.operator must be "AND" or "OR".`);
+            }
+            if (
+              !Array.isArray(chk.conditions) ||
+              chk.conditions.length === 0 ||
+              chk.conditions.length > INTERACTIVE_RESOURCE_LIMITS.maxGraphChallengeConditions
+            ) {
+              errors.push(
+                `graph-slider challenges[${idx}].check.conditions must have 1 to ${INTERACTIVE_RESOURCE_LIMITS.maxGraphChallengeConditions} items.`
+              );
+            } else {
+              chk.conditions.forEach((cond, cIdx) => {
+                if (!cond || typeof cond !== 'object' || Array.isArray(cond)) {
+                  errors.push(`graph-slider challenges[${idx}].check.conditions[${cIdx}] must be an object.`);
+                  return;
+                }
+                const cRec = cond as Record<string, unknown>;
+                checkAllowedKeys(cRec, GRAPH_CONDITION_ALLOWED_KEYS, `challenges[${idx}].check.conditions[${cIdx}]`, errors);
+                const hasSlider = typeof cRec.sliderId === 'string';
+                const hasReadout = typeof cRec.readoutId === 'string';
+                if (hasSlider === hasReadout) {
+                  errors.push(
+                    `graph-slider challenges[${idx}].check.conditions[${cIdx}] must specify exactly one of "sliderId" or "readoutId".`
+                  );
+                } else if (hasSlider && !sliderIds.has(cRec.sliderId as string)) {
+                  errors.push(
+                    `graph-slider challenges[${idx}].check.conditions[${cIdx}] references unknown sliderId "${String(cRec.sliderId)}".`
+                  );
+                } else if (hasReadout && !readoutIds.has(cRec.readoutId as string)) {
+                  errors.push(
+                    `graph-slider challenges[${idx}].check.conditions[${cIdx}] references unknown readoutId "${String(cRec.readoutId)}".`
+                  );
+                }
+                const hasBounds =
+                  typeof cRec.min === 'number' || typeof cRec.max === 'number' || typeof cRec.target === 'number';
+                if (!hasBounds) {
+                  errors.push(
+                    `graph-slider challenges[${idx}].check.conditions[${cIdx}] requires numeric min, max, or target.`
+                  );
+                }
+              });
+            }
+          }
+        });
+      }
+    }
   }
 
   return errors.length === 0
@@ -624,6 +1131,7 @@ export function assertValidLessonInteractives(
         `Slide ${slide.id}: exceeds maximum of ${INTERACTIVE_RESOURCE_LIMITS.maxActivitiesPerSlide} interactive activities per slide.`
       );
     }
+    let slideGraphCurves = 0;
     for (const raw of list) {
       const res = validateSlideInteractiveConfig(raw, {
         requireImplemented: !options.allowUnimplementedEngines,
@@ -637,7 +1145,15 @@ export function assertValidLessonInteractives(
           errors.push(`Slide ${slide.id}: duplicate interactive activity id "${res.config.id}".`);
         }
         seenIds.add(res.config.id);
+        if (res.config.engine === 'graph-slider') {
+          slideGraphCurves += res.config.curves.length;
+        }
       }
+    }
+    if (slideGraphCurves > INTERACTIVE_RESOURCE_LIMITS.maxGraphCurvesPerSlide) {
+      errors.push(
+        `Slide ${slide.id}: total graph-slider curves (${slideGraphCurves}) exceeds slide maximum (${INTERACTIVE_RESOURCE_LIMITS.maxGraphCurvesPerSlide}).`
+      );
     }
   }
 
