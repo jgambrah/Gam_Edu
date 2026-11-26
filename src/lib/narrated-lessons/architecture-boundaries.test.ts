@@ -110,4 +110,22 @@ describe('GAM EDU Modular-Monolith Transitive Dependency Boundaries', () => {
 
     expect(violations).toEqual([]);
   });
+
+  it('ensures NarratedLessonPlayer lazy-loads heavy interactive labs and reviewer tools via next/dynamic', () => {
+    const playerPath = path.resolve(REPO_ROOT, 'src/components/narrated-lessons/NarratedLessonPlayer.tsx');
+    const src = fs.readFileSync(playerPath, 'utf8');
+    const forbiddenStaticImports = [
+      /^\s*import\s+[^;]*from\s+['"]\.\/InlineCodePlayground['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/BooleanCircuitLab['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/BooleanIntroInteractive['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/PointerCueEditor['"]/m,
+    ];
+    for (const re of forbiddenStaticImports) {
+      expect(src).not.toMatch(re);
+    }
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/InlineCodePlayground['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/BooleanCircuitLab['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/BooleanIntroInteractive['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/PointerCueEditor['"]\)/);
+  });
 });

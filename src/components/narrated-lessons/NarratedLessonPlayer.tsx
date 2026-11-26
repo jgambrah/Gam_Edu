@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   BookOpen,
   CheckCircle2,
@@ -47,13 +48,50 @@ import type {
 import { lessonMediaUrl } from '@/lib/narrated-lessons/types';
 import type { LessonNotesPackage, LessonStage } from '@/lib/narrated-lessons/notes-types';
 import { TeacherPointerOverlay } from './TeacherPointerOverlay';
-import { PointerCueEditor } from './PointerCueEditor';
 import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
-import { InlineCodePlayground } from './InlineCodePlayground';
-import { BooleanIntroInteractive } from './BooleanIntroInteractive';
-import { BooleanCircuitLab } from './BooleanCircuitLab';
 import { resolveRestoredStepIndex } from '@/lib/narrated-lessons/progress-migration';
 import { sanitizeSvg } from '@/lib/narrated-lessons/svg-sanitizer';
+
+// Lazy-loaded heavy/optional interactive labs and reviewer tools (Step 2: zero download on unrelated lessons)
+const LazyLabLoading = () => (
+  <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs font-medium text-slate-500">
+    Loading interactive activity...
+  </div>
+);
+
+const PointerCueEditor = dynamic(
+  () => import('./PointerCueEditor').then((m) => m.PointerCueEditor),
+  { ssr: false, loading: LazyLabLoading },
+);
+
+const InlineCodePlayground = dynamic(
+  () => import('./InlineCodePlayground').then((m) => m.InlineCodePlayground),
+  { ssr: false, loading: LazyLabLoading },
+);
+
+const BooleanIntroInteractive = dynamic(
+  () => import('./BooleanIntroInteractive').then((m) => m.BooleanIntroInteractive),
+  { ssr: false, loading: LazyLabLoading },
+);
+
+const BooleanCircuitLab = dynamic(
+  () => import('./BooleanCircuitLab').then((m) => m.BooleanCircuitLab),
+  { ssr: false, loading: LazyLabLoading },
+);
+
+function isComputerScienceEnrichmentLesson(lesson: NarratedLesson): boolean {
+  const id = (lesson.lessonId || '').toLowerCase();
+  const subject = (lesson.meta?.subject || '').toLowerCase();
+  const topic = (lesson.meta?.topic || '').toLowerCase();
+  return (
+    subject.includes('computer science') ||
+    id.includes('-cs-') ||
+    topic.includes('programming') ||
+    topic.includes('algorithm') ||
+    topic.includes('database') ||
+    topic.includes('boolean')
+  );
+}
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -1480,16 +1518,24 @@ export function NarratedLessonPlayer({
               </div>
             </div>
 
-            {/* Interactive introductory explorations (Boolean Logic 10A intro01–intro03) */}
-            <div className="mt-3">
-              <BooleanIntroInteractive lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
-            </div>
+            {/* Interactive introductory explorations (lazy-loaded only on Boolean Logic 10A intro slides) */}
+            {lesson.lessonId === 'igcse-cs-boolean-logic-a' &&
+              currentStep.slide.id.startsWith('intro') && (
+                <div className="mt-3">
+                  <BooleanIntroInteractive lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
+                </div>
+              )}
 
-            {/* Interactive Boolean Logic Circuit Lab (Chapter 10 Boolean Logic lessons) */}
-            <BooleanCircuitLab lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
+            {/* Interactive Boolean Logic Circuit Lab (lazy-loaded only on Chapter 10 formal gate slides) */}
+            {lesson.lessonId.toLowerCase().includes('boolean-logic') &&
+              !currentStep.slide.id.startsWith('intro') && (
+                <BooleanCircuitLab lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
+              )}
 
-            {/* Collapsible Inline Runner (Pseudocode / Python / SQL) for Computer Science lessons */}
-            <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />
+            {/* Collapsible Inline Runner (lazy-loaded only on Computer Science lessons) */}
+            {isComputerScienceEnrichmentLesson(lesson) && (
+              <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />
+            )}
 
             {/* Reviewer-Mode Pointer Cues Editor */}
             {reviewerMode && (
