@@ -129,7 +129,8 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `mode`, `visualMode`,
   - `"shared-highlight"` (Mode C): Renders `sharedVisual` with a declarative bounded `stage.highlightRegion` (`{ xPct, yPct, widthPct, heightPct, label }`, all within `0..100%`) and Enlarge lightbox.
 - `stages` *(required, 2–10 items, unique IDs)*:
   - Required: `id`, `title`, `summary`.
-  - Optional pedagogy: `shortLabel`, `startingCondition`, `whatChanges`, `whyItMatters`, `connectionToNext`, `commonMisconception`, `inputs[]`, `outputs[]`.
+  - Optional pedagogy: `shortLabel`, `equation` (highlighted chemical/algebraic equation, ≤ 180 chars), `startingCondition`, `whatChanges`, `whyItMatters`, `connectionToNext`, `commonMisconception`, `inputs[]`, `outputs[]`.
+  - Optional `reactionMeta` *(for A-Level Chemistry & Biology mechanisms)*: `{ reactants?, intermediates?, products?, bondsBroken?, bondsFormed?, electronMovement? }` (up to 4 strings per list, ≤ 120 chars each; `electronMovement` ≤ 200 chars). Supports electrophilic addition, nucleophilic substitution, peptide bond condensation/hydrolysis, DNA replication, transcription/translation, polymerisation, and electrolysis cleanly with approved WebP/PNG diagrams and zero 3D/molecular simulator bloat.
   - Optional `stateSnapshot` *(0–6 items)*: `[{ id, label, value }]` (rejects prototype keys like `constructor`/`__proto__`; values ≤ 80 chars; renders accessible textual diff badges `"Changed (was ...)"`, `"New in this stage"`, `"Removed"`, `"Unchanged"`).
   - Optional `prediction` *(max 3 across activity)*: `{ prompt, options (2..4), correctIndex, explanation }` (non-blocking).
 - `sequenceChallenge` *(optional, max 1)*: `{ id, prompt, stageIdsToOrder (2..6 valid stage IDs), explanation }` — keyboard-accessible `Move Up`/`Move Down` controls (zero drag-and-drop).

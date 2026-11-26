@@ -279,11 +279,21 @@ export interface ProcessStagePredictionDef {
   explanation: string;
 }
 
+export interface ProcessReactionMetadata {
+  reactants?: string[];
+  intermediates?: string[];
+  products?: string[];
+  bondsBroken?: string[];
+  bondsFormed?: string[];
+  electronMovement?: string;
+}
+
 export interface ProcessStageDef {
   id: string;
   title: string;
   shortLabel?: string;
   summary: string;
+  equation?: string;
   startingCondition?: string;
   whatChanges?: string;
   whyItMatters?: string;
@@ -291,6 +301,7 @@ export interface ProcessStageDef {
   commonMisconception?: string;
   inputs?: string[];
   outputs?: string[];
+  reactionMeta?: ProcessReactionMetadata;
   stateSnapshot?: ProcessStateField[];
   visual?: ProcessVisualRef;
   highlightRegion?: ProcessHighlightRegion;
@@ -392,11 +403,20 @@ const PROCESS_HIGHLIGHT_ALLOWED_KEYS = new Set(['xPct', 'yPct', 'widthPct', 'hei
 const PROCESS_STATE_ALLOWED_KEYS = new Set(['id', 'label', 'value']);
 const PROCESS_PREDICTION_ALLOWED_KEYS = new Set(['prompt', 'options', 'correctIndex', 'explanation']);
 const PROCESS_SEQUENCE_ALLOWED_KEYS = new Set(['id', 'prompt', 'stageIdsToOrder', 'explanation']);
+const PROCESS_REACTION_META_ALLOWED_KEYS = new Set([
+  'reactants',
+  'intermediates',
+  'products',
+  'bondsBroken',
+  'bondsFormed',
+  'electronMovement',
+]);
 const PROCESS_STAGE_ALLOWED_KEYS = new Set([
   'id',
   'title',
   'shortLabel',
   'summary',
+  'equation',
   'startingCondition',
   'whatChanges',
   'whyItMatters',
@@ -404,6 +424,7 @@ const PROCESS_STAGE_ALLOWED_KEYS = new Set([
   'commonMisconception',
   'inputs',
   'outputs',
+  'reactionMeta',
   'stateSnapshot',
   'visual',
   'highlightRegion',
@@ -1259,6 +1280,7 @@ export function validateSlideInteractiveConfig(
         }
         for (const optStr of [
           'shortLabel',
+          'equation',
           'startingCondition',
           'whatChanges',
           'whyItMatters',
@@ -1267,6 +1289,31 @@ export function validateSlideInteractiveConfig(
         ] as const) {
           if (sRec[optStr] !== undefined && typeof sRec[optStr] !== 'string') {
             errors.push(`process-stepper stages[${idx}].${optStr} must be a string.`);
+          }
+        }
+        if (typeof sRec.equation === 'string' && sRec.equation.length > 180) {
+          errors.push(`process-stepper stages[${idx}].equation must be at most 180 characters.`);
+        }
+        if (sRec.reactionMeta !== undefined) {
+          const rm = sRec.reactionMeta as Record<string, unknown>;
+          if (!rm || typeof rm !== 'object' || Array.isArray(rm)) {
+            errors.push(`process-stepper stages[${idx}].reactionMeta must be an object.`);
+          } else {
+            checkAllowedKeys(rm, PROCESS_REACTION_META_ALLOWED_KEYS, `stages[${idx}].reactionMeta`, errors);
+            for (const listKey of ['reactants', 'intermediates', 'products', 'bondsBroken', 'bondsFormed'] as const) {
+              if (rm[listKey] !== undefined) {
+                if (
+                  !Array.isArray(rm[listKey]) ||
+                  (rm[listKey] as unknown[]).length > 4 ||
+                  (rm[listKey] as unknown[]).some((x) => typeof x !== 'string' || x.trim().length === 0 || x.length > 120)
+                ) {
+                  errors.push(`process-stepper stages[${idx}].reactionMeta.${listKey} must be up to 4 non-empty strings (<=120 chars).`);
+                }
+              }
+            }
+            if (rm.electronMovement !== undefined && (typeof rm.electronMovement !== 'string' || rm.electronMovement.length > 200)) {
+              errors.push(`process-stepper stages[${idx}].reactionMeta.electronMovement must be a string (<=200 chars).`);
+            }
           }
         }
         for (const optArr of ['inputs', 'outputs'] as const) {

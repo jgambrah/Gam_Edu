@@ -259,4 +259,29 @@ describe('Step 4B ProcessStepperEngine UI: Navigation, State Diff, Prediction, S
     render(<InteractiveEngineRegistry lesson={fixture} slide={stubSlide} lowDataMode={true} />);
     expect(screen.getByText(/Low-Data Summary/i)).toBeTruthy();
   });
+
+  it('renders A-Level Chemistry equation banner and structured reactionMeta (bonds broken/formed, electron movement, intermediates)', () => {
+    const elecCfg = fixture.slides[7].interactive as ProcessStepperInteractiveConfig;
+    const { container } = render(<ProcessStepperEngine config={elecCfg} />);
+
+    // Advance to Stage 2 (pi-attack)
+    fireEvent.click(screen.getByRole('button', { name: /Next Stage/i }));
+    expect(container.querySelector('[data-stage-equation="true"]')?.textContent).toContain('CH₂=CH₂');
+    expect(container.querySelector('[data-stage-reaction-meta="true"]')?.textContent).toContain('C=C π bond');
+    expect(container.querySelector('[data-stage-reaction-meta="true"]')?.textContent).toContain('Curly arrow 1');
+
+    // Reject unknown reactionMeta field
+    const badMeta = validateSlideInteractiveConfig({
+      ...elecCfg,
+      stages: [
+        {
+          ...elecCfg.stages[0],
+          reactionMeta: { unsupportedKey: ['x'] } as unknown as ProcessStepperInteractiveConfig['stages'][0]['reactionMeta'],
+        },
+        elecCfg.stages[1],
+      ],
+    });
+    expect(badMeta.ok).toBe(false);
+    expect(badMeta.errors.join(' ')).toMatch(/Unknown configuration field/i);
+  });
 });

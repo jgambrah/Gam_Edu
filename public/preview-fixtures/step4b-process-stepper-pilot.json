@@ -803,6 +803,14 @@
             "title": "π-Bond Attack & Heterolytic Fission",
             "shortLabel": "π Attack",
             "summary": "A pair of electrons from the C=C π bond forms a new C–H σ bond with Hδ⁺. Simultaneously, the H–Br bond breaks heterolytically, sending both bonding electrons onto Br.",
+            "equation": "CH₂=CH₂ + Hδ⁺–Brδ⁻ → [CH₃–CH₂⁺] + :Br⁻",
+            "reactionMeta": {
+              "reactants": ["Ethene (CH₂=CH₂)", "Hydrogen bromide (HBr)"],
+              "intermediates": ["Ethyl carbocation (CH₃–CH₂⁺)", "Bromide ion (:Br⁻)"],
+              "bondsBroken": ["C=C π bond", "H–Br σ bond (heterolytic)"],
+              "bondsFormed": ["C–H σ bond"],
+              "electronMovement": "Curly arrow 1: C=C π bond → Hδ⁺; Curly arrow 2: H–Br bond pair → Br."
+            },
             "prediction": {
               "prompt": "What intermediate ion is formed when the π bond forms a C–H bond and Br⁻ departs?",
               "options": [
@@ -833,6 +841,13 @@
             "title": "Nucleophilic Attack → Bromoethane",
             "shortLabel": "Bromoethane",
             "summary": "The bromide ion donates a lone pair of electrons to the positively charged carbon, forming a C–Br covalent bond and yielding saturated bromoethane (CH₃CH₂Br).",
+            "equation": "[CH₃–CH₂⁺] + :Br⁻ → CH₃CH₂Br",
+            "reactionMeta": {
+              "intermediates": ["Ethyl carbocation (CH₃–CH₂⁺)", "Bromide ion (:Br⁻)"],
+              "products": ["Bromoethane (CH₃CH₂Br)"],
+              "bondsFormed": ["C–Br σ covalent bond"],
+              "electronMovement": "Curly arrow: lone pair on :Br⁻ → positively charged C⁺."
+            },
             "stateSnapshot": [
               { "id": "carbon", "label": "Final bonding", "value": "C–C single σ (sp³)" },
               { "id": "species", "label": "Product", "value": "CH₃CH₂Br (bromoethane)" }

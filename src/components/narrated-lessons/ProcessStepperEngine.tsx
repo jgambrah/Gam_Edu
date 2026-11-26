@@ -375,6 +375,61 @@ export function ProcessStepperEngine({ config, lessonId }: ProcessStepperEngineP
           {currentStage.summary}
         </p>
 
+        {/* Optional Chemical / Mathematical Equation Banner */}
+        {currentStage.equation && (
+          <div
+            data-stage-equation="true"
+            className="mt-2.5 overflow-x-auto rounded-lg border border-slate-300 bg-slate-900 px-3 py-2 font-mono text-xs font-bold text-amber-200 sm:text-sm"
+          >
+            {currentStage.equation}
+          </div>
+        )}
+
+        {/* Optional Structured Reaction / Mechanism Metadata (A-Level Chemistry & Biology) */}
+        {currentStage.reactionMeta && (
+          <div
+            data-stage-reaction-meta="true"
+            className="mt-2.5 grid gap-1.5 rounded-lg border border-fuchsia-200 bg-fuchsia-50/60 p-2.5 text-xs text-slate-800 sm:grid-cols-2"
+          >
+            {currentStage.reactionMeta.reactants && currentStage.reactionMeta.reactants.length > 0 && (
+              <div>
+                <span className="font-bold text-fuchsia-950">Reactants: </span>
+                <span>{currentStage.reactionMeta.reactants.join(', ')}</span>
+              </div>
+            )}
+            {currentStage.reactionMeta.intermediates && currentStage.reactionMeta.intermediates.length > 0 && (
+              <div>
+                <span className="font-bold text-fuchsia-950">Intermediates: </span>
+                <span>{currentStage.reactionMeta.intermediates.join(', ')}</span>
+              </div>
+            )}
+            {currentStage.reactionMeta.products && currentStage.reactionMeta.products.length > 0 && (
+              <div>
+                <span className="font-bold text-fuchsia-950">Products: </span>
+                <span>{currentStage.reactionMeta.products.join(', ')}</span>
+              </div>
+            )}
+            {currentStage.reactionMeta.bondsBroken && currentStage.reactionMeta.bondsBroken.length > 0 && (
+              <div>
+                <span className="font-bold text-rose-900">Bonds broken: </span>
+                <span>{currentStage.reactionMeta.bondsBroken.join(', ')}</span>
+              </div>
+            )}
+            {currentStage.reactionMeta.bondsFormed && currentStage.reactionMeta.bondsFormed.length > 0 && (
+              <div>
+                <span className="font-bold text-emerald-900">Bonds formed: </span>
+                <span>{currentStage.reactionMeta.bondsFormed.join(', ')}</span>
+              </div>
+            )}
+            {currentStage.reactionMeta.electronMovement && (
+              <div className="sm:col-span-2">
+                <span className="font-bold text-indigo-950">Electron-pair movement: </span>
+                <span>{currentStage.reactionMeta.electronMovement}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
           {currentStage.startingCondition && (
             <div className="rounded-lg border border-slate-200 bg-white p-2.5 text-xs">
