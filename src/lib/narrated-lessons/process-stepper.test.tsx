@@ -109,15 +109,24 @@ describe('Step 4B Schema Validation, Security & Production Compatibility', () =>
   const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step4b-process-stepper-pilot.json');
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as NarratedLesson;
 
-  it('validates all 8 cross-subject pilot slides under dev validation and blocks them at production publish gate (productionVersion: null)', () => {
+  it('validates all 8 cross-subject pilot slides under production publish gate (productionVersion: 1.0.0) and still blocks unsupported future versions', () => {
     expect(fixture.slides.length).toBe(8);
 
-    expect(() =>
-      assertValidLessonInteractives(fixture, { allowDevOnlyEngines: true }),
-    ).not.toThrow();
+    expect(() => assertValidLessonInteractives(fixture)).not.toThrow();
 
-    // MUST be blocked at production publish gate because process-stepper productionVersion is null
-    expect(() => assertValidLessonInteractives(fixture)).toThrow(/not yet deployed in production/i);
+    const futureLesson: NarratedLesson = {
+      ...fixture,
+      slides: [
+        {
+          ...fixture.slides[0],
+          interactive: {
+            ...(fixture.slides[0].interactive as ProcessStepperInteractiveConfig),
+            minEngineVersion: '2.0.0',
+          },
+        },
+      ],
+    };
+    expect(() => assertValidLessonInteractives(futureLesson)).toThrow(/exceeds productionVersion "1\.0\.0"/i);
   });
 
   it('rejects duplicate stage IDs, unsafe prototype state keys, untrusted visual URLs, and invalid highlight coordinates', () => {
