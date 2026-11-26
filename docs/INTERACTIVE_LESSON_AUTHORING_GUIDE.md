@@ -25,10 +25,10 @@ All six engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/in
 | `graph-slider` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject dynamic graph, sliders, piecewise & step waveforms, readouts, predictions & compound discovery challenges |
 | `process-stepper` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, `reactionMeta`, predictions & sequencing |
 | `diagram-hotspots` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject interactive WebP/PNG diagram, point/rect hotspots, structure-to-function links, progressive disclosure, Identify challenges & `nonVisualQuestion` |
-| `construction-lab` | **Production LIVE** | `1.2.0` | `1.2.0` | `1` | `"1.0.0"` (legacy `boolean-circuit`) · `"1.1.0"` (Step 4D domains) · `"1.2.0"` (`atom-bond-builder`) | Legacy & declarative `boolean-circuit`, `equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, and `atom-bond-builder` (all Production LIVE) |
+| `construction-lab` | **Production LIVE (`1.2.0`) · Preview (`1.3.0`)** | `1.3.0` | `1.2.0` | `1` | `"1.0.0"` (legacy `boolean-circuit`) · `"1.1.0"` (Step 4D) · `"1.2.0"` (`atom-bond-builder`) · `"1.3.0"` (`geometry-constructor`, Preview Only) | Legacy & declarative `boolean-circuit`, `equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, `atom-bond-builder` (all LIVE), plus `geometry-constructor` (Step 4F Preview Only) |
 
 > **Version Distinction:** `engineVersion` is the version installed in the codebase; `productionVersion` is the highest version verified live on `https://gam-it-service.app` after manual Vercel promotion; `schemaVersion` is the JSON config schema format (`1`); `minEngineVersion` is the minimum engine version required by a specific slide activity.  
-> **Deferred Future Extensions (Do NOT author yet):** `atom-bond-builder` (v1.1) and `geometry-constructor` (v1.2) are not implemented and are rejected by the publish validator.
+> **Step 4F Preview Gate:** `geometry-constructor` (`minEngineVersion: "1.3.0"`) is implemented in **isolated preview mode** only. Because `productionVersion` is held closed at `"1.2.0"`, any production publish attempt containing `geometry-constructor` is rejected by `validateSlideInteractiveConfig` until explicit preview approval and manual Vercel production promotion.
 
 ---
 
@@ -41,7 +41,7 @@ Strict field allowlisting is enforced — **unknown keys are rejected**.
 | `id` | `string` | **Yes** | `^[A-Za-z0-9_-]{2,64}$`. Must be **globally unique** across all slides in the lesson (including multiple activities on the same slide). |
 | `engine` | `string` | **Yes** | Must be one of the six implemented engine IDs: `rule-explorer`, `code-playground`, `construction-lab`, `graph-slider`, `process-stepper`, `diagram-hotspots`. |
 | `schemaVersion` | `number` | **Yes** | Must be `1`. |
-| `minEngineVersion` | `string` | No (Required `"1.1.0"` on Step 4D `construction-lab` domains) | SemVer `MAJOR.MINOR.PATCH` (e.g. `"1.0.0"` or `"1.1.0"`). Rejected if higher than the engine's `productionVersion` (at publish time) or `engineVersion` (at runtime). |
+| `minEngineVersion` | `string` | No (Required `"1.1.0"` Step 4D, `"1.2.0"` Step 4E, `"1.3.0"` Step 4F Preview) | SemVer `MAJOR.MINOR.PATCH` (e.g. `"1.0.0"`, `"1.1.0"`, `"1.2.0"`, `"1.3.0"`). Rejected if higher than the engine's `productionVersion` (at publish time) or `engineVersion` (at runtime). |
 | `title` | `string` | **Yes** | At least 2 non-whitespace characters. Short student-facing heading. |
 | `instructions` | `string` | **Yes** | At least 4 non-whitespace characters. Clear action prompt for the learner. |
 | `accessibilityLabel` | `string` | **Yes** | At least 4 non-whitespace characters. Screen-reader landmark label (`aria-label`). |
@@ -114,7 +114,14 @@ Shared optional fields across all Step 4D domain adapters: `subjectTag`, `modelN
     - The supported element registry (`Z = 1..30`, plus `Br`, `I`) does not imply unrestricted validation of transition-metal bonding or coordination complexes.
     - Individual orbital spin-box construction, resonance hybrids, odd-electron radicals, molecular orbital (MO) theory, and heavyweight 3D molecular viewers remain outside the approved scope.
   - **Existing engines reused (no duplication):** Metallic bonding & Intermolecular Forces (noting London dispersion forces occur between ALL molecules) use existing LIVE `diagram-hotspots`, `process-stepper`, `rule-explorer`, and `graph-slider`.
-- **Deferred beyond Step 4E:** `geometry-constructor` (Step 4F).
+- **`labKind: "geometry-constructor"` (`1.3.0` Preview Only — Geometry Construction Laboratory)**:
+  - **Gate:** Requires `"minEngineVersion": "1.3.0"`. Held closed at the production publish gate while `construction-lab.productionVersion` remains `"1.2.0"`.
+  - **Required:** `"curriculumLevel": "introductory" | "igcse" | "as-a-level"` and `"mode"`:
+    - `"compass-straightedge"`: `gridBounds`, `initialPoints` (`1..60`), `initialSegments?` (`<= 80`), `constructionGoal` (`perpendicular-bisector`, `angle-bisector`, `triangle-sss`, `triangle-sas`, `triangle-asa`, `locus-circle`, `parallel-line`, `perpendicular-through-point`), `requireConstructionArcs?` (verifies genuine equal-radius / intersecting arc provenance, never merely counting unrelated arcs), `distanceTolerance?` (`0.01..1.0`), `angleToleranceDeg?` (`0.1..5.0`). Validates SSS/SAS/ASA triangle feasibility at authoring time and accepts both mirrored orientations.
+    - `"transformations"`: `gridBounds` (with `step` in `(0, 5]`), `preImageVertices` (`3..8`, simple non-self-intersecting polygon), `transformation` (`translation`, `reflection` across `x-axis`, `y-axis`, `y = x`, `y = −x`, `x = k`, `y = k`, `rotation` about arbitrary `(cx, cy)`, `enlargement` with non-zero `scaleFactor`, including fractional and negative scale factors), `requireLabelledCorrespondence?`. Enforces authoring-time grid reachability (`isReachableOnGrid`) and in-bounds checks for every expected image vertex.
+    - `"coordinate-geometry"`: `gridBounds`, `coordGoal` (`midpoint`, `parallel-through-point`, `perpendicular-through-point`, `line-from-equation`). Uses general line form `ax + by + c = 0` so horizontal and vertical perpendicular lines never produce `Infinity` or `NaN` (vertical gradients report `"undefined (vertical)"`).
+    - `"circle-theorems"`: `circleTheorem` (`angle-at-centre`, `semicircle-90`, `same-segment`, `cyclic-quadrilateral`, `tangent-radius`), `fixedAnglesDeg`, `movablePointAngleDeg`, `targetPrompt`, `expectedAngleDeg?` (cross-checked against derived mathematical angle at authoring time), `angleToleranceDeg?`. Enforces arc/chord domain guards (major vs minor/reflex arc, non-crossing cyclic quadrilateral).
+  - **Existing engines reused (no duplication):** 3D solid geometry nets reuse existing LIVE `process-stepper` / `diagram-hotspots`.
 
 ### D. `graph-slider` (Step 4A — Production LIVE `1.0.0`)
 

@@ -34,13 +34,15 @@ import {
   type LogicGateOp,
 } from '@/lib/boolean-logic/circuit-engine';
 import { validateAtomBondBuilderConfig } from './atom-bond-schema-validator';
+import { validateGeometryConstructorConfig } from './geometry-schema-validator';
 
 export type ConstructionLabKind =
   | 'boolean-circuit'
   | 'equation-balancer'
   | 'electrical-circuit'
   | 'bio-sequence-builder'
-  | 'atom-bond-builder';
+  | 'atom-bond-builder'
+  | 'geometry-constructor';
 
 export interface ConstructionPredictionDef {
   prompt: string;
@@ -232,9 +234,12 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (obj.labKind === 'geometry-constructor') {
+    return '1.3.0';
   }
   if (obj.labKind === 'atom-bond-builder') {
     return '1.2.0';
@@ -253,7 +258,8 @@ export function validateConstructionLabConfig(
     labKind !== 'equation-balancer' &&
     labKind !== 'electrical-circuit' &&
     labKind !== 'bio-sequence-builder' &&
-    labKind !== 'atom-bond-builder'
+    labKind !== 'atom-bond-builder' &&
+    labKind !== 'geometry-constructor'
   ) {
     errors.push(`Unsupported construction-lab labKind "${String(labKind)}".`);
     return;
@@ -287,6 +293,12 @@ export function validateConstructionLabConfig(
   // Domain 5 (Step 4E): Atomic & Molecular Bonding Laboratory
   if (labKind === 'atom-bond-builder') {
     validateAtomBondBuilderConfig(obj, errors);
+    return;
+  }
+
+  // Domain 6 (Step 4F): Geometry Construction Laboratory
+  if (labKind === 'geometry-constructor') {
+    validateGeometryConstructorConfig(obj, errors);
     return;
   }
 

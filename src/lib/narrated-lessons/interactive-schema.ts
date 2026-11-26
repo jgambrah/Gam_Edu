@@ -50,6 +50,15 @@ import type {
   OctetPolicy,
   VseprShapeId,
 } from '@/lib/construction-lab/atom-bond-engine';
+import type {
+  CircleTheoremKind,
+  CompassConstructionGoal,
+  CoordinateGeometryGoal,
+  GeoPoint,
+  GeoSegment,
+  GeometryConstructorMode,
+  TransformationSpec,
+} from '@/lib/construction-lab/geometry-engine';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -122,11 +131,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.2.0',
+    engineVersion: '1.3.0',
     productionVersion: '1.2.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0 LIVE).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0 LIVE; geometry-constructor 1.3.0 preview).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -292,12 +301,60 @@ export interface AtomBondBuilderConstructionConfig extends ConstructionLabShared
   bondOrdersDisplay?: Array<1 | 2 | 3>;
 }
 
+export interface GeometryConstructorBase extends ConstructionLabSharedFields {
+  labKind: 'geometry-constructor';
+  curriculumLevel: 'introductory' | 'igcse' | 'as-a-level';
+  gridBounds?: { xMin: number; xMax: number; yMin: number; yMax: number; step?: number };
+}
+
+export interface GeometryCompassConfig extends GeometryConstructorBase {
+  mode: 'compass-straightedge';
+  gridBounds: { xMin: number; xMax: number; yMin: number; yMax: number; step?: number };
+  initialPoints: GeoPoint[];
+  initialSegments?: GeoSegment[];
+  allowedTools?: Array<'point' | 'segment' | 'line' | 'compass-arc' | 'intersect'>;
+  constructionGoal: CompassConstructionGoal;
+}
+
+export interface GeometryTransformationConfig extends GeometryConstructorBase {
+  mode: 'transformations';
+  gridBounds: { xMin: number; xMax: number; yMin: number; yMax: number; step?: number };
+  preImageVertices: Array<{ x: number; y: number; label?: string }>;
+  transformation: TransformationSpec;
+  requireLabelledCorrespondence?: boolean;
+}
+
+export interface GeometryCoordinateConfig extends GeometryConstructorBase {
+  mode: 'coordinate-geometry';
+  gridBounds: { xMin: number; xMax: number; yMin: number; yMax: number; step?: number };
+  coordGoal: CoordinateGeometryGoal;
+}
+
+export interface GeometryCircleTheoremConfig extends GeometryConstructorBase {
+  mode: 'circle-theorems';
+  circleTheorem: {
+    theorem: CircleTheoremKind;
+    fixedAnglesDeg: number[];
+    movablePointAngleDeg: number;
+    targetPrompt: string;
+    expectedAngleDeg?: number;
+    angleToleranceDeg?: number;
+  };
+}
+
+export type GeometryConstructorConstructionConfig =
+  | GeometryCompassConfig
+  | GeometryTransformationConfig
+  | GeometryCoordinateConfig
+  | GeometryCircleTheoremConfig;
+
 export type ConstructionLabInteractiveConfig =
   | BooleanCircuitConstructionConfig
   | EquationBalancerConstructionConfig
   | ElectricalCircuitConstructionConfig
   | BioSequenceConstructionConfig
-  | AtomBondBuilderConstructionConfig;
+  | AtomBondBuilderConstructionConfig
+  | GeometryConstructorConstructionConfig;
 
 export type RuleOperator = 'AND' | 'OR' | 'NOT' | 'XOR';
 
