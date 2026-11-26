@@ -51,6 +51,7 @@ import { PointerCueEditor } from './PointerCueEditor';
 import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
 import { InlineCodePlayground } from './InlineCodePlayground';
 import { BooleanIntroInteractive } from './BooleanIntroInteractive';
+import { BooleanCircuitLab } from './BooleanCircuitLab';
 import { resolveRestoredStepIndex } from '@/lib/narrated-lessons/progress-migration';
 
 type PlayerStep =
@@ -1478,10 +1479,13 @@ export function NarratedLessonPlayer({
               </div>
             </div>
 
-            {/* Interactive introductory explorations (e.g. Boolean Logic 10A intro slides) */}
+            {/* Interactive introductory explorations (Boolean Logic 10A intro01–intro03) */}
             <div className="mt-3">
               <BooleanIntroInteractive lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
             </div>
+
+            {/* Interactive Boolean Logic Circuit Lab (Chapter 10 Boolean Logic lessons) */}
+            <BooleanCircuitLab lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
 
             {/* Collapsible Inline Runner (Pseudocode / Python / SQL) for Computer Science lessons */}
             <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />

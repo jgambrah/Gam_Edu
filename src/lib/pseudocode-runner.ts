@@ -246,9 +246,10 @@ class Runtime {
     const trimmed = raw.trim();
     if (varType === 'STRING' || varType === 'CHAR') return raw;
     if (varType === 'BOOLEAN') {
-      if (trimmed.toUpperCase() === 'TRUE') return true;
-      if (trimmed.toUpperCase() === 'FALSE') return false;
-      throw new Error(`Expected TRUE or FALSE for BOOLEAN input, got "${raw}".`);
+      const up = trimmed.toUpperCase();
+      if (up === 'TRUE' || up === '1') return true;
+      if (up === 'FALSE' || up === '0') return false;
+      throw new Error(`Expected TRUE/FALSE (or 1/0) for BOOLEAN input, got "${raw}".`);
     }
     if (varType === 'INTEGER') {
       const n = Number(trimmed);

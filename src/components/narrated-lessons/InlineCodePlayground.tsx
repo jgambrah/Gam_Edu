@@ -19,8 +19,9 @@ import {
   getWorkshopActivitiesForLesson,
   type InlineWorkshopActivity,
 } from '@/lib/narrated-lessons/ch11-workshop-activities';
+import { getCh10ActivitiesForLesson } from '@/lib/narrated-lessons/ch10-boolean-activities';
 import { runPseudocode } from '@/lib/pseudocode-runner';
-import { outputMatches, runPython } from '@/lib/python-runner';
+import { outputMatches, preparePython, runPython } from '@/lib/python-runner';
 import { executeIgcseSql, type SqlExecutionResult } from '@/lib/sql-practice/igcse-sql-engine';
 
 type PlaygroundMode = 'pseudocode' | 'python' | 'sql';
@@ -53,6 +54,12 @@ function defaultModeForLesson(lesson: NarratedLesson): PlaygroundMode {
 function starterForSandbox(lesson: NarratedLesson, mode: PlaygroundMode): { code: string; stdin: string } {
   const id = (lesson.lessonId || '').toLowerCase();
   if (mode === 'sql') {
+    if (id.includes('boolean-logic')) {
+      return {
+        code: '-- Enrichment only (isolated Sensors table: id, a, b)\nSELECT id\nFROM Sensors\nWHERE a = 1 AND b = 1\nORDER BY id;',
+        stdin: '',
+      };
+    }
     if (id.includes('scenarios-b')) {
       return {
         code: 'SELECT Product, PricePesewas, Quantity\nFROM Sales;',
@@ -128,10 +135,22 @@ function draftStorageKey(lessonId: string, activityId: string, mode: PlaygroundM
 
 export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundProps) {
   const enabled = useMemo(() => isComputerScienceLesson(lesson), [lesson]);
-  const lessonActivities = useMemo(
-    () => getWorkshopActivitiesForLesson(lesson.lessonId),
-    [lesson.lessonId]
-  );
+  const lessonActivities = useMemo<InlineWorkshopActivity[]>(() => {
+    const ch11 = getWorkshopActivitiesForLesson(lesson.lessonId);
+    const ch10: InlineWorkshopActivity[] = getCh10ActivitiesForLesson(lesson.lessonId).map((a) => ({
+      id: a.id,
+      lessonId: a.lessonId,
+      afterSlideId: a.afterSlideId,
+      title: a.title,
+      task: a.task,
+      languages: ['pseudocode', 'python', 'sql'],
+      pythonStarter: a.pythonStarter,
+      pseudocodeStarter: a.pseudocodeStarter,
+      sqlStarter: a.sqlStarter,
+      publicTests: [a.publicSample],
+    }));
+    return [...ch11, ...ch10];
+  }, [lesson.lessonId]);
   const slideActivities = useMemo(
     () => (slideId ? lessonActivities.filter((a) => a.afterSlideId === slideId) : []),
     [lessonActivities, slideId]
@@ -144,6 +163,7 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
   const [code, setCode] = useState<string>(() => starterForSandbox(lesson, initialMode).code);
   const [stdinText, setStdinText] = useState<string>(() => starterForSandbox(lesson, initialMode).stdin);
   const [running, setRunning] = useState(false);
+  const [pyStatus, setPyStatus] = useState<'idle' | 'loading' | 'ready' | 'failed'>('idle');
   const [textOutput, setTextOutput] = useState<string[]>([]);
   const [sqlResult, setSqlResult] = useState<SqlExecutionResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -186,6 +206,24 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
     setCheckBanner(null);
     setConfirmReset(false);
   }, [lesson, activeActivity, activeActivityId, mode]);
+
+  // Pre-warm Pyodide Web Worker as soon as the learner opens Python mode
+  useEffect(() => {
+    if (!open || mode !== 'python') return;
+    if (pyStatus === 'ready' || pyStatus === 'loading') return;
+    let alive = true;
+    setPyStatus('loading');
+    preparePython()
+      .then(() => {
+        if (alive) setPyStatus('ready');
+      })
+      .catch(() => {
+        if (alive) setPyStatus('failed');
+      });
+    return () => {
+      alive = false;
+    };
+  }, [open, mode, pyStatus]);
 
   // Persist learner draft per lesson/activity/language
   useEffect(() => {
@@ -239,15 +277,22 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
           setErrorMsg(res.error || 'SQL syntax error.');
         }
       } else {
+        setPyStatus((prev) => (prev === 'ready' ? 'ready' : 'loading'));
         const res = await runPython(code, {
           stdin: stdinText,
           strictInput: true,
           timeoutMs: 10000,
         });
         if (res.ok) {
+          setPyStatus('ready');
           const lines = res.output ? res.output.split('\n') : [];
           setTextOutput(lines.length > 0 ? lines : ['(Program finished with no output)']);
         } else {
+          if (/could not start|failed to load|too long to load/i.test(res.error || '')) {
+            setPyStatus('failed');
+          } else {
+            setPyStatus('ready');
+          }
           setErrorMsg(res.error || 'Python execution error.');
         }
       }
@@ -515,6 +560,17 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
                   </button>
                 </span>
               )}
+              {mode === 'python' && pyStatus === 'loading' && (
+                <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/15 px-2 py-1 text-[11px] font-semibold text-amber-200">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Loading Python 3...
+                </span>
+              )}
+              {mode === 'python' && pyStatus === 'ready' && (
+                <span className="hidden sm:inline-flex items-center rounded-lg bg-emerald-500/15 px-2 py-1 text-[11px] font-semibold text-emerald-300">
+                  Python 3 ready
+                </span>
+              )}
               <button
                 type="button"
                 onClick={handleRun}
@@ -522,7 +578,7 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
                 className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1 text-xs font-bold text-white hover:bg-emerald-500 disabled:opacity-60"
               >
                 {running ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5 fill-current" />}
-                {running ? 'Running...' : 'Run'}
+                {running ? (mode === 'python' && pyStatus === 'loading' ? 'Loading Python...' : 'Running...') : 'Run'}
               </button>
               {activeActivity && (
                 <button
@@ -581,6 +637,7 @@ export function InlineCodePlayground({ lesson, slideId }: InlineCodePlaygroundPr
           {mode === 'sql' && (
             <p className="text-[11px] text-slate-400">
               Isolated tables: <code className="text-sky-300">Sales</code> (Product, PricePesewas, Quantity),{' '}
+              <code className="text-sky-300">Sensors</code> (id, a, b),{' '}
               <code className="text-sky-300">Stock</code>, <code className="text-sky-300">Equipment</code>,{' '}
               <code className="text-sky-300">Weather</code> (read-only).
             </p>
