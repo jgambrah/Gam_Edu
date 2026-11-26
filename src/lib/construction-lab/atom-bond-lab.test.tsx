@@ -245,7 +245,7 @@ describe('Step 4E Schema Validation, Production Gate (productionVersion 1.2.0) &
       { requireImplemented: true, requireProduction: true },
     );
     expect(futureVer.ok).toBe(false);
-    expect(futureVer.errors.join(' ')).toMatch(/exceeds.*1\.2\.0/i);
+    expect(futureVer.errors.join(' ')).toMatch(/exceeds productionVersion/i);
 
     const downgrade = validateSlideInteractiveConfig({ ...a01, minEngineVersion: '1.1.0' });
     expect(downgrade.ok).toBe(false);

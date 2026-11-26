@@ -32,9 +32,9 @@ import { GeometryConstructorLab } from '@/components/narrated-lessons/constructi
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 4F — Geometry Construction Laboratory (geometry-constructor 1.3.0)', () => {
-  it('enforces construction-lab engineVersion 1.3.0 and holds productionVersion closed at 1.2.0', () => {
+  it('confirms construction-lab engineVersion 1.3.0 and productionVersion 1.3.0 (LIVE)', () => {
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.3.0');
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.2.0');
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 
   describe('1. Analytical Primitives & Intersections', () => {
@@ -312,12 +312,18 @@ describe('Step 4F — Geometry Construction Laboratory (geometry-constructor 1.3
       expect(lowVer.ok).toBe(false);
       expect(lowVer.errors.some((e) => /1\.3\.0/.test(e))).toBe(true);
 
-      const prodBlocked = validateSlideInteractiveConfig(
+      const prodPassed = validateSlideInteractiveConfig(
         { ...baseMidpoint, minEngineVersion: '1.3.0' },
         { requireProduction: true },
       );
-      expect(prodBlocked.ok).toBe(false);
-      expect(prodBlocked.errors.some((e) => /exceeds productionVersion/i.test(e))).toBe(true);
+      expect(prodPassed.ok).toBe(true);
+
+      const futureBlocked = validateSlideInteractiveConfig(
+        { ...baseMidpoint, minEngineVersion: '1.4.0' },
+        { requireProduction: true },
+      );
+      expect(futureBlocked.ok).toBe(false);
+      expect(futureBlocked.errors.some((e) => /exceeds productionVersion/i.test(e))).toBe(true);
 
       const unreachable = validateSlideInteractiveConfig(
         {
@@ -354,11 +360,8 @@ describe('Step 4F — Geometry Construction Laboratory (geometry-constructor 1.3
       };
       expect(lesson.slides).toHaveLength(13);
 
-      // Must pass preview validation (allowDevOnlyEngines: true)
-      expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: true })).not.toThrow();
-
-      // Must FAIL production gate while productionVersion is held closed at 1.2.0
-      expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).toThrow(/productionVersion/i);
+      // Passes strict production validation now that productionVersion is 1.3.0 LIVE
+      expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).not.toThrow();
 
       const totalActivities = lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0);
       expect(totalActivities).toBe(17);
