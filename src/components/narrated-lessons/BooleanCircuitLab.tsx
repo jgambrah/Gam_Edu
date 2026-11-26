@@ -294,10 +294,21 @@ export function BooleanCircuitLab({ lessonId, slideId }: BooleanCircuitLabProps)
     pushHistory();
     setBuilderGates([]);
     setBuilderOutput(activity.output);
+    setNewGateId(activity.gates.length === 1 ? activity.output : 'D');
+    setNewPin1(activity.inputs[0] ?? 'A');
+    setNewPin2(activity.inputs[1] ?? activity.inputs[0] ?? 'A');
     setGradeResult(null);
   };
 
   const handleGrade = () => {
+    if (builderGates.length === 0) {
+      setGradeResult({
+        passed: false,
+        mode: gradingMode,
+        message: 'No gates added yet — choose a Gate Type and Input Pins above, click "+ Add Gate" to place it into the circuit, then click "Check Circuit".',
+      });
+      return;
+    }
     const res = gradeCircuit(activeNetlist, targetNetlist, gradingMode);
     setGradeResult(res);
   };
@@ -624,13 +635,24 @@ export function BooleanCircuitLab({ lessonId, slideId }: BooleanCircuitLabProps)
             </div>
           )}
 
-          {/* Validation Errors (Cycles / Missing Inputs / Multiple Drivers / Invalid Arity) */}
-          {!validation.ok && (
-            <div className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
-              {validation.errors.map((err, idx) => (
-                <p key={idx}>• {err}</p>
-              ))}
+          {/* Friendly empty-builder guidance OR Validation Errors */}
+          {labMode === 'build' && builderGates.length === 0 ? (
+            <div className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-medium text-sky-900">
+              <strong>Step 1:</strong> Choose a <strong>Gate Type</strong>, <strong>Output Label</strong> (e.g. <code className="font-mono font-bold">{activity.output}</code>), and <strong>Input Pins</strong> above, then click <strong>+ Add Gate</strong> to wire it into your circuit before clicking <strong>Check Circuit</strong>.
             </div>
+          ) : (
+            !validation.ok && (
+              <div className="rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-900">
+                {validation.errors.map((err, idx) => (
+                  <p key={idx}>• {err}</p>
+                ))}
+                {labMode === 'build' && builderGates.length > 0 && (
+                  <p className="mt-1 text-[11px] text-amber-800">
+                    Tip: Select your last gate in the <strong>Final Output</strong> dropdown above, or add a gate with Output Label <code className="font-mono font-bold">{activity.output}</code>.
+                  </p>
+                )}
+              </div>
+            )
           )}
 
           {/* Responsive Wired Circuit SVG */}
