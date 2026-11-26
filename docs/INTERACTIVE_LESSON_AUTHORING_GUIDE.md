@@ -103,7 +103,18 @@ Shared optional fields across all Step 4D domain adapters: `subjectTag`, `modelN
   - Never uses `Infinity` in JSON; detects short circuits safely (no finite current computed through 0 Ω closed loop) and diagnoses meter misconnections. Lamps use simplified constant-resistance models with qualitative brightness.
 - **`labKind: "bio-sequence-builder"` (`1.1.0` LIVE — Biological Sequence & Inheritance Builder)**:
   - Modes: `"dna-base-pairing"` (antiparallel A–T/C–G), `"dna-to-mrna"` (3′→5′ template → 5′→3′ mRNA, A→U, catches T-in-RNA), `"mrna-translation"` (standard 64-codon table, N→C polypeptide, STOP codons terminate without assigning an amino acid, `isCompleteCodingSequence?`), `"monohybrid-punnett"` (`parent1Genotype`, `parent2Genotype`, `dominantAllele`, `dominantTrait?`, `recessiveTrait?`, `inheritanceAssumption?`, ratios presented strictly as probabilities).
-- **Deferred beyond Step 4D v1.0:** `atom-bond-builder` (v1.1) and `geometry-constructor` (v1.2).
+- **`labKind: "atom-bond-builder"` (`1.2.0` Step 4E Preview — Blocked from Production CDN Publish while `productionVersion: "1.1.0"`)**:
+  - **Required:** `"minEngineVersion": "1.2.0"`, `"curriculumLevel": "introductory" | "igcse" | "as-a-level"`, and `"mode"`:
+    - `"atomic-structure"`: `representation` (`"shells"` for `Z = 1..20` simplified first-20 filling model, or `"subshells"` for `Z = 1..30` `1s..3d` with Cr/Cu anomalies and `4s`-before-`3d` cation ionisation), `targetElement`, `targetMassNumber` (physically verified isotopes unless `allowHypotheticalIsotope: true`; flags radioactive Carbon-14), `targetCharge?`, `lockNucleus?`.
+    - `"ionic-bonding"`: up to **6 ions** (`NaCl`, `MgO`, `MgCl₂`, `CaCl₂`, `Al₂O₃`), `cationElement`, `anionElement`, `targetCationCount`, `targetAnionCount`, `targetCationCharge`, `targetAnionCharge`, `requireSimplestRatio?` (default `true`; rejects electrically neutral non-simplest ratios like `Na₂Cl₂`). Framed as extended ionic lattice empirical composition, never isolated molecules.
+    - `"covalent-bonding"`: `2..8` atoms (`Z = 1..30, Br, I`), single/double/triple/dative bonds, learner-controlled lone pairs, `formulaDisplay` consistency check, `netCharge?`, `octetPolicy` (`"strict-duet-octet"` | `"electron-deficient"` | `"expanded-octet"`), atom-specific `minValenceElectrons`/`maxValenceElectrons` (`BF₃`, `PCl₅`, `SF₆`), coordinate donor/acceptor validation (`NH₃ + H⁺ → NH₄⁺`), `referenceBonds?`. Odd-electron radicals and resonance hybrids are rejected cleanly.
+    - `"molecular-geometry"`: bounded VSEPR (`stericNumber 2..6`, multiple bonds count as 1 domain), `centralElement`, `surroundingElements` (2–6), `targetBondingDomains`, `targetLonePairs`, `targetElectronGeometry`, `targetMolecularShape`, `targetBondAngleLabel`, `checkPolarity?`, `expectedPolar?`. Evaluates polarity via true 3D VSEPR unit-vector Pauling dipole summation (`CO₂` non-polar vs `HCN` polar; `CH₄` non-polar vs `CH₃Cl` polar).
+  - **Scientific Model Disclaimers (Mandatory):**
+    - Electronegativity-based molecular polarity calculations are simplified educational approximations, not exact experimental dipole-moment predictions.
+    - The supported element registry (`Z = 1..30`, plus `Br`, `I`) does not imply unrestricted validation of transition-metal bonding or coordination complexes.
+    - Individual orbital spin-box construction, resonance hybrids, odd-electron radicals, molecular orbital (MO) theory, and heavyweight 3D molecular viewers remain outside the approved scope.
+  - **Existing engines reused (no duplication):** Metallic bonding & Intermolecular Forces (noting London dispersion forces occur between ALL molecules) use existing LIVE `diagram-hotspots`, `process-stepper`, `rule-explorer`, and `graph-slider`.
+- **Deferred beyond Step 4E:** `geometry-constructor` (Step 4F).
 
 ### D. `graph-slider` (Step 4A — Production LIVE `1.0.0`)
 

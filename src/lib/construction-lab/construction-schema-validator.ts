@@ -33,12 +33,14 @@ import {
   type LogicCircuitNetlist,
   type LogicGateOp,
 } from '@/lib/boolean-logic/circuit-engine';
+import { validateAtomBondBuilderConfig } from './atom-bond-schema-validator';
 
 export type ConstructionLabKind =
   | 'boolean-circuit'
   | 'equation-balancer'
   | 'electrical-circuit'
-  | 'bio-sequence-builder';
+  | 'bio-sequence-builder'
+  | 'atom-bond-builder';
 
 export interface ConstructionPredictionDef {
   prompt: string;
@@ -230,9 +232,12 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (obj.labKind === 'atom-bond-builder') {
+    return '1.2.0';
   }
   return '1.1.0';
 }
@@ -247,7 +252,8 @@ export function validateConstructionLabConfig(
     labKind !== 'boolean-circuit' &&
     labKind !== 'equation-balancer' &&
     labKind !== 'electrical-circuit' &&
-    labKind !== 'bio-sequence-builder'
+    labKind !== 'bio-sequence-builder' &&
+    labKind !== 'atom-bond-builder'
   ) {
     errors.push(`Unsupported construction-lab labKind "${String(labKind)}".`);
     return;
@@ -255,16 +261,16 @@ export function validateConstructionLabConfig(
 
   // Enforce domain-specific minimum engine version so new domains CANNOT bypass the production gate!
   const requiredMin = getRequiredConstructionLabMinVersion(obj);
-  if (requiredMin === '1.1.0') {
+  if (requiredMin !== '1.0.0') {
     if (typeof obj.minEngineVersion !== 'string') {
       errors.push(
-        `construction-lab "${labKind}"${labKind === 'boolean-circuit' ? ' with declarative circuitConfig' : ''} requires explicit "minEngineVersion": "1.1.0" (or higher).`,
+        `construction-lab "${labKind}"${labKind === 'boolean-circuit' ? ' with declarative circuitConfig' : ''} requires explicit "minEngineVersion": "${requiredMin}" (or higher).`,
       );
     } else {
-      const cmp = compareSemverFn(obj.minEngineVersion, '1.1.0');
+      const cmp = compareSemverFn(obj.minEngineVersion, requiredMin);
       if (cmp === null || cmp < 0) {
         errors.push(
-          `construction-lab "${labKind}" requires minEngineVersion >= "1.1.0" (got "${obj.minEngineVersion}"). Older versions cannot run Step 4D domain adapters.`,
+          `construction-lab "${labKind}" requires minEngineVersion >= "${requiredMin}" (got "${obj.minEngineVersion}"). Older versions cannot run this domain adapter.`,
         );
       }
     }
@@ -277,6 +283,12 @@ export function validateConstructionLabConfig(
     }
   }
   validatePrediction(obj.prediction, errors);
+
+  // Domain 5 (Step 4E): Atomic & Molecular Bonding Laboratory
+  if (labKind === 'atom-bond-builder') {
+    validateAtomBondBuilderConfig(obj, errors);
+    return;
+  }
 
   // Domain 4: Boolean Circuit (legacy activityId OR declarative circuitConfig)
   if (labKind === 'boolean-circuit') {
