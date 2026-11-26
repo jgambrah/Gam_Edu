@@ -14,6 +14,11 @@
 
 import { MATH_EXPR_LIMITS, tryParseMathExpr } from './math-expr';
 import type { GraphChallengeCheck, GraphPoint } from './graph-sampler';
+import {
+  FORBIDDEN_STATE_IDS,
+  isApprovedProcessAssetPath,
+  type ProcessStateField,
+} from './process-stepper-logic';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -55,6 +60,11 @@ export const INTERACTIVE_RESOURCE_LIMITS = {
   maxGraphCurvesPerSlide: 8,
   maxMathAstDepth: MATH_EXPR_LIMITS.maxAstDepth,
   maxMathAstNodes: MATH_EXPR_LIMITS.maxAstNodes,
+  minProcessStages: 2,
+  maxProcessStages: 10,
+  maxProcessStateFields: 6,
+  maxProcessPredictions: 3,
+  maxProcessSequenceItems: 6,
 } as const;
 
 export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, InteractiveEngineMeta> = {
@@ -92,11 +102,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'process-stepper': {
     id: 'process-stepper',
-    engineVersion: '0.0.0-planned',
+    engineVersion: '1.0.0',
     productionVersion: null,
     supportedSchemaVersions: [1],
-    implemented: false,
-    description: 'Reserved for Step 4: Step-by-step process and mechanism explorer.',
+    implemented: true,
+    description: 'Cross-subject step-by-step process & mechanism explorer with state tracking, highlights, and discovery checks (Step 4B).',
   },
   'diagram-hotspots': {
     id: 'diagram-hotspots',
@@ -245,8 +255,68 @@ export interface GraphSliderInteractiveConfig extends SlideInteractiveBase {
   showDataTable?: boolean;
 }
 
+export type ProcessStepperMode = 'linear' | 'cyclic';
+export type ProcessVisualMode = 'diagram' | 'stage-illustrations' | 'shared-highlight';
+
+export interface ProcessVisualRef {
+  src: string;
+  altText: string;
+  caption?: string;
+}
+
+export interface ProcessHighlightRegion {
+  xPct: number;
+  yPct: number;
+  widthPct: number;
+  heightPct: number;
+  label: string;
+}
+
+export interface ProcessStagePredictionDef {
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+}
+
+export interface ProcessStageDef {
+  id: string;
+  title: string;
+  shortLabel?: string;
+  summary: string;
+  startingCondition?: string;
+  whatChanges?: string;
+  whyItMatters?: string;
+  connectionToNext?: string;
+  commonMisconception?: string;
+  inputs?: string[];
+  outputs?: string[];
+  stateSnapshot?: ProcessStateField[];
+  visual?: ProcessVisualRef;
+  highlightRegion?: ProcessHighlightRegion;
+  prediction?: ProcessStagePredictionDef;
+}
+
+export interface ProcessSequenceChallengeDef {
+  id: string;
+  prompt: string;
+  stageIdsToOrder: string[];
+  explanation: string;
+}
+
+export interface ProcessStepperInteractiveConfig extends SlideInteractiveBase {
+  engine: 'process-stepper';
+  subjectTag?: string;
+  modelNote?: string;
+  mode: ProcessStepperMode;
+  visualMode?: ProcessVisualMode;
+  sharedVisual?: ProcessVisualRef;
+  stages: ProcessStageDef[];
+  sequenceChallenge?: ProcessSequenceChallengeDef;
+}
+
 export interface PlannedEngineInteractiveConfig extends SlideInteractiveBase {
-  engine: 'process-stepper' | 'diagram-hotspots';
+  engine: 'diagram-hotspots';
   params?: Record<string, unknown>;
 }
 
@@ -255,6 +325,7 @@ export type SlideInteractiveConfig =
   | ConstructionLabInteractiveConfig
   | RuleExplorerInteractiveConfig
   | GraphSliderInteractiveConfig
+  | ProcessStepperInteractiveConfig
   | PlannedEngineInteractiveConfig;
 
 const ALLOWED_RULE_OPS = new Set<RuleOperator>(['AND', 'OR', 'NOT', 'XOR']);
@@ -304,9 +375,40 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
     'samples',
     'showDataTable',
   ]),
-  'process-stepper': new Set(['params']),
+  'process-stepper': new Set([
+    'subjectTag',
+    'modelNote',
+    'mode',
+    'visualMode',
+    'sharedVisual',
+    'stages',
+    'sequenceChallenge',
+  ]),
   'diagram-hotspots': new Set(['params']),
 };
+
+const PROCESS_VISUAL_ALLOWED_KEYS = new Set(['src', 'altText', 'caption']);
+const PROCESS_HIGHLIGHT_ALLOWED_KEYS = new Set(['xPct', 'yPct', 'widthPct', 'heightPct', 'label']);
+const PROCESS_STATE_ALLOWED_KEYS = new Set(['id', 'label', 'value']);
+const PROCESS_PREDICTION_ALLOWED_KEYS = new Set(['prompt', 'options', 'correctIndex', 'explanation']);
+const PROCESS_SEQUENCE_ALLOWED_KEYS = new Set(['id', 'prompt', 'stageIdsToOrder', 'explanation']);
+const PROCESS_STAGE_ALLOWED_KEYS = new Set([
+  'id',
+  'title',
+  'shortLabel',
+  'summary',
+  'startingCondition',
+  'whatChanges',
+  'whyItMatters',
+  'connectionToNext',
+  'commonMisconception',
+  'inputs',
+  'outputs',
+  'stateSnapshot',
+  'visual',
+  'highlightRegion',
+  'prediction',
+]);
 
 const HEX_COLOR_RE = /^#[0-9A-Fa-f]{6}$/;
 const GRAPH_VAR_RE = /^[A-Za-z][A-Za-z0-9_]{0,24}$/;
@@ -1080,6 +1182,251 @@ export function validateSlideInteractiveConfig(
             }
           }
         });
+      }
+    }
+  } else if (obj.engine === 'process-stepper') {
+    const validateVisualRef = (vis: unknown, label: string) => {
+      if (!vis || typeof vis !== 'object' || Array.isArray(vis)) {
+        errors.push(`process-stepper ${label} must be an object.`);
+        return;
+      }
+      const vRec = vis as Record<string, unknown>;
+      checkAllowedKeys(vRec, PROCESS_VISUAL_ALLOWED_KEYS, label, errors);
+      if (typeof vRec.src !== 'string' || !isApprovedProcessAssetPath(vRec.src)) {
+        errors.push(`process-stepper ${label}.src must be an approved WebP/PNG media path.`);
+      }
+      if (typeof vRec.altText !== 'string' || vRec.altText.trim().length < 4) {
+        errors.push(`process-stepper ${label}.altText must be at least 4 characters.`);
+      }
+      if (vRec.caption !== undefined && typeof vRec.caption !== 'string') {
+        errors.push(`process-stepper ${label}.caption must be a string.`);
+      }
+    };
+
+    if (obj.subjectTag !== undefined && typeof obj.subjectTag !== 'string') {
+      errors.push('process-stepper "subjectTag" must be a string.');
+    }
+    if (obj.modelNote !== undefined && typeof obj.modelNote !== 'string') {
+      errors.push('process-stepper "modelNote" must be a string.');
+    }
+    if (obj.mode !== 'linear' && obj.mode !== 'cyclic') {
+      errors.push('process-stepper "mode" must be "linear" or "cyclic".');
+    }
+    const visualMode = obj.visualMode === undefined ? 'diagram' : obj.visualMode;
+    if (!['diagram', 'stage-illustrations', 'shared-highlight'].includes(String(visualMode))) {
+      errors.push('process-stepper "visualMode" must be "diagram", "stage-illustrations", or "shared-highlight".');
+    }
+    if (visualMode === 'shared-highlight') {
+      if (obj.sharedVisual === undefined) {
+        errors.push('process-stepper visualMode="shared-highlight" requires "sharedVisual".');
+      } else {
+        validateVisualRef(obj.sharedVisual, 'sharedVisual');
+      }
+    } else if (obj.sharedVisual !== undefined) {
+      validateVisualRef(obj.sharedVisual, 'sharedVisual');
+    }
+
+    const stageIds = new Set<string>();
+    let predictionCount = 0;
+    if (
+      !Array.isArray(obj.stages) ||
+      obj.stages.length < INTERACTIVE_RESOURCE_LIMITS.minProcessStages ||
+      obj.stages.length > INTERACTIVE_RESOURCE_LIMITS.maxProcessStages
+    ) {
+      errors.push(
+        `process-stepper requires ${INTERACTIVE_RESOURCE_LIMITS.minProcessStages} to ${INTERACTIVE_RESOURCE_LIMITS.maxProcessStages} stages.`
+      );
+    } else {
+      obj.stages.forEach((st, idx) => {
+        if (!st || typeof st !== 'object' || Array.isArray(st)) {
+          errors.push(`process-stepper stages[${idx}] must be an object.`);
+          return;
+        }
+        const sRec = st as Record<string, unknown>;
+        checkAllowedKeys(sRec, PROCESS_STAGE_ALLOWED_KEYS, `stages[${idx}]`, errors);
+        if (typeof sRec.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(sRec.id)) {
+          errors.push(`process-stepper stages[${idx}].id must be a 1-40 char identifier.`);
+        } else if (stageIds.has(sRec.id)) {
+          errors.push(`process-stepper duplicate stage id "${sRec.id}".`);
+        } else {
+          stageIds.add(sRec.id);
+        }
+        if (typeof sRec.title !== 'string' || sRec.title.trim().length < 2) {
+          errors.push(`process-stepper stages[${idx}].title must be a non-empty string.`);
+        }
+        if (typeof sRec.summary !== 'string' || sRec.summary.trim().length < 4) {
+          errors.push(`process-stepper stages[${idx}].summary must be a non-empty string.`);
+        }
+        for (const optStr of [
+          'shortLabel',
+          'startingCondition',
+          'whatChanges',
+          'whyItMatters',
+          'connectionToNext',
+          'commonMisconception',
+        ] as const) {
+          if (sRec[optStr] !== undefined && typeof sRec[optStr] !== 'string') {
+            errors.push(`process-stepper stages[${idx}].${optStr} must be a string.`);
+          }
+        }
+        for (const optArr of ['inputs', 'outputs'] as const) {
+          if (sRec[optArr] !== undefined) {
+            if (
+              !Array.isArray(sRec[optArr]) ||
+              (sRec[optArr] as unknown[]).length > 6 ||
+              (sRec[optArr] as unknown[]).some((x) => typeof x !== 'string' || x.trim().length === 0)
+            ) {
+              errors.push(`process-stepper stages[${idx}].${optArr} must be an array of up to 6 non-empty strings.`);
+            }
+          }
+        }
+
+        if (sRec.stateSnapshot !== undefined) {
+          if (
+            !Array.isArray(sRec.stateSnapshot) ||
+            sRec.stateSnapshot.length > INTERACTIVE_RESOURCE_LIMITS.maxProcessStateFields
+          ) {
+            errors.push(
+              `process-stepper stages[${idx}].stateSnapshot must have at most ${INTERACTIVE_RESOURCE_LIMITS.maxProcessStateFields} fields.`
+            );
+          } else {
+            const fieldIds = new Set<string>();
+            sRec.stateSnapshot.forEach((f, fIdx) => {
+              if (!f || typeof f !== 'object' || Array.isArray(f)) {
+                errors.push(`process-stepper stages[${idx}].stateSnapshot[${fIdx}] must be an object.`);
+                return;
+              }
+              const fRec = f as Record<string, unknown>;
+              checkAllowedKeys(fRec, PROCESS_STATE_ALLOWED_KEYS, `stages[${idx}].stateSnapshot[${fIdx}]`, errors);
+              if (
+                typeof fRec.id !== 'string' ||
+                !/^[A-Za-z0-9_-]{1,32}$/.test(fRec.id) ||
+                FORBIDDEN_STATE_IDS.has(fRec.id.toLowerCase())
+              ) {
+                errors.push(`process-stepper stages[${idx}].stateSnapshot[${fIdx}].id is invalid or unsafe.`);
+              } else if (fieldIds.has(fRec.id)) {
+                errors.push(`process-stepper stages[${idx}] duplicate state field id "${fRec.id}".`);
+              } else {
+                fieldIds.add(fRec.id);
+              }
+              if (typeof fRec.label !== 'string' || fRec.label.trim().length === 0 || fRec.label.length > 60) {
+                errors.push(`process-stepper stages[${idx}].stateSnapshot[${fIdx}].label must be 1-60 chars.`);
+              }
+              if (typeof fRec.value !== 'string' || fRec.value.trim().length === 0 || fRec.value.length > 80) {
+                errors.push(`process-stepper stages[${idx}].stateSnapshot[${fIdx}].value must be 1-80 chars.`);
+              }
+            });
+          }
+        }
+
+        if (sRec.visual !== undefined) {
+          validateVisualRef(sRec.visual, `stages[${idx}].visual`);
+        }
+
+        if (sRec.highlightRegion !== undefined) {
+          const hr = sRec.highlightRegion as Record<string, unknown>;
+          if (!hr || typeof hr !== 'object' || Array.isArray(hr)) {
+            errors.push(`process-stepper stages[${idx}].highlightRegion must be an object.`);
+          } else {
+            checkAllowedKeys(hr, PROCESS_HIGHLIGHT_ALLOWED_KEYS, `stages[${idx}].highlightRegion`, errors);
+            const numsOk =
+              typeof hr.xPct === 'number' &&
+              typeof hr.yPct === 'number' &&
+              typeof hr.widthPct === 'number' &&
+              typeof hr.heightPct === 'number' &&
+              hr.xPct >= 0 &&
+              hr.xPct <= 100 &&
+              hr.yPct >= 0 &&
+              hr.yPct <= 100 &&
+              hr.widthPct > 0 &&
+              hr.widthPct <= 100 &&
+              hr.heightPct > 0 &&
+              hr.heightPct <= 100 &&
+              hr.xPct + hr.widthPct <= 100 &&
+              hr.yPct + hr.heightPct <= 100;
+            if (!numsOk) {
+              errors.push(`process-stepper stages[${idx}].highlightRegion coordinates must be bounded within 0..100%.`);
+            }
+            if (typeof hr.label !== 'string' || hr.label.trim().length === 0) {
+              errors.push(`process-stepper stages[${idx}].highlightRegion.label must be a non-empty string.`);
+            }
+          }
+        }
+
+        if (sRec.prediction !== undefined) {
+          predictionCount += 1;
+          const pr = sRec.prediction as Record<string, unknown>;
+          if (!pr || typeof pr !== 'object' || Array.isArray(pr)) {
+            errors.push(`process-stepper stages[${idx}].prediction must be an object.`);
+          } else {
+            checkAllowedKeys(pr, PROCESS_PREDICTION_ALLOWED_KEYS, `stages[${idx}].prediction`, errors);
+            if (typeof pr.prompt !== 'string' || pr.prompt.trim().length < 4) {
+              errors.push(`process-stepper stages[${idx}].prediction.prompt must be a non-empty string.`);
+            }
+            if (
+              !Array.isArray(pr.options) ||
+              pr.options.length < 2 ||
+              pr.options.length > 4 ||
+              pr.options.some((o) => typeof o !== 'string' || o.trim().length === 0)
+            ) {
+              errors.push(`process-stepper stages[${idx}].prediction.options must be 2 to 4 non-empty strings.`);
+            } else if (
+              typeof pr.correctIndex !== 'number' ||
+              !Number.isInteger(pr.correctIndex) ||
+              pr.correctIndex < 0 ||
+              pr.correctIndex >= pr.options.length
+            ) {
+              errors.push(`process-stepper stages[${idx}].prediction.correctIndex must be a valid option index.`);
+            }
+            if (typeof pr.explanation !== 'string' || pr.explanation.trim().length < 4) {
+              errors.push(`process-stepper stages[${idx}].prediction.explanation must be a non-empty string.`);
+            }
+          }
+        }
+      });
+
+      if (predictionCount > INTERACTIVE_RESOURCE_LIMITS.maxProcessPredictions) {
+        errors.push(
+          `process-stepper supports at most ${INTERACTIVE_RESOURCE_LIMITS.maxProcessPredictions} stage prediction questions.`
+        );
+      }
+    }
+
+    if (obj.sequenceChallenge !== undefined) {
+      const seq = obj.sequenceChallenge as Record<string, unknown>;
+      if (!seq || typeof seq !== 'object' || Array.isArray(seq)) {
+        errors.push('process-stepper "sequenceChallenge" must be an object.');
+      } else {
+        checkAllowedKeys(seq, PROCESS_SEQUENCE_ALLOWED_KEYS, 'sequenceChallenge', errors);
+        if (typeof seq.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(seq.id)) {
+          errors.push('process-stepper sequenceChallenge.id must be a 1-40 char identifier.');
+        }
+        if (typeof seq.prompt !== 'string' || seq.prompt.trim().length < 4) {
+          errors.push('process-stepper sequenceChallenge.prompt must be a non-empty string.');
+        }
+        if (typeof seq.explanation !== 'string' || seq.explanation.trim().length < 4) {
+          errors.push('process-stepper sequenceChallenge.explanation must be a non-empty string.');
+        }
+        if (
+          !Array.isArray(seq.stageIdsToOrder) ||
+          seq.stageIdsToOrder.length < 2 ||
+          seq.stageIdsToOrder.length > INTERACTIVE_RESOURCE_LIMITS.maxProcessSequenceItems
+        ) {
+          errors.push(
+            `process-stepper sequenceChallenge.stageIdsToOrder must have 2 to ${INTERACTIVE_RESOURCE_LIMITS.maxProcessSequenceItems} stage IDs.`
+          );
+        } else {
+          const seenSeq = new Set<string>();
+          for (const sid of seq.stageIdsToOrder) {
+            if (typeof sid !== 'string' || !stageIds.has(sid)) {
+              errors.push(`process-stepper sequenceChallenge references unknown stage id "${String(sid)}".`);
+            } else if (seenSeq.has(sid)) {
+              errors.push(`process-stepper sequenceChallenge has duplicate stage id "${sid}".`);
+            } else {
+              seenSeq.add(sid);
+            }
+          }
+        }
       }
     }
   }

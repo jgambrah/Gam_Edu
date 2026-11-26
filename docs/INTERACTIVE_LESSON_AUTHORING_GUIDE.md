@@ -22,7 +22,7 @@ Slides without `interactive` continue working identically as standard narrated s
 | `code-playground` | **Implemented (Publishable)** | `1.0.0` | `1` | Live sandboxed Python 3 (Pyodide), Cambridge Pseudocode, and Read-Only SQL (`SELECT`) |
 | `construction-lab` | **Implemented (Publishable)** | `1.0.0` | `1` | Interactive Boolean Logic Circuit Builder (`labKind: "boolean-circuit"`) |
 | `graph-slider` | **Step 4A Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject dynamic graph, sliders, piecewise & step waveforms, readouts & discovery challenges *(blocked from production CDN publish until Step 4A is deployed to production)* |
-| `process-stepper` | **Reserved (Step 4B — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
+| `process-stepper` | **Step 4B Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, predictions & sequencing *(blocked from production CDN publish until Step 4B is verified in production)* |
 | `diagram-hotspots` | **Reserved (Step 4C — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
 
 > **Important:** Do **not** author production lessons using reserved Step 4 engines (`graph-slider`, `process-stepper`, `diagram-hotspots`). The publishing validator (`assertValidLessonInteractives`) explicitly rejects unimplemented engines.
@@ -115,6 +115,25 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `xVar`, `axes`, `slid
     - `outside-real-domain`: operations outside the supported real numbers (`sqrt(-4)`, `ln(-2)`, `(-2)^0.5`) → displays `"Outside real domain"`.
     - `exceeds-numeric-limit`: mathematically valid results exceeding `±1e12` or `|exponent| > 100` (e.g. `10^50`) → displays `"Exceeds numeric limit"` (never mislabelled as mathematically undefined).
   - **Deferred in v1.0:** Parametric plotting `(x(t), y(t))` and continuous animation loops (e.g., Solar System orbital animation) are intentionally deferred.
+
+### E. `process-stepper` (Step 4B Preview — Cross-Subject Process & Mechanism Engine)
+
+> **Production Gate Notice:** On the Step 4B feature branch, `process-stepper` has `implemented: true, engineVersion: "1.0.0", productionVersion: null`. Do **not** publish live CDN lessons using `process-stepper` until Step 4B is merged and verified in production.
+
+Extra allowed top-level fields: `subjectTag`, `modelNote`, `mode`, `visualMode`, `sharedVisual`, `stages`, `sequenceChallenge`.
+
+- `mode` *(required)*: `"linear"` (stops at final stage with Replay) or `"cyclic"` (wraps cleanly from final stage back to Stage 1 with explicit cycle-restart notice).
+- `visualMode` *(optional, default `"diagram"`)*:
+  - `"diagram"` (Mode A): Auto-generated accessible linear/cyclic flow overview highlighting active & visited stages (visited ≠ mastery).
+  - `"stage-illustrations"` (Mode B): Renders stage-specific `stage.visual` (`{ src, altText, caption? }`) from approved WebP/PNG paths with Enlarge lightbox.
+  - `"shared-highlight"` (Mode C): Renders `sharedVisual` with a declarative bounded `stage.highlightRegion` (`{ xPct, yPct, widthPct, heightPct, label }`, all within `0..100%`) and Enlarge lightbox.
+- `stages` *(required, 2–10 items, unique IDs)*:
+  - Required: `id`, `title`, `summary`.
+  - Optional pedagogy: `shortLabel`, `startingCondition`, `whatChanges`, `whyItMatters`, `connectionToNext`, `commonMisconception`, `inputs[]`, `outputs[]`.
+  - Optional `stateSnapshot` *(0–6 items)*: `[{ id, label, value }]` (rejects prototype keys like `constructor`/`__proto__`; values ≤ 80 chars; renders accessible textual diff badges `"Changed (was ...)"`, `"New in this stage"`, `"Removed"`, `"Unchanged"`).
+  - Optional `prediction` *(max 3 across activity)*: `{ prompt, options (2..4), correctIndex, explanation }` (non-blocking).
+- `sequenceChallenge` *(optional, max 1)*: `{ id, prompt, stageIdsToOrder (2..6 valid stage IDs), explanation }` — keyboard-accessible `Move Up`/`Move Down` controls (zero drag-and-drop).
+- **Deferred in v1.0:** Stage-specific audio tracks (deferred to avoid competing with `NarratedLessonPlayer` main narration audio), branching state machines, and continuous animation.
 
 ---
 

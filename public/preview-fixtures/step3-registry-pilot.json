@@ -439,13 +439,13 @@
       "teacherNote": "Preview-only fixture slide p08.",
       "interactive": [
         {
-          "id": "pilot-reserved-process-stepper",
-          "engine": "process-stepper",
+          "id": "pilot-reserved-diagram-hotspots",
+          "engine": "diagram-hotspots",
           "schemaVersion": 1,
-          "title": "Reserved Step 4B Engine: Process Stepper",
-          "instructions": "Step through the stages of a biological process.",
-          "accessibilityLabel": "Reserved process stepper fallback",
-          "fallbackText": "Step-by-step process exploration is reserved for Step 4B."
+          "title": "Reserved Step 4C Engine: Diagram Hotspots",
+          "instructions": "Tap regions on a scientific diagram to inspect labels.",
+          "accessibilityLabel": "Reserved diagram hotspots fallback",
+          "fallbackText": "Interactive diagram hotspot exploration is reserved for Step 4C."
         },
         {
           "id": "pilot-incompatible-version",

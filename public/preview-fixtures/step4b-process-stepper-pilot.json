@@ -1,0 +1,850 @@
+{
+  "lessonId": "step4b-process-stepper-pilot-preview",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 4B Preview Pilot — Reusable Process & Mechanism Engine",
+    "subject": "Cross-Subject Mechanisms (Biology, CS, Science, Chemistry, Maths)",
+    "class": "Preview Pilot",
+    "topic": "ProcessStepperEngine v1.0.0 Verification",
+    "contentStandard": "STEP4B.PILOT",
+    "indicators": ["STEP4B.1", "STEP4B.2"],
+    "estMinutes": 14
+  },
+  "slides": [
+    {
+      "id": "m01",
+      "order": 1,
+      "title": "Biology — Mitosis and the Cell Division Process",
+      "purpose": "Step through Interphase, Mitosis (PMAT), and Cytokinesis with consistent diploid chromosome count (2n = 4).",
+      "onScreenText": [
+        "Interphase precedes mitosis; cytokinesis completes division",
+        "Diploid count remains 2n = 4 in each daughter cell",
+        "Chromatid separation halves chromatids, not chromosome count"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Mitosis and cell division overview showing 2n = 4 parent cell forming two 2n = 4 daughter cells",
+        "description": "Cell division summary.",
+        "labels": ["Interphase", "Mitosis (PMAT)", "Cytokinesis"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f5f3ff\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#4c1d95\">Mitosis &amp; Cell Division (2n = 4)</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#6d28d9\">Interphase → Prophase → Metaphase → Anaphase → Telophase → Cytokinesis</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Step through how a diploid cell with four chromosomes replicates its DNA during interphase, separates sister chromatids during mitosis, and divides its cytoplasm in cytokinesis.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Interphase precedes mitosis; cytokinesis divides the cytoplasm and may overlap late telophase."],
+      "indicatorIds": ["STEP4B.1"],
+      "askTeacherContext": { "focus": "Mitosis", "keyTerms": ["Chromatid", "Cytokinesis"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 1 of 8.",
+      "interactive": {
+        "id": "pilot4b-bio-mitosis",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Biology",
+        "title": "Mitosis and the Cell Division Process",
+        "instructions": "Step through all six stages for a model diploid cell (2n = 4) and track how DNA, chromatids, and the nuclear membrane change.",
+        "accessibilityLabel": "Interactive six-stage mitosis and cell division stepper",
+        "fallbackText": "Interphase replicates DNA before mitosis. Prophase condenses chromosomes, Metaphase aligns them at the equator, Anaphase separates sister chromatids, Telophase reforms nuclei, and Cytokinesis divides the cytoplasm into two identical 2n = 4 daughter cells.",
+        "modelNote": "Interphase precedes mitosis; cytokinesis divides the cytoplasm and may overlap late mitosis. Model diploid count: 2n = 4.",
+        "mode": "linear",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "interphase",
+            "title": "Interphase (Preparation)",
+            "shortLabel": "Interphase",
+            "summary": "Before mitosis begins, the cell grows and replicates its DNA during S phase so each of the 4 chromosomes consists of two identical sister chromatids.",
+            "startingCondition": "4 unreplicated chromosomes (4 chromatids) inside an intact nucleus.",
+            "whatChanges": "DNA replicates; chromatid count doubles from 4 to 8 while chromosome count stays 4.",
+            "whyItMatters": "Guarantees both daughter cells inherit an exact, complete copy of the genome.",
+            "connectionToNext": "Once DNA replication and growth checkpoints pass, the cell enters Prophase.",
+            "commonMisconception": "Interphase is NOT a stage of mitosis—it prepares the cell before mitosis starts.",
+            "stateSnapshot": [
+              { "id": "chromosomes", "label": "Chromosomes per cell", "value": "4 (2n = 4)" },
+              { "id": "chromatids", "label": "Chromatids per cell", "value": "8 (replicated pairs)" },
+              { "id": "nucleus", "label": "Nuclear membrane", "value": "Intact" }
+            ]
+          },
+          {
+            "id": "prophase",
+            "title": "Prophase",
+            "shortLabel": "Prophase",
+            "summary": "Chromatin condenses into visible X-shaped chromosomes (each with two sister chromatids), spindle fibres form, and the nuclear membrane breaks down.",
+            "whatChanges": "Chromosomes thicken and become visible; nuclear membrane disintegrates.",
+            "whyItMatters": "Condensing DNA prevents tangling or breaking during movement.",
+            "connectionToNext": "Spindle fibres attach to centromeres to guide chromosomes to the equator.",
+            "stateSnapshot": [
+              { "id": "chromosomes", "label": "Chromosomes per cell", "value": "4 condensed (2n = 4)" },
+              { "id": "chromatids", "label": "Chromatids per cell", "value": "8 (joined at centromeres)" },
+              { "id": "nucleus", "label": "Nuclear membrane", "value": "Breaking down" }
+            ]
+          },
+          {
+            "id": "metaphase",
+            "title": "Metaphase",
+            "shortLabel": "Metaphase",
+            "summary": "Spindle fibres align all 4 chromosomes single-file along the cell equator (metaphase plate).",
+            "whatChanges": "Chromosomes line up centrally with spindle fibres attached to opposite sides of each centromere.",
+            "whyItMatters": "Ensures each pole receives exactly one sister chromatid from every chromosome.",
+            "connectionToNext": "Once alignment is checked, centromeres split to start Anaphase.",
+            "prediction": {
+              "prompt": "What happens immediately after chromosomes align at the cell equator?",
+              "options": [
+                "Sister chromatids separate and move to opposite poles",
+                "DNA replicates a second time",
+                "The nuclear membrane thickens around the equator"
+              ],
+              "correctIndex": 0,
+              "explanation": "In Anaphase, centromeres divide and spindle fibres pull sister chromatids to opposite poles."
+            },
+            "stateSnapshot": [
+              { "id": "chromosomes", "label": "Chromosomes per cell", "value": "4 aligned at equator" },
+              { "id": "chromatids", "label": "Chromatids per cell", "value": "8 (paired)" },
+              { "id": "nucleus", "label": "Nuclear membrane", "value": "Absent" }
+            ]
+          },
+          {
+            "id": "anaphase",
+            "title": "Anaphase",
+            "shortLabel": "Anaphase",
+            "summary": "Centromeres split and shortening spindle fibres pull sister chromatids to opposite poles; each separated chromatid is now an individual chromosome.",
+            "whatChanges": "4 chromosomes move to the left pole and 4 identical chromosomes move to the right pole.",
+            "whyItMatters": "Physically divides the duplicated genetic material equally.",
+            "connectionToNext": "When chromosomes arrive at the poles, Telophase begins.",
+            "stateSnapshot": [
+              { "id": "chromosomes", "label": "Chromosomes per cell", "value": "8 (4 moving to each pole)" },
+              { "id": "chromatids", "label": "Chromatids per cell", "value": "8 (now separate)" },
+              { "id": "nucleus", "label": "Nuclear membrane", "value": "Absent" }
+            ]
+          },
+          {
+            "id": "telophase",
+            "title": "Telophase",
+            "shortLabel": "Telophase",
+            "summary": "Two new nuclear membranes form around the two clusters of 4 chromosomes, which decondense back into chromatin.",
+            "whatChanges": "Nuclear division (mitosis) completes; two genetically identical nuclei exist in one cell.",
+            "connectionToNext": "Cytokinesis (which often starts during late telophase) separates the cytoplasm.",
+            "stateSnapshot": [
+              { "id": "chromosomes", "label": "Chromosomes per nucleus", "value": "4 per nucleus (2n = 4)" },
+              { "id": "chromatids", "label": "Chromatids per nucleus", "value": "4 unreplicated" },
+              { "id": "nucleus", "label": "Nuclear membrane", "value": "Reforming (2 nuclei)" }
+            ]
+          },
+          {
+            "id": "cytokinesis",
+            "title": "Cytokinesis",
+            "shortLabel": "Cytokinesis",
+            "summary": "The cytoplasm divides (cleavage furrow in animals; cell plate in plants), producing two separate, genetically identical diploid daughter cells.",
+            "whatChanges": "One parent cell becomes two independent daughter cells.",
+            "whyItMatters": "Completes cell division for growth and tissue repair.",
+            "stateSnapshot": [
+              { "id": "chromosomes", "label": "Chromosomes per daughter cell", "value": "4 (2n = 4)" },
+              { "id": "chromatids", "label": "Chromatids per daughter cell", "value": "4 unreplicated" },
+              { "id": "nucleus", "label": "Nuclear membrane", "value": "Intact (1 per cell)" }
+            ]
+          }
+        ],
+        "sequenceChallenge": {
+          "id": "mitosis-order",
+          "prompt": "Arrange the four core phases of mitosis (nuclear division) in the correct order.",
+          "stageIdsToOrder": ["prophase", "metaphase", "anaphase", "telophase"],
+          "explanation": "Nuclear division follows PMAT: Prophase (condense) → Metaphase (align) → Anaphase (separate) → Telophase (reform nuclei)."
+        }
+      }
+    },
+    {
+      "id": "m02",
+      "order": 2,
+      "title": "Computer Science — CPU Fetch–Decode–Execute Cycle",
+      "purpose": "Trace a specific simplified instruction (LOAD 5 at address 100) through PC, MAR, MDR, CIR, and ACC.",
+      "onScreenText": [
+        "Example instruction: LOAD 5 stored at address 100",
+        "Tracks PC, MAR, MDR, CIR, and ACC registers live",
+        "Not every instruction requires the ALU"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "CPU Fetch Decode Execute register schematic",
+        "description": "Simplified accumulator CPU registers.",
+        "labels": ["PC", "MAR / MDR", "CIR", "ACC"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"34\" font-weight=\"bold\" fill=\"#38bdf8\">Fetch → Decode → Execute</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#94a3b8\">Trace LOAD 5 (address 100) across PC, MAR, MDR, CIR, and ACC</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Trace how a simplified accumulator processor fetches, decodes, and executes the instruction LOAD 5 stored at memory address 100.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear computer science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["PC increments during fetch; LOAD transfers data into ACC without needing an ALU calculation."],
+      "indicatorIds": ["STEP4B.1"],
+      "askTeacherContext": { "focus": "Fetch-Decode-Execute", "keyTerms": ["PC", "MAR", "MDR", "CIR"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 2 of 8.",
+      "interactive": {
+        "id": "pilot4b-cs-fde-cycle",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Computer Science",
+        "title": "CPU Fetch–Decode–Execute Cycle (Example: LOAD 5)",
+        "instructions": "Step through the registers as the CPU executes LOAD 5 (stored at address 100, where memory[5] holds value 42).",
+        "accessibilityLabel": "Interactive CPU Fetch Decode Execute register stepper",
+        "fallbackText": "PC (100) copies to MAR; memory[100] ('LOAD 5') loads into MDR then CIR; PC increments to 101; Control Unit decodes LOAD 5; Execute reads memory[5] (42) into ACC.",
+        "modelNote": "Simplified single-accumulator Von Neumann model executing LOAD 5. Not all instructions pass through the ALU (LOAD transfers memory to ACC directly). Restarting the cycle replays this LOAD 5 example rather than fetching address 101.",
+        "mode": "cyclic",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "copy-pc-mar",
+            "title": "Fetch 1: Copy PC to MAR",
+            "shortLabel": "PC → MAR",
+            "summary": "The address of the next instruction (100) is copied from the Program Counter (PC) into the Memory Address Register (MAR).",
+            "whatChanges": "MAR receives address 100 and places it on the address bus.",
+            "stateSnapshot": [
+              { "id": "pc", "label": "Program Counter (PC)", "value": "100" },
+              { "id": "mar", "label": "MAR", "value": "100" },
+              { "id": "mdr", "label": "MDR", "value": "—" },
+              { "id": "cir", "label": "CIR", "value": "—" },
+              { "id": "acc", "label": "Accumulator (ACC)", "value": "0" }
+            ]
+          },
+          {
+            "id": "read-mdr",
+            "title": "Fetch 2: Read Instruction & Increment PC",
+            "shortLabel": "Mem → MDR",
+            "summary": "Main memory returns the instruction at address 100 ('LOAD 5') into the MDR while the PC increments to 101.",
+            "whatChanges": "MDR holds 'LOAD 5'; PC advances to 101 ready for the next instruction.",
+            "stateSnapshot": [
+              { "id": "pc", "label": "Program Counter (PC)", "value": "101" },
+              { "id": "mar", "label": "MAR", "value": "100" },
+              { "id": "mdr", "label": "MDR", "value": "LOAD 5" },
+              { "id": "cir", "label": "CIR", "value": "—" },
+              { "id": "acc", "label": "Accumulator (ACC)", "value": "0" }
+            ]
+          },
+          {
+            "id": "copy-cir",
+            "title": "Fetch 3: Transfer MDR to CIR",
+            "shortLabel": "MDR → CIR",
+            "summary": "The fetched instruction is copied from the MDR into the Current Instruction Register (CIR).",
+            "whatChanges": "CIR now holds 'LOAD 5', freeing MDR for operand data transfers.",
+            "stateSnapshot": [
+              { "id": "pc", "label": "Program Counter (PC)", "value": "101" },
+              { "id": "mar", "label": "MAR", "value": "100" },
+              { "id": "mdr", "label": "MDR", "value": "LOAD 5" },
+              { "id": "cir", "label": "CIR", "value": "LOAD 5" },
+              { "id": "acc", "label": "Accumulator (ACC)", "value": "0" }
+            ]
+          },
+          {
+            "id": "decode",
+            "title": "Decode Instruction",
+            "shortLabel": "Decode",
+            "summary": "The Control Unit decodes 'LOAD 5' into opcode LOAD (read from memory into ACC) and operand address 5.",
+            "whatChanges": "Control signals prepare to read data from address 5 (ALU arithmetic is NOT needed for LOAD).",
+            "prediction": {
+              "prompt": "Which unit decodes the instruction inside the CIR?",
+              "options": ["Control Unit (CU)", "Hard Disk Drive", "Accumulator (ACC)"],
+              "correctIndex": 0,
+              "explanation": "The Control Unit decodes the opcode and operand in the CIR and generates control signals."
+            },
+            "stateSnapshot": [
+              { "id": "pc", "label": "Program Counter (PC)", "value": "101" },
+              { "id": "mar", "label": "MAR", "value": "5 (operand addr)" },
+              { "id": "mdr", "label": "MDR", "value": "LOAD 5" },
+              { "id": "cir", "label": "CIR", "value": "LOAD 5 (decoded)" },
+              { "id": "acc", "label": "Accumulator (ACC)", "value": "0" }
+            ]
+          },
+          {
+            "id": "execute",
+            "title": "Execute LOAD 5",
+            "shortLabel": "Execute",
+            "summary": "Memory address 5 returns value 42 into the MDR, which is then loaded into the Accumulator (ACC).",
+            "whatChanges": "ACC updates from 0 to 42; the CPU is now ready to fetch the next instruction at PC = 101.",
+            "stateSnapshot": [
+              { "id": "pc", "label": "Program Counter (PC)", "value": "101" },
+              { "id": "mar", "label": "MAR", "value": "5" },
+              { "id": "mdr", "label": "MDR", "value": "42" },
+              { "id": "cir", "label": "CIR", "value": "LOAD 5" },
+              { "id": "acc", "label": "Accumulator (ACC)", "value": "42" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "m03",
+      "order": 3,
+      "title": "NaCCA Science — The Water Cycle (Simplified Pathway)",
+      "purpose": "Explore a cyclic natural mechanism tracking state of matter and thermal energy transfer.",
+      "onScreenText": [
+        "Simplified 4-stage cyclic pathway",
+        "Tracks state of matter & thermal energy",
+        "Real water molecules take many interconnected paths"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Simplified water cycle stages overview",
+        "description": "Water cycle header.",
+        "labels": ["Evaporation", "Condensation", "Precipitation", "Collection"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#e0f2fe\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#0c4a6e\">The Water Cycle</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#0369a1\">Evaporation → Condensation → Precipitation → Collection</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Follow one simplified pathway of water through evaporation, condensation, precipitation, and collection, tracking how thermal energy drives each change of state.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Warm Ghanaian science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Solar thermal energy drives evaporation; cooling aloft causes condensation."],
+      "indicatorIds": ["STEP4B.1"],
+      "askTeacherContext": { "focus": "Water cycle", "keyTerms": ["Evaporation", "Condensation"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 3 of 8.",
+      "interactive": {
+        "id": "pilot4b-sci-water-cycle",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "NaCCA Science",
+        "title": "The Water Cycle (Simplified Pathway)",
+        "instructions": "Step around this cyclic pathway and observe how water changes state and exchanges heat energy.",
+        "accessibilityLabel": "Cyclic water cycle four-stage stepper",
+        "fallbackText": "Solar heat causes evaporation (liquid to vapour), cooling causes condensation (vapour to droplets forming clouds), gravity drives precipitation, and runoff/infiltration returns water to collection bodies.",
+        "modelNote": "This 4-stage loop is a simplified pathway within a larger interconnected natural cycle—not every water molecule follows the same four stages in order (some evaporate again immediately or remain in groundwater/glaciers).",
+        "mode": "cyclic",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "evaporation",
+            "title": "Evaporation",
+            "shortLabel": "Evaporation",
+            "summary": "Thermal energy from the Sun warms surface water in rivers, lakes, and oceans, turning liquid water into invisible water vapour that rises.",
+            "whatChanges": "Liquid water absorbs heat and changes into gas (water vapour).",
+            "stateSnapshot": [
+              { "id": "state", "label": "State of water", "value": "Liquid → Gas (vapour)" },
+              { "id": "energy", "label": "Thermal energy", "value": "Absorbed from Sun" }
+            ]
+          },
+          {
+            "id": "condensation",
+            "title": "Condensation",
+            "shortLabel": "Condensation",
+            "summary": "As warm water vapour rises into cooler upper air, it loses thermal energy and condenses into tiny liquid droplets around dust particles, forming clouds.",
+            "whatChanges": "Water vapour releases heat and turns back into liquid droplets.",
+            "stateSnapshot": [
+              { "id": "state", "label": "State of water", "value": "Gas → Liquid droplets" },
+              { "id": "energy", "label": "Thermal energy", "value": "Released to cool air" }
+            ]
+          },
+          {
+            "id": "precipitation",
+            "title": "Precipitation",
+            "shortLabel": "Precipitation",
+            "summary": "Cloud droplets combine until they become too heavy to stay suspended, falling to Earth as rain (or hail/snow in cold regions).",
+            "whatChanges": "Gravity pulls heavy water droplets downward to land and sea.",
+            "stateSnapshot": [
+              { "id": "state", "label": "State of water", "value": "Liquid rain droplets" },
+              { "id": "energy", "label": "Driving force", "value": "Gravity" }
+            ]
+          },
+          {
+            "id": "collection",
+            "title": "Collection & Runoff",
+            "shortLabel": "Collection",
+            "summary": "Rainwater flows over land as surface runoff or infiltrates into soil and groundwater, collecting in rivers, lakes, and oceans.",
+            "whatChanges": "Water returns to surface reservoirs and underground aquifers.",
+            "stateSnapshot": [
+              { "id": "state", "label": "State of water", "value": "Liquid (rivers/oceans/soil)" },
+              { "id": "energy", "label": "Driving force", "value": "Gravity & infiltration" }
+            ]
+          }
+        ],
+        "sequenceChallenge": {
+          "id": "water-cycle-order",
+          "prompt": "Order this simplified 4-stage water pathway starting from solar warming of ocean water.",
+          "stageIdsToOrder": ["evaporation", "condensation", "precipitation", "collection"],
+          "explanation": "Evaporation lifts vapour → Condensation forms clouds → Precipitation falls → Collection returns water to reservoirs."
+        }
+      }
+    },
+    {
+      "id": "m04",
+      "order": 4,
+      "title": "Chemistry — Electrolysis of Molten Lead(II) Bromide",
+      "purpose": "Trace ion mobility, concurrent reduction at cathode and oxidation at anode with safety context.",
+      "onScreenText": [
+        "Conceptual virtual demo (PbBr₂ is toxic)",
+        "Cathode (-): Pb²⁺ + 2e⁻ → Pb (reduction)",
+        "Anode (+): 2Br⁻ → Br₂ + 2e⁻ (oxidation, concurrent)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Electrolysis of molten lead(II) bromide electrode half-equations",
+        "description": "Electrolysis equations.",
+        "labels": ["Cathode (-)", "Anode (+)", "Molten PbBr2"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fff7ed\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#9a3412\">Electrolysis of Molten PbBr₂</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"20\" fill=\"#c2410c\">Cathode: Pb²⁺ + 2e⁻ → Pb · Anode: 2Br⁻ → Br₂ + 2e⁻</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Examine this conceptual virtual demonstration of electrolysing molten lead two bromide. Remember that reduction at the cathode and oxidation at the anode happen at the same time.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Ions must be free to move (molten); oxidation at anode and reduction at cathode occur concurrently."],
+      "indicatorIds": ["STEP4B.1"],
+      "askTeacherContext": { "focus": "Electrolysis", "keyTerms": ["Cathode", "Anode", "Oxidation", "Reduction"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 4 of 8.",
+      "interactive": {
+        "id": "pilot4b-chem-electrolysis",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Chemistry",
+        "title": "Electrolysis of Molten Lead(II) Bromide (Virtual Model)",
+        "instructions": "Step through how melting frees ions and how opposite electrodes drive concurrent redox reactions.",
+        "accessibilityLabel": "Electrolysis of molten lead II bromide four-stage stepper",
+        "fallbackText": "Solid PbBr2 cannot conduct because ions are fixed. Melting frees Pb2+ and Br- ions. Under DC voltage, Pb2+ is reduced to molten lead at the negative cathode while Br- is simultaneously oxidised to brown bromine vapour at the positive anode.",
+        "modelNote": "Conceptual virtual demonstration only—lead(II) bromide and bromine vapour are toxic and corrosive, so this is NOT an independent student practical (teacher fume-cupboard demonstration only). Cathode reduction and anode oxidation occur concurrently.",
+        "mode": "linear",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "solid-lattice",
+            "title": "Solid Ionic Lattice (No Conduction)",
+            "shortLabel": "Solid PbBr₂",
+            "summary": "At room temperature, Pb²⁺ and Br⁻ ions are locked in a rigid ionic lattice and cannot move to carry charge.",
+            "stateSnapshot": [
+              { "id": "ions", "label": "Ion mobility", "value": "Fixed in lattice" },
+              { "id": "current", "label": "Electrical current", "value": "0 A (no conduction)" }
+            ]
+          },
+          {
+            "id": "melting",
+            "title": "Heating to Melt PbBr₂",
+            "shortLabel": "Molten Ions",
+            "summary": "Heating above 373 °C melts the solid, breaking the rigid lattice so Pb²⁺ cations and Br⁻ anions move freely.",
+            "whatChanges": "Free-moving ions make the molten salt an electrical conductor (electrolyte).",
+            "stateSnapshot": [
+              { "id": "ions", "label": "Ion mobility", "value": "Free Pb²⁺ & Br⁻" },
+              { "id": "current", "label": "Electrical current", "value": "Ready to conduct" }
+            ]
+          },
+          {
+            "id": "ion-migration",
+            "title": "DC Power Applied: Ion Migration",
+            "shortLabel": "Migration",
+            "summary": "Applying DC voltage attracts positive Pb²⁺ ions toward the negative cathode and negative Br⁻ ions toward the positive anode.",
+            "prediction": {
+              "prompt": "Which ion moves to the positive electrode (anode) and what happens to it?",
+              "options": [
+                "Br⁻ moves to the anode and loses electrons (oxidation)",
+                "Pb²⁺ moves to the anode and gains electrons",
+                "Br⁻ moves to the cathode and gains electrons"
+              ],
+              "correctIndex": 0,
+              "explanation": "Opposites attract: negative Br⁻ ions migrate to the positive anode and lose electrons (oxidation) to form Br₂."
+            },
+            "stateSnapshot": [
+              { "id": "cathode", "label": "At Cathode (-)", "value": "Pb²⁺ attracted" },
+              { "id": "anode", "label": "At Anode (+)", "value": "Br⁻ attracted" }
+            ]
+          },
+          {
+            "id": "concurrent-redox",
+            "title": "Concurrent Cathode & Anode Reactions",
+            "shortLabel": "Redox Products",
+            "summary": "Reduction and oxidation occur simultaneously: at the cathode Pb²⁺ + 2e⁻ → Pb (silvery molten lead); at the anode 2Br⁻ → Br₂ + 2e⁻ (brown bromine vapour).",
+            "whyItMatters": "Electrons removed at the anode flow through the external circuit to the cathode, balancing charge continuously.",
+            "stateSnapshot": [
+              { "id": "cathode", "label": "Cathode (-) Product", "value": "Molten Pb (reduction)" },
+              { "id": "anode", "label": "Anode (+) Product", "value": "Brown Br₂ gas (oxidation)" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "m05",
+      "order": 5,
+      "title": "Biology — Human Digestion Pathway",
+      "purpose": "Distinguish mechanical digestion, chemical digestion, absorption, and egestion across organs.",
+      "onScreenText": [
+        "Mechanical vs chemical digestion distinguished",
+        "Absorption happens mainly in the small intestine",
+        "Egestion removes undigested waste (not excretion)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Human digestion organs pathway overview",
+        "description": "Digestion stages.",
+        "labels": ["Mouth", "Stomach", "Small Intestine", "Large Intestine"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0fdf4\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#14532d\">Human Digestion Pathway</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#166534\">Mechanical · Chemical · Absorption · Egestion</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Follow a meal from the mouth to egestion, noting where mechanical breakdown, enzymatic chemical digestion, and nutrient absorption take place.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Absorption occurs primarily across villi in the small intestine; egestion removes undigested solids."],
+      "indicatorIds": ["STEP4B.1"],
+      "askTeacherContext": { "focus": "Human digestion", "keyTerms": ["Amylase", "Villi", "Egestion"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 5 of 8.",
+      "interactive": {
+        "id": "pilot4b-bio-digestion",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Biology",
+        "title": "Human Digestion Pathway",
+        "instructions": "Step through each organ to distinguish mechanical digestion, chemical digestion, absorption, and egestion.",
+        "accessibilityLabel": "Human digestive system five-stage stepper",
+        "fallbackText": "Mouth chews food and starts starch digestion (amylase); Stomach churns food with acid and protease; Small Intestine completes chemical digestion and absorbs nutrients via villi; Large Intestine absorbs water; Rectum stores and egests undigested faeces.",
+        "mode": "linear",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "mouth",
+            "title": "Mouth (Ingestion & Early Digestion)",
+            "shortLabel": "Mouth",
+            "summary": "Teeth chew food into smaller pieces (mechanical digestion) while salivary amylase begins breaking starch into maltose (chemical digestion).",
+            "stateSnapshot": [
+              { "id": "process", "label": "Primary processes", "value": "Mechanical + Chemical" },
+              { "id": "enzyme", "label": "Key enzyme", "value": "Salivary amylase (starch)" }
+            ]
+          },
+          {
+            "id": "stomach",
+            "title": "Stomach",
+            "shortLabel": "Stomach",
+            "summary": "Muscular walls churn food (mechanical) while hydrochloric acid kills pathogens and provides acidic pH for pepsin (protease) to begin protein digestion.",
+            "stateSnapshot": [
+              { "id": "process", "label": "Primary processes", "value": "Churning + Protein digestion" },
+              { "id": "enzyme", "label": "Key enzyme", "value": "Pepsin (protease, pH ~2)" }
+            ]
+          },
+          {
+            "id": "small-intestine",
+            "title": "Small Intestine (Digestion & Absorption)",
+            "shortLabel": "Small Intestine",
+            "summary": "Bile emulsifies fats; pancreatic and intestinal enzymes complete chemical digestion into glucose, amino acids, fatty acids, and glycerol, which absorb through villi into the bloodstream.",
+            "stateSnapshot": [
+              { "id": "process", "label": "Primary processes", "value": "Chemical digestion + Absorption" },
+              { "id": "enzyme", "label": "Key enzymes", "value": "Amylase, Protease, Lipase" }
+            ]
+          },
+          {
+            "id": "large-intestine",
+            "title": "Large Intestine (Water Absorption)",
+            "shortLabel": "Large Intestine",
+            "summary": "Remaining water and mineral ions are absorbed from undigested material, forming semi-solid faeces.",
+            "stateSnapshot": [
+              { "id": "process", "label": "Primary processes", "value": "Water absorption" },
+              { "id": "enzyme", "label": "Key enzyme", "value": "None (no new digestion)" }
+            ]
+          },
+          {
+            "id": "egestion",
+            "title": "Rectum & Anus (Egestion)",
+            "shortLabel": "Egestion",
+            "summary": "Undigested food waste (faeces) is stored in the rectum and expelled through the anus—this is egestion.",
+            "commonMisconception": "Egestion (removing undigested food) is different from excretion (removing metabolic waste like urea and CO₂).",
+            "stateSnapshot": [
+              { "id": "process", "label": "Primary processes", "value": "Egestion" },
+              { "id": "enzyme", "label": "Key enzyme", "value": "None" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "m06",
+      "order": 6,
+      "title": "Computer Science — Binary Search Step Trace",
+      "purpose": "Trace binary search on sorted array [4, 11, 18, 25, 33, 42, 57] for target 42 with explicit midpoint convention.",
+      "onScreenText": [
+        "Sorted array: [4, 11, 18, 25, 33, 42, 57]",
+        "Target: 42 · Midpoint: floor((low + high) / 2)",
+        "Halves remaining search space each step"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Sorted array indices 0 to 6 for binary search trace",
+        "description": "Binary search array.",
+        "labels": ["low", "mid", "high"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"30\" font-weight=\"bold\" fill=\"#34d399\">[4, 11, 18, 25, 33, 42, 57]</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#94a3b8\">Target = 42 · mid = floor((low + high) / 2)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Trace binary search looking for 42 in a seven-element sorted array. Watch how low, mid, and high narrow the search range in just two comparisons.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear computer science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Binary search requires a sorted array and discards half the elements on each comparison."],
+      "indicatorIds": ["STEP4B.2"],
+      "askTeacherContext": { "focus": "Binary search", "keyTerms": ["low", "mid", "high", "Sorted array"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 6 of 8.",
+      "interactive": {
+        "id": "pilot4b-cs-binary-search",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Computer Science",
+        "title": "Binary Search Trace (Target = 42)",
+        "instructions": "Step through the pointer updates (low, mid, high) as binary search locates 42 inside [4, 11, 18, 25, 33, 42, 57].",
+        "accessibilityLabel": "Binary search four-stage pointer trace stepper",
+        "fallbackText": "Start with low=0, high=6. Mid=3 gives 25 < 42, so set low=4. Next mid=floor((4+6)/2)=5 gives 42 == 42: target found at index 5.",
+        "modelNote": "0-based indexing on sorted array [4, 11, 18, 25, 33, 42, 57]; integer midpoint convention: mid = floor((low + high) / 2). Terminates when array[mid] == target or low > high (not found).",
+        "mode": "linear",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "init",
+            "title": "Initialise Search Bounds",
+            "shortLabel": "Init",
+            "summary": "Set low = 0 and high = 6 to cover all 7 sorted elements [4, 11, 18, 25, 33, 42, 57].",
+            "stateSnapshot": [
+              { "id": "low", "label": "low", "value": "0" },
+              { "id": "mid", "label": "mid", "value": "—" },
+              { "id": "high", "label": "high", "value": "6" },
+              { "id": "status", "label": "Status", "value": "Searching" }
+            ]
+          },
+          {
+            "id": "check-mid-1",
+            "title": "Comparison 1: Inspect mid = 3",
+            "shortLabel": "mid = 3",
+            "summary": "Compute mid = floor((0 + 6) / 2) = 3. Compare array[3] = 25 with target 42: since 25 < 42, 42 cannot be in indices 0..3.",
+            "whatChanges": "Half the array (indices 0..3) is eliminated in one comparison.",
+            "stateSnapshot": [
+              { "id": "low", "label": "low", "value": "0" },
+              { "id": "mid", "label": "mid", "value": "3 (value = 25)" },
+              { "id": "high", "label": "high", "value": "6" },
+              { "id": "status", "label": "Comparison", "value": "25 < 42 (go right)" }
+            ]
+          },
+          {
+            "id": "update-low",
+            "title": "Narrow Bounds: low ← mid + 1",
+            "shortLabel": "low = 4",
+            "summary": "Move low to mid + 1 = 4 so the active search range becomes indices 4..6 ([33, 42, 57]).",
+            "stateSnapshot": [
+              { "id": "low", "label": "low", "value": "4" },
+              { "id": "mid", "label": "mid", "value": "—" },
+              { "id": "high", "label": "high", "value": "6" },
+              { "id": "status", "label": "Active subarray", "value": "[33, 42, 57]" }
+            ]
+          },
+          {
+            "id": "found",
+            "title": "Comparison 2: Inspect mid = 5 (Found!)",
+            "shortLabel": "Found @ 5",
+            "summary": "Compute mid = floor((4 + 6) / 2) = 5. Compare array[5] = 42 with target 42: exact match! Algorithm terminates returning index 5.",
+            "stateSnapshot": [
+              { "id": "low", "label": "low", "value": "4" },
+              { "id": "mid", "label": "mid", "value": "5 (value = 42)" },
+              { "id": "high", "label": "high", "value": "6" },
+              { "id": "status", "label": "Result", "value": "Found at index 5" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "m07",
+      "order": 7,
+      "title": "Mathematics — Solving a Linear Equation (3x + 5 = 20)",
+      "purpose": "Explain why each inverse algebraic operation is applied while preserving equality at every step.",
+      "onScreenText": [
+        "Equation: 3x + 5 = 20",
+        "Apply the same inverse operation to both sides",
+        "Check solution by substituting x = 5 back in"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Linear equation 3x + 5 = 20 solving steps",
+        "description": "Algebraic balance.",
+        "labels": ["3x + 5 = 20", "3x = 15", "x = 5"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"44\" font-weight=\"bold\" fill=\"#0f172a\">3x + 5 = 20</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#0284c7\">Preserve equality at every inverse step</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Step through solving three x plus five equals twenty, seeing why each inverse operation keeps both sides balanced.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Doing the same operation to both sides preserves equality."],
+      "indicatorIds": ["STEP4B.2"],
+      "askTeacherContext": { "focus": "Linear equations", "keyTerms": ["Inverse operation", "Equality"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 7 of 8.",
+      "interactive": {
+        "id": "pilot4b-math-linear-eq",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Mathematics",
+        "title": "Solving 3x + 5 = 20 (Preserving Equality)",
+        "instructions": "Step through each algebraic transformation and observe how both sides stay equal.",
+        "accessibilityLabel": "Linear equation four-stage solution stepper",
+        "fallbackText": "Start with 3x + 5 = 20. Subtract 5 from both sides to get 3x = 15. Divide both sides by 3 to get x = 5. Substitute back: 3(5) + 5 = 20.",
+        "mode": "linear",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "start-eq",
+            "title": "Original Equation",
+            "shortLabel": "3x + 5 = 20",
+            "summary": "We want to isolate x. Currently x is multiplied by 3 and then 5 is added.",
+            "stateSnapshot": [
+              { "id": "lhs", "label": "Left-hand side", "value": "3x + 5" },
+              { "id": "rhs", "label": "Right-hand side", "value": "20" },
+              { "id": "op", "label": "Operation applied", "value": "None (starting balance)" }
+            ]
+          },
+          {
+            "id": "subtract-5",
+            "title": "Subtract 5 from Both Sides",
+            "shortLabel": "−5 both sides",
+            "summary": "Undo '+ 5' by subtracting 5 from both sides: (3x + 5) − 5 = 20 − 5, giving 3x = 15.",
+            "whyItMatters": "Subtracting the same value from both sides preserves equality.",
+            "stateSnapshot": [
+              { "id": "lhs", "label": "Left-hand side", "value": "3x" },
+              { "id": "rhs", "label": "Right-hand side", "value": "15" },
+              { "id": "op", "label": "Operation applied", "value": "Subtract 5 from both sides" }
+            ]
+          },
+          {
+            "id": "divide-3",
+            "title": "Divide Both Sides by 3",
+            "shortLabel": "÷3 both sides",
+            "summary": "Undo '× 3' by dividing both sides by 3: 3x / 3 = 15 / 3, giving x = 5.",
+            "stateSnapshot": [
+              { "id": "lhs", "label": "Left-hand side", "value": "x" },
+              { "id": "rhs", "label": "Right-hand side", "value": "5" },
+              { "id": "op", "label": "Operation applied", "value": "Divide both sides by 3" }
+            ]
+          },
+          {
+            "id": "verify",
+            "title": "Verify by Substitution",
+            "shortLabel": "Check x = 5",
+            "summary": "Substitute x = 5 into 3x + 5: 3(5) + 5 = 15 + 5 = 20, matching the right-hand side.",
+            "stateSnapshot": [
+              { "id": "lhs", "label": "Left-hand side", "value": "3(5) + 5 = 20" },
+              { "id": "rhs", "label": "Right-hand side", "value": "20" },
+              { "id": "op", "label": "Equality check", "value": "20 = 20 (Verified)" }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "m08",
+      "order": 8,
+      "title": "A-Level Chemistry — Electrophilic Addition (Ethene + HBr)",
+      "purpose": "Trace electron-pair movement, π-bond cleavage, carbocation intermediate, and nucleophilic attack.",
+      "onScreenText": [
+        "Electron-rich C=C π bond attacks δ⁺ H of HBr",
+        "Heterolytic fission forms carbocation + Br⁻",
+        "Br⁻ lone pair forms C–Br bond → bromoethane"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Electrophilic addition of HBr to ethene forming bromoethane",
+        "description": "Electrophilic addition mechanism.",
+        "labels": ["Ethene + HBr", "Carbocation", "Bromoethane"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fdf2f8\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#831843\">Electrophilic Addition: C₂H₄ + HBr</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"20\" fill=\"#9d174d\">CH₂=CH₂ + H–Br → [CH₃–CH₂⁺] + Br⁻ → CH₃CH₂Br</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Trace how the electron-rich pi bond of ethene attacks the partially positive hydrogen of hydrogen bromide to form a carbocation intermediate and then bromoethane.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear A-level chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Curly arrows always show the movement of an electron pair from electron-rich to electron-deficient sites."],
+      "indicatorIds": ["STEP4B.2"],
+      "askTeacherContext": { "focus": "Electrophilic addition", "keyTerms": ["Carbocation", "Heterolytic fission"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4B Preview Pilot 8 of 8.",
+      "interactive": {
+        "id": "pilot4b-alevel-electrophilic-add",
+        "engine": "process-stepper",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "A-Level Chemistry",
+        "title": "Electrophilic Addition of HBr to Ethene",
+        "instructions": "Step through electron-pair movement, bond breaking/forming, and intermediate formation.",
+        "accessibilityLabel": "Electrophilic addition four-stage mechanism stepper",
+        "fallbackText": "Ethene's C=C pi bond attacks the delta-positive H of polar HBr; the H-Br bond breaks heterolytically to yield an ethyl carbocation (CH3CH2+) and Br-; finally Br- donates a lone pair to the positive carbon to form bromoethane (CH3CH2Br).",
+        "mode": "linear",
+        "visualMode": "diagram",
+        "stages": [
+          {
+            "id": "approach",
+            "title": "Polarised Electrophile Approaches π Bond",
+            "shortLabel": "Approach",
+            "summary": "HBr is permanently polar (Hδ⁺–Brδ⁻) because Br is more electronegative than H. It approaches the high electron density of ethene's C=C π bond.",
+            "stateSnapshot": [
+              { "id": "carbon", "label": "Carbon bonding", "value": "C=C (1 σ + 1 π, sp²)" },
+              { "id": "species", "label": "Active species", "value": "CH₂=CH₂ + Hδ⁺–Brδ⁻" }
+            ]
+          },
+          {
+            "id": "pi-attack",
+            "title": "π-Bond Attack & Heterolytic Fission",
+            "shortLabel": "π Attack",
+            "summary": "A pair of electrons from the C=C π bond forms a new C–H σ bond with Hδ⁺. Simultaneously, the H–Br bond breaks heterolytically, sending both bonding electrons onto Br.",
+            "prediction": {
+              "prompt": "What intermediate ion is formed when the π bond forms a C–H bond and Br⁻ departs?",
+              "options": [
+                "An ethyl carbocation (CH₃–CH₂⁺)",
+                "A negatively charged carbanion (CH₃–CH₂⁻)",
+                "A neutral free radical (CH₃–CH₂•)"
+              ],
+              "correctIndex": 0,
+              "explanation": "The second carbon loses its share of the π electrons, leaving a positively charged ethyl carbocation (CH₃–CH₂⁺)."
+            },
+            "stateSnapshot": [
+              { "id": "carbon", "label": "Bond change", "value": "C=C π breaks; C–H forms" },
+              { "id": "species", "label": "Bond fission", "value": "H–Br heterolytic fission" }
+            ]
+          },
+          {
+            "id": "carbocation",
+            "title": "Carbocation Intermediate & Br⁻ Nucleophile",
+            "shortLabel": "Carbocation",
+            "summary": "An unstable, positively charged ethyl carbocation intermediate (CH₃–CH₂⁺) exists briefly alongside the bromide ion (:Br⁻) carrying a lone pair.",
+            "stateSnapshot": [
+              { "id": "carbon", "label": "Intermediate", "value": "CH₃–CH₂⁺ (carbocation)" },
+              { "id": "species", "label": "Nucleophile", "value": ":Br⁻ (lone pair ready)" }
+            ]
+          },
+          {
+            "id": "product",
+            "title": "Nucleophilic Attack → Bromoethane",
+            "shortLabel": "Bromoethane",
+            "summary": "The bromide ion donates a lone pair of electrons to the positively charged carbon, forming a C–Br covalent bond and yielding saturated bromoethane (CH₃CH₂Br).",
+            "stateSnapshot": [
+              { "id": "carbon", "label": "Final bonding", "value": "C–C single σ (sp³)" },
+              { "id": "species", "label": "Product", "value": "CH₃CH₂Br (bromoethane)" }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "checkpoints": [],
+  "masteryCheck": { "items": [] },
+  "summary": {
+    "recapScript": "You have explored all 8 cross-subject Step 4B Process and Mechanism pilots through a single reusable ProcessStepperEngine."
+  }
+}

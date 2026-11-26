@@ -38,6 +38,11 @@ const LazyGraphSliderEngine = dynamic(
   { ssr: false, loading: RegistryLoading },
 );
 
+const LazyProcessStepperEngine = dynamic(
+  () => import('./ProcessStepperEngine').then((m) => m.ProcessStepperEngine),
+  { ssr: false, loading: RegistryLoading },
+);
+
 export interface InteractiveEngineRegistryProps {
   lesson: NarratedLesson;
   slide: LessonSlide;
@@ -142,6 +147,8 @@ function InteractiveItemRenderer({
       return <LazyRuleExplorerEngine config={config} />;
     case 'graph-slider':
       return <LazyGraphSliderEngine config={config} />;
+    case 'process-stepper':
+      return <LazyProcessStepperEngine config={config} lessonId={lesson.lessonId} />;
     case 'code-playground':
       return (
         <LazyInlineCodePlayground

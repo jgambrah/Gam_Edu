@@ -320,13 +320,13 @@ describe('Interactive Schema Validation, Security Boundaries & Versioning (Step 
         {
           id: 's01',
           interactive: {
-            id: 'future-process',
-            engine: 'process-stepper',
+            id: 'future-hotspots',
+            engine: 'diagram-hotspots',
             schemaVersion: 1,
-            title: 'Mitosis Stepper',
-            instructions: 'Step through the phases of mitosis.',
-            accessibilityLabel: 'Mitosis process stepper',
-            fallbackText: 'Prophase, Metaphase, Anaphase, Telophase.',
+            title: 'Heart Anatomy Hotspots',
+            instructions: 'Tap each chamber to inspect its role.',
+            accessibilityLabel: 'Heart anatomy hotspot diagram',
+            fallbackText: 'The heart has four chambers: left/right atria and left/right ventricles.',
           },
         },
       ],
@@ -437,19 +437,19 @@ describe('InteractiveEngineRegistry Fallbacks, Low-Data Opt-In & Backward Compat
         minEngineVersion: '9.0.0',
       },
       {
-        id: 'bio-process-stepper',
-        engine: 'process-stepper',
+        id: 'bio-diagram-hotspots',
+        engine: 'diagram-hotspots',
         schemaVersion: 1,
-        title: 'Mitosis Process Explorer',
-        instructions: 'Step through cell division phases.',
-        accessibilityLabel: 'Cell division process stepper',
-        fallbackText: 'Cell division progresses through Prophase, Metaphase, Anaphase, and Telophase.',
+        title: 'Heart Anatomy Explorer',
+        instructions: 'Explore labeled chambers on the diagram.',
+        accessibilityLabel: 'Heart anatomy hotspot explorer',
+        fallbackText: 'The heart pumps blood through four chambers: right/left atria and right/left ventricles.',
       },
     ]);
     render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={multiFallbackSlide} />);
     expect(screen.getByText('Computer Laboratory Access Rule')).toBeTruthy();
-    expect(screen.getByText('Mitosis Process Explorer')).toBeTruthy();
-    expect(screen.getByText(/Prophase, Metaphase, Anaphase, and Telophase/i)).toBeTruthy();
+    expect(screen.getByText('Heart Anatomy Explorer')).toBeTruthy();
+    expect(screen.getByText(/four chambers/i)).toBeTruthy();
   });
 
   it('respects Low-Data Mode with text summary first and allows manual opt-in loading', () => {
