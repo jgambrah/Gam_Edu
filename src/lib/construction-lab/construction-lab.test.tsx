@@ -47,6 +47,14 @@ describe('Step 4D Domain 1: Chemical Equation Balancer (Stoichiometry & Charge C
     expect(parseChemicalFormula('Ca(OH2').ok).toBe(false);
     expect(parseChemicalFormula('(((H2)))').ok).toBe(false);
     expect(parseChemicalFormula('H0O').ok).toBe(false);
+    expect(parseChemicalFormula('H-2O').ok).toBe(false);
+    expect(parseChemicalFormula('C'.repeat(45)).ok).toBe(false);
+
+    // Coefficient limits (0 and 13 > maxCoefficientHardCap 12 rejected)
+    const zeroCoeff = evaluateEquationBalance([{ formula: 'H2' }, { formula: 'O2' }], [{ formula: 'H2O' }], [0, 1], [1]);
+    expect(zeroCoeff.ok).toBe(false);
+    const overCoeff = evaluateEquationBalance([{ formula: 'H2' }, { formula: 'O2' }], [{ formula: 'H2O' }], [13, 1], [1]);
+    expect(overCoeff.ok).toBe(false);
   });
 
   it('verifies atom conservation, charge conservation, simplest whole-number ratio, and unsolvable authoring rejection', () => {
@@ -121,12 +129,23 @@ describe('Step 4D Domain 2: Bounded DC Electrical Circuit Solver (Ohm, Kirchhoff
     expect(cheatSeries.totalCurrentA).toBeCloseTo(1.0, 5);
     expect(evaluateDcCircuitGoal(cheatSeries, c05.goal!).passed).toBe(false);
 
-    // Parallel KCL & independent branch open check on C06
-    const c06 = fixture.slides[5].interactive as ElectricalCircuitConstructionConfig;
+    // Parallel KCL & independent branch open check on C06 (first activity)
+    const c06Pair = fixture.slides[5].interactive as ElectricalCircuitConstructionConfig[];
+    const c06 = c06Pair[0];
     const c06OneOpen = solveDcCircuit(c06.topology, c06.supplyVoltageV, c06.slots, c06.palette, {});
     expect(c06OneOpen.branchBOpen).toBe(true);
     expect(c06OneOpen.branchACurrentA).toBeCloseTo(1.0, 5);
     expect(c06OneOpen.branchBCurrentA).toBe(0);
+
+    // Both parallel branches open -> open-main, I_total = 0 A
+    const c06AllOpen = solveDcCircuit(c06.topology, c06.supplyVoltageV, c06.slots, c06.palette, {
+      'p-ba': 'sw-open',
+      'p-bb': 'sw-open',
+    });
+    expect(c06AllOpen.status).toBe('open-main');
+    expect(c06AllOpen.totalCurrentA).toBe(0);
+    expect(c06AllOpen.branchACurrentA).toBe(0);
+    expect(c06AllOpen.branchBCurrentA).toBe(0);
 
     const c06Both = solveDcCircuit(c06.topology, c06.supplyVoltageV, c06.slots, c06.palette, {
       'p-bb': 'lamp-6',
@@ -135,6 +154,26 @@ describe('Step 4D Domain 2: Bounded DC Electrical Circuit Solver (Ohm, Kirchhoff
     expect(c06Both.totalCurrentA).toBeCloseTo(2.0, 5);
     expect(c06Both.kclResidualA).toBeLessThan(1e-6);
     expect(evaluateDcCircuitGoal(c06Both, c06.goal!).passed).toBe(true);
+
+    // Independent mixed series-parallel reference case (12 V, 2 Ohm series + two parallel 6 Ohm resistors):
+    // R_eq = 5.00 Ohm, I_total = 2.40 A, V_parallel = 7.20 V, I_A = I_B = 1.20 A
+    const c06Mixed = c06Pair[1];
+    const mixedSolved = solveDcCircuit(
+      c06Mixed.topology,
+      c06Mixed.supplyVoltageV,
+      c06Mixed.slots,
+      c06Mixed.palette,
+      { 'm-bb': 'res-6' },
+    );
+    expect(mixedSolved.status).toBe('normal');
+    expect(mixedSolved.equivalentResistanceOhm).toBeCloseTo(5.0, 5);
+    expect(mixedSolved.totalCurrentA).toBeCloseTo(2.4, 5);
+    expect(mixedSolved.voltmeterProbeV).toBeCloseTo(7.2, 5);
+    expect(mixedSolved.branchACurrentA).toBeCloseTo(1.2, 5);
+    expect(mixedSolved.branchBCurrentA).toBeCloseTo(1.2, 5);
+    expect(mixedSolved.kclResidualA).toBeLessThan(1e-6);
+    expect(mixedSolved.kvlResidualV).toBeLessThan(1e-6);
+    expect(evaluateDcCircuitGoal(mixedSolved, c06Mixed.goal!).passed).toBe(true);
 
     // Short circuit & meter misconnection on C07 initial faulty state
     const c07 = fixture.slides[6].interactive as ElectricalCircuitConstructionConfig;
@@ -179,6 +218,18 @@ describe('Step 4D Domain 3: Biological Sequence & Inheritance Engine', () => {
     expect(badStop.passed).toBe(false);
     expect(badStop.feedback).toMatch(/stop codon.*does NOT code for an amino acid/i);
 
+    // Premature stop codon (AUG UGA GGA -> terminates at UGA, GGA is NOT translated!)
+    const prematureStop = translateMrnaCodons(['A', 'U', 'G', 'U', 'G', 'A', 'G', 'G', 'A']);
+    expect(prematureStop.aminoAcids).toEqual(['Met']);
+    expect(prematureStop.expectedTokens).toEqual(['Met', 'STOP']);
+    expect(prematureStop.stopCodonIndex).toBe(1);
+
+    // Invalid nucleotide token & incomplete codon length rejected by schema validator
+    const c08 = fixture.slides[7].interactive as BioSequenceConstructionConfig;
+    expect(validateSlideInteractiveConfig({ ...c08, templateSequence: ['T', 'X', 'C'] }).ok).toBe(false);
+    const c10 = fixture.slides[9].interactive as BioSequenceConstructionConfig;
+    expect(validateSlideInteractiveConfig({ ...c10, templateSequence: ['A', 'U', 'G', 'G', 'G'] }).ok).toBe(false);
+
     const punnettRef = computeMonohybridPunnett('Tt', 'Tt', 'T');
     expect(punnettRef.genotypeProbabilities).toEqual({ TT: 25, Tt: 50, tt: 25 });
     expect(punnettRef.dominantProbabilityPct).toBe(75);
@@ -219,8 +270,10 @@ describe('Step 4D Strict Schema Validation, Domain Version Gates & Legacy Compat
     expect(legacy.ok).toBe(true);
   });
 
-  it('rejects cyclic declarative Boolean circuits and unsolvable chemical equations at schema validation time', () => {
+  it('rejects cyclic, unsupported-gate, invalid-ref, and version-downgraded declarative Boolean circuits; accepts functionally equivalent alternatives and enforces maxGates', () => {
     const c12 = fixture.slides[11].interactive as BooleanCircuitConstructionConfig;
+
+    // Cycle rejected
     const cyclic = validateSlideInteractiveConfig({
       ...c12,
       circuitConfig: {
@@ -234,13 +287,72 @@ describe('Step 4D Strict Schema Validation, Domain Version Gates & Legacy Compat
     });
     expect(cyclic.ok).toBe(false);
     expect(cyclic.errors.join(' ')).toMatch(/cycle/i);
+
+    // Unsupported gate rejected (XOR not in allowedGates)
+    const unsupportedGate = validateSlideInteractiveConfig({
+      ...c12,
+      circuitConfig: {
+        ...c12.circuitConfig!,
+        initialGates: [{ id: 'G1', op: 'XOR', inputs: ['A', 'B'] }],
+        initialOutput: 'G1',
+      },
+    });
+    expect(unsupportedGate.ok).toBe(false);
+
+    // Invalid port reference rejected
+    const badRef = validateSlideInteractiveConfig({
+      ...c12,
+      circuitConfig: {
+        ...c12.circuitConfig!,
+        initialGates: [{ id: 'G1', op: 'NOT', inputs: ['Z_UNKNOWN'] }],
+        initialOutput: 'G1',
+      },
+    });
+    expect(badRef.ok).toBe(false);
+
+    // Version bypass on declarative boolean-circuit rejected
+    const downgradeBool = validateSlideInteractiveConfig({ ...c12, minEngineVersion: '1.0.0' });
+    expect(downgradeBool.ok).toBe(false);
+    expect(downgradeBool.errors.join(' ')).toMatch(/requires minEngineVersion >= "1\.1\.0"/i);
+
+    // Functionally equivalent alternative construction accepted: A AND (NOT B) built via NOT(NAND(A, NOT B))
+    const altCfg: BooleanCircuitConstructionConfig = {
+      ...c12,
+      circuitConfig: {
+        ...c12.circuitConfig!,
+        initialGates: [
+          { id: 'G1', op: 'NOT', inputs: ['B'] },
+          { id: 'G2', op: 'NAND', inputs: ['A', 'G1'] },
+          { id: 'G3', op: 'NOT', inputs: ['G2'] },
+        ],
+        initialOutput: 'G3',
+      },
+    };
+    const { unmount } = render(<DeclarativeBooleanCircuitAdapter config={altCfg} />);
+    fireEvent.click(screen.getByRole('button', { name: /Grade logic circuit/i }));
+    expect(screen.getByText(/Verified:/i)).toBeTruthy();
+    unmount();
+
+    // Structural constraint maxGates enforced separately from functional equivalence
+    const overMaxGates: BooleanCircuitConstructionConfig = {
+      ...altCfg,
+      circuitConfig: { ...altCfg.circuitConfig!, maxGates: 2 },
+    };
+    render(<DeclarativeBooleanCircuitAdapter config={overMaxGates} />);
+    fireEvent.click(screen.getByRole('button', { name: /Grade logic circuit/i }));
+    expect(screen.getByText(/exceeding the structural limit of 2 gate/i)).toBeTruthy();
   });
 });
 
 describe('Step 4D UI Components: Undo/Reset, Interactive Grading, Multi-Activity Isolation & Low-Data', () => {
-  it('supports EquationBalancerLab coefficient stepping, Undo, Reset, and verification on C01', () => {
+  it('supports EquationBalancerLab prediction-before-construction, coefficient stepping, Undo, Reset, and verification on C01', () => {
     const c01 = fixture.slides[0].interactive as EquationBalancerConstructionConfig;
     render(<EquationBalancerLab config={c01} />);
+
+    // Prediction-before-construction prompt
+    fireEvent.click(screen.getByRole('button', { name: /^2$/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Check prediction/i }));
+    expect(screen.getByText(/Spot on!/i)).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: /^Increase coefficient for H₂$/i }));
     fireEvent.click(screen.getByRole('button', { name: /^Increase coefficient for H₂O$/i }));
@@ -250,6 +362,10 @@ describe('Step 4D UI Components: Undo/Reset, Interactive Grading, Multi-Activity
     fireEvent.click(screen.getByRole('button', { name: /Undo last change/i }));
     fireEvent.click(screen.getByRole('button', { name: /Check equation balance/i }));
     expect(screen.getByText(/Keep refining:/i)).toBeTruthy();
+
+    // Reset restores coefficients cleanly
+    fireEvent.click(screen.getByRole('button', { name: /Reset construction/i }));
+    expect(screen.queryByText(/Keep refining:/i)).toBeNull();
   });
 
   it('supports DeclarativeBooleanCircuitAdapter functional-equivalence grading on C12, BioSequenceLab, ElectricalCircuitLab, and Low-Data Mode', () => {

@@ -2753,6 +2753,7 @@
       "instructions": "Balance both bromine atoms and net electric charge using Br⁻, Br₂, and electrons (e⁻).",
       "accessibilityLabel": "Interactive ionic half-equation balancer for bromide oxidation",
       "fallbackText": "Balanced half-equation: 2Br⁻(l) → Br₂(g) + 2e⁻ (2 Br atoms and −2 total charge on each side).",
+      "modelNote": "Represents the anode oxidation half-equation during electrolysis of molten lead(II) bromide (PbBr₂) at high temperature (~370–400 °C), well above bromine's boiling point (58.8 °C), which is why bromine is evolved as a brown gas Br₂(g) rather than liquid Br₂(l).",
       "arrow": "→",
       "maxCoefficient": 10,
       "requireSimplestRatio": true,
@@ -2981,6 +2982,102 @@
       "successExplanation": "Verified! Both 6 Ω parallel branches receive 6.00 V, each draws 1.00 A, and KCL holds: I_total = 1.00 A + 1.00 A = 2.00 A (R_eq = 3.00 Ω)."
     },
     {
+      "id": "pilot4d-phys-mixed-sp",
+      "engine": "construction-lab",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.1.0",
+      "labKind": "electrical-circuit",
+      "subjectTag": "Physics",
+      "title": "Mixed Series-Parallel Reference Circuit (12 V · 2 Ω + 6 Ω ∥ 6 Ω)",
+      "instructions": "Place a 2 Ω resistor in the main series loop and two 6 Ω resistors in parallel Branches A and B, then verify R_eq = 5.00 Ω, I_total = 2.40 A, V_parallel = 7.20 V, and I_A = I_B = 1.20 A.",
+      "accessibilityLabel": "Interactive 12 volt mixed series-parallel electrical circuit builder",
+      "fallbackText": "In a 12 V mixed circuit with a 2 Ω series resistor feeding two parallel 6 Ω resistors, R_parallel = 3 Ω, R_eq = 5 Ω, I_total = 2.40 A, V_series = 4.80 V, V_parallel = 7.20 V, and each parallel branch carries 1.20 A.",
+      "topology": "series-parallel",
+      "supplyVoltageV": 12,
+      "palette": [
+        {
+          "id": "res-2",
+          "kind": "resistor",
+          "label": "Resistor 2 Ω",
+          "resistanceOhm": 2
+        },
+        {
+          "id": "res-6",
+          "kind": "resistor",
+          "label": "Resistor 6 Ω",
+          "resistanceOhm": 6
+        },
+        {
+          "id": "sw-open",
+          "kind": "switch-open",
+          "label": "Switch (Open)"
+        },
+        {
+          "id": "amm",
+          "kind": "ammeter",
+          "label": "Ammeter"
+        },
+        {
+          "id": "volt",
+          "kind": "voltmeter",
+          "label": "Voltmeter"
+        }
+      ],
+      "slots": [
+        {
+          "id": "m-amm",
+          "label": "Main Ammeter",
+          "position": "main",
+          "initialComponentId": "amm",
+          "locked": true
+        },
+        {
+          "id": "m-r1",
+          "label": "Main Series Resistor",
+          "position": "main",
+          "initialComponentId": "res-2"
+        },
+        {
+          "id": "m-ba",
+          "label": "Parallel Branch A",
+          "position": "branch-a",
+          "initialComponentId": "res-6"
+        },
+        {
+          "id": "m-bb",
+          "label": "Parallel Branch B",
+          "position": "branch-b",
+          "initialComponentId": "sw-open"
+        },
+        {
+          "id": "m-v",
+          "label": "Voltmeter across Parallel Network",
+          "position": "voltmeter-probe",
+          "initialComponentId": "volt",
+          "targetSlotId": "m-ba",
+          "locked": true
+        }
+      ],
+      "goal": {
+        "description": "R_eq = 5.00 Ω, I_total = 2.40 A, V_parallel = 7.20 V, I_A = I_B = 1.20 A",
+        "targetTotalCurrentA": 2.4,
+        "targetBranchACurrentA": 1.2,
+        "targetBranchBCurrentA": 1.2,
+        "targetVoltmeterV": 7.2,
+        "toleranceA": 0.05,
+        "toleranceV": 0.1,
+        "requiredComponents": [
+          {
+            "kind": "resistor",
+            "minCount": 3
+          }
+        ],
+        "requireNoShortCircuit": true,
+        "requireNoMeterMisconnection": true
+      },
+      "successExplanation": "Verified! R_parallel = 3.00 Ω + 2.00 Ω series = 5.00 Ω total; I_total = 2.40 A splits evenly (1.20 A each) across the parallel 6 Ω branches at 7.20 V (KVL: 4.80 V + 7.20 V = 12.00 V)."
+    },
+    {
       "id": "pilot4d-phys-troubleshoot",
       "engine": "construction-lab",
       "schemaVersion": 1,
@@ -3142,7 +3239,7 @@
       "instructions": "Use the standard genetic code: AUG = Met, GGA = Gly, UUU = Phe, UAA = STOP (termination signal, no amino acid).",
       "accessibilityLabel": "Interactive mRNA translation and amino acid sequence builder",
       "fallbackText": "5′-AUG GGA UUU UAA-3′ translates to N-Met–Gly–Phe-C (2 condensation peptide bonds) and terminates at the UAA STOP codon.",
-      "modelNote": "Complete short coding sequence from AUG start codon to UAA stop codon. Peptide bonds form between the carboxyl (–COOH) group of one amino acid and the amino (–NH₂) group of the next via condensation (releasing H₂O).",
+      "modelNote": "Complete short coding sequence from AUG start codon to UAA stop codon. In simplified textbook stoichiometry, peptide bond formation is written as a condensation reaction between –COOH and –NH₂ releasing H₂O; in living cells during ribosome-mediated translation, amino acids are first activated onto tRNA (using ATP) and peptidyl transferase in the ribosome catalyses peptide bond formation between aminoacyl-tRNA and peptidyl-tRNA.",
       "templateDirection": "5′→3′ mRNA",
       "productDirection": "N→C Polypeptide",
       "templateSequence": [
