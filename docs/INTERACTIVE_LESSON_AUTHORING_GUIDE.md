@@ -14,18 +14,21 @@ Slides without `interactive` continue working identically as standard narrated s
 
 ---
 
-## 2. Supported & Reserved Engine Identifiers
+## 2. Supported Engine Identifiers & Production Compatibility Manifest
 
-| Engine ID | Status | Installed Version | Supported `schemaVersion` | Use Case |
-| :--- | :--- | :--- | :--- | :--- |
-| `rule-explorer` | **Implemented (Publishable)** | `1.0.0` | `1` | Cross-subject condition/rule toggling (CS, Chemistry, Biology, Physics, Geography, Civics) |
-| `code-playground` | **Implemented (Publishable)** | `1.0.0` | `1` | Live sandboxed Python 3 (Pyodide), Cambridge Pseudocode, and Read-Only SQL (`SELECT`) |
-| `construction-lab` | **Production LIVE (`1.1.0`)** | `1.1.0` | `1` | Legacy & declarative Boolean Circuit Builder, Chemistry Equation Balancer (`equation-balancer`), Bounded DC Circuit Builder (`electrical-circuit`), Biological Sequence & Inheritance Builder (`bio-sequence-builder`) |
-| `graph-slider` | **Step 4A Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject dynamic graph, sliders, piecewise & step waveforms, readouts & discovery challenges *(blocked from production CDN publish until Step 4A is deployed to production)* |
-| `process-stepper` | **Step 4B Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, predictions & sequencing *(blocked from production CDN publish until Step 4B is verified in production)* |
-| `diagram-hotspots` | **Step 4C Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject interactive diagram, point/rect hotspots, structure-to-function links, progressive disclosure & identify challenges *(blocked from production CDN publish until Step 4C is verified in production)* |
+All six engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/interactive-schema.ts`) are verified **Production LIVE** on `https://gam-it-service.app`:
 
-> **Important:** Do **not** author production lessons using reserved Step 4 engines (`graph-slider`, `process-stepper`, `diagram-hotspots`). The publishing validator (`assertValidLessonInteractives`) explicitly rejects unimplemented engines.
+| Engine ID | Status | Installed `engineVersion` | Verified `productionVersion` | Supported `schemaVersion` | Minimum `minEngineVersion` | Use Case |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| `rule-explorer` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject condition/rule toggling (CS, Chemistry, Biology, Physics, Geography, Civics) |
+| `code-playground` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Live sandboxed Python 3 (Pyodide), Cambridge 0478 Pseudocode, and Read-Only SQL (`SELECT`) |
+| `graph-slider` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject dynamic graph, sliders, piecewise & step waveforms, readouts, predictions & compound discovery challenges |
+| `process-stepper` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, `reactionMeta`, predictions & sequencing |
+| `diagram-hotspots` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject interactive WebP/PNG diagram, point/rect hotspots, structure-to-function links, progressive disclosure, Identify challenges & `nonVisualQuestion` |
+| `construction-lab` | **Production LIVE** | `1.1.0` | `1.1.0` | `1` | `"1.0.0"` (legacy `boolean-circuit`) · `"1.1.0"` (all Step 4D domains) | Legacy & declarative `boolean-circuit`, `equation-balancer`, `electrical-circuit`, and `bio-sequence-builder` |
+
+> **Version Distinction:** `engineVersion` is the version installed in the codebase; `productionVersion` is the highest version verified live on `https://gam-it-service.app` after manual Vercel promotion; `schemaVersion` is the JSON config schema format (`1`); `minEngineVersion` is the minimum engine version required by a specific slide activity.  
+> **Deferred Future Extensions (Do NOT author yet):** `atom-bond-builder` (v1.1) and `geometry-constructor` (v1.2) are not implemented and are rejected by the publish validator.
 
 ---
 
@@ -36,9 +39,9 @@ Strict field allowlisting is enforced — **unknown keys are rejected**.
 | Field | Type | Required | Rules |
 | :--- | :--- | :---: | :--- |
 | `id` | `string` | **Yes** | `^[A-Za-z0-9_-]{2,64}$`. Must be **globally unique** across all slides in the lesson (including multiple activities on the same slide). |
-| `engine` | `string` | **Yes** | Must be an implemented engine ID (`rule-explorer`, `code-playground`, `construction-lab`). |
+| `engine` | `string` | **Yes** | Must be one of the six implemented engine IDs: `rule-explorer`, `code-playground`, `construction-lab`, `graph-slider`, `process-stepper`, `diagram-hotspots`. |
 | `schemaVersion` | `number` | **Yes** | Must be `1`. |
-| `minEngineVersion` | `string` | No | SemVer `MAJOR.MINOR.PATCH` (e.g. `"1.0.0"`). Rejected if higher than the installed engine version. |
+| `minEngineVersion` | `string` | No (Required `"1.1.0"` on Step 4D `construction-lab` domains) | SemVer `MAJOR.MINOR.PATCH` (e.g. `"1.0.0"` or `"1.1.0"`). Rejected if higher than the engine's `productionVersion` (at publish time) or `engineVersion` (at runtime). |
 | `title` | `string` | **Yes** | At least 2 non-whitespace characters. Short student-facing heading. |
 | `instructions` | `string` | **Yes** | At least 4 non-whitespace characters. Clear action prompt for the learner. |
 | `accessibilityLabel` | `string` | **Yes** | At least 4 non-whitespace characters. Screen-reader landmark label (`aria-label`). |
@@ -234,15 +237,16 @@ The inline SQL runner executes read-only `SELECT` queries against GAM EDU's buil
 
 ## 10. Valid & Invalid Configuration Examples
 
-See machine-readable valid examples for every implemented engine in [interactive-lesson-examples.json](file:///c:/Users/LENOVO/OneDrive%20-%20Kwame%20Nkrumah%20Uni.%20of%20Sci.%20and%20Tech/Documents/GitHub/Gam_Edu/docs/examples/interactive-lesson-examples.json).
+See machine-readable valid examples for all six implemented engines in [examples/interactive-lesson-examples.json](./examples/interactive-lesson-examples.json).
 
 ### Common Invalid Authoring Mistakes (Rejected by `publish-lesson.ts`)
 
 | Mistake | Why Rejected |
 | :--- | :--- |
-| `"engine": "graph-slider"` in a production lesson | Reserved Step 4 engine — not yet implemented |
+| `"labKind": "atom-bond-builder"` or `"geometry-constructor"` | Deferred future construction extension — not yet implemented |
+| Step 4D `construction-lab` domain (`equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, or declarative `boolean-circuit` with `circuitConfig`) with `"minEngineVersion": "1.0.0"` | Step 4D domains require `"minEngineVersion": "1.1.0"` or higher |
 | `"schemaVersion": 2` | Only `schemaVersion: 1` is supported |
-| `"minEngineVersion": "2.0.0"` | Exceeds installed engine version `1.0.0` |
+| `"minEngineVersion": "2.0.0"` | Exceeds verified `productionVersion` (`1.0.0` or `1.1.0`) |
 | Unknown field like `"customCss": "..."` or `"onClick": "..."` | Strict schema allowlist rejects unknown keys |
 | `{ "operator": "AND", "operands": [{ "input": "a" }] }` | `AND`/`OR`/`XOR` require 2–8 operands (`NOT` requires exactly 1) |
 | `{ "input": "missingId" }` | References an input ID not declared in `inputs[]` |

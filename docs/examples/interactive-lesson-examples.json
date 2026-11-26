@@ -199,8 +199,8 @@
       "title": "Discover Quadratic Vertex Form",
       "instructions": "Move a, h, and k to see how the vertex (h, k) and curvature compare with the reference parabola y = x².",
       "accessibilityLabel": "Quadratic vertex form graph and parameter sliders",
-      "fallbackText": "In y = a(x - h)^2 + k, the vertex sits at (h, k). Negative a flips the parabola upside down; |a| > 1 narrows it.",
-      "modelNote": "Real-valued quadratic function plotted over x in [-6, 6].",
+      "fallbackText": "In y = a(x - h)^2 + k, when a ≠ 0 the vertex sits at (h, k), negative a flips the parabola downward, and |a| > 1 narrows it; when a = 0, the graph becomes the horizontal constant function y = k (not a parabola).",
+      "modelNote": "Real-valued function y = a(x - h)^2 + k plotted over x in [-6, 6]. Note: when a = 0, y = k is a horizontal constant function rather than a parabola.",
       "axes": {
         "xLabel": "x",
         "xMin": -6,
