@@ -272,7 +272,7 @@
         "instructions": "Vary Amplitude (A), Wavelength (λ), and Frequency (f) to observe the spatial wave snapshot and calculated wave speed.",
         "accessibilityLabel": "Transverse wave spatial snapshot graph and sliders",
         "fallbackText": "In a spatial wave snapshot y(x) = A sin(2πx / λ), amplitude A sets peak height, wavelength λ sets crest-to-crest distance, wave speed is v = fλ, and period is T = 1/f.",
-        "modelNote": "Spatial snapshot at a fixed instant in time (not a time graph). Frequency changes the calculated wave speed v = fλ and period T = 1/f rather than the frozen spatial shape.",
+        "modelNote": "Spatial displacement snapshot y(x) at a fixed instant in time (distinct from a displacement-time graph y(t)). In a fixed-speed medium, f and λ are inversely related (v constant); here, f and λ can be varied independently to show how wave speed v = fλ and period T = 1/f respond while the frozen spatial shape depends only on A and λ.",
         "axes": { "xLabel": "Position x", "xUnit": "m", "xMin": 0, "xMax": 8, "yLabel": "Displacement y", "yUnit": "m", "yMin": -2.5, "yMax": 2.5 },
         "sliders": [
           { "id": "A", "label": "Amplitude (A)", "min": 0.5, "max": 2, "step": 0.25, "defaultValue": 1, "unit": "m", "presets": [0.5, 1, 2] },

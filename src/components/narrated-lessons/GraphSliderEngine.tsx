@@ -15,7 +15,13 @@ import type {
   GraphCurveDef,
   GraphSliderInteractiveConfig,
 } from '@/lib/narrated-lessons/interactive-schema';
-import { evaluateMathAst, tryParseMathExpr, type MathAstNode } from '@/lib/narrated-lessons/math-expr';
+import {
+  evaluateMathAst,
+  evaluateMathAstDetailed,
+  tryParseMathExpr,
+  type MathAstNode,
+  type MathEvalResult,
+} from '@/lib/narrated-lessons/math-expr';
 import {
   buildStepSeriesPoints,
   evaluateGraphChallengeCheck,
@@ -46,9 +52,18 @@ function clamp(v: number, lo: number, hi: number): number {
 }
 
 function formatNum(v: number, precision = 2): string {
-  if (!Number.isFinite(v)) return 'undefined';
+  if (!Number.isFinite(v)) return 'Undefined';
   const rounded = Math.abs(v) < 1e-10 ? 0 : v;
   return rounded.toFixed(precision);
+}
+
+function formatDetailedEval(res: MathEvalResult, precision = 2, unit?: string): string {
+  if (res.status === 'ok') {
+    return `${formatNum(res.value, precision)}${unit ? ` ${unit}` : ''}`;
+  }
+  if (res.status === 'outside-real-domain') return 'Outside real domain';
+  if (res.status === 'exceeds-numeric-limit') return 'Exceeds numeric limit';
+  return 'Undefined';
 }
 
 function dashForStyle(style?: GraphCurveDef['style']): string | undefined {
@@ -133,14 +148,20 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
     });
   }, [config.readouts, config.sliders]);
 
-  // Evaluate readouts
-  const readoutResults = useMemo(() => {
-    const map: Record<string, number> = {};
+  // Evaluate readouts (detailed status + numeric map for challenge checks)
+  const readoutDetailed = useMemo(() => {
+    const detailed: Record<string, MathEvalResult> = {};
+    const numeric: Record<string, number> = {};
     for (const { readout, ast } of parsedReadouts) {
-      map[readout.id] = ast ? evaluateMathAst(ast, sliderValues) : Number.NaN;
+      const res: MathEvalResult = ast
+        ? evaluateMathAstDetailed(ast, sliderValues)
+        : { status: 'undefined', reason: 'Expression unavailable.' };
+      detailed[readout.id] = res;
+      numeric[readout.id] = res.status === 'ok' ? res.value : Number.NaN;
     }
-    return map;
+    return { detailed, numeric };
   }, [parsedReadouts, sliderValues]);
+  const readoutResults = readoutDetailed.numeric;
 
   // Sample all curves for SVG rendering
   const renderedCurves = useMemo(() => {
@@ -606,7 +627,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
       {config.readouts && config.readouts.length > 0 && (
         <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
           {config.readouts.map((r) => {
-            const val = readoutResults[r.id];
+            const detail = readoutDetailed.detailed[r.id];
             return (
               <div
                 key={r.id}
@@ -617,8 +638,7 @@ export function GraphSliderEngine({ config }: GraphSliderEngineProps) {
                   {r.label}
                 </p>
                 <p className="mt-0.5 font-mono text-lg font-extrabold text-slate-900">
-                  {formatNum(val, r.precision ?? 2)}
-                  {Number.isFinite(val) && r.unit ? ` ${r.unit}` : ''}
+                  {detail ? formatDetailedEval(detail, r.precision ?? 2, r.unit) : 'Undefined'}
                 </p>
               </div>
             );

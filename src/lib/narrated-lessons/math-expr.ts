@@ -344,100 +344,179 @@ export function parseMathExpr(
   };
 }
 
-function guardFinite(v: number): number {
+export type MathEvalStatus =
+  | 'ok'
+  | 'undefined'
+  | 'outside-real-domain'
+  | 'exceeds-numeric-limit';
+
+export type MathEvalResult =
+  | { status: 'ok'; value: number }
+  | { status: 'undefined'; reason: string }
+  | { status: 'outside-real-domain'; reason: string }
+  | { status: 'exceeds-numeric-limit'; reason: string };
+
+function wrapFinite(v: number): MathEvalResult {
   if (!Number.isFinite(v) || Math.abs(v) > MATH_EXPR_LIMITS.maxAbsIntermediate) {
-    return Number.NaN;
+    return {
+      status: 'exceeds-numeric-limit',
+      reason: `Result exceeds supported display range (±${MATH_EXPR_LIMITS.maxAbsIntermediate.toExponential(0)}).`,
+    };
   }
-  return v;
+  return { status: 'ok', value: v };
 }
 
 /**
- * Evaluates a pre-parsed MathAstNode against numeric variable bindings.
- * Returns `NaN` for domain violations (division by 0, sqrt(<0), ln(<=0), tan pole, overflow).
+ * Evaluates a pre-parsed MathAstNode and distinguishes:
+ * - Mathematically undefined operations (e.g. 1/0, ln(0), tan(PI/2))
+ * - Values outside the supported real-number domain (e.g. sqrt(-4), ln(-2), (-2)^0.5)
+ * - Valid mathematical results exceeding the engine's numerical display/safety limit (e.g. 10^50)
+ */
+export function evaluateMathAstDetailed(
+  node: MathAstNode,
+  variables: Readonly<Record<string, number>>
+): MathEvalResult {
+  switch (node.type) {
+    case 'number':
+      return wrapFinite(node.value);
+    case 'const':
+      return { status: 'ok', value: CONSTANTS[node.name] };
+    case 'var': {
+      if (!Object.prototype.hasOwnProperty.call(variables, node.name)) {
+        return { status: 'undefined', reason: `Variable "${node.name}" has no value.` };
+      }
+      const v = variables[node.name];
+      return typeof v === 'number'
+        ? wrapFinite(v)
+        : { status: 'undefined', reason: `Variable "${node.name}" is not numeric.` };
+    }
+    case 'unary': {
+      const a = evaluateMathAstDetailed(node.arg, variables);
+      if (a.status !== 'ok') return a;
+      return wrapFinite(node.op === '-' ? -a.value : a.value);
+    }
+    case 'binary': {
+      const l = evaluateMathAstDetailed(node.left, variables);
+      if (l.status !== 'ok') return l;
+      const r = evaluateMathAstDetailed(node.right, variables);
+      if (r.status !== 'ok') return r;
+      switch (node.op) {
+        case '+':
+          return wrapFinite(l.value + r.value);
+        case '-':
+          return wrapFinite(l.value - r.value);
+        case '*':
+          return wrapFinite(l.value * r.value);
+        case '/':
+          if (r.value === 0) {
+            return { status: 'undefined', reason: 'Division by zero is undefined.' };
+          }
+          return wrapFinite(l.value / r.value);
+        case '^': {
+          if (l.value === 0 && r.value < 0) {
+            return { status: 'undefined', reason: 'Zero raised to a negative power is undefined.' };
+          }
+          if (l.value < 0 && !Number.isInteger(r.value)) {
+            return {
+              status: 'outside-real-domain',
+              reason: 'Negative base with fractional exponent is outside the real numbers.',
+            };
+          }
+          if (Math.abs(r.value) > MATH_EXPR_LIMITS.maxExponentAbs) {
+            return {
+              status: 'exceeds-numeric-limit',
+              reason: `Exponent magnitude exceeds supported limit (${MATH_EXPR_LIMITS.maxExponentAbs}).`,
+            };
+          }
+          return wrapFinite(Math.pow(l.value, r.value));
+        }
+      }
+    }
+    case 'call': {
+      const vals: number[] = [];
+      for (const arg of node.args) {
+        const res = evaluateMathAstDetailed(arg, variables);
+        if (res.status !== 'ok') return res;
+        vals.push(res.value);
+      }
+      switch (node.name) {
+        case 'abs':
+          return wrapFinite(Math.abs(vals[0]));
+        case 'sin':
+          return wrapFinite(Math.sin(vals[0]));
+        case 'cos':
+          return wrapFinite(Math.cos(vals[0]));
+        case 'tan':
+          if (Math.abs(Math.cos(vals[0])) < 1e-12) {
+            return { status: 'undefined', reason: 'Tangent is undefined at odd multiples of π/2.' };
+          }
+          return wrapFinite(Math.tan(vals[0]));
+        case 'sqrt':
+          if (vals[0] < 0) {
+            return {
+              status: 'outside-real-domain',
+              reason: 'Square root of a negative number is outside the real numbers.',
+            };
+          }
+          return wrapFinite(Math.sqrt(vals[0]));
+        case 'ln':
+          if (vals[0] === 0) {
+            return { status: 'undefined', reason: 'ln(0) is undefined.' };
+          }
+          if (vals[0] < 0) {
+            return {
+              status: 'outside-real-domain',
+              reason: 'Natural logarithm of a negative number is outside the real numbers.',
+            };
+          }
+          return wrapFinite(Math.log(vals[0]));
+        case 'log10':
+          if (vals[0] === 0) {
+            return { status: 'undefined', reason: 'log10(0) is undefined.' };
+          }
+          if (vals[0] < 0) {
+            return {
+              status: 'outside-real-domain',
+              reason: 'Base-10 logarithm of a negative number is outside the real numbers.',
+            };
+          }
+          return wrapFinite(Math.log10(vals[0]));
+        case 'exp':
+          if (vals[0] > 27) {
+            return {
+              status: 'exceeds-numeric-limit',
+              reason: 'Exponential result exceeds supported display range.',
+            };
+          }
+          return wrapFinite(Math.exp(vals[0]));
+        case 'deg2rad':
+          return wrapFinite((vals[0] * Math.PI) / 180);
+        case 'rad2deg':
+          return wrapFinite((vals[0] * 180) / Math.PI);
+        case 'floor':
+          return wrapFinite(Math.floor(vals[0]));
+        case 'ceil':
+          return wrapFinite(Math.ceil(vals[0]));
+        case 'round':
+          return wrapFinite(Math.round(vals[0]));
+        case 'min':
+          return wrapFinite(Math.min(...vals));
+        case 'max':
+          return wrapFinite(Math.max(...vals));
+      }
+    }
+  }
+}
+
+/**
+ * Fast numeric wrapper returning `number` (`NaN` for non-ok statuses) for curve sampling.
  */
 export function evaluateMathAst(
   node: MathAstNode,
   variables: Readonly<Record<string, number>>
 ): number {
-  switch (node.type) {
-    case 'number':
-      return guardFinite(node.value);
-    case 'const':
-      return CONSTANTS[node.name];
-    case 'var': {
-      if (!Object.prototype.hasOwnProperty.call(variables, node.name)) return Number.NaN;
-      const v = variables[node.name];
-      return typeof v === 'number' ? guardFinite(v) : Number.NaN;
-    }
-    case 'unary': {
-      const a = evaluateMathAst(node.arg, variables);
-      if (Number.isNaN(a)) return Number.NaN;
-      return guardFinite(node.op === '-' ? -a : a);
-    }
-    case 'binary': {
-      const l = evaluateMathAst(node.left, variables);
-      const r = evaluateMathAst(node.right, variables);
-      if (Number.isNaN(l) || Number.isNaN(r)) return Number.NaN;
-      switch (node.op) {
-        case '+':
-          return guardFinite(l + r);
-        case '-':
-          return guardFinite(l - r);
-        case '*':
-          return guardFinite(l * r);
-        case '/':
-          if (r === 0) return Number.NaN;
-          return guardFinite(l / r);
-        case '^': {
-          if (Math.abs(r) > MATH_EXPR_LIMITS.maxExponentAbs) return Number.NaN;
-          if (l === 0 && r < 0) return Number.NaN;
-          if (l < 0 && !Number.isInteger(r)) return Number.NaN;
-          return guardFinite(Math.pow(l, r));
-        }
-      }
-    }
-    case 'call': {
-      const vals = node.args.map((arg) => evaluateMathAst(arg, variables));
-      if (vals.some((v) => Number.isNaN(v))) return Number.NaN;
-      switch (node.name) {
-        case 'abs':
-          return guardFinite(Math.abs(vals[0]));
-        case 'sin':
-          return guardFinite(Math.sin(vals[0]));
-        case 'cos':
-          return guardFinite(Math.cos(vals[0]));
-        case 'tan':
-          if (Math.abs(Math.cos(vals[0])) < 1e-12) return Number.NaN;
-          return guardFinite(Math.tan(vals[0]));
-        case 'sqrt':
-          if (vals[0] < 0) return Number.NaN;
-          return guardFinite(Math.sqrt(vals[0]));
-        case 'ln':
-          if (vals[0] <= 0) return Number.NaN;
-          return guardFinite(Math.log(vals[0]));
-        case 'log10':
-          if (vals[0] <= 0) return Number.NaN;
-          return guardFinite(Math.log10(vals[0]));
-        case 'exp':
-          if (vals[0] > 27) return Number.NaN; // e^27 ~ 5.3e11 < 1e12 guard
-          return guardFinite(Math.exp(vals[0]));
-        case 'deg2rad':
-          return guardFinite((vals[0] * Math.PI) / 180);
-        case 'rad2deg':
-          return guardFinite((vals[0] * 180) / Math.PI);
-        case 'floor':
-          return guardFinite(Math.floor(vals[0]));
-        case 'ceil':
-          return guardFinite(Math.ceil(vals[0]));
-        case 'round':
-          return guardFinite(Math.round(vals[0]));
-        case 'min':
-          return guardFinite(Math.min(...vals));
-        case 'max':
-          return guardFinite(Math.max(...vals));
-      }
-    }
-  }
+  const res = evaluateMathAstDetailed(node, variables);
+  return res.status === 'ok' ? res.value : Number.NaN;
 }
 
 export function tryParseMathExpr(

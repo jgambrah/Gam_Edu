@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { evaluateMathAst, parseMathExpr, tryParseMathExpr } from './math-expr';
+import { evaluateMathAst, evaluateMathAstDetailed, parseMathExpr, tryParseMathExpr } from './math-expr';
 import {
   buildStepSeriesPoints,
   evaluateGraphChallengeCheck,
@@ -61,13 +61,76 @@ describe('Step 4A Mathematical Expression Parser & Bounded AST Evaluator', () =>
     expect(tryParseMathExpr(wide, []).ok).toBe(false);
   });
 
-  it('returns NaN cleanly on mathematical domain violations and numeric overflow without throwing', () => {
+  it('distinguishes mathematically undefined, outside-real-domain, and exceeds-numeric-limit cleanly', () => {
+    const detailed = (expr: string, vars: Record<string, number> = {}) =>
+      evaluateMathAstDetailed(parseMathExpr(expr, Object.keys(vars)).ast, vars);
+
+    expect(detailed('1 / x', { x: 0 }).status).toBe('undefined');
+    expect(detailed('ln(x)', { x: 0 }).status).toBe('undefined');
+    expect(detailed('tan(PI / 2)').status).toBe('undefined');
+
+    expect(detailed('sqrt(x)', { x: -4 }).status).toBe('outside-real-domain');
+    expect(detailed('log10(x)', { x: -10 }).status).toBe('outside-real-domain');
+    expect(detailed('(-2)^0.5').status).toBe('outside-real-domain');
+
+    // 10^50 is mathematically valid — MUST be classified as exceeds-numeric-limit, NOT undefined!
+    expect(detailed('10^50').status).toBe('exceeds-numeric-limit');
+    expect(detailed('exp(30)').status).toBe('exceeds-numeric-limit');
+
+    // Fast wrapper still returns NaN for non-ok statuses
     expect(Number.isNaN(evalScalar('1 / x', { x: 0 }))).toBe(true);
-    expect(Number.isNaN(evalScalar('sqrt(x)', { x: -4 }))).toBe(true);
-    expect(Number.isNaN(evalScalar('ln(x)', { x: 0 }))).toBe(true);
-    expect(Number.isNaN(evalScalar('log10(x)', { x: -10 }))).toBe(true);
-    expect(Number.isNaN(evalScalar('tan(PI / 2)'))).toBe(true);
-    expect(Number.isNaN(evalScalar('10^50'))).toBe(true); // exceeds 1e12 overflow guard
+    expect(Number.isNaN(evalScalar('10^50'))).toBe(true);
+  });
+
+  it('handles shifted asymptotes (1/(x-0.37), tan(x-0.5)), ln(x-1) domain boundary, and steep continuous lines (20*x) with zero false breaks', () => {
+    // 1) Shifted reciprocal 1/(x - 0.37) — pole misses grid points yet MUST NOT connect across x = 0.37
+    const shiftedRecip = sampleFormulaCurve(parseMathExpr('1 / (x - 0.37)', ['x']).ast, {}, {
+      xVar: 'x',
+      xMin: -4,
+      xMax: 4,
+      yMin: -6,
+      yMax: 6,
+      samples: 160,
+    });
+    expect(shiftedRecip.segments.length).toBeGreaterThanOrEqual(2);
+    for (const seg of shiftedRecip.segments) {
+      expect(seg.some((p) => p.x < 0.37) && seg.some((p) => p.x > 0.37)).toBe(false);
+    }
+
+    // 2) Shifted tangent tan(x - 0.5)
+    const shiftedTan = sampleFormulaCurve(parseMathExpr('tan(x - 0.5)', ['x']).ast, {}, {
+      xVar: 'x',
+      xMin: -4,
+      xMax: 4,
+      yMin: -6,
+      yMax: 6,
+      samples: 160,
+    });
+    expect(shiftedTan.segments.length).toBeGreaterThanOrEqual(3);
+
+    // 3) Steep continuous linear function 20*x MUST remain 1 continuous segment (no false break!)
+    const steepLinear = sampleFormulaCurve(parseMathExpr('20 * x', ['x']).ast, {}, {
+      xVar: 'x',
+      xMin: -1,
+      xMax: 1,
+      yMin: -25,
+      yMax: 25,
+      samples: 160,
+    });
+    expect(steepLinear.segments.length).toBe(1);
+    expect(steepLinear.segments[0].length).toBe(160);
+
+    // 4) Shifted logarithm ln(x - 1) plots strictly for x > 1
+    const shiftedLn = sampleFormulaCurve(parseMathExpr('ln(x - 1)', ['x']).ast, {}, {
+      xVar: 'x',
+      xMin: -2,
+      xMax: 6,
+      yMin: -4,
+      yMax: 4,
+      samples: 120,
+    });
+    expect(shiftedLn.segments.length).toBeGreaterThanOrEqual(1);
+    expect(shiftedLn.segments.every((seg) => seg.every((p) => p.x > 1))).toBe(true);
   });
 });
 
@@ -264,5 +327,28 @@ describe('Step 4A Schema Validation, Production Compatibility & UI Integration',
     const stubSlide = fixture.slides[1] as LessonSlide;
     render(<InteractiveEngineRegistry lesson={fixture} slide={stubSlide} lowDataMode={true} />);
     expect(screen.getByText(/Low-Data Summary/i)).toBeTruthy();
+  });
+
+  it('validates all 8 previewStep4aExamples in docs/examples/interactive-lesson-examples.json and blocks them at production publish gate', () => {
+    const examplesPath = path.resolve(process.cwd(), 'docs/examples/interactive-lesson-examples.json');
+    const parsed = JSON.parse(fs.readFileSync(examplesPath, 'utf8')) as {
+      previewStep4aExamples: Record<string, unknown>;
+    };
+    const entries = Object.entries(parsed.previewStep4aExamples);
+    expect(entries.length).toBe(8);
+
+    for (const [key, cfg] of entries) {
+      const devRes = validateSlideInteractiveConfig(cfg, {
+        requireImplemented: true,
+        requireProduction: false,
+      });
+      expect(devRes.ok, `Step 4A example "${key}" failed: ${devRes.errors.join('; ')}`).toBe(true);
+
+      const prodRes = validateSlideInteractiveConfig(cfg, {
+        requireImplemented: true,
+        requireProduction: true,
+      });
+      expect(prodRes.ok).toBe(false);
+    }
   });
 });

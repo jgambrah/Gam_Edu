@@ -34,8 +34,12 @@
       "rule": {
         "operator": "AND",
         "operands": [
-          { "input": "idCard" },
-          { "input": "permission" }
+          {
+            "input": "idCard"
+          },
+          {
+            "input": "permission"
+          }
         ]
       },
       "output": {
@@ -57,16 +61,34 @@
       "accessibilityLabel": "Chemistry fire triangle condition explorer",
       "fallbackText": "In the fire triangle model, ordinary combustion requires fuel, oxygen and sufficient heat to initiate and sustain burning.",
       "inputs": [
-        { "id": "fuel", "label": "Fuel present", "defaultValue": true },
-        { "id": "oxygen", "label": "Oxygen present", "defaultValue": true },
-        { "id": "heat", "label": "Sufficient heat to initiate and sustain burning", "defaultValue": false }
+        {
+          "id": "fuel",
+          "label": "Fuel present",
+          "defaultValue": true
+        },
+        {
+          "id": "oxygen",
+          "label": "Oxygen present",
+          "defaultValue": true
+        },
+        {
+          "id": "heat",
+          "label": "Sufficient heat to initiate and sustain burning",
+          "defaultValue": false
+        }
       ],
       "rule": {
         "operator": "AND",
         "operands": [
-          { "input": "fuel" },
-          { "input": "oxygen" },
-          { "input": "heat" }
+          {
+            "input": "fuel"
+          },
+          {
+            "input": "oxygen"
+          },
+          {
+            "input": "heat"
+          }
         ]
       },
       "output": {
@@ -86,16 +108,39 @@
       "instructions": "Run the Python snippet and test normal and boundary marks (49, 50, 51, 0, and 100).",
       "accessibilityLabel": "Inline Python 3 code playground",
       "fallbackText": "When mark >= 50 the program prints Pass; otherwise it prints Retry (boundary values: 49 -> Retry, 50 -> Pass, 51 -> Pass).",
-      "languages": ["python"],
+      "languages": [
+        "python"
+      ],
       "pythonStarter": "mark = int(input())\nif mark >= 50:\n    print(\"Pass\")\nelse:\n    print(\"Retry\")",
       "publicTests": [
-        { "stdin": "72", "expectedStdout": "Pass" },
-        { "stdin": "41", "expectedStdout": "Retry" },
-        { "stdin": "49", "expectedStdout": "Retry" },
-        { "stdin": "50", "expectedStdout": "Pass" },
-        { "stdin": "51", "expectedStdout": "Pass" },
-        { "stdin": "0", "expectedStdout": "Retry" },
-        { "stdin": "100", "expectedStdout": "Pass" }
+        {
+          "stdin": "72",
+          "expectedStdout": "Pass"
+        },
+        {
+          "stdin": "41",
+          "expectedStdout": "Retry"
+        },
+        {
+          "stdin": "49",
+          "expectedStdout": "Retry"
+        },
+        {
+          "stdin": "50",
+          "expectedStdout": "Pass"
+        },
+        {
+          "stdin": "51",
+          "expectedStdout": "Pass"
+        },
+        {
+          "stdin": "0",
+          "expectedStdout": "Retry"
+        },
+        {
+          "stdin": "100",
+          "expectedStdout": "Pass"
+        }
       ]
     },
     "codePlaygroundPseudocode": {
@@ -107,10 +152,15 @@
       "instructions": "Run the examination-standard Cambridge pseudocode FOR loop with explicit INTEGER declarations to compute the sum of 1 to 5.",
       "accessibilityLabel": "Cambridge IGCSE pseudocode playground",
       "fallbackText": "Declaring Total and Count as INTEGER and summing 1 through 5 in a FOR loop outputs 15.",
-      "languages": ["pseudocode"],
+      "languages": [
+        "pseudocode"
+      ],
       "pseudocodeStarter": "DECLARE Total : INTEGER\nDECLARE Count : INTEGER\nTotal ← 0\nFOR Count ← 1 TO 5\n    Total ← Total + Count\nNEXT Count\nOUTPUT Total",
       "publicTests": [
-        { "stdin": "", "expectedStdout": "15" }
+        {
+          "stdin": "",
+          "expectedStdout": "15"
+        }
       ]
     },
     "codePlaygroundSql": {
@@ -122,7 +172,9 @@
       "instructions": "Run the SELECT query against the isolated Stock table (Pen, Ruler, Book, Bag, Pencil) to list items with Quantity < 6 ordered by Price descending.",
       "accessibilityLabel": "Read-only SQL query playground",
       "fallbackText": "Against GAM EDU's Stock fixture, SELECT ItemName, Price FROM Stock WHERE Quantity < 6 ORDER BY Price DESC returns 3 rows: Bag (35), Ruler (4), and Pencil (1.5). Pen (Qty 12) and Book (Qty 20) are excluded.",
-      "languages": ["sql"],
+      "languages": [
+        "sql"
+      ],
       "sqlStarter": "SELECT ItemName, Price\nFROM Stock\nWHERE Quantity < 6\nORDER BY Price DESC;"
     },
     "constructionLabBooleanCircuit": {
@@ -135,6 +187,752 @@
       "instructions": "Construct a circuit that produces an output of 1 only when input A is 1 and input B is 0. Test all four possible input combinations and verify your circuit using a truth table.",
       "accessibilityLabel": "Interactive Boolean circuit construction challenge",
       "fallbackText": "Connect input B through a NOT gate, then feed input A and (NOT B) into an AND gate. The output is 1 only when A=1 and B=0."
+    }
+  },
+  "previewStep4aExamples": {
+    "pilot4a-math-quadratic": {
+      "id": "pilot4a-math-quadratic",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Mathematics",
+      "title": "Discover Quadratic Vertex Form",
+      "instructions": "Move a, h, and k to see how the vertex (h, k) and curvature compare with the reference parabola y = x².",
+      "accessibilityLabel": "Quadratic vertex form graph and parameter sliders",
+      "fallbackText": "In y = a(x - h)^2 + k, the vertex sits at (h, k). Negative a flips the parabola upside down; |a| > 1 narrows it.",
+      "modelNote": "Real-valued quadratic function plotted over x in [-6, 6].",
+      "axes": {
+        "xLabel": "x",
+        "xMin": -6,
+        "xMax": 6,
+        "yLabel": "y",
+        "yMin": -8,
+        "yMax": 12
+      },
+      "sliders": [
+        {
+          "id": "a",
+          "label": "Stretch / Direction (a)",
+          "min": -3,
+          "max": 3,
+          "step": 0.5,
+          "defaultValue": 1,
+          "presets": [
+            -2,
+            -1,
+            0.5,
+            1,
+            2
+          ]
+        },
+        {
+          "id": "h",
+          "label": "Horizontal Shift (h)",
+          "min": -4,
+          "max": 4,
+          "step": 1,
+          "defaultValue": 2,
+          "presets": [
+            -2,
+            0,
+            2
+          ]
+        },
+        {
+          "id": "k",
+          "label": "Vertical Shift (k)",
+          "min": -5,
+          "max": 5,
+          "step": 1,
+          "defaultValue": -3,
+          "presets": [
+            -3,
+            0,
+            3
+          ]
+        }
+      ],
+      "curves": [
+        {
+          "id": "ref-parabola",
+          "label": "y = x²",
+          "expr": "x^2",
+          "color": "#94a3b8",
+          "style": "dashed",
+          "isReference": true
+        },
+        {
+          "id": "transformed",
+          "label": "y = a(x - h)² + k",
+          "expr": "a * (x - h)^2 + k",
+          "color": "#0284c7",
+          "style": "solid"
+        }
+      ],
+      "readouts": [
+        {
+          "id": "yIntercept",
+          "label": "y-intercept (at x = 0)",
+          "expr": "a * (0 - h)^2 + k",
+          "precision": 2
+        }
+      ],
+      "challenges": [
+        {
+          "id": "flip-and-shift",
+          "prompt": "Make the parabola open downward (a < 0) with its vertex at (2, 4).",
+          "check": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "sliderId": "a",
+                "max": -0.5
+              },
+              {
+                "sliderId": "h",
+                "target": 2,
+                "tolerance": 0.01
+              },
+              {
+                "sliderId": "k",
+                "target": 4,
+                "tolerance": 0.01
+              }
+            ]
+          },
+          "successText": "Well done! Because a < 0, the vertex (2, 4) is a maximum point.",
+          "hintText": "Set a to a negative value, h = 2, and k = 4."
+        }
+      ],
+      "showDataTable": true
+    },
+    "pilot4a-phys-projectile": {
+      "id": "pilot4a-phys-projectile",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Physics",
+      "title": "Discover Projectile Motion",
+      "instructions": "Adjust launch angle and initial speed to observe how the trajectory, range, and maximum height respond.",
+      "accessibilityLabel": "Projectile motion trajectory graph and sliders",
+      "fallbackText": "With constant g = 9.81 m/s² and no air resistance on level ground, horizontal range is maximised at 45° and complementary angles (30° and 60°) yield equal range.",
+      "modelNote": "Idealised projectile motion: g = 9.81 m/s², no air resistance, equal launch and landing heights.",
+      "axes": {
+        "xLabel": "Horizontal distance",
+        "xUnit": "m",
+        "xMin": 0,
+        "xMax": 100,
+        "yLabel": "Height",
+        "yUnit": "m",
+        "yMin": 0,
+        "yMax": 50
+      },
+      "sliders": [
+        {
+          "id": "theta",
+          "label": "Launch angle",
+          "min": 15,
+          "max": 75,
+          "step": 5,
+          "defaultValue": 60,
+          "unit": "°",
+          "presets": [
+            15,
+            30,
+            45,
+            60,
+            75
+          ]
+        },
+        {
+          "id": "v0",
+          "label": "Initial speed",
+          "min": 10,
+          "max": 30,
+          "step": 2,
+          "defaultValue": 26,
+          "unit": "m/s",
+          "presets": [
+            16,
+            20,
+            26,
+            30
+          ]
+        }
+      ],
+      "curves": [
+        {
+          "id": "trajectory",
+          "label": "Projectile trajectory",
+          "expr": "x * tan(deg2rad(theta)) - (9.81 * x^2) / (2 * v0^2 * cos(deg2rad(theta))^2)",
+          "color": "#0284c7",
+          "style": "solid",
+          "stopAtYZero": true
+        }
+      ],
+      "readouts": [
+        {
+          "id": "range",
+          "label": "Horizontal range",
+          "expr": "(v0^2 * sin(2 * deg2rad(theta))) / 9.81",
+          "unit": "m",
+          "precision": 2
+        },
+        {
+          "id": "maxHeight",
+          "label": "Maximum height",
+          "expr": "(v0^2 * sin(deg2rad(theta))^2) / (2 * 9.81)",
+          "unit": "m",
+          "precision": 2
+        }
+      ],
+      "challenges": [
+        {
+          "id": "max-range-at-26",
+          "prompt": "Keep initial speed at 26 m/s and set the launch angle that gives the greatest horizontal range.",
+          "check": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "sliderId": "theta",
+                "min": 44,
+                "max": 46
+              },
+              {
+                "sliderId": "v0",
+                "target": 26,
+                "tolerance": 0.05
+              }
+            ]
+          },
+          "successText": "Exact! At θ = 45° and v₀ = 26 m/s, sin(2θ) = 1, giving the maximum range of 68.91 m.",
+          "hintText": "Make sure initial speed stays at 26 m/s and compare 30°, 45°, and 60°."
+        }
+      ]
+    },
+    "pilot4a-phys-ohms-law": {
+      "id": "pilot4a-phys-ohms-law",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Physics",
+      "title": "How Does Resistance Affect Current?",
+      "instructions": "Compare the current-voltage graph for your chosen resistance R against the dashed 3 Ω reference resistor.",
+      "accessibilityLabel": "Ohm's Law current versus voltage graph and sliders",
+      "fallbackText": "By Ohm's Law (I = V / R), keeping voltage at 6 V and doubling resistance from 3 Ω to 6 Ω halves the current from 2.00 A to 1.00 A.",
+      "modelNote": "Ideal ohmic resistor with constant resistance at each setting.",
+      "xVar": "V",
+      "axes": {
+        "xLabel": "Voltage",
+        "xUnit": "V",
+        "xMin": 0,
+        "xMax": 12,
+        "yLabel": "Current",
+        "yUnit": "A",
+        "yMin": 0,
+        "yMax": 6
+      },
+      "prediction": {
+        "prompt": "A circuit has V = 6 V and R = 3 Ω (current = 2 A). What happens to current if resistance doubles to 6 Ω at constant 6 V?",
+        "options": [
+          "The current doubles to 4 A",
+          "The current stays 2 A",
+          "The current halves to 1 A"
+        ],
+        "correctIndex": 2,
+        "explanation": "Current is inversely proportional to resistance (I = V / R), so doubling R halves I."
+      },
+      "sliders": [
+        {
+          "id": "Vset",
+          "label": "Test Voltage",
+          "min": 2,
+          "max": 12,
+          "step": 2,
+          "defaultValue": 6,
+          "unit": "V",
+          "presets": [
+            6,
+            12
+          ]
+        },
+        {
+          "id": "R",
+          "label": "Resistance",
+          "min": 2,
+          "max": 12,
+          "step": 1,
+          "defaultValue": 3,
+          "unit": "Ω",
+          "presets": [
+            3,
+            6,
+            12
+          ]
+        }
+      ],
+      "curves": [
+        {
+          "id": "ref-3ohm",
+          "label": "Reference (R = 3 Ω)",
+          "expr": "V / 3",
+          "color": "#94a3b8",
+          "style": "dashed",
+          "isReference": true
+        },
+        {
+          "id": "current-line",
+          "label": "I = V / R",
+          "expr": "V / R",
+          "color": "#ea580c",
+          "style": "solid"
+        }
+      ],
+      "readouts": [
+        {
+          "id": "current",
+          "label": "Current at Test Voltage",
+          "expr": "Vset / R",
+          "unit": "A",
+          "precision": 2
+        },
+        {
+          "id": "power",
+          "label": "Power (V² / R)",
+          "expr": "Vset^2 / R",
+          "unit": "W",
+          "precision": 2
+        }
+      ],
+      "challenges": [
+        {
+          "id": "verify-halving",
+          "prompt": "Set Test Voltage to 6 V and Resistance to 6 Ω to confirm the current drops to 1.00 A.",
+          "check": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "sliderId": "Vset",
+                "target": 6,
+                "tolerance": 0.01
+              },
+              {
+                "sliderId": "R",
+                "target": 6,
+                "tolerance": 0.01
+              },
+              {
+                "readoutId": "current",
+                "target": 1,
+                "tolerance": 0.01
+              }
+            ]
+          },
+          "successText": "Confirmed! At 6 V and 6 Ω, I = 6 / 6 = 1.00 A — half the original 2.00 A.",
+          "hintText": "Set Test Voltage = 6 V and Resistance = 6 Ω."
+        }
+      ]
+    },
+    "pilot4a-sci-wave": {
+      "id": "pilot4a-sci-wave",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "NaCCA Science",
+      "title": "Discover the Properties of a Transverse Wave",
+      "instructions": "Vary Amplitude (A), Wavelength (λ), and Frequency (f) to observe the spatial wave snapshot and calculated wave speed.",
+      "accessibilityLabel": "Transverse wave spatial snapshot graph and sliders",
+      "fallbackText": "In a spatial wave snapshot y(x) = A sin(2πx / λ), amplitude A sets peak height, wavelength λ sets crest-to-crest distance, wave speed is v = fλ, and period is T = 1/f.",
+      "modelNote": "Spatial displacement snapshot y(x) at a fixed instant in time (distinct from a displacement-time graph y(t)). In a fixed-speed medium, f and λ are inversely related (v constant); here, f and λ can be varied independently to show how wave speed v = fλ and period T = 1/f respond while the frozen spatial shape depends only on A and λ.",
+      "axes": {
+        "xLabel": "Position x",
+        "xUnit": "m",
+        "xMin": 0,
+        "xMax": 8,
+        "yLabel": "Displacement y",
+        "yUnit": "m",
+        "yMin": -2.5,
+        "yMax": 2.5
+      },
+      "sliders": [
+        {
+          "id": "A",
+          "label": "Amplitude (A)",
+          "min": 0.5,
+          "max": 2,
+          "step": 0.25,
+          "defaultValue": 1,
+          "unit": "m",
+          "presets": [
+            0.5,
+            1,
+            2
+          ]
+        },
+        {
+          "id": "lambda",
+          "label": "Wavelength (λ)",
+          "min": 1,
+          "max": 4,
+          "step": 0.5,
+          "defaultValue": 2,
+          "unit": "m",
+          "presets": [
+            1,
+            2,
+            4
+          ]
+        },
+        {
+          "id": "f",
+          "label": "Frequency (f)",
+          "min": 0.5,
+          "max": 4,
+          "step": 0.5,
+          "defaultValue": 1.5,
+          "unit": "Hz",
+          "presets": [
+            1,
+            1.5,
+            3
+          ]
+        }
+      ],
+      "curves": [
+        {
+          "id": "ref-wave",
+          "label": "Reference (A = 1 m, λ = 2 m)",
+          "expr": "sin(2 * PI * x / 2)",
+          "color": "#94a3b8",
+          "style": "dashed",
+          "isReference": true
+        },
+        {
+          "id": "wave",
+          "label": "y(x) = A sin(2πx / λ)",
+          "expr": "A * sin(2 * PI * x / lambda)",
+          "color": "#0891b2",
+          "style": "solid"
+        }
+      ],
+      "readouts": [
+        {
+          "id": "waveSpeed",
+          "label": "Wave speed (v = fλ)",
+          "expr": "f * lambda",
+          "unit": "m/s",
+          "precision": 2
+        },
+        {
+          "id": "period",
+          "label": "Period (T = 1/f)",
+          "expr": "1 / f",
+          "unit": "s",
+          "precision": 2
+        }
+      ],
+      "challenges": [
+        {
+          "id": "double-amplitude-only",
+          "prompt": "Double the amplitude to 2 m while keeping wavelength at 2 m. Notice the crests stay 2 m apart.",
+          "check": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "sliderId": "A",
+                "target": 2,
+                "tolerance": 0.01
+              },
+              {
+                "sliderId": "lambda",
+                "target": 2,
+                "tolerance": 0.01
+              }
+            ]
+          },
+          "successText": "Exactly! Increasing amplitude makes the wave taller without changing its wavelength.",
+          "hintText": "Set Amplitude = 2 m and keep Wavelength = 2 m."
+        }
+      ]
+    },
+    "pilot4a-econ-equilibrium": {
+      "id": "pilot4a-econ-equilibrium",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Economics",
+      "title": "Explore Market Equilibrium",
+      "instructions": "Adjust the demand and supply intercepts to watch the intersection point and equilibrium readouts shift.",
+      "accessibilityLabel": "Supply and demand market equilibrium graph",
+      "fallbackText": "For linear curves P_d = d₀ - Q and P_s = s₀ + Q, equilibrium occurs at Q* = (d₀ - s₀)/2 and P* = (d₀ + s₀)/2.",
+      "modelNote": "Simplified linear market model with all other market conditions held constant (ceteris paribus).",
+      "xVar": "Q",
+      "axes": {
+        "xLabel": "Quantity",
+        "xUnit": "units",
+        "xMin": 0,
+        "xMax": 80,
+        "yLabel": "Price",
+        "yUnit": "GH₵",
+        "yMin": 0,
+        "yMax": 120
+      },
+      "sliders": [
+        {
+          "id": "d0",
+          "label": "Demand intercept (d₀)",
+          "min": 60,
+          "max": 110,
+          "step": 10,
+          "defaultValue": 80,
+          "unit": "GH₵",
+          "presets": [
+            60,
+            80,
+            100
+          ]
+        },
+        {
+          "id": "s0",
+          "label": "Supply intercept (s₀)",
+          "min": 10,
+          "max": 50,
+          "step": 10,
+          "defaultValue": 20,
+          "unit": "GH₵",
+          "presets": [
+            10,
+            20,
+            40
+          ]
+        }
+      ],
+      "curves": [
+        {
+          "id": "demand",
+          "label": "Demand (P = d₀ - Q)",
+          "expr": "d0 - Q",
+          "color": "#2563eb",
+          "style": "solid"
+        },
+        {
+          "id": "supply",
+          "label": "Supply (P = s₀ + Q)",
+          "expr": "s0 + Q",
+          "color": "#16a34a",
+          "style": "dashed"
+        }
+      ],
+      "readouts": [
+        {
+          "id": "eqPrice",
+          "label": "Equilibrium price (P*)",
+          "expr": "(d0 + s0) / 2",
+          "unit": "GH₵",
+          "precision": 2
+        },
+        {
+          "id": "eqQty",
+          "label": "Equilibrium quantity (Q*)",
+          "expr": "(d0 - s0) / 2",
+          "unit": "units",
+          "precision": 2
+        }
+      ],
+      "challenges": [
+        {
+          "id": "demand-shift",
+          "prompt": "Hold Supply intercept at 20 GH₵ and raise Demand intercept to 100 GH₵. Confirm equilibrium price reaches 60 GH₵.",
+          "check": {
+            "operator": "AND",
+            "conditions": [
+              {
+                "sliderId": "s0",
+                "target": 20,
+                "tolerance": 0.01
+              },
+              {
+                "sliderId": "d0",
+                "target": 100,
+                "tolerance": 0.01
+              },
+              {
+                "readoutId": "eqPrice",
+                "target": 60,
+                "tolerance": 0.01
+              }
+            ]
+          },
+          "successText": "Correct! With stronger demand (d₀ = 100) and unchanged supply (s₀ = 20), P* rises from 50 to 60 GH₵ and Q* rises from 30 to 40 units.",
+          "hintText": "Keep Supply = 20 GH₵ and move Demand to 100 GH₵."
+        }
+      ]
+    },
+    "pilot4a-sci-distance-time": {
+      "id": "pilot4a-sci-distance-time",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "NaCCA Science",
+      "title": "Piecewise Distance–Time Journey",
+      "instructions": "Scrub the coordinate inspector across 0 to 10 seconds and open the data table to compare speeds in each stage.",
+      "accessibilityLabel": "Piecewise distance-time graph of a three-stage journey",
+      "fallbackText": "Stage 1 (0–4 s): 40 m at 10 m/s. Stage 2 (4–7 s): stationary at 40 m (0 m/s). Stage 3 (7–10 s): 60 m in 3 s (20 m/s).",
+      "modelNote": "Declarative piecewise linear segments (no executable conditions).",
+      "xVar": "t",
+      "axes": {
+        "xLabel": "Time",
+        "xUnit": "s",
+        "xMin": 0,
+        "xMax": 10,
+        "yLabel": "Distance",
+        "yUnit": "m",
+        "yMin": 0,
+        "yMax": 110
+      },
+      "curves": [
+        {
+          "id": "journey",
+          "label": "Pupil's journey",
+          "kind": "piecewise",
+          "color": "#7c3aed",
+          "style": "solid",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 4,
+              "y": 40
+            },
+            {
+              "x": 7,
+              "y": 40
+            },
+            {
+              "x": 10,
+              "y": 100
+            }
+          ]
+        }
+      ],
+      "showDataTable": true
+    },
+    "pilot4a-math-discontinuity": {
+      "id": "pilot4a-math-discontinuity",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Mathematics",
+      "title": "Asymptote & Discontinuity Explorer",
+      "instructions": "Adjust k to scale y = k / x and inspect how both y = k / x and y = tan(x) break cleanly across asymptotes.",
+      "accessibilityLabel": "Reciprocal and tangent function discontinuity graph",
+      "fallbackText": "y = k / x is undefined at x = 0; y = tan(x) is undefined at odd multiples of π/2 (~ ±1.57). Branches do not connect across asymptotes.",
+      "modelNote": "Angles for tan(x) are in radians; SVG clipPath prevents false horizontal clamping.",
+      "axes": {
+        "xLabel": "x",
+        "xUnit": "rad",
+        "xMin": -4,
+        "xMax": 4,
+        "yLabel": "y",
+        "yMin": -6,
+        "yMax": 6
+      },
+      "sliders": [
+        {
+          "id": "k",
+          "label": "Scale factor (k)",
+          "min": -3,
+          "max": 3,
+          "step": 1,
+          "defaultValue": 1,
+          "presets": [
+            -2,
+            1,
+            2
+          ]
+        }
+      ],
+      "curves": [
+        {
+          "id": "reciprocal",
+          "label": "y = k / x",
+          "expr": "k / x",
+          "color": "#db2777",
+          "style": "solid"
+        },
+        {
+          "id": "tangent",
+          "label": "y = tan(x)",
+          "expr": "tan(x)",
+          "color": "#0284c7",
+          "style": "dashed"
+        }
+      ]
+    },
+    "pilot4a-cs-digital-step": {
+      "id": "pilot4a-cs-digital-step",
+      "engine": "graph-slider",
+      "schemaVersion": 1,
+      "minEngineVersion": "1.0.0",
+      "subjectTag": "Computer Science",
+      "title": "Digital Signal Step-Line Waveform",
+      "instructions": "Use the time inspector to read the discrete binary state (0 = LOW, 1 = HIGH) at each clock interval.",
+      "accessibilityLabel": "Digital signal binary step waveform graph",
+      "fallbackText": "Binary sequence 0, 1, 1, 0, 1, 0 switches cleanly between 0 (LOW) and 1 (HIGH) at clock edges.",
+      "modelNote": "Declarative step-line series (kind='step') — zero diagonal interpolation.",
+      "xVar": "t",
+      "axes": {
+        "xLabel": "Clock cycle",
+        "xUnit": "tick",
+        "xMin": 0,
+        "xMax": 6,
+        "yLabel": "Signal level",
+        "yUnit": "bit",
+        "yMin": -0.2,
+        "yMax": 1.4
+      },
+      "curves": [
+        {
+          "id": "bitstream",
+          "label": "Digital bit stream (0 1 1 0 1 0)",
+          "kind": "step",
+          "color": "#059669",
+          "style": "solid",
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 1,
+              "y": 1
+            },
+            {
+              "x": 2,
+              "y": 1
+            },
+            {
+              "x": 3,
+              "y": 0
+            },
+            {
+              "x": 4,
+              "y": 1
+            },
+            {
+              "x": 5,
+              "y": 0
+            },
+            {
+              "x": 6,
+              "y": 0
+            }
+          ]
+        }
+      ],
+      "showDataTable": true
     }
   }
 }

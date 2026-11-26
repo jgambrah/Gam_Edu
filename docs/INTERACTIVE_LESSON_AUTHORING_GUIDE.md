@@ -110,6 +110,10 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `xVar`, `axes`, `slid
   - **Unary functions (arity = 1):** `abs`, `sin`, `cos`, `tan`, `sqrt`, `ln`, `log10`, `exp`, `deg2rad`, `rad2deg`, `floor`, `ceil`, `round`. (Trig uses radians internally; use `deg2rad(theta)` for degrees.)
   - **Multi-arg functions (arity = 2..4):** `min`, `max`.
   - **Limits:** Max AST depth **8**, max **48** AST nodes, max **200** sample points per curve, max `24,576` bytes per activity.
+  - **Mathematical Status Distinction (`evaluateMathAstDetailed`):**
+    - `undefined`: mathematically undefined operations (`1/0`, `ln(0)`, `log10(0)`, `tan(PI/2)`, `0^-1`) → displays `"Undefined"`.
+    - `outside-real-domain`: operations outside the supported real numbers (`sqrt(-4)`, `ln(-2)`, `(-2)^0.5`) → displays `"Outside real domain"`.
+    - `exceeds-numeric-limit`: mathematically valid results exceeding `±1e12` or `|exponent| > 100` (e.g. `10^50`) → displays `"Exceeds numeric limit"` (never mislabelled as mathematically undefined).
   - **Deferred in v1.0:** Parametric plotting `(x(t), y(t))` and continuous animation loops (e.g., Solar System orbital animation) are intentionally deferred.
 
 ---
