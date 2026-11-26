@@ -154,18 +154,12 @@ export function evaluateSequenceOrder(
   return { correct: matched === total, matchedPositions: matched, total };
 }
 
-const APPROVED_RELATIVE_IMAGE_RE = /^(?:images\/[A-Za-z0-9_.-]+\.(?:webp|png)|\/preview-fixtures\/[A-Za-z0-9_.-]+\.(?:webp|png))$/;
-const APPROVED_CDN_IMAGE_RE =
-  /^https:\/\/(?:storage\.googleapis\.com\/gamedu-[A-Za-z0-9_-]+\.firebasestorage\.app|firebasestorage\.googleapis\.com\/v0\/b\/gamedu-[A-Za-z0-9_-]+\.firebasestorage\.app)\/[^\s"'<>]+\.(?:webp|png)(?:\?[^\s"'<>]*)?$/;
+import { isApprovedInteractiveAssetPath } from './visual-region';
 
 /**
  * Validates that a stage or shared illustration path points ONLY to an approved
- * GAM EDU WebP/PNG media location (blocks javascript:, data:, external untrusted URLs, and HTML).
+ * GAM EDU WebP/PNG media location (delegates to shared visual-region allowlist).
  */
 export function isApprovedProcessAssetPath(src: string): boolean {
-  if (typeof src !== 'string') return false;
-  const trimmed = src.trim();
-  if (trimmed.length === 0 || trimmed.length > 512) return false;
-  if (trimmed.includes('..')) return false;
-  return APPROVED_RELATIVE_IMAGE_RE.test(trimmed) || APPROVED_CDN_IMAGE_RE.test(trimmed);
+  return isApprovedInteractiveAssetPath(src);
 }

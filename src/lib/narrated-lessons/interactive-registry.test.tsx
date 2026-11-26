@@ -313,7 +313,15 @@ describe('Interactive Schema Validation, Security Boundaries & Versioning (Step 
     ).toThrow(/duplicate interactive activity id/i);
   });
 
-  it('rejects reserved Step 4 engines at publish time while allowing explicit preview opt-in', () => {
+  it('rejects unimplemented engines at publish time while allowing explicit preview opt-in', () => {
+    const customRegistry = {
+      ...SUPPORTED_INTERACTIVE_ENGINES,
+      'diagram-hotspots': {
+        ...SUPPORTED_INTERACTIVE_ENGINES['diagram-hotspots'],
+        implemented: false,
+        productionVersion: null,
+      },
+    };
     const reservedLesson = {
       lessonId: 'reserved-test',
       slides: [
@@ -327,17 +335,25 @@ describe('Interactive Schema Validation, Security Boundaries & Versioning (Step 
             instructions: 'Tap each chamber to inspect its role.',
             accessibilityLabel: 'Heart anatomy hotspot diagram',
             fallbackText: 'The heart has four chambers: left/right atria and left/right ventricles.',
+            diagram: { src: '/preview-fixtures/diagrams/mammalian-heart.png', altText: 'Heart diagram' },
+            hotspots: [
+              { id: 'ra', label: 'Right Atrium', xPct: 30, yPct: 30, summary: 'Receives deoxygenated blood.' },
+              { id: 'la', label: 'Left Atrium', xPct: 70, yPct: 30, summary: 'Receives oxygenated blood.' },
+            ],
           },
         },
       ],
     };
 
-    // Production publish gate rejects reserved engine
-    expect(() => assertValidLessonInteractives(reservedLesson)).toThrow(/reserved for future development/i);
-
-    // Explicit preview-only fallback opt-in succeeds
     expect(() =>
-      assertValidLessonInteractives(reservedLesson, { allowUnimplementedEngines: true }),
+      assertValidLessonInteractives(reservedLesson, { engineRegistry: customRegistry }),
+    ).toThrow(/reserved for future development/i);
+
+    expect(() =>
+      assertValidLessonInteractives(reservedLesson, {
+        allowUnimplementedEngines: true,
+        engineRegistry: customRegistry,
+      }),
     ).not.toThrow();
   });
 
@@ -437,19 +453,19 @@ describe('InteractiveEngineRegistry Fallbacks, Low-Data Opt-In & Backward Compat
         minEngineVersion: '9.0.0',
       },
       {
-        id: 'bio-diagram-hotspots',
-        engine: 'diagram-hotspots',
+        id: 'future-unknown-engine',
+        engine: 'future-3d-sim',
         schemaVersion: 1,
-        title: 'Heart Anatomy Explorer',
-        instructions: 'Explore labeled chambers on the diagram.',
-        accessibilityLabel: 'Heart anatomy hotspot explorer',
-        fallbackText: 'The heart pumps blood through four chambers: right/left atria and right/left ventricles.',
-      },
+        title: 'Future Engine Fallback',
+        instructions: 'Requires a future interactive engine.',
+        accessibilityLabel: 'Future engine fallback',
+        fallbackText: 'This activity requires a future engine; continue with the slide explanation above.',
+      } as unknown as NonNullable<LessonSlide['interactive']> extends Array<infer T> ? T : never,
     ]);
     render(<InteractiveEngineRegistry lesson={STUB_LESSON} slide={multiFallbackSlide} />);
     expect(screen.getByText('Computer Laboratory Access Rule')).toBeTruthy();
-    expect(screen.getByText('Heart Anatomy Explorer')).toBeTruthy();
-    expect(screen.getByText(/four chambers/i)).toBeTruthy();
+    expect(screen.getByText('Future Engine Fallback')).toBeTruthy();
+    expect(screen.getByText(/requires a future engine/i)).toBeTruthy();
   });
 
   it('respects Low-Data Mode with text summary first and allows manual opt-in loading', () => {

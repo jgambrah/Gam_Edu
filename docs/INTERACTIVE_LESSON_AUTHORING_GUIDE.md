@@ -23,7 +23,7 @@ Slides without `interactive` continue working identically as standard narrated s
 | `construction-lab` | **Implemented (Publishable)** | `1.0.0` | `1` | Interactive Boolean Logic Circuit Builder (`labKind: "boolean-circuit"`) |
 | `graph-slider` | **Step 4A Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject dynamic graph, sliders, piecewise & step waveforms, readouts & discovery challenges *(blocked from production CDN publish until Step 4A is deployed to production)* |
 | `process-stepper` | **Step 4B Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, predictions & sequencing *(blocked from production CDN publish until Step 4B is verified in production)* |
-| `diagram-hotspots` | **Reserved (Step 4C — Blocked at Publish)** | `0.0.0-planned` | `1` | *Not yet implemented.* Rejected by `publish-lesson.ts` |
+| `diagram-hotspots` | **Step 4C Preview (`productionVersion: null`)** | `1.0.0` | `1` | Cross-subject interactive diagram, point/rect hotspots, structure-to-function links, progressive disclosure & identify challenges *(blocked from production CDN publish until Step 4C is verified in production)* |
 
 > **Important:** Do **not** author production lessons using reserved Step 4 engines (`graph-slider`, `process-stepper`, `diagram-hotspots`). The publishing validator (`assertValidLessonInteractives`) explicitly rejects unimplemented engines.
 
@@ -135,6 +135,22 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `mode`, `visualMode`,
   - Optional `prediction` *(max 3 across activity)*: `{ prompt, options (2..4), correctIndex, explanation }` (non-blocking).
 - `sequenceChallenge` *(optional, max 1)*: `{ id, prompt, stageIdsToOrder (2..6 valid stage IDs), explanation }` — keyboard-accessible `Move Up`/`Move Down` controls (zero drag-and-drop).
 - **Deferred in v1.0:** Stage-specific audio tracks (deferred to avoid competing with `NarratedLessonPlayer` main narration audio), branching state machines, and continuous animation.
+
+### F. `diagram-hotspots` (Step 4C Preview — Cross-Subject Diagram & Hotspots Engine)
+
+> **Production Gate Notice:** On the Step 4C feature branch, `diagram-hotspots` has `implemented: true, engineVersion: "1.0.0", productionVersion: null`. Do **not** publish live CDN lessons using `diagram-hotspots` until Step 4C is merged and verified in production.
+
+Extra allowed top-level fields: `subjectTag`, `modelNote`, `diagram`, `defaultMode`, `progressiveDisclosure`, `guidedOrder`, `hotspots`, `identifyPrompts`.
+
+- `diagram` *(required)*: `{ src, altText, caption? }` — approved **WebP or PNG** path only (validated by shared `visual-region.ts`; raw SVG markup, untrusted external URLs, `..` and `%2e`/`%2f` traversal are rejected).
+- `hotspots` *(required, 2–12 items, unique IDs)*:
+  - Point hotspot: `{ id, label, xPct, yPct, summary, ... }` (`0..100%` relative to the rendered image).
+  - Rectangular hotspot: add `widthPct`, `heightPct` (`> 0`, `xPct + widthPct <= 100`, `yPct + heightPct <= 100`).
+  - Optional pedagogy: `functionText`, `structureToFunction`, `equation` (≤ 180 chars), `commonMisconception`, `linkedHotspotIds` (max 6 valid non-self IDs), `relationshipExplanation`, `discoveryPrompt`.
+- `guidedOrder` *(optional)*: ordered array of hotspot IDs for `Prev Part` / `Next Part` guided tours.
+- `progressiveDisclosure` *(optional boolean)*: starts on a clean diagram so learners observe before revealing markers.
+- `identifyPrompts` *(optional, 0–6 items)*: `{ id, prompt, targetHotspotId, explanation, hintText? }`. Before checking, **all pin & list labels are concealed as `Region 1`, `Region 2`…** so answers never leak!
+- **Deferred in v1.0:** Freeform polygon hitboxes, in-app diagram editing, 3D molecular viewers, and synchronised side-by-side diagram comparison.
 
 ---
 

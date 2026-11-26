@@ -141,6 +141,7 @@ describe('GAM EDU Modular-Monolith Transitive Dependency Boundaries', () => {
       /^\s*import\s+[^;]*from\s+['"]\.\/RuleExplorerEngine['"]/m,
       /^\s*import\s+[^;]*from\s+['"]\.\/GraphSliderEngine['"]/m,
       /^\s*import\s+[^;]*from\s+['"]\.\/ProcessStepperEngine['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/DiagramHotspotsEngine['"]/m,
     ];
     for (const re of forbiddenStaticImports) {
       expect(src).not.toMatch(re);
@@ -150,5 +151,6 @@ describe('GAM EDU Modular-Monolith Transitive Dependency Boundaries', () => {
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/RuleExplorerEngine['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/GraphSliderEngine['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/ProcessStepperEngine['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/DiagramHotspotsEngine['"]\)/);
   });
 });

@@ -1,0 +1,781 @@
+{
+  "lessonId": "step4c-diagram-hotspots-pilot-preview",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 4C Preview Pilot — Reusable Diagram & Hotspots Engine",
+    "subject": "Cross-Subject Visual Discovery (Biology, Chemistry, Physics, CS, NaCCA)",
+    "class": "Preview Pilot",
+    "topic": "DiagramHotspotsEngine v1.0.0 Verification",
+    "contentStandard": "STEP4C.PILOT",
+    "indicators": ["STEP4C.1", "STEP4C.2"],
+    "estMinutes": 14
+  },
+  "slides": [
+    {
+      "id": "h01",
+      "order": 1,
+      "title": "Biology — Animal Cell Ultrastructure",
+      "purpose": "Explore eukaryotic organelles with point & rectangular hotspots, structure-to-function links, and identification challenges.",
+      "onScreenText": [
+        "Point & rectangular hotspots on approved PNG",
+        "Structure-to-function & related-organelle links",
+        "Identify Challenge conceals answers until checked"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Animal cell ultrastructure interactive header",
+        "description": "Cell ultrastructure overview.",
+        "labels": ["Nucleus", "Mitochondrion", "Rough ER"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0fdfa\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#134e4a\">Animal Cell Ultrastructure</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#0f766e\">Explore structures below, then switch to Identify Challenge</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Explore the animal cell diagram below. Notice how each organelle's structure directly supports its biological function, then test yourself in Identify Challenge mode.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Organelle ultrastructure directly enables specialised cellular functions."],
+      "indicatorIds": ["STEP4C.1"],
+      "askTeacherContext": { "focus": "Animal cell organelles", "keyTerms": ["Nucleus", "Mitochondrion", "Rough ER"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 1 of 8.",
+      "interactive": {
+        "id": "pilot4c-bio-animal-cell",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Biology",
+        "title": "Explore Eukaryotic Animal Cell Organelles",
+        "instructions": "Select each numbered hotspot (or use Next Part / the label list) to compare organelle structure and function.",
+        "accessibilityLabel": "Interactive eukaryotic animal cell organelle diagram",
+        "fallbackText": "Nucleus stores genetic DNA; Mitochondrion generates ATP via aerobic respiration across folded cristae; Rough ER synthesises and folds proteins via bound ribosomes; Plasma Membrane selectively regulates entry and exit of substances.",
+        "modelNote": "Idealised eukaryotic animal cell schematic (not drawn to scale).",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/animal-cell.png",
+          "altText": "Cross-section diagram of an animal cell with nucleus, mitochondrion, rough endoplasmic reticulum, and plasma membrane",
+          "caption": "Schematic eukaryotic animal cell."
+        },
+        "guidedOrder": ["nucleus", "rough-er", "mitochondrion", "membrane"],
+        "hotspots": [
+          {
+            "id": "nucleus",
+            "label": "Nucleus",
+            "xPct": 34,
+            "yPct": 48,
+            "summary": "Control centre containing chromosomal DNA surrounded by a double nuclear envelope with nuclear pores.",
+            "functionText": "Stores genetic instructions and coordinates transcription of mRNA.",
+            "structureToFunction": "Nuclear pores allow mRNA to exit to ribosomes while protecting DNA inside the nuclear envelope.",
+            "linkedHotspotIds": ["rough-er"],
+            "relationshipExplanation": "mRNA transcribed in the nucleus passes through nuclear pores to ribosomes on the Rough ER for protein synthesis."
+          },
+          {
+            "id": "mitochondrion",
+            "label": "Mitochondrion",
+            "xPct": 68,
+            "yPct": 36,
+            "summary": "Double-membraned organelle whose inner membrane folds inward into cristae.",
+            "functionText": "Site of aerobic respiration, generating ATP for cellular work.",
+            "structureToFunction": "Folded cristae create a large surface area for electron transport chain enzymes and ATP synthase.",
+            "equation": "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP"
+          },
+          {
+            "id": "rough-er",
+            "label": "Rough Endoplasmic Reticulum",
+            "xPct": 44,
+            "yPct": 57,
+            "widthPct": 21,
+            "heightPct": 14,
+            "summary": "Network of flattened membrane sacs (cisternae) studded with 80S ribosomes.",
+            "functionText": "Synthesises, folds, and transports secretory and membrane proteins.",
+            "structureToFunction": "Bound ribosomes translate polypeptides directly into the ER lumen for folding.",
+            "linkedHotspotIds": ["nucleus"],
+            "relationshipExplanation": "Continuous with the outer nuclear membrane so mRNA reaches ribosomes rapidly."
+          },
+          {
+            "id": "membrane",
+            "label": "Plasma Membrane",
+            "xPct": 86,
+            "yPct": 50,
+            "summary": "Partially permeable phospholipid bilayer with embedded transport and receptor proteins.",
+            "functionText": "Controls movement of ions, nutrients, and waste into and out of the cell.",
+            "structureToFunction": "Hydrophobic fatty-acid tails restrict polar molecules while channel and carrier proteins provide selective pathways."
+          }
+        ],
+        "identifyPrompts": [
+          {
+            "id": "id-atp-organelle",
+            "prompt": "Select the organelle whose folded inner membrane (cristae) maximises ATP synthesis during aerobic respiration.",
+            "targetHotspotId": "mitochondrion",
+            "explanation": "The mitochondrion (Region 2) carries out aerobic respiration across its folded cristae.",
+            "hintText": "Look for the bean-shaped organelle in the upper right."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h02",
+      "order": 2,
+      "title": "Biology — Mammalian Heart Chambers & Valves",
+      "purpose": "Verify anatomical orientation (viewer left = anatomical right), valve function, and thicker left ventricular myocardium.",
+      "onScreenText": [
+        "Viewer left = Right side (deoxygenated blood)",
+        "Viewer right = Left side (oxygenated blood)",
+        "Left ventricle has thicker wall to pump to whole body"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Mammalian heart chambers overview",
+        "description": "Heart anatomy header.",
+        "labels": ["Atria", "Ventricles", "Valves", "Aorta"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fff1f2\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#881337\">Mammalian Heart Anatomy</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#be123c\">Chambers · Bicuspid Valve · Aorta · Double Circulation</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Inspect the four chambers, bicuspid valve, and aorta below. Remember that anatomical right is drawn on the viewer's left.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Left ventricle generates higher systemic pressure via a thicker muscular wall; valves prevent backflow."],
+      "indicatorIds": ["STEP4C.1"],
+      "askTeacherContext": { "focus": "Mammalian heart", "keyTerms": ["Left ventricle", "Bicuspid valve", "Aorta"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 2 of 8.",
+      "interactive": {
+        "id": "pilot4c-bio-heart",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Biology",
+        "title": "Mammalian Heart Chambers, Valves & Vessels",
+        "instructions": "Explore the chambers and valve in anatomical orientation (as if looking at a person facing you).",
+        "accessibilityLabel": "Interactive mammalian heart chambers and valves diagram",
+        "fallbackText": "Right atrium receives deoxygenated blood and passes it to the right ventricle (pumps to lungs). Left atrium receives oxygenated blood from pulmonary veins and passes it through the bicuspid valve to the thick-walled left ventricle, which pumps blood into the aorta.",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/mammalian-heart.png",
+          "altText": "Schematic mammalian heart showing right and left atria, right and left ventricles, bicuspid valve, and aorta",
+          "caption": "Anatomical view: right side (deoxygenated, blue) on viewer's left; left side (oxygenated, red) on viewer's right."
+        },
+        "hotspots": [
+          {
+            "id": "right-atrium",
+            "label": "Right Atrium",
+            "xPct": 32,
+            "yPct": 32,
+            "summary": "Upper chamber on the anatomical right side receiving deoxygenated blood from the vena cava.",
+            "linkedHotspotIds": ["right-ventricle"],
+            "relationshipExplanation": "Contracts to push deoxygenated blood through the tricuspid valve into the right ventricle."
+          },
+          {
+            "id": "right-ventricle",
+            "label": "Right Ventricle",
+            "xPct": 32,
+            "yPct": 68,
+            "summary": "Lower right chamber pumping deoxygenated blood via the pulmonary artery to the lungs.",
+            "structureToFunction": "Thinner muscular wall than the left ventricle because the lungs are close and require lower pressure."
+          },
+          {
+            "id": "left-atrium",
+            "label": "Left Atrium",
+            "xPct": 68,
+            "yPct": 32,
+            "summary": "Upper left chamber receiving oxygenated blood from the lungs via the pulmonary veins.",
+            "linkedHotspotIds": ["bicuspid-valve", "left-ventricle"],
+            "relationshipExplanation": "Passes oxygenated blood through the bicuspid (mitral) valve into the left ventricle."
+          },
+          {
+            "id": "bicuspid-valve",
+            "label": "Bicuspid (Mitral) Valve",
+            "xPct": 68,
+            "yPct": 48,
+            "summary": "Atrioventricular valve between the left atrium and left ventricle.",
+            "functionText": "Prevents backflow of oxygenated blood into the left atrium when the left ventricle contracts."
+          },
+          {
+            "id": "left-ventricle",
+            "label": "Left Ventricle",
+            "xPct": 68,
+            "yPct": 68,
+            "summary": "Thickest-walled chamber of the heart, pumping oxygenated blood into the aorta.",
+            "structureToFunction": "Thick cardiac muscle generates high pressure needed to propel blood around the entire systemic circulation.",
+            "linkedHotspotIds": ["aorta"],
+            "relationshipExplanation": "Ejects oxygenated blood through the aortic semilunar valve directly into the aorta."
+          },
+          {
+            "id": "aorta",
+            "label": "Aorta",
+            "xPct": 54,
+            "yPct": 16,
+            "summary": "Largest artery carrying high-pressure oxygenated blood from the left ventricle to body tissues.",
+            "structureToFunction": "Thick elastic walls stretch and recoil to smooth out high-pressure pulses."
+          }
+        ],
+        "identifyPrompts": [
+          {
+            "id": "id-bicuspid",
+            "prompt": "Select the valve that prevents backflow of oxygenated blood into the left atrium during ventricular contraction.",
+            "targetHotspotId": "bicuspid-valve",
+            "explanation": "The bicuspid (mitral) valve sits between the left atrium and left ventricle."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h03",
+      "order": 3,
+      "title": "Chemistry — Fractional Distillation Apparatus",
+      "purpose": "Verify thermometer placement at the side-arm and Liebig condenser counter-current cooling.",
+      "onScreenText": [
+        "Thermometer bulb sits level with condenser side-arm",
+        "Fractionating column separates liquids by boiling point",
+        "Cold water enters Liebig condenser at the lower end"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Fractional distillation apparatus overview",
+        "description": "Distillation apparatus header.",
+        "labels": ["Column", "Thermometer", "Condenser"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#0f172a\">Fractional Distillation Apparatus</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#0369a1\">Separating miscible liquids with close boiling points</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Inspect each piece of fractional distillation apparatus below, paying close attention to the thermometer bulb position and condenser cooling direction.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Thermometer bulb must sit at the side-arm to measure the vapour temperature entering the condenser."],
+      "indicatorIds": ["STEP4C.1"],
+      "askTeacherContext": { "focus": "Fractional distillation", "keyTerms": ["Fractionating column", "Liebig condenser"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 3 of 8.",
+      "interactive": {
+        "id": "pilot4c-chem-distillation",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Chemistry",
+        "title": "Fractional Distillation Laboratory Apparatus",
+        "instructions": "Explore each part of the apparatus to see why its position matters for pure separation.",
+        "accessibilityLabel": "Interactive fractional distillation laboratory apparatus diagram",
+        "fallbackText": "The round-bottom flask heats the liquid mixture; the fractionating column provides repeated condensation and vaporisation; the thermometer bulb sits level with the side-arm to read vapour boiling point; the Liebig condenser cools vapour (cold water in at the lower end, out at the upper end) into the receiving flask.",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/fractional-distillation.png",
+          "altText": "Fractional distillation setup with round-bottom flask, fractionating column, thermometer at side-arm, Liebig condenser, and receiving flask"
+        },
+        "hotspots": [
+          {
+            "id": "flask",
+            "label": "Round-Bottom Flask",
+            "xPct": 18,
+            "yPct": 72,
+            "summary": "Holds the miscible liquid mixture (e.g. ethanol and water) and anti-bumping granules during heating."
+          },
+          {
+            "id": "column",
+            "label": "Fractionating Column",
+            "xPct": 18,
+            "yPct": 44,
+            "summary": "Tall glass column packed with glass beads creating a temperature gradient (hotter at bottom, cooler at top).",
+            "structureToFunction": "Provides a large surface area for repeated condensation and re-vaporisation so only the lower-boiling fraction reaches the top."
+          },
+          {
+            "id": "thermometer",
+            "label": "Thermometer Bulb (at Side-Arm)",
+            "xPct": 18,
+            "yPct": 22,
+            "summary": "Bulb positioned directly opposite the side-arm leading to the condenser.",
+            "functionText": "Measures the exact boiling point of the vapour passing into the condenser.",
+            "commonMisconception": "Never dip the thermometer bulb into the boiling liquid—that reads the mixture temperature, not the distilling vapour."
+          },
+          {
+            "id": "condenser",
+            "label": "Liebig Condenser",
+            "xPct": 50,
+            "yPct": 42,
+            "summary": "Water-jacketed tube cooling hot vapour back into liquid distillate.",
+            "structureToFunction": "Cold water enters at the lower inlet and exits at the upper outlet so the jacket stays completely filled for efficient counter-current cooling."
+          },
+          {
+            "id": "receiver",
+            "label": "Receiving Flask",
+            "xPct": 83,
+            "yPct": 72,
+            "summary": "Collects the condensed liquid fraction (distillate) cleanly."
+          }
+        ],
+        "identifyPrompts": [
+          {
+            "id": "id-thermometer",
+            "prompt": "Select the component that measures the boiling point of the vapour entering the condenser.",
+            "targetHotspotId": "thermometer",
+            "explanation": "The thermometer bulb is placed level with the side-arm to measure the distilling vapour's exact temperature."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h04",
+      "order": 4,
+      "title": "A-Level Biology — Protein Tertiary Structure",
+      "purpose": "Distinguish backbone hydrogen bonding (secondary) from R-group interactions (tertiary) with accurate caveats.",
+      "onScreenText": [
+        "Backbone H-bonds stabilise α-helices & β-sheets (2°)",
+        "R-group bonds (disulfide, ionic, hydrophobic) fold 3° shape",
+        "Not all proteins have disulfide bridges or 4° structure"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Protein tertiary structure interactions header",
+        "description": "Protein folding interactions.",
+        "labels": ["α-Helix", "Disulfide S–S", "Ionic", "Hydrophobic"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fdf4ff\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#581c87\">Protein Tertiary Structure</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#7e22ce\">Backbone H-bonds vs R-group Side-Chain Interactions</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Explore the interactions that fold a polypeptide into its specific three-dimensional tertiary structure, distinguishing peptide backbone hydrogen bonds from R-group side-chain interactions.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear A-level biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Secondary structure uses backbone H-bonds; tertiary folding depends on R-group interactions."],
+      "indicatorIds": ["STEP4C.2"],
+      "askTeacherContext": { "focus": "Protein tertiary structure", "keyTerms": ["Disulfide bridge", "R-group", "Hydrophobic core"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 4 of 8.",
+      "interactive": {
+        "id": "pilot4c-alevel-protein-3d",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "A-Level Biology",
+        "title": "Protein Tertiary Structure & Stabilising Bonds",
+        "instructions": "Observe the diagram first, then reveal markers to compare backbone hydrogen bonds with R-group interactions.",
+        "accessibilityLabel": "Interactive protein tertiary structure interactions diagram",
+        "fallbackText": "Secondary structures (alpha-helices and beta-pleated sheets) are stabilised by peptide backbone hydrogen bonds. Tertiary 3D folding is stabilised by R-group interactions: strong covalent disulfide bridges (between cysteine residues), ionic bonds (sensitive to pH), hydrogen bonds, and hydrophobic interactions clustering non-polar R-groups inward. Not all proteins contain disulfide bridges or quaternary structure.",
+        "modelNote": "Not all proteins contain disulfide bridges (only those with appropriately positioned cysteine R-groups), and monomeric proteins have tertiary structure without quaternary structure.",
+        "progressiveDisclosure": true,
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/protein-tertiary.png",
+          "altText": "Schematic regions representing alpha-helix, beta-pleated sheet, disulfide bridge, ionic bond, and hydrophobic core in a folded protein"
+        },
+        "hotspots": [
+          {
+            "id": "alpha-helix",
+            "label": "α-Helix (Backbone H-Bonds)",
+            "xPct": 10,
+            "yPct": 23,
+            "widthPct": 26,
+            "heightPct": 23,
+            "summary": "Regular coiled secondary structure stabilised by hydrogen bonds between backbone C=O and N–H groups (four residues apart).",
+            "commonMisconception": "Secondary structure involves peptide backbone H-bonds—not R-group interactions."
+          },
+          {
+            "id": "beta-sheet",
+            "label": "β-Pleated Sheet (Backbone H-Bonds)",
+            "xPct": 10,
+            "yPct": 57,
+            "widthPct": 26,
+            "heightPct": 23,
+            "summary": "Folded sheet formed by hydrogen bonding between parallel or antiparallel polypeptide backbone strands."
+          },
+          {
+            "id": "disulfide",
+            "label": "Disulfide Bridge (R-Group Covalent)",
+            "xPct": 44,
+            "yPct": 23,
+            "widthPct": 25,
+            "heightPct": 23,
+            "summary": "Strong covalent S–S bond formed by oxidation between two cysteine thiol (–SH) R-groups.",
+            "equation": "R–SH + HS–R' → R–S–S–R' + 2H⁺ + 2e⁻",
+            "commonMisconception": "Not all proteins have disulfide bonds; they occur mainly where cysteine residues align closely (e.g. insulin, antibodies)."
+          },
+          {
+            "id": "ionic-bond",
+            "label": "Ionic Interaction (Charged R-Groups)",
+            "xPct": 44,
+            "yPct": 57,
+            "widthPct": 25,
+            "heightPct": 23,
+            "summary": "Electrostatic attraction between oppositely charged ionised R-groups (e.g. –NH₃⁺ and –COO⁻).",
+            "structureToFunction": "Sensitive to pH changes: extreme pH alters side-chain ionisation, breaking ionic bonds and denaturing active sites."
+          },
+          {
+            "id": "hydrophobic-core",
+            "label": "Hydrophobic Core (Non-Polar R-Groups)",
+            "xPct": 72,
+            "yPct": 25,
+            "widthPct": 22,
+            "heightPct": 52,
+            "summary": "Non-polar R-groups cluster inward away from surrounding aqueous cytoplasm while hydrophilic R-groups face outward.",
+            "structureToFunction": "Drives compact globular folding and keeps water-soluble enzymes soluble in blood or cytosol."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h05",
+      "order": 5,
+      "title": "A-Level Chemistry — Organic Functional Groups",
+      "purpose": "Verify structural formulae, carbon tetravalency, and reactivity across four key functional groups.",
+      "onScreenText": [
+        "Alkene (C=C), Alcohol (–OH), Carboxylic Acid (–COOH), Amine (–NH₂)",
+        "Displayed structures obey carbon valency = 4",
+        "Functional group determines characteristic reactions"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Organic functional groups header",
+        "description": "Organic chemistry groups.",
+        "labels": ["C=C", "–OH", "–COOH", "–NH₂"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#0f172a\">Organic Functional Groups</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#0284c7\">C=C · –OH · –COOH · –NH₂</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Inspect these four organic functional groups and compare how their bonding and polarity govern chemical reactivity.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Functional groups are the reactive centres of organic molecules."],
+      "indicatorIds": ["STEP4C.2"],
+      "askTeacherContext": { "focus": "Functional groups", "keyTerms": ["Alkene", "Hydroxyl", "Carboxyl", "Amino"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 5 of 8.",
+      "interactive": {
+        "id": "pilot4c-alevel-organic-groups",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "A-Level Chemistry",
+        "title": "Identify Organic Functional Groups",
+        "instructions": "Select each molecule to inspect its functional group, polarity, and characteristic reaction.",
+        "accessibilityLabel": "Interactive organic chemistry functional groups diagram",
+        "fallbackText": "Ethene (H2C=CH2) has an electron-rich C=C alkene double bond; Ethanol (CH3CH2OH) has a polar hydroxyl -OH group; Ethanoic acid (CH3COOH) has an acidic carboxyl -COOH group; Methylamine (CH3NH2) has a basic amino -NH2 group with a nitrogen lone pair.",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/organic-functional-groups.png",
+          "altText": "Four panels displaying ethene, ethanol, ethanoic acid, and methylamine"
+        },
+        "hotspots": [
+          {
+            "id": "alkene",
+            "label": "Alkene (C=C Double Bond)",
+            "xPct": 8,
+            "yPct": 18,
+            "widthPct": 38,
+            "heightPct": 31,
+            "summary": "Unsaturated hydrocarbon containing a σ bond and an exposed, electron-rich π bond.",
+            "equation": "H₂C=CH₂ + Br₂ → CH₂Br–CH₂Br",
+            "structureToFunction": "High π-electron density attracts electrophiles, undergoing electrophilic addition."
+          },
+          {
+            "id": "hydroxyl",
+            "label": "Alcohol Hydroxyl (–OH)",
+            "xPct": 54,
+            "yPct": 18,
+            "widthPct": 38,
+            "heightPct": 31,
+            "summary": "Polar O–H bond capable of forming hydrogen bonds with water.",
+            "equation": "CH₃CH₂OH + [O] → CH₃CHO + H₂O"
+          },
+          {
+            "id": "carboxyl",
+            "label": "Carboxylic Acid (–COOH)",
+            "xPct": 8,
+            "yPct": 57,
+            "widthPct": 38,
+            "heightPct": 31,
+            "summary": "Combines C=O and –OH on the same carbon; acts as a weak Brønsted–Lowry acid.",
+            "equation": "CH₃COOH ⇌ CH₃COO⁻ + H⁺"
+          },
+          {
+            "id": "amino",
+            "label": "Primary Amine (–NH₂)",
+            "xPct": 54,
+            "yPct": 57,
+            "widthPct": 38,
+            "heightPct": 31,
+            "summary": "Nitrogen carries a lone pair of electrons, acting as both a weak base and nucleophile.",
+            "equation": "CH₃NH₂ + H⁺ → CH₃NH₃⁺"
+          }
+        ],
+        "identifyPrompts": [
+          {
+            "id": "id-carboxyl",
+            "prompt": "Select the molecule containing the weak-acid carboxyl functional group (–COOH).",
+            "targetHotspotId": "carboxyl",
+            "explanation": "Ethanoic acid (CH₃COOH) contains the carboxyl group –COOH."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h06",
+      "order": 6,
+      "title": "Computer Science — Von Neumann CPU Architecture",
+      "purpose": "Explore CU, ALU, Registers, System Buses, and Main Memory with inter-component links.",
+      "onScreenText": [
+        "Control Unit decodes instructions & sends timing signals",
+        "ALU performs arithmetic & Boolean logic",
+        "Buses link CPU registers to Main Memory (RAM)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Von Neumann CPU architecture overview",
+        "description": "CPU block diagram header.",
+        "labels": ["CU", "ALU", "Registers", "RAM"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#38bdf8\">Von Neumann CPU Architecture</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#94a3b8\">CU · ALU · Registers · System Buses · Main Memory</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Inspect each core block of the Von Neumann processor and see how system buses connect CPU registers with main memory.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear computer science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Instructions and data share main memory and travel across address, data, and control buses."],
+      "indicatorIds": ["STEP4C.2"],
+      "askTeacherContext": { "focus": "Von Neumann architecture", "keyTerms": ["ALU", "Control Unit", "Buses"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 6 of 8.",
+      "interactive": {
+        "id": "pilot4c-cs-von-neumann",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Computer Science",
+        "title": "Von Neumann CPU Architecture Explorer",
+        "instructions": "Select each hardware block to trace its role and how it connects to neighbouring blocks.",
+        "accessibilityLabel": "Interactive Von Neumann CPU architecture diagram",
+        "fallbackText": "Control Unit fetches and decodes instructions; ALU runs arithmetic and logic; Registers hold fast working values (PC, MAR, MDR, CIR, ACC); System Buses (address, data, control) link CPU to Main Memory (RAM).",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/von-neumann-cpu.png",
+          "altText": "Block diagram of a Von Neumann CPU showing Control Unit, ALU, Registers, System Buses, and Main Memory"
+        },
+        "hotspots": [
+          {
+            "id": "cu",
+            "label": "Control Unit (CU)",
+            "xPct": 22,
+            "yPct": 33,
+            "summary": "Coordinates fetch–decode–execute timing and sends control signals across the control bus.",
+            "linkedHotspotIds": ["registers", "buses"],
+            "relationshipExplanation": "Reads the decoded instruction from CIR (in Registers) and issues read/write signals on the control bus."
+          },
+          {
+            "id": "alu",
+            "label": "Arithmetic Logic Unit (ALU)",
+            "xPct": 22,
+            "yPct": 68,
+            "summary": "Executes integer arithmetic (+, −) and Boolean logic operations (AND, OR, NOT, comparisons).",
+            "linkedHotspotIds": ["registers"],
+            "relationshipExplanation": "Stores calculation results directly into the Accumulator register."
+          },
+          {
+            "id": "registers",
+            "label": "CPU Registers (PC, MAR, MDR, CIR, ACC)",
+            "xPct": 48,
+            "yPct": 50,
+            "summary": "Ultra-fast small storage locations inside the CPU holding current addresses, instructions, and intermediate data.",
+            "linkedHotspotIds": ["buses"]
+          },
+          {
+            "id": "buses",
+            "label": "System Buses (Address, Data, Control)",
+            "xPct": 69,
+            "yPct": 50,
+            "summary": "Parallel electrical pathways carrying memory addresses (unidirectional), data/instructions (bidirectional), and control signals.",
+            "linkedHotspotIds": ["ram"]
+          },
+          {
+            "id": "ram",
+            "label": "Main Memory (RAM)",
+            "xPct": 86,
+            "yPct": 50,
+            "summary": "Volatile primary memory holding both currently running program instructions and working data."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h07",
+      "order": 7,
+      "title": "Physics — Electrical Measuring Instruments",
+      "purpose": "Distinguish ammeters connected in series (low resistance) from voltmeters connected in parallel (high resistance).",
+      "onScreenText": [
+        "Ammeter (A): connected in SERIES (very low resistance)",
+        "Voltmeter (V): connected in PARALLEL (very high resistance)",
+        "Ohm's Law: V = I × R"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Ammeter in series and voltmeter in parallel overview",
+        "description": "Electrical instruments header.",
+        "labels": ["Ammeter (Series)", "Voltmeter (Parallel)", "Resistor"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fffbeb\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#78350f\">Electrical Measuring Instruments</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#a16207\">Ammeter in Series · Voltmeter in Parallel · V = I × R</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Compare how an ammeter is wired in series to measure current while a voltmeter is wired in parallel across a resistor to measure potential difference.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear physics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Ammeters go in series (negligible resistance); voltmeters go in parallel (very high resistance)."],
+      "indicatorIds": ["STEP4C.2"],
+      "askTeacherContext": { "focus": "Ammeter and voltmeter", "keyTerms": ["Series", "Parallel", "Potential difference"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 7 of 8.",
+      "interactive": {
+        "id": "pilot4c-phys-instruments",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "Physics",
+        "title": "Ammeter vs Voltmeter Connection Explorer",
+        "instructions": "Inspect each component in the test circuit to understand why ammeters and voltmeters are wired differently.",
+        "accessibilityLabel": "Interactive electrical circuit with ammeter in series and voltmeter in parallel",
+        "fallbackText": "The ammeter is connected in series with the resistor so the same current flows through it (very low internal resistance). The voltmeter is connected in parallel across the resistor to measure potential difference without drawing significant current (very high internal resistance).",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/electrical-instruments.png",
+          "altText": "Circuit diagram showing cell, ammeter connected in series, resistor, and voltmeter connected in parallel across the resistor"
+        },
+        "hotspots": [
+          {
+            "id": "cell",
+            "label": "DC Cell / Power Supply",
+            "xPct": 20,
+            "yPct": 38,
+            "summary": "Provides electromotive force (e.m.f.) to drive electric charge around the closed loop."
+          },
+          {
+            "id": "ammeter",
+            "label": "Ammeter (Connected in Series)",
+            "xPct": 50,
+            "yPct": 23,
+            "summary": "Measures electric current (I) in amperes (A) flowing through the circuit.",
+            "structureToFunction": "Very low internal resistance ensures it does not significantly reduce the current being measured.",
+            "equation": "I = V / R"
+          },
+          {
+            "id": "resistor",
+            "label": "Test Resistor (R)",
+            "xPct": 50,
+            "yPct": 52,
+            "summary": "Component whose resistance opposes current flow and across which potential difference is measured.",
+            "equation": "R = V / I"
+          },
+          {
+            "id": "voltmeter",
+            "label": "Voltmeter (Connected in Parallel)",
+            "xPct": 50,
+            "yPct": 79,
+            "summary": "Measures potential difference (V) in volts (V) across the ends of the resistor.",
+            "structureToFunction": "Very high internal resistance prevents current from bypassing the resistor through the voltmeter.",
+            "commonMisconception": "Connecting a voltmeter in series blocks current because of its very high resistance."
+          }
+        ],
+        "identifyPrompts": [
+          {
+            "id": "id-voltmeter",
+            "prompt": "Select the instrument connected in PARALLEL with very high internal resistance.",
+            "targetHotspotId": "voltmeter",
+            "explanation": "The voltmeter is connected in parallel across the resistor to measure potential difference."
+          }
+        ]
+      }
+    },
+    {
+      "id": "h08",
+      "order": 8,
+      "title": "NaCCA Science — Idealised Soil Profile Horizons",
+      "purpose": "Explore O, A, B, C, and R horizons while noting real soils vary by climate and geology.",
+      "onScreenText": [
+        "Horizons O (organic), A (topsoil), B (subsoil), C (parent rock), R (bedrock)",
+        "Topsoil (A) holds humus, roots, and soil organisms",
+        "Idealised model — not every soil has all 5 horizons"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Soil profile horizons overview",
+        "description": "Soil horizons header.",
+        "labels": ["O", "A (Topsoil)", "B (Subsoil)", "C", "R (Bedrock)"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#422006\">Idealised Soil Profile</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#854d0e\">Horizons O · A (Topsoil) · B (Subsoil) · C · R (Bedrock)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Explore the five layers of this idealised soil profile from organic leaf litter down to solid bedrock. Remember that real soils in different regions may lack some horizons.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Warm Ghanaian science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Topsoil (Horizon A) is richest in humus and supports crop roots."],
+      "indicatorIds": ["STEP4C.2"],
+      "askTeacherContext": { "focus": "Soil profile", "keyTerms": ["Topsoil", "Subsoil", "Bedrock"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4C Preview Pilot 8 of 8.",
+      "interactive": {
+        "id": "pilot4c-nacca-soil-profile",
+        "engine": "diagram-hotspots",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.0.0",
+        "subjectTag": "NaCCA Science",
+        "title": "Idealised Soil Profile Horizons",
+        "instructions": "Select each horizon from top to bottom to compare texture, humus content, and role in plant growth.",
+        "accessibilityLabel": "Interactive idealised soil profile horizons diagram",
+        "fallbackText": "O Horizon: surface organic leaf litter. A Horizon (Topsoil): dark, humus-rich layer where most plant roots and earthworms live. B Horizon (Subsoil): denser clay and leached minerals. C Horizon: partially weathered parent rock fragments. R Horizon: unweathered solid bedrock.",
+        "modelNote": "Represents an idealised mature soil profile (O–A–B–C–R). Real soils vary widely with climate, erosion, and agriculture—not all soils contain every horizon.",
+        "diagram": {
+          "src": "/preview-fixtures/diagrams/soil-profile.png",
+          "altText": "Vertical soil profile cross-section showing five horizontal bands labelled O, A, B, C, and R from top to bottom"
+        },
+        "hotspots": [
+          {
+            "id": "horizon-o",
+            "label": "O Horizon (Organic Layer)",
+            "xPct": 12,
+            "yPct": 9,
+            "widthPct": 76,
+            "heightPct": 11,
+            "summary": "Surface layer of fallen leaves, twigs, and decomposing organic litter."
+          },
+          {
+            "id": "horizon-a",
+            "label": "A Horizon (Topsoil)",
+            "xPct": 12,
+            "yPct": 21,
+            "widthPct": 76,
+            "heightPct": 17,
+            "summary": "Dark, fertile mixture of mineral particles and humus supporting most crop roots and soil microbes.",
+            "structureToFunction": "Rich humus retains moisture and nutrients while crumb structure allows air circulation to roots."
+          },
+          {
+            "id": "horizon-b",
+            "label": "B Horizon (Subsoil)",
+            "xPct": 12,
+            "yPct": 39,
+            "widthPct": 76,
+            "heightPct": 20,
+            "summary": "Lighter, denser layer accumulating clay and minerals leached downward from topsoil."
+          },
+          {
+            "id": "horizon-c",
+            "label": "C Horizon (Weathered Parent Rock)",
+            "xPct": 12,
+            "yPct": 60,
+            "widthPct": 76,
+            "heightPct": 18,
+            "summary": "Partially broken-down rock fragments with very little organic matter."
+          },
+          {
+            "id": "horizon-r",
+            "label": "R Horizon (Bedrock)",
+            "xPct": 12,
+            "yPct": 79,
+            "widthPct": 76,
+            "heightPct": 16,
+            "summary": "Continuous, unweathered solid rock beneath the soil profile."
+          }
+        ]
+      }
+    }
+  ],
+  "checkpoints": [],
+  "masteryCheck": { "items": [] },
+  "summary": {
+    "recapScript": "You have explored all 8 cross-subject Step 4C Diagram and Hotspots pilots through a single reusable DiagramHotspotsEngine."
+  }
+}

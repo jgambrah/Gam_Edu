@@ -19,6 +19,11 @@ import {
   isApprovedProcessAssetPath,
   type ProcessStateField,
 } from './process-stepper-logic';
+import {
+  isApprovedInteractiveAssetPath,
+  isValidPointPercent,
+  isValidRectPercent,
+} from './visual-region';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -65,6 +70,10 @@ export const INTERACTIVE_RESOURCE_LIMITS = {
   maxProcessStateFields: 6,
   maxProcessPredictions: 3,
   maxProcessSequenceItems: 6,
+  minDiagramHotspots: 2,
+  maxDiagramHotspots: 12,
+  maxDiagramIdentifyPrompts: 6,
+  maxDiagramLinkedHotspots: 6,
 } as const;
 
 export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, InteractiveEngineMeta> = {
@@ -110,11 +119,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'diagram-hotspots': {
     id: 'diagram-hotspots',
-    engineVersion: '0.0.0-planned',
+    engineVersion: '1.0.0',
     productionVersion: null,
     supportedSchemaVersions: [1],
-    implemented: false,
-    description: 'Reserved for Step 4: Non-graded interactive diagram hotspot explorer.',
+    implemented: true,
+    description: 'Cross-subject interactive diagram, structure-to-function hotspot explorer, and accessible identification challenges (Step 4C).',
   },
 };
 
@@ -326,9 +335,41 @@ export interface ProcessStepperInteractiveConfig extends SlideInteractiveBase {
   sequenceChallenge?: ProcessSequenceChallengeDef;
 }
 
-export interface PlannedEngineInteractiveConfig extends SlideInteractiveBase {
+export interface DiagramHotspotItemDef {
+  id: string;
+  label: string;
+  xPct: number;
+  yPct: number;
+  widthPct?: number;
+  heightPct?: number;
+  summary: string;
+  functionText?: string;
+  structureToFunction?: string;
+  equation?: string;
+  commonMisconception?: string;
+  linkedHotspotIds?: string[];
+  relationshipExplanation?: string;
+  discoveryPrompt?: string;
+}
+
+export interface DiagramIdentifyPromptDef {
+  id: string;
+  prompt: string;
+  targetHotspotId: string;
+  explanation: string;
+  hintText?: string;
+}
+
+export interface DiagramHotspotsInteractiveConfig extends SlideInteractiveBase {
   engine: 'diagram-hotspots';
-  params?: Record<string, unknown>;
+  subjectTag?: string;
+  modelNote?: string;
+  diagram: ProcessVisualRef;
+  defaultMode?: 'explore' | 'identify';
+  progressiveDisclosure?: boolean;
+  guidedOrder?: string[];
+  hotspots: DiagramHotspotItemDef[];
+  identifyPrompts?: DiagramIdentifyPromptDef[];
 }
 
 export type SlideInteractiveConfig =
@@ -337,7 +378,7 @@ export type SlideInteractiveConfig =
   | RuleExplorerInteractiveConfig
   | GraphSliderInteractiveConfig
   | ProcessStepperInteractiveConfig
-  | PlannedEngineInteractiveConfig;
+  | DiagramHotspotsInteractiveConfig;
 
 const ALLOWED_RULE_OPS = new Set<RuleOperator>(['AND', 'OR', 'NOT', 'XOR']);
 const SEMVER_RE = /^(\d+)\.(\d+)\.(\d+)$/;
@@ -395,8 +436,35 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
     'stages',
     'sequenceChallenge',
   ]),
-  'diagram-hotspots': new Set(['params']),
+  'diagram-hotspots': new Set([
+    'subjectTag',
+    'modelNote',
+    'diagram',
+    'defaultMode',
+    'progressiveDisclosure',
+    'guidedOrder',
+    'hotspots',
+    'identifyPrompts',
+  ]),
 };
+
+const DIAGRAM_HOTSPOT_ALLOWED_KEYS = new Set([
+  'id',
+  'label',
+  'xPct',
+  'yPct',
+  'widthPct',
+  'heightPct',
+  'summary',
+  'functionText',
+  'structureToFunction',
+  'equation',
+  'commonMisconception',
+  'linkedHotspotIds',
+  'relationshipExplanation',
+  'discoveryPrompt',
+]);
+const DIAGRAM_IDENTIFY_ALLOWED_KEYS = new Set(['id', 'prompt', 'targetHotspotId', 'explanation', 'hintText']);
 
 const PROCESS_VISUAL_ALLOWED_KEYS = new Set(['src', 'altText', 'caption']);
 const PROCESS_HIGHLIGHT_ALLOWED_KEYS = new Set(['xPct', 'yPct', 'widthPct', 'heightPct', 'label']);
@@ -1474,6 +1542,175 @@ export function validateSlideInteractiveConfig(
             }
           }
         }
+      }
+    }
+  } else if (obj.engine === 'diagram-hotspots') {
+    if (obj.subjectTag !== undefined && typeof obj.subjectTag !== 'string') {
+      errors.push('diagram-hotspots "subjectTag" must be a string.');
+    }
+    if (obj.modelNote !== undefined && typeof obj.modelNote !== 'string') {
+      errors.push('diagram-hotspots "modelNote" must be a string.');
+    }
+    if (obj.defaultMode !== undefined && obj.defaultMode !== 'explore' && obj.defaultMode !== 'identify') {
+      errors.push('diagram-hotspots "defaultMode" must be "explore" or "identify".');
+    }
+    if (obj.progressiveDisclosure !== undefined && typeof obj.progressiveDisclosure !== 'boolean') {
+      errors.push('diagram-hotspots "progressiveDisclosure" must be a boolean.');
+    }
+
+    const diag = obj.diagram as Record<string, unknown> | undefined;
+    if (!diag || typeof diag !== 'object' || Array.isArray(diag)) {
+      errors.push('diagram-hotspots requires a "diagram" object.');
+    } else {
+      checkAllowedKeys(diag, PROCESS_VISUAL_ALLOWED_KEYS, 'diagram', errors);
+      if (typeof diag.src !== 'string' || !isApprovedInteractiveAssetPath(diag.src)) {
+        errors.push('diagram-hotspots diagram.src must be an approved WebP/PNG media path.');
+      }
+      if (typeof diag.altText !== 'string' || diag.altText.trim().length < 4) {
+        errors.push('diagram-hotspots diagram.altText must be at least 4 characters.');
+      }
+      if (diag.caption !== undefined && typeof diag.caption !== 'string') {
+        errors.push('diagram-hotspots diagram.caption must be a string.');
+      }
+    }
+
+    const hotspotIds = new Set<string>();
+    const pendingLinks: Array<{ idx: number; id: string; links: unknown }> = [];
+    if (
+      !Array.isArray(obj.hotspots) ||
+      obj.hotspots.length < INTERACTIVE_RESOURCE_LIMITS.minDiagramHotspots ||
+      obj.hotspots.length > INTERACTIVE_RESOURCE_LIMITS.maxDiagramHotspots
+    ) {
+      errors.push(
+        `diagram-hotspots requires ${INTERACTIVE_RESOURCE_LIMITS.minDiagramHotspots} to ${INTERACTIVE_RESOURCE_LIMITS.maxDiagramHotspots} hotspots.`
+      );
+    } else {
+      obj.hotspots.forEach((h, idx) => {
+        if (!h || typeof h !== 'object' || Array.isArray(h)) {
+          errors.push(`diagram-hotspots hotspots[${idx}] must be an object.`);
+          return;
+        }
+        const hRec = h as Record<string, unknown>;
+        checkAllowedKeys(hRec, DIAGRAM_HOTSPOT_ALLOWED_KEYS, `hotspots[${idx}]`, errors);
+        let hid = '';
+        if (typeof hRec.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(hRec.id)) {
+          errors.push(`diagram-hotspots hotspots[${idx}].id must be a 1-40 char identifier.`);
+        } else if (hotspotIds.has(hRec.id)) {
+          errors.push(`diagram-hotspots duplicate hotspot id "${hRec.id}".`);
+        } else {
+          hotspotIds.add(hRec.id);
+          hid = hRec.id;
+        }
+        if (typeof hRec.label !== 'string' || hRec.label.trim().length < 2) {
+          errors.push(`diagram-hotspots hotspots[${idx}].label must be a non-empty string.`);
+        }
+        if (typeof hRec.summary !== 'string' || hRec.summary.trim().length < 4) {
+          errors.push(`diagram-hotspots hotspots[${idx}].summary must be a non-empty string.`);
+        }
+        const hasRect = hRec.widthPct !== undefined || hRec.heightPct !== undefined;
+        if (hasRect) {
+          if (!isValidRectPercent(hRec.xPct, hRec.yPct, hRec.widthPct, hRec.heightPct)) {
+            errors.push(`diagram-hotspots hotspots[${idx}] rectangular coordinates must be bounded within 0..100%.`);
+          }
+        } else if (!isValidPointPercent(hRec.xPct, hRec.yPct)) {
+          errors.push(`diagram-hotspots hotspots[${idx}] point coordinates (xPct, yPct) must be bounded within 0..100%.`);
+        }
+        for (const optStr of [
+          'functionText',
+          'structureToFunction',
+          'equation',
+          'commonMisconception',
+          'relationshipExplanation',
+          'discoveryPrompt',
+        ] as const) {
+          if (hRec[optStr] !== undefined && typeof hRec[optStr] !== 'string') {
+            errors.push(`diagram-hotspots hotspots[${idx}].${optStr} must be a string.`);
+          }
+        }
+        if (typeof hRec.equation === 'string' && hRec.equation.length > 180) {
+          errors.push(`diagram-hotspots hotspots[${idx}].equation must be at most 180 characters.`);
+        }
+        if (hRec.linkedHotspotIds !== undefined) {
+          pendingLinks.push({ idx, id: hid, links: hRec.linkedHotspotIds });
+        }
+      });
+
+      for (const item of pendingLinks) {
+        if (
+          !Array.isArray(item.links) ||
+          item.links.length > INTERACTIVE_RESOURCE_LIMITS.maxDiagramLinkedHotspots
+        ) {
+          errors.push(
+            `diagram-hotspots hotspots[${item.idx}].linkedHotspotIds must be an array of at most ${INTERACTIVE_RESOURCE_LIMITS.maxDiagramLinkedHotspots} IDs.`
+          );
+        } else {
+          for (const lid of item.links) {
+            if (typeof lid !== 'string' || !hotspotIds.has(lid)) {
+              errors.push(`diagram-hotspots hotspots[${item.idx}] references unknown linkedHotspotId "${String(lid)}".`);
+            } else if (lid === item.id) {
+              errors.push(`diagram-hotspots hotspots[${item.idx}] cannot link to itself ("${lid}").`);
+            }
+          }
+        }
+      }
+    }
+
+    if (obj.guidedOrder !== undefined) {
+      if (!Array.isArray(obj.guidedOrder) || obj.guidedOrder.length === 0) {
+        errors.push('diagram-hotspots "guidedOrder" must be a non-empty array of hotspot IDs.');
+      } else {
+        const seenGuided = new Set<string>();
+        for (const gid of obj.guidedOrder) {
+          if (typeof gid !== 'string' || !hotspotIds.has(gid)) {
+            errors.push(`diagram-hotspots guidedOrder references unknown hotspot id "${String(gid)}".`);
+          } else if (seenGuided.has(gid)) {
+            errors.push(`diagram-hotspots guidedOrder contains duplicate hotspot id "${gid}".`);
+          } else {
+            seenGuided.add(gid);
+          }
+        }
+      }
+    }
+
+    if (obj.identifyPrompts !== undefined) {
+      if (
+        !Array.isArray(obj.identifyPrompts) ||
+        obj.identifyPrompts.length > INTERACTIVE_RESOURCE_LIMITS.maxDiagramIdentifyPrompts
+      ) {
+        errors.push(
+          `diagram-hotspots "identifyPrompts" must be an array of at most ${INTERACTIVE_RESOURCE_LIMITS.maxDiagramIdentifyPrompts} items.`
+        );
+      } else {
+        const promptIds = new Set<string>();
+        obj.identifyPrompts.forEach((p, idx) => {
+          if (!p || typeof p !== 'object' || Array.isArray(p)) {
+            errors.push(`diagram-hotspots identifyPrompts[${idx}] must be an object.`);
+            return;
+          }
+          const pRec = p as Record<string, unknown>;
+          checkAllowedKeys(pRec, DIAGRAM_IDENTIFY_ALLOWED_KEYS, `identifyPrompts[${idx}]`, errors);
+          if (typeof pRec.id !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(pRec.id)) {
+            errors.push(`diagram-hotspots identifyPrompts[${idx}].id must be a 1-40 char identifier.`);
+          } else if (promptIds.has(pRec.id)) {
+            errors.push(`diagram-hotspots duplicate identifyPrompt id "${pRec.id}".`);
+          } else {
+            promptIds.add(pRec.id);
+          }
+          if (typeof pRec.prompt !== 'string' || pRec.prompt.trim().length < 4) {
+            errors.push(`diagram-hotspots identifyPrompts[${idx}].prompt must be a non-empty string.`);
+          }
+          if (typeof pRec.targetHotspotId !== 'string' || !hotspotIds.has(pRec.targetHotspotId)) {
+            errors.push(
+              `diagram-hotspots identifyPrompts[${idx}] references unknown targetHotspotId "${String(pRec.targetHotspotId)}".`
+            );
+          }
+          if (typeof pRec.explanation !== 'string' || pRec.explanation.trim().length < 4) {
+            errors.push(`diagram-hotspots identifyPrompts[${idx}].explanation must be a non-empty string.`);
+          }
+          if (pRec.hintText !== undefined && typeof pRec.hintText !== 'string') {
+            errors.push(`diagram-hotspots identifyPrompts[${idx}].hintText must be a string.`);
+          }
+        });
       }
     }
   }

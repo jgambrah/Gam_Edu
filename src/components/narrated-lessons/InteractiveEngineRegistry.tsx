@@ -43,6 +43,11 @@ const LazyProcessStepperEngine = dynamic(
   { ssr: false, loading: RegistryLoading },
 );
 
+const LazyDiagramHotspotsEngine = dynamic(
+  () => import('./DiagramHotspotsEngine').then((m) => m.DiagramHotspotsEngine),
+  { ssr: false, loading: RegistryLoading },
+);
+
 export interface InteractiveEngineRegistryProps {
   lesson: NarratedLesson;
   slide: LessonSlide;
@@ -149,6 +154,8 @@ function InteractiveItemRenderer({
       return <LazyGraphSliderEngine config={config} />;
     case 'process-stepper':
       return <LazyProcessStepperEngine config={config} lessonId={lesson.lessonId} />;
+    case 'diagram-hotspots':
+      return <LazyDiagramHotspotsEngine config={config} lessonId={lesson.lessonId} />;
     case 'code-playground':
       return (
         <LazyInlineCodePlayground
@@ -159,8 +166,15 @@ function InteractiveItemRenderer({
       );
     case 'construction-lab':
       return <LazyBooleanCircuitLab lessonId={lesson.lessonId} slideId={slideId} />;
-    default:
-      return <InteractiveFallbackCard title={config.title} message={config.fallbackText} />;
+    default: {
+      const fallback = config as { title?: string; fallbackText?: string };
+      return (
+        <InteractiveFallbackCard
+          title={fallback.title ?? 'Interactive Activity Unavailable'}
+          message={fallback.fallbackText ?? 'Continue with the slide explanation above.'}
+        />
+      );
+    }
   }
 }
 
