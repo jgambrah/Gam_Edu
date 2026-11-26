@@ -83,16 +83,28 @@ Extra allowed top-level fields: `languages`, `pythonStarter`, `pseudocodeStarter
 - `sqlStarter` *(optional string)*: Starter **read-only `SELECT`** SQL query. DDL/DML keywords (`DROP`, `DELETE`, `INSERT`, `UPDATE`, `ALTER`, `TRUNCATE`, `CREATE`, `ATTACH`, `DETACH`) are rejected.
 - `publicTests` *(optional array, max 8 items)*: Each item allows only `{ "stdin": string, "expectedStdout": string }`.
 
-### C. `construction-lab` (Boolean Circuit Builder)
+### C. `construction-lab` (`1.0.0` Legacy Boolean Circuit LIVE · `1.1.0` Step 4D Preview Domain Adapters)
 
-Extra allowed top-level fields: `labKind`, `activityId`.
+> **Production Gate Notice:** `construction-lab` has `engineVersion: "1.1.0"` and `productionVersion: "1.0.0"`. Existing `labKind: "boolean-circuit"` lessons without `circuitConfig` remain 100% production-compatible (`minEngineVersion: "1.0.0"`). All Step 4D domain adapters (`equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, and declarative `boolean-circuit` with `circuitConfig`) **MUST** declare `"minEngineVersion": "1.1.0"` and remain blocked at the production publish gate until Step 4D is verified live in production.
 
-- `labKind` *(required string)*: Currently must be `"boolean-circuit"`.
-- `activityId` *(optional string)*: Optional preset reference identifier.
+Shared optional fields across all Step 4D domain adapters: `subjectTag`, `modelNote`, `prediction` (`{ prompt, options (2..4), correctIndex, explanation }`), `successExplanation`.
 
-### D. `graph-slider` (Step 4A Preview — Cross-Subject Graph & Slider Discovery Engine)
+- **`labKind: "boolean-circuit"`**:
+  - **Legacy (`1.0.0` LIVE):** `{ labKind: "boolean-circuit", activityId? }` — preserves `BooleanCircuitLab.tsx` and all seeded Chapter 10 lessons unchanged.
+  - **Declarative (`1.1.0` Preview):** Add `circuitConfig` (`{ inputs (1..4), outputLabel?, allowedGates, initialGates? (<=10, cycle-free), initialOutput?, targetTruthTable (2^n binary outputs), gradingMode? ("functional-equivalence" | "specified-gate-structure"), targetNetlist?, maxGates?, successExplanation? }`). Reuses `circuit-engine.ts` with zero duplicate logic.
+- **`labKind: "equation-balancer"` (`1.1.0` Preview — Chemistry Stoichiometry & Charge Conservation)**:
+  - Fields: `reactants` (1–6), `products` (1–6), `arrow?` (`"→" | "⇌" | "->"`), `maxCoefficient?` (`2..12`), `requireSimplestRatio?` (default `true`), `showAtomVisuals?`, `difficulty?` (`"foundation" | "standard" | "challenge"`).
+  - Each species: `{ formula, display?, charge? (-8..+8), state? ("s"|"l"|"g"|"aq"), isElectron? }`. Validates real IUPAC element symbols, balanced parentheses (nesting ≤ 2), positive integer subscripts, and authoring-time solvability within `1..maxCoefficient`. Students adjust whole-number coefficients only (never subscripts).
+- **`labKind: "electrical-circuit"` (`1.1.0` Preview — Bounded DC Circuit Builder)**:
+  - Fields: `topology` (`"series" | "parallel-2-branch" | "series-parallel"`), `supplyVoltageV` (`1..24`), `palette` (1–8 components: `wire`, `switch-open`, `switch-closed`, `resistor`, `lamp`, `ammeter`, `voltmeter` with finite `resistanceOhm` `1..1000` for resistors/lamps only), `slots` (2–8, `position`: `"main" | "branch-a" | "branch-b" | "voltmeter-probe"`), `goal?` (structural `requiredComponents` + numerical `targetTotalCurrentA`, `targetBranchACurrentA`, `targetBranchBCurrentA`, `targetVoltmeterV`), `isMisconceptionActivity?`.
+  - Never uses `Infinity` in JSON; detects short circuits safely (no finite current computed through 0 Ω closed loop) and diagnoses meter misconnections. Lamps use simplified constant-resistance models with qualitative brightness.
+- **`labKind: "bio-sequence-builder"` (`1.1.0` Preview — Biological Sequence & Inheritance Builder)**:
+  - Modes: `"dna-base-pairing"` (antiparallel A–T/C–G), `"dna-to-mrna"` (3′→5′ template → 5′→3′ mRNA, A→U, catches T-in-RNA), `"mrna-translation"` (standard 64-codon table, N→C polypeptide, STOP codons terminate without assigning an amino acid, `isCompleteCodingSequence?`), `"monohybrid-punnett"` (`parent1Genotype`, `parent2Genotype`, `dominantAllele`, `dominantTrait?`, `recessiveTrait?`, `inheritanceAssumption?`, ratios presented strictly as probabilities).
+- **Deferred beyond Step 4D v1.0:** `atom-bond-builder` (v1.1) and `geometry-constructor` (v1.2).
 
-> **Production Gate Notice:** On the Step 4A feature branch, `graph-slider` has `implemented: true, engineVersion: "1.0.0", productionVersion: null`. Do **not** publish live CDN lessons using `graph-slider` until Step 4A is merged and verified in production.
+### D. `graph-slider` (Step 4A — Production LIVE `1.0.0`)
+
+> **Production Status:** `graph-slider` is verified live in production (`implemented: true, engineVersion: "1.0.0", productionVersion: "1.0.0"`).
 
 Extra allowed top-level fields: `subjectTag`, `modelNote`, `xVar`, `axes`, `sliders`, `curves`, `readouts`, `prediction`, `challenges`, `samples`, `showDataTable`.
 

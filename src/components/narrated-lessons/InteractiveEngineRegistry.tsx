@@ -23,8 +23,8 @@ const LazyInlineCodePlayground = dynamic(
   { ssr: false, loading: RegistryLoading },
 );
 
-const LazyBooleanCircuitLab = dynamic(
-  () => import('./BooleanCircuitLab').then((m) => m.BooleanCircuitLab),
+const LazyConstructionLabRouter = dynamic(
+  () => import('./construction/ConstructionLabRouter').then((m) => m.ConstructionLabRouter),
   { ssr: false, loading: RegistryLoading },
 );
 
@@ -165,7 +165,7 @@ function InteractiveItemRenderer({
         />
       );
     case 'construction-lab':
-      return <LazyBooleanCircuitLab lessonId={lesson.lessonId} slideId={slideId} />;
+      return <LazyConstructionLabRouter config={config} lessonId={lesson.lessonId} slideId={slideId} />;
     default: {
       const fallback = config as { title?: string; fallbackText?: string };
       return (

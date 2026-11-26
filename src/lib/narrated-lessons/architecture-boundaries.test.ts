@@ -138,6 +138,7 @@ describe('GAM EDU Modular-Monolith Transitive Dependency Boundaries', () => {
     const forbiddenStaticImports = [
       /^\s*import\s+[^;]*from\s+['"]\.\/InlineCodePlayground['"]/m,
       /^\s*import\s+[^;]*from\s+['"]\.\/BooleanCircuitLab['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/construction\/ConstructionLabRouter['"]/m,
       /^\s*import\s+[^;]*from\s+['"]\.\/RuleExplorerEngine['"]/m,
       /^\s*import\s+[^;]*from\s+['"]\.\/GraphSliderEngine['"]/m,
       /^\s*import\s+[^;]*from\s+['"]\.\/ProcessStepperEngine['"]/m,
@@ -147,10 +148,23 @@ describe('GAM EDU Modular-Monolith Transitive Dependency Boundaries', () => {
       expect(src).not.toMatch(re);
     }
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/InlineCodePlayground['"]\)/);
-    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/BooleanCircuitLab['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/construction\/ConstructionLabRouter['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/RuleExplorerEngine['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/GraphSliderEngine['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/ProcessStepperEngine['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/DiagramHotspotsEngine['"]\)/);
+
+    // Also verify ConstructionLabRouter independently lazy-loads every domain adapter
+    const routerPath = path.resolve(
+      REPO_ROOT,
+      'src/components/narrated-lessons/construction/ConstructionLabRouter.tsx',
+    );
+    const routerSrc = fs.readFileSync(routerPath, 'utf8');
+    expect(routerSrc).not.toMatch(/^\s*import\s+[^;]*from\s+['"]\.\.?\/.*Lab['"]/m);
+    expect(routerSrc).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\.\/BooleanCircuitLab['"]\)/);
+    expect(routerSrc).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/EquationBalancerLab['"]\)/);
+    expect(routerSrc).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/ElectricalCircuitLab['"]\)/);
+    expect(routerSrc).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/BioSequenceLab['"]\)/);
+    expect(routerSrc).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/DeclarativeBooleanCircuitAdapter['"]\)/);
   });
 });

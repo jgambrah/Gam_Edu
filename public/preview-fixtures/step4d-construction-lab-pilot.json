@@ -1,0 +1,695 @@
+{
+  "lessonId": "step4d-construction-lab-pilot-preview",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 4D Preview Pilot — Construction Laboratory Extensions (v1.1.0)",
+    "subject": "Cross-Subject Construction Labs (Chemistry, Physics, Biology, Computer Science)",
+    "class": "Preview Pilot",
+    "topic": "ConstructionLabShell + Bounded Domain Adapters",
+    "contentStandard": "STEP4D.PILOT",
+    "indicators": ["STEP4D.1", "STEP4D.2", "STEP4D.3", "STEP4D.4"],
+    "estMinutes": 20
+  },
+  "slides": [
+    {
+      "id": "c01",
+      "order": 1,
+      "title": "C01 · Chemistry — Water Formation Equation",
+      "purpose": "Balance a foundational neutral molecular equation using whole-number coefficients without altering chemical subscripts.",
+      "onScreenText": [
+        "Conservation of atoms: equal H and O on both sides",
+        "Adjust whole-number coefficients only — never change subscripts",
+        "Check simplest whole-number ratio (GCD = 1)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Water formation balancing lab header",
+        "description": "Hydrogen and oxygen forming liquid water.",
+        "labels": ["H2", "O2", "H2O"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#eef2ff\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#312e81\">C01 · Water Formation</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"24\" fill=\"#4338ca\">H₂(g) + O₂(g) → H₂O(l)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Balance the formation of water from hydrogen and oxygen gas. Adjust the coefficients and watch the live atom count table.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Atoms are conserved in chemical reactions; subscripts define the substance and must never be changed."],
+      "indicatorIds": ["STEP4D.1"],
+      "askTeacherContext": { "focus": "Balancing chemical equations", "keyTerms": ["Coefficient", "Subscript", "Conservation of atoms"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C01 of 12.",
+      "interactive": {
+        "id": "pilot4d-chem-water",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "equation-balancer",
+        "subjectTag": "Chemistry",
+        "difficulty": "foundation",
+        "title": "Balance the Formation of Water",
+        "instructions": "Use the + and − buttons to set whole-number coefficients so hydrogen and oxygen atoms are conserved in the simplest ratio.",
+        "accessibilityLabel": "Interactive chemical equation balancer for water formation",
+        "fallbackText": "Balanced equation: 2H₂(g) + O₂(g) → 2H₂O(l) (4 H atoms and 2 O atoms on both sides).",
+        "arrow": "→",
+        "maxCoefficient": 8,
+        "requireSimplestRatio": true,
+        "showAtomVisuals": true,
+        "reactants": [
+          { "formula": "H2", "state": "g" },
+          { "formula": "O2", "state": "g" }
+        ],
+        "products": [
+          { "formula": "H2O", "state": "l" }
+        ],
+        "prediction": {
+          "prompt": "One molecule of O₂ provides 2 oxygen atoms. How many H₂O molecules must be formed to use both oxygen atoms?",
+          "options": ["1", "2", "3", "4"],
+          "correctIndex": 1,
+          "explanation": "Each H₂O contains 1 oxygen atom, so 2 H₂O molecules balance 1 O₂ molecule."
+        },
+        "successExplanation": "Balanced! 2H₂(g) + O₂(g) → 2H₂O(l) conserves 4 H atoms and 2 O atoms in the simplest whole-number ratio (2 : 1 : 2)."
+      }
+    },
+    {
+      "id": "c02",
+      "order": 2,
+      "title": "C02 · Chemistry — Haber Process Reversible Equation",
+      "purpose": "Balance a reversible industrial synthesis equation with a reversible arrow (⇌).",
+      "onScreenText": [
+        "Reversible reaction arrow (⇌) indicates dynamic equilibrium",
+        "N₂(g) + 3H₂(g) ⇌ 2NH₃(g)",
+        "Conservation balancing is separate from reaction conditions"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Haber process balancing header",
+        "description": "Ammonia synthesis.",
+        "labels": ["N2", "H2", "NH3"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0fdf4\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"36\" font-weight=\"bold\" fill=\"#14532d\">C02 · Haber Process</text><text x=\"400\" y=\"260\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"24\" fill=\"#15803d\">N₂(g) + H₂(g) ⇌ NH₃(g)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Balance the reversible Haber process equation used to manufacture ammonia for fertilisers.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Reversible equations obey the exact same atom-conservation rules as irreversible reactions."],
+      "indicatorIds": ["STEP4D.1"],
+      "askTeacherContext": { "focus": "Haber process", "keyTerms": ["Reversible reaction", "Ammonia", "Stoichiometry"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C02 of 12.",
+      "interactive": {
+        "id": "pilot4d-chem-haber",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "equation-balancer",
+        "subjectTag": "Chemistry",
+        "difficulty": "standard",
+        "title": "Balance the Haber Process Equation",
+        "instructions": "Balance nitrogen and hydrogen atoms across the reversible reaction arrow.",
+        "accessibilityLabel": "Interactive chemical equation balancer for the Haber process",
+        "fallbackText": "Balanced equation: N₂(g) + 3H₂(g) ⇌ 2NH₃(g) (2 N atoms and 6 H atoms on both sides).",
+        "modelNote": "Atom conservation verifies stoichiometry only; actual industrial ammonia synthesis requires an iron catalyst, ~450 °C, and ~200 atm.",
+        "arrow": "⇌",
+        "maxCoefficient": 10,
+        "requireSimplestRatio": true,
+        "showAtomVisuals": true,
+        "reactants": [
+          { "formula": "N2", "state": "g" },
+          { "formula": "H2", "state": "g" }
+        ],
+        "products": [
+          { "formula": "NH3", "state": "g" }
+        ],
+        "successExplanation": "Balanced! N₂(g) + 3H₂(g) ⇌ 2NH₃(g) conserves 2 N atoms and 6 H atoms in the simplest ratio (1 : 3 : 2)."
+      }
+    },
+    {
+      "id": "c03",
+      "order": 3,
+      "title": "C03 · Chemistry — Parenthesised Compound Neutralisation",
+      "purpose": "Count atoms accurately inside parenthesised chemical formulae such as Ca(OH)₂.",
+      "onScreenText": [
+        "Ca(OH)₂ contains 1 Ca, 2 O, and 2 H atoms",
+        "Parenthesis subscript multiplies every element inside the brackets",
+        "Acid + alkali neutralisation forms salt and water"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Calcium hydroxide neutralisation header",
+        "description": "Parenthesised formula balancing.",
+        "labels": ["Ca(OH)2", "HCl", "CaCl2", "H2O"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fefce8\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#713f12\">C03 · Parenthesised Formulae</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#a16207\">Ca(OH)₂(aq) + HCl(aq) → CaCl₂(aq) + H₂O(l)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Balance the neutralisation of calcium hydroxide with hydrochloric acid, taking care to count both oxygen and hydrogen inside the OH brackets.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["A subscript outside parentheses multiplies every element inside the parentheses."],
+      "indicatorIds": ["STEP4D.1"],
+      "askTeacherContext": { "focus": "Parenthesised formulae", "keyTerms": ["Calcium hydroxide", "Neutralisation"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C03 of 12.",
+      "interactive": {
+        "id": "pilot4d-chem-parentheses",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "equation-balancer",
+        "subjectTag": "Chemistry",
+        "difficulty": "standard",
+        "title": "Balance Ca(OH)₂ + HCl Neutralisation",
+        "instructions": "Remember that Ca(OH)₂ has 2 O atoms and 2 H atoms. Balance all four elements.",
+        "accessibilityLabel": "Interactive chemical equation balancer for calcium hydroxide and hydrochloric acid",
+        "fallbackText": "Balanced equation: Ca(OH)₂(aq) + 2HCl(aq) → CaCl₂(aq) + 2H₂O(l) (1 Ca, 2 O, 4 H, 2 Cl on both sides).",
+        "arrow": "→",
+        "maxCoefficient": 10,
+        "requireSimplestRatio": true,
+        "reactants": [
+          { "formula": "Ca(OH)2", "state": "aq" },
+          { "formula": "HCl", "state": "aq" }
+        ],
+        "products": [
+          { "formula": "CaCl2", "state": "aq" },
+          { "formula": "H2O", "state": "l" }
+        ],
+        "hints": ["Start by balancing chlorine (Cl) on both sides, then check total hydrogen and oxygen."],
+        "successExplanation": "Balanced! Ca(OH)₂(aq) + 2HCl(aq) → CaCl₂(aq) + 2H₂O(l) conserves Ca, O, H, and Cl."
+      }
+    },
+    {
+      "id": "c04",
+      "order": 4,
+      "title": "C04 · A-Level Chemistry — Ionic & Redox Half-Equation",
+      "purpose": "Conserve both atoms AND total electric charge in an electrolysis oxidation half-equation.",
+      "onScreenText": [
+        "Ionic half-equations must conserve both atoms and net charge",
+        "Anode oxidation of bromide ions: 2Br⁻(l) → Br₂(g) + 2e⁻",
+        "Each electron (e⁻) carries a charge of −1"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Bromide oxidation half-equation header",
+        "description": "Ionic half-equation balancing.",
+        "labels": ["Br-", "Br2", "e-"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fdf2f8\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#831843\">C04 · Redox Half-Equation</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"24\" fill=\"#be185d\">Br⁻(l) → Br₂(g) + e⁻</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Balance the anode oxidation half-equation for molten bromide ions, making sure both bromine atoms and total electric charge match on both sides.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear chemistry teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Half-equations require both atom conservation and total electric charge conservation."],
+      "indicatorIds": ["STEP4D.1"],
+      "askTeacherContext": { "focus": "Redox half-equations", "keyTerms": ["Oxidation", "Charge conservation", "Electrons"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C04 of 12.",
+      "interactive": {
+        "id": "pilot4d-chem-redox",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "equation-balancer",
+        "subjectTag": "A-Level Chemistry",
+        "difficulty": "challenge",
+        "title": "Balance the Anode Oxidation Half-Equation",
+        "instructions": "Balance both bromine atoms and net electric charge using Br⁻, Br₂, and electrons (e⁻).",
+        "accessibilityLabel": "Interactive ionic half-equation balancer for bromide oxidation",
+        "fallbackText": "Balanced half-equation: 2Br⁻(l) → Br₂(g) + 2e⁻ (2 Br atoms and −2 total charge on each side).",
+        "arrow": "→",
+        "maxCoefficient": 10,
+        "requireSimplestRatio": true,
+        "reactants": [
+          { "formula": "Br", "charge": -1, "state": "l" }
+        ],
+        "products": [
+          { "formula": "Br2", "state": "g" },
+          { "formula": "e-", "charge": -1, "isElectron": true }
+        ],
+        "successExplanation": "Balanced! 2Br⁻(l) → Br₂(g) + 2e⁻ conserves 2 Br atoms and a net electric charge of −2 on each side."
+      }
+    },
+    {
+      "id": "c05",
+      "order": 5,
+      "title": "C05 · Physics — Series Electrical Circuit",
+      "purpose": "Build a closed 12 V series circuit with two 6 Ω lamps and verify V = IR and voltage division.",
+      "onScreenText": [
+        "Series resistance adds: R_total = R₁ + R₂",
+        "Same current flows through every component in series",
+        "Potential difference divides across series loads (KVL)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Series electrical circuit lab header",
+        "description": "12 V DC series circuit.",
+        "labels": ["12 V", "Switch", "Ammeter", "Lamps"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#38bdf8\">C05 · Series DC Circuit</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#fbbf24\">12 V · R_total = R₁ + R₂ · I = V / R</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Close the main switch and place two 6-ohm lamps in series with the 12-volt supply. Observe how the ammeter reads 1.00 amp and the voltmeter across one lamp reads 6.00 volts.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear physics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["In a series circuit, current is identical everywhere and supply voltage divides across the loads."],
+      "indicatorIds": ["STEP4D.2"],
+      "askTeacherContext": { "focus": "Series circuits", "keyTerms": ["Series resistance", "Current", "Potential difference"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C05 of 12.",
+      "interactive": {
+        "id": "pilot4d-phys-series",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "electrical-circuit",
+        "subjectTag": "Physics",
+        "title": "Build a 12 V Series Two-Lamp Circuit",
+        "instructions": "Close the switch and place two 6 Ω lamps in Series Slots 1 and 2 so main current is 1.00 A and Lamp 1 reads 6.00 V.",
+        "accessibilityLabel": "Interactive 12 volt DC series electrical circuit builder",
+        "fallbackText": "With a closed switch and two 6 Ω lamps in series on a 12 V supply, R_eq = 12 Ω, I = 1.00 A, and each lamp has 6.00 V across it (P = 6.00 W).",
+        "topology": "series",
+        "supplyVoltageV": 12,
+        "palette": [
+          { "id": "sw-open", "kind": "switch-open", "label": "Switch (Open)" },
+          { "id": "sw-closed", "kind": "switch-closed", "label": "Switch (Closed)" },
+          { "id": "lamp-6", "kind": "lamp", "label": "Lamp 6 Ω", "resistanceOhm": 6 },
+          { "id": "res-12", "kind": "resistor", "label": "Resistor 12 Ω", "resistanceOhm": 12 },
+          { "id": "amm", "kind": "ammeter", "label": "Ammeter" },
+          { "id": "volt", "kind": "voltmeter", "label": "Voltmeter" },
+          { "id": "wire", "kind": "wire", "label": "Connecting Wire" }
+        ],
+        "slots": [
+          { "id": "s-sw", "label": "Main Switch", "position": "main", "initialComponentId": "sw-open" },
+          { "id": "s-amm", "label": "Main Ammeter", "position": "main", "initialComponentId": "amm", "locked": true },
+          { "id": "s-load1", "label": "Series Slot 1", "position": "main", "initialComponentId": "lamp-6" },
+          { "id": "s-load2", "label": "Series Slot 2", "position": "main", "initialComponentId": "wire" },
+          { "id": "s-probe", "label": "Voltmeter across Slot 1", "position": "voltmeter-probe", "initialComponentId": "volt", "targetSlotId": "s-load1", "locked": true }
+        ],
+        "goal": {
+          "description": "2 lamps in series, I_total = 1.00 A, V across Slot 1 = 6.00 V",
+          "targetTotalCurrentA": 1.0,
+          "toleranceA": 0.05,
+          "targetVoltmeterV": 6.0,
+          "toleranceV": 0.1,
+          "requiredComponents": [{ "kind": "lamp", "minCount": 2, "position": "main" }],
+          "requireNoShortCircuit": true,
+          "requireNoMeterMisconnection": true
+        },
+        "successExplanation": "Verified! Two 6 Ω lamps in series give R_eq = 12 Ω, so I = 12 V / 12 Ω = 1.00 A and each lamp receives 6.00 V (KVL: 6 V + 6 V = 12 V)."
+      }
+    },
+    {
+      "id": "c06",
+      "order": 6,
+      "title": "C06 · Physics — Parallel Electrical Circuit",
+      "purpose": "Verify Kirchhoff's Current Law (I_total = I_A + I_B) and independent branch switching in a 6 V parallel circuit.",
+      "onScreenText": [
+        "Each parallel branch receives the full 6 V supply voltage",
+        "Total current equals sum of branch currents: I_total = I_A + I_B",
+        "Opening one branch leaves the other branch lit"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Parallel electrical circuit lab header",
+        "description": "6 V parallel DC circuit.",
+        "labels": ["6 V", "Branch A", "Branch B", "KCL"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#34d399\">C06 · Parallel DC Circuit</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#a7f3d0\">6 V · I_total = I_A + I_B · 1/R_eq = 1/R_A + 1/R_B</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Build a 6-volt parallel circuit with a 6-ohm lamp in each branch and compare the branch currents with the main-line ammeter reading.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear physics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Adding a parallel branch lowers equivalent resistance and increases total supply current."],
+      "indicatorIds": ["STEP4D.2"],
+      "askTeacherContext": { "focus": "Parallel circuits", "keyTerms": ["Kirchhoff's Current Law", "Parallel resistance"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C06 of 12.",
+      "interactive": {
+        "id": "pilot4d-phys-parallel",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "electrical-circuit",
+        "subjectTag": "Physics",
+        "title": "Build a 6 V Parallel Two-Lamp Circuit",
+        "instructions": "Place a 6 Ω lamp in Branch A and a 6 Ω lamp in Branch B so each branch draws 1.00 A and total current is 2.00 A.",
+        "accessibilityLabel": "Interactive 6 volt DC parallel electrical circuit builder",
+        "fallbackText": "With two 6 Ω lamps in parallel across 6 V, each branch draws 1.00 A, total current is 2.00 A, and equivalent resistance is 3.00 Ω.",
+        "topology": "parallel-2-branch",
+        "supplyVoltageV": 6,
+        "palette": [
+          { "id": "sw-open", "kind": "switch-open", "label": "Switch (Open)" },
+          { "id": "sw-closed", "kind": "switch-closed", "label": "Switch (Closed)" },
+          { "id": "lamp-6", "kind": "lamp", "label": "Lamp 6 Ω", "resistanceOhm": 6 },
+          { "id": "res-12", "kind": "resistor", "label": "Resistor 12 Ω", "resistanceOhm": 12 },
+          { "id": "amm", "kind": "ammeter", "label": "Ammeter" },
+          { "id": "volt", "kind": "voltmeter", "label": "Voltmeter" }
+        ],
+        "slots": [
+          { "id": "p-sw", "label": "Main Switch", "position": "main", "initialComponentId": "sw-closed" },
+          { "id": "p-amm", "label": "Main Ammeter", "position": "main", "initialComponentId": "amm", "locked": true },
+          { "id": "p-ba", "label": "Branch A Slot", "position": "branch-a", "initialComponentId": "lamp-6" },
+          { "id": "p-bb", "label": "Branch B Slot", "position": "branch-b", "initialComponentId": "sw-open" },
+          { "id": "p-v", "label": "Voltmeter across Branch A", "position": "voltmeter-probe", "initialComponentId": "volt", "targetSlotId": "p-ba", "locked": true }
+        ],
+        "goal": {
+          "description": "Two 6 Ω lamps in parallel (I_A = 1.00 A, I_B = 1.00 A, I_total = 2.00 A)",
+          "targetTotalCurrentA": 2.0,
+          "targetBranchACurrentA": 1.0,
+          "targetBranchBCurrentA": 1.0,
+          "toleranceA": 0.05,
+          "requiredComponents": [{ "kind": "lamp", "minCount": 2 }],
+          "requireNoShortCircuit": true,
+          "requireNoMeterMisconnection": true
+        },
+        "successExplanation": "Verified! Both 6 Ω parallel branches receive 6.00 V, each draws 1.00 A, and KCL holds: I_total = 1.00 A + 1.00 A = 2.00 A (R_eq = 3.00 Ω)."
+      }
+    },
+    {
+      "id": "c07",
+      "order": 7,
+      "title": "C07 · Physics — Meter Connections & Short-Circuit Troubleshooting",
+      "purpose": "Diagnose and repair an intentional short circuit and a misplaced voltmeter in a troubleshooting circuit.",
+      "onScreenText": [
+        "Intentional troubleshooting activity: fix the starting wiring faults",
+        "Ammeter goes in SERIES; Voltmeter goes in PARALLEL",
+        "Never bridge a supply with zero-resistance wire (short circuit)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Circuit troubleshooting lab header",
+        "description": "Fixing meter misconnections and short circuits.",
+        "labels": ["Short Circuit", "Ammeter", "Voltmeter"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#450a0a\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#fca5a5\">C07 · Meter &amp; Short-Circuit Lab</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"20\" fill=\"#fecaca\">Diagnose the Faulty Wiring &amp; Restore Safe Measurement</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "This circuit starts with an intentional wiring fault: a short-circuit wire in Branch B. Replace the short-circuit wire with a 6-ohm resistor and ensure the meters are placed correctly.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear physics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["A zero-resistance path across a supply causes a short circuit; voltmeters belong in parallel and ammeters in series."],
+      "indicatorIds": ["STEP4D.2"],
+      "askTeacherContext": { "focus": "Short circuit and meters", "keyTerms": ["Short circuit", "Ammeter in series", "Voltmeter in parallel"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C07 of 12 (intentional misconception/troubleshooting).",
+      "interactive": {
+        "id": "pilot4d-phys-troubleshoot",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "electrical-circuit",
+        "subjectTag": "Physics",
+        "isMisconceptionActivity": true,
+        "title": "Fix the Short Circuit & Meter Misconnection",
+        "instructions": "The starting circuit has a plain wire shorting Branch B and a misplaced ammeter in the parallel probe. Replace Branch B with a 6 Ω resistor and place the Voltmeter in the parallel probe.",
+        "accessibilityLabel": "Interactive electrical circuit troubleshooting lab for short circuits and meter placement",
+        "fallbackText": "Replacing the short-circuit wire in Branch B with a 6 Ω resistor and placing the voltmeter in the parallel probe restores safe operation (I_total = 2.00 A, V_probe = 6.00 V).",
+        "topology": "parallel-2-branch",
+        "supplyVoltageV": 6,
+        "palette": [
+          { "id": "wire", "kind": "wire", "label": "Plain Wire (0 Ω)" },
+          { "id": "res-6", "kind": "resistor", "label": "Resistor 6 Ω", "resistanceOhm": 6 },
+          { "id": "amm", "kind": "ammeter", "label": "Ammeter (Series)" },
+          { "id": "volt", "kind": "voltmeter", "label": "Voltmeter (Parallel)" }
+        ],
+        "slots": [
+          { "id": "t-main", "label": "Main Series Meter", "position": "main", "initialComponentId": "amm" },
+          { "id": "t-ba", "label": "Branch A", "position": "branch-a", "initialComponentId": "res-6", "locked": true },
+          { "id": "t-bb", "label": "Branch B (Faulty Wire)", "position": "branch-b", "initialComponentId": "wire" },
+          { "id": "t-probe", "label": "Parallel Probe across Branch A", "position": "voltmeter-probe", "initialComponentId": "amm", "targetSlotId": "t-ba" }
+        ],
+        "goal": {
+          "description": "Eliminate short circuit & meter faults (I_total = 2.00 A, V_probe = 6.00 V)",
+          "targetTotalCurrentA": 2.0,
+          "targetVoltmeterV": 6.0,
+          "toleranceA": 0.05,
+          "toleranceV": 0.1,
+          "requiredComponents": [
+            { "kind": "resistor", "minCount": 2 },
+            { "kind": "voltmeter", "minCount": 1, "position": "voltmeter-probe" }
+          ],
+          "requireNoShortCircuit": true,
+          "requireNoMeterMisconnection": true
+        },
+        "successExplanation": "Faults resolved! Both branches now have safe 6 Ω loads, the ammeter is in series (2.00 A), and the voltmeter is in parallel (6.00 V)."
+      }
+    },
+    {
+      "id": "c08",
+      "order": 8,
+      "title": "C08 · Biology — DNA Complementary Base Pairing",
+      "purpose": "Assemble an antiparallel 5′→3′ complementary DNA strand using A–T and C–G pairing rules.",
+      "onScreenText": [
+        "DNA strands are antiparallel (3′→5′ paired with 5′→3′)",
+        "Adenine pairs with Thymine (2 H-bonds); Cytosine pairs with Guanine (3 H-bonds)",
+        "Uracil (U) does not occur in DNA"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "DNA complementary base pairing header",
+        "description": "Antiparallel DNA double helix pairing.",
+        "labels": ["A-T", "C-G", "3'->5'", "5'->3'"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#ecfeff\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#164e63\">C08 · DNA Base Pairing</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#0e7490\">3′–T A C G G A–5′  ↔  5′–A T G C C T–3′</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Build the complementary 5-prime to 3-prime DNA strand opposite the 3-prime to 5-prime template strand.",
+        "estSeconds": 7,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["DNA is antiparallel and follows strict complementary base pairing (A–T, C–G)."],
+      "indicatorIds": ["STEP4D.3"],
+      "askTeacherContext": { "focus": "DNA base pairing", "keyTerms": ["Antiparallel", "Complementary base pairing", "Hydrogen bonds"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C08 of 12.",
+      "interactive": {
+        "id": "pilot4d-bio-dna-pairing",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "bio-sequence-builder",
+        "subjectTag": "Biology",
+        "mode": "dna-base-pairing",
+        "title": "Build the Antiparallel Complementary DNA Strand",
+        "instructions": "Select the complementary DNA nucleotide (A, T, C, or G) for each position along the 3′→5′ template strand.",
+        "accessibilityLabel": "Interactive DNA complementary base pairing builder",
+        "fallbackText": "DNA template 3′-TAC GGA-5′ pairs with complementary 5′-ATG CCT-3′ (A–T has 2 H-bonds, C–G has 3 H-bonds).",
+        "modelNote": "Shows a 6-base DNA fragment; strands run antiparallel (3′→5′ paired with 5′→3′).",
+        "templateDirection": "3′→5′",
+        "productDirection": "5′→3′",
+        "templateSequence": ["T", "A", "C", "G", "G", "A"],
+        "palette": ["A", "T", "C", "G", "U"]
+      }
+    },
+    {
+      "id": "c09",
+      "order": 9,
+      "title": "C09 · A-Level Biology — DNA-to-mRNA Transcription",
+      "purpose": "Synthesise a 5′→3′ mRNA transcript from a 3′→5′ DNA template strand using Uracil (U) opposite Adenine (A).",
+      "onScreenText": [
+        "RNA polymerase reads the 3′→5′ DNA template strand",
+        "mRNA is synthesised 5′→3′ (same sequence as coding strand, with U replacing T)",
+        "DNA Adenine (A) pairs with mRNA Uracil (U)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "mRNA transcription lab header",
+        "description": "DNA template to mRNA transcription.",
+        "labels": ["Template 3'->5'", "mRNA 5'->3'", "A->U"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f5f3ff\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"34\" font-weight=\"bold\" fill=\"#4c1d95\">C09 · mRNA Transcription</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#6d28d9\">DNA 3′–T A C G A A–5′ → mRNA 5′–A U G C U U–3′</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Transcribe the 3-prime to 5-prime DNA template strand into a 5-prime to 3-prime mRNA strand. Remember that RNA contains uracil instead of thymine.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Transcription reads the 3′→5′ DNA template strand to synthesise 5′→3′ mRNA with U instead of T."],
+      "indicatorIds": ["STEP4D.3"],
+      "askTeacherContext": { "focus": "Transcription", "keyTerms": ["Template strand", "Coding strand", "Uracil"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C09 of 12.",
+      "interactive": {
+        "id": "pilot4d-bio-transcription",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "bio-sequence-builder",
+        "subjectTag": "A-Level Biology",
+        "mode": "dna-to-mrna",
+        "title": "Transcribe 5′→3′ mRNA from the 3′→5′ DNA Template",
+        "instructions": "Build the complementary mRNA strand. Notice how the coding (non-template) DNA strand would have T where mRNA has U.",
+        "accessibilityLabel": "Interactive DNA to mRNA transcription sequence builder",
+        "fallbackText": "DNA template 3′-TAC GAA-5′ transcribes to 5′-AUG CUU-3′ mRNA (coding strand would be 5′-ATG CTT-3′).",
+        "modelNote": "RNA polymerase uses the 3′→5′ DNA template (antisense) strand to build 5′→3′ mRNA; the opposite 5′→3′ DNA strand is the coding (sense) strand.",
+        "templateDirection": "3′→5′ DNA Template",
+        "productDirection": "5′→3′ mRNA",
+        "templateSequence": ["T", "A", "C", "G", "A", "A"],
+        "palette": ["A", "U", "C", "G", "T"]
+      }
+    },
+    {
+      "id": "c10",
+      "order": 10,
+      "title": "C10 · A-Level Biology — Translation & Amino Acid Sequencing",
+      "purpose": "Translate 5′→3′ mRNA codons into an N- to C-terminus polypeptide, terminating cleanly at STOP without assigning an amino acid.",
+      "onScreenText": [
+        "AUG = Start codon (Met); UAA/UAG/UGA = STOP (no amino acid)",
+        "Polypeptide grows from N-terminus (amino) to C-terminus (carboxyl)",
+        "Peptide bonds form by condensation reactions releasing H₂O"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "mRNA translation lab header",
+        "description": "Ribosomal translation of codons to polypeptide.",
+        "labels": ["AUG=Met", "GGA=Gly", "UUU=Phe", "UAA=STOP"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0fdfa\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#134e4a\">C10 · mRNA Translation</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#0f766e\">5′–AUG GGA UUU UAA–3′ → N–Met–Gly–Phe–C (STOP)</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Translate each 5-prime to 3-prime mRNA codon into its amino acid from N-terminus to C-terminus, and mark the UAA stop codon as STOP without assigning an amino acid.",
+        "estSeconds": 9,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Stop codons terminate translation and do not code for an amino acid; amino acids join via condensation peptide bonds."],
+      "indicatorIds": ["STEP4D.3"],
+      "askTeacherContext": { "focus": "Translation", "keyTerms": ["Codon", "Start codon", "Stop codon", "Peptide bond"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C10 of 12.",
+      "interactive": {
+        "id": "pilot4d-bio-translation",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "bio-sequence-builder",
+        "subjectTag": "A-Level Biology",
+        "mode": "mrna-translation",
+        "isCompleteCodingSequence": true,
+        "title": "Translate mRNA Codons into a Polypeptide",
+        "instructions": "Use the standard genetic code: AUG = Met, GGA = Gly, UUU = Phe, UAA = STOP (termination signal, no amino acid).",
+        "accessibilityLabel": "Interactive mRNA translation and amino acid sequence builder",
+        "fallbackText": "5′-AUG GGA UUU UAA-3′ translates to N-Met–Gly–Phe-C (2 condensation peptide bonds) and terminates at the UAA STOP codon.",
+        "modelNote": "Complete short coding sequence from AUG start codon to UAA stop codon. Peptide bonds form between the carboxyl (–COOH) group of one amino acid and the amino (–NH₂) group of the next via condensation (releasing H₂O).",
+        "templateDirection": "5′→3′ mRNA",
+        "productDirection": "N→C Polypeptide",
+        "templateSequence": ["A", "U", "G", "G", "G", "A", "U", "U", "U", "U", "A", "A"],
+        "palette": ["Met", "Gly", "Phe", "Pro", "STOP"]
+      }
+    },
+    {
+      "id": "c11",
+      "order": 11,
+      "title": "C11 · Biology — Monohybrid Inheritance (Punnett Construction)",
+      "purpose": "Construct gamete pairings for Tt × Tt and interpret genotype/phenotype ratios strictly as probabilities under complete dominance.",
+      "onScreenText": [
+        "Parental cross: Tt (Tall) × Tt (Tall) under complete dominance",
+        "Genotype probabilities: 25% TT, 50% Tt, 25% tt",
+        "Phenotype probabilities: 75% Tall : 25% Dwarf (3 : 1)"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Monohybrid Punnett square header",
+        "description": "Tt x Tt monohybrid inheritance.",
+        "labels": ["TT", "Tt", "tt", "3:1 Probability"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f7fee7\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#365314\">C11 · Monohybrid Inheritance</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#4d7c0f\">Tt × Tt → 25% TT · 50% Tt · 25% tt</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Complete the 2-by-2 Punnett grid by combining one gamete allele from each heterozygous parent, and note that ratios represent probabilities per fertilisation event.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear biology teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Mendelian ratios represent probabilities for each independent fertilisation event, not guaranteed counts in small samples."],
+      "indicatorIds": ["STEP4D.3"],
+      "askTeacherContext": { "focus": "Monohybrid inheritance", "keyTerms": ["Heterozygous", "Complete dominance", "Probability"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C11 of 12.",
+      "interactive": {
+        "id": "pilot4d-bio-punnett",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "bio-sequence-builder",
+        "subjectTag": "Biology",
+        "mode": "monohybrid-punnett",
+        "title": "Construct the Tt × Tt Monohybrid Punnett Grid",
+        "instructions": "Select each square in the 2×2 grid and choose the offspring diploid genotype formed by the row and column gametes.",
+        "accessibilityLabel": "Interactive monohybrid Punnett square builder for Tt by Tt cross",
+        "fallbackText": "Tt × Tt yields genotype probabilities 25% TT, 50% Tt, 25% tt and phenotype probability 75% tall : 25% dwarf under complete dominance.",
+        "modelNote": "Assumes a single autosomal gene with complete dominance (T = tall dominant over t = dwarf recessive) and independent gamete segregation.",
+        "parent1Genotype": "Tt",
+        "parent2Genotype": "Tt",
+        "dominantAllele": "T",
+        "dominantTrait": "Tall",
+        "recessiveTrait": "Dwarf",
+        "inheritanceAssumption": "Complete dominance (T = Tall, t = Dwarf)"
+      }
+    },
+    {
+      "id": "c12",
+      "order": 12,
+      "title": "C12 · Computer Science — Declarative Boolean Circuit Construction",
+      "purpose": "Build a combinational logic circuit purely from declarative JSON (no TypeScript activity mapping) graded by functional equivalence.",
+      "onScreenText": [
+        "Target function: X = A AND (NOT B)",
+        "Authored 100% in JSON via circuitConfig (no TS activity file)",
+        "Graded by functional equivalence via circuit-engine.ts"
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "Declarative Boolean circuit lab header",
+        "description": "JSON-driven Boolean logic circuit construction.",
+        "labels": ["A", "B", "NOT", "AND"],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#0f172a\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#818cf8\">C12 · Declarative Boolean Circuit</text><text x=\"400\" y=\"258\" text-anchor=\"middle\" font-family=\"monospace\" font-size=\"22\" fill=\"#c7d2fe\">Target: X = A AND (NOT B) · Truth-Table Graded</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Build a combinational logic circuit whose output X equals 1 only when A is 1 and B is 0. Any functionally equivalent gate combination is accepted.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear computer science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": ["Declarative JSON circuit configurations reuse circuit-engine.ts with functional-equivalence truth-table grading."],
+      "indicatorIds": ["STEP4D.4"],
+      "askTeacherContext": { "focus": "Boolean logic circuits", "keyTerms": ["NOT gate", "AND gate", "Functional equivalence"], "commonMisconceptions": [] },
+      "teacherNote": "Step 4D Preview Pilot C12 of 12.",
+      "interactive": {
+        "id": "pilot4d-cs-declarative-bool",
+        "engine": "construction-lab",
+        "schemaVersion": 1,
+        "minEngineVersion": "1.1.0",
+        "labKind": "boolean-circuit",
+        "subjectTag": "Computer Science",
+        "title": "Build X = A AND (NOT B) (Declarative JSON Circuit)",
+        "instructions": "Add and wire gates so the live truth table matches Target X = [0, 0, 1, 0] for (A,B) = (0,0), (0,1), (1,0), (1,1).",
+        "accessibilityLabel": "Interactive declarative Boolean logic circuit builder for A AND NOT B",
+        "fallbackText": "Target X = A AND (NOT B): invert B with a NOT gate (G1), then feed A and G1 into an AND gate (G2). Outputs 1 only when A=1 and B=0.",
+        "circuitConfig": {
+          "inputs": ["A", "B"],
+          "outputLabel": "X",
+          "allowedGates": ["NOT", "AND", "OR", "NAND"],
+          "initialGates": [{ "id": "G1", "op": "NOT", "inputs": ["B"] }],
+          "initialOutput": "G1",
+          "targetTruthTable": [0, 0, 1, 0],
+          "gradingMode": "functional-equivalence",
+          "maxGates": 4,
+          "successExplanation": "Functionally equivalent! Your circuit outputs X = 1 exclusively when A = 1 and B = 0."
+        }
+      }
+    }
+  ],
+  "checkpoints": [],
+  "masteryCheck": { "items": [] },
+  "summary": {
+    "recapScript": "You have tested all 12 Step 4D Construction Laboratory pilot activities across Chemistry, Physics, Biology, and Computer Science."
+  }
+}

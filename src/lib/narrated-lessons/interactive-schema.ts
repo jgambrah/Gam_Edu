@@ -24,6 +24,24 @@ import {
   isValidPointPercent,
   isValidRectPercent,
 } from './visual-region';
+import {
+  CONSTRUCTION_LAB_LIMITS,
+  validateConstructionLabConfig,
+  type ConstructionLabKind,
+  type ConstructionPredictionDef,
+  type DeclarativeBooleanCircuitConfig,
+} from '@/lib/construction-lab/construction-schema-validator';
+import {
+  STOICHIOMETRY_LIMITS,
+  type ChemicalSpeciesDef,
+} from '@/lib/construction-lab/stoichiometry-engine';
+import type {
+  DcCircuitGoalDef,
+  DcCircuitSlotDef,
+  DcCircuitTopology,
+  DcComponentOption,
+} from '@/lib/construction-lab/dc-circuit-engine';
+import { BIO_SEQUENCE_LIMITS, type BioSequenceMode } from '@/lib/construction-lab/bio-sequence-engine';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -74,6 +92,15 @@ export const INTERACTIVE_RESOURCE_LIMITS = {
   maxDiagramHotspots: 12,
   maxDiagramIdentifyPrompts: 6,
   maxDiagramLinkedHotspots: 6,
+  maxChemSpeciesPerSide: STOICHIOMETRY_LIMITS.maxSpeciesPerSide,
+  maxChemFormulaLength: STOICHIOMETRY_LIMITS.maxFormulaLength,
+  maxChemCoefficient: STOICHIOMETRY_LIMITS.maxCoefficientHardCap,
+  maxDcSlots: CONSTRUCTION_LAB_LIMITS.maxDcSlots,
+  maxDcPalette: CONSTRUCTION_LAB_LIMITS.maxDcPalette,
+  maxBioSequenceLength: BIO_SEQUENCE_LIMITS.maxSequenceLength,
+  maxBooleanInputs: CONSTRUCTION_LAB_LIMITS.maxBooleanInputs,
+  maxBooleanGates: CONSTRUCTION_LAB_LIMITS.maxBooleanGates,
+  maxConstructionUndoHistory: CONSTRUCTION_LAB_LIMITS.maxUndoHistory,
 } as const;
 
 export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, InteractiveEngineMeta> = {
@@ -87,11 +114,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.0.0',
+    engineVersion: '1.1.0',
     productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Reuses BooleanCircuitLab (interactive logic gate circuit builder).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -153,11 +180,68 @@ export interface CodePlaygroundInteractiveConfig extends SlideInteractiveBase {
   publicTests?: Array<{ stdin: string; expectedStdout: string }>;
 }
 
-export interface ConstructionLabInteractiveConfig extends SlideInteractiveBase {
+export type {
+  ConstructionLabKind,
+  ConstructionPredictionDef,
+  DeclarativeBooleanCircuitConfig,
+};
+
+export interface ConstructionLabSharedFields extends SlideInteractiveBase {
   engine: 'construction-lab';
+  subjectTag?: string;
+  modelNote?: string;
+  prediction?: ConstructionPredictionDef;
+  successExplanation?: string;
+}
+
+export interface BooleanCircuitConstructionConfig extends ConstructionLabSharedFields {
   labKind: 'boolean-circuit';
   activityId?: string;
+  circuitConfig?: DeclarativeBooleanCircuitConfig;
 }
+
+export interface EquationBalancerConstructionConfig extends ConstructionLabSharedFields {
+  labKind: 'equation-balancer';
+  arrow?: '→' | '⇌' | '->';
+  maxCoefficient?: number;
+  requireSimplestRatio?: boolean;
+  showAtomVisuals?: boolean;
+  difficulty?: 'foundation' | 'standard' | 'challenge';
+  reactants: ChemicalSpeciesDef[];
+  products: ChemicalSpeciesDef[];
+}
+
+export interface ElectricalCircuitConstructionConfig extends ConstructionLabSharedFields {
+  labKind: 'electrical-circuit';
+  topology: DcCircuitTopology;
+  supplyVoltageV: number;
+  palette: DcComponentOption[];
+  slots: DcCircuitSlotDef[];
+  goal?: DcCircuitGoalDef;
+  isMisconceptionActivity?: boolean;
+}
+
+export interface BioSequenceConstructionConfig extends ConstructionLabSharedFields {
+  labKind: 'bio-sequence-builder';
+  mode: BioSequenceMode;
+  templateDirection?: string;
+  productDirection?: string;
+  templateSequence?: string[];
+  palette?: string[];
+  isCompleteCodingSequence?: boolean;
+  parent1Genotype?: string;
+  parent2Genotype?: string;
+  dominantAllele?: string;
+  dominantTrait?: string;
+  recessiveTrait?: string;
+  inheritanceAssumption?: string;
+}
+
+export type ConstructionLabInteractiveConfig =
+  | BooleanCircuitConstructionConfig
+  | EquationBalancerConstructionConfig
+  | ElectricalCircuitConstructionConfig
+  | BioSequenceConstructionConfig;
 
 export type RuleOperator = 'AND' | 'OR' | 'NOT' | 'XOR';
 
@@ -747,8 +831,11 @@ export function validateSlideInteractiveConfig(
     errors.push(`Unknown or unsupported interactive engine "${String(obj.engine)}".`);
   } else {
     engineMeta = registry[obj.engine as InteractiveEngineId];
-    const allowedTopLevel = new Set([...BASE_ALLOWED_KEYS, ...ENGINE_EXTRA_KEYS[engineMeta.id]]);
-    checkAllowedKeys(obj, allowedTopLevel, 'interactive', errors);
+    // For construction-lab, validateConstructionLabConfig enforces stricter per-labKind allowlists.
+    if (engineMeta.id !== 'construction-lab') {
+      const allowedTopLevel = new Set([...BASE_ALLOWED_KEYS, ...ENGINE_EXTRA_KEYS[engineMeta.id]]);
+      checkAllowedKeys(obj, allowedTopLevel, 'interactive', errors);
+    }
 
     if (options.requireImplemented && !engineMeta.implemented) {
       errors.push(
@@ -911,12 +998,7 @@ export function validateSlideInteractiveConfig(
       }
     }
   } else if (obj.engine === 'construction-lab') {
-    if (obj.labKind !== 'boolean-circuit') {
-      errors.push(`Unsupported construction-lab labKind "${String(obj.labKind)}".`);
-    }
-    if (obj.activityId !== undefined && typeof obj.activityId !== 'string') {
-      errors.push('construction-lab "activityId" must be a string.');
-    }
+    validateConstructionLabConfig(obj, compareSemver, errors);
   } else if (obj.engine === 'graph-slider') {
     if (obj.subjectTag !== undefined && typeof obj.subjectTag !== 'string') {
       errors.push('graph-slider "subjectTag" must be a string.');
