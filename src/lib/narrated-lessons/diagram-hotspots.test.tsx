@@ -118,14 +118,21 @@ describe('Step 4C DiagramHotspotsEngine UI: Explore, Guided Order, Answer Concea
     expect(screen.queryByRole('dialog', { name: /Enlarged interactive diagram/i })).toBeNull();
   });
 
-  it('strictly conceals answer labels in Identify Challenge mode until checked, then reveals explanatory feedback', () => {
+  it('strictly conceals answer labels, altText, and captions in Identify Challenge mode until checked, then reveals explanatory feedback', () => {
     const cellCfg = fixture.slides[0].interactive as DiagramHotspotsInteractiveConfig;
-    render(<DiagramHotspotsEngine config={cellCfg} />);
+    const { container } = render(<DiagramHotspotsEngine config={cellCfg} />);
+
+    // In Explore mode, descriptive altText and figcaption are visible
+    expect(container.querySelector('img')?.getAttribute('alt')).toMatch(/mitochondrion/i);
+    expect(container.querySelector('figcaption')).not.toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: /Identify Challenge/i }));
 
-    // Before submitting: NO pin or accessible list button should reveal "Mitochondrion"
+    // Before submitting: NO pin, accessible list button, img alt, or figcaption should reveal "Mitochondrion"
     expect(screen.queryByRole('button', { name: /Mitochondrion/i })).toBeNull();
+    expect(container.querySelector('img')?.getAttribute('alt')).not.toMatch(/mitochondrion/i);
+    expect(container.querySelector('figcaption')).toBeNull();
+
     // Accessible numbered regions ARE present
     const region2Buttons = screen.getAllByRole('button', { name: /Region 2/i });
     expect(region2Buttons.length).toBeGreaterThanOrEqual(1);
@@ -134,6 +141,36 @@ describe('Step 4C DiagramHotspotsEngine UI: Explore, Guided Order, Answer Concea
     fireEvent.click(region2Buttons[0]);
     fireEvent.click(screen.getByRole('button', { name: /Check selection/i }));
     expect(screen.getByText(/Correct!/i)).toBeTruthy();
+  });
+
+  it('supports equivalent nonvisual conceptual identification questions and rejects malformed nonVisualQuestion schemas', () => {
+    const cellCfg = fixture.slides[0].interactive as DiagramHotspotsInteractiveConfig;
+    render(<DiagramHotspotsEngine config={cellCfg} />);
+
+    fireEvent.click(screen.getByRole('button', { name: /Identify Challenge/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Text-only equivalent \(nonvisual\)/i }));
+
+    // Select the conceptual nonvisual option "Mitochondrion" and submit
+    fireEvent.click(screen.getByRole('button', { name: /^Mitochondrion$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Check answer/i }));
+    expect(screen.getByText(/Correct!/i)).toBeTruthy();
+
+    // Schema rejects invalid correctIndex in nonVisualQuestion
+    const badNv = validateSlideInteractiveConfig({
+      ...cellCfg,
+      identifyPrompts: [
+        {
+          ...cellCfg.identifyPrompts![0],
+          nonVisualQuestion: {
+            prompt: 'Which organelle?',
+            options: ['Nucleus', 'Mitochondrion'],
+            correctIndex: 5,
+          },
+        },
+      ],
+    });
+    expect(badNv.ok).toBe(false);
+    expect(badNv.errors.join(' ')).toMatch(/correctIndex/i);
   });
 
   it('supports Progressive Disclosure on Protein Tertiary Structure, multi-activity isolation, and Low-Data Mode', () => {

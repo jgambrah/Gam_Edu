@@ -2002,8 +2002,8 @@
       ]
     }
   },
-  "previewStep4cExamples": {
-    "pilot4c-bio-animal-cell": {
+  "previewStep4cExamples": [
+    {
       "id": "pilot4c-bio-animal-cell",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2017,6 +2017,7 @@
       "diagram": {
         "src": "/preview-fixtures/diagrams/animal-cell.png",
         "altText": "Cross-section diagram of an animal cell with nucleus, mitochondrion, rough endoplasmic reticulum, and plasma membrane",
+        "identifyAltText": "Unlabelled schematic animal cell diagram with four numbered regions",
         "caption": "Schematic eukaryotic animal cell."
       },
       "guidedOrder": [
@@ -2033,11 +2034,11 @@
           "yPct": 48,
           "summary": "Control centre containing chromosomal DNA surrounded by a double nuclear envelope with nuclear pores.",
           "functionText": "Stores genetic instructions and coordinates transcription of mRNA.",
-          "structureToFunction": "Nuclear pores allow mRNA to exit to ribosomes while protecting DNA inside the nuclear envelope.",
+          "structureToFunction": "Nuclear pores allow mRNA to exit to ribosomes in the cytoplasm—including ribosomes bound to the Rough ER—while protecting DNA inside the nuclear envelope.",
           "linkedHotspotIds": [
             "rough-er"
           ],
-          "relationshipExplanation": "mRNA transcribed in the nucleus passes through nuclear pores to ribosomes on the Rough ER for protein synthesis."
+          "relationshipExplanation": "mRNA transcribed in the nucleus passes through nuclear pores and is translated by ribosomes, including those attached to the Rough ER for secretory and membrane protein synthesis."
         },
         {
           "id": "mitochondrion",
@@ -2045,9 +2046,9 @@
           "xPct": 68,
           "yPct": 36,
           "summary": "Double-membraned organelle whose inner membrane folds inward into cristae.",
-          "functionText": "Site of aerobic respiration, generating ATP for cellular work.",
+          "functionText": "Site of aerobic respiration, releasing energy from glucose—some transferred to ATP for cellular work, and some dissipated as heat.",
           "structureToFunction": "Folded cristae create a large surface area for electron transport chain enzymes and ATP synthase.",
-          "equation": "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O + ATP"
+          "equation": "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O"
         },
         {
           "id": "rough-er",
@@ -2058,11 +2059,11 @@
           "heightPct": 14,
           "summary": "Network of flattened membrane sacs (cisternae) studded with 80S ribosomes.",
           "functionText": "Synthesises, folds, and transports secretory and membrane proteins.",
-          "structureToFunction": "Bound ribosomes translate polypeptides directly into the ER lumen for folding.",
+          "structureToFunction": "Bound ribosomes translate mRNA that exited through nuclear pores directly into polypeptides entering the ER lumen for folding.",
           "linkedHotspotIds": [
             "nucleus"
           ],
-          "relationshipExplanation": "Continuous with the outer nuclear membrane so mRNA reaches ribosomes rapidly."
+          "relationshipExplanation": "Continuous with the outer nuclear membrane so mRNA passing through nuclear pores rapidly reaches rough ER-associated ribosomes."
         },
         {
           "id": "membrane",
@@ -2077,14 +2078,25 @@
       "identifyPrompts": [
         {
           "id": "id-atp-organelle",
-          "prompt": "Select the organelle whose folded inner membrane (cristae) maximises ATP synthesis during aerobic respiration.",
+          "prompt": "Select the organelle whose folded inner membrane (cristae) maximises energy transfer to ATP during aerobic respiration.",
           "targetHotspotId": "mitochondrion",
-          "explanation": "The mitochondrion (Region 2) carries out aerobic respiration across its folded cristae.",
-          "hintText": "Look for the bean-shaped organelle in the upper right."
+          "explanation": "The mitochondrion (Region 2) carries out aerobic respiration (C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O), transferring released energy to ATP across its folded cristae.",
+          "hintText": "Look for the bean-shaped organelle in the upper right.",
+          "nonVisualQuestion": {
+            "prompt": "Which animal cell organelle has folded inner membranes (cristae) that maximise surface area for aerobic respiration and ATP synthesis?",
+            "options": [
+              "Nucleus",
+              "Mitochondrion",
+              "Rough Endoplasmic Reticulum",
+              "Plasma Membrane"
+            ],
+            "correctIndex": 1,
+            "explanation": "The mitochondrion has folded cristae hosting electron transport chain enzymes and ATP synthase, transferring energy released during aerobic respiration to ATP."
+          }
         }
       ]
     },
-    "pilot4c-bio-heart": {
+    {
       "id": "pilot4c-bio-heart",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2097,6 +2109,7 @@
       "diagram": {
         "src": "/preview-fixtures/diagrams/mammalian-heart.png",
         "altText": "Schematic mammalian heart showing right and left atria, right and left ventricles, bicuspid valve, and aorta",
+        "identifyAltText": "Unlabelled schematic mammalian heart diagram with six numbered regions",
         "caption": "Anatomical view: right side (deoxygenated, blue) on viewer's left; left side (oxygenated, red) on viewer's right."
       },
       "hotspots": [
@@ -2137,7 +2150,7 @@
           "xPct": 68,
           "yPct": 48,
           "summary": "Atrioventricular valve between the left atrium and left ventricle.",
-          "functionText": "Prevents backflow of oxygenated blood into the left atrium when the left ventricle contracts."
+          "functionText": "Prevents backflow of oxygenated blood from the left ventricle into the left atrium when the left ventricle contracts."
         },
         {
           "id": "left-ventricle",
@@ -2163,13 +2176,24 @@
       "identifyPrompts": [
         {
           "id": "id-bicuspid",
-          "prompt": "Select the valve that prevents backflow of oxygenated blood into the left atrium during ventricular contraction.",
+          "prompt": "Select the valve that prevents backflow of oxygenated blood from the left ventricle into the left atrium during ventricular contraction.",
           "targetHotspotId": "bicuspid-valve",
-          "explanation": "The bicuspid (mitral) valve sits between the left atrium and left ventricle."
+          "explanation": "The bicuspid (mitral) valve sits between the left atrium and left ventricle and prevents backflow from the left ventricle into the left atrium.",
+          "nonVisualQuestion": {
+            "prompt": "Which heart valve prevents backflow of oxygenated blood from the left ventricle into the left atrium when the left ventricle contracts?",
+            "options": [
+              "Tricuspid valve",
+              "Bicuspid (mitral) valve",
+              "Pulmonary semilunar valve",
+              "Aortic semilunar valve"
+            ],
+            "correctIndex": 1,
+            "explanation": "The bicuspid (mitral) valve lies between the left atrium and left ventricle, closing during ventricular systole to prevent backflow into the left atrium."
+          }
         }
       ]
     },
-    "pilot4c-chem-distillation": {
+    {
       "id": "pilot4c-chem-distillation",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2181,7 +2205,8 @@
       "fallbackText": "The round-bottom flask heats the liquid mixture; the fractionating column provides repeated condensation and vaporisation; the thermometer bulb sits level with the side-arm to read vapour boiling point; the Liebig condenser cools vapour (cold water in at the lower end, out at the upper end) into the receiving flask.",
       "diagram": {
         "src": "/preview-fixtures/diagrams/fractional-distillation.png",
-        "altText": "Fractional distillation setup with round-bottom flask, fractionating column, thermometer at side-arm, Liebig condenser, and receiving flask"
+        "altText": "Fractional distillation setup with round-bottom flask, fractionating column, thermometer at side-arm, Liebig condenser, and receiving flask",
+        "identifyAltText": "Unlabelled fractional distillation laboratory apparatus diagram with five numbered regions"
       },
       "hotspots": [
         {
@@ -2229,11 +2254,22 @@
           "id": "id-thermometer",
           "prompt": "Select the component that measures the boiling point of the vapour entering the condenser.",
           "targetHotspotId": "thermometer",
-          "explanation": "The thermometer bulb is placed level with the side-arm to measure the distilling vapour's exact temperature."
+          "explanation": "The thermometer bulb is placed level with the side-arm to measure the distilling vapour's exact temperature.",
+          "nonVisualQuestion": {
+            "prompt": "In fractional distillation, where should the thermometer bulb be positioned to measure the boiling point of the distilling fraction accurately?",
+            "options": [
+              "Submerged inside the boiling liquid mixture",
+              "Level with the side-arm leading into the Liebig condenser",
+              "Inside the receiving flask",
+              "At the lower cold-water inlet of the condenser"
+            ],
+            "correctIndex": 1,
+            "explanation": "Positioning the thermometer bulb level with the side-arm measures the exact temperature of the vapour passing into the condenser."
+          }
         }
       ]
     },
-    "pilot4c-alevel-protein-3d": {
+    {
       "id": "pilot4c-alevel-protein-3d",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2243,7 +2279,7 @@
       "instructions": "Observe the diagram first, then reveal markers to compare backbone hydrogen bonds with R-group interactions.",
       "accessibilityLabel": "Interactive protein tertiary structure interactions diagram",
       "fallbackText": "Secondary structures (alpha-helices and beta-pleated sheets) are stabilised by peptide backbone hydrogen bonds. Tertiary 3D folding is stabilised by R-group interactions: strong covalent disulfide bridges (between cysteine residues), ionic bonds (sensitive to pH), hydrogen bonds, and hydrophobic interactions clustering non-polar R-groups inward. Not all proteins contain disulfide bridges or quaternary structure.",
-      "modelNote": "Not all proteins contain disulfide bridges (only those with appropriately positioned cysteine R-groups), and monomeric proteins have tertiary structure without quaternary structure.",
+      "modelNote": "Not all proteins contain disulfide bridges (only those with appropriately positioned cysteine R-groups), and monomeric proteins have tertiary structure without quaternary structure. Disulfide bridges are covalent bonds, whereas hydrogen bonds (between polar R-groups), ionic bonds, and hydrophobic interactions are non-covalent.",
       "progressiveDisclosure": true,
       "diagram": {
         "src": "/preview-fixtures/diagrams/protein-tertiary.png",
@@ -2257,8 +2293,8 @@
           "yPct": 23,
           "widthPct": 26,
           "heightPct": 23,
-          "summary": "Regular coiled secondary structure stabilised by hydrogen bonds between backbone C=O and N–H groups (four residues apart).",
-          "commonMisconception": "Secondary structure involves peptide backbone H-bonds—not R-group interactions."
+          "summary": "Regular coiled secondary structure stabilised by non-covalent hydrogen bonds between peptide backbone C=O and N–H groups (four residues apart).",
+          "commonMisconception": "Secondary structure relies on peptide backbone H-bonds, whereas hydrogen bonds between polar R-groups can also contribute to tertiary structure."
         },
         {
           "id": "beta-sheet",
@@ -2267,7 +2303,7 @@
           "yPct": 57,
           "widthPct": 26,
           "heightPct": 23,
-          "summary": "Folded sheet formed by hydrogen bonding between parallel or antiparallel polypeptide backbone strands."
+          "summary": "Folded sheet formed by non-covalent hydrogen bonding between parallel or antiparallel polypeptide backbone strands."
         },
         {
           "id": "disulfide",
@@ -2276,19 +2312,19 @@
           "yPct": 23,
           "widthPct": 25,
           "heightPct": 23,
-          "summary": "Strong covalent S–S bond formed by oxidation between two cysteine thiol (–SH) R-groups.",
+          "summary": "Strong covalent S–S bond formed by oxidation between two cysteine thiol (–SH) R-groups (unlike non-covalent H-bonds, ionic, and hydrophobic interactions).",
           "equation": "R–SH + HS–R' → R–S–S–R' + 2H⁺ + 2e⁻",
           "commonMisconception": "Not all proteins have disulfide bonds; they occur mainly where cysteine residues align closely (e.g. insulin, antibodies)."
         },
         {
           "id": "ionic-bond",
-          "label": "Ionic Interaction (Charged R-Groups)",
+          "label": "Ionic & R-Group H-Bond Interactions",
           "xPct": 44,
           "yPct": 57,
           "widthPct": 25,
           "heightPct": 23,
-          "summary": "Electrostatic attraction between oppositely charged ionised R-groups (e.g. –NH₃⁺ and –COO⁻).",
-          "structureToFunction": "Sensitive to pH changes: extreme pH alters side-chain ionisation, breaking ionic bonds and denaturing active sites."
+          "summary": "Non-covalent tertiary interactions: electrostatic attraction between oppositely charged ionised R-groups (e.g. –NH₃⁺ and –COO⁻) alongside hydrogen bonds between polar R-groups.",
+          "structureToFunction": "Sensitive to pH and temperature: extreme pH disrupts ionic bonds while excess heat breaks weak R-group hydrogen bonds, denaturing active sites."
         },
         {
           "id": "hydrophobic-core",
@@ -2302,7 +2338,7 @@
         }
       ]
     },
-    "pilot4c-alevel-organic-groups": {
+    {
       "id": "pilot4c-alevel-organic-groups",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2312,9 +2348,11 @@
       "instructions": "Select each molecule to inspect its functional group, polarity, and characteristic reaction.",
       "accessibilityLabel": "Interactive organic chemistry functional groups diagram",
       "fallbackText": "Ethene (H2C=CH2) has an electron-rich C=C alkene double bond; Ethanol (CH3CH2OH) has a polar hydroxyl -OH group; Ethanoic acid (CH3COOH) has an acidic carboxyl -COOH group; Methylamine (CH3NH2) has a basic amino -NH2 group with a nitrogen lone pair.",
+      "modelNote": "Panels show condensed structural formulae (grouping C–H bonds as CH₃, CH₂, etc.); fully displayed formulae draw every individual covalent bond explicitly (including every C–H, O–H, and C=O bond).",
       "diagram": {
         "src": "/preview-fixtures/diagrams/organic-functional-groups.png",
-        "altText": "Four panels displaying ethene, ethanol, ethanoic acid, and methylamine"
+        "altText": "Four panels showing condensed structural formulae for ethene, ethanol, ethanoic acid, and methylamine",
+        "identifyAltText": "Four panels showing four numbered organic molecules in condensed structural formula form"
       },
       "hotspots": [
         {
@@ -2364,11 +2402,22 @@
           "id": "id-carboxyl",
           "prompt": "Select the molecule containing the weak-acid carboxyl functional group (–COOH).",
           "targetHotspotId": "carboxyl",
-          "explanation": "Ethanoic acid (CH₃COOH) contains the carboxyl group –COOH."
+          "explanation": "Ethanoic acid (condensed formula CH₃–COOH) contains the carboxyl group –COOH (a C=O and –OH attached to the same carbon).",
+          "nonVisualQuestion": {
+            "prompt": "Which condensed structural formula represents a carboxylic acid containing the weak-acid –COOH functional group?",
+            "options": [
+              "H₂C=CH₂",
+              "CH₃–CH₂–OH",
+              "CH₃–COOH",
+              "CH₃–NH₂"
+            ],
+            "correctIndex": 2,
+            "explanation": "CH₃–COOH (ethanoic acid) contains the carboxyl group (–COOH), which partially dissociates in water to release H⁺ ions."
+          }
         }
       ]
     },
-    "pilot4c-cs-von-neumann": {
+    {
       "id": "pilot4c-cs-von-neumann",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2378,6 +2427,7 @@
       "instructions": "Select each hardware block to trace its role and how it connects to neighbouring blocks.",
       "accessibilityLabel": "Interactive Von Neumann CPU architecture diagram",
       "fallbackText": "Control Unit fetches and decodes instructions; ALU runs arithmetic and logic; Registers hold fast working values (PC, MAR, MDR, CIR, ACC); System Buses (address, data, control) link CPU to Main Memory (RAM).",
+      "modelNote": "Simplified curriculum Von Neumann model: bus directions (unidirectional address bus, bidirectional data bus) reflect standard GCSE/IGCSE/A-Level teaching conventions rather than all modern multiplexed or DMA hardware designs.",
       "diagram": {
         "src": "/preview-fixtures/diagrams/von-neumann-cpu.png",
         "altText": "Block diagram of a Von Neumann CPU showing Control Unit, ALU, Registers, System Buses, and Main Memory"
@@ -2421,7 +2471,7 @@
           "label": "System Buses (Address, Data, Control)",
           "xPct": 69,
           "yPct": 50,
-          "summary": "Parallel electrical pathways carrying memory addresses (unidirectional), data/instructions (bidirectional), and control signals.",
+          "summary": "In the simplified curriculum model, parallel electrical pathways carry memory addresses (unidirectional from CPU to memory), data/instructions (bidirectional), and control/timing signals.",
           "linkedHotspotIds": [
             "ram"
           ]
@@ -2435,7 +2485,7 @@
         }
       ]
     },
-    "pilot4c-phys-instruments": {
+    {
       "id": "pilot4c-phys-instruments",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2447,7 +2497,8 @@
       "fallbackText": "The ammeter is connected in series with the resistor so the same current flows through it (very low internal resistance). The voltmeter is connected in parallel across the resistor to measure potential difference without drawing significant current (very high internal resistance).",
       "diagram": {
         "src": "/preview-fixtures/diagrams/electrical-instruments.png",
-        "altText": "Circuit diagram showing cell, ammeter connected in series, resistor, and voltmeter connected in parallel across the resistor"
+        "altText": "Circuit diagram showing cell, ammeter connected in series, resistor, and voltmeter connected in parallel across the resistor",
+        "identifyAltText": "Circuit diagram with four numbered components in series and parallel positions"
       },
       "hotspots": [
         {
@@ -2489,11 +2540,22 @@
           "id": "id-voltmeter",
           "prompt": "Select the instrument connected in PARALLEL with very high internal resistance.",
           "targetHotspotId": "voltmeter",
-          "explanation": "The voltmeter is connected in parallel across the resistor to measure potential difference."
+          "explanation": "The voltmeter is connected in parallel across the resistor to measure potential difference without drawing significant current.",
+          "nonVisualQuestion": {
+            "prompt": "Which electrical measuring instrument is connected in PARALLEL across a component and has very high internal resistance?",
+            "options": [
+              "Ammeter",
+              "Voltmeter",
+              "Fixed resistor",
+              "DC cell"
+            ],
+            "correctIndex": 1,
+            "explanation": "A voltmeter is connected in parallel across a component and has very high internal resistance so negligible current bypasses the component."
+          }
         }
       ]
     },
-    "pilot4c-nacca-soil-profile": {
+    {
       "id": "pilot4c-nacca-soil-profile",
       "engine": "diagram-hotspots",
       "schemaVersion": 1,
@@ -2557,5 +2619,5 @@
         }
       ]
     }
-  }
+  ]
 }

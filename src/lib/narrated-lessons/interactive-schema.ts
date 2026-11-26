@@ -352,19 +352,33 @@ export interface DiagramHotspotItemDef {
   discoveryPrompt?: string;
 }
 
+export interface DiagramVisualRef extends ProcessVisualRef {
+  /** Optional unlabelled alt text used during Identify mode before checking so screen readers never leak answers. */
+  identifyAltText?: string;
+}
+
+export interface DiagramNonVisualQuestionDef {
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+}
+
 export interface DiagramIdentifyPromptDef {
   id: string;
   prompt: string;
   targetHotspotId: string;
   explanation: string;
   hintText?: string;
+  /** Equivalent conceptual text-only identification question for nonvisual / screen-reader learners. */
+  nonVisualQuestion?: DiagramNonVisualQuestionDef;
 }
 
 export interface DiagramHotspotsInteractiveConfig extends SlideInteractiveBase {
   engine: 'diagram-hotspots';
   subjectTag?: string;
   modelNote?: string;
-  diagram: ProcessVisualRef;
+  diagram: DiagramVisualRef;
   defaultMode?: 'explore' | 'identify';
   progressiveDisclosure?: boolean;
   guidedOrder?: string[];
@@ -464,7 +478,16 @@ const DIAGRAM_HOTSPOT_ALLOWED_KEYS = new Set([
   'relationshipExplanation',
   'discoveryPrompt',
 ]);
-const DIAGRAM_IDENTIFY_ALLOWED_KEYS = new Set(['id', 'prompt', 'targetHotspotId', 'explanation', 'hintText']);
+const DIAGRAM_VISUAL_ALLOWED_KEYS = new Set(['src', 'altText', 'caption', 'identifyAltText']);
+const DIAGRAM_IDENTIFY_ALLOWED_KEYS = new Set([
+  'id',
+  'prompt',
+  'targetHotspotId',
+  'explanation',
+  'hintText',
+  'nonVisualQuestion',
+]);
+const DIAGRAM_NONVISUAL_QUESTION_ALLOWED_KEYS = new Set(['prompt', 'options', 'correctIndex', 'explanation']);
 
 const PROCESS_VISUAL_ALLOWED_KEYS = new Set(['src', 'altText', 'caption']);
 const PROCESS_HIGHLIGHT_ALLOWED_KEYS = new Set(['xPct', 'yPct', 'widthPct', 'heightPct', 'label']);
@@ -1562,7 +1585,7 @@ export function validateSlideInteractiveConfig(
     if (!diag || typeof diag !== 'object' || Array.isArray(diag)) {
       errors.push('diagram-hotspots requires a "diagram" object.');
     } else {
-      checkAllowedKeys(diag, PROCESS_VISUAL_ALLOWED_KEYS, 'diagram', errors);
+      checkAllowedKeys(diag, DIAGRAM_VISUAL_ALLOWED_KEYS, 'diagram', errors);
       if (typeof diag.src !== 'string' || !isApprovedInteractiveAssetPath(diag.src)) {
         errors.push('diagram-hotspots diagram.src must be an approved WebP/PNG media path.');
       }
@@ -1571,6 +1594,9 @@ export function validateSlideInteractiveConfig(
       }
       if (diag.caption !== undefined && typeof diag.caption !== 'string') {
         errors.push('diagram-hotspots diagram.caption must be a string.');
+      }
+      if (diag.identifyAltText !== undefined && typeof diag.identifyAltText !== 'string') {
+        errors.push('diagram-hotspots diagram.identifyAltText must be a string.');
       }
     }
 
@@ -1709,6 +1735,48 @@ export function validateSlideInteractiveConfig(
           }
           if (pRec.hintText !== undefined && typeof pRec.hintText !== 'string') {
             errors.push(`diagram-hotspots identifyPrompts[${idx}].hintText must be a string.`);
+          }
+          if (pRec.nonVisualQuestion !== undefined) {
+            const nv = pRec.nonVisualQuestion as Record<string, unknown>;
+            if (!nv || typeof nv !== 'object' || Array.isArray(nv)) {
+              errors.push(`diagram-hotspots identifyPrompts[${idx}].nonVisualQuestion must be an object.`);
+            } else {
+              checkAllowedKeys(
+                nv,
+                DIAGRAM_NONVISUAL_QUESTION_ALLOWED_KEYS,
+                `identifyPrompts[${idx}].nonVisualQuestion`,
+                errors
+              );
+              if (typeof nv.prompt !== 'string' || nv.prompt.trim().length < 4) {
+                errors.push(
+                  `diagram-hotspots identifyPrompts[${idx}].nonVisualQuestion.prompt must be a non-empty string.`
+                );
+              }
+              if (
+                !Array.isArray(nv.options) ||
+                nv.options.length < 2 ||
+                nv.options.length > 4 ||
+                nv.options.some((opt) => typeof opt !== 'string' || opt.trim().length === 0)
+              ) {
+                errors.push(
+                  `diagram-hotspots identifyPrompts[${idx}].nonVisualQuestion.options must contain 2 to 4 non-empty strings.`
+                );
+              } else if (
+                typeof nv.correctIndex !== 'number' ||
+                !Number.isInteger(nv.correctIndex) ||
+                nv.correctIndex < 0 ||
+                nv.correctIndex >= nv.options.length
+              ) {
+                errors.push(
+                  `diagram-hotspots identifyPrompts[${idx}].nonVisualQuestion.correctIndex must be a valid option index.`
+                );
+              }
+              if (nv.explanation !== undefined && typeof nv.explanation !== 'string') {
+                errors.push(
+                  `diagram-hotspots identifyPrompts[${idx}].nonVisualQuestion.explanation must be a string.`
+                );
+              }
+            }
           }
         });
       }

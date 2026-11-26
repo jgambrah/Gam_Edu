@@ -66,6 +66,8 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
   const [promptIdx, setPromptIdx] = useState(0);
   const [pickedHotspotId, setPickedHotspotId] = useState<string | null>(null);
   const [identifyChecked, setIdentifyChecked] = useState(false);
+  const [useNonVisual, setUseNonVisual] = useState(false);
+  const [pickedNonVisualIdx, setPickedNonVisualIdx] = useState<number | null>(null);
 
   // Enlarge modal + focus restoration
   const [enlarged, setEnlarged] = useState(false);
@@ -81,6 +83,8 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
     setPromptIdx(0);
     setPickedHotspotId(null);
     setIdentifyChecked(false);
+    setUseNonVisual(false);
+    setPickedNonVisualIdx(null);
     setEnlarged(false);
   }, [config, guidedIds, hasIdentify, hotspots]);
 
@@ -109,8 +113,13 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
   );
 
   const currentPrompt = config.identifyPrompts?.[promptIdx] ?? null;
+  const activeNonVisual = Boolean(useNonVisual && currentPrompt?.nonVisualQuestion);
   const isIdentifyCorrect = Boolean(
-    identifyChecked && currentPrompt && pickedHotspotId === currentPrompt.targetHotspotId
+    identifyChecked &&
+      currentPrompt &&
+      (activeNonVisual
+        ? pickedNonVisualIdx === currentPrompt.nonVisualQuestion?.correctIndex
+        : pickedHotspotId === currentPrompt.targetHotspotId)
   );
 
   const selectHotspot = (id: string) => {
@@ -145,12 +154,17 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
     setPromptIdx(0);
     setPickedHotspotId(null);
     setIdentifyChecked(false);
+    setUseNonVisual(false);
+    setPickedNonVisualIdx(null);
   };
 
   const resolvedSrc = resolveDiagramSrc(config.diagram.src, lessonId);
 
-  // Answer concealment: in Identify mode before checking, NEVER leak structure labels!
+  // Answer concealment: in Identify mode before checking, NEVER leak structure labels, captions, or descriptive altText!
   const concealLabels = mode === 'identify' && !identifyChecked;
+  const activeAltText = concealLabels
+    ? config.diagram.identifyAltText ?? 'Unlabelled interactive diagram with numbered regions for identification'
+    : config.diagram.altText;
 
   const renderOverlayMarkers = (inModal = false) => {
     if (!showMarkers && mode === 'explore') return null;
@@ -326,27 +340,76 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
             <span className="font-extrabold uppercase tracking-wide text-amber-800">
               Identify {promptIdx + 1} of {config.identifyPrompts!.length}
             </span>
-            {currentPrompt.hintText && !identifyChecked && (
-              <span className="text-[11px] font-medium text-amber-900">
-                Hint: {currentPrompt.hintText}
-              </span>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {currentPrompt.nonVisualQuestion && (
+                <button
+                  type="button"
+                  aria-pressed={activeNonVisual}
+                  onClick={() => {
+                    setUseNonVisual((v) => !v);
+                    setIdentifyChecked(false);
+                    setPickedNonVisualIdx(null);
+                    setPickedHotspotId(null);
+                  }}
+                  className="rounded-lg border border-amber-400 bg-white px-2.5 py-1 text-[11px] font-bold text-amber-900 hover:bg-amber-100"
+                >
+                  {activeNonVisual ? 'Switch to diagram selection' : 'Text-only equivalent (nonvisual)'}
+                </button>
+              )}
+              {currentPrompt.hintText && !identifyChecked && !activeNonVisual && (
+                <span className="text-[11px] font-medium text-amber-900">
+                  Hint: {currentPrompt.hintText}
+                </span>
+              )}
+            </div>
           </div>
-          <p className="mt-1 text-sm font-bold text-slate-950">{currentPrompt.prompt}</p>
+
+          {activeNonVisual && currentPrompt.nonVisualQuestion ? (
+            <div data-nonvisual-question="true" className="mt-2">
+              <p className="text-sm font-bold text-slate-950">{currentPrompt.nonVisualQuestion.prompt}</p>
+              <div className="mt-2 grid gap-1.5 sm:grid-cols-2">
+                {currentPrompt.nonVisualQuestion.options.map((opt, oIdx) => {
+                  const isPicked = pickedNonVisualIdx === oIdx;
+                  return (
+                    <button
+                      key={oIdx}
+                      type="button"
+                      aria-pressed={isPicked}
+                      onClick={() => {
+                        setPickedNonVisualIdx(oIdx);
+                        setIdentifyChecked(false);
+                      }}
+                      className={`rounded-lg border px-3 py-2 text-left text-xs font-bold transition motion-reduce:transition-none ${
+                        isPicked
+                          ? 'border-amber-600 bg-amber-200/80 text-slate-950'
+                          : 'border-amber-200 bg-white text-slate-800 hover:bg-amber-100/60'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <p className="mt-1 text-sm font-bold text-slate-950">{currentPrompt.prompt}</p>
+          )}
+
           <div className="mt-2.5 flex flex-wrap items-center gap-2">
             <button
               type="button"
-              disabled={!pickedHotspotId}
+              disabled={activeNonVisual ? pickedNonVisualIdx === null : !pickedHotspotId}
               onClick={() => setIdentifyChecked(true)}
               className="rounded-lg bg-amber-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-amber-700 disabled:opacity-40"
             >
-              Check selection
+              {activeNonVisual ? 'Check answer' : 'Check selection'}
             </button>
             {identifyChecked && !isIdentifyCorrect && (
               <button
                 type="button"
                 onClick={() => {
                   setPickedHotspotId(null);
+                  setPickedNonVisualIdx(null);
                   setIdentifyChecked(false);
                 }}
                 className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
@@ -360,6 +423,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
                 onClick={() => {
                   setPromptIdx((i) => i + 1);
                   setPickedHotspotId(null);
+                  setPickedNonVisualIdx(null);
                   setIdentifyChecked(false);
                 }}
                 className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-teal-700"
@@ -386,7 +450,9 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
               )}
               <span>
                 {isIdentifyCorrect ? 'Correct! ' : 'Not quite. '}
-                {currentPrompt.explanation}
+                {activeNonVisual && currentPrompt.nonVisualQuestion?.explanation
+                  ? currentPrompt.nonVisualQuestion.explanation
+                  : currentPrompt.explanation}
               </span>
             </div>
           )}
@@ -398,7 +464,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
         <div className="relative inline-block max-w-full overflow-hidden rounded-lg bg-white">
           <img
             src={resolvedSrc}
-            alt={config.diagram.altText}
+            alt={activeAltText}
             loading="eager"
             className="block max-h-[420px] w-auto max-w-full object-contain"
           />
@@ -414,7 +480,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
             Enlarge
           </button>
         </div>
-        {config.diagram.caption && (
+        {config.diagram.caption && !concealLabels && (
           <figcaption className="mt-1.5 text-[11px] text-slate-600">
             {config.diagram.caption}
           </figcaption>
@@ -621,7 +687,7 @@ export function DiagramHotspotsEngine({ config, lessonId }: DiagramHotspotsEngin
             <div className="relative inline-block max-w-full">
               <img
                 src={resolvedSrc}
-                alt={config.diagram.altText}
+                alt={activeAltText}
                 className="block max-h-[80vh] w-auto max-w-full object-contain"
               />
               {renderOverlayMarkers(true)}

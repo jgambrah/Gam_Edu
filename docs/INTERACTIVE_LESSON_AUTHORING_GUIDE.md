@@ -116,9 +116,9 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `xVar`, `axes`, `slid
     - `exceeds-numeric-limit`: mathematically valid results exceeding `±1e12` or `|exponent| > 100` (e.g. `10^50`) → displays `"Exceeds numeric limit"` (never mislabelled as mathematically undefined).
   - **Deferred in v1.0:** Parametric plotting `(x(t), y(t))` and continuous animation loops (e.g., Solar System orbital animation) are intentionally deferred.
 
-### E. `process-stepper` (Step 4B Preview — Cross-Subject Process & Mechanism Engine)
+### E. `process-stepper` (Step 4B — Production LIVE `1.0.0`)
 
-> **Production Gate Notice:** On the Step 4B feature branch, `process-stepper` has `implemented: true, engineVersion: "1.0.0", productionVersion: null`. Do **not** publish live CDN lessons using `process-stepper` until Step 4B is merged and verified in production.
+> **Production Status:** `process-stepper` is verified live in production (`implemented: true, engineVersion: "1.0.0", productionVersion: "1.0.0"`).
 
 Extra allowed top-level fields: `subjectTag`, `modelNote`, `mode`, `visualMode`, `sharedVisual`, `stages`, `sequenceChallenge`.
 
@@ -142,14 +142,16 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `mode`, `visualMode`,
 
 Extra allowed top-level fields: `subjectTag`, `modelNote`, `diagram`, `defaultMode`, `progressiveDisclosure`, `guidedOrder`, `hotspots`, `identifyPrompts`.
 
-- `diagram` *(required)*: `{ src, altText, caption? }` — approved **WebP or PNG** path only (validated by shared `visual-region.ts`; raw SVG markup, untrusted external URLs, `..` and `%2e`/`%2f` traversal are rejected).
+- `diagram` *(required)*: `{ src, altText, identifyAltText?, caption? }` — approved **WebP or PNG** path only (validated by shared `visual-region.ts`; raw SVG markup, untrusted external URLs, `..` and `%2e`/`%2f` traversal are rejected). In Identify mode before checking, `identifyAltText` (or a neutral unlabelled fallback) replaces `altText` and `caption` is hidden so answers never leak to screen readers or captions.
 - `hotspots` *(required, 2–12 items, unique IDs)*:
   - Point hotspot: `{ id, label, xPct, yPct, summary, ... }` (`0..100%` relative to the rendered image).
   - Rectangular hotspot: add `widthPct`, `heightPct` (`> 0`, `xPct + widthPct <= 100`, `yPct + heightPct <= 100`).
   - Optional pedagogy: `functionText`, `structureToFunction`, `equation` (≤ 180 chars), `commonMisconception`, `linkedHotspotIds` (max 6 valid non-self IDs), `relationshipExplanation`, `discoveryPrompt`.
 - `guidedOrder` *(optional)*: ordered array of hotspot IDs for `Prev Part` / `Next Part` guided tours.
 - `progressiveDisclosure` *(optional boolean)*: starts on a clean diagram so learners observe before revealing markers.
-- `identifyPrompts` *(optional, 0–6 items)*: `{ id, prompt, targetHotspotId, explanation, hintText? }`. Before checking, **all pin & list labels are concealed as `Region 1`, `Region 2`…** so answers never leak!
+- `identifyPrompts` *(optional, 0–6 items)*: `{ id, prompt, targetHotspotId, explanation, hintText?, nonVisualQuestion? }`.
+  - Before checking, **all pin & list labels are concealed as `Region 1`, `Region 2`…** and `caption`/`altText` are concealed so answers never leak.
+  - `nonVisualQuestion` *(optional, recommended for every Identify prompt)*: `{ prompt, options (2..4), correctIndex, explanation? }` — provides a genuinely equivalent conceptual text-only identification question toggleable for screen-reader and nonvisual learners.
 - **Deferred in v1.0:** Freeform polygon hitboxes, in-app diagram editing, 3D molecular viewers, and synchronised side-by-side diagram comparison.
 
 ---
