@@ -277,20 +277,29 @@ class Runtime {
 
     const parseOr = (): PValue => {
       let left = parseAnd();
-      while (peek()?.type === 'IDENT' && peek().value.toUpperCase() === 'OR') {
-        next();
+      while (
+        peek()?.type === 'IDENT' &&
+        ['OR', 'XOR', 'NOR'].includes(peek().value.toUpperCase())
+      ) {
+        const op = next().value.toUpperCase();
         const right = parseAnd();
-        left = Boolean(left) || Boolean(right);
+        if (op === 'OR') left = Boolean(left) || Boolean(right);
+        else if (op === 'XOR') left = Boolean(left) !== Boolean(right);
+        else if (op === 'NOR') left = !(Boolean(left) || Boolean(right));
       }
       return left;
     };
 
     const parseAnd = (): PValue => {
       let left = parseNot();
-      while (peek()?.type === 'IDENT' && peek().value.toUpperCase() === 'AND') {
-        next();
+      while (
+        peek()?.type === 'IDENT' &&
+        ['AND', 'NAND'].includes(peek().value.toUpperCase())
+      ) {
+        const op = next().value.toUpperCase();
         const right = parseNot();
-        left = Boolean(left) && Boolean(right);
+        if (op === 'AND') left = Boolean(left) && Boolean(right);
+        else if (op === 'NAND') left = !(Boolean(left) && Boolean(right));
       }
       return left;
     };

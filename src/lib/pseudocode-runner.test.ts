@@ -92,6 +92,21 @@ describe('Cambridge IGCSE 0478 Pseudocode Runner', () => {
     expect(res.output).toEqual(['20', 'IGCSE 9', '92', 'Ama:92']);
   });
 
+  it('supports BOOLEAN 0/1 inputs and XOR, NAND, NOR operators', () => {
+    const code = `
+      DECLARE A, B, Y : BOOLEAN
+      INPUT A
+      INPUT B
+      Y ← A XOR B
+      OUTPUT Y
+      OUTPUT A NAND B
+      OUTPUT A NOR B
+    `;
+    const res = runPseudocode(code, '0\n1');
+    expect(res.ok).toBe(true);
+    expect(res.output).toEqual(['TRUE', 'TRUE', 'FALSE']);
+  });
+
   it('guards against infinite loops and missing input cleanly', () => {
     const inf = runPseudocode('WHILE TRUE DO\n  OUTPUT "x"\nENDWHILE');
     expect(inf.ok).toBe(false);

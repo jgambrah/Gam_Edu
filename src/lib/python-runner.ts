@@ -637,6 +637,9 @@ onmessage = async (e) => {
     ns = py.globals.get('dict')();
     if (usesPlot) await py.runPythonAsync("import matplotlib\\nmatplotlib.use('Agg')\\nimport matplotlib.pyplot as plt\\nplt.close('all')\\nplt.show = lambda *a, **k: None", { globals: ns });
     py.runPython('import os, pygame\\npygame._event_calls = 0\\ntry:\\n    os.chdir(' + JSON.stringify(cwd || '/home/pyodide') + ')\\nexcept Exception:\\n    pass', { globals: ns });
+    if (strictInput) {
+      py.runPython('import sys\\ndef input(prompt=""):\\n    line = sys.stdin.readline()\\n    if line == "":\\n        raise EOFError("EOF when reading a line")\\n    return line.rstrip("\\r\\n")\\n', { globals: ns });
+    }
     try {
       await py.runPythonAsync(code, { globals: ns });
     } catch (runErr) {
