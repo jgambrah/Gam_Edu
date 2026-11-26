@@ -95,7 +95,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'graph-slider': {
     id: 'graph-slider',
     engineVersion: '1.0.0',
-    productionVersion: null,
+    productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Cross-subject dynamic graph, parameter slider, piecewise, step-line, and discovery engine (Step 4A).',

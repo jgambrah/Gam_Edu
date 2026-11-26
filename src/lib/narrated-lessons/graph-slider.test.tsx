@@ -256,16 +256,11 @@ describe('Step 4A Schema Validation, Production Compatibility & UI Integration',
   const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step4a-graph-slider-pilot.json');
   const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as NarratedLesson;
 
-  it('validates all 8 cross-subject pilot slides under dev validation and blocks them at production publish gate (productionVersion: null)', () => {
+  it('validates all 8 cross-subject pilot slides under strict production publish rules (graph-slider productionVersion: 1.0.0)', () => {
     expect(fixture.slides.length).toBe(8);
 
-    // Valid under dev-branch validation (allowDevOnlyEngines: true)
-    expect(() =>
-      assertValidLessonInteractives(fixture, { allowDevOnlyEngines: true }),
-    ).not.toThrow();
-
-    // MUST be blocked at production publish gate because graph-slider productionVersion is null
-    expect(() => assertValidLessonInteractives(fixture)).toThrow(/not yet deployed in production/i);
+    // Step 4A is verified live in production (8ab62ecc), so graph-slider 1.0.0 passes strict publish validation
+    expect(() => assertValidLessonInteractives(fixture)).not.toThrow();
   });
 
   it('rejects CSS/SVG injection in curve color, unknown fields, and invalid challenge references', () => {
@@ -329,7 +324,7 @@ describe('Step 4A Schema Validation, Production Compatibility & UI Integration',
     expect(screen.getByText(/Low-Data Summary/i)).toBeTruthy();
   });
 
-  it('validates all 8 previewStep4aExamples in docs/examples/interactive-lesson-examples.json and blocks them at production publish gate', () => {
+  it('validates all 8 previewStep4aExamples in docs/examples/interactive-lesson-examples.json under production publish rules', () => {
     const examplesPath = path.resolve(process.cwd(), 'docs/examples/interactive-lesson-examples.json');
     const parsed = JSON.parse(fs.readFileSync(examplesPath, 'utf8')) as {
       previewStep4aExamples: Record<string, unknown>;
@@ -338,17 +333,11 @@ describe('Step 4A Schema Validation, Production Compatibility & UI Integration',
     expect(entries.length).toBe(8);
 
     for (const [key, cfg] of entries) {
-      const devRes = validateSlideInteractiveConfig(cfg, {
-        requireImplemented: true,
-        requireProduction: false,
-      });
-      expect(devRes.ok, `Step 4A example "${key}" failed: ${devRes.errors.join('; ')}`).toBe(true);
-
       const prodRes = validateSlideInteractiveConfig(cfg, {
         requireImplemented: true,
         requireProduction: true,
       });
-      expect(prodRes.ok).toBe(false);
+      expect(prodRes.ok, `Step 4A example "${key}" failed: ${prodRes.errors.join('; ')}`).toBe(true);
     }
   });
 });
