@@ -50,6 +50,8 @@ import { TeacherPointerOverlay } from './TeacherPointerOverlay';
 import { PointerCueEditor } from './PointerCueEditor';
 import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
 import { InlineCodePlayground } from './InlineCodePlayground';
+import { BooleanIntroInteractive } from './BooleanIntroInteractive';
+import { resolveRestoredStepIndex } from '@/lib/narrated-lessons/progress-migration';
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -407,11 +409,13 @@ export function NarratedLessonPlayer({
       if (!raw) return;
       const saved = JSON.parse(raw) as {
         stepIdx?: number;
+        currentStepId?: string;
         itemProgress?: Record<string, ItemProgress>;
         lowDataMode?: boolean;
       };
-      if (typeof saved.stepIdx === 'number' && saved.stepIdx >= 0 && saved.stepIdx < steps.length) {
-        setStepIdx(saved.stepIdx);
+      const restoredIdx = resolveRestoredStepIndex(lesson.lessonId, steps, saved);
+      if (restoredIdx >= 0 && restoredIdx < steps.length) {
+        setStepIdx(restoredIdx);
       }
       if (saved.itemProgress) setItemProgress(saved.itemProgress);
       if (typeof saved.lowDataMode === 'boolean') setLowDataMode(saved.lowDataMode);
@@ -423,14 +427,15 @@ export function NarratedLessonPlayer({
   // Persist progress to localStorage (zero Firestore writes)
   useEffect(() => {
     try {
+      const currentStepId = steps[stepIdx]?.id;
       localStorage.setItem(
         STORAGE_KEY_PREFIX + lesson.lessonId,
-        JSON.stringify({ stepIdx, itemProgress, lowDataMode }),
+        JSON.stringify({ stepIdx, currentStepId, itemProgress, lowDataMode }),
       );
     } catch {
       // ignore storage errors
     }
-  }, [lesson.lessonId, stepIdx, itemProgress, lowDataMode]);
+  }, [lesson.lessonId, steps, stepIdx, itemProgress, lowDataMode]);
 
   const currentStep = steps[stepIdx];
   const currentAudioUrl = useMemo(() => {
@@ -1471,6 +1476,11 @@ export function NarratedLessonPlayer({
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Interactive introductory explorations (e.g. Boolean Logic 10A intro slides) */}
+            <div className="mt-3">
+              <BooleanIntroInteractive lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
             </div>
 
             {/* Collapsible Inline Runner (Pseudocode / Python / SQL) for Computer Science lessons */}
