@@ -36,6 +36,11 @@ const LazyBioSequenceLab = dynamic(
   { ssr: false, loading: DomainLoading },
 );
 
+const LazyAtomBondLab = dynamic(
+  () => import('./AtomBondLab').then((m) => m.AtomBondLab),
+  { ssr: false, loading: DomainLoading },
+);
+
 export interface ConstructionLabRouterProps {
   config: ConstructionLabInteractiveConfig;
   lessonId: string;
@@ -55,5 +60,7 @@ export function ConstructionLabRouter({ config, lessonId, slideId }: Constructio
       return <LazyElectricalCircuitLab config={config} />;
     case 'bio-sequence-builder':
       return <LazyBioSequenceLab config={config} />;
+    case 'atom-bond-builder':
+      return <LazyAtomBondLab config={config} />;
   }
 }

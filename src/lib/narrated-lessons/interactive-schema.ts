@@ -42,6 +42,14 @@ import type {
   DcComponentOption,
 } from '@/lib/construction-lab/dc-circuit-engine';
 import { BIO_SEQUENCE_LIMITS, type BioSequenceMode } from '@/lib/construction-lab/bio-sequence-engine';
+import type {
+  AtomBondMode,
+  AtomicRepresentation,
+  CovalentAtomNode,
+  CovalentBondDef,
+  OctetPolicy,
+  VseprShapeId,
+} from '@/lib/construction-lab/atom-bond-engine';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -114,11 +122,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.1.0',
+    engineVersion: '1.2.0',
     productionVersion: '1.1.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0 LIVE; atom-bond-builder 1.2.0 preview).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -237,11 +245,59 @@ export interface BioSequenceConstructionConfig extends ConstructionLabSharedFiel
   inheritanceAssumption?: string;
 }
 
+export interface AtomBondBuilderConstructionConfig extends ConstructionLabSharedFields {
+  labKind: 'atom-bond-builder';
+  mode: AtomBondMode;
+  curriculumLevel: 'introductory' | 'igcse' | 'as-a-level';
+  // atomic-structure
+  representation?: AtomicRepresentation;
+  targetElement?: string;
+  targetMassNumber?: number;
+  targetCharge?: number;
+  initialProtons?: number;
+  initialNeutrons?: number;
+  initialElectrons?: number;
+  lockNucleus?: boolean;
+  allowHypotheticalIsotope?: boolean;
+  // ionic-bonding
+  cationElement?: string;
+  anionElement?: string;
+  targetCationCount?: number;
+  targetAnionCount?: number;
+  targetCationCharge?: number;
+  targetAnionCharge?: number;
+  requireSimplestRatio?: boolean;
+  // covalent-bonding
+  formulaDisplay?: string;
+  netCharge?: number;
+  octetPolicy?: OctetPolicy;
+  atoms?: CovalentAtomNode[];
+  allowedBondOrders?: Array<1 | 2 | 3>;
+  allowDativeBonds?: boolean;
+  initialBonds?: CovalentBondDef[];
+  referenceBonds?: CovalentBondDef[];
+  expectedDativeCount?: number;
+  initialLonePairs?: Record<string, number>;
+  // molecular-geometry
+  moleculeFormula?: string;
+  centralElement?: string;
+  surroundingElements?: string[];
+  targetBondingDomains?: number;
+  targetLonePairs?: number;
+  targetElectronGeometry?: VseprShapeId;
+  targetMolecularShape?: VseprShapeId;
+  targetBondAngleLabel?: string;
+  checkPolarity?: boolean;
+  expectedPolar?: boolean;
+  bondOrdersDisplay?: Array<1 | 2 | 3>;
+}
+
 export type ConstructionLabInteractiveConfig =
   | BooleanCircuitConstructionConfig
   | EquationBalancerConstructionConfig
   | ElectricalCircuitConstructionConfig
-  | BioSequenceConstructionConfig;
+  | BioSequenceConstructionConfig
+  | AtomBondBuilderConstructionConfig;
 
 export type RuleOperator = 'AND' | 'OR' | 'NOT' | 'XOR';
 
