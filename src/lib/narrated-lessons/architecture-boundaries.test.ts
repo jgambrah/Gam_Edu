@@ -128,4 +128,23 @@ describe('GAM EDU Modular-Monolith Transitive Dependency Boundaries', () => {
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/BooleanIntroInteractive['"]\)/);
     expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/PointerCueEditor['"]\)/);
   });
+
+  it('ensures InteractiveEngineRegistry lazy-loads all interactive engines via next/dynamic', () => {
+    const registryPath = path.resolve(
+      REPO_ROOT,
+      'src/components/narrated-lessons/InteractiveEngineRegistry.tsx',
+    );
+    const src = fs.readFileSync(registryPath, 'utf8');
+    const forbiddenStaticImports = [
+      /^\s*import\s+[^;]*from\s+['"]\.\/InlineCodePlayground['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/BooleanCircuitLab['"]/m,
+      /^\s*import\s+[^;]*from\s+['"]\.\/RuleExplorerEngine['"]/m,
+    ];
+    for (const re of forbiddenStaticImports) {
+      expect(src).not.toMatch(re);
+    }
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/InlineCodePlayground['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/BooleanCircuitLab['"]\)/);
+    expect(src).toMatch(/dynamic\s*\(\s*\(\)\s*=>\s*import\(['"]\.\/RuleExplorerEngine['"]\)/);
+  });
 });

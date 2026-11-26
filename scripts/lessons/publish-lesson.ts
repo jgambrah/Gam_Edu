@@ -34,6 +34,7 @@ import {
   computeTtsCacheKey,
 } from '../../src/lib/narrated-lessons/pronunciation';
 import { assertSafeSvg } from '../../src/lib/narrated-lessons/svg-sanitizer';
+import { assertValidLessonInteractives } from '../../src/lib/narrated-lessons/interactive-schema';
 import {
   normalizeCambridgeLevel,
   normalizeClassLevel,
@@ -445,6 +446,7 @@ async function main() {
       assertSafeSvg(slide.visual.svgCode, `${lesson.lessonId}/${slide.id}`);
     }
   }
+  assertValidLessonInteractives(lesson);
   assertPronunciationCoverage(lesson.slides, lesson.pronunciationGuide ?? []);
   for (const slide of lesson.slides) {
     slide.narration.audioSource = slide.narration.audioSource ?? 'tts';

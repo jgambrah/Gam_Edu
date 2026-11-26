@@ -1,3 +1,5 @@
+import type { SlideInteractiveConfig } from './interactive-schema';
+
 export interface LessonMeta {
   title?: string;
   topic?: string;
@@ -114,6 +116,8 @@ export interface LessonSlide {
   timingMethod?: TimingMethod;
   audioHash?: string;
   cues?: PointerCue[];
+  /** Optional versioned interactive activity config(s) resolved via InteractiveEngineRegistry (Step 3). */
+  interactive?: SlideInteractiveConfig | SlideInteractiveConfig[];
 }
 
 export interface WrongFeedback {

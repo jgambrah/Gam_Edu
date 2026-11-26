@@ -49,6 +49,8 @@ import { lessonMediaUrl } from '@/lib/narrated-lessons/types';
 import type { LessonNotesPackage, LessonStage } from '@/lib/narrated-lessons/notes-types';
 import { TeacherPointerOverlay } from './TeacherPointerOverlay';
 import { LessonNotesAndQuestions } from './LessonNotesAndQuestions';
+import { InteractiveEngineRegistry } from './InteractiveEngineRegistry';
+import { normalizeSlideInteractives } from '@/lib/narrated-lessons/interactive-schema';
 import { resolveRestoredStepIndex } from '@/lib/narrated-lessons/progress-migration';
 import { sanitizeSvg } from '@/lib/narrated-lessons/svg-sanitizer';
 
@@ -1518,6 +1520,16 @@ export function NarratedLessonPlayer({
               </div>
             </div>
 
+            {/* Versioned JSON-driven Interactive Engine Registry (Step 3: lazy-loaded, cross-subject) */}
+            {currentStep.slide.interactive && (
+              <InteractiveEngineRegistry
+                lesson={lesson}
+                slide={currentStep.slide}
+                lowDataMode={lowDataMode}
+              />
+            )}
+
+            {/* Legacy backward-compatible mounts for existing published lessons without `slide.interactive` */}
             {/* Interactive introductory explorations (lazy-loaded only on Boolean Logic 10A intro slides) */}
             {lesson.lessonId === 'igcse-cs-boolean-logic-a' &&
               currentStep.slide.id.startsWith('intro') && (
@@ -1528,14 +1540,20 @@ export function NarratedLessonPlayer({
 
             {/* Interactive Boolean Logic Circuit Lab (lazy-loaded only on Chapter 10 formal gate slides) */}
             {lesson.lessonId.toLowerCase().includes('boolean-logic') &&
-              !currentStep.slide.id.startsWith('intro') && (
+              !currentStep.slide.id.startsWith('intro') &&
+              !normalizeSlideInteractives(currentStep.slide.interactive).some(
+                (i) => i.engine === 'construction-lab',
+              ) && (
                 <BooleanCircuitLab lessonId={lesson.lessonId} slideId={currentStep.slide.id} />
               )}
 
             {/* Collapsible Inline Runner (lazy-loaded only on Computer Science lessons) */}
-            {isComputerScienceEnrichmentLesson(lesson) && (
-              <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />
-            )}
+            {isComputerScienceEnrichmentLesson(lesson) &&
+              !normalizeSlideInteractives(currentStep.slide.interactive).some(
+                (i) => i.engine === 'code-playground',
+              ) && (
+                <InlineCodePlayground lesson={lesson} slideId={currentStep.slide.id} />
+              )}
 
             {/* Reviewer-Mode Pointer Cues Editor */}
             {reviewerMode && (
