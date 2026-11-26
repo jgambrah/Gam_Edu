@@ -53,6 +53,7 @@ import { InlineCodePlayground } from './InlineCodePlayground';
 import { BooleanIntroInteractive } from './BooleanIntroInteractive';
 import { BooleanCircuitLab } from './BooleanCircuitLab';
 import { resolveRestoredStepIndex } from '@/lib/narrated-lessons/progress-migration';
+import { sanitizeSvg } from '@/lib/narrated-lessons/svg-sanitizer';
 
 type PlayerStep =
   | { kind: 'intro'; id: string; label: string }
@@ -1291,7 +1292,7 @@ export function NarratedLessonPlayer({
                 {currentStep.slide.visual.type === 'svg' && currentStep.slide.visual.svgCode ? (
                   <div
                     className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
-                    dangerouslySetInnerHTML={{ __html: currentStep.slide.visual.svgCode }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeSvg(currentStep.slide.visual.svgCode) }}
                   />
                 ) : (
                   <img
@@ -2043,7 +2044,7 @@ export function NarratedLessonPlayer({
                 {currentStep.slide.visual.type === 'svg' && currentStep.slide.visual.svgCode ? (
                   <div
                     className="h-full w-full [&>svg]:h-full [&>svg]:w-full"
-                    dangerouslySetInnerHTML={{ __html: currentStep.slide.visual.svgCode }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeSvg(currentStep.slide.visual.svgCode) }}
                   />
                 ) : (
                   <img
@@ -2326,7 +2327,7 @@ function AssessmentCard({
               {diagSlide?.visual.svgCode && (
                 <div
                   className="pointer-events-none h-full w-full [&>svg]:h-full [&>svg]:w-full"
-                  dangerouslySetInnerHTML={{ __html: diagSlide.visual.svgCode }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeSvg(diagSlide.visual.svgCode) }}
                 />
               )}
               {item.hotspots.map((hs) => {

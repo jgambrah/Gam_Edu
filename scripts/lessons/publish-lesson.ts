@@ -33,6 +33,7 @@ import {
   buildTtsText,
   computeTtsCacheKey,
 } from '../../src/lib/narrated-lessons/pronunciation';
+import { assertSafeSvg } from '../../src/lib/narrated-lessons/svg-sanitizer';
 import {
   normalizeCambridgeLevel,
   normalizeClassLevel,
@@ -406,7 +407,44 @@ async function main() {
     throw new Error('Invalid lesson JSON: missing lessonId or slides.');
   }
 
-  // 1. Validate pronunciation coverage & compute ttsText + audioHash
+  // 1. Security & schema gates: recursive protected teacher-key scan, SVG security, duplicate slide IDs, pronunciation
+  const FORBIDDEN_TEACHER_KEYS = new Set([
+    'teacherreference',
+    'teacherpseudocode',
+    'gradingtests',
+    'solutionsql',
+    'teachersolutions',
+    'hiddentests',
+    'answerkey',
+    'modelsolution',
+    'rubricanswers',
+  ]);
+  const scanForbiddenKeys = (node: unknown, trail = 'root'): void => {
+    if (!node || typeof node !== 'object') return;
+    if (Array.isArray(node)) {
+      node.forEach((item, idx) => scanForbiddenKeys(item, `${trail}[${idx}]`));
+      return;
+    }
+    for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+      if (FORBIDDEN_TEACHER_KEYS.has(k.toLowerCase())) {
+        throw new Error(
+          `Security gate FAILED: protected teacher field "${trail}.${k}" must not be published in public lesson JSON.`,
+        );
+      }
+      scanForbiddenKeys(v, `${trail}.${k}`);
+    }
+  };
+  scanForbiddenKeys(lesson);
+  const seenSlideIds = new Set<string>();
+  for (const slide of lesson.slides) {
+    if (seenSlideIds.has(slide.id)) {
+      throw new Error(`Invalid lesson JSON: duplicate slide.id "${slide.id}".`);
+    }
+    seenSlideIds.add(slide.id);
+    if (slide.visual?.type === 'svg' && slide.visual.svgCode) {
+      assertSafeSvg(slide.visual.svgCode, `${lesson.lessonId}/${slide.id}`);
+    }
+  }
   assertPronunciationCoverage(lesson.slides, lesson.pronunciationGuide ?? []);
   for (const slide of lesson.slides) {
     slide.narration.audioSource = slide.narration.audioSource ?? 'tts';
