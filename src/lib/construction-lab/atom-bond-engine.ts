@@ -8,6 +8,12 @@ export * from './atom-bond-ionic';
 export * from './atom-bond-covalent';
 export * from './atom-bond-vsepr';
 
+export type AtomBondMode =
+  | 'atomic-structure'
+  | 'ionic-bonding'
+  | 'covalent-bonding'
+  | 'molecular-geometry';
+
 export const ATOM_BOND_LIMITS = {
   maxShellElementsZ: 20,
   maxSubshellElementsZ: 30,

@@ -340,7 +340,7 @@ describe('Step 4E Schema Validation, Version Gate (productionVersion 1.1.0 < 1.2
         electronsTransferred: 6,
       });
       computeMolecularPolarity('C', ['H', 'H', 'H', 'Cl'], 0);
-      validateSlideInteractiveConfig(fixture.slides[0].interactive, { allowDevOnlyEngines: true });
+      validateSlideInteractiveConfig(fixture.slides[0].interactive, { requireProduction: false });
     }
     const elapsedMs = performance.now() - start;
     const avgMs = elapsedMs / 1000;
