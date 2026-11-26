@@ -239,10 +239,18 @@ describe('Step 4D Domain 3: Biological Sequence & Inheritance Engine', () => {
 });
 
 describe('Step 4D Strict Schema Validation, Domain Version Gates & Legacy Compatibility', () => {
-  it('validates all 12 pilots under dev validation and blocks them at production publish gate (productionVersion: 1.0.0 < 1.1.0)', () => {
+  it('validates all 12 slides (13 pilots) under both dev and production publish validation (productionVersion: 1.1.0) while rejecting unsupported future versions (2.0.0)', () => {
     expect(fixture.slides.length).toBe(12);
     expect(() => assertValidLessonInteractives(fixture, { allowDevOnlyEngines: true })).not.toThrow();
-    expect(() => assertValidLessonInteractives(fixture)).toThrow(/exceeds productionVersion "1\.0\.0"/i);
+    expect(() => assertValidLessonInteractives(fixture)).not.toThrow();
+
+    const c01 = fixture.slides[0].interactive as EquationBalancerConstructionConfig;
+    const futureVersionAttempt = validateSlideInteractiveConfig(
+      { ...c01, minEngineVersion: '2.0.0' },
+      { requireImplemented: true, requireProduction: true },
+    );
+    expect(futureVersionAttempt.ok).toBe(false);
+    expect(futureVersionAttempt.errors.join(' ')).toMatch(/exceeds.*1\.1\.0/i);
   });
 
   it('prevents Step 4D domains from bypassing the version gate with minEngineVersion 1.0.0 while keeping legacy boolean-circuit valid', () => {

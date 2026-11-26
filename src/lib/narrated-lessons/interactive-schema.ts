@@ -115,7 +115,7 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'construction-lab': {
     id: 'construction-lab',
     engineVersion: '1.1.0',
-    productionVersion: '1.0.0',
+    productionVersion: '1.1.0',
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0).',
