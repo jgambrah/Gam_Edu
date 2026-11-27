@@ -48,6 +48,11 @@ const LazyDiagramHotspotsEngine = dynamic(
   { ssr: false, loading: RegistryLoading },
 );
 
+const LazyMathEvaluatorEngine = dynamic(
+  () => import('./MathEvaluatorEngine').then((m) => m.MathEvaluatorEngine),
+  { ssr: false, loading: RegistryLoading },
+);
+
 export interface InteractiveEngineRegistryProps {
   lesson: NarratedLesson;
   slide: LessonSlide;
@@ -166,6 +171,8 @@ function InteractiveItemRenderer({
       );
     case 'construction-lab':
       return <LazyConstructionLabRouter config={config} lessonId={lesson.lessonId} slideId={slideId} />;
+    case 'math-evaluator':
+      return <LazyMathEvaluatorEngine config={config} />;
     default: {
       const fallback = config as { title?: string; fallbackText?: string };
       return (

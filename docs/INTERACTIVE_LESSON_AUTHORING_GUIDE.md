@@ -26,6 +26,7 @@ All six engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/in
 | `process-stepper` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, `reactionMeta`, predictions & sequencing |
 | `diagram-hotspots` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject interactive WebP/PNG diagram, point/rect hotspots, structure-to-function links, progressive disclosure, Identify challenges & `nonVisualQuestion` |
 | `construction-lab` | **Production LIVE** | `1.3.0` | `1.3.0` | `1` | `"1.0.0"` (legacy `boolean-circuit`) · `"1.1.0"` (Step 4D) · `"1.2.0"` (`atom-bond-builder`) · `"1.3.0"` (`geometry-constructor`) | Legacy & declarative `boolean-circuit`, `equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, `atom-bond-builder`, and `geometry-constructor` (all Production LIVE) |
+| `math-evaluator` | **Preview Only (Step 5A)** | `1.0.0` | `null` (held closed) | `1` | `"1.0.0"` (Preview Only) | Bounded exact rational, polynomial, surd, domain, equation, interval, 7-component SI unit, significant-figure, and symbolic calculus evaluator |
 
 > **Version Distinction:** `engineVersion` is the version installed in the codebase; `productionVersion` is the highest version verified live on `https://gam-it-service.app` after manual Vercel promotion; `schemaVersion` is the JSON config schema format (`1`); `minEngineVersion` is the minimum engine version required by a specific slide activity.
 
@@ -38,7 +39,7 @@ Strict field allowlisting is enforced — **unknown keys are rejected**.
 | Field | Type | Required | Rules |
 | :--- | :--- | :---: | :--- |
 | `id` | `string` | **Yes** | `^[A-Za-z0-9_-]{2,64}$`. Must be **globally unique** across all slides in the lesson (including multiple activities on the same slide). |
-| `engine` | `string` | **Yes** | Must be one of the six implemented engine IDs: `rule-explorer`, `code-playground`, `construction-lab`, `graph-slider`, `process-stepper`, `diagram-hotspots`. |
+| `engine` | `string` | **Yes** | Must be one of the seven implemented engine IDs: `rule-explorer`, `code-playground`, `construction-lab`, `graph-slider`, `process-stepper`, `diagram-hotspots` (all Production LIVE), or `math-evaluator` (Step 5A Preview Only — blocked at production publish gate while `productionVersion: null`). |
 | `schemaVersion` | `number` | **Yes** | Must be `1`. |
 | `minEngineVersion` | `string` | No (Required `"1.1.0"` Step 4D, `"1.2.0"` Step 4E, `"1.3.0"` Step 4F Preview) | SemVer `MAJOR.MINOR.PATCH` (e.g. `"1.0.0"`, `"1.1.0"`, `"1.2.0"`, `"1.3.0"`). Rejected if higher than the engine's `productionVersion` (at publish time) or `engineVersion` (at runtime). |
 | `title` | `string` | **Yes** | At least 2 non-whitespace characters. Short student-facing heading. |
