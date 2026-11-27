@@ -42,3 +42,17 @@ GAM EDU is fundamentally a **comprehensive school management system** (administr
 - Do not delete legacy lesson files during unrelated security or performance changes.
 - Do not generate paid media (TTS/image generation) or deploy/push to production without explicit approval.
 - Run automated Vitest regression tests (security, dependency boundaries, interactive engines, progress migration) before every release.
+
+## 6. Permanent Interactive Foundation Roadmap (Approved Sequence)
+
+1. **Steps 1–4F (LIVE on `https://gam-it-service.app`):** Security hardening, selective lazy loading, `InteractiveEngineRegistry`, `code-playground` (`1.0.0`), `rule-explorer` (`1.0.0`), `graph-slider` (`1.0.0`), `process-stepper` (`1.0.0`), `diagram-hotspots` (`1.0.0`), and `construction-lab` (`1.3.0`: `boolean-circuit`, `equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, `atom-bond-builder`, `geometry-constructor`).
+2. **Step 5A.1 — Mathematical Answer Evaluator (`math-evaluator` `1.0.0`):** *Current Preview Stage (`productionVersion: null` until accepted & promoted).* Five discriminated modes (`numeric-quantity`, `algebraic-expression`, `equation-solution`, `inequality-interval`, `calculus-check`), exact `BigRat`/polynomial/surd/symbolic equivalence, unified 1D real domain certification, strict verification policies (`exact-only`, `exact-or-symbolic`, `allow-bounded-numeric`), exact SI units & precision.
+3. **Step 5A.2 — Mathematical Working and Reasoning Workspace *(Planned — Not Yet Implemented)*:** Extends `math-evaluator` (no redundant 8th engine family); student-friendly touch/keyboard mathematical keypad (Primary, JHS, SHS, IGCSE, AS/A Level layouts; no LaTeX required), step-by-step transformation verification (distinguishing equality, equivalence, implication, extraneous/eliminated solutions, and indeterminate steps), optional marking schemes (M/A/B marks, partial credit, ECF, no duplicate marks), Guided/Independent/Exam practice modes (formative client-side practice only; no gradebook writes), worked solution comparison; future handwriting/OCR recorded as deferred (no paid AI/OCR).
+4. **Step 5A.3 — Comprehensive Mathematical Reliability Verification *(Planned — Not Yet Implemented)*:** Large-scale reproducible oracle verification across supported classes, domain/undefined cases, alternative methods, false-acceptance/false-rejection analysis, indeterminate handling, accessibility, and real browser performance measurements (explicit supported/unsupported/deferred boundary disclosures).
+5. **Step 5B — Sorting and Classification (`sort-classify` `1.0.0`):** *Planned.*
+6. **Step 5C — Virtual Measuring Instruments (`construction-lab: measurement-lab`):** *Planned.*
+7. **Step 5D — Probability and Statistics (`construction-lab: data-stats-lab`):** *Planned.*
+8. **Step 5E — Remaining Geometry Capabilities (`geometry-constructor` extensions):** *Planned.*
+9. **Step 5F — Primary Number Manipulatives (`construction-lab: number-manipulative`):** *Planned.*
+10. **Step 5G — Bounded Physics Workbench (`construction-lab: physics-workbench`):** *Planned.*
+11. **Step 6 — Comprehensive Foundation Verification & Final Sign-Off:** *Planned.*

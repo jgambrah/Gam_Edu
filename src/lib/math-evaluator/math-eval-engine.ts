@@ -41,16 +41,20 @@ import {
   type BigRat,
 } from './math-eval-exact';
 import {
+  allRealsIntervalUnion,
   areExcludedSetsEqual,
   areIntervalUnionsEqual,
   exactRootEqual,
   exactRootToNumber,
-  extractOriginalDomain,
+  extractExpressionDomain,
+  intersectIntervalUnions,
+  isIntervalUnionSubset,
   parseEndpoint,
   parseExactRoot,
   parseExcludedValuesSet,
   parseIntervalOrInequality,
   splitEquation,
+  subtractPointFromUnion,
   testCandidateAgainstOriginalEquation,
   type EquationClass,
   type ExactInterval,
@@ -191,6 +195,71 @@ function parseExactNumberOrRat(raw: string, budget: EvalOpBudget): BigRat | null
   } catch {
     return null;
   }
+}
+
+function collectVarsInAst(node: EvalAstNode, out: Set<string>): void {
+  if (node.type === 'var') {
+    out.add(node.name);
+    return;
+  }
+  if (node.type === 'unary' || node.type === 'call') {
+    collectVarsInAst(node.arg, out);
+    return;
+  }
+  if (node.type === 'binary') {
+    collectVarsInAst(node.left, out);
+    collectVarsInAst(node.right, out);
+  }
+}
+
+/** Detects domain-sensitive constructs (variable denominators, negative powers, logs, sqrt, tan) in multivariate expressions. */
+function hasMultivariateDomainHazard(node: EvalAstNode, budget: EvalOpBudget): boolean {
+  const usesAnyVar = (n: EvalAstNode): boolean => {
+    if (n.type === 'var') return true;
+    if (n.type === 'unary' || n.type === 'call') return usesAnyVar(n.arg);
+    if (n.type === 'binary') return usesAnyVar(n.left) || usesAnyVar(n.right);
+    return false;
+  };
+  const walk = (n: EvalAstNode): boolean => {
+    budget.tick();
+    if (n.type === 'binary' && n.op === '/' && usesAnyVar(n.right)) return true;
+    if (n.type === 'binary' && n.op === '^' && usesAnyVar(n.left) && n.right.type === 'unary' && n.right.op === '-') return true;
+    if (n.type === 'call' && (n.name === 'ln' || n.name === 'log10' || n.name === 'sqrt' || n.name === 'tan') && usesAnyVar(n.arg)) return true;
+    if (n.type === 'unary' || n.type === 'call') return walk(n.arg);
+    if (n.type === 'binary') return walk(n.left) || walk(n.right);
+    return false;
+  };
+  return walk(node);
+}
+
+/** Builds the explicit author-assumed domain for a univariate algebraic spec. */
+function buildAssumedDomain(
+  spec: MathAlgebraicExpressionSpec,
+  variable: string,
+  budget: EvalOpBudget,
+): ExactInterval[] {
+  let dom = allRealsIntervalUnion();
+  const assumption = spec.domainRestrictions?.variableAssumptions?.[variable];
+  if (assumption === 'positive') {
+    dom = intersectIntervalUnions(dom, [
+      { low: { kind: 'rat', value: RAT_ZERO }, lowInclusive: false, high: { kind: 'pos-inf' }, highInclusive: false },
+    ]);
+  } else if (assumption === 'nonzero') {
+    dom = subtractPointFromUnion(dom, RAT_ZERO);
+  }
+  if (spec.domainRestrictions?.expectedDomainInterval) {
+    const iv = parseIntervalOrInequality(spec.domainRestrictions.expectedDomainInterval, variable);
+    dom = intersectIntervalUnions(dom, iv);
+  }
+  if (spec.domainRestrictions?.expectedExcluded && spec.domainRestrictions.expectedExcluded.length > 0) {
+    for (const ex of spec.domainRestrictions.expectedExcluded) {
+      const parsedEx = parseExactRoot(ex, budget);
+      if (parsedEx && parsedEx.kind === 'rat') {
+        dom = subtractPointFromUnion(dom, parsedEx.value);
+      }
+    }
+  }
+  return dom;
 }
 
 /** Verifies specifically that every ln(...) node referencing `variable` wraps `abs(...)` (not merely `abs()` elsewhere!). */
@@ -439,6 +508,51 @@ export function evaluateMathSubmission(
     if (spec.mode === 'algebraic-expression') {
       const lrnParsed = parseEvalExpr(submission.expression, { allowedVariables: spec.variables });
       const expParsed = parseEvalExpr(spec.expectedExpr, { allowedVariables: spec.variables });
+      const srcParsed = spec.sourceExpr
+        ? parseEvalExpr(spec.sourceExpr, { allowedVariables: spec.variables })
+        : null;
+
+      const usedVars = new Set<string>();
+      collectVarsInAst(lrnParsed.ast, usedVars);
+      collectVarsInAst(expParsed.ast, usedVars);
+      if (srcParsed) collectVarsInAst(srcParsed.ast, usedVars);
+      const activeVar = usedVars.size === 1 ? Array.from(usedVars)[0] : spec.variables.length === 1 ? spec.variables[0] : null;
+
+      // 0. Pre-check constant/univariate undefined expressions (e.g. 0/0, ln(-1)) & multivariate domain hazards
+      if (usedVars.size === 0) {
+        const natLrn = extractExpressionDomain(lrnParsed.ast, '__const', budget);
+        if (natLrn.domain.length === 0) {
+          return {
+            passed: false,
+            verdict: 'incorrect',
+            feedback: 'Your expression is undefined (for example, division by zero or invalid logarithm/root domain).',
+            opsUsed: budget.used,
+          };
+        }
+      } else if (usedVars.size > 1) {
+        if (
+          hasMultivariateDomainHazard(lrnParsed.ast, budget) ||
+          hasMultivariateDomainHazard(expParsed.ast, budget) ||
+          (srcParsed && hasMultivariateDomainHazard(srcParsed.ast, budget))
+        ) {
+          return {
+            passed: false,
+            verdict: 'unsupported-or-indeterminate',
+            feedback: 'Multivariate rational, logarithmic, or radical domain certification is unsupported.',
+            opsUsed: budget.used,
+          };
+        }
+      } else if (activeVar) {
+        const natLrnPre = extractExpressionDomain(lrnParsed.ast, activeVar, budget);
+        if (natLrnPre.certifiable && natLrnPre.domain.length === 0) {
+          return {
+            passed: false,
+            verdict: 'incorrect',
+            feedback: 'Your expression is undefined everywhere on the real numbers (check division by zero or invalid domain).',
+            opsUsed: budget.used,
+          };
+        }
+      }
 
       const posVars = new Set<string>();
       for (const [v, a] of Object.entries(spec.domainRestrictions?.variableAssumptions ?? {})) {
@@ -447,15 +561,24 @@ export function evaluateMathSubmission(
 
       // 1. Verify mathematical equivalence FIRST (before misconception checks!)
       const symResult = checkSymbolicEquivalence(lrnParsed.ast, expParsed.ast, budget, posVars);
+      const policy = spec.verificationPolicy ?? 'exact-or-symbolic';
       let matchedTier: 'exact-equivalent' | 'symbolic-domain-equivalent' | 'bounded-numeric-match' | null = null;
 
       if (symResult === 'exact') {
         matchedTier = 'exact-equivalent';
       } else if (symResult === 'symbolic') {
+        if (policy === 'exact-only') {
+          return {
+            passed: false,
+            verdict: 'unsupported-or-indeterminate',
+            feedback: 'This expression requires symbolic domain rules, which are disabled under the exact-only verification policy.',
+            opsUsed: budget.used,
+          };
+        }
         matchedTier = 'symbolic-domain-equivalent';
       } else if (symResult === 'unsupported') {
         // ONLY allow numerical sampling when explicitly authorised by `allow-bounded-numeric`!
-        if (spec.verificationPolicy === 'allow-bounded-numeric') {
+        if (policy === 'allow-bounded-numeric') {
           const numRes = checkBoundedNumericAgreement(lrnParsed.ast, expParsed.ast, spec.variables, budget, posVars);
           if (numRes.agreed) {
             matchedTier = 'bounded-numeric-match';
@@ -493,32 +616,48 @@ export function evaluateMathSubmission(
         };
       }
 
-      // 3. Domain certification (parsed exact sets & intervals — ZERO substring matching!)
-      if (spec.sourceExpr) {
-        if (spec.variables.length !== 1) {
-          // Unsupported multivariate denominator domain check
-          const srcAst = parseEvalExpr(spec.sourceExpr, { allowedVariables: spec.variables }).ast;
-          const hasDiv = (n: EvalAstNode): boolean =>
-            (n.type === 'binary' && n.op === '/') ||
-            (n.type === 'unary' && hasDiv(n.arg)) ||
-            (n.type === 'call' && hasDiv(n.arg)) ||
-            (n.type === 'binary' && (hasDiv(n.left) || hasDiv(n.right)));
-          if (hasDiv(srcAst)) {
+      // 3. Rigorous Domain Verification Model (compares source, expected, learner, and assumed domains!)
+      if (activeVar) {
+        const v = activeVar;
+        const natExp = extractExpressionDomain(expParsed.ast, v, budget);
+        const natLrn = extractExpressionDomain(lrnParsed.ast, v, budget);
+        const natSrc = srcParsed ? extractExpressionDomain(srcParsed.ast, v, budget) : null;
+
+        if (!natExp.certifiable || !natLrn.certifiable || (natSrc && !natSrc.certifiable)) {
+          return {
+            passed: false,
+            verdict: 'unsupported-or-indeterminate',
+            feedback: 'Domain equivalence could not be certified for this expression class.',
+            opsUsed: budget.used,
+          };
+        }
+
+        const assumpDom = buildAssumedDomain(spec, v, budget);
+
+        if (natSrc) {
+          // Simplification task: learner may broaden natural domain (e.g. (x^2-9)/(x-3) -> x+3),
+          // provided original restrictions are preserved when required, and MUST NOT introduce
+          // any new undefined points inside the required domain D_req = natSrc ∩ assumpDom!
+          const requiredDom = intersectIntervalUnions(natSrc.domain, assumpDom);
+          if (!isIntervalUnionSubset(requiredDom, natLrn.domain)) {
             return {
               passed: false,
-              verdict: 'unsupported-or-indeterminate',
-              feedback: 'Multivariate rational denominator domain certification is unsupported.',
+              verdict: 'incorrect',
+              feedback:
+                'Your expression introduces an additional undefined point (removable discontinuity or invalid domain restriction) within the required domain.',
               opsUsed: budget.used,
             };
           }
         } else {
-          const srcAst = parseEvalExpr(spec.sourceExpr, { allowedVariables: spec.variables }).ast;
-          const srcDom = extractOriginalDomain(srcAst, spec.variables[0], budget);
-          if (!srcDom.certifiable) {
+          // Pure expression equivalence task: effective domains under explicit assumptions MUST match!
+          const effExpDom = intersectIntervalUnions(natExp.domain, assumpDom);
+          const effLrnDom = intersectIntervalUnions(natLrn.domain, assumpDom);
+          if (!areIntervalUnionsEqual(effExpDom, effLrnDom)) {
             return {
               passed: false,
-              verdict: 'unsupported-or-indeterminate',
-              feedback: 'Domain equivalence could not be certified for this denominator class.',
+              verdict: 'incorrect',
+              feedback:
+                'These expressions agree algebraically where both are defined, but they do NOT have the same real domain (check denominators, logarithms, or roots).',
               opsUsed: budget.used,
             };
           }
@@ -755,6 +894,26 @@ export function evaluateMathSubmission(
         // Genuine symbolic comparison ONLY (NEVER numerical sampling claiming symbolic!)
         const sym = checkSymbolicEquivalence(derivedAst, lrnAst, budget);
         if (sym === 'exact' || sym === 'symbolic') {
+          // Verify derivative does not silently introduce or remove domain restrictions!
+          const natDerived = extractExpressionDomain(derivedAst, spec.variable, budget);
+          const natLrn = extractExpressionDomain(lrnAst, spec.variable, budget);
+          if (!natDerived.certifiable || !natLrn.certifiable) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'Derivative domain equivalence could not be certified for this expression class.',
+              opsUsed: budget.used,
+            };
+          }
+          if (!areIntervalUnionsEqual(natDerived.domain, natLrn.domain)) {
+            return {
+              passed: false,
+              verdict: 'incorrect',
+              feedback:
+                'Your derivative is algebraically similar where defined, but introduces or removes domain restrictions (check denominators, logs, or roots).',
+              opsUsed: budget.used,
+            };
+          }
           return {
             passed: true,
             verdict: sym === 'exact' ? 'exact-equivalent' : 'symbolic-domain-equivalent',
@@ -816,6 +975,27 @@ export function evaluateMathSubmission(
           passed: false,
           verdict: 'wrong-form',
           feedback: `Your antiderivative works for ${spec.variable} > 0, but write ln|${spec.variable}| (with absolute value bars inside ln) to cover all ${spec.variable} ≠ 0.`,
+          opsUsed: budget.used,
+        };
+      }
+
+      // Step 2b: Verify antiderivative does not silently introduce extraneous undefined points inside integrand's domain!
+      const natIntegrand = extractExpressionDomain(srcAst, spec.variable, budget);
+      const natAnti = extractExpressionDomain(lrnParsed.ast, spec.variable, budget);
+      if (!natIntegrand.certifiable || !natAnti.certifiable) {
+        return {
+          passed: false,
+          verdict: 'unsupported-or-indeterminate',
+          feedback: 'Antiderivative domain equivalence could not be certified for this expression class.',
+          opsUsed: budget.used,
+        };
+      }
+      if (natAnti.domain.length === 0 || !isIntervalUnionSubset(natIntegrand.domain, natAnti.domain)) {
+        return {
+          passed: false,
+          verdict: 'incorrect',
+          feedback:
+            'Your antiderivative introduces an undefined point or narrows the domain relative to the integrand.',
           opsUsed: budget.used,
         };
       }

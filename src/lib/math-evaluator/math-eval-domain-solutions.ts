@@ -178,6 +178,72 @@ export function areIntervalUnionsEqual(a: ExactInterval[], b: ExactInterval[]): 
   return true;
 }
 
+export function allRealsIntervalUnion(): ExactInterval[] {
+  return [{ low: { kind: 'neg-inf' }, lowInclusive: false, high: { kind: 'pos-inf' }, highInclusive: false }];
+}
+
+function intersectTwoIntervals(a: ExactInterval, b: ExactInterval): ExactInterval | null {
+  const lowCmp = cmpEndpoint(a.low, b.low);
+  let low: ExactEndpoint;
+  let lowInclusive: boolean;
+  if (lowCmp > 0) {
+    low = a.low;
+    lowInclusive = a.lowInclusive;
+  } else if (lowCmp < 0) {
+    low = b.low;
+    lowInclusive = b.lowInclusive;
+  } else {
+    low = a.low;
+    lowInclusive = a.lowInclusive && b.lowInclusive;
+  }
+
+  const highCmp = cmpEndpoint(a.high, b.high);
+  let high: ExactEndpoint;
+  let highInclusive: boolean;
+  if (highCmp < 0) {
+    high = a.high;
+    highInclusive = a.highInclusive;
+  } else if (highCmp > 0) {
+    high = b.high;
+    highInclusive = b.highInclusive;
+  } else {
+    high = a.high;
+    highInclusive = a.highInclusive && b.highInclusive;
+  }
+
+  const lh = cmpEndpoint(low, high);
+  if (lh > 0) return null;
+  if (lh === 0 && !(lowInclusive && highInclusive)) return null;
+  return { low, lowInclusive, high, highInclusive };
+}
+
+export function intersectIntervalUnions(a: ExactInterval[], b: ExactInterval[]): ExactInterval[] {
+  const na = normaliseIntervalUnion(a);
+  const nb = normaliseIntervalUnion(b);
+  const out: ExactInterval[] = [];
+  for (const ia of na) {
+    for (const ib of nb) {
+      const inter = intersectTwoIntervals(ia, ib);
+      if (inter) out.push(inter);
+    }
+  }
+  return normaliseIntervalUnion(out);
+}
+
+export function subtractPointFromUnion(union: ExactInterval[], pt: BigRat): ExactInterval[] {
+  const p: ExactEndpoint = { kind: 'rat', value: pt };
+  const complement: ExactInterval[] = [
+    { low: { kind: 'neg-inf' }, lowInclusive: false, high: p, highInclusive: false },
+    { low: p, lowInclusive: false, high: { kind: 'pos-inf' }, highInclusive: false },
+  ];
+  return intersectIntervalUnions(union, complement);
+}
+
+export function isIntervalUnionSubset(sub: ExactInterval[], sup: ExactInterval[]): boolean {
+  const nSub = normaliseIntervalUnion(sub);
+  return areIntervalUnionsEqual(intersectIntervalUnions(nSub, sup), nSub);
+}
+
 export function parseIntervalOrInequality(
   raw: string,
   variable: string,
@@ -300,6 +366,7 @@ export function areExcludedSetsEqual(a: BigRat[], b: BigRat[]): boolean {
 
 export interface ExtractedDomain {
   certifiable: boolean;
+  domain: ExactInterval[];
   excludedRats: BigRat[];
   restrictedInterval?: ExactInterval;
 }
@@ -363,61 +430,209 @@ export function solveUnivariatePolyExact(
   return { status: 'unsupported' };
 }
 
-/** Walks the ORIGINAL AST (preserving nested denominators like `1/(1/x)`) to extract domain restrictions. */
+/**
+ * Walks the ORIGINAL un-simplified AST (preserving nested denominators like `1/(1/x)`,
+ * removable discontinuities like `x^2/x`, and log/sqrt positivity domains like `ln(x(x-2))`
+ * and `ln(x^2)`) to compute the exact canonical 1D real natural domain `ExactInterval[]`.
+ *
+ * Sets `certifiable = false` whenever a denominator, negative power, log, or sqrt argument
+ * lies outside the supported univariate degree 0..2 rational-root / abs classes.
+ */
 export function extractOriginalDomain(node: EvalAstNode, variable: string, budget: EvalOpBudget): ExtractedDomain {
   const excluded: BigRat[] = [];
   let certifiable = true;
-  let restrictedInterval: ExactInterval | undefined;
+  let domain: ExactInterval[] = allRealsIntervalUnion();
 
-  const intersectLow = (low: BigRat, inclusive: boolean) => {
-    const next: ExactInterval = {
-      low: { kind: 'rat', value: low },
-      lowInclusive: inclusive,
-      high: { kind: 'pos-inf' },
-      highInclusive: false,
-    };
-    if (!restrictedInterval) {
-      restrictedInterval = next;
-    } else if (restrictedInterval.low.kind === 'rat') {
-      const c = ratCmp(low, restrictedInterval.low.value);
-      if (c > 0) {
-        restrictedInterval.low = { kind: 'rat', value: low };
-        restrictedInterval.lowInclusive = inclusive;
-      } else if (c === 0) {
-        restrictedInterval.lowInclusive = restrictedInterval.lowInclusive && inclusive;
+  const excludeZeroPoly = (poly: PolyMap) => {
+    const solved = solveUnivariatePolyExact(poly, variable);
+    if (solved.status === 'unsupported') {
+      certifiable = false;
+      return;
+    }
+    if (solved.status === 'identity') {
+      // Constant zero denominator (e.g. 0/0 or 1/(x-x)) -> undefined everywhere!
+      domain = [];
+      return;
+    }
+    for (const r of solved.roots) {
+      if (r.kind === 'rat') {
+        if (!excluded.some((e) => ratEq(e, r.value))) excluded.push(r.value);
+        domain = subtractPointFromUnion(domain, r.value);
+      } else {
+        certifiable = false;
       }
     }
+  };
+
+  const applyPositivityConstraint = (argNode: EvalAstNode, strict: boolean) => {
+    // Handle abs(u): sqrt(abs(u)) is always >= 0; ln(abs(u)) requires u != 0
+    if (argNode.type === 'call' && argNode.name === 'abs') {
+      if (!strict) return;
+      let innerRp = null;
+      try {
+        innerRp = astToRationalPoly(argNode.arg, budget);
+      } catch {
+        domain = [];
+        return;
+      }
+      if (!innerRp || innerRp.den.size !== 1 || !innerRp.den.has('')) {
+        certifiable = false;
+        return;
+      }
+      excludeZeroPoly(innerRp.num);
+      return;
+    }
+
+    let argRp = null;
+    try {
+      argRp = astToRationalPoly(argNode, budget);
+    } catch {
+      domain = [];
+      return;
+    }
+    if (!argRp || argRp.den.size !== 1 || !argRp.den.has('')) {
+      certifiable = false;
+      return;
+    }
+
+    // Normalise by positive/negative constant denominator sign
+    const denConst = argRp.den.get('')!;
+    const poly = new Map<string, BigRat>();
+    for (const [k, c] of argRp.num.entries()) {
+      poly.set(k, ratDiv(c, denConst));
+    }
+
+    // Ensure purely univariate in `variable`
+    for (const k of poly.keys()) {
+      if (!k) continue;
+      const parts = k.split('*');
+      if (parts.some((p) => !p.startsWith(`${variable}^`))) {
+        certifiable = false;
+        return;
+      }
+    }
+
+    const deg = polyDegree(poly);
+    const c0 = poly.get('') ?? RAT_ZERO;
+    const c1 = poly.get(`${variable}^1`) ?? RAT_ZERO;
+    const c2 = poly.get(`${variable}^2`) ?? RAT_ZERO;
+
+    if (deg === 0) {
+      const ok = strict ? c0.n > B0 : c0.n >= B0;
+      if (!ok) domain = [];
+      return;
+    }
+
+    if (deg === 1) {
+      const root = ratDiv(ratNeg(c0), c1);
+      const ep: ExactEndpoint = { kind: 'rat', value: root };
+      const iv: ExactInterval =
+        c1.n > B0
+          ? { low: ep, lowInclusive: !strict, high: { kind: 'pos-inf' }, highInclusive: false }
+          : { low: { kind: 'neg-inf' }, lowInclusive: false, high: ep, highInclusive: !strict };
+      domain = intersectIntervalUnions(domain, [iv]);
+      return;
+    }
+
+    if (deg === 2) {
+      const solved = solveUnivariatePolyExact(poly, variable);
+      if (solved.status !== 'finite') {
+        certifiable = false;
+        return;
+      }
+      if (solved.roots.some((r) => r.kind !== 'rat')) {
+        certifiable = false;
+        return;
+      }
+      const ratRoots = (solved.roots as Array<{ kind: 'rat'; value: BigRat }>)
+        .map((r) => r.value)
+        .sort((a, b) => ratCmp(a, b));
+
+      if (ratRoots.length === 0) {
+        // No real roots -> always same sign as c2
+        if (c2.n < B0) domain = [];
+        return;
+      }
+      if (ratRoots.length === 1) {
+        // Double root r (e.g. x^2 -> r = 0):
+        const r = ratRoots[0];
+        if (c2.n > B0) {
+          if (strict) {
+            if (!excluded.some((e) => ratEq(e, r))) excluded.push(r);
+            domain = subtractPointFromUnion(domain, r);
+          }
+          // non-strict (e.g. sqrt(x^2)): valid for all R
+        } else {
+          if (strict) {
+            domain = [];
+          } else {
+            const ep: ExactEndpoint = { kind: 'rat', value: r };
+            domain = intersectIntervalUnions(domain, [{ low: ep, lowInclusive: true, high: ep, highInclusive: true }]);
+          }
+        }
+        return;
+      }
+      // Two distinct rational roots r1 < r2 (e.g. x(x-2) -> r1=0, r2=2)
+      const ep1: ExactEndpoint = { kind: 'rat', value: ratRoots[0] };
+      const ep2: ExactEndpoint = { kind: 'rat', value: ratRoots[1] };
+      const posSet: ExactInterval[] =
+        c2.n > B0
+          ? [
+              { low: { kind: 'neg-inf' }, lowInclusive: false, high: ep1, highInclusive: !strict },
+              { low: ep2, lowInclusive: !strict, high: { kind: 'pos-inf' }, highInclusive: false },
+            ]
+          : [{ low: ep1, lowInclusive: !strict, high: ep2, highInclusive: !strict }];
+      domain = intersectIntervalUnions(domain, posSet);
+      return;
+    }
+
+    certifiable = false;
   };
 
   const walk = (n: EvalAstNode) => {
     budget.tick();
     if (n.type === 'binary' && n.op === '/') {
-      const denRp = astToRationalPoly(n.right, budget);
-      if (!denRp) {
-        certifiable = false;
+      if (n.right.type === 'call' && n.right.name === 'abs') {
+        try {
+          const innerRp = astToRationalPoly(n.right.arg, budget);
+          if (!innerRp || innerRp.den.size !== 1 || !innerRp.den.has('')) certifiable = false;
+          else excludeZeroPoly(innerRp.num);
+        } catch {
+          domain = [];
+        }
       } else {
-        const solved = solveUnivariatePolyExact(denRp.num, variable);
-        if (solved.status === 'unsupported') certifiable = false;
-        else if (solved.status === 'finite') {
-          for (const r of solved.roots) {
-            if (r.kind === 'rat' && !excluded.some((e) => ratEq(e, r.value))) {
-              excluded.push(r.value);
-            } else if (r.kind === 'surd') {
-              certifiable = false;
-            }
-          }
+        try {
+          const denRp = astToRationalPoly(n.right, budget);
+          if (!denRp) certifiable = false;
+          else excludeZeroPoly(denRp.num);
+        } catch {
+          // Division by zero inside denominator itself (e.g. 1/(1/0)) -> undefined
+          domain = [];
         }
       }
     }
-    if (n.type === 'call' && (n.name === 'ln' || n.name === 'log10' || n.name === 'sqrt')) {
-      const argRp = astToRationalPoly(n.arg, budget);
-      if (argRp && polyDegree(argRp.num) === 1 && argRp.den.size === 1 && argRp.den.has('')) {
-        const c1 = argRp.num.get(`${variable}^1`) ?? RAT_ZERO;
-        const c0 = argRp.num.get('') ?? RAT_ZERO;
-        if (c1.n > B0) {
-          intersectLow(ratDiv(ratNeg(c0), c1), n.name === 'sqrt');
+    if (n.type === 'binary' && n.op === '^') {
+      // Negative integer exponent u^(-k) has same domain restriction u != 0 as 1/u^k
+      try {
+        const expRp = astToRationalPoly(n.right, budget);
+        if (expRp && expRp.den.size === 1 && expRp.den.has('') && expRp.num.size === 1 && expRp.num.has('')) {
+          const expRat = ratDiv(expRp.num.get('')!, expRp.den.get('')!);
+          if (expRat.d === B1 && expRat.n < B0) {
+            const baseRp = astToRationalPoly(n.left, budget);
+            if (!baseRp) certifiable = false;
+            else excludeZeroPoly(baseRp.num);
+          }
         }
+      } catch {
+        domain = [];
       }
+    }
+    if (n.type === 'call' && (n.name === 'ln' || n.name === 'log10' || n.name === 'sqrt')) {
+      applyPositivityConstraint(n.arg, n.name !== 'sqrt');
+    }
+    if (n.type === 'call' && n.name === 'tan') {
+      // tan(u) has infinitely many periodic poles -> not representable as a finite interval union
+      certifiable = false;
     }
     if (n.type === 'unary') walk(n.arg);
     else if (n.type === 'call') walk(n.arg);
@@ -428,8 +643,15 @@ export function extractOriginalDomain(node: EvalAstNode, variable: string, budge
   };
 
   walk(node);
-  return { certifiable, excludedRats: excluded, restrictedInterval };
+  return {
+    certifiable,
+    domain: normaliseIntervalUnion(domain),
+    excludedRats: excluded,
+    restrictedInterval: domain.length === 1 ? domain[0] : undefined,
+  };
 }
+
+export const extractExpressionDomain = extractOriginalDomain;
 
 /* ========================================================================== */
 /* 4. INDEPENDENT COMPLETE EQUATION CERTIFICATION (ALL 5 CLASSES!)            */

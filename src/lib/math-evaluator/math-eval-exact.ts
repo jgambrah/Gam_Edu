@@ -594,6 +594,19 @@ function tryCombineLogSum(
   if (node.type === 'binary' && node.op === '*' && node.left.type === 'number' && Number.isInteger(node.left.value)) {
     const k = node.left.value;
     if (k < 1 || k > 4) return null;
+    // Even power of ln(abs(u)): k*ln(|u|) === ln(|u|^k) === ln(u^k) on u != 0
+    if (
+      k % 2 === 0 &&
+      node.right.type === 'call' &&
+      node.right.name === fnName &&
+      node.right.arg.type === 'call' &&
+      node.right.arg.name === 'abs'
+    ) {
+      const innerAbs = astToRationalPoly(node.right.arg.arg, budget);
+      if (innerAbs) {
+        return { num: polyPow(innerAbs.num, k, budget), den: polyPow(innerAbs.den, k, budget) };
+      }
+    }
     const inner = tryCombineLogSum(node.right, fnName, budget);
     if (!inner) return null;
     return { num: polyPow(inner.num, k, budget), den: polyPow(inner.den, k, budget) };

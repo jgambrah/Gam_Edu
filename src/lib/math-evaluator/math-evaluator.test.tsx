@@ -70,9 +70,24 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
   });
 
   describe('2. Defect #1: Genuine Symbolic Equivalence vs Bounded Numeric vs Unsupported', () => {
-    it('proves log product rule and Pythagorean identity symbolically (zero numerical sampling)', () => {
-      const logRes = evaluateMathSubmission(
+    it('proves log product rule under explicit shared domain (x > 2) and Pythagorean identity symbolically (zero numerical sampling)', () => {
+      // Documented Step 5A.1 correction: ln(x)+ln(x-2) has natural domain (2, inf) whereas ln(x(x-2)) has (-inf,0) U (2,inf).
+      // Without x > 2 they are NOT equivalent; WITH explicit shared domain x > 2 they ARE symbolic-domain-equivalent.
+      const logUnrestricted = evaluateMathSubmission(
         { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'ln(x*(x - 2))', verificationPolicy: 'exact-or-symbolic' },
+        { expression: 'ln(x) + ln(x - 2)' },
+      );
+      expect(logUnrestricted.passed).toBe(false);
+      expect(logUnrestricted.verdict).toBe('incorrect');
+
+      const logRes = evaluateMathSubmission(
+        {
+          mode: 'algebraic-expression',
+          variables: ['x'],
+          expectedExpr: 'ln(x*(x - 2))',
+          domainRestrictions: { expectedDomainInterval: 'x > 2' },
+          verificationPolicy: 'exact-or-symbolic',
+        },
         { expression: 'ln(x) + ln(x - 2)' },
       );
       expect(logRes.passed).toBe(true);
@@ -282,10 +297,16 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
         ).passed,
       ).toBe(true);
 
-      // Unsimplified algebraic fraction rejected!
+      // Unsimplified algebraic fraction rejected on simplification task (with sourceExpr preserving x != 3)!
       expect(
         evaluateMathSubmission(
-          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x + 3', requiredForm: 'simplified-fraction' },
+          {
+            mode: 'algebraic-expression',
+            variables: ['x'],
+            sourceExpr: '(x^2 - 9)/(x - 3)',
+            expectedExpr: 'x + 3',
+            requiredForm: 'simplified-fraction',
+          },
           { expression: '(x^2 - 9)/(x - 3)' },
         ).verdict,
       ).toBe('wrong-form');
@@ -536,6 +557,210 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
       expect(inspectRawNumericPrecision('30e7')).toMatchObject({ isScientific: true, isNormalisedScientific: false });
       expect(inspectRawNumericPrecision('1200').ambiguousTrailingZeros).toBe(true);
       expect(inspectRawNumericPrecision('0.00').sigFigs).toBe(2);
+    });
+  });
+
+  describe('10. Step 5A.1 Mandatory Independent Domain, Verification Policy & Calculus Domain Suite', () => {
+    it('rejects x vs x²/x, 1 vs x/x, x+3 vs (x²-9)/(x-3), and 1/(1/x) vs x over all reals, and accepts them under explicit exclusion assumptions', () => {
+      // 1. x vs x^2/x over all R -> REJECTED
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x' },
+          { expression: 'x^2 / x' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // 2. 1 vs x/x over all R -> REJECTED
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '1' },
+          { expression: 'x / x' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // 3. Same expressions under explicit x != 0 assumption -> ACCEPTED
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'algebraic-expression',
+            variables: ['x'],
+            expectedExpr: 'x',
+            domainRestrictions: { variableAssumptions: { x: 'nonzero' } },
+          },
+          { expression: 'x^2 / x' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'algebraic-expression',
+            variables: ['x'],
+            expectedExpr: '1',
+            domainRestrictions: { expectedExcluded: ['0'] },
+          },
+          { expression: 'x / x' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+
+      // 4. x + 3 vs (x^2 - 9)/(x - 3) over all R -> REJECTED
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x + 3' },
+          { expression: '(x^2 - 9)/(x - 3)' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // 5. Simplification of (x^2 - 9)/(x - 3) with x != 3 preserved -> ACCEPTED, extra exclusion rejected, extra removable discontinuity rejected
+      const simpSpec: MathAlgebraicExpressionSpec = {
+        mode: 'algebraic-expression',
+        variables: ['x'],
+        sourceExpr: '(x^2 - 9)/(x - 3)',
+        expectedExpr: 'x + 3',
+        domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['3'] },
+      };
+      expect(evaluateMathSubmission(simpSpec, { expression: 'x + 3', domainInput: 'x != 3' }).passed).toBe(true);
+      expect(evaluateMathSubmission(simpSpec, { expression: 'x + 3', domainInput: 'x != 3, x != 0' }).passed).toBe(false);
+      // Learner introduces an additional removable discontinuity at x = 0 inside D_req = R \ {3}
+      expect(
+        evaluateMathSubmission(simpSpec, { expression: '(x + 3)*x/x', domainInput: 'x != 3' }),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // 6. 1/(1/x) vs x over all R -> REJECTED; under x != 0 -> ACCEPTED
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x' },
+          { expression: '1/(1/x)' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'algebraic-expression',
+            variables: ['x'],
+            expectedExpr: 'x',
+            domainRestrictions: { variableAssumptions: { x: 'nonzero' } },
+          },
+          { expression: '1/(1/x)' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+    });
+
+    it('enforces exact logarithmic, radical, constant-undefined (0/0), and multivariate denominator domain rules', () => {
+      // ln(x^2) vs 2*ln(x) over all R -> REJECTED (domains R\{0} vs (0,inf))
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'ln(x^2)' },
+          { expression: '2*ln(x)' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // ln(x^2) vs 2*ln|x| on x != 0 -> ACCEPTED (both have domain R\{0} and ln(|x|^2) = ln(x^2))
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'algebraic-expression',
+            variables: ['x'],
+            expectedExpr: 'ln(x^2)',
+            domainRestrictions: { variableAssumptions: { x: 'nonzero' } },
+          },
+          { expression: '2*ln(abs(x))' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'symbolic-domain-equivalent' });
+
+      // sqrt(x^2) vs x over all R -> REJECTED; sqrt(x^2) vs abs(x) -> ACCEPTED
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'sqrt(x^2)' },
+          { expression: 'x' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'sqrt(x^2)' },
+          { expression: 'abs(x)' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'symbolic-domain-equivalent' });
+
+      // Undefined constant 0/0 -> REJECTED (never passed!)
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '1' },
+          { expression: '0/0' },
+        ).passed,
+      ).toBe(false);
+      expect(
+        evaluateMathSubmission(
+          { mode: 'numeric-quantity', expectedValue: '1' },
+          { expression: '0/0' },
+        ).passed,
+      ).toBe(false);
+
+      // Unsupported multivariate denominator domain -> unsupported-or-indeterminate (even without sourceExpr!)
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x', 'y'], expectedExpr: 'x + y' },
+          { expression: '(x^2 - y^2)/(x - y)' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'unsupported-or-indeterminate' });
+    });
+
+    it('enforces verificationPolicy (exact-only vs exact-or-symbolic vs allow-bounded-numeric) and calculus domain preservation', () => {
+      // exact-only MUST NOT accept symbolic-domain-equivalent trig/log identities
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '1', verificationPolicy: 'exact-only' },
+          { expression: 'sin(x)^2 + cos(x)^2' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'unsupported-or-indeterminate' });
+
+      // Calculus derivative: d/dx(x^2) = 2x; learner writing 2x^2/x introduces undefined point at x=0 -> REJECTED
+      expect(
+        evaluateMathSubmission(
+          { mode: 'calculus-check', variable: 'x', calculusKind: 'derivative', sourceExpr: 'x^2', expectedExpr: '2x' },
+          { expression: '2x^2 / x' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // Calculus antiderivative: integral of 2x is x^2 + C; learner writing x^2 + x/x - 1 + C narrows domain -> REJECTED
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'antiderivative',
+            sourceExpr: '2x',
+            expectedExpr: 'x^2 + C',
+            requireConstantOfIntegration: true,
+          },
+          { expression: 'x^2 + x/x - 1 + C' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // Generated independent parametric domain family: k in [-5..5]
+      for (let k = -5; k <= 5; k++) {
+        const factor = k === 0 ? 'x' : k > 0 ? `(x - ${k})` : `(x + ${-k})`;
+        const withHole = `((x + 1)*${factor})/${factor}`;
+        // Over all reals: MUST FAIL (removable discontinuity at x = k)
+        expect(
+          evaluateMathSubmission(
+            { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x + 1' },
+            { expression: withHole },
+          ).passed,
+        ).toBe(false);
+        // Under explicit x != k: MUST PASS
+        expect(
+          evaluateMathSubmission(
+            {
+              mode: 'algebraic-expression',
+              variables: ['x'],
+              expectedExpr: 'x + 1',
+              domainRestrictions: { expectedExcluded: [String(k)] },
+            },
+            { expression: withHole },
+          ),
+        ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+      }
     });
   });
 });
