@@ -407,12 +407,24 @@ export function solveUnivariatePolyExact(
     }
     // Check if disc = p/q has exact integer sqrt(p*q)/q -> exact rational or exact quadratic surd!
     const prod = Number(disc.n * disc.d);
-    if (!Number.isSafeInteger(prod) || prod > MATH_EVAL_LIMITS.maxSurdRadicand) {
+    if (!Number.isSafeInteger(prod)) {
+      return { status: 'unsupported' };
+    }
+    const negBOver2A = ratDiv(ratNeg(c1), twoA);
+    const exactIntRoot = Math.round(Math.sqrt(prod));
+    if (exactIntRoot * exactIntRoot === prod) {
+      // Exact rational roots (perfect square discriminant — not a surd, no maxSurdRadicand needed!)
+      const sqrtCoeff = makeRat(BigInt(exactIntRoot), disc.d);
+      const halfDelta = ratDiv(sqrtCoeff, twoA);
+      const r1 = makeRat(negBOver2A.n * halfDelta.d - halfDelta.n * negBOver2A.d, negBOver2A.d * halfDelta.d);
+      const r2 = makeRat(negBOver2A.n * halfDelta.d + halfDelta.n * negBOver2A.d, negBOver2A.d * halfDelta.d);
+      return { status: 'finite', roots: [{ kind: 'rat', value: r1 }, { kind: 'rat', value: r2 }] };
+    }
+    if (prod > MATH_EVAL_LIMITS.maxSurdRadicand) {
       return { status: 'unsupported' };
     }
     const { outside, inside } = extractSquareFactor(prod);
     const sqrtCoeff = makeRat(BigInt(outside), disc.d);
-    const negBOver2A = ratDiv(ratNeg(c1), twoA);
     const surdOver2A = ratDiv(sqrtCoeff, twoA);
     if (inside === 1) {
       const r1 = makeRat(negBOver2A.n * surdOver2A.d - surdOver2A.n * negBOver2A.d, negBOver2A.d * surdOver2A.d);

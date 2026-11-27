@@ -224,11 +224,11 @@ export interface MathMultiStepWorkingSpec {
   keypadProfile?: 'primary' | 'lower-secondary' | 'igcse' | 'as-a-level';
   domainRestrictions?: MathDomainRestrictions;
   finalGoal:
-    | MathNumericQuantitySpec
-    | MathAlgebraicExpressionSpec
-    | MathEquationSolutionSpec
-    | MathInequalityIntervalSpec
-    | MathCalculusCheckSpec;
+  | MathNumericQuantitySpec
+  | MathAlgebraicExpressionSpec
+  | MathEquationSolutionSpec
+  | MathInequalityIntervalSpec
+  | MathCalculusCheckSpec;
   maxWorkingSteps?: number;
   markingScheme?: MarkingSchemeDef;
   workedSolutions: WorkedSolutionDef[];
@@ -274,19 +274,19 @@ export function evaluateWorkingWorkspace(
 
   const marking = spec.markingScheme
     ? evaluateMarkingScheme(
-        spec.markingScheme,
-        {
-          problemKind: spec.problemKind,
-          variables: spec.variables,
-          initialStatement: spec.initialStatement,
-          initialUnit: spec.initialUnit,
-          domainRestrictions: spec.domainRestrictions,
-          finalGoal: spec.finalGoal,
-        },
-        learnerSteps,
-        chain,
-        cumulativeBudget,
-      )
+      spec.markingScheme,
+      {
+        problemKind: spec.problemKind,
+        variables: spec.variables,
+        initialStatement: spec.initialStatement,
+        initialUnit: spec.initialUnit,
+        domainRestrictions: spec.domainRestrictions,
+        finalGoal: spec.finalGoal,
+      },
+      learnerSteps,
+      chain,
+      cumulativeBudget,
+    )
     : null;
 
   return {
@@ -414,8 +414,9 @@ function hasAbsInsideLnOfVar(node: EvalAstNode, variable: string): boolean {
 export function evaluateMathSubmission(
   spec: MathEvaluatorSpec,
   submission: MathEvalSubmission,
+  sharedBudget?: EvalOpBudget,
 ): MathEvalResult {
-  const budget = new EvalOpBudget();
+  const budget = sharedBudget ?? new EvalOpBudget();
 
   try {
     /* -------------------- MODE 1: NUMERIC QUANTITY -------------------- */

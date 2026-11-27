@@ -38,6 +38,7 @@ import {
   areIntervalUnionsEqual,
   deriveCompleteEquationSolutions,
   exactRootEqual,
+  exactRootToNumber,
   extractExpressionDomain,
   intersectIntervalUnions,
   isIntervalUnionSubset,
@@ -46,6 +47,7 @@ import {
   parseExcludedValuesSet,
   parseIntervalOrInequality,
   splitEquation,
+  testCandidateAgainstOriginalEquation,
   type EquationClass,
   type ExactInterval,
   type ExactRoot,
@@ -85,11 +87,27 @@ export type StepOperationKind =
   | 'state-domain'
   | 'conclude';
 
+export type CandidateRejectionReason = 'substitution-mismatch' | 'domain-excluded' | 'negative-rhs';
+
+export interface CandidateCheckInput {
+  candidate: string;
+  verdict: 'valid' | 'extraneous';
+  reason?: CandidateRejectionReason;
+  evidenceExpr?: string;
+}
+
+export interface VerifiedRejectedCandidate {
+  candidate: string;
+  hasVerifiedEvidence: boolean;
+  failureKind: 'domain-excluded' | 'substitution-mismatch';
+}
+
 export interface WorkingStepInput {
   math: string;
   operation?: StepOperationKind;
   domainNote?: string;
   rejectedExtraneous?: string[];
+  candidateChecks?: CandidateCheckInput[];
   unit?: string;
   justification?: string;
 }
@@ -97,11 +115,13 @@ export interface WorkingStepInput {
 export interface StepVerificationItem {
   stepIndex: number; // 0-based index into learnerSteps
   rawMath: string;
+  prevMath?: string;
   operation?: StepOperationKind;
   status: StepTransitionStatus;
   feedback: string;
   introducedExtraneous?: string[];
   lostSolutions?: string[];
+  verifiedRejectedExtraneous?: VerifiedRejectedCandidate[];
 }
 
 export interface WorkingChainResult {
@@ -333,8 +353,9 @@ export function certifyInequalityStepIntervals(
   return null;
 }
 
-/** Syntactic detector for completed-square form: `a*(x + p)^2 + q` or `(x + p)^2 = k` or `(x + p)^2 + q = 0`. */
-export function isCompletedSquareForm(raw: string, variable: string): boolean {
+/** Syntactic detector for completed-square form: `a*(x + p)^2 + q` or `(x + p)^2 = k` or `(x + p)^2 + q = 0`. Consumes shared cumulative budget. */
+export function isCompletedSquareForm(raw: string, variable: string, sharedBudget?: EvalOpBudget): boolean {
+  const budget = sharedBudget ?? new EvalOpBudget();
   const norm = raw.trim().replace(/[\u2212\u2013]/g, '-');
   const checkExpr = (exprStr: string): boolean => {
     try {
@@ -343,10 +364,11 @@ export function isCompletedSquareForm(raw: string, variable: string): boolean {
       let hasBareLinearTerm = false;
 
       const isLinearInVar = (n: EvalAstNode): boolean => {
+        budget.tick();
         const v = new Set<string>();
         collectVarsInAst(n, v);
         if (!v.has(variable)) return false;
-        const rp = astToRationalPoly(n, new EvalOpBudget(500));
+        const rp = astToRationalPoly(n, budget);
         return rp !== null && polyDegree(rp.den) === 0 && polyDegree(rp.num) === 1;
       };
 
@@ -389,7 +411,8 @@ export function isCompletedSquareForm(raw: string, variable: string): boolean {
 
       walkTopAdd(ast);
       return hasLinearSquare && !hasBareLinearTerm;
-    } catch {
+    } catch (e) {
+      if (e instanceof MathEvalLimitError && e.code === 'LIMIT_EXCEEDED') throw e;
       return false;
     }
   };
@@ -440,11 +463,22 @@ export function verifyWorkingChain(
   // Track original constraints & outstanding extraneous-root obligations across the chain
   let origDom: ExactInterval[] | null = null;
   let origEqSols: CertifiedSolSet | null = null;
+  let origLhsAst: EvalAstNode | null = null;
+  let origRhsAst: EvalAstNode | null = null;
   const outstandingExtraneous: ExactRoot[] = [];
 
   try {
     if (config.problemKind === 'equation-solving') {
       origEqSols = certifyEquationStepSolutions(config.initialStatement, activeVar, budget);
+      if (config.initialStatement.includes('=')) {
+        try {
+          const { lhs, rhs } = splitEquation(config.initialStatement);
+          origLhsAst = parseEvalExpr(lhs, { allowedVariables: [activeVar] }).ast;
+          origRhsAst = parseEvalExpr(rhs, { allowedVariables: [activeVar] }).ast;
+        } catch {
+          // ignore if unparseable as single equation
+        }
+      }
     } else if (config.problemKind === 'algebraic-simplification' && config.variables.length === 1) {
       const initAst = parseEvalExpr(config.initialStatement, { allowedVariables: config.variables }).ast;
       const natInit = extractExpressionDomain(initAst, activeVar, budget);
@@ -462,11 +496,14 @@ export function verifyWorkingChain(
       budget.tick();
       const step = cappedSteps[i];
       const currRaw = (step.math ?? '').trim();
+      const stepPrevMath = prevMath;
+      const resultLenBefore = stepResults.length;
 
       if (!currRaw) {
         stepResults.push({
           stepIndex: i,
           rawMath: currRaw,
+          prevMath: stepPrevMath,
           operation: step.operation,
           status: 'syntax-error',
           feedback: `Step ${i + 1} is empty. Enter a mathematical expression, equation, or conclusion.`,
@@ -476,17 +513,91 @@ export function verifyWorkingChain(
         continue;
       }
 
-      // Record explicit learner rejections of extraneous candidates
-      if (step.rejectedExtraneous && step.rejectedExtraneous.length > 0) {
-        for (const rej of step.rejectedExtraneous) {
-          const parsedRej = parseExactRoot(rej, budget);
-          if (parsedRej) {
-            const idx = outstandingExtraneous.findIndex((r) => exactRootEqual(r, parsedRej));
-            if (idx >= 0) outstandingExtraneous.splice(idx, 1);
+      // Independently verify declared extraneous rejections & structured candidateChecks against the original equation!
+      // Reject contradictory attempts to reject genuine valid solutions, and NEVER clear obligations on unverified claims.
+      const verifiedRejects: VerifiedRejectedCandidate[] = [];
+      let contradictoryRejectionRoot: string | null = null;
+      const declaredRejects: Array<{ raw: string; reason?: CandidateRejectionReason }> = [];
+      if (step.rejectedExtraneous) {
+        for (const r of step.rejectedExtraneous) declaredRejects.push({ raw: r });
+      }
+      if (step.candidateChecks) {
+        for (const cc of step.candidateChecks) {
+          if (cc.verdict === 'extraneous') {
+            const existing = declaredRejects.find((d) => d.raw === cc.candidate);
+            if (existing) existing.reason = cc.reason;
+            else declaredRejects.push({ raw: cc.candidate, reason: cc.reason });
           }
         }
       }
 
+      if (declaredRejects.length > 0 && config.problemKind === 'equation-solving') {
+        const origFinite = origEqSols && origEqSols.kind === 'finite' ? origEqSols.roots : null;
+        for (const decl of declaredRejects) {
+          const parsedRej = parseExactRoot(decl.raw, budget);
+          if (!parsedRej) continue;
+          // 1. Contradiction check: cannot reject a genuine valid solution of the original equation!
+          if (origFinite && origFinite.some((validRoot) => exactRootEqual(validRoot, parsedRej))) {
+            contradictoryRejectionRoot = formatExactRootBrief(parsedRej);
+            break;
+          }
+          // 2. Independently confirm candidate fails the original equation (domain error or LHS != RHS)
+          if (origLhsAst && origRhsAst) {
+            const chk = testCandidateAgainstOriginalEquation(
+              origLhsAst,
+              origRhsAst,
+              activeVar,
+              exactRootToNumber(parsedRej),
+              budget,
+            );
+            if (!chk.satisfies) {
+              const failureKind: 'domain-excluded' | 'substitution-mismatch' = chk.domainError
+                ? 'domain-excluded'
+                : 'substitution-mismatch';
+              const reasonMatches =
+                decl.reason !== undefined &&
+                ((failureKind === 'domain-excluded' && decl.reason === 'domain-excluded') ||
+                  (failureKind === 'substitution-mismatch' &&
+                    (decl.reason === 'substitution-mismatch' || decl.reason === 'negative-rhs')));
+              verifiedRejects.push({
+                candidate: formatExactRootBrief(parsedRej),
+                hasVerifiedEvidence: reasonMatches,
+                failureKind,
+              });
+              const idx = outstandingExtraneous.findIndex((r) => exactRootEqual(r, parsedRej));
+              if (idx >= 0) outstandingExtraneous.splice(idx, 1);
+            }
+          }
+        }
+      }
+
+      if (contradictoryRejectionRoot !== null) {
+        stepResults.push({
+          stepIndex: i,
+          rawMath: currRaw,
+          prevMath: stepPrevMath,
+          operation: step.operation,
+          status: 'lost-solution-error',
+          lostSolutions: [contradictoryRejectionRoot],
+          feedback: `Contradictory candidate rejection: ${activeVar} = ${contradictoryRejectionRoot} IS a genuine solution of the original equation and cannot be rejected as extraneous.`,
+        });
+        if (earliestErrorIndex === null) earliestErrorIndex = i;
+        hasInvalidStep = true;
+        prevMath = currRaw;
+        continue;
+      }
+
+      const attachStepMeta = () => {
+        if (stepResults.length > resultLenBefore) {
+          const last = stepResults[stepResults.length - 1];
+          last.prevMath = stepPrevMath;
+          if (verifiedRejects.length > 0) {
+            last.verifiedRejectedExtraneous = verifiedRejects;
+          }
+        }
+      };
+
+      try {
       // 1. CALCULUS WORKING SEMANTICS (differentiate / integrate operations)
       if (config.problemKind === 'calculus-working') {
         const prevClean = stripCalculusLabel(prevMath);
@@ -1017,6 +1128,9 @@ export function verifyWorkingChain(
         if (earliestErrorIndex === null) earliestErrorIndex = i;
         hasInvalidStep = true;
       }
+      } finally {
+        attachStepMeta();
+      }
     }
   } catch (e) {
     if (e instanceof MathEvalLimitError && e.code === 'LIMIT_EXCEEDED') {
@@ -1061,12 +1175,19 @@ export function verifyWorkingChain(
       opsUsed: budget.used,
     };
   } else {
-    finalAnswerResult = evaluateMathSubmission(config.finalGoal, {
-      expression: lastExprForGoal,
-      unit: lastStep?.unit || undefined,
-      domainInput: statedDomain,
-      rootsInput: config.finalGoal.mode === 'equation-solution' ? lastRaw : undefined,
-    });
+    finalAnswerResult = evaluateMathSubmission(
+      config.finalGoal,
+      {
+        expression: lastExprForGoal,
+        unit: lastStep?.unit || undefined,
+        domainInput: statedDomain,
+        rootsInput: config.finalGoal.mode === 'equation-solution' ? lastRaw : undefined,
+      },
+      budget,
+    );
+    if (finalAnswerResult.verdict === 'unsupported-or-indeterminate' && budget.used >= budget.maxOps) {
+      budgetExceeded = true;
+    }
   }
 
   const unresolvedExtraneous = outstandingExtraneous.map(formatExactRootBrief);
