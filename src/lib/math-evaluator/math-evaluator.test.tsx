@@ -763,4 +763,189 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
       }
     });
   });
+
+  describe('10. Step 5A.1 Final Acceptance Refinements — Simplification Authoring & Calculus Domains', () => {
+    const baseAlg = {
+      id: 'ref-alg-1',
+      engine: 'math-evaluator',
+      schemaVersion: 1,
+      minEngineVersion: '1.0.0',
+      title: 'Simplification Authoring Check',
+      instructions: 'Simplify the expression.',
+      accessibilityLabel: 'Simplification check',
+      fallbackText: 'Simplify the algebraic expression.',
+      curriculumLevel: 'igcse',
+      mode: 'algebraic-expression',
+      variables: ['x'],
+    } as const;
+
+    it('rejects inconsistent source/reference, empty required domains, extra reference holes, and invalid learner-domain requirements at authoring time', () => {
+      // 1. Inconsistent source and reference
+      expect(
+        validateSlideInteractiveConfig({
+          ...baseAlg,
+          sourceExpr: '(x^2 - 9)/(x - 3)',
+          expectedExpr: 'x + 4',
+        }).errors.some((e) => /not mathematically equivalent/i.test(e)),
+      ).toBe(true);
+
+      // 2. Empty / contradictory required source domain
+      expect(
+        validateSlideInteractiveConfig({
+          ...baseAlg,
+          sourceExpr: 'ln(x - 5)',
+          expectedExpr: 'ln(x - 5)',
+          domainRestrictions: { expectedDomainInterval: 'x < 2' },
+        }).errors.some((e) => /empty or contradictory/i.test(e)),
+      ).toBe(true);
+
+      // 3. Reference introduces additional undefined point inside D_req
+      expect(
+        validateSlideInteractiveConfig({
+          ...baseAlg,
+          sourceExpr: '(x^2 - 9)/(x - 3)',
+          expectedExpr: '(x + 3)*x/x',
+        }).errors.some((e) => /additional undefined points/i.test(e)),
+      ).toBe(true);
+
+      // 4. requireLearnerDomain: true without expectedExcluded or expectedDomainInterval
+      expect(
+        validateSlideInteractiveConfig({
+          ...baseAlg,
+          sourceExpr: '(x^2 - 9)/(x - 3)',
+          expectedExpr: 'x + 3',
+          domainRestrictions: { requireLearnerDomain: true },
+        }).errors.some((e) => /at least one of expectedExcluded or expectedDomainInterval/i.test(e)),
+      ).toBe(true);
+
+      // 5. Valid simplification authoring config passes with 0 errors
+      expect(
+        validateSlideInteractiveConfig({
+          ...baseAlg,
+          sourceExpr: '(x^2 - 9)/(x - 3)',
+          expectedExpr: 'x + 3',
+          domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['3'] },
+        }).errors,
+      ).toEqual([]);
+
+      // 6. Runtime guards against reference expression with extra undefined point inside D_req
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'algebraic-expression',
+            variables: ['x'],
+            sourceExpr: '(x^2 - 9)/(x - 3)',
+            expectedExpr: '(x + 3)*x/x',
+          },
+          { expression: 'x + 3' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'unsupported-or-indeterminate' });
+    });
+
+    it('accepts simplified derivative d/dx(x/x) = 0 while preserving optional learner restrictions and rejecting extra derivative holes', () => {
+      // d/dx(x/x) -> 0 passes (D_req = R \ {0} subset of D_lrn = R)
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'derivative',
+            sourceExpr: 'x/x',
+            expectedExpr: '0',
+          },
+          { expression: '0' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+
+      // d/dx(x/x) -> 0 with requireLearnerDomain: true requires x != 0
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'derivative',
+            sourceExpr: 'x/x',
+            expectedExpr: '0',
+            domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['0'] },
+          },
+          { expression: '0' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'wrong-form' });
+
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'derivative',
+            sourceExpr: 'x/x',
+            expectedExpr: '0',
+            domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['0'] },
+          },
+          { expression: '0', domainInput: 'x != 0' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+
+      // d/dx(x^2) -> 2*x^2/x STILL FAILS (introduces hole at x = 0 inside R)
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'derivative',
+            sourceExpr: 'x^2',
+            expectedExpr: '2x',
+          },
+          { expression: '2*x^2/x' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // d/dx(ln(x)) -> 1/x passes (D_req = (0, +inf) subset of R \ {0}), while 1/x + 0/(x - 1) fails
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'derivative',
+            sourceExpr: 'ln(x)',
+            expectedExpr: '1/x',
+          },
+          { expression: '1/x' },
+        ),
+      ).toMatchObject({ passed: true, verdict: 'exact-equivalent' });
+
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'calculus-check',
+            variable: 'x',
+            calculusKind: 'derivative',
+            sourceExpr: 'ln(x)',
+            expectedExpr: '1/x',
+          },
+          { expression: '1/x + 0/(x - 1)' },
+        ),
+      ).toMatchObject({ passed: false, verdict: 'incorrect' });
+
+      // Authoring validation rejects derivative expectedExpr introducing extra undefined points
+      expect(
+        validateSlideInteractiveConfig({
+          id: 'ref-calc-1',
+          engine: 'math-evaluator',
+          schemaVersion: 1,
+          minEngineVersion: '1.0.0',
+          title: 'Derivative Authoring Check',
+          instructions: 'Differentiate x^2.',
+          accessibilityLabel: 'Derivative check',
+          fallbackText: 'Differentiate x^2.',
+          curriculumLevel: 'as-a-level',
+          mode: 'calculus-check',
+          variable: 'x',
+          calculusKind: 'derivative',
+          sourceExpr: 'x^2',
+          expectedExpr: '2*x^2/x',
+        }).errors.some((e) => /additional undefined points/i.test(e)),
+      ).toBe(true);
+    });
+  });
 });

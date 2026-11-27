@@ -7,9 +7,12 @@
  */
 
 import { EvalOpBudget, MATH_EVAL_LIMITS } from './math-eval-limits';
-import { parseEvalExpr } from './math-eval-parser';
+import { parseEvalExpr, type EvalAstNode } from './math-eval-parser';
 import {
   certifyEquationAuthorConfig,
+  extractExpressionDomain,
+  intersectIntervalUnions,
+  isIntervalUnionSubset,
   normaliseIntervalUnion,
   parseEndpoint,
   parseExactRoot,
@@ -18,6 +21,11 @@ import {
 } from './math-eval-domain-solutions';
 import { parseUnitExpression } from './math-eval-units-precision';
 import { checkSymbolicEquivalence, differentiateAst } from './math-eval-exact';
+import {
+  buildAssumedDomainFromRestrictions,
+  collectVarsInAst,
+  type MathDomainRestrictions,
+} from './math-eval-engine';
 
 const SHARED_MATH_EVAL_KEYS = [
   'id',
@@ -84,6 +92,7 @@ const CALCULUS_KEYS = new Set([
   'expectedExpr',
   'requireConstantOfIntegration',
   'requireAbsInLog',
+  'domainRestrictions',
 ]);
 
 const TOLERANCE_KEYS = new Set(['abs', 'rel']);
@@ -128,6 +137,83 @@ function isPlainObj(v: unknown): v is Record<string, unknown> {
 
 function isFiniteNonNeg(v: unknown): v is number {
   return typeof v === 'number' && Number.isFinite(v) && v >= 0;
+}
+
+function validateDomainRestrictionsObject(
+  rawDr: unknown,
+  allowedVars: string[],
+  errors: string[],
+): MathDomainRestrictions | undefined {
+  if (rawDr === undefined) return undefined;
+  if (!isPlainObj(rawDr)) {
+    errors.push('domainRestrictions must be an object.');
+    return undefined;
+  }
+  const errCountBefore = errors.length;
+  checkAllowed(rawDr, DOMAIN_KEYS, 'domainRestrictions', errors);
+  if (rawDr.requireLearnerDomain !== undefined && typeof rawDr.requireLearnerDomain !== 'boolean') {
+    errors.push('domainRestrictions.requireLearnerDomain must be a strict boolean.');
+  }
+  if (rawDr.expectedExcluded !== undefined) {
+    if (!Array.isArray(rawDr.expectedExcluded) || rawDr.expectedExcluded.some((x) => typeof x !== 'string')) {
+      errors.push('domainRestrictions.expectedExcluded must be an array of exact number strings.');
+    } else {
+      const b = new EvalOpBudget();
+      for (const ex of rawDr.expectedExcluded) {
+        const parsed = parseExactRoot(ex, b);
+        if (!parsed || parsed.kind !== 'rat') {
+          errors.push(`domainRestrictions.expectedExcluded value "${ex}" must be an exact rational number string.`);
+        }
+      }
+    }
+  }
+  if (rawDr.expectedDomainInterval !== undefined) {
+    if (typeof rawDr.expectedDomainInterval !== 'string' || !rawDr.expectedDomainInterval.trim()) {
+      errors.push('domainRestrictions.expectedDomainInterval must be a non-empty string.');
+    } else {
+      try {
+        parseIntervalOrInequality(rawDr.expectedDomainInterval, allowedVars[0]);
+      } catch (e) {
+        errors.push(`domainRestrictions.expectedDomainInterval invalid: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+  }
+  if (rawDr.variableAssumptions !== undefined) {
+    if (!isPlainObj(rawDr.variableAssumptions)) {
+      errors.push('domainRestrictions.variableAssumptions must be an object.');
+    } else {
+      for (const [vk, vv] of Object.entries(rawDr.variableAssumptions)) {
+        if (!allowedVars.includes(vk)) errors.push(`variableAssumptions references undeclared variable "${vk}".`);
+        if (typeof vv !== 'string' || !VALID_ASSUMPTIONS.has(vv)) {
+          errors.push(`Invalid variableAssumption "${String(vv)}" for "${vk}".`);
+        }
+      }
+    }
+  }
+  if (rawDr.requireLearnerDomain === true) {
+    const hasExcluded = Array.isArray(rawDr.expectedExcluded) && rawDr.expectedExcluded.length > 0;
+    const hasInterval = typeof rawDr.expectedDomainInterval === 'string' && rawDr.expectedDomainInterval.trim().length > 0;
+    if (!hasExcluded && !hasInterval) {
+      errors.push(
+        'domainRestrictions.requireLearnerDomain is true, so at least one of expectedExcluded or expectedDomainInterval must be provided.',
+      );
+    }
+  }
+  if (errors.length > errCountBefore) return undefined;
+  const typed = rawDr as MathDomainRestrictions;
+  // Check that author-defined assumptions themselves are not contradictory (non-empty assumed domain)
+  if (allowedVars.length >= 1) {
+    try {
+      const b = new EvalOpBudget();
+      const assumpDom = buildAssumedDomainFromRestrictions(typed, allowedVars[0], b);
+      if (assumpDom.length === 0) {
+        errors.push('domainRestrictions produces an empty or contradictory assumed domain.');
+      }
+    } catch (e) {
+      errors.push(`domainRestrictions invalid: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+  return typed;
 }
 
 export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors: string[]): void {
@@ -303,64 +389,74 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
       errors.push('algebraic-expression requires non-empty string "expectedExpr".');
       return;
     }
-    let expAst;
+    let expAst: EvalAstNode;
+    let srcAst: EvalAstNode | null = null;
     try {
       expAst = parseEvalExpr(obj.expectedExpr, { allowedVariables: vars }).ast;
-      if (typeof obj.sourceExpr === 'string' && obj.sourceExpr.trim()) {
-        parseEvalExpr(obj.sourceExpr, { allowedVariables: vars });
+      if (obj.sourceExpr !== undefined) {
+        if (typeof obj.sourceExpr !== 'string' || !obj.sourceExpr.trim()) {
+          errors.push('algebraic-expression "sourceExpr" must be a non-empty string when provided.');
+        } else {
+          srcAst = parseEvalExpr(obj.sourceExpr, { allowedVariables: vars }).ast;
+        }
       }
     } catch (e) {
       errors.push(`algebraic-expression syntax invalid: ${e instanceof Error ? e.message : String(e)}`);
       return;
     }
 
-    if (obj.domainRestrictions !== undefined) {
-      if (!isPlainObj(obj.domainRestrictions)) {
-        errors.push('domainRestrictions must be an object.');
-      } else {
-        checkAllowed(obj.domainRestrictions, DOMAIN_KEYS, 'domainRestrictions', errors);
-        if (
-          obj.domainRestrictions.requireLearnerDomain !== undefined &&
-          typeof obj.domainRestrictions.requireLearnerDomain !== 'boolean'
-        ) {
-          errors.push('domainRestrictions.requireLearnerDomain must be a strict boolean.');
+    const errCountBeforeDr = errors.length;
+    const validatedDr = validateDomainRestrictionsObject(obj.domainRestrictions, vars, errors);
+
+    // Authoring-time source/reference mathematical equivalence & effective-domain consistency
+    if (errors.length === errCountBeforeDr) {
+      const b = new EvalOpBudget();
+      const posVars = new Set<string>();
+      for (const [vk, vv] of Object.entries(validatedDr?.variableAssumptions ?? {})) {
+        if (vv === 'positive') posVars.add(vk);
+      }
+
+      const usedVars = new Set<string>();
+      collectVarsInAst(expAst, usedVars);
+      if (srcAst) collectVarsInAst(srcAst, usedVars);
+      const activeVar = usedVars.size === 1 ? Array.from(usedVars)[0] : vars.length === 1 ? vars[0] : null;
+
+      if (srcAst) {
+        // 1. Source and reference must not be provably inconsistent (unsupported remains indeterminate)
+        const srcExpEq = checkSymbolicEquivalence(srcAst, expAst, b, posVars);
+        if (srcExpEq === 'not-equal') {
+          errors.push(
+            `algebraic-expression sourceExpr "${obj.sourceExpr}" and expectedExpr "${obj.expectedExpr}" are not mathematically equivalent.`,
+          );
         }
-        if (obj.domainRestrictions.expectedExcluded !== undefined) {
-          if (
-            !Array.isArray(obj.domainRestrictions.expectedExcluded) ||
-            obj.domainRestrictions.expectedExcluded.some((x) => typeof x !== 'string')
-          ) {
-            errors.push('domainRestrictions.expectedExcluded must be an array of exact number strings.');
-          } else {
-            const b = new EvalOpBudget();
-            for (const ex of obj.domainRestrictions.expectedExcluded) {
-              if (!parseExactRoot(ex, b)) {
-                errors.push(`domainRestrictions.expectedExcluded value "${ex}" is invalid.`);
-              }
+
+        // 2. For certifiable univariate expressions, verify D_req = natSrc ∩ assumpDom is non-empty
+        //    and reference expression is defined throughout D_req (D_req ⊆ natExp).
+        if (activeVar) {
+          const natSrc = extractExpressionDomain(srcAst, activeVar, b);
+          const natExp = extractExpressionDomain(expAst, activeVar, b);
+          const assumpDom = buildAssumedDomainFromRestrictions(validatedDr, activeVar, b);
+          if (natSrc.certifiable) {
+            const requiredDom = intersectIntervalUnions(natSrc.domain, assumpDom);
+            if (requiredDom.length === 0) {
+              errors.push(
+                'algebraic-expression required source domain under domainRestrictions is empty or contradictory.',
+              );
+            } else if (natExp.certifiable && !isIntervalUnionSubset(requiredDom, natExp.domain)) {
+              errors.push(
+                `algebraic-expression expectedExpr "${obj.expectedExpr}" introduces additional undefined points within the required source domain.`,
+              );
             }
           }
         }
-        if (obj.domainRestrictions.expectedDomainInterval !== undefined) {
-          if (typeof obj.domainRestrictions.expectedDomainInterval !== 'string') {
-            errors.push('domainRestrictions.expectedDomainInterval must be a string.');
-          } else {
-            try {
-              parseIntervalOrInequality(obj.domainRestrictions.expectedDomainInterval, vars[0]);
-            } catch (e) {
-              errors.push(`domainRestrictions.expectedDomainInterval invalid: ${e instanceof Error ? e.message : String(e)}`);
-            }
-          }
-        }
-        if (obj.domainRestrictions.variableAssumptions !== undefined) {
-          if (!isPlainObj(obj.domainRestrictions.variableAssumptions)) {
-            errors.push('domainRestrictions.variableAssumptions must be an object.');
-          } else {
-            for (const [vk, vv] of Object.entries(obj.domainRestrictions.variableAssumptions)) {
-              if (!vars.includes(vk)) errors.push(`variableAssumptions references undeclared variable "${vk}".`);
-              if (typeof vv !== 'string' || !VALID_ASSUMPTIONS.has(vv)) {
-                errors.push(`Invalid variableAssumption "${String(vv)}" for "${vk}".`);
-              }
-            }
+      } else if (activeVar) {
+        // Pure equivalence task: ensure effective domain of expectedExpr under assumptions is non-empty
+        const natExp = extractExpressionDomain(expAst, activeVar, b);
+        if (natExp.certifiable) {
+          const assumpDom = buildAssumedDomainFromRestrictions(validatedDr, activeVar, b);
+          const effExpDom = intersectIntervalUnions(natExp.domain, assumpDom);
+          if (effExpDom.length === 0) {
+            errors.push('algebraic-expression effective reference domain under domainRestrictions is empty or contradictory.');
           }
         }
       }
@@ -516,21 +612,58 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     errors.push('calculus-check requires string "sourceExpr" and "expectedExpr".');
     return;
   }
+  const validatedCalcDr = validateDomainRestrictionsObject(obj.domainRestrictions, [obj.variable], errors);
   try {
     const src = parseEvalExpr(obj.sourceExpr, { allowedVariables: [obj.variable] });
     const exp = parseEvalExpr(obj.expectedExpr, { allowedVariables: [obj.variable], allowConstantC: true });
     const budget = new EvalOpBudget();
+    const posVars = new Set<string>();
+    if (validatedCalcDr?.variableAssumptions?.[obj.variable] === 'positive') {
+      posVars.add(obj.variable);
+    }
+    const assumpDom = buildAssumedDomainFromRestrictions(validatedCalcDr, obj.variable, budget);
     if (obj.calculusKind === 'derivative') {
       const derived = differentiateAst(src.ast, obj.variable, budget);
-      const eq = checkSymbolicEquivalence(derived, exp.ast, budget);
+      const eq = checkSymbolicEquivalence(derived, exp.ast, budget, posVars);
       if (eq !== 'exact' && eq !== 'symbolic') {
         errors.push(`calculus-check expectedExpr "${obj.expectedExpr}" does not match symbolic derivative of "${obj.sourceExpr}".`);
+      } else {
+        const natSrc = extractExpressionDomain(src.ast, obj.variable, budget);
+        const natDerived = extractExpressionDomain(derived, obj.variable, budget);
+        const natExp = extractExpressionDomain(exp.ast, obj.variable, budget);
+        if (natSrc.certifiable && natDerived.certifiable) {
+          const requiredDiffDom = intersectIntervalUnions(intersectIntervalUnions(natSrc.domain, natDerived.domain), assumpDom);
+          if (requiredDiffDom.length === 0) {
+            errors.push('calculus-check required differentiation domain is empty or contradictory.');
+          } else if (natExp.certifiable && !isIntervalUnionSubset(requiredDiffDom, natExp.domain)) {
+            errors.push(
+              `calculus-check expectedExpr "${obj.expectedExpr}" introduces additional undefined points within the required differentiation domain.`,
+            );
+          }
+        }
       }
     } else {
       const dExp = differentiateAst(exp.ast, obj.variable, budget);
-      const eq = checkSymbolicEquivalence(dExp, src.ast, budget);
+      const eq = checkSymbolicEquivalence(dExp, src.ast, budget, posVars);
       if (eq !== 'exact' && eq !== 'symbolic') {
         errors.push(`calculus-check expectedExpr "${obj.expectedExpr}" does not differentiate back to "${obj.sourceExpr}".`);
+      } else {
+        const natIntegrand = extractExpressionDomain(src.ast, obj.variable, budget);
+        const natExp = extractExpressionDomain(exp.ast, obj.variable, budget);
+        const natExpDeriv = extractExpressionDomain(dExp, obj.variable, budget);
+        if (natIntegrand.certifiable) {
+          const requiredIntDom = intersectIntervalUnions(natIntegrand.domain, assumpDom);
+          if (requiredIntDom.length === 0) {
+            errors.push('calculus-check required integration domain is empty or contradictory.');
+          } else if (
+            (natExp.certifiable && !isIntervalUnionSubset(requiredIntDom, natExp.domain)) ||
+            (natExpDeriv.certifiable && !isIntervalUnionSubset(requiredIntDom, natExpDeriv.domain))
+          ) {
+            errors.push(
+              `calculus-check expectedExpr "${obj.expectedExpr}" is undefined or non-differentiable within the required integration domain.`,
+            );
+          }
+        }
       }
     }
   } catch (e) {

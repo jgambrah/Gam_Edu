@@ -124,24 +124,26 @@ export interface MathNumericQuantitySpec {
   misconceptionChecks?: MathMisconceptionRule[];
 }
 
+export interface MathDomainRestrictions {
+  requireLearnerDomain?: boolean;
+  expectedExcluded?: string[];
+  expectedDomainInterval?: string;
+  variableAssumptions?: Record<string, 'real' | 'positive' | 'nonzero' | 'integer'>;
+}
+
 export interface MathAlgebraicExpressionSpec {
   mode: 'algebraic-expression';
   variables: string[];
   sourceExpr?: string;
   expectedExpr: string;
   requiredForm?:
-    | 'any-equivalent'
-    | 'expanded-polynomial'
-    | 'collected-like-terms'
-    | 'factored-form'
-    | 'simplified-fraction'
-    | 'simplified-surd';
-  domainRestrictions?: {
-    requireLearnerDomain?: boolean;
-    expectedExcluded?: string[];
-    expectedDomainInterval?: string;
-    variableAssumptions?: Record<string, 'real' | 'positive' | 'nonzero' | 'integer'>;
-  };
+  | 'any-equivalent'
+  | 'expanded-polynomial'
+  | 'collected-like-terms'
+  | 'factored-form'
+  | 'simplified-fraction'
+  | 'simplified-surd';
+  domainRestrictions?: MathDomainRestrictions;
   verificationPolicy?: 'exact-only' | 'exact-or-symbolic' | 'allow-bounded-numeric';
   misconceptionChecks?: MathMisconceptionRule[];
 }
@@ -177,6 +179,7 @@ export interface MathCalculusCheckSpec {
   expectedExpr: string;
   requireConstantOfIntegration?: boolean;
   requireAbsInLog?: boolean;
+  domainRestrictions?: MathDomainRestrictions;
 }
 
 export type MathEvaluatorSpec =
@@ -197,7 +200,7 @@ function parseExactNumberOrRat(raw: string, budget: EvalOpBudget): BigRat | null
   }
 }
 
-function collectVarsInAst(node: EvalAstNode, out: Set<string>): void {
+export function collectVarsInAst(node: EvalAstNode, out: Set<string>): void {
   if (node.type === 'var') {
     out.add(node.name);
     return;
@@ -213,7 +216,7 @@ function collectVarsInAst(node: EvalAstNode, out: Set<string>): void {
 }
 
 /** Detects domain-sensitive constructs (variable denominators, negative powers, logs, sqrt, tan) in multivariate expressions. */
-function hasMultivariateDomainHazard(node: EvalAstNode, budget: EvalOpBudget): boolean {
+export function hasMultivariateDomainHazard(node: EvalAstNode, budget: EvalOpBudget): boolean {
   const usesAnyVar = (n: EvalAstNode): boolean => {
     if (n.type === 'var') return true;
     if (n.type === 'unary' || n.type === 'call') return usesAnyVar(n.arg);
@@ -232,14 +235,14 @@ function hasMultivariateDomainHazard(node: EvalAstNode, budget: EvalOpBudget): b
   return walk(node);
 }
 
-/** Builds the explicit author-assumed domain for a univariate algebraic spec. */
-function buildAssumedDomain(
-  spec: MathAlgebraicExpressionSpec,
+/** Builds the explicit author-assumed domain for a univariate spec from domainRestrictions. */
+export function buildAssumedDomainFromRestrictions(
+  restrictions: MathDomainRestrictions | undefined,
   variable: string,
   budget: EvalOpBudget,
 ): ExactInterval[] {
   let dom = allRealsIntervalUnion();
-  const assumption = spec.domainRestrictions?.variableAssumptions?.[variable];
+  const assumption = restrictions?.variableAssumptions?.[variable];
   if (assumption === 'positive') {
     dom = intersectIntervalUnions(dom, [
       { low: { kind: 'rat', value: RAT_ZERO }, lowInclusive: false, high: { kind: 'pos-inf' }, highInclusive: false },
@@ -247,12 +250,12 @@ function buildAssumedDomain(
   } else if (assumption === 'nonzero') {
     dom = subtractPointFromUnion(dom, RAT_ZERO);
   }
-  if (spec.domainRestrictions?.expectedDomainInterval) {
-    const iv = parseIntervalOrInequality(spec.domainRestrictions.expectedDomainInterval, variable);
+  if (restrictions?.expectedDomainInterval) {
+    const iv = parseIntervalOrInequality(restrictions.expectedDomainInterval, variable);
     dom = intersectIntervalUnions(dom, iv);
   }
-  if (spec.domainRestrictions?.expectedExcluded && spec.domainRestrictions.expectedExcluded.length > 0) {
-    for (const ex of spec.domainRestrictions.expectedExcluded) {
+  if (restrictions?.expectedExcluded && restrictions.expectedExcluded.length > 0) {
+    for (const ex of restrictions.expectedExcluded) {
       const parsedEx = parseExactRoot(ex, budget);
       if (parsedEx && parsedEx.kind === 'rat') {
         dom = subtractPointFromUnion(dom, parsedEx.value);
@@ -260,6 +263,14 @@ function buildAssumedDomain(
     }
   }
   return dom;
+}
+
+function buildAssumedDomain(
+  spec: MathAlgebraicExpressionSpec,
+  variable: string,
+  budget: EvalOpBudget,
+): ExactInterval[] {
+  return buildAssumedDomainFromRestrictions(spec.domainRestrictions, variable, budget);
 }
 
 /** Verifies specifically that every ln(...) node referencing `variable` wraps `abs(...)` (not merely `abs()` elsewhere!). */
@@ -635,10 +646,29 @@ export function evaluateMathSubmission(
         const assumpDom = buildAssumedDomain(spec, v, budget);
 
         if (natSrc) {
-          // Simplification task: learner may broaden natural domain (e.g. (x^2-9)/(x-3) -> x+3),
-          // provided original restrictions are preserved when required, and MUST NOT introduce
-          // any new undefined points inside the required domain D_req = natSrc ∩ assumpDom!
+          // Simplification task:
+          // 1. Required source domain D_req = natSrc ∩ assumpDom must be non-empty.
+          // 2. Author's reference expression must be defined throughout D_req (D_req ⊆ natExp).
+          // 3. Learner may broaden natural domain (e.g. (x^2-9)/(x-3) -> x+3),
+          //    provided original restrictions are preserved when required, and MUST NOT introduce
+          //    any new undefined points inside D_req (D_req ⊆ natLrn).
           const requiredDom = intersectIntervalUnions(natSrc.domain, assumpDom);
+          if (requiredDom.length === 0) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'The required source domain under the specified assumptions is empty or contradictory.',
+              opsUsed: budget.used,
+            };
+          }
+          if (!isIntervalUnionSubset(requiredDom, natExp.domain)) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'The reference expression is not defined throughout the required source domain.',
+              opsUsed: budget.used,
+            };
+          }
           if (!isIntervalUnionSubset(requiredDom, natLrn.domain)) {
             return {
               passed: false,
@@ -649,9 +679,17 @@ export function evaluateMathSubmission(
             };
           }
         } else {
-          // Pure expression equivalence task: effective domains under explicit assumptions MUST match!
+          // Pure expression equivalence task: effective domains under explicit assumptions MUST match and be non-empty!
           const effExpDom = intersectIntervalUnions(natExp.domain, assumpDom);
           const effLrnDom = intersectIntervalUnions(natLrn.domain, assumpDom);
+          if (effExpDom.length === 0) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'The effective reference domain under the specified assumptions is empty or contradictory.',
+              opsUsed: budget.used,
+            };
+          }
           if (!areIntervalUnionsEqual(effExpDom, effLrnDom)) {
             return {
               passed: false,
@@ -886,18 +924,31 @@ export function evaluateMathSubmission(
 
     /* -------------------- MODE 5: CALCULUS CHECK -------------------- */
     if (spec.mode === 'calculus-check') {
+      const assumpDom = buildAssumedDomainFromRestrictions(spec.domainRestrictions, spec.variable, budget);
+      const posVars = new Set<string>();
+      if (spec.domainRestrictions?.variableAssumptions?.[spec.variable] === 'positive') {
+        posVars.add(spec.variable);
+      }
+
       if (spec.calculusKind === 'derivative') {
         const srcAst = parseEvalExpr(spec.sourceExpr, { allowedVariables: [spec.variable] }).ast;
         const derivedAst = differentiateAst(srcAst, spec.variable, budget);
         const lrnAst = parseEvalExpr(submission.expression, { allowedVariables: [spec.variable] }).ast;
 
         // Genuine symbolic comparison ONLY (NEVER numerical sampling claiming symbolic!)
-        const sym = checkSymbolicEquivalence(derivedAst, lrnAst, budget);
+        const sym = checkSymbolicEquivalence(derivedAst, lrnAst, budget, posVars);
         if (sym === 'exact' || sym === 'symbolic') {
-          // Verify derivative does not silently introduce or remove domain restrictions!
+          // Distinguish:
+          // - D_src: natural domain of source expression f(x)
+          // - D_deriv = D_src ∩ nat(f'(x)): domain where derivative exists
+          // - D_req = D_deriv ∩ D_assump: required differentiation domain
+          // - D_lrn = nat(learner): learner's derivative natural domain
+          // Accept simplified derivative (e.g. d/dx(x/x) -> 0) when D_req ⊆ D_lrn,
+          // while rejecting derivatives that introduce extra undefined points (e.g. d/dx(x^2) -> 2x^2/x)!
+          const natSrc = extractExpressionDomain(srcAst, spec.variable, budget);
           const natDerived = extractExpressionDomain(derivedAst, spec.variable, budget);
           const natLrn = extractExpressionDomain(lrnAst, spec.variable, budget);
-          if (!natDerived.certifiable || !natLrn.certifiable) {
+          if (!natSrc.certifiable || !natDerived.certifiable || !natLrn.certifiable) {
             return {
               passed: false,
               verdict: 'unsupported-or-indeterminate',
@@ -905,15 +956,67 @@ export function evaluateMathSubmission(
               opsUsed: budget.used,
             };
           }
-          if (!areIntervalUnionsEqual(natDerived.domain, natLrn.domain)) {
+          const derivDomain = intersectIntervalUnions(natSrc.domain, natDerived.domain);
+          const requiredDiffDom = intersectIntervalUnions(derivDomain, assumpDom);
+          if (requiredDiffDom.length === 0) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'The required differentiation domain under the specified assumptions is empty or contradictory.',
+              opsUsed: budget.used,
+            };
+          }
+          if (!isIntervalUnionSubset(requiredDiffDom, natLrn.domain)) {
             return {
               passed: false,
               verdict: 'incorrect',
               feedback:
-                'Your derivative is algebraically similar where defined, but introduces or removes domain restrictions (check denominators, logs, or roots).',
+                'Your derivative is algebraically similar where defined, but introduces an additional undefined point within the required differentiation domain.',
               opsUsed: budget.used,
             };
           }
+
+          // Preserve explicit learner-declared domain restrictions when required by the task
+          if (spec.domainRestrictions?.requireLearnerDomain) {
+            const rawDom = (submission.domainInput ?? '').trim();
+            if (!rawDom) {
+              return {
+                passed: false,
+                verdict: 'wrong-form',
+                feedback: 'Your simplified derivative is correct, but you must also state the domain restriction where the derivative exists.',
+                opsUsed: budget.used,
+              };
+            }
+            if (spec.domainRestrictions.expectedExcluded && spec.domainRestrictions.expectedExcluded.length > 0) {
+              const expectedSet: BigRat[] = [];
+              for (const ex of spec.domainRestrictions.expectedExcluded) {
+                const parsedEx = parseExactRoot(ex, budget);
+                if (parsedEx && parsedEx.kind === 'rat') expectedSet.push(parsedEx.value);
+              }
+              const learnerSet = parseExcludedValuesSet(rawDom, spec.variable, budget);
+              if (!areExcludedSetsEqual(expectedSet, learnerSet)) {
+                return {
+                  passed: false,
+                  verdict: 'wrong-form',
+                  feedback: 'Check your excluded value(s): state the exact set of values where the original function or derivative is undefined.',
+                  opsUsed: budget.used,
+                };
+              }
+            }
+            if (spec.domainRestrictions.expectedDomainInterval) {
+              const expIv = parseIntervalOrInequality(spec.domainRestrictions.expectedDomainInterval, spec.variable);
+              const lrnIv = parseIntervalOrInequality(rawDom, spec.variable);
+              if (!areIntervalUnionsEqual(expIv, lrnIv)) {
+                return {
+                  passed: false,
+                  verdict: 'wrong-form',
+                  feedback: 'Your derivative is correct, but check the exact domain interval where the derivative exists.',
+                  opsUsed: budget.used,
+                };
+              }
+            }
+          }
+
           return {
             passed: true,
             verdict: sym === 'exact' ? 'exact-equivalent' : 'symbolic-domain-equivalent',
@@ -940,7 +1043,10 @@ export function evaluateMathSubmission(
         };
       }
 
-      // Antiderivative verification via exact differentiation of learner's F(x)
+      // Antiderivative verification via exact differentiation of learner's F(x).
+      // Limitation note (Step 5A.1): On disconnected domains such as R \ {0} (e.g. integral of 1/x = ln|x| + C),
+      // the true general antiderivative allows independent constants on each connected component;
+      // Step 5A.1 intentionally verifies the standard school/A-level single-constant `+ C` representation.
       const requireC = Boolean(spec.requireConstantOfIntegration);
       const lrnParsed = parseEvalExpr(submission.expression, {
         allowedVariables: [spec.variable],
@@ -951,7 +1057,7 @@ export function evaluateMathSubmission(
 
       // Step 1: Verify d/dx(F) === sourceExpr symbolically!
       // Note: if learner wrote x^2 + C*x, d/dx = 2x + C !== 2x -> fails immediately!
-      const sym = checkSymbolicEquivalence(lrnDerivX, srcAst, budget);
+      const sym = checkSymbolicEquivalence(lrnDerivX, srcAst, budget, posVars);
       if (sym === 'unsupported') {
         return {
           passed: false,
@@ -979,10 +1085,12 @@ export function evaluateMathSubmission(
         };
       }
 
-      // Step 2b: Verify antiderivative does not silently introduce extraneous undefined points inside integrand's domain!
+      // Step 2b: Verify BOTH natural domain AND differentiability domain of learner's antiderivative
+      // cover the required integration domain D_int = natIntegrand ∩ assumpDom!
       const natIntegrand = extractExpressionDomain(srcAst, spec.variable, budget);
       const natAnti = extractExpressionDomain(lrnParsed.ast, spec.variable, budget);
-      if (!natIntegrand.certifiable || !natAnti.certifiable) {
+      const natLrnDeriv = extractExpressionDomain(lrnDerivX, spec.variable, budget);
+      if (!natIntegrand.certifiable || !natAnti.certifiable || !natLrnDeriv.certifiable) {
         return {
           passed: false,
           verdict: 'unsupported-or-indeterminate',
@@ -990,12 +1098,25 @@ export function evaluateMathSubmission(
           opsUsed: budget.used,
         };
       }
-      if (natAnti.domain.length === 0 || !isIntervalUnionSubset(natIntegrand.domain, natAnti.domain)) {
+      const requiredIntDom = intersectIntervalUnions(natIntegrand.domain, assumpDom);
+      if (requiredIntDom.length === 0) {
+        return {
+          passed: false,
+          verdict: 'unsupported-or-indeterminate',
+          feedback: 'The required integration domain under the specified assumptions is empty or contradictory.',
+          opsUsed: budget.used,
+        };
+      }
+      if (
+        natAnti.domain.length === 0 ||
+        !isIntervalUnionSubset(requiredIntDom, natAnti.domain) ||
+        !isIntervalUnionSubset(requiredIntDom, natLrnDeriv.domain)
+      ) {
         return {
           passed: false,
           verdict: 'incorrect',
           feedback:
-            'Your antiderivative introduces an undefined point or narrows the domain relative to the integrand.',
+            'Your antiderivative introduces an undefined or non-differentiable point within the required integration domain.',
           opsUsed: budget.used,
         };
       }
