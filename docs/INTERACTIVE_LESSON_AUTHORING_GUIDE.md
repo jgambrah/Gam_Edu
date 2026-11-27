@@ -16,9 +16,9 @@ Slides without `interactive` continue working identically as standard narrated s
 
 ## 2. Supported Engine Identifiers & Production Compatibility Manifest
 
-All six engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/interactive-schema.ts`) are verified **Production LIVE** on `https://gam-it-service.app`:
+All seven engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/interactive-schema.ts`) are production-compatible on `fixed-version` (Steps 1–4F verified LIVE on `https://gam-it-service.app`; Step 5A.1 `math-evaluator` `1.0.0` integrated on `fixed-version` pending manual Vercel production promotion):
 
-| Engine ID | Status | Installed `engineVersion` | Verified `productionVersion` | Supported `schemaVersion` | Minimum `minEngineVersion` | Use Case |
+| Engine ID | Status | Installed `engineVersion` | Configured `productionVersion` | Supported `schemaVersion` | Minimum `minEngineVersion` | Use Case |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | `rule-explorer` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject condition/rule toggling (CS, Chemistry, Biology, Physics, Geography, Civics) |
 | `code-playground` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Live sandboxed Python 3 (Pyodide), Cambridge 0478 Pseudocode, and Read-Only SQL (`SELECT`) |
@@ -26,7 +26,7 @@ All six engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/in
 | `process-stepper` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, `reactionMeta`, predictions & sequencing |
 | `diagram-hotspots` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject interactive WebP/PNG diagram, point/rect hotspots, structure-to-function links, progressive disclosure, Identify challenges & `nonVisualQuestion` |
 | `construction-lab` | **Production LIVE** | `1.3.0` | `1.3.0` | `1` | `"1.0.0"` (legacy `boolean-circuit`) · `"1.1.0"` (Step 4D) · `"1.2.0"` (`atom-bond-builder`) · `"1.3.0"` (`geometry-constructor`) | Legacy & declarative `boolean-circuit`, `equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, `atom-bond-builder`, and `geometry-constructor` (all Production LIVE) |
-| `math-evaluator` | **Preview Only (Step 5A)** | `1.0.0` | `null` (held closed) | `1` | `"1.0.0"` (Preview Only) | Bounded exact rational, polynomial, surd, domain, equation, interval, 7-component SI unit, significant-figure, and symbolic calculus evaluator |
+| `math-evaluator` | **Integrated (`fixed-version`, Pending Manual Vercel Promotion)** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Bounded exact rational, polynomial, surd, domain, equation, interval, 7-component SI unit, significant-figure, and symbolic calculus evaluator (Step 5A.1) |
 
 > **Version Distinction:** `engineVersion` is the version installed in the codebase; `productionVersion` is the highest version verified live on `https://gam-it-service.app` after manual Vercel promotion; `schemaVersion` is the JSON config schema format (`1`); `minEngineVersion` is the minimum engine version required by a specific slide activity.
 

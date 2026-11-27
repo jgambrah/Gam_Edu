@@ -30,9 +30,9 @@ import { MathEvaluatorEngine } from '@/components/narrated-lessons/MathEvaluator
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Preview)', () => {
-  it('registers math-evaluator as 7th engine with engineVersion 1.0.0 and productionVersion null (closed)', () => {
+  it('registers math-evaluator as 7th engine with engineVersion 1.0.0 and productionVersion 1.0.0', () => {
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].engineVersion).toBe('1.0.0');
-    expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].productionVersion).toBeNull();
+    expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].productionVersion).toBe('1.0.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].implemented).toBe(true);
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
@@ -438,7 +438,7 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
       ).toBe(false);
     });
 
-    it('validates all 15 slides (19 activities) in step5a-math-evaluator-pilot.json and keeps production gate CLOSED', () => {
+    it('validates all 15 slides (19 activities) in step5a-math-evaluator-pilot.json under production-compatible math-evaluator 1.0.0', () => {
       const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step5a-math-evaluator-pilot.json');
       const lesson = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as {
         lessonId: string;
@@ -447,7 +447,7 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
       expect(lesson.slides).toHaveLength(15);
       expect(lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0)).toBe(19);
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: true })).not.toThrow();
-      expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).toThrow(/production/i);
+      expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).not.toThrow();
     });
 
     it('supports keypad insertion, live AST preview, multi-activity isolation, and Low-Data Mode', () => {

@@ -175,10 +175,10 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'math-evaluator': {
     id: 'math-evaluator',
     engineVersion: '1.0.0',
-    productionVersion: null,
+    productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, and symbolic calculus evaluator (Step 5A preview).',
+    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, and symbolic calculus evaluator (Step 5A.1 production-compatible).',
   },
 };
 

@@ -1,0 +1,14 @@
+import React from 'react';
+import { StudentEnrichmentGate } from '@/components/student-enrichment/StudentEnrichmentGate';
+
+export default function DashboardNarratedLessonsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <StudentEnrichmentGate sectionName="Student Enrichment · Narrated Lessons">
+      {children}
+    </StudentEnrichmentGate>
+  );
+}
