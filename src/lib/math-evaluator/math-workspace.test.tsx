@@ -455,7 +455,7 @@ describe('Step 5A.2 — Mathematical Working & Reasoning Workspace (math-evaluat
             label: 'Factorisation',
             marks: [
               { markId: 'M1', type: 'M', points: 1, description: 'Factorise quadratic', predicate: { kind: 'certified-transition', expectedOperation: 'factorise' } },
-              { markId: 'A1', type: 'A', points: 1, dependsOn: ['M1'], description: 'Exact roots', predicate: { kind: 'final-answer' } },
+              { markId: 'A1', type: 'A', points: 1, requiresMarkIds: ['M1'], description: 'Exact roots', predicate: { kind: 'final-answer' } },
             ],
           },
         ],
