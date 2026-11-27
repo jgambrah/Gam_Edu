@@ -1,0 +1,479 @@
+{
+  "lessonId": "step5a-math-evaluator-pilot",
+  "title": "Step 5A Preview: Mathematical Evaluator Pilots (v1.0.0)",
+  "subject": "Mathematics, Science, Accounting & Economics",
+  "level": "Primary (Basic 4 / 0096) to AS & A Level (9709 / 9702 / 9701)",
+  "description": "Preview-only validation fixture exercising all five discriminated math-evaluator modes across 15 slides and 18 independent activities.",
+  "slides": [
+    {
+      "id": "me-s01",
+      "title": "1. Primary Equivalent & Reduced Fractions",
+      "narration": "Simplify 6/8 to its lowest reduced fraction.",
+      "visual": { "type": "diagram", "caption": "Equivalent fractions in lowest terms." },
+      "interactive": [
+        {
+          "id": "me-01-reduced-fraction",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "primary",
+          "subjectTag": "Primary Maths · Fractions",
+          "mode": "numeric-quantity",
+          "title": "Simplify 6/8 to Lowest Terms",
+          "instructions": "Enter 6/8 as a reduced fraction in lowest terms.",
+          "promptMath": "6 / 8 = ?",
+          "accessibilityLabel": "Reduce fraction six eighths to lowest terms",
+          "fallbackText": "Divide numerator and denominator by their highest common factor 2: 6/8 = 3/4.",
+          "expectedValue": "3/4",
+          "precisionRule": { "kind": "exact" },
+          "requiredForm": "reduced-fraction",
+          "hints": ["Both 6 and 8 are divisible by 2."],
+          "successExplanation": "3 and 4 share no common factor greater than 1, so 3/4 is in lowest terms."
+        }
+      ]
+    },
+    {
+      "id": "me-s02",
+      "title": "2. Exact Decimal Rounding (Half-Up Carry-Over)",
+      "narration": "Round 9.995 to exactly two decimal places using standard half-up rounding.",
+      "visual": { "type": "diagram", "caption": "Decimal rounding with carry-over." },
+      "interactive": [
+        {
+          "id": "me-02-decimal-rounding",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "primary",
+          "subjectTag": "Number · Rounding",
+          "mode": "numeric-quantity",
+          "title": "Round 9.995 to 2 Decimal Places",
+          "instructions": "Enter 9.995 rounded to exactly 2 decimal places (half-up). Keep trailing zeros.",
+          "promptMath": "Round 9.995 to 2 d.p.",
+          "accessibilityLabel": "Round 9.995 to two decimal places",
+          "fallbackText": "The third decimal digit is 5, so 9.995 rounds up with carry-over to 10.00.",
+          "expectedValue": "9.995",
+          "precisionRule": { "kind": "decimal-places", "count": 2, "rounding": "half-up" },
+          "successExplanation": "Exact BigInt decimal arithmetic avoids binary float drift: 9.995 -> 10.00."
+        }
+      ]
+    },
+    {
+      "id": "me-s03",
+      "title": "3. Expansion & Factorisation (Multi-Activity Slide)",
+      "narration": "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide.",
+      "visual": { "type": "diagram", "caption": "Expanding and factorising algebra." },
+      "interactive": [
+        {
+          "id": "me-03a-expand",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Algebra · Expansion",
+          "mode": "algebraic-expression",
+          "title": "Expand and Simplify 2(x + 3)",
+          "instructions": "Multiply out the bracket to obtain an expanded polynomial.",
+          "promptMath": "Expand: 2(x + 3)",
+          "accessibilityLabel": "Expand 2 times x plus 3",
+          "fallbackText": "2(x + 3) = 2x + 6.",
+          "variables": ["x"],
+          "expectedExpr": "2x + 6",
+          "requiredForm": "expanded-polynomial",
+          "misconceptionChecks": [
+            { "matchExpr": "2x + 3", "feedback": "Remember to multiply BOTH terms inside the bracket by 2 (2 × 3 = 6)." }
+          ],
+          "successExplanation": "2(x + 3) expands to 2x + 6."
+        },
+        {
+          "id": "me-03b-factorise",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Factorisation",
+          "mode": "algebraic-expression",
+          "title": "Factorise x² − 9",
+          "instructions": "Write x² − 9 in fully factorised form.",
+          "promptMath": "Factorise: x² − 9",
+          "accessibilityLabel": "Factorise x squared minus 9",
+          "fallbackText": "Difference of two squares: x² − 9 = (x − 3)(x + 3).",
+          "variables": ["x"],
+          "expectedExpr": "(x - 3)(x + 3)",
+          "requiredForm": "factored-form",
+          "successExplanation": "(x − 3)(x + 3) and (x + 3)(x − 3) are both accepted."
+        }
+      ]
+    },
+    {
+      "id": "me-s04",
+      "title": "4. Collecting Like Terms",
+      "narration": "Combine like terms in a two-variable linear expression.",
+      "visual": { "type": "diagram", "caption": "Collecting like terms." },
+      "interactive": [
+        {
+          "id": "me-04-like-terms",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Algebra · Simplification",
+          "mode": "algebraic-expression",
+          "title": "Collect Like Terms: 3x + 2y − x + 5y",
+          "instructions": "Simplify 3x + 2y − x + 5y by collecting all like terms.",
+          "promptMath": "Simplify: 3x + 2y − x + 5y",
+          "accessibilityLabel": "Collect like terms in 3x plus 2y minus x plus 5y",
+          "fallbackText": "(3x − x) + (2y + 5y) = 2x + 7y.",
+          "variables": ["x", "y"],
+          "expectedExpr": "2x + 7y",
+          "requiredForm": "collected-like-terms",
+          "successExplanation": "3x − x = 2x and 2y + 5y = 7y."
+        }
+      ]
+    },
+    {
+      "id": "me-s05",
+      "title": "5. Rational Expression with Excluded Value",
+      "narration": "Simplify a rational algebraic expression while preserving the excluded value from the original denominator.",
+      "visual": { "type": "diagram", "caption": "Removable discontinuity at x = 3." },
+      "interactive": [
+        {
+          "id": "me-05-rational-domain",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Rational Expressions",
+          "mode": "algebraic-expression",
+          "title": "Simplify (x² − 9) / (x − 3) and State Domain Restriction",
+          "instructions": "Enter the simplified expression and state the excluded value of x from the original denominator.",
+          "promptMath": "(x² − 9) / (x − 3)",
+          "accessibilityLabel": "Simplify x squared minus 9 over x minus 3 with domain restriction",
+          "fallbackText": "(x² − 9)/(x − 3) = x + 3, with x ≠ 3 because the original denominator vanishes at x = 3.",
+          "variables": ["x"],
+          "sourceExpr": "(x^2 - 9)/(x - 3)",
+          "expectedExpr": "x + 3",
+          "requiredForm": "expanded-polynomial",
+          "domainRestrictions": {
+            "requireLearnerDomain": true,
+            "expectedExcluded": ["3"]
+          },
+          "successExplanation": "Cancelling (x − 3) removes the factor algebraically, but x ≠ 3 remains excluded from the original domain."
+        }
+      ]
+    },
+    {
+      "id": "me-s06",
+      "title": "6. Linear Equation Solution",
+      "narration": "Solve a linear equation in one unknown.",
+      "visual": { "type": "diagram", "caption": "Solving 3x − 7 = 11." },
+      "interactive": [
+        {
+          "id": "me-06-linear-eq",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Algebra · Linear Equations",
+          "mode": "equation-solution",
+          "title": "Solve 3x − 7 = 11",
+          "instructions": "Enter the exact value of x.",
+          "promptMath": "3x − 7 = 11",
+          "accessibilityLabel": "Solve linear equation 3x minus 7 equals 11",
+          "fallbackText": "Add 7 to get 3x = 18, then divide by 3 to get x = 6.",
+          "variable": "x",
+          "originalEquation": "3x - 7 = 11",
+          "equationClass": "linear",
+          "expectedRoots": ["6"],
+          "successExplanation": "3(6) − 7 = 18 − 7 = 11."
+        }
+      ]
+    },
+    {
+      "id": "me-s07",
+      "title": "7. Quadratic Equation — Complete Solution Set",
+      "narration": "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete.",
+      "visual": { "type": "diagram", "caption": "Quadratic roots {2, 3}." },
+      "interactive": [
+        {
+          "id": "me-07-quadratic-roots",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Quadratics",
+          "mode": "equation-solution",
+          "title": "Solve x² − 5x + 6 = 0",
+          "instructions": "Enter ALL real roots separated by a comma (e.g. 2, 3).",
+          "promptMath": "x² − 5x + 6 = 0",
+          "accessibilityLabel": "Find all roots of x squared minus 5x plus 6 equals 0",
+          "fallbackText": "(x − 2)(x − 3) = 0, so the complete solution set is {2, 3}.",
+          "variable": "x",
+          "originalEquation": "x^2 - 5x + 6 = 0",
+          "equationClass": "quadratic",
+          "expectedRoots": ["2", "3"],
+          "requireCompleteSet": true,
+          "successExplanation": "Both x = 2 and x = 3 satisfy the quadratic."
+        }
+      ]
+    },
+    {
+      "id": "me-s08",
+      "title": "8. Radical Equation & Extraneous-Root Rejection",
+      "narration": "Solve a radical equation and reject any extraneous root introduced by squaring both sides.",
+      "visual": { "type": "diagram", "caption": "Checking roots in the original equation." },
+      "interactive": [
+        {
+          "id": "me-08-extraneous-root",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Radical Equations",
+          "mode": "equation-solution",
+          "title": "Solve √(x + 2) = x",
+          "instructions": "Solve √(x + 2) = x and enter ONLY valid real roots that satisfy the original equation.",
+          "promptMath": "√(x + 2) = x",
+          "accessibilityLabel": "Solve square root of x plus 2 equals x",
+          "fallbackText": "Squaring gives x² − x − 2 = 0 -> x = 2 or x = −1. Checking in the original equation: √(2+2)=2 (valid), √(−1+2)=1 ≠ −1 (extraneous). Only x = 2 is valid.",
+          "variable": "x",
+          "originalEquation": "sqrt(x + 2) = x",
+          "equationClass": "radical-single",
+          "expectedRoots": ["2"],
+          "extraneousCandidates": ["-1"],
+          "successExplanation": "x = −1 is extraneous because the principal square root is non-negative."
+        }
+      ]
+    },
+    {
+      "id": "me-s09",
+      "title": "9. Inequalities & Interval Notation",
+      "narration": "Express the solution set of a compound inequality as a disjoint union of intervals.",
+      "visual": { "type": "diagram", "caption": "Interval union (-∞, -2) ∪ [5, ∞)." },
+      "interactive": [
+        {
+          "id": "me-09-interval-union",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Inequalities",
+          "mode": "inequality-interval",
+          "title": "Express x < −2 or x ≥ 5",
+          "instructions": "Enter the solution set using interval notation (e.g. (-inf, -2) U [5, inf)) or inequality notation.",
+          "promptMath": "x < −2  or  x ≥ 5",
+          "accessibilityLabel": "Enter interval union for x less than minus 2 or x greater than or equal to 5",
+          "fallbackText": "In interval notation: (−∞, −2) ∪ [5, ∞).",
+          "variable": "x",
+          "expectedIntervals": [
+            { "low": "-inf", "lowInclusive": false, "high": "-2", "highInclusive": false },
+            { "low": "5", "lowInclusive": true, "high": "inf", "highInclusive": false }
+          ],
+          "acceptedInputStyle": "either",
+          "successExplanation": "Open '(' excludes −2 and ±∞; closed '[' includes 5."
+        }
+      ]
+    },
+    {
+      "id": "me-s10",
+      "title": "10. Surds & Indices Simplification",
+      "narration": "Extract perfect square factors and combine like surds.",
+      "visual": { "type": "diagram", "caption": "Simplifying √12 + √27." },
+      "interactive": [
+        {
+          "id": "me-10-surds",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Number · Surds",
+          "mode": "algebraic-expression",
+          "title": "Simplify √12 + √27",
+          "instructions": "Write √12 + √27 as a single simplified surd (e.g. 5sqrt(3)).",
+          "promptMath": "√12 + √27",
+          "accessibilityLabel": "Simplify square root of 12 plus square root of 27",
+          "fallbackText": "√12 = 2√3 and √27 = 3√3, so √12 + √27 = 5√3.",
+          "variables": ["x"],
+          "expectedExpr": "5sqrt(3)",
+          "requiredForm": "simplified-surd",
+          "successExplanation": "2√3 + 3√3 = 5√3."
+        }
+      ]
+    },
+    {
+      "id": "me-s11",
+      "title": "11. Logarithmic Identity & Domain Restriction",
+      "narration": "Combine two natural logarithms while preserving the stricter original domain x > 2.",
+      "visual": { "type": "diagram", "caption": "Logarithm domain preservation x > 2." },
+      "interactive": [
+        {
+          "id": "me-11-log-domain",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "Pure Maths · Logarithms",
+          "mode": "algebraic-expression",
+          "title": "Combine ln(x) + ln(x − 2) and State Domain",
+          "instructions": "Write ln(x) + ln(x − 2) as a single logarithm and state the valid domain for x.",
+          "promptMath": "ln(x) + ln(x − 2)",
+          "accessibilityLabel": "Combine natural log of x plus natural log of x minus 2 with domain",
+          "fallbackText": "ln(x) + ln(x − 2) = ln(x(x − 2)) for x > 2 (both x > 0 and x − 2 > 0 must hold).",
+          "variables": ["x"],
+          "sourceExpr": "ln(x) + ln(x - 2)",
+          "expectedExpr": "ln(x*(x - 2))",
+          "domainRestrictions": {
+            "requireLearnerDomain": true,
+            "expectedDomainInterval": "x > 2",
+            "variableAssumptions": { "x": "positive" }
+          },
+          "verificationPolicy": "exact-or-symbolic",
+          "successExplanation": "Although x(x − 2) > 0 also holds for x < 0, the original expression requires both x > 0 and x > 2, so x > 2."
+        }
+      ]
+    },
+    {
+      "id": "me-s12",
+      "title": "12. Physics Quantities, Equivalent Units & Sig Figs (Multi-Activity Slide)",
+      "narration": "Practise equivalent SI unit conversion and scientific notation with exact significant figures.",
+      "visual": { "type": "diagram", "caption": "Physics units and significant figures." },
+      "interactive": [
+        {
+          "id": "me-12a-physics-units",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Physics · Kinematics & Units",
+          "mode": "numeric-quantity",
+          "title": "Average Speed (Equivalent Units Accepted)",
+          "instructions": "A vehicle travels 150 m in 12 s. Enter its speed and unit (both m/s and equivalent km/h are accepted).",
+          "promptMath": "v = 150 m ÷ 12 s",
+          "accessibilityLabel": "Calculate average speed with units",
+          "fallbackText": "v = 150 / 12 = 12.5 m/s (equivalent to 45 km/h).",
+          "expectedValue": "12.5",
+          "unitSpec": {
+            "expectedUnit": "m/s",
+            "allowEquivalentUnits": true
+          },
+          "successExplanation": "12.5 m/s = 45 km/h."
+        },
+        {
+          "id": "me-12b-sig-figs-sci",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Physics · Standard Form & Sig Figs",
+          "mode": "numeric-quantity",
+          "title": "Speed of Light to 3 Significant Figures",
+          "instructions": "Enter 299792458 m/s rounded to 3 significant figures in scientific notation (e.g. 3.00e8 or 3.00 * 10^8).",
+          "promptMath": "c ≈ 299,792,458 m/s (3 s.f.)",
+          "accessibilityLabel": "Enter speed of light to 3 significant figures in scientific notation",
+          "fallbackText": "3.00 × 10^8 m/s (3 significant figures).",
+          "expectedValue": "299792458",
+          "precisionRule": { "kind": "sig-figs", "count": 3, "rounding": "half-up" },
+          "requiredForm": "scientific",
+          "unitSpec": { "expectedUnit": "m/s", "allowEquivalentUnits": false },
+          "successExplanation": "3.00 × 10^8 clearly displays all 3 significant figures."
+        }
+      ]
+    },
+    {
+      "id": "me-s13",
+      "title": "13. Chemistry Concentration & Accounting Margin (Multi-Activity Slide)",
+      "narration": "Apply exact numerical and unit evaluation across Chemistry and Accounting.",
+      "visual": { "type": "diagram", "caption": "Cross-subject quantitative reasoning." },
+      "interactive": [
+        {
+          "id": "me-13a-chemistry-molarity",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Chemistry · Stoichiometry",
+          "mode": "numeric-quantity",
+          "title": "Molar Concentration of NaCl Solution",
+          "instructions": "0.125 mol of NaCl is dissolved in 0.50 dm³ of water. Enter the concentration with unit (mol/dm^3 or mol/m^3).",
+          "promptMath": "c = 0.125 mol ÷ 0.50 dm³",
+          "accessibilityLabel": "Calculate molar concentration with units",
+          "fallbackText": "c = 0.125 / 0.50 = 0.25 mol/dm³ (250 mol/m³).",
+          "expectedValue": "0.25",
+          "unitSpec": { "expectedUnit": "mol/dm^3", "allowEquivalentUnits": true },
+          "successExplanation": "0.25 mol/dm³ equals 250 mol/m³."
+        },
+        {
+          "id": "me-13b-accounting-margin",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Accounting · Gross Profit Margin",
+          "mode": "numeric-quantity",
+          "title": "Gross Profit Margin (%)",
+          "instructions": "Revenue is GHS 800 and Cost of Sales is GHS 500. Enter the Gross Profit Margin percentage (with unit %).",
+          "promptMath": "Margin = (800 − 500) / 800 × 100%",
+          "accessibilityLabel": "Calculate gross profit margin percentage",
+          "fallbackText": "Gross profit = 300; Margin = 300/800 = 37.5%.",
+          "expectedValue": "37.5",
+          "unitSpec": { "expectedUnit": "%", "allowEquivalentUnits": true },
+          "successExplanation": "Gross Profit Margin is 37.5% (distinct from mark-up, which is 300/500 = 60%)."
+        }
+      ]
+    },
+    {
+      "id": "me-s14",
+      "title": "14. Supported Symbolic Differentiation",
+      "narration": "Differentiate a combined polynomial and trigonometric function (with angles in radians).",
+      "visual": { "type": "diagram", "caption": "Differentiation in radians." },
+      "interactive": [
+        {
+          "id": "me-14-derivative",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "Calculus · Differentiation",
+          "mode": "calculus-check",
+          "title": "Find d/dx (3x² + sin(x))",
+          "instructions": "Enter the derivative of 3x² + sin(x) with respect to x (radians).",
+          "promptMath": "d/dx (3x² + sin(x))",
+          "accessibilityLabel": "Differentiate 3x squared plus sine x",
+          "fallbackText": "d/dx (3x² + sin(x)) = 6x + cos(x).",
+          "variable": "x",
+          "calculusKind": "derivative",
+          "sourceExpr": "3x^2 + sin(x)",
+          "expectedExpr": "6x + cos(x)",
+          "successExplanation": "Power rule gives 6x and d/dx(sin x) = cos x in radians."
+        }
+      ]
+    },
+    {
+      "id": "me-s15",
+      "title": "15. Supported Antiderivative Verification",
+      "narration": "Find the general indefinite integral and include the constant of integration + C.",
+      "visual": { "type": "diagram", "caption": "Indefinite integration verified by exact differentiation." },
+      "interactive": [
+        {
+          "id": "me-15-antiderivative",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "Calculus · Integration",
+          "mode": "calculus-check",
+          "title": "Find ∫ (4x³ − 2x) dx",
+          "instructions": "Enter the general indefinite integral of 4x³ − 2x (remember + C).",
+          "promptMath": "∫ (4x³ − 2x) dx",
+          "accessibilityLabel": "Find general indefinite integral of 4x cubed minus 2x",
+          "fallbackText": "∫ (4x³ − 2x) dx = x⁴ − x² + C.",
+          "variable": "x",
+          "calculusKind": "antiderivative",
+          "sourceExpr": "4x^3 - 2x",
+          "expectedExpr": "x^4 - x^2 + C",
+          "requireConstantOfIntegration": true,
+          "successExplanation": "Differentiating x⁴ − x² + C recovers 4x³ − 2x exactly."
+        }
+      ]
+    }
+  ]
+}

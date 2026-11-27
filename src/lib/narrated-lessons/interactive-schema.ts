@@ -59,6 +59,8 @@ import type {
   GeometryConstructorMode,
   TransformationSpec,
 } from '@/lib/construction-lab/geometry-engine';
+import type { MathEvaluatorSpec, MathMisconceptionRule } from '@/lib/math-evaluator/math-eval-engine';
+import { validateMathEvaluatorConfig } from '@/lib/math-evaluator/math-eval-schema-validator';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -66,7 +68,8 @@ export type InteractiveEngineId =
   | 'rule-explorer'
   | 'graph-slider'
   | 'process-stepper'
-  | 'diagram-hotspots';
+  | 'diagram-hotspots'
+  | 'math-evaluator';
 
 export interface InteractiveEngineMeta {
   id: InteractiveEngineId;
@@ -168,6 +171,14 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
     supportedSchemaVersions: [1],
     implemented: true,
     description: 'Cross-subject interactive diagram, structure-to-function hotspot explorer, and accessible identification challenges (Step 4C).',
+  },
+  'math-evaluator': {
+    id: 'math-evaluator',
+    engineVersion: '1.0.0',
+    productionVersion: null,
+    supportedSchemaVersions: [1],
+    implemented: true,
+    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, and symbolic calculus evaluator (Step 5A preview).',
   },
 };
 
@@ -583,13 +594,25 @@ export interface DiagramHotspotsInteractiveConfig extends SlideInteractiveBase {
   identifyPrompts?: DiagramIdentifyPromptDef[];
 }
 
+export type MathEvaluatorInteractiveConfig = SlideInteractiveBase &
+  MathEvaluatorSpec & {
+    engine: 'math-evaluator';
+    subjectTag?: string;
+    curriculumLevel: 'primary' | 'lower-secondary' | 'igcse' | 'as-a-level';
+    promptMath?: string;
+    prediction?: ConstructionPredictionDef;
+    misconceptionChecks?: MathMisconceptionRule[];
+    successExplanation?: string;
+  };
+
 export type SlideInteractiveConfig =
   | CodePlaygroundInteractiveConfig
   | ConstructionLabInteractiveConfig
   | RuleExplorerInteractiveConfig
   | GraphSliderInteractiveConfig
   | ProcessStepperInteractiveConfig
-  | DiagramHotspotsInteractiveConfig;
+  | DiagramHotspotsInteractiveConfig
+  | MathEvaluatorInteractiveConfig;
 
 const ALLOWED_RULE_OPS = new Set<RuleOperator>(['AND', 'OR', 'NOT', 'XOR']);
 const SEMVER_RE = /^(\d+)\.(\d+)\.(\d+)$/;
@@ -656,6 +679,37 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
     'guidedOrder',
     'hotspots',
     'identifyPrompts',
+  ]),
+  'math-evaluator': new Set([
+    'subjectTag',
+    'curriculumLevel',
+    'mode',
+    'promptMath',
+    'prediction',
+    'misconceptionChecks',
+    'successExplanation',
+    'expectedValue',
+    'tolerance',
+    'precisionRule',
+    'requiredForm',
+    'unitSpec',
+    'variables',
+    'sourceExpr',
+    'expectedExpr',
+    'domainRestrictions',
+    'verificationPolicy',
+    'variable',
+    'originalEquation',
+    'equationClass',
+    'expectedRoots',
+    'solutionType',
+    'requireCompleteSet',
+    'extraneousCandidates',
+    'expectedIntervals',
+    'acceptedInputStyle',
+    'calculusKind',
+    'requireConstantOfIntegration',
+    'requireAbsInLog',
   ]),
 };
 
@@ -1976,6 +2030,8 @@ export function validateSlideInteractiveConfig(
         });
       }
     }
+  } else if (obj.engine === 'math-evaluator') {
+    validateMathEvaluatorConfig(obj, errors);
   }
 
   return errors.length === 0
