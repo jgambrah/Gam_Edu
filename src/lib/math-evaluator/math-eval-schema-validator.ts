@@ -25,7 +25,9 @@ import {
   buildAssumedDomainFromRestrictions,
   collectVarsInAst,
   type MathDomainRestrictions,
+  type MathMultiStepWorkingSpec,
 } from './math-eval-engine';
+import { verifyWorkingChain, type WorkingStepInput, type WorkspaceProblemKind } from './math-eval-step-verifier';
 
 const SHARED_MATH_EVAL_KEYS = [
   'id',
@@ -93,6 +95,79 @@ const CALCULUS_KEYS = new Set([
   'requireConstantOfIntegration',
   'requireAbsInLog',
   'domainRestrictions',
+]);
+
+const WORKSPACE_KEYS = new Set([
+  ...SHARED_MATH_EVAL_KEYS,
+  'learningMode',
+  'problemKind',
+  'variables',
+  'initialStatement',
+  'initialUnit',
+  'keypadProfile',
+  'domainRestrictions',
+  'finalGoal',
+  'maxWorkingSteps',
+  'markingScheme',
+  'workedSolutions',
+]);
+
+const MARKING_SCHEME_KEYS = new Set(['maxMarks', 'sharedIndependentMarks', 'strategyGroups']);
+const STRATEGY_GROUP_KEYS = new Set(['id', 'label', 'marks']);
+const MARK_RULE_KEYS = new Set([
+  'markId',
+  'type',
+  'points',
+  'description',
+  'requiresMarkIds',
+  'allowErrorCarriedForward',
+  'predicate',
+]);
+const WORKED_SOLUTION_KEYS = new Set(['methodLabel', 'steps']);
+const WORKED_STEP_KEYS = new Set(['math', 'note', 'operation', 'domainNote', 'rejectedExtraneous', 'unit']);
+
+const VALID_LEARNING_MODES = new Set(['guided', 'independent', 'exam-practice']);
+const VALID_PROBLEM_KINDS = new Set<WorkspaceProblemKind>([
+  'arithmetic-numeric',
+  'algebraic-simplification',
+  'equation-solving',
+  'inequality-solving',
+  'calculus-working',
+  'formula-unit',
+]);
+const VALID_OPERATIONS = new Set([
+  'simplify',
+  'rearrange',
+  'factorise',
+  'expand',
+  'complete-square',
+  'quadratic-formula',
+  'substitute',
+  'differentiate',
+  'integrate',
+  'check-candidates',
+  'state-domain',
+  'conclude',
+]);
+const VALID_MARK_TYPES = new Set(['M', 'A', 'B']);
+const VALID_STEP_FORMS = new Set([
+  'factored-form',
+  'expanded-polynomial',
+  'collected-like-terms',
+  'reduced-fraction',
+  'simplified-fraction',
+  'simplified-surd',
+  'completed-square',
+]);
+const VALID_PREDICATE_KINDS = new Set([
+  'expression-equivalent',
+  'required-form',
+  'equation-equivalent',
+  'certified-transition',
+  'domain-restriction',
+  'extraneous-rejection',
+  'final-answer',
+  'follow-through-step',
 ]);
 
 const TOLERANCE_KEYS = new Set(['abs', 'rel']);
@@ -223,10 +298,11 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     mode !== 'algebraic-expression' &&
     mode !== 'equation-solution' &&
     mode !== 'inequality-interval' &&
-    mode !== 'calculus-check'
+    mode !== 'calculus-check' &&
+    mode !== 'multi-step-working'
   ) {
     errors.push(
-      'math-evaluator "mode" must be numeric-quantity, algebraic-expression, equation-solution, inequality-interval, or calculus-check.',
+      'math-evaluator "mode" must be numeric-quantity, algebraic-expression, equation-solution, inequality-interval, calculus-check, or multi-step-working.',
     );
     return;
   }
@@ -592,6 +668,12 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     return;
   }
 
+  // MODE 6: MULTI-STEP WORKING WORKSPACE (Step 5A.2 — requires minEngineVersion >= 1.1.0)
+  if (mode === 'multi-step-working') {
+    validateMultiStepWorkingConfig(obj, errors);
+    return;
+  }
+
   // MODE 5: CALCULUS CHECK
   checkAllowed(obj, CALCULUS_KEYS, 'math-evaluator(calculus-check)', errors);
   if (typeof obj.variable !== 'string' || !/^[a-zA-Z]$/.test(obj.variable)) {
@@ -668,5 +750,373 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     }
   } catch (e) {
     errors.push(`calculus-check expression unsupported or invalid: ${e instanceof Error ? e.message : String(e)}`);
+  }
+}
+
+function validateMarkRuleList(
+  rawRules: unknown,
+  ctx: string,
+  allowedVars: string[],
+  knownIds: Set<string>,
+  errors: string[],
+): { rules: Array<{ markId: string; points: number; requiresMarkIds: string[] }>; totalPoints: number } {
+  const rules: Array<{ markId: string; points: number; requiresMarkIds: string[] }> = [];
+  let totalPoints = 0;
+  if (!Array.isArray(rawRules)) {
+    errors.push(`${ctx} must be an array.`);
+    return { rules, totalPoints };
+  }
+  const localIds = new Set<string>();
+  for (let i = 0; i < rawRules.length; i++) {
+    const r = rawRules[i];
+    if (!isPlainObj(r)) {
+      errors.push(`${ctx}[${i}] must be an object.`);
+      continue;
+    }
+    checkAllowed(r, MARK_RULE_KEYS, `${ctx}[${i}]`, errors);
+    if (typeof r.markId !== 'string' || !/^[A-Za-z0-9_-]{1,24}$/.test(r.markId)) {
+      errors.push(`${ctx}[${i}].markId must be a valid identifier (1..24 chars).`);
+      continue;
+    }
+    if (localIds.has(r.markId) || knownIds.has(r.markId)) {
+      errors.push(`Duplicate markId "${r.markId}" in ${ctx}[${i}].`);
+      continue;
+    }
+    localIds.add(r.markId);
+
+    if (typeof r.type !== 'string' || !VALID_MARK_TYPES.has(r.type)) {
+      errors.push(`${ctx}[${i}].type must be M, A, or B.`);
+    }
+    if (typeof r.points !== 'number' || !Number.isFinite(r.points) || !Number.isInteger(r.points) || r.points < 1 || r.points > 10) {
+      errors.push(`${ctx}[${i}].points must be a positive integer (1..10).`);
+    } else {
+      totalPoints += r.points;
+    }
+    if (typeof r.description !== 'string' || r.description.trim().length < 4) {
+      errors.push(`${ctx}[${i}].description must be a non-empty string.`);
+    }
+    if (r.allowErrorCarriedForward !== undefined && typeof r.allowErrorCarriedForward !== 'boolean') {
+      errors.push(`${ctx}[${i}].allowErrorCarriedForward must be a strict boolean.`);
+    }
+    const reqs: string[] = [];
+    if (r.requiresMarkIds !== undefined) {
+      if (!Array.isArray(r.requiresMarkIds) || r.requiresMarkIds.some((x) => typeof x !== 'string')) {
+        errors.push(`${ctx}[${i}].requiresMarkIds must be an array of markId strings.`);
+      } else {
+        reqs.push(...(r.requiresMarkIds as string[]));
+      }
+    }
+
+    // Validate predicate strictly
+    if (!isPlainObj(r.predicate)) {
+      errors.push(`${ctx}[${i}].predicate must be an object.`);
+    } else {
+      const p = r.predicate;
+      if (typeof p.kind !== 'string' || !VALID_PREDICATE_KINDS.has(p.kind)) {
+        errors.push(`${ctx}[${i}].predicate.kind "${String(p.kind)}" is unsupported.`);
+      } else if (p.kind === 'expression-equivalent') {
+        if (typeof p.targetExpr !== 'string' || !p.targetExpr.trim()) {
+          errors.push(`${ctx}[${i}].predicate.targetExpr must be a non-empty string.`);
+        } else {
+          try {
+            parseEvalExpr(p.targetExpr, { allowedVariables: allowedVars });
+          } catch (e) {
+            errors.push(`${ctx}[${i}].predicate.targetExpr invalid: ${e instanceof Error ? e.message : String(e)}`);
+          }
+        }
+      } else if (p.kind === 'required-form') {
+        if (typeof p.targetExpr !== 'string' || !p.targetExpr.trim()) {
+          errors.push(`${ctx}[${i}].predicate.targetExpr must be a non-empty string.`);
+        } else {
+          try {
+            parseEvalExpr(p.targetExpr, { allowedVariables: allowedVars });
+          } catch (e) {
+            errors.push(`${ctx}[${i}].predicate.targetExpr invalid: ${e instanceof Error ? e.message : String(e)}`);
+          }
+        }
+        if (typeof p.form !== 'string' || !VALID_STEP_FORMS.has(p.form)) {
+          errors.push(`${ctx}[${i}].predicate.form is invalid.`);
+        }
+      } else if (p.kind === 'equation-equivalent') {
+        if (typeof p.targetEquation !== 'string' || !p.targetEquation.includes('=')) {
+          errors.push(`${ctx}[${i}].predicate.targetEquation must contain "=".`);
+        }
+        if (
+          p.requiredForm !== undefined &&
+          p.requiredForm !== 'factored-form' &&
+          p.requiredForm !== 'completed-square' &&
+          p.requiredForm !== 'expanded-polynomial'
+        ) {
+          errors.push(`${ctx}[${i}].predicate.requiredForm is invalid.`);
+        }
+      } else if (p.kind === 'extraneous-rejection') {
+        if (!Array.isArray(p.expectedRejected) || p.expectedRejected.length === 0 || p.expectedRejected.some((x) => typeof x !== 'string')) {
+          errors.push(`${ctx}[${i}].predicate.expectedRejected must be a non-empty array of root strings.`);
+        }
+      } else if (p.kind === 'domain-restriction') {
+        const hasEx = Array.isArray(p.expectedExcluded) && p.expectedExcluded.length > 0;
+        const hasIv = typeof p.expectedDomainInterval === 'string' && p.expectedDomainInterval.trim().length > 0;
+        if (!hasEx && !hasIv) {
+          errors.push(`${ctx}[${i}].predicate(domain-restriction) requires expectedExcluded or expectedDomainInterval.`);
+        }
+      } else if (p.kind === 'follow-through-step') {
+        if (r.allowErrorCarriedForward !== true) {
+          errors.push(`${ctx}[${i}] uses follow-through-step predicate without allowErrorCarriedForward: true.`);
+        }
+      }
+    }
+
+    rules.push({ markId: r.markId, points: typeof r.points === 'number' ? r.points : 0, requiresMarkIds: reqs });
+  }
+
+  // Validate requiresMarkIds references & detect cycles (DFS 3-colouring)
+  const allVisible = new Set<string>([...knownIds, ...localIds]);
+  const depMap = new Map<string, string[]>();
+  for (const r of rules) {
+    depMap.set(r.markId, r.requiresMarkIds);
+    for (const req of r.requiresMarkIds) {
+      if (!allVisible.has(req)) {
+        errors.push(`Mark "${r.markId}" in ${ctx} references unknown prerequisite "${req}".`);
+      }
+      if (req === r.markId) {
+        errors.push(`Mark "${r.markId}" in ${ctx} cannot depend on itself.`);
+      }
+    }
+  }
+
+  const state = new Map<string, 0 | 1 | 2>(); // 0=unvisited, 1=visiting, 2=done
+  const hasCycle = (id: string): boolean => {
+    const st = state.get(id) ?? 0;
+    if (st === 1) return true;
+    if (st === 2) return false;
+    state.set(id, 1);
+    for (const dep of depMap.get(id) ?? []) {
+      if (depMap.has(dep) && hasCycle(dep)) return true;
+    }
+    state.set(id, 2);
+    return false;
+  };
+  for (const r of rules) {
+    if (hasCycle(r.markId)) {
+      errors.push(`Cyclic mark dependency detected involving "${r.markId}" in ${ctx}.`);
+      break;
+    }
+  }
+
+  return { rules, totalPoints };
+}
+
+function validateMultiStepWorkingConfig(obj: Record<string, unknown>, errors: string[]): void {
+  checkAllowed(obj, WORKSPACE_KEYS, 'math-evaluator(multi-step-working)', errors);
+
+  if (typeof obj.learningMode !== 'string' || !VALID_LEARNING_MODES.has(obj.learningMode)) {
+    errors.push('multi-step-working "learningMode" must be guided, independent, or exam-practice.');
+  }
+  if (typeof obj.problemKind !== 'string' || !VALID_PROBLEM_KINDS.has(obj.problemKind as WorkspaceProblemKind)) {
+    errors.push('multi-step-working "problemKind" is invalid.');
+  }
+  const vars = obj.variables;
+  if (
+    !Array.isArray(vars) ||
+    vars.length > MATH_EVAL_LIMITS.maxVariables ||
+    vars.some((v) => typeof v !== 'string' || !/^[a-zA-Z]$/.test(v))
+  ) {
+    errors.push(`multi-step-working "variables" must be 0..${MATH_EVAL_LIMITS.maxVariables} single-letter strings.`);
+    return;
+  }
+  if (new Set(vars).size !== vars.length) {
+    errors.push('multi-step-working "variables" must not contain duplicates.');
+    return;
+  }
+  if (typeof obj.initialStatement !== 'string' || !obj.initialStatement.trim()) {
+    errors.push('multi-step-working requires non-empty string "initialStatement".');
+    return;
+  }
+  if (obj.initialUnit !== undefined) {
+    if (typeof obj.initialUnit !== 'string' || !obj.initialUnit.trim()) {
+      errors.push('multi-step-working "initialUnit" must be a non-empty string.');
+    } else {
+      try {
+        parseUnitExpression(obj.initialUnit);
+      } catch (e) {
+        errors.push(`multi-step-working initialUnit invalid: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+  }
+  if (obj.keypadProfile !== undefined && (typeof obj.keypadProfile !== 'string' || !VALID_LEVELS.has(obj.keypadProfile))) {
+    errors.push('multi-step-working "keypadProfile" must be primary, lower-secondary, igcse, or as-a-level.');
+  }
+  if (obj.maxWorkingSteps !== undefined) {
+    if (
+      typeof obj.maxWorkingSteps !== 'number' ||
+      !Number.isInteger(obj.maxWorkingSteps) ||
+      obj.maxWorkingSteps < 1 ||
+      obj.maxWorkingSteps > MATH_EVAL_LIMITS.maxWorkingSteps
+    ) {
+      errors.push(`multi-step-working "maxWorkingSteps" must be an integer 1..${MATH_EVAL_LIMITS.maxWorkingSteps}.`);
+    }
+  }
+
+  validateDomainRestrictionsObject(obj.domainRestrictions, vars as string[], errors);
+
+  // Validate nested finalGoal (must be one of the 5 Step 5A.1 modes — never recursive multi-step-working!)
+  if (!isPlainObj(obj.finalGoal)) {
+    errors.push('multi-step-working requires a valid "finalGoal" object.');
+    return;
+  }
+  if (obj.finalGoal.mode === 'multi-step-working') {
+    errors.push('multi-step-working "finalGoal" cannot recursively use mode "multi-step-working".');
+    return;
+  }
+  const fgErrors: string[] = [];
+  validateMathEvaluatorConfig(
+    {
+      ...obj.finalGoal,
+      id: `${String(obj.id ?? 'ws')}_goal`,
+      engine: 'math-evaluator',
+      schemaVersion: 1,
+      title: 'Final Goal',
+      instructions: 'Final goal validation',
+      accessibilityLabel: 'Final goal',
+      fallbackText: 'Final goal',
+      curriculumLevel: typeof obj.curriculumLevel === 'string' ? obj.curriculumLevel : 'igcse',
+    },
+    fgErrors,
+  );
+  for (const e of fgErrors) errors.push(`finalGoal: ${e}`);
+
+  // Validate optional markingScheme
+  if (obj.markingScheme !== undefined) {
+    if (!isPlainObj(obj.markingScheme)) {
+      errors.push('multi-step-working "markingScheme" must be an object.');
+    } else {
+      const ms = obj.markingScheme;
+      checkAllowed(ms, MARKING_SCHEME_KEYS, 'markingScheme', errors);
+      if (typeof ms.maxMarks !== 'number' || !Number.isInteger(ms.maxMarks) || ms.maxMarks < 1 || ms.maxMarks > 20) {
+        errors.push('markingScheme.maxMarks must be an integer 1..20.');
+      }
+      const sharedIds = new Set<string>();
+      let sharedPoints = 0;
+      if (ms.sharedIndependentMarks !== undefined) {
+        if (!Array.isArray(ms.sharedIndependentMarks) || ms.sharedIndependentMarks.length > MATH_EVAL_LIMITS.maxSharedIndependentMarks) {
+          errors.push(`markingScheme.sharedIndependentMarks must be an array of at most ${MATH_EVAL_LIMITS.maxSharedIndependentMarks} rules.`);
+        } else {
+          const sr = validateMarkRuleList(ms.sharedIndependentMarks, 'markingScheme.sharedIndependentMarks', vars as string[], new Set(), errors);
+          sharedPoints = sr.totalPoints;
+          for (const r of sr.rules) sharedIds.add(r.markId);
+        }
+      }
+      if (!Array.isArray(ms.strategyGroups) || ms.strategyGroups.length < 1 || ms.strategyGroups.length > MATH_EVAL_LIMITS.maxMarkingStrategies) {
+        errors.push(`markingScheme.strategyGroups must contain 1..${MATH_EVAL_LIMITS.maxMarkingStrategies} strategies.`);
+      } else {
+        const stratIds = new Set<string>();
+        for (let si = 0; si < ms.strategyGroups.length; si++) {
+          const sg = ms.strategyGroups[si];
+          if (!isPlainObj(sg)) {
+            errors.push(`markingScheme.strategyGroups[${si}] must be an object.`);
+            continue;
+          }
+          checkAllowed(sg, STRATEGY_GROUP_KEYS, `markingScheme.strategyGroups[${si}]`, errors);
+          if (typeof sg.id !== 'string' || !sg.id.trim()) {
+            errors.push(`markingScheme.strategyGroups[${si}].id must be a non-empty string.`);
+          } else if (stratIds.has(sg.id)) {
+            errors.push(`Duplicate strategy group id "${sg.id}".`);
+          } else {
+            stratIds.add(sg.id);
+          }
+          if (typeof sg.label !== 'string' || !sg.label.trim()) {
+            errors.push(`markingScheme.strategyGroups[${si}].label must be a non-empty string.`);
+          }
+          if (!Array.isArray(sg.marks) || sg.marks.length < 1 || sg.marks.length > MATH_EVAL_LIMITS.maxMarkingRulesPerStrategy) {
+            errors.push(`markingScheme.strategyGroups[${si}].marks must have 1..${MATH_EVAL_LIMITS.maxMarkingRulesPerStrategy} rules.`);
+          } else {
+            const sr = validateMarkRuleList(sg.marks, `markingScheme.strategyGroups[${si}].marks`, vars as string[], sharedIds, errors);
+            if (typeof ms.maxMarks === 'number' && sharedPoints + sr.totalPoints > ms.maxMarks) {
+              errors.push(
+                `markingScheme.strategyGroups[${si}] (${sharedPoints + sr.totalPoints} pts including shared marks) exceeds maxMarks (${ms.maxMarks}).`,
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Validate workedSolutions (1..4 model solutions, each verified against step verifier under cumulative budget!)
+  if (
+    !Array.isArray(obj.workedSolutions) ||
+    obj.workedSolutions.length < 1 ||
+    obj.workedSolutions.length > MATH_EVAL_LIMITS.maxWorkedSolutions
+  ) {
+    errors.push(`multi-step-working requires 1..${MATH_EVAL_LIMITS.maxWorkedSolutions} workedSolutions.`);
+    return;
+  }
+
+  const cumulativeBudget = new EvalOpBudget(MATH_EVAL_LIMITS.maxTotalWorkspaceOps);
+  for (let wi = 0; wi < obj.workedSolutions.length; wi++) {
+    const ws = obj.workedSolutions[wi];
+    if (!isPlainObj(ws)) {
+      errors.push(`workedSolutions[${wi}] must be an object.`);
+      continue;
+    }
+    checkAllowed(ws, WORKED_SOLUTION_KEYS, `workedSolutions[${wi}]`, errors);
+    if (typeof ws.methodLabel !== 'string' || !ws.methodLabel.trim()) {
+      errors.push(`workedSolutions[${wi}].methodLabel must be a non-empty string.`);
+    }
+    if (
+      !Array.isArray(ws.steps) ||
+      ws.steps.length < 1 ||
+      ws.steps.length > MATH_EVAL_LIMITS.maxWorkedStepsPerSolution
+    ) {
+      errors.push(`workedSolutions[${wi}].steps must have 1..${MATH_EVAL_LIMITS.maxWorkedStepsPerSolution} steps.`);
+      continue;
+    }
+    const modelSteps: WorkingStepInput[] = [];
+    for (let si = 0; si < ws.steps.length; si++) {
+      const st = ws.steps[si];
+      if (!isPlainObj(st)) {
+        errors.push(`workedSolutions[${wi}].steps[${si}] must be an object.`);
+        continue;
+      }
+      checkAllowed(st, WORKED_STEP_KEYS, `workedSolutions[${wi}].steps[${si}]`, errors);
+      if (typeof st.math !== 'string' || !st.math.trim()) {
+        errors.push(`workedSolutions[${wi}].steps[${si}].math must be a non-empty string.`);
+      }
+      if (typeof st.note !== 'string' || !st.note.trim()) {
+        errors.push(`workedSolutions[${wi}].steps[${si}].note must be a non-empty string.`);
+      }
+      if (st.operation !== undefined && (typeof st.operation !== 'string' || !VALID_OPERATIONS.has(st.operation))) {
+        errors.push(`workedSolutions[${wi}].steps[${si}].operation is invalid.`);
+      }
+      modelSteps.push({
+        math: typeof st.math === 'string' ? st.math : '',
+        operation: st.operation as WorkingStepInput['operation'],
+        domainNote: typeof st.domainNote === 'string' ? st.domainNote : undefined,
+        rejectedExtraneous: Array.isArray(st.rejectedExtraneous) ? (st.rejectedExtraneous as string[]) : undefined,
+        unit: typeof st.unit === 'string' ? st.unit : undefined,
+      });
+    }
+
+    // Verify author model solution is not provably invalid (indeterminate allowed for unsupported classes!)
+    if (errors.length === 0 && modelSteps.length > 0) {
+      const typedSpec = obj as unknown as MathMultiStepWorkingSpec;
+      const chain = verifyWorkingChain(
+        {
+          problemKind: typedSpec.problemKind,
+          variables: typedSpec.variables,
+          initialStatement: typedSpec.initialStatement,
+          initialUnit: typedSpec.initialUnit,
+          domainRestrictions: typedSpec.domainRestrictions,
+          finalGoal: typedSpec.finalGoal,
+        },
+        modelSteps,
+        cumulativeBudget,
+      );
+      if (chain.hasInvalidStep) {
+        errors.push(
+          `workedSolutions[${wi}] ("${String(ws.methodLabel)}") contains a provably invalid mathematical step at index ${chain.earliestErrorIndex}.`,
+        );
+      }
+    }
   }
 }

@@ -23,6 +23,15 @@ export const MATH_EVAL_LIMITS = {
   maxEvalOps: 2_000,
   maxSurdRadicand: 10_000,
   numericSampleCount: 16,
+  // Step 5A.2 Multi-Step Working Workspace bounds
+  maxWorkingSteps: 16,
+  maxUndoHistory: 30,
+  maxMarkingStrategies: 4,
+  maxMarkingRulesPerStrategy: 8,
+  maxSharedIndependentMarks: 6,
+  maxWorkedSolutions: 4,
+  maxWorkedStepsPerSolution: 16,
+  maxTotalWorkspaceOps: 24_000,
 } as const;
 
 export const FORBIDDEN_IDENTIFIERS = new Set([

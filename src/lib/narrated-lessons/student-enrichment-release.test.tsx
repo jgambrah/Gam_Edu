@@ -2,13 +2,11 @@ import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import {
-  SUPER_ADMIN_EMAIL,
-  SUPER_ADMIN_UID,
   evaluateStudentEnrichmentAccess,
   getStudentEnrichmentReleaseStatus,
 } from '@/lib/student-enrichment-release';
 
-let mockUser: { email?: string | null; uid?: string } | null = null;
+let mockUser: { uid?: string } | null = null;
 let mockUserLoading = false;
 let mockRole: string | null = null;
 let mockRoleLoading = false;
@@ -28,13 +26,41 @@ describe('Student Enrichment Under-Construction Access Gate', () => {
     expect(getStudentEnrichmentReleaseStatus()).toBe('under-construction');
   });
 
+  it('fails closed while auth or role loading is in progress, and rejects unauthenticated stale roles', () => {
+    expect(
+      evaluateStudentEnrichmentAccess({
+        role: 'Director',
+        isAuthenticated: true,
+        isLoading: true,
+        releaseStatusOverride: 'under-construction',
+      }),
+    ).toEqual({
+      allowed: false,
+      status: 'under-construction',
+      reason: 'loading-fail-closed',
+    });
+
+    // Stale role without active authenticated user MUST be denied
+    expect(
+      evaluateStudentEnrichmentAccess({
+        role: 'Director',
+        isAuthenticated: false,
+        isLoading: false,
+        releaseStatusOverride: 'under-construction',
+      }),
+    ).toEqual({
+      allowed: false,
+      status: 'under-construction',
+      reason: 'restricted-under-construction',
+    });
+  });
+
   it('restricts Student, Parent, Accountant, and unauthenticated users during under-construction', () => {
     for (const role of ['Student', 'Parent', 'Accountant', null]) {
       expect(
         evaluateStudentEnrichmentAccess({
           role,
-          email: 'learner@school.edu.gh',
-          uid: 'u-1',
+          isAuthenticated: role !== null,
           releaseStatusOverride: 'under-construction',
         }),
       ).toEqual({
@@ -45,48 +71,23 @@ describe('Student Enrichment Under-Construction Access Gate', () => {
     }
   });
 
-  it('allows Super Admin, Director, Administrator, Teacher, and designated reviewer emails during under-construction', () => {
-    expect(
-      evaluateStudentEnrichmentAccess({
-        role: null,
-        email: SUPER_ADMIN_EMAIL,
-        releaseStatusOverride: 'under-construction',
-      }),
-    ).toMatchObject({ allowed: true, reason: 'super-admin' });
-
-    expect(
-      evaluateStudentEnrichmentAccess({
-        role: null,
-        uid: SUPER_ADMIN_UID,
-        releaseStatusOverride: 'under-construction',
-      }),
-    ).toMatchObject({ allowed: true, reason: 'super-admin' });
-
+  it('allows trusted Director (including Super Admin), Administrator, and Teacher roles during under-construction', () => {
     for (const role of ['Director', 'Administrator', 'Teacher']) {
       expect(
         evaluateStudentEnrichmentAccess({
           role,
-          email: 'staff@school.edu.gh',
+          isAuthenticated: true,
           releaseStatusOverride: 'under-construction',
         }),
       ).toMatchObject({ allowed: true, reason: 'authorized-role' });
     }
-
-    expect(
-      evaluateStudentEnrichmentAccess({
-        role: null,
-        email: 'Reviewer@External.Org',
-        releaseStatusOverride: 'under-construction',
-        reviewerEmailsOverride: 'reviewer@external.org, qa@gam-it-service.app',
-      }),
-    ).toMatchObject({ allowed: true, reason: 'designated-reviewer' });
   });
 
   it('grants unrestricted access to students when owner sets release status to released', () => {
     expect(
       evaluateStudentEnrichmentAccess({
         role: 'Student',
-        email: 'student@school.edu.gh',
+        isAuthenticated: true,
         releaseStatusOverride: 'released',
       }),
     ).toEqual({
@@ -96,40 +97,61 @@ describe('Student Enrichment Under-Construction Access Gate', () => {
     });
   });
 
-  it('renders under-construction notice for Student, reviewer banner + content for Director, and clean content when released', () => {
-    // 1. Ordinary Student -> restricted notice, child NOT rendered
-    mockUser = { email: 'student@school.edu.gh', uid: 'stu-1' };
-    mockRole = 'Student';
-    mockUserLoading = false;
+  it('fails closed on loading, switches cleanly across Director -> Student -> unauthenticated without stale permissions, and opens when released', () => {
+    // 1. Loading state -> fails closed, child NOT rendered
+    mockUser = { uid: 'dir-1' };
+    mockRole = 'Director';
+    mockUserLoading = true;
     mockRoleLoading = false;
     const { rerender } = render(
       <StudentEnrichmentGate releaseStatusOverride="under-construction">
-        <div>Secret Enrichment Lesson</div>
+        <div>Enrichment Lesson Content</div>
+      </StudentEnrichmentGate>,
+    );
+    expect(screen.getByText(/Checking Student Enrichment access/i)).toBeTruthy();
+    expect(screen.queryByText('Enrichment Lesson Content')).toBeNull();
+
+    // 2. Director loaded -> authorised preview banner + child rendered
+    mockUserLoading = false;
+    rerender(
+      <StudentEnrichmentGate releaseStatusOverride="under-construction">
+        <div>Enrichment Lesson Content</div>
+      </StudentEnrichmentGate>,
+    );
+    expect(screen.getByText(/Authorised Staff \/ Reviewer access active/i)).toBeTruthy();
+    expect(screen.getByText('Enrichment Lesson Content')).toBeTruthy();
+
+    // 3. Switch account to Student -> immediately restricted (zero stale Director permission)
+    mockUser = { uid: 'stu-1' };
+    mockRole = 'Student';
+    rerender(
+      <StudentEnrichmentGate releaseStatusOverride="under-construction">
+        <div>Enrichment Lesson Content</div>
       </StudentEnrichmentGate>,
     );
     expect(screen.getByText(/Currently Under Construction/i)).toBeTruthy();
-    expect(screen.queryByText('Secret Enrichment Lesson')).toBeNull();
+    expect(screen.queryByText('Enrichment Lesson Content')).toBeNull();
 
-    // 2. Director -> authorised preview banner + child rendered
-    mockUser = { email: 'director@school.edu.gh', uid: 'dir-1' };
+    // 4. Sign out with stale role string -> still restricted
+    mockUser = null;
     mockRole = 'Director';
     rerender(
       <StudentEnrichmentGate releaseStatusOverride="under-construction">
-        <div>Secret Enrichment Lesson</div>
+        <div>Enrichment Lesson Content</div>
       </StudentEnrichmentGate>,
     );
-    expect(screen.getByText(/Authorised Admin \/ Reviewer access active/i)).toBeTruthy();
-    expect(screen.getByText('Secret Enrichment Lesson')).toBeTruthy();
+    expect(screen.getByText(/Sign in \(Authorised Staff \/ Reviewer\)/i)).toBeTruthy();
+    expect(screen.queryByText('Enrichment Lesson Content')).toBeNull();
 
-    // 3. Released -> Student sees child with zero under-construction banner
-    mockUser = { email: 'student@school.edu.gh', uid: 'stu-1' };
+    // 5. Released -> Student sees child with zero under-construction banner
+    mockUser = { uid: 'stu-1' };
     mockRole = 'Student';
     rerender(
       <StudentEnrichmentGate releaseStatusOverride="released">
-        <div>Secret Enrichment Lesson</div>
+        <div>Enrichment Lesson Content</div>
       </StudentEnrichmentGate>,
     );
     expect(screen.queryByText(/Under Construction/i)).toBeNull();
-    expect(screen.getByText('Secret Enrichment Lesson')).toBeTruthy();
+    expect(screen.getByText('Enrichment Lesson Content')).toBeTruthy();
   });
 });

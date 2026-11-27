@@ -1,0 +1,2137 @@
+{
+  "lessonId": "step5a2-math-workspace-pilot",
+  "title": "Step 5A.2 Curriculum Pilot — Mathematical Working & Reasoning Workspace (20 Examples)",
+  "subject": "Mathematics & Science",
+  "grade": "Primary · JHS · IGCSE · AS/A Level",
+  "curriculum": "NaCCA / Cambridge",
+  "slides": [
+    {
+      "id": "mw-s01",
+      "order": 1,
+      "title": "1. Fraction Arithmetic (Primary)",
+      "purpose": "Add 1/2 + 1/3 using equivalent fractions and simplify to lowest terms.",
+      "onScreenText": [
+        "1. Fraction Arithmetic (Primary)",
+        "Add 1/2 + 1/3 using equivalent fractions and simplify to lowest terms."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "1. Fraction Arithmetic (Primary)",
+        "description": "Add 1/2 + 1/3 using equivalent fractions and simplify to lowest terms.",
+        "labels": [
+          "1. Fraction Arithmetic (Primary)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">1. Fraction Arithmetic (Primary)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Add 1/2 + 1/3 using equivalent fractions and simplify to lowest terms.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Add 1/2 + 1/3 using equivalent fractions and simplify to lowest terms.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Add 1/2 + 1/3 using equivalent fractions and simplify to lowest terms."
+      ],
+      "indicatorIds": [
+        "B5.1.3.1"
+      ],
+      "askTeacherContext": {
+        "focus": "Fraction Arithmetic (Primary)",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 1 of 20.",
+      "interactive": [
+        {
+          "id": "mw-01-fractions",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "primary",
+          "subjectTag": "Primary Maths · Fractions",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "arithmetic-numeric",
+          "variables": [],
+          "initialStatement": "1/2 + 1/3",
+          "title": "Add 1/2 + 1/3 Step by Step",
+          "instructions": "Convert to a common denominator (such as 6 or 12) and write the final fraction in lowest terms.",
+          "accessibilityLabel": "Multi-step fraction addition workspace for one half plus one third",
+          "fallbackText": "Find a common denominator for 1/2 and 1/3, add the numerators, and reduce the fraction to lowest terms.",
+          "hints": [
+            "A common denominator of 2 and 3 is 6.",
+            "1/2 = 3/6 and 1/3 = 2/6."
+          ],
+          "finalGoal": {
+            "mode": "numeric-quantity",
+            "expectedValue": "5/6",
+            "requiredForm": "reduced-fraction"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "LCD = 6",
+              "steps": [
+                {
+                  "math": "3/6 + 2/6",
+                  "note": "Rewrite both fractions with denominator 6."
+                },
+                {
+                  "math": "5/6",
+                  "note": "Add numerators to get the reduced fraction 5/6."
+                }
+              ]
+            },
+            {
+              "methodLabel": "Common denominator 12 then reduce",
+              "steps": [
+                {
+                  "math": "6/12 + 4/12",
+                  "note": "Rewrite both fractions with denominator 12."
+                },
+                {
+                  "math": "10/12",
+                  "note": "Add numerators."
+                },
+                {
+                  "math": "5/6",
+                  "note": "Divide numerator and denominator by 2."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s02",
+      "order": 2,
+      "title": "2. Percentages & Discount (JHS)",
+      "purpose": "Calculate the final price of a GHS 250 textbook after a 20% discount.",
+      "onScreenText": [
+        "2. Percentages & Discount (JHS)",
+        "Calculate the final price of a GHS 250 textbook after a 20% discount."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "2. Percentages & Discount (JHS)",
+        "description": "Calculate the final price of a GHS 250 textbook after a 20% discount.",
+        "labels": [
+          "2. Percentages & Discount (JHS)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">2. Percentages &amp; Discount (JHS)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Calculate the final price of a GHS 250 textbook after a 20% discount.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Calculate the final price of a GHS 250 textbook after a 20% discount.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Calculate the final price of a GHS 250 textbook after a 20% discount."
+      ],
+      "indicatorIds": [
+        "B7.1.4.2"
+      ],
+      "askTeacherContext": {
+        "focus": "Percentages & Discount (JHS)",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 2 of 20.",
+      "interactive": [
+        {
+          "id": "mw-02-percentages",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "JHS Maths · Financial Percentages",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "arithmetic-numeric",
+          "variables": [],
+          "initialStatement": "250 - (20/100)*250",
+          "title": "Discounted Textbook Price (GHS)",
+          "instructions": "Show your working to find the price after a 20% discount on GHS 250 (either subtract the discount or multiply by 0.8).",
+          "accessibilityLabel": "Multi-step percentage discount workspace",
+          "fallbackText": "Compute 20% of 250 and subtract it from 250, or multiply 250 by 0.80.",
+          "finalGoal": {
+            "mode": "numeric-quantity",
+            "expectedValue": "200"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Subtract discount amount",
+              "steps": [
+                {
+                  "math": "250 - 50",
+                  "note": "20% of 250 is 50."
+                },
+                {
+                  "math": "200",
+                  "note": "Final discounted price is GHS 200."
+                }
+              ]
+            },
+            {
+              "methodLabel": "Percentage multiplier",
+              "steps": [
+                {
+                  "math": "0.8 * 250",
+                  "note": "Paying 80% of the original price."
+                },
+                {
+                  "math": "200",
+                  "note": "Final discounted price is GHS 200."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s03",
+      "order": 3,
+      "title": "3. Algebraic Expansion & Collecting Like Terms",
+      "purpose": "Expand 3(x + 4) + 2(x - 1) and collect like terms.",
+      "onScreenText": [
+        "3. Algebraic Expansion & Collecting Like Terms",
+        "Expand 3(x + 4) + 2(x - 1) and collect like terms."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "3. Algebraic Expansion & Collecting Like Terms",
+        "description": "Expand 3(x + 4) + 2(x - 1) and collect like terms.",
+        "labels": [
+          "3. Algebraic Expansion & Collecting Like Terms"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">3. Algebraic Expansion &amp; Collecting Like Terms</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Expand 3(x + 4) + 2(x - 1) and collect like terms.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Expand 3(x + 4) + 2(x - 1) and collect like terms.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Expand 3(x + 4) + 2(x - 1) and collect like terms."
+      ],
+      "indicatorIds": [
+        "B8.2.2.1"
+      ],
+      "askTeacherContext": {
+        "focus": "Algebraic Expansion & Collecting Like Terms",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 3 of 20.",
+      "interactive": [
+        {
+          "id": "mw-03-expand-collect",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "JHS Algebra · Expansion",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "algebraic-simplification",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "3(x + 4) + 2(x - 1)",
+          "title": "Expand and Simplify 3(x + 4) + 2(x − 1)",
+          "instructions": "Expand both brackets first, then combine like terms.",
+          "accessibilityLabel": "Expand and collect like terms workspace",
+          "fallbackText": "Distribute 3 over (x + 4) and 2 over (x - 1), then collect x-terms and constants.",
+          "finalGoal": {
+            "mode": "algebraic-expression",
+            "variables": [
+              "x"
+            ],
+            "expectedExpr": "5x + 10",
+            "requiredForm": "collected-like-terms"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Distribute then collect",
+              "steps": [
+                {
+                  "math": "3x + 12 + 2x - 2",
+                  "note": "Expand both brackets carefully."
+                },
+                {
+                  "math": "5x + 10",
+                  "note": "Combine 3x + 2x and 12 - 2."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s04",
+      "order": 4,
+      "title": "4. Quadratic Factorisation",
+      "purpose": "Factorise x² + 5x + 6 completely.",
+      "onScreenText": [
+        "4. Quadratic Factorisation",
+        "Factorise x² + 5x + 6 completely."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "4. Quadratic Factorisation",
+        "description": "Factorise x² + 5x + 6 completely.",
+        "labels": [
+          "4. Quadratic Factorisation"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">4. Quadratic Factorisation</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Factorise x² + 5x + 6 completely.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Factorise x² + 5x + 6 completely.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Factorise x² + 5x + 6 completely."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A2"
+      ],
+      "askTeacherContext": {
+        "focus": "Quadratic Factorisation",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 4 of 20.",
+      "interactive": [
+        {
+          "id": "mw-04-factorise",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "IGCSE Algebra · Factorisation",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "algebraic-simplification",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "x^2 + 5x + 6",
+          "title": "Factorise x² + 5x + 6",
+          "instructions": "Split the middle term or factor directly into two linear binomials.",
+          "accessibilityLabel": "Factorise x squared plus 5x plus 6 workspace",
+          "fallbackText": "Find two integers whose product is 6 and sum is 5 to factorise x^2 + 5x + 6.",
+          "finalGoal": {
+            "mode": "algebraic-expression",
+            "variables": [
+              "x"
+            ],
+            "expectedExpr": "(x + 2)(x + 3)",
+            "requiredForm": "factored-form"
+          },
+          "markingScheme": {
+            "maxMarks": 2,
+            "strategyGroups": [
+              {
+                "id": "direct-factor",
+                "label": "Factorise quadratic",
+                "marks": [
+                  {
+                    "markId": "M1",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Demonstrate genuine factored form (x + 2)(x + 3)",
+                    "predicate": {
+                      "kind": "required-form",
+                      "targetExpr": "(x + 2)(x + 3)",
+                      "form": "factored-form",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1",
+                    "type": "A",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M1"
+                    ],
+                    "description": "Final fully factored answer",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Split middle term",
+              "steps": [
+                {
+                  "math": "x^2 + 2x + 3x + 6",
+                  "note": "Rewrite 5x as 2x + 3x."
+                },
+                {
+                  "math": "(x + 2)(x + 3)",
+                  "note": "Factor by grouping into two linear factors."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s05",
+      "order": 5,
+      "title": "5. Linear Equation — Alternative Methods",
+      "purpose": "Solve 2(x + 3) = 14 by expanding first or dividing by 2 first.",
+      "onScreenText": [
+        "5. Linear Equation — Alternative Methods",
+        "Solve 2(x + 3) = 14 by expanding first or dividing by 2 first."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "5. Linear Equation — Alternative Methods",
+        "description": "Solve 2(x + 3) = 14 by expanding first or dividing by 2 first.",
+        "labels": [
+          "5. Linear Equation — Alternative Methods"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">5. Linear Equation — Alternative Methods</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve 2(x + 3) = 14 by expanding first or dividing by 2 first.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve 2(x + 3) = 14 by expanding first or dividing by 2 first.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve 2(x + 3) = 14 by expanding first or dividing by 2 first."
+      ],
+      "indicatorIds": [
+        "B8.2.3.1"
+      ],
+      "askTeacherContext": {
+        "focus": "Linear Equation — Alternative Methods",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 5 of 20.",
+      "interactive": [
+        {
+          "id": "mw-05-linear-alt",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Algebra · Linear Equations",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "2(x + 3) = 14",
+          "title": "Solve 2(x + 3) = 14",
+          "instructions": "Use any valid algebraic method (expand first OR divide both sides by 2 first).",
+          "accessibilityLabel": "Solve 2 times x plus 3 equals 14 workspace",
+          "fallbackText": "Either divide both sides by 2 or expand the bracket first, then isolate x.",
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "2(x + 3) = 14",
+            "equationClass": "linear",
+            "expectedRoots": [
+              "4"
+            ]
+          },
+          "markingScheme": {
+            "maxMarks": 2,
+            "strategyGroups": [
+              {
+                "id": "expand-first",
+                "label": "Expand bracket first",
+                "marks": [
+                  {
+                    "markId": "M1a",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Expand to 2x + 6 = 14",
+                    "predicate": {
+                      "kind": "equation-equivalent",
+                      "targetEquation": "2x + 6 = 14",
+                      "requiredForm": "expanded-polynomial",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1a",
+                    "type": "A",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M1a"
+                    ],
+                    "description": "Solve x = 4",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "divide-first",
+                "label": "Divide both sides by 2 first",
+                "marks": [
+                  {
+                    "markId": "M1b",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Divide by 2 to get x + 3 = 7",
+                    "predicate": {
+                      "kind": "equation-equivalent",
+                      "targetEquation": "x + 3 = 7",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1b",
+                    "type": "A",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M1b"
+                    ],
+                    "description": "Solve x = 4",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Method 1: Divide by 2 first",
+              "steps": [
+                {
+                  "math": "x + 3 = 7",
+                  "note": "Divide both sides by 2."
+                },
+                {
+                  "math": "x = 4",
+                  "note": "Subtract 3 from both sides."
+                }
+              ]
+            },
+            {
+              "methodLabel": "Method 2: Expand first",
+              "steps": [
+                {
+                  "math": "2x + 6 = 14",
+                  "note": "Expand the bracket."
+                },
+                {
+                  "math": "2x = 8",
+                  "note": "Subtract 6 from both sides."
+                },
+                {
+                  "math": "x = 4",
+                  "note": "Divide both sides by 2."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s06",
+      "order": 6,
+      "title": "6. Quadratic Equation by Factorisation",
+      "purpose": "Solve x² − x − 6 = 0 by factorising.",
+      "onScreenText": [
+        "6. Quadratic Equation by Factorisation",
+        "Solve x² − x − 6 = 0 by factorising."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "6. Quadratic Equation by Factorisation",
+        "description": "Solve x² − x − 6 = 0 by factorising.",
+        "labels": [
+          "6. Quadratic Equation by Factorisation"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">6. Quadratic Equation by Factorisation</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve x² − x − 6 = 0 by factorising.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve x² − x − 6 = 0 by factorising.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve x² − x − 6 = 0 by factorising."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A5"
+      ],
+      "askTeacherContext": {
+        "focus": "Quadratic Equation by Factorisation",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 6 of 20.",
+      "interactive": [
+        {
+          "id": "mw-06-quad-factor",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "IGCSE Algebra · Quadratics",
+          "mode": "multi-step-working",
+          "learningMode": "independent",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "x^2 - x - 6 = 0",
+          "title": "Solve x² − x − 6 = 0 by Factorisation",
+          "instructions": "Show the factored equation before stating both solutions.",
+          "accessibilityLabel": "Solve x squared minus x minus 6 equals 0 by factorisation",
+          "fallbackText": "Factorise the quadratic into two linear factors equal to zero, then solve each factor.",
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "x^2 - x - 6 = 0",
+            "equationClass": "quadratic",
+            "expectedRoots": [
+              "3",
+              "-2"
+            ]
+          },
+          "markingScheme": {
+            "maxMarks": 2,
+            "strategyGroups": [
+              {
+                "id": "factorisation",
+                "label": "Factorisation method",
+                "marks": [
+                  {
+                    "markId": "M1",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Write genuine factored equation (x - 3)(x + 2) = 0",
+                    "predicate": {
+                      "kind": "equation-equivalent",
+                      "targetEquation": "(x - 3)(x + 2) = 0",
+                      "requiredForm": "factored-form",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1",
+                    "type": "A",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M1"
+                    ],
+                    "description": "Obtain complete root set x = 3 or x = -2",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Factorisation",
+              "steps": [
+                {
+                  "math": "(x - 3)(x + 2) = 0",
+                  "note": "Factorise x^2 - x - 6."
+                },
+                {
+                  "math": "x = 3 or x = -2",
+                  "note": "Set each linear factor equal to zero."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s07",
+      "order": 7,
+      "title": "7. Quadratic by Completing the Square",
+      "purpose": "Solve x² − 6x + 5 = 0 by completing the square.",
+      "onScreenText": [
+        "7. Quadratic by Completing the Square",
+        "Solve x² − 6x + 5 = 0 by completing the square."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "7. Quadratic by Completing the Square",
+        "description": "Solve x² − 6x + 5 = 0 by completing the square.",
+        "labels": [
+          "7. Quadratic by Completing the Square"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">7. Quadratic by Completing the Square</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve x² − 6x + 5 = 0 by completing the square.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve x² − 6x + 5 = 0 by completing the square.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve x² − 6x + 5 = 0 by completing the square."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A6"
+      ],
+      "askTeacherContext": {
+        "focus": "Quadratic by Completing the Square",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 7 of 20.",
+      "interactive": [
+        {
+          "id": "mw-07-complete-square",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "IGCSE Algebra · Completing the Square",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "x^2 - 6x + 5 = 0",
+          "title": "Solve x² − 6x + 5 = 0 by Completing the Square",
+          "instructions": "Rewrite in completed-square form (x − p)² = q, then find both roots.",
+          "accessibilityLabel": "Solve quadratic by completing the square",
+          "fallbackText": "Complete the square on x^2 - 6x, isolate the squared term, and take square roots.",
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "x^2 - 6x + 5 = 0",
+            "equationClass": "quadratic",
+            "expectedRoots": [
+              "1",
+              "5"
+            ]
+          },
+          "markingScheme": {
+            "maxMarks": 2,
+            "strategyGroups": [
+              {
+                "id": "complete-square",
+                "label": "Completing the square",
+                "marks": [
+                  {
+                    "markId": "M1",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Write completed-square equation (x - 3)^2 = 4 or (x - 3)^2 - 4 = 0",
+                    "predicate": {
+                      "kind": "equation-equivalent",
+                      "targetEquation": "(x - 3)^2 = 4",
+                      "requiredForm": "completed-square",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1",
+                    "type": "A",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M1"
+                    ],
+                    "description": "Obtain both roots x = 1 and x = 5",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Completing the square",
+              "steps": [
+                {
+                  "math": "(x - 3)^2 - 4 = 0",
+                  "note": "Complete the square: x^2 - 6x + 9 - 4 = 0."
+                },
+                {
+                  "math": "(x - 3)^2 = 4",
+                  "note": "Isolate the squared expression."
+                },
+                {
+                  "math": "x = 5 or x = 1",
+                  "note": "Take +/- square root of 4 and add 3."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s08",
+      "order": 8,
+      "title": "8. Quadratic Formula Working",
+      "purpose": "Solve x² − 4x + 1 = 0 leaving exact surd answers.",
+      "onScreenText": [
+        "8. Quadratic Formula Working",
+        "Solve x² − 4x + 1 = 0 leaving exact surd answers."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "8. Quadratic Formula Working",
+        "description": "Solve x² − 4x + 1 = 0 leaving exact surd answers.",
+        "labels": [
+          "8. Quadratic Formula Working"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">8. Quadratic Formula Working</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve x² − 4x + 1 = 0 leaving exact surd answers.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve x² − 4x + 1 = 0 leaving exact surd answers.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve x² − 4x + 1 = 0 leaving exact surd answers."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A7"
+      ],
+      "askTeacherContext": {
+        "focus": "Quadratic Formula Working",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 8 of 20.",
+      "interactive": [
+        {
+          "id": "mw-08-quad-formula",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "IGCSE Algebra · Quadratic Formula",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "x^2 - 4x + 1 = 0",
+          "title": "Solve x² − 4x + 1 = 0 in Exact Surd Form",
+          "instructions": "Use the quadratic formula or completing the square and state both exact surd roots.",
+          "accessibilityLabel": "Solve quadratic equation with exact surd roots",
+          "fallbackText": "Apply the quadratic formula with a = 1, b = -4, c = 1 and simplify sqrt(12).",
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "x^2 - 4x + 1 = 0",
+            "equationClass": "quadratic",
+            "expectedRoots": [
+              "2 + sqrt(3)",
+              "2 - sqrt(3)"
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Quadratic formula",
+              "steps": [
+                {
+                  "math": "(x - 2)^2 = 3",
+                  "note": "Equivalent discriminant step: b^2 - 4ac = 12, giving (4 +/- 2sqrt(3))/2."
+                },
+                {
+                  "math": "x = 2 + sqrt(3) or x = 2 - sqrt(3)",
+                  "note": "Simplify both exact surd roots."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s09",
+      "order": 9,
+      "title": "9. Avoiding Lost Solutions (x² = 3x)",
+      "purpose": "Solve x² = 3x without dividing by x.",
+      "onScreenText": [
+        "9. Avoiding Lost Solutions (x² = 3x)",
+        "Solve x² = 3x without dividing by x."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "9. Avoiding Lost Solutions (x² = 3x)",
+        "description": "Solve x² = 3x without dividing by x.",
+        "labels": [
+          "9. Avoiding Lost Solutions (x² = 3x)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">9. Avoiding Lost Solutions (x² = 3x)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve x² = 3x without dividing by x.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve x² = 3x without dividing by x.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve x² = 3x without dividing by x."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A8"
+      ],
+      "askTeacherContext": {
+        "focus": "Avoiding Lost Solutions (x² = 3x)",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 9 of 20.",
+      "interactive": [
+        {
+          "id": "mw-09-lost-solution",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Solution Preservation",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "x^2 = 3x",
+          "title": "Solve x² = 3x (Do Not Lose x = 0!)",
+          "instructions": "Rearrange and factorise rather than dividing both sides by x.",
+          "accessibilityLabel": "Solve x squared equals 3x without losing solutions",
+          "fallbackText": "Subtract 3x from both sides, factor out x, and find both roots.",
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "x^2 = 3x",
+            "equationClass": "quadratic",
+            "expectedRoots": [
+              "0",
+              "3"
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Rearrange and factorise",
+              "steps": [
+                {
+                  "math": "x^2 - 3x = 0",
+                  "note": "Bring all terms to one side."
+                },
+                {
+                  "math": "x(x - 3) = 0",
+                  "note": "Factor out x cleanly (never divide by x)."
+                },
+                {
+                  "math": "x = 0 or x = 3",
+                  "note": "Both x = 0 and x = 3 are valid solutions."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s10",
+      "order": 10,
+      "title": "10. Radical Equation & Extraneous Root Check",
+      "purpose": "Solve √(x + 2) = x by squaring (a one-way implication) and checking candidates.",
+      "onScreenText": [
+        "10. Radical Equation & Extraneous Root Check",
+        "Solve √(x + 2) = x by squaring (a one-way implication) and checking candidates."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "10. Radical Equation & Extraneous Root Check",
+        "description": "Solve √(x + 2) = x by squaring (a one-way implication) and checking candidates.",
+        "labels": [
+          "10. Radical Equation & Extraneous Root Check"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">10. Radical Equation &amp; Extraneous Root Check</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve √(x + 2) = x by squaring (a one-way implication) and checking candidates.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve √(x + 2) = x by squaring (a one-way implication) and checking candidates.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve √(x + 2) = x by squaring (a one-way implication) and checking candidates."
+      ],
+      "indicatorIds": [
+        "AS-9709-P1"
+      ],
+      "askTeacherContext": {
+        "focus": "Radical Equation & Extraneous Root Check",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 10 of 20.",
+      "interactive": [
+        {
+          "id": "mw-10-radical-extraneous",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "AS Algebra · Radical Equations",
+          "mode": "multi-step-working",
+          "learningMode": "exam-practice",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "sqrt(x + 2) = x",
+          "title": "Solve √(x + 2) = x and Reject Extraneous Root",
+          "instructions": "Square both sides (noting this is a one-way implication requiring x >= 0), solve the resulting quadratic, and explicitly reject any extraneous root.",
+          "accessibilityLabel": "Solve square root of x plus 2 equals x step by step",
+          "fallbackText": "Square both sides as a one-way implication, solve the quadratic, and substitute candidates back into the original radical equation.",
+          "hints": [
+            "Squaring both sides gives x + 2 = x^2, which may introduce an extraneous root.",
+            "Check both candidates in sqrt(x + 2) = x."
+          ],
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "sqrt(x + 2) = x",
+            "equationClass": "radical-single",
+            "expectedRoots": [
+              "2"
+            ],
+            "extraneousCandidates": [
+              "-1"
+            ]
+          },
+          "markingScheme": {
+            "maxMarks": 4,
+            "sharedIndependentMarks": [
+              {
+                "markId": "B1",
+                "type": "B",
+                "points": 1,
+                "description": "Explicitly reject extraneous candidate x = -1 after checking original equation",
+                "predicate": {
+                  "kind": "extraneous-rejection",
+                  "expectedRejected": [
+                    "-1"
+                  ]
+                }
+              }
+            ],
+            "strategyGroups": [
+              {
+                "id": "square-and-factor",
+                "label": "Square both sides (one-way implication) & factorise",
+                "marks": [
+                  {
+                    "markId": "M1",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Square both sides (one-way implication) to obtain x^2 - x - 2 = 0",
+                    "predicate": {
+                      "kind": "certified-transition",
+                      "expectedStatus": "valid-implication-extraneous-risk"
+                    }
+                  },
+                  {
+                    "markId": "M2",
+                    "type": "M",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M1"
+                    ],
+                    "description": "Factorise the quadratic to (x - 2)(x + 1) = 0",
+                    "predicate": {
+                      "kind": "equation-equivalent",
+                      "targetEquation": "(x - 2)(x + 1) = 0",
+                      "requiredForm": "factored-form",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1",
+                    "type": "A",
+                    "points": 1,
+                    "requiresMarkIds": [
+                      "M2"
+                    ],
+                    "description": "Conclude valid root x = 2",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Squaring (One-Way Implication) & Candidate Verification",
+              "steps": [
+                {
+                  "math": "x + 2 = x^2",
+                  "note": "Square both sides — one-way implication (valid when x >= 0; must check candidates in original equation)."
+                },
+                {
+                  "math": "x^2 - x - 2 = 0",
+                  "note": "Rearrange into standard quadratic form."
+                },
+                {
+                  "math": "(x - 2)(x + 1) = 0",
+                  "note": "Factorise the quadratic."
+                },
+                {
+                  "math": "x = 2 or x = -1",
+                  "note": "Candidate solutions from the squared equation."
+                },
+                {
+                  "math": "x = 2",
+                  "operation": "check-candidates",
+                  "rejectedExtraneous": [
+                    "-1"
+                  ],
+                  "note": "Test in √(x + 2) = x: x = 2 gives √4 = 2 (valid); x = -1 gives √1 = 1 ≠ -1 (extraneous, rejected)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s11",
+      "order": 11,
+      "title": "11. Rational Simplification with Domain Restriction",
+      "purpose": "Simplify (x² − 9)/(x − 3) and preserve x ≠ 3.",
+      "onScreenText": [
+        "11. Rational Simplification with Domain Restriction",
+        "Simplify (x² − 9)/(x − 3) and preserve x ≠ 3."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "11. Rational Simplification with Domain Restriction",
+        "description": "Simplify (x² − 9)/(x − 3) and preserve x ≠ 3.",
+        "labels": [
+          "11. Rational Simplification with Domain Restriction"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">11. Rational Simplification with Domain Restriction</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Simplify (x² − 9)/(x − 3) and preserve x ≠ 3.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Simplify (x² − 9)/(x − 3) and preserve x ≠ 3.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Simplify (x² − 9)/(x − 3) and preserve x ≠ 3."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A9"
+      ],
+      "askTeacherContext": {
+        "focus": "Rational Simplification with Domain Restriction",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 11 of 20.",
+      "interactive": [
+        {
+          "id": "mw-11-rational-domain",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "IGCSE Algebra · Rational Expressions",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "algebraic-simplification",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "(x^2 - 9)/(x - 3)",
+          "title": "Simplify (x² − 9)/(x − 3) and State Domain",
+          "instructions": "Factor the numerator, cancel the common factor, and state the excluded value in the domain note.",
+          "accessibilityLabel": "Simplify rational expression with domain restriction",
+          "fallbackText": "Factor the difference of squares in the numerator, cancel common factors, and state the excluded x value.",
+          "domainRestrictions": {
+            "requireLearnerDomain": true,
+            "expectedExcluded": [
+              "3"
+            ]
+          },
+          "finalGoal": {
+            "mode": "algebraic-expression",
+            "variables": [
+              "x"
+            ],
+            "sourceExpr": "(x^2 - 9)/(x - 3)",
+            "expectedExpr": "x + 3",
+            "requiredForm": "expanded-polynomial",
+            "domainRestrictions": {
+              "requireLearnerDomain": true,
+              "expectedExcluded": [
+                "3"
+              ]
+            }
+          },
+          "markingScheme": {
+            "maxMarks": 2,
+            "sharedIndependentMarks": [
+              {
+                "markId": "B1",
+                "type": "B",
+                "points": 1,
+                "description": "State domain restriction x != 3",
+                "predicate": {
+                  "kind": "domain-restriction",
+                  "expectedExcluded": [
+                    "3"
+                  ]
+                }
+              }
+            ],
+            "strategyGroups": [
+              {
+                "id": "cancel-factor",
+                "label": "Factor and cancel",
+                "marks": [
+                  {
+                    "markId": "A1",
+                    "type": "A",
+                    "points": 1,
+                    "description": "Simplify cleanly to x + 3",
+                    "predicate": {
+                      "kind": "final-answer",
+                      "requireValidWorking": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Difference of squares",
+              "steps": [
+                {
+                  "math": "(x - 3)(x + 3)/(x - 3)",
+                  "domainNote": "x != 3",
+                  "note": "Factor numerator as a difference of two squares."
+                },
+                {
+                  "math": "x + 3",
+                  "domainNote": "x != 3",
+                  "note": "Cancel (x - 3) while keeping x != 3."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s12",
+      "order": 12,
+      "title": "12. Inequality Sign Reversal",
+      "purpose": "Solve −2x + 4 ≤ 10 carefully reversing the inequality sign when dividing by −2.",
+      "onScreenText": [
+        "12. Inequality Sign Reversal",
+        "Solve −2x + 4 ≤ 10 carefully reversing the inequality sign when dividing by −2."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "12. Inequality Sign Reversal",
+        "description": "Solve −2x + 4 ≤ 10 carefully reversing the inequality sign when dividing by −2.",
+        "labels": [
+          "12. Inequality Sign Reversal"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">12. Inequality Sign Reversal</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve −2x + 4 ≤ 10 carefully reversing the inequality sign when dividing by −2.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve −2x + 4 ≤ 10 carefully reversing the inequality sign when dividing by −2.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve −2x + 4 ≤ 10 carefully reversing the inequality sign when dividing by −2."
+      ],
+      "indicatorIds": [
+        "B9.2.3.1"
+      ],
+      "askTeacherContext": {
+        "focus": "Inequality Sign Reversal",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 12 of 20.",
+      "interactive": [
+        {
+          "id": "mw-12-ineq-reversal",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Linear Inequalities",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "inequality-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "-2x + 4 <= 10",
+          "title": "Solve −2x + 4 ≤ 10",
+          "instructions": "Isolate x step by step. Remember to reverse the inequality symbol when dividing by a negative number.",
+          "accessibilityLabel": "Solve minus 2x plus 4 less than or equal to 10",
+          "fallbackText": "Subtract 4 from both sides, then divide by -2 and reverse the inequality sign.",
+          "finalGoal": {
+            "mode": "inequality-interval",
+            "variable": "x",
+            "expectedIntervals": [
+              {
+                "low": "-3",
+                "lowInclusive": true,
+                "high": "inf",
+                "highInclusive": false
+              }
+            ],
+            "acceptedInputStyle": "either"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Divide by negative coefficient",
+              "steps": [
+                {
+                  "math": "-2x <= 6",
+                  "note": "Subtract 4 from both sides."
+                },
+                {
+                  "math": "x >= -3",
+                  "note": "Divide by -2 and reverse <= to >=."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s13",
+      "order": 13,
+      "title": "13. Compound Inequality & Interval Notation",
+      "purpose": "Solve −3 < 2x − 1 ≤ 5 and express the solution as an interval.",
+      "onScreenText": [
+        "13. Compound Inequality & Interval Notation",
+        "Solve −3 < 2x − 1 ≤ 5 and express the solution as an interval."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "13. Compound Inequality & Interval Notation",
+        "description": "Solve −3 < 2x − 1 ≤ 5 and express the solution as an interval.",
+        "labels": [
+          "13. Compound Inequality & Interval Notation"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">13. Compound Inequality &amp; Interval Notation</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve −3 &lt; 2x − 1 ≤ 5 and express the solution as an interval.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve −3 < 2x − 1 ≤ 5 and express the solution as an interval.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve −3 < 2x − 1 ≤ 5 and express the solution as an interval."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A10"
+      ],
+      "askTeacherContext": {
+        "focus": "Compound Inequality & Interval Notation",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 13 of 20.",
+      "interactive": [
+        {
+          "id": "mw-13-compound-ineq",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Compound Inequalities",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "inequality-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "-3 < 2x - 1 <= 5",
+          "title": "Solve −3 < 2x − 1 ≤ 5",
+          "instructions": "Solve all three parts together and write the final interval (e.g. (-1, 3]).",
+          "accessibilityLabel": "Solve compound inequality minus 3 less than 2x minus 1 less than or equal to 5",
+          "fallbackText": "Add 1 to all three parts, divide by 2, and write the half-open interval.",
+          "finalGoal": {
+            "mode": "inequality-interval",
+            "variable": "x",
+            "expectedIntervals": [
+              {
+                "low": "-1",
+                "lowInclusive": false,
+                "high": "3",
+                "highInclusive": true
+              }
+            ],
+            "acceptedInputStyle": "either"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Three-part inequality to interval",
+              "steps": [
+                {
+                  "math": "-2 < 2x <= 6",
+                  "note": "Add 1 to all three parts."
+                },
+                {
+                  "math": "-1 < x <= 3",
+                  "note": "Divide all three parts by 2."
+                },
+                {
+                  "math": "(-1, 3]",
+                  "note": "Express in interval notation."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s14",
+      "order": 14,
+      "title": "14. Simplifying Surds",
+      "purpose": "Simplify √50 + √18 to a single reduced surd.",
+      "onScreenText": [
+        "14. Simplifying Surds",
+        "Simplify √50 + √18 to a single reduced surd."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "14. Simplifying Surds",
+        "description": "Simplify √50 + √18 to a single reduced surd.",
+        "labels": [
+          "14. Simplifying Surds"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">14. Simplifying Surds</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Simplify √50 + √18 to a single reduced surd.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Simplify √50 + √18 to a single reduced surd.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Simplify √50 + √18 to a single reduced surd."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-N4"
+      ],
+      "askTeacherContext": {
+        "focus": "Simplifying Surds",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 14 of 20.",
+      "interactive": [
+        {
+          "id": "mw-14-surds",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Number · Surds & Indices",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "arithmetic-numeric",
+          "variables": [],
+          "initialStatement": "sqrt(50) + sqrt(18)",
+          "title": "Simplify √50 + √18",
+          "instructions": "Extract perfect square factors from each radical, then combine like surds.",
+          "accessibilityLabel": "Simplify square root of 50 plus square root of 18",
+          "fallbackText": "Rewrite 50 as 25*2 and 18 as 9*2, extract square roots, and combine like surds.",
+          "finalGoal": {
+            "mode": "algebraic-expression",
+            "variables": [
+              "x"
+            ],
+            "expectedExpr": "8*sqrt(2)",
+            "requiredForm": "simplified-surd"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Extract perfect squares",
+              "steps": [
+                {
+                  "math": "5*sqrt(2) + 3*sqrt(2)",
+                  "note": "sqrt(50) = 5*sqrt(2) and sqrt(18) = 3*sqrt(2)."
+                },
+                {
+                  "math": "8*sqrt(2)",
+                  "note": "Combine like surds."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s15",
+      "order": 15,
+      "title": "15. Logarithmic Law Under Explicit Domain",
+      "purpose": "Combine ln(x) + ln(x − 2) for x > 2.",
+      "onScreenText": [
+        "15. Logarithmic Law Under Explicit Domain",
+        "Combine ln(x) + ln(x − 2) for x > 2."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "15. Logarithmic Law Under Explicit Domain",
+        "description": "Combine ln(x) + ln(x − 2) for x > 2.",
+        "labels": [
+          "15. Logarithmic Law Under Explicit Domain"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">15. Logarithmic Law Under Explicit Domain</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Combine ln(x) + ln(x − 2) for x > 2.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Combine ln(x) + ln(x − 2) for x > 2.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Combine ln(x) + ln(x − 2) for x > 2."
+      ],
+      "indicatorIds": [
+        "AS-9709-P2"
+      ],
+      "askTeacherContext": {
+        "focus": "Logarithmic Law Under Explicit Domain",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 15 of 20.",
+      "interactive": [
+        {
+          "id": "mw-15-logs-domain",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "AS Algebra · Logarithms & Domain",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "algebraic-simplification",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "ln(x) + ln(x - 2)",
+          "title": "Combine ln(x) + ln(x − 2) for x > 2",
+          "instructions": "Combine into a single logarithm under the shared domain x > 2.",
+          "accessibilityLabel": "Combine ln x plus ln of x minus 2 for x greater than 2",
+          "fallbackText": "Apply the logarithm product rule on the shared domain x > 2.",
+          "domainRestrictions": {
+            "expectedDomainInterval": "x > 2"
+          },
+          "finalGoal": {
+            "mode": "algebraic-expression",
+            "variables": [
+              "x"
+            ],
+            "expectedExpr": "ln(x*(x - 2))",
+            "domainRestrictions": {
+              "expectedDomainInterval": "x > 2"
+            }
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Log product law on x > 2",
+              "steps": [
+                {
+                  "math": "ln(x*(x - 2))",
+                  "domainNote": "x > 2",
+                  "note": "For x > 2 both x > 0 and x - 2 > 0, so ln(x) + ln(x - 2) = ln(x(x - 2))."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s16",
+      "order": 16,
+      "title": "16. Calculus Differentiation Working",
+      "purpose": "Differentiate f(x) = x³ + 2x using derivative operation context.",
+      "onScreenText": [
+        "16. Calculus Differentiation Working",
+        "Differentiate f(x) = x³ + 2x using derivative operation context."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "16. Calculus Differentiation Working",
+        "description": "Differentiate f(x) = x³ + 2x using derivative operation context.",
+        "labels": [
+          "16. Calculus Differentiation Working"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">16. Calculus Differentiation Working</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Differentiate f(x) = x³ + 2x using derivative operation context.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Differentiate f(x) = x³ + 2x using derivative operation context.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Differentiate f(x) = x³ + 2x using derivative operation context."
+      ],
+      "indicatorIds": [
+        "AS-9709-C1"
+      ],
+      "askTeacherContext": {
+        "focus": "Calculus Differentiation Working",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 16 of 20.",
+      "interactive": [
+        {
+          "id": "mw-16-diff",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "AS Calculus · Differentiation",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "calculus-working",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "f(x) = x^3 + 2x",
+          "title": "Find f'(x) for f(x) = x³ + 2x",
+          "instructions": "Select Differentiate (or prefix with f'(x) =) to differentiate term by term.",
+          "accessibilityLabel": "Differentiate f of x equals x cubed plus 2x",
+          "fallbackText": "Apply the power rule to x^3 and 2x to find the derivative.",
+          "finalGoal": {
+            "mode": "calculus-check",
+            "variable": "x",
+            "calculusKind": "derivative",
+            "sourceExpr": "x^3 + 2x",
+            "expectedExpr": "3x^2 + 2"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Power rule",
+              "steps": [
+                {
+                  "math": "f'(x) = 3x^2 + 2",
+                  "operation": "differentiate",
+                  "note": "Differentiate x^3 to 3x^2 and 2x to 2."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s17",
+      "order": 17,
+      "title": "17. Indefinite Integration (+ C)",
+      "purpose": "Find the general antiderivative of 3x² + 4x.",
+      "onScreenText": [
+        "17. Indefinite Integration (+ C)",
+        "Find the general antiderivative of 3x² + 4x."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "17. Indefinite Integration (+ C)",
+        "description": "Find the general antiderivative of 3x² + 4x.",
+        "labels": [
+          "17. Indefinite Integration (+ C)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">17. Indefinite Integration (+ C)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Find the general antiderivative of 3x² + 4x.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Find the general antiderivative of 3x² + 4x.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Find the general antiderivative of 3x² + 4x."
+      ],
+      "indicatorIds": [
+        "AS-9709-C2"
+      ],
+      "askTeacherContext": {
+        "focus": "Indefinite Integration (+ C)",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 17 of 20.",
+      "interactive": [
+        {
+          "id": "mw-17-integrate",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "AS Calculus · Integration",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "calculus-working",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "3x^2 + 4x",
+          "title": "Integrate 3x² + 4x with Respect to x",
+          "instructions": "Select Integrate and include the arbitrary constant + C.",
+          "accessibilityLabel": "Integrate 3x squared plus 4x with respect to x",
+          "fallbackText": "Apply the reverse power rule to each term and include + C.",
+          "finalGoal": {
+            "mode": "calculus-check",
+            "variable": "x",
+            "calculusKind": "antiderivative",
+            "sourceExpr": "3x^2 + 4x",
+            "expectedExpr": "x^3 + 2x^2 + C",
+            "requireConstantOfIntegration": true
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Reverse power rule",
+              "steps": [
+                {
+                  "math": "x^3 + 2x^2 + C",
+                  "operation": "integrate",
+                  "note": "Differentiating x^3 + 2x^2 + C recovers 3x^2 + 4x."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s18",
+      "order": 18,
+      "title": "18. Formula Substitution & Unit Conversion",
+      "purpose": "Convert a speed of 72 km/h into m/s step by step.",
+      "onScreenText": [
+        "18. Formula Substitution & Unit Conversion",
+        "Convert a speed of 72 km/h into m/s step by step."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "18. Formula Substitution & Unit Conversion",
+        "description": "Convert a speed of 72 km/h into m/s step by step.",
+        "labels": [
+          "18. Formula Substitution & Unit Conversion"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">18. Formula Substitution &amp; Unit Conversion</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Convert a speed of 72 km/h into m/s step by step.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Convert a speed of 72 km/h into m/s step by step.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Convert a speed of 72 km/h into m/s step by step."
+      ],
+      "indicatorIds": [
+        "IGCSE-0625-P1"
+      ],
+      "askTeacherContext": {
+        "focus": "Formula Substitution & Unit Conversion",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 18 of 20.",
+      "interactive": [
+        {
+          "id": "mw-18-units",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Physics & Maths · SI Units",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "formula-unit",
+          "variables": [],
+          "initialStatement": "72",
+          "initialUnit": "km/h",
+          "title": "Convert 72 km/h to m/s",
+          "instructions": "Show your unit conversion working and enter the unit (m/s) in the unit box.",
+          "accessibilityLabel": "Convert 72 kilometres per hour to metres per second",
+          "fallbackText": "Convert kilometres to metres and hours to seconds to express speed in m/s.",
+          "finalGoal": {
+            "mode": "numeric-quantity",
+            "expectedValue": "20",
+            "unitSpec": {
+              "expectedUnit": "m/s",
+              "allowEquivalentUnits": false
+            }
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Exact SI conversion",
+              "steps": [
+                {
+                  "math": "72000/3600",
+                  "unit": "m/s",
+                  "note": "1 km = 1000 m and 1 h = 3600 s."
+                },
+                {
+                  "math": "20",
+                  "unit": "m/s",
+                  "note": "Simplify 72000 / 3600 = 20 m/s."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s19",
+      "order": 19,
+      "title": "19. Error-Carried-Forward (ECF) Practice",
+      "purpose": "Solve 3x + 5 = 20 with authorised follow-through marking.",
+      "onScreenText": [
+        "19. Error-Carried-Forward (ECF) Practice",
+        "Solve 3x + 5 = 20 with authorised follow-through marking."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "19. Error-Carried-Forward (ECF) Practice",
+        "description": "Solve 3x + 5 = 20 with authorised follow-through marking.",
+        "labels": [
+          "19. Error-Carried-Forward (ECF) Practice"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">19. Error-Carried-Forward (ECF) Practice</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Solve 3x + 5 = 20 with authorised follow-through marking.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve 3x + 5 = 20 with authorised follow-through marking.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve 3x + 5 = 20 with authorised follow-through marking."
+      ],
+      "indicatorIds": [
+        "IGCSE-0580-A3"
+      ],
+      "askTeacherContext": {
+        "focus": "Error-Carried-Forward (ECF) Practice",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 19 of 20.",
+      "interactive": [
+        {
+          "id": "mw-19-ecf",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Algebra · Method & ECF Marking",
+          "mode": "multi-step-working",
+          "learningMode": "independent",
+          "problemKind": "equation-solving",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "3x + 5 = 20",
+          "title": "Solve 3x + 5 = 20 (With ECF Marking)",
+          "instructions": "Isolate the 3x term first, then divide by 3 to find x.",
+          "accessibilityLabel": "Solve 3x plus 5 equals 20 with ECF marking",
+          "fallbackText": "Subtract 5 from both sides, then divide both sides by 3.",
+          "finalGoal": {
+            "mode": "equation-solution",
+            "variable": "x",
+            "originalEquation": "3x + 5 = 20",
+            "equationClass": "linear",
+            "expectedRoots": [
+              "5"
+            ]
+          },
+          "markingScheme": {
+            "maxMarks": 2,
+            "strategyGroups": [
+              {
+                "id": "isolate-then-divide",
+                "label": "Isolate 3x then divide by 3",
+                "marks": [
+                  {
+                    "markId": "M1",
+                    "type": "M",
+                    "points": 1,
+                    "description": "Subtract 5 to obtain 3x = 15",
+                    "predicate": {
+                      "kind": "equation-equivalent",
+                      "targetEquation": "3x = 15",
+                      "requireValidTransition": true
+                    }
+                  },
+                  {
+                    "markId": "A1",
+                    "type": "A",
+                    "points": 1,
+                    "allowErrorCarriedForward": true,
+                    "description": "Solve cleanly for x (ECF allowed for valid division after an arithmetic slip)",
+                    "predicate": {
+                      "kind": "follow-through-step",
+                      "requireIsolatedFinalVariable": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Standard linear isolation",
+              "steps": [
+                {
+                  "math": "3x = 15",
+                  "note": "Subtract 5 from both sides."
+                },
+                {
+                  "math": "x = 5",
+                  "note": "Divide both sides by 3."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mw-s20",
+      "order": 20,
+      "title": "20. Bounded Symbolic Scope (Indeterminate Handling)",
+      "purpose": "Explore a trigonometric identity outside bounded Step 5A.1 symbolic rules without false rejection.",
+      "onScreenText": [
+        "20. Bounded Symbolic Scope (Indeterminate Handling)",
+        "Explore a trigonometric identity outside bounded Step 5A.1 symbolic rules without false rejection."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "20. Bounded Symbolic Scope (Indeterminate Handling)",
+        "description": "Explore a trigonometric identity outside bounded Step 5A.1 symbolic rules without false rejection.",
+        "labels": [
+          "20. Bounded Symbolic Scope (Indeterminate Handling)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"210\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"28\" font-weight=\"bold\" fill=\"#0f172a\">20. Bounded Symbolic Scope (Indeterminate Handling)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"16\" fill=\"#4338ca\">Explore a trigonometric identity outside bounded Step 5A.1 symbolic rules without false </text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Explore a trigonometric identity outside bounded Step 5A.1 symbolic rules without false rejection.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Explore a trigonometric identity outside bounded Step 5A.1 symbolic rules without false rejection."
+      ],
+      "indicatorIds": [
+        "AS-9709-T1"
+      ],
+      "askTeacherContext": {
+        "focus": "Bounded Symbolic Scope (Indeterminate Handling)",
+        "keyTerms": [
+          "Step-by-step working",
+          "Method marks",
+          "Mathematical reasoning"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A.2 Mathematical Working Workspace curriculum pilot slide 20 of 20.",
+      "interactive": [
+        {
+          "id": "mw-20-indeterminate",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.1.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "AS Trigonometry · Scope Transparency",
+          "mode": "multi-step-working",
+          "learningMode": "guided",
+          "problemKind": "algebraic-simplification",
+          "variables": [
+            "x"
+          ],
+          "initialStatement": "sin(2x)",
+          "title": "Double-Angle Identity: sin(2x)",
+          "instructions": "Write the double-angle form 2*sin(x)*cos(x). Because double-angle trig identities lie outside bounded symbolic rules, the verifier reports Indeterminate rather than falsely marking your step wrong.",
+          "accessibilityLabel": "Double-angle trigonometric identity workspace",
+          "fallbackText": "Recall the double-angle identity for sin(2x) and compare with the worked solution.",
+          "finalGoal": {
+            "mode": "algebraic-expression",
+            "variables": [
+              "x"
+            ],
+            "expectedExpr": "2*sin(x)*cos(x)",
+            "verificationPolicy": "allow-bounded-numeric"
+          },
+          "workedSolutions": [
+            {
+              "methodLabel": "Double-angle formula",
+              "steps": [
+                {
+                  "math": "2*sin(x)*cos(x)",
+                  "note": "Standard double-angle identity (outside bounded symbolic proof rules, so reported transparently as indeterminate during step check)."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "checkpoints": [],
+  "glossary": []
+}
