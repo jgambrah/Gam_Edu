@@ -14,6 +14,8 @@ export * from './math-eval-parser';
 export * from './math-eval-exact';
 export * from './math-eval-domain-solutions';
 export * from './math-eval-units-precision';
+export * from './math-eval-step-verifier';
+export * from './math-eval-marking';
 
 import { EvalOpBudget, MATH_EVAL_LIMITS, MathEvalLimitError } from './math-eval-limits';
 import { parseEvalExpr, type EvalAstNode } from './math-eval-parser';
@@ -69,12 +71,26 @@ import {
   parseUnitExpression,
 } from './math-eval-units-precision';
 
+import {
+  verifyWorkingChain,
+  type StepOperationKind,
+  type WorkingChainResult,
+  type WorkingStepInput,
+  type WorkspaceProblemKind,
+} from './math-eval-step-verifier';
+import {
+  evaluateMarkingScheme,
+  type MarkingEvaluationResult,
+  type MarkingSchemeDef,
+} from './math-eval-marking';
+
 export type MathEvaluatorMode =
   | 'numeric-quantity'
   | 'algebraic-expression'
   | 'equation-solution'
   | 'inequality-interval'
-  | 'calculus-check';
+  | 'calculus-check'
+  | 'multi-step-working';
 
 export type MathEvalVerdict =
   | 'exact-equivalent'
@@ -182,12 +198,104 @@ export interface MathCalculusCheckSpec {
   domainRestrictions?: MathDomainRestrictions;
 }
 
+export interface WorkedSolutionStepDef {
+  math: string;
+  note: string;
+  operation?: StepOperationKind;
+  domainNote?: string;
+  rejectedExtraneous?: string[];
+  unit?: string;
+}
+
+export interface WorkedSolutionDef {
+  methodLabel: string;
+  steps: WorkedSolutionStepDef[];
+}
+
+export type WorkspaceLearningMode = 'guided' | 'independent' | 'exam-practice';
+
+export interface MathMultiStepWorkingSpec {
+  mode: 'multi-step-working';
+  learningMode: WorkspaceLearningMode;
+  problemKind: WorkspaceProblemKind;
+  variables: string[];
+  initialStatement: string;
+  initialUnit?: string;
+  keypadProfile?: 'primary' | 'lower-secondary' | 'igcse' | 'as-a-level';
+  domainRestrictions?: MathDomainRestrictions;
+  finalGoal:
+    | MathNumericQuantitySpec
+    | MathAlgebraicExpressionSpec
+    | MathEquationSolutionSpec
+    | MathInequalityIntervalSpec
+    | MathCalculusCheckSpec;
+  maxWorkingSteps?: number;
+  markingScheme?: MarkingSchemeDef;
+  workedSolutions: WorkedSolutionDef[];
+}
+
 export type MathEvaluatorSpec =
   | MathNumericQuantitySpec
   | MathAlgebraicExpressionSpec
   | MathEquationSolutionSpec
   | MathInequalityIntervalSpec
-  | MathCalculusCheckSpec;
+  | MathCalculusCheckSpec
+  | MathMultiStepWorkingSpec;
+
+export interface WorkspaceEvaluationResult {
+  chain: WorkingChainResult;
+  marking: MarkingEvaluationResult | null;
+  totalOpsUsed: number;
+  budgetExceeded: boolean;
+}
+
+/**
+ * Evaluates a Step 5A.2 multi-step mathematical working submission under a SINGLE
+ * cumulative EvalOpBudget across all transitions, domain checks, final-answer verification,
+ * and all marking strategies.
+ */
+export function evaluateWorkingWorkspace(
+  spec: MathMultiStepWorkingSpec,
+  learnerSteps: WorkingStepInput[],
+): WorkspaceEvaluationResult {
+  const cumulativeBudget = new EvalOpBudget(MATH_EVAL_LIMITS.maxTotalWorkspaceOps);
+  const chain = verifyWorkingChain(
+    {
+      problemKind: spec.problemKind,
+      variables: spec.variables,
+      initialStatement: spec.initialStatement,
+      initialUnit: spec.initialUnit,
+      domainRestrictions: spec.domainRestrictions,
+      finalGoal: spec.finalGoal,
+    },
+    learnerSteps,
+    cumulativeBudget,
+  );
+
+  const marking = spec.markingScheme
+    ? evaluateMarkingScheme(
+        spec.markingScheme,
+        {
+          problemKind: spec.problemKind,
+          variables: spec.variables,
+          initialStatement: spec.initialStatement,
+          initialUnit: spec.initialUnit,
+          domainRestrictions: spec.domainRestrictions,
+          finalGoal: spec.finalGoal,
+        },
+        learnerSteps,
+        chain,
+        cumulativeBudget,
+      )
+    : null;
+
+  return {
+    chain,
+    marking,
+    totalOpsUsed: cumulativeBudget.used,
+    budgetExceeded: chain.budgetExceeded || Boolean(marking?.budgetExceeded),
+  };
+}
 
 function parseExactNumberOrRat(raw: string, budget: EvalOpBudget): BigRat | null {
   try {

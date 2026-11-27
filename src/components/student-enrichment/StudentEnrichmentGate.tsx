@@ -25,10 +25,13 @@ export function StudentEnrichmentGate({
   const { user, isUserLoading } = useUser();
   const { role, loading: isRoleLoading } = useRole();
 
+  const isLoading = isUserLoading || isRoleLoading;
+  const isAuthenticated = Boolean(user);
+
   const decision = evaluateStudentEnrichmentAccess({
-    role,
-    email: user?.email,
-    uid: user?.uid,
+    role: isAuthenticated ? role : null,
+    isAuthenticated,
+    isLoading,
     releaseStatusOverride,
   });
 
@@ -36,11 +39,13 @@ export function StudentEnrichmentGate({
     return <>{children}</>;
   }
 
-  if (isUserLoading || isRoleLoading) {
+  // Fail closed while auth or role context is resolving (prevents stale or premature flashes)
+  if (decision.reason === 'loading-fail-closed') {
     return (
       <div
         role="status"
         aria-live="polite"
+        data-student-enrichment-gate="loading"
         className="flex min-h-[50vh] items-center justify-center p-6 text-slate-600"
       >
         <div className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium shadow-sm">
@@ -78,9 +83,10 @@ export function StudentEnrichmentGate({
           </div>
 
           <p className="mt-4 text-sm leading-relaxed text-slate-600">
-            The GAM EDU Student Enrichment programme (Narrated Lessons, Interactive Labs, and Coding
-            Club) is actively being developed and reviewed. Student access is temporarily restricted
-            until official release approval is granted by the school administration.
+            The GAM EDU Student Enrichment programme (Narrated Lessons, Interactive Labs, Coding
+            Club, and Study Clubs) is actively being developed and reviewed. Student access is
+            temporarily restricted until official release approval is granted by the school
+            administration.
           </p>
 
           <p className="mt-2.5 text-xs leading-relaxed text-slate-500">
@@ -89,7 +95,7 @@ export function StudentEnrichmentGate({
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            {user ? (
+            {isAuthenticated ? (
               <Link
                 href="/dashboard"
                 className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700"
@@ -102,7 +108,7 @@ export function StudentEnrichmentGate({
                 href="/login"
                 className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-indigo-700"
               >
-                Sign in (Authorised Reviewer / Staff)
+                Sign in (Authorised Staff / Reviewer)
               </Link>
             )}
           </div>
@@ -121,7 +127,7 @@ export function StudentEnrichmentGate({
           <span className="inline-flex items-center gap-1.5">
             <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-amber-700" />
             <span>
-              <strong>{sectionName} · Under Construction:</strong> Authorised Admin / Reviewer
+              <strong>{sectionName} · Under Construction:</strong> Authorised Staff / Reviewer
               access active. Ordinary student access remains restricted until official release.
             </span>
           </span>

@@ -30,8 +30,8 @@ import { MathEvaluatorEngine } from '@/components/narrated-lessons/MathEvaluator
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Preview)', () => {
-  it('registers math-evaluator as 7th engine with engineVersion 1.0.0 and productionVersion 1.0.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].engineVersion).toBe('1.0.0');
+  it('registers math-evaluator as 7th engine with engineVersion 1.1.0 and productionVersion 1.0.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].engineVersion).toBe('1.1.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].productionVersion).toBe('1.0.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].implemented).toBe(true);
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');

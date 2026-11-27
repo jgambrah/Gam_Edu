@@ -174,11 +174,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'math-evaluator': {
     id: 'math-evaluator',
-    engineVersion: '1.0.0',
+    engineVersion: '1.1.0',
     productionVersion: '1.0.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, and symbolic calculus evaluator (Step 5A.1 production-compatible).',
+    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, symbolic calculus evaluator (1.0.0) and multi-step working/marking workspace (1.1.0).',
   },
 };
 
@@ -710,6 +710,15 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
     'calculusKind',
     'requireConstantOfIntegration',
     'requireAbsInLog',
+    'learningMode',
+    'problemKind',
+    'initialStatement',
+    'initialUnit',
+    'keypadProfile',
+    'finalGoal',
+    'maxWorkingSteps',
+    'markingScheme',
+    'workedSolutions',
   ]),
 };
 
@@ -2031,6 +2040,12 @@ export function validateSlideInteractiveConfig(
       }
     }
   } else if (obj.engine === 'math-evaluator') {
+    if (obj.mode === 'multi-step-working') {
+      const cmp = typeof obj.minEngineVersion === 'string' ? compareSemver(obj.minEngineVersion, '1.1.0') : null;
+      if (typeof obj.minEngineVersion !== 'string' || !SEMVER_RE.test(obj.minEngineVersion) || cmp === null || cmp < 0) {
+        errors.push('math-evaluator mode "multi-step-working" requires minEngineVersion >= "1.1.0".');
+      }
+    }
     validateMathEvaluatorConfig(obj, errors);
   }
 

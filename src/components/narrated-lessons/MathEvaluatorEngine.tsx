@@ -1,10 +1,23 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Calculator, CheckCircle2, HelpCircle, RotateCcw, XCircle } from 'lucide-react';
 import type { MathEvaluatorInteractiveConfig } from '@/lib/narrated-lessons/interactive-schema';
 import { evaluateMathSubmission, type MathEvalResult } from '@/lib/math-evaluator/math-eval-engine';
 import { MathPreview } from './MathPreview';
+
+const LazyMathWorkingWorkspace = dynamic(
+  () => import('./MathWorkingWorkspace').then((m) => m.MathWorkingWorkspace),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs font-medium text-slate-600">
+        Loading mathematical working workspace…
+      </div>
+    ),
+  },
+);
 
 const KEYPAD_KEYS: Array<{ label: string; insert: string; aria: string }> = [
   { label: 'x', insert: 'x', aria: 'Insert variable x' },
@@ -24,6 +37,17 @@ const KEYPAD_KEYS: Array<{ label: string; insert: string; aria: string }> = [
 ];
 
 export function MathEvaluatorEngine({ config }: { config: MathEvaluatorInteractiveConfig }) {
+  if (config.mode === 'multi-step-working') {
+    return <LazyMathWorkingWorkspace config={config} />;
+  }
+  return <SingleAnswerMathEvaluator config={config} />;
+}
+
+function SingleAnswerMathEvaluator({
+  config,
+}: {
+  config: Exclude<MathEvaluatorInteractiveConfig, { mode: 'multi-step-working' }>;
+}) {
   const [expr, setExpr] = useState('');
   const [unit, setUnit] = useState('');
   const [domainInput, setDomainInput] = useState('');
