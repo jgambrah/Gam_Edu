@@ -1023,6 +1023,35 @@
           "sourceExpr": "3x^2 + sin(x)",
           "expectedExpr": "6x + cos(x)",
           "successExplanation": "Power rule gives 6x and d/dx(sin x) = cos x in radians."
+        },
+        {
+          "id": "me-14b-derivative-domain",
+          "engine": "math-evaluator",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "as-a-level",
+          "subjectTag": "Calculus · Differentiation & Domain",
+          "mode": "calculus-check",
+          "title": "Find d/dx (x / x) and State Domain Restriction",
+          "instructions": "Enter the simplified derivative of x / x and state the excluded value of x where the function and derivative are undefined.",
+          "promptMath": "d/dx (x / x)",
+          "accessibilityLabel": "Differentiate x over x with domain restriction",
+          "fallbackText": "d/dx (x / x) = 0, valid for x ≠ 0 because x / x is undefined at x = 0.",
+          "variable": "x",
+          "calculusKind": "derivative",
+          "sourceExpr": "x/x",
+          "expectedExpr": "0",
+          "domainRestrictions": {
+            "requireLearnerDomain": true,
+            "expectedExcluded": [
+              "0"
+            ]
+          },
+          "hints": [
+            "For x ≠ 0, x / x equals the constant 1.",
+            "Remember to state x != 0 in the domain restriction box."
+          ],
+          "successExplanation": "For all x ≠ 0, x/x = 1 so its derivative is 0, while x = 0 remains excluded from the domain."
         }
       ]
     },

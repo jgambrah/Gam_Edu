@@ -438,14 +438,14 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
       ).toBe(false);
     });
 
-    it('validates all 15 slides (18 activities) in step5a-math-evaluator-pilot.json and keeps production gate CLOSED', () => {
+    it('validates all 15 slides (19 activities) in step5a-math-evaluator-pilot.json and keeps production gate CLOSED', () => {
       const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step5a-math-evaluator-pilot.json');
       const lesson = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as {
         lessonId: string;
         slides: Array<{ id: string; interactive?: unknown[] }>;
       };
       expect(lesson.slides).toHaveLength(15);
-      expect(lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0)).toBe(18);
+      expect(lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0)).toBe(19);
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: true })).not.toThrow();
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).toThrow(/production/i);
     });
@@ -946,6 +946,105 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Pre
           expectedExpr: '2*x^2/x',
         }).errors.some((e) => /additional undefined points/i.test(e)),
       ).toBe(true);
+    });
+
+    it('renders and submits domain restriction input for algebraic-expression and calculus-check (when required), hides it when not required, and clears it on Reset', () => {
+      const algDomCfg: MathEvaluatorInteractiveConfig = {
+        id: 'ui-alg-dom',
+        engine: 'math-evaluator',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'igcse',
+        mode: 'algebraic-expression',
+        title: 'Rational Domain UI',
+        instructions: 'Simplify (x^2 - 9)/(x - 3) and state x != 3.',
+        accessibilityLabel: 'Rational Domain UI',
+        fallbackText: 'x + 3, x != 3',
+        variables: ['x'],
+        sourceExpr: '(x^2 - 9)/(x - 3)',
+        expectedExpr: 'x + 3',
+        domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['3'] },
+      };
+
+      const calcDomCfg: MathEvaluatorInteractiveConfig = {
+        id: 'ui-calc-dom',
+        engine: 'math-evaluator',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'as-a-level',
+        mode: 'calculus-check',
+        title: 'Derivative Domain UI',
+        instructions: 'Differentiate x/x and state x != 0.',
+        accessibilityLabel: 'Derivative Domain UI',
+        fallbackText: '0, x != 0',
+        variable: 'x',
+        calculusKind: 'derivative',
+        sourceExpr: 'x/x',
+        expectedExpr: '0',
+        domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['0'] },
+      };
+
+      const calcPlainCfg: MathEvaluatorInteractiveConfig = {
+        id: 'ui-calc-plain',
+        engine: 'math-evaluator',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'as-a-level',
+        mode: 'calculus-check',
+        title: 'Plain Derivative UI',
+        instructions: 'Differentiate 3x^2.',
+        accessibilityLabel: 'Plain Derivative UI',
+        fallbackText: '6x',
+        variable: 'x',
+        calculusKind: 'derivative',
+        sourceExpr: '3x^2',
+        expectedExpr: '6x',
+      };
+
+      render(
+        <div>
+          <MathEvaluatorEngine config={algDomCfg} />
+          <MathEvaluatorEngine config={calcDomCfg} />
+          <MathEvaluatorEngine config={calcPlainCfg} />
+        </div>,
+      );
+
+      // 1. Algebraic-expression domain input appears & submits correctly
+      const algExprInput = screen.getByLabelText('Rational Domain UI answer input') as HTMLInputElement;
+      const algDomInput = screen.getByLabelText('Rational Domain UI domain restriction input') as HTMLInputElement;
+      const checkButtons = screen.getAllByRole('button', { name: 'Check answer' });
+      const resetButtons = screen.getAllByRole('button', { name: 'Reset answer' });
+
+      fireEvent.change(algExprInput, { target: { value: 'x + 3' } });
+      fireEvent.change(algDomInput, { target: { value: 'x != 3' } });
+      fireEvent.click(checkButtons[0]);
+      expect(screen.getByText(/exact algebraic equivalence confirmed/i)).toBeTruthy();
+
+      // 2. Calculus-check domain input appears ONLY when requireLearnerDomain is enabled
+      const calcExprInput = screen.getByLabelText('Derivative Domain UI answer input') as HTMLInputElement;
+      const calcDomInput = screen.getByLabelText('Derivative Domain UI domain restriction input') as HTMLInputElement;
+      expect(screen.queryByLabelText('Plain Derivative UI domain restriction input')).toBeNull();
+
+      // 3. Missing required restriction receives appropriate feedback
+      fireEvent.change(calcExprInput, { target: { value: '0' } });
+      fireEvent.click(checkButtons[1]);
+      expect(screen.getByText(/must also state the domain restriction/i)).toBeTruthy();
+
+      // 4. Incorrect required restriction receives appropriate feedback
+      fireEvent.change(calcDomInput, { target: { value: 'x != 1' } });
+      fireEvent.click(checkButtons[1]);
+      expect(screen.getByText(/Check your excluded value\(s\)/i)).toBeTruthy();
+
+      // 5. Correct learner domain restriction is submitted and passes
+      fireEvent.change(calcDomInput, { target: { value: 'x != 0' } });
+      fireEvent.click(checkButtons[1]);
+      expect(screen.getByText(/exact symbolic derivative confirmed/i)).toBeTruthy();
+
+      // 6. Reset clears the domain input, expression input, and previous feedback
+      fireEvent.click(resetButtons[1]);
+      expect(calcExprInput.value).toBe('');
+      expect(calcDomInput.value).toBe('');
+      expect(screen.queryByText(/exact symbolic derivative confirmed/i)).toBeNull();
     });
   });
 });

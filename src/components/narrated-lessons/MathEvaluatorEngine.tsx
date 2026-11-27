@@ -199,7 +199,8 @@ export function MathEvaluatorEngine({ config }: { config: MathEvaluatorInteracti
         )}
       </div>
 
-      {config.mode === 'algebraic-expression' && config.domainRestrictions?.requireLearnerDomain && (
+      {(config.mode === 'algebraic-expression' || config.mode === 'calculus-check') &&
+        config.domainRestrictions?.requireLearnerDomain && (
         <label className="mt-2 block text-xs font-bold text-slate-700">
           <span>Domain restriction (e.g. x != 3 or x &gt; 2)</span>
           <input
