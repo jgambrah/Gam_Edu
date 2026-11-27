@@ -802,10 +802,21 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
       const v = node.right;
       const du = differentiateAst(u, variable, budget);
       const dv = differentiateAst(v, variable, budget);
-      if (node.op === '+' || node.op === '-') {
-        return { type: 'binary', op: node.op, left: du, right: dv };
+      const isZero = (n: EvalAstNode) => n.type === 'number' && n.value === 0;
+      if (node.op === '+') {
+        if (isZero(du)) return dv;
+        if (isZero(dv)) return du;
+        return { type: 'binary', op: '+', left: du, right: dv };
+      }
+      if (node.op === '-') {
+        if (isZero(dv)) return du;
+        if (isZero(du)) return { type: 'unary', op: '-', arg: dv };
+        return { type: 'binary', op: '-', left: du, right: dv };
       }
       if (node.op === '*') {
+        if (isZero(du) && isZero(dv)) return numNode(0);
+        if (isZero(du)) return { type: 'binary', op: '*', left: u, right: dv };
+        if (isZero(dv)) return { type: 'binary', op: '*', left: du, right: v };
         return {
           type: 'binary',
           op: '+',
@@ -998,11 +1009,15 @@ export function isSimplifiedFractionAst(learnerAst: EvalAstNode, expectedAst: Ev
 export function isReducedFractionAst(node: EvalAstNode): boolean {
   const core = node.type === 'unary' ? node.arg : node;
   if (core.type === 'number') return /^\d+$/.test(core.raw);
-  if (core.type === 'binary' && core.op === '/' && core.left.type === 'number' && core.right.type === 'number') {
-    if (!/^\d+$/.test(core.left.raw) || !/^\d+$/.test(core.right.raw)) return false;
-    const p = BigInt(core.left.raw);
-    const q = BigInt(core.right.raw);
-    return q > B1 && bigGcd(p, q) === B1;
+  if (core.type === 'binary' && core.op === '/') {
+    const leftNum = core.left.type === 'unary' && core.left.op === '-' ? core.left.arg : core.left;
+    const rightNum = core.right;
+    if (leftNum.type === 'number' && rightNum.type === 'number') {
+      if (!/^\d+$/.test(leftNum.raw) || !/^\d+$/.test(rightNum.raw)) return false;
+      const p = BigInt(leftNum.raw);
+      const q = BigInt(rightNum.raw);
+      return q > B1 && bigGcd(p, q) === B1;
+    }
   }
   return false;
 }

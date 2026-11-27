@@ -91,6 +91,8 @@ export type MarkPredicate =
   | {
       kind: 'extraneous-rejection';
       expectedRejected: string[];
+      /** When true, learner must provide verified substitution/domain evidence (`candidateChecks`), not merely declare the number. */
+      requireEvidence?: boolean;
     }
   | {
       kind: 'final-answer';
@@ -98,8 +100,10 @@ export type MarkPredicate =
     }
   | {
       kind: 'follow-through-step';
-      /** Requires a valid transition (exact/symbolic equivalence) on a step at or after earliest error, reaching an isolated root/value. */
+      /** Requires a valid transition (exact/symbolic equivalence) on a step after an eligible earlier error, reaching an isolated root/value without trivial repetition. */
       requireIsolatedFinalVariable?: boolean;
+      /** Error statuses eligible for ECF (default: ['invalid-transformation'], excluding lost-solution & domain-violation errors). */
+      eligibleErrorStatuses?: StepTransitionStatus[];
     };
 
 export interface MarkRuleDef {
@@ -151,6 +155,10 @@ const VALID_TRANSITION_STATUSES: ReadonlySet<StepTransitionStatus> = new Set([
   'valid-implication-extraneous-risk',
 ]);
 
+function normStepText(raw?: string): string {
+  return (raw ?? '').replace(/\s+/g, '').replace(/[\u2212\u2013]/g, '-').toLowerCase();
+}
+
 function checkSyntacticForm(
   rawExpr: string,
   targetExpr: string,
@@ -160,7 +168,7 @@ function checkSyntacticForm(
 ): boolean {
   const v0 = variables[0] ?? 'x';
   if (form === 'completed-square') {
-    return isCompletedSquareForm(rawExpr, v0);
+    return isCompletedSquareForm(rawExpr, v0, budget);
   }
   const ast = parseEvalExpr(rawExpr, { allowedVariables: variables }).ast;
   if (form === 'factored-form') return isFullyFactoredFormAst(ast, variables, budget);
@@ -248,26 +256,82 @@ function evaluateRulePredicate(
     const expectedRoots = pred.expectedRejected
       .map((r) => parseExactRoot(r, budget))
       .filter((r): r is NonNullable<typeof r> => r !== null);
-    for (let i = 0; i < steps.length; i++) {
-      const rejList = steps[i].rejectedExtraneous ?? [];
-      if (rejList.length === 0) continue;
-      const lrnRoots = rejList
-        .map((r) => parseExactRoot(r, budget))
+    for (let i = 0; i < chain.stepResults.length; i++) {
+      const sr = chain.stepResults[i];
+      // Never award rejection mark on a step that contradicted a valid root
+      if (sr.status === 'lost-solution-error') continue;
+      const verifiedList = sr.verifiedRejectedExtraneous ?? [];
+      if (verifiedList.length === 0) continue;
+      const eligible = pred.requireEvidence ? verifiedList.filter((v) => v.hasVerifiedEvidence) : verifiedList;
+      if (eligible.length === 0) continue;
+      const lrnRoots = eligible
+        .map((v) => parseExactRoot(v.candidate, budget))
         .filter((r): r is NonNullable<typeof r> => r !== null);
       const allFound = expectedRoots.every((er) => lrnRoots.some((lr) => exactRootEqual(er, lr)));
       if (allFound) {
-        return { matched: true, viaEcf: false, stepIndex: i, reason: 'Extraneous candidate(s) explicitly verified and rejected.' };
+        return {
+          matched: true,
+          viaEcf: false,
+          stepIndex: i,
+          reason: pred.requireEvidence
+            ? 'Extraneous candidate(s) rejected with verified substitution/domain evidence.'
+            : 'Extraneous candidate(s) independently verified invalid against the original equation and rejected.',
+        };
       }
     }
-    return { matched: false, viaEcf: false, stepIndex: null, reason: 'Extraneous candidate(s) not explicitly rejected.' };
+    return {
+      matched: false,
+      viaEcf: false,
+      stepIndex: null,
+      reason: pred.requireEvidence
+        ? 'Extraneous candidate rejection requires verified substitution or domain evidence.'
+        : 'Extraneous candidate(s) not validly rejected against the original equation.',
+    };
   }
 
   if (pred.kind === 'certified-transition') {
     for (let i = 0; i < chain.stepResults.length; i++) {
       const sr = chain.stepResults[i];
       if (pred.expectedStatus && sr.status !== pred.expectedStatus) continue;
-      if (pred.expectedOperation && sr.operation !== pred.expectedOperation) continue;
       if (!pred.expectedStatus && !VALID_TRANSITION_STATUSES.has(sr.status)) continue;
+
+      // Reject trivial no-op repetition of the previous line
+      if (sr.prevMath && normStepText(sr.rawMath) === normStepText(sr.prevMath)) continue;
+
+      // Verify actual mathematical operation evidence (NEVER trust dropdown label alone!)
+      if (pred.expectedOperation) {
+        if (pred.expectedOperation === 'differentiate' || pred.expectedOperation === 'integrate') {
+          if (sr.operation !== pred.expectedOperation || !VALID_TRANSITION_STATUSES.has(sr.status)) continue;
+        } else if (pred.expectedOperation === 'check-candidates') {
+          if ((sr.verifiedRejectedExtraneous ?? []).length === 0) continue;
+        } else if (pred.expectedOperation === 'complete-square') {
+          if (!isCompletedSquareForm(sr.rawMath, activeVar, budget)) continue;
+        } else if (pred.expectedOperation === 'factorise') {
+          const exprToCheck = sr.rawMath.includes('=') && sr.rawMath.split('=').length === 2
+            ? (splitEquation(sr.rawMath).rhs.trim() === '0' ? splitEquation(sr.rawMath).lhs : splitEquation(sr.rawMath).rhs)
+            : sr.rawMath;
+          try {
+            const ast = parseEvalExpr(exprToCheck, { allowedVariables: config.variables }).ast;
+            if (!isFullyFactoredFormAst(ast, config.variables, budget)) continue;
+          } catch (e) {
+            if (e instanceof MathEvalLimitError && e.code === 'LIMIT_EXCEEDED') throw e;
+            continue;
+          }
+        } else if (pred.expectedOperation === 'expand') {
+          const exprToCheck = sr.rawMath.includes('=') && sr.rawMath.split('=').length === 2
+            ? splitEquation(sr.rawMath).lhs
+            : sr.rawMath;
+          try {
+            const ast = parseEvalExpr(exprToCheck, { allowedVariables: config.variables }).ast;
+            if (!isExpandedPolynomialAst(ast)) continue;
+          } catch (e) {
+            if (e instanceof MathEvalLimitError && e.code === 'LIMIT_EXCEEDED') throw e;
+            continue;
+          }
+        } else if (sr.operation !== pred.expectedOperation) {
+          continue;
+        }
+      }
       return { matched: true, viaEcf: false, stepIndex: i, reason: `Verified transition (${sr.status}) on Step ${i + 1}.` };
     }
     return { matched: false, viaEcf: false, stepIndex: null, reason: 'Required certified transformation step not demonstrated.' };
@@ -277,17 +341,33 @@ function evaluateRulePredicate(
     if (!rule.allowErrorCarriedForward) {
       return { matched: false, viaEcf: false, stepIndex: null, reason: 'ECF not authorised on this rule.' };
     }
-    // Look for a valid algebraic/equation follow-through step strictly AFTER the earliest error!
     if (chain.earliestErrorIndex === null) {
-      // No error occurred: normal valid final/follow-through step qualifies directly
       if (chain.finalAnswerResult.passed) {
         return { matched: true, viaEcf: false, stepIndex: Math.max(0, steps.length - 1), reason: 'Milestone achieved without error.' };
       }
       return { matched: false, viaEcf: false, stepIndex: null, reason: 'Follow-through milestone not reached.' };
     }
+
+    // Only allow ECF after eligible error categories (default: arithmetic/algebraic slip `invalid-transformation`,
+    // explicitly excluding fundamentally invalid operations like lost-solution or domain-violation errors!)
+    const eligibleErrs = new Set<StepTransitionStatus>(
+      pred.eligibleErrorStatuses ?? ['invalid-transformation'],
+    );
+    const earliestStatus = chain.stepResults[chain.earliestErrorIndex]?.status;
+    if (!earliestStatus || !eligibleErrs.has(earliestStatus)) {
+      return {
+        matched: false,
+        viaEcf: false,
+        stepIndex: null,
+        reason: `ECF not eligible after "${earliestStatus ?? 'unknown'}" error on Step ${chain.earliestErrorIndex + 1}.`,
+      };
+    }
+
     for (let i = chain.earliestErrorIndex + 1; i < chain.stepResults.length; i++) {
       const sr = chain.stepResults[i];
       if (sr.status !== 'exact-equivalence' && sr.status !== 'symbolic-equivalence') continue;
+      // Reject trivial repetition of the erroneous line (must make genuine mathematical progress!)
+      if (sr.prevMath && normStepText(sr.rawMath) === normStepText(sr.prevMath)) continue;
       if (pred.requireIsolatedFinalVariable) {
         const isolatedRe = new RegExp(`^${activeVar}\\s*=\\s*[^=${activeVar}]+$`);
         if (!isolatedRe.test(steps[i].math.trim())) continue;
@@ -296,10 +376,10 @@ function evaluateRulePredicate(
         matched: true,
         viaEcf: true,
         stepIndex: i,
-        reason: `Valid Error-Carried-Forward (ECF) follow-through verified on Step ${i + 1} after earlier slip on Step ${chain.earliestErrorIndex + 1}.`,
+        reason: `Valid Error-Carried-Forward (ECF) follow-through verified on Step ${i + 1} after eligible slip on Step ${chain.earliestErrorIndex + 1}.`,
       };
     }
-    return { matched: false, viaEcf: false, stepIndex: null, reason: 'No valid follow-through step demonstrated after earlier error.' };
+    return { matched: false, viaEcf: false, stepIndex: null, reason: 'No valid non-trivial follow-through step demonstrated after earlier error.' };
   }
 
   if (pred.kind === 'expression-equivalent' || pred.kind === 'required-form') {
@@ -363,7 +443,7 @@ function evaluateRulePredicate(
         const { lhs, rhs } = splitEquation(raw);
         let formOk = false;
         if (pred.requiredForm === 'completed-square') {
-          formOk = isCompletedSquareForm(raw, activeVar);
+          formOk = isCompletedSquareForm(raw, activeVar, budget);
         } else if (pred.requiredForm === 'factored-form') {
           // One side must be 0 and the other side must be genuinely factored (e.g. (x-2)(x+1) = 0)!
           const rhsZero = rhs.trim() === '0';
@@ -373,7 +453,8 @@ function evaluateRulePredicate(
             try {
               const nzAst = parseEvalExpr(nonZeroSide, { allowedVariables: config.variables }).ast;
               formOk = isFullyFactoredFormAst(nzAst, config.variables, budget);
-            } catch {
+            } catch (e) {
+              if (e instanceof MathEvalLimitError && e.code === 'LIMIT_EXCEEDED') throw e;
               formOk = false;
             }
           }
@@ -382,7 +463,8 @@ function evaluateRulePredicate(
             formOk =
               isExpandedPolynomialAst(parseEvalExpr(lhs, { allowedVariables: config.variables }).ast) &&
               isExpandedPolynomialAst(parseEvalExpr(rhs, { allowedVariables: config.variables }).ast);
-          } catch {
+          } catch (e) {
+            if (e instanceof MathEvalLimitError && e.code === 'LIMIT_EXCEEDED') throw e;
             formOk = false;
           }
         }
