@@ -171,16 +171,180 @@ describe('Step 5B — Sorting and Classification Engine (sort-classify 1.0.0)', 
       expect(bad.ok).toBe(false);
     });
 
-    it('validates all 10 slides (12 activities) in step5b-sort-classify-pilot.json and keeps production gate CLOSED', () => {
+    it('validates all 15 slides (19 activities) in step5b-sort-classify-pilot.json and keeps production gate CLOSED', () => {
       const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step5b-sort-classify-pilot.json');
       const lesson = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as {
         lessonId: string;
         slides: Array<{ id: string; interactive?: unknown[] }>;
       };
-      expect(lesson.slides).toHaveLength(10);
-      expect(lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0)).toBe(12);
+      expect(lesson.slides).toHaveLength(15);
+      expect(lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0)).toBe(19);
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: true })).not.toThrow();
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).toThrow(/production/i);
+    });
+
+    it('enforces Step 5B close-out corrections: 1:1 cardinality, duplicate pairs, bipartite cloze feasibility, closest-order tie-breaking, explicit empty-set decision, malformed submissions & visual safety', () => {
+      // 1. 1:1 cardinality violation in pair-matching (both schema and evaluator)
+      const oneToOneSpec = {
+        mode: 'pair-matching' as const,
+        allowManyToMany: false,
+        leftItems: [
+          { id: 'l1', label: 'A' },
+          { id: 'l2', label: 'B' },
+        ],
+        rightItems: [
+          { id: 'r1', label: '1' },
+          { id: 'r2', label: '2' },
+        ],
+        expectedMatches: [
+          { leftId: 'l1', rightId: 'r1' },
+          { leftId: 'l2', rightId: 'r2' },
+        ],
+      };
+      expect(
+        evaluatePairMatching(oneToOneSpec, [
+          { leftId: 'l1', rightId: 'r1' },
+          { leftId: 'l1', rightId: 'r2' },
+        ]).passed,
+      ).toBe(false);
+      expect(
+        evaluatePairMatching(oneToOneSpec, [
+          { leftId: 'l1', rightId: 'r1' },
+          { leftId: 'l1', rightId: 'r1' },
+        ]).feedback,
+      ).toMatch(/duplicate/i);
+      expect(
+        evaluatePairMatching(oneToOneSpec, [{ leftId: 'ghost', rightId: 'r1' }]).feedback,
+      ).toMatch(/unknown/i);
+
+      // Schema rejects conflicting 1:1 expectedMatches and duplicate expectedMatches
+      const badCard = validateSlideInteractiveConfig({
+        id: 'bad-card',
+        engine: 'sort-classify',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'primary',
+        mode: 'pair-matching',
+        allowManyToMany: false,
+        title: 'Bad 1:1',
+        instructions: 'Match items.',
+        accessibilityLabel: 'Bad 1:1',
+        fallbackText: 'Fallback text.',
+        leftItems: [{ id: 'l1', label: 'A' }, { id: 'l2', label: 'B' }],
+        rightItems: [{ id: 'r1', label: '1' }, { id: 'r2', label: '2' }],
+        expectedMatches: [
+          { leftId: 'l1', rightId: 'r1' },
+          { leftId: 'l2', rightId: 'r1' },
+        ],
+      });
+      expect(badCard.ok).toBe(false);
+
+      // 2. Non-reusable cloze bipartite feasibility check (2 blanks both only accept tok1 -> infeasible!)
+      const infeasibleCloze = validateSlideInteractiveConfig({
+        id: 'bad-cloze-bipartite',
+        engine: 'sort-classify',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'igcse',
+        mode: 'cloze-tiles',
+        reusableTokens: false,
+        title: 'Infeasible Cloze',
+        instructions: 'Fill blanks.',
+        accessibilityLabel: 'Infeasible Cloze',
+        fallbackText: 'Fallback.',
+        template: 'First {{b1}} then {{b2}}.',
+        blanks: [
+          { id: 'b1', acceptedTokenIds: ['t1'] },
+          { id: 'b2', acceptedTokenIds: ['t1'] },
+        ],
+        tokens: [
+          { id: 't1', label: 'alpha' },
+          { id: 't2', label: 'beta' },
+        ],
+      });
+      expect(infeasibleCloze.ok).toBe(false);
+      expect(infeasibleCloze.errors.join(' ')).toMatch(/feasible/i);
+
+      // Undeclared placeholder & duplicate placeholder rejected
+      const badPlaceholder = validateSlideInteractiveConfig({
+        id: 'bad-ph',
+        engine: 'sort-classify',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'primary',
+        mode: 'cloze-tiles',
+        title: 'Bad PH',
+        instructions: 'Fill blanks.',
+        accessibilityLabel: 'Bad PH',
+        fallbackText: 'Fallback.',
+        template: 'Use {{b1}} and {{b1}} and {{ghost}}.',
+        blanks: [{ id: 'b1', acceptedTokenIds: ['t1'] }],
+        tokens: [{ id: 't1', label: 'A' }, { id: 't2', label: 'B' }],
+      });
+      expect(badPlaceholder.ok).toBe(false);
+
+      // 3. Closest accepted order + deterministic tie-breaking in evaluateOrderSequence
+      const seqSpec = {
+        mode: 'order-sequence' as const,
+        items: [
+          { id: 'a', label: 'A' },
+          { id: 'b', label: 'B' },
+          { id: 'c', label: 'C' },
+        ],
+        acceptedOrders: [
+          ['a', 'b', 'c'],
+          ['c', 'b', 'a'],
+        ],
+      };
+      // Learner matches ['c', 'a', 'b'] -> 1 match with ['c','b','a'] vs 0 with ['a','b','c']
+      const seqRes = evaluateOrderSequence(seqSpec, ['c', 'a', 'b']);
+      expect(seqRes.passed).toBe(false);
+      expect(seqRes.correctCount).toBe(1);
+      expect(seqRes.closestOrderIndex).toBe(1);
+      expect(seqRes.itemDiagnostics.c).toBe('correct');
+      // Malformed duplicate item rejected
+      expect(evaluateOrderSequence(seqSpec, ['a', 'a', 'c']).feedback).toMatch(/duplicate/i);
+
+      // 4. Explicit empty-set decision vs unanswered item
+      const emptySetSpec = {
+        mode: 'category-bins' as const,
+        allowMultipleBinsPerItem: true,
+        explicitEmptyDecision: true,
+        bins: [
+          { id: 'even', label: 'Even' },
+          { id: 'prime', label: 'Prime' },
+        ],
+        items: [
+          { id: 'n2', label: '2', validBinIds: ['even', 'prime'] },
+          { id: 'n9', label: '9', validBinIds: [] },
+        ],
+      };
+      const unanswered = evaluateCategoryBins(emptySetSpec, { n2: ['even', 'prime'] });
+      expect(unanswered.passed).toBe(false);
+      expect(unanswered.itemDiagnostics.n9).toBe('unassigned');
+      const explicitlyDecided = evaluateCategoryBins(emptySetSpec, { n2: ['even', 'prime'] }, ['n9']);
+      expect(explicitlyDecided.passed).toBe(true);
+      expect(explicitlyDecided.itemDiagnostics.n9).toBe('correct');
+
+      // 5. Prototype-sensitive keys & external image URLs rejected
+      const badVisual = validateSlideInteractiveConfig({
+        id: 'bad-vis',
+        engine: 'sort-classify',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'early-years',
+        mode: 'category-bins',
+        title: 'Bad Visual',
+        instructions: 'Sort items.',
+        accessibilityLabel: 'Bad Visual',
+        fallbackText: 'Fallback.',
+        bins: [{ id: 'b1', label: 'B1' }, { id: 'b2', label: 'B2' }],
+        items: [
+          { id: 'i1', label: 'Bad', validBinIds: ['b1'], visual: { src: 'https://evil.example.com/x.png', alt: 'External image' } },
+          { id: 'constructor', label: 'Proto', validBinIds: ['b2'] },
+        ],
+      });
+      expect(badVisual.ok).toBe(false);
     });
   });
 

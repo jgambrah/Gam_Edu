@@ -23,9 +23,13 @@ import {
 export function SortClassifyEngine({ config }: { config: SortClassifyInteractiveConfig }) {
   // Mode 1: Category Bins state
   const [binAssignments, setBinAssignments] = useState<Record<string, string[]>>({});
+  const [explicitEmptyIds, setExplicitEmptyIds] = useState<string[]>([]);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(
     config.mode === 'category-bins' ? config.items[0]?.id ?? null : null,
   );
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const [predictionChoice, setPredictionChoice] = useState<number | null>(null);
+  const [predictionChecked, setPredictionChecked] = useState(false);
 
   // Mode 2: Pair Matching state
   const [pairs, setPairs] = useState<Array<{ leftId: string; rightId: string }>>([]);
@@ -49,7 +53,7 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
   const [showHints, setShowHints] = useState(false);
 
   const snapshot = () =>
-    JSON.stringify({ binAssignments, pairs, blanksFilled, orderIds });
+    JSON.stringify({ binAssignments, explicitEmptyIds, pairs, blanksFilled, orderIds });
 
   const pushHistory = () => {
     setHistory((h) => [...h.slice(-24), snapshot()]);
@@ -61,11 +65,13 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
     if (!prev) return;
     const parsed = JSON.parse(prev) as {
       binAssignments: Record<string, string[]>;
+      explicitEmptyIds?: string[];
       pairs: Array<{ leftId: string; rightId: string }>;
       blanksFilled: Record<string, string | null>;
       orderIds: string[];
     };
     setBinAssignments(parsed.binAssignments);
+    setExplicitEmptyIds(parsed.explicitEmptyIds ?? []);
     setPairs(parsed.pairs);
     setBlanksFilled(parsed.blanksFilled);
     setOrderIds(parsed.orderIds);
@@ -75,6 +81,7 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
 
   const handleReset = () => {
     setBinAssignments({});
+    setExplicitEmptyIds([]);
     setPairs([]);
     setBlanksFilled({});
     setOrderIds(config.mode === 'order-sequence' ? config.items.map((it) => it.id) : []);
@@ -84,7 +91,7 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
 
   const handleCheck = () => {
     if (config.mode === 'category-bins') {
-      setResult(evaluateCategoryBins(config, binAssignments));
+      setResult(evaluateCategoryBins(config, binAssignments, explicitEmptyIds));
     } else if (config.mode === 'pair-matching') {
       setResult(evaluatePairMatching(config, pairs));
     } else if (config.mode === 'cloze-tiles') {
@@ -97,6 +104,7 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
   const toggleItemInBin = (itemId: string, binId: string) => {
     if (config.mode !== 'category-bins') return;
     pushHistory();
+    setExplicitEmptyIds((prev) => prev.filter((id) => id !== itemId));
     setBinAssignments((prev) => {
       const cur = prev[itemId] ?? [];
       if (config.allowMultipleBinsPerItem) {
@@ -105,6 +113,15 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
       }
       return { ...prev, [itemId]: cur[0] === binId ? [] : [binId] };
     });
+  };
+
+  const toggleExplicitEmpty = (itemId: string) => {
+    if (config.mode !== 'category-bins') return;
+    pushHistory();
+    setBinAssignments((prev) => ({ ...prev, [itemId]: [] }));
+    setExplicitEmptyIds((prev) =>
+      prev.includes(itemId) ? prev.filter((id) => id !== itemId) : [...prev, itemId],
+    );
   };
 
   const togglePair = (leftId: string, rightId: string) => {
@@ -168,7 +185,9 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
               </span>
             )}
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-              Practice exploration (not graded mastery)
+              {config.learningMode === 'practice'
+                ? 'Independent practice'
+                : 'Guided exploration (not graded mastery)'}
             </span>
           </div>
           <h3 className="mt-1.5 text-sm font-extrabold text-slate-900 sm:text-base">{config.title}</h3>
@@ -198,25 +217,65 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
         </div>
       </div>
 
+      {/* Optional Prediction Before Sorting */}
+      {config.prediction && (
+        <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs">
+          <p className="font-bold text-amber-950">Predict first: {config.prediction.prompt}</p>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {config.prediction.options.map((opt, idx) => (
+              <button
+                key={idx}
+                type="button"
+                aria-pressed={predictionChoice === idx}
+                onClick={() => {
+                  setPredictionChoice(idx);
+                  setPredictionChecked(true);
+                }}
+                className={`min-h-[44px] rounded-lg border px-3 py-1.5 font-semibold ${
+                  predictionChoice === idx
+                    ? 'border-amber-600 bg-amber-100 text-amber-950'
+                    : 'border-amber-200 bg-white text-slate-800 hover:bg-amber-50'
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+          {predictionChecked && (
+            <p className="mt-2 font-medium text-amber-900" role="status">
+              {predictionChoice === config.prediction.correctIndex ? 'Great prediction! ' : 'Good hypothesis — '}
+              {config.prediction.explanation}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* MODE 1: CATEGORY BINS */}
       {config.mode === 'category-bins' && (
         <div className="mt-3 space-y-3 text-xs">
           <p className="font-bold text-slate-700">
-            1. Select an item, then choose its target category
+            1. Drag or select an item, then choose its target category
             {config.allowMultipleBinsPerItem ? ' (overlapping sets enabled — select all sets it belongs to)' : ''}:
           </p>
           <div className="flex flex-wrap gap-2">
             {config.items.map((item) => {
               const assigned = binAssignments[item.id] ?? [];
+              const isMarkedNone = explicitEmptyIds.includes(item.id);
               const diag = result?.itemDiagnostics[item.id];
               const isSel = selectedItemId === item.id;
               return (
                 <button
                   key={item.id}
                   type="button"
+                  draggable
+                  onDragStart={() => {
+                    setDraggedItemId(item.id);
+                    setSelectedItemId(item.id);
+                  }}
+                  onDragEnd={() => setDraggedItemId(null)}
                   aria-pressed={isSel}
                   onClick={() => setSelectedItemId(item.id)}
-                  className={`min-h-[44px] rounded-xl border px-3 py-1.5 font-bold transition ${
+                  className={`inline-flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-1.5 font-bold transition ${
                     isSel
                       ? 'border-indigo-600 bg-indigo-50 text-indigo-950 ring-2 ring-indigo-300'
                       : diag === 'correct'
@@ -226,10 +285,23 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
                           : 'border-slate-300 bg-white text-slate-800 hover:bg-slate-50'
                   }`}
                 >
-                  {item.label}
+                  {item.visual && (
+                    <img
+                      src={item.visual.src}
+                      alt={item.visual.alt}
+                      loading="lazy"
+                      className="h-7 w-7 rounded object-cover"
+                    />
+                  )}
+                  <span>{item.label}</span>
                   {assigned.length > 0 && (
-                    <span className="ml-1.5 rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] text-indigo-800">
+                    <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] text-indigo-800">
                       {assigned.length}
+                    </span>
+                  )}
+                  {isMarkedNone && (
+                    <span className="rounded bg-slate-200 px-1.5 py-0.5 text-[10px] text-slate-700">
+                      None
                     </span>
                   )}
                 </button>
@@ -237,15 +309,53 @@ export function SortClassifyEngine({ config }: { config: SortClassifyInteractive
             })}
           </div>
 
+          {config.explicitEmptyDecision && selectedItemId && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => toggleExplicitEmpty(selectedItemId)}
+                aria-pressed={explicitEmptyIds.includes(selectedItemId)}
+                className={`min-h-[44px] rounded-lg border px-3 py-1.5 text-xs font-bold ${
+                  explicitEmptyIds.includes(selectedItemId)
+                    ? 'border-slate-800 bg-slate-800 text-white'
+                    : 'border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100'
+                }`}
+              >
+                Mark selected item as &ldquo;None of these sets (∅)&rdquo;
+              </button>
+            </div>
+          )}
+
           <div className="grid gap-2.5 sm:grid-cols-2">
             {config.bins.map((bin) => {
               const itemsInBin = config.items.filter((it) => (binAssignments[it.id] ?? []).includes(bin.id));
               return (
-                <div key={bin.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <div
+                  key={bin.id}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (draggedItemId) {
+                      toggleItemInBin(draggedItemId, bin.id);
+                      setDraggedItemId(null);
+                    }
+                  }}
+                  className="rounded-xl border border-slate-200 bg-slate-50 p-3"
+                >
                   <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="font-extrabold text-slate-900">{bin.label}</p>
-                      {bin.description && <p className="text-[11px] text-slate-500">{bin.description}</p>}
+                    <div className="flex items-center gap-2">
+                      {bin.visual && (
+                        <img
+                          src={bin.visual.src}
+                          alt={bin.visual.alt}
+                          loading="lazy"
+                          className="h-8 w-8 rounded object-cover"
+                        />
+                      )}
+                      <div>
+                        <p className="font-extrabold text-slate-900">{bin.label}</p>
+                        {bin.description && <p className="text-[11px] text-slate-500">{bin.description}</p>}
+                      </div>
                     </div>
                     <button
                       type="button"

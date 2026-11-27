@@ -1336,7 +1336,75 @@ for (const c of cases) {
       }
     }
 
-    if (c.expectedMarks !== undefined && res.marking) {
+    const VALID_TRANSITION_STATUSES = new Set([
+      'exact-equivalence',
+      'symbolic-equivalence',
+      'valid-implication-extraneous-risk',
+      'lost-solution-error',
+      'domain-violation-error',
+      'invalid-transformation',
+      'syntax-error',
+      'indeterminate-unverified',
+    ]);
+    const ERROR_TRANSITION_STATUSES = new Set([
+      'lost-solution-error',
+      'domain-violation-error',
+      'invalid-transformation',
+      'syntax-error',
+    ]);
+    const VALID_MARK_TYPES = new Set(['M', 'A', 'B', 'ECF']);
+
+    // 1. Transition statuses & earliestErrorIndex consistency
+    let firstErrIdx: number | null = null;
+    for (let si = 0; si < res.chain.stepResults.length; si++) {
+      const sr = res.chain.stepResults[si];
+      if (!VALID_TRANSITION_STATUSES.has(sr.status)) {
+        st.markingMismatch++;
+        discrepancies.push({ id: c.id, topic: c.topic, class: c.verificationClass, error: `Invalid transition status "${sr.status}" at step ${si}` });
+      }
+      if (ERROR_TRANSITION_STATUSES.has(sr.status) && firstErrIdx === null) {
+        firstErrIdx = si;
+      }
+    }
+    if (res.chain.earliestErrorIndex !== firstErrIdx) {
+      st.markingMismatch++;
+      discrepancies.push({
+        id: c.id,
+        topic: c.topic,
+        class: c.verificationClass,
+        error: `earliestErrorIndex mismatch: expected ${firstErrIdx}, got ${res.chain.earliestErrorIndex}`,
+      });
+    }
+    // 2. Outstanding mathematical obligations (unresolved extraneous roots)
+    if (res.chain.unresolvedExtraneous.length > 0 && res.chain.mathematicallyCorrect) {
+      st.falseAccept++;
+      discrepancies.push({
+        id: c.id,
+        topic: c.topic,
+        class: c.verificationClass,
+        error: `mathematicallyCorrect=true despite unresolvedExtraneous=${JSON.stringify(res.chain.unresolvedExtraneous)}`,
+      });
+    }
+    if (res.chain.mathematicallyCorrect && firstErrIdx !== null) {
+      st.falseAccept++;
+      discrepancies.push({
+        id: c.id,
+        topic: c.topic,
+        class: c.verificationClass,
+        error: `mathematicallyCorrect=true despite error transition at step ${firstErrIdx}`,
+      });
+    }
+
+    // 3. Missing marking result check & individual markId / reason / sum invariants
+    if (c.expectedMarks !== undefined && !res.marking) {
+      st.markingMismatch++;
+      discrepancies.push({
+        id: c.id,
+        topic: c.topic,
+        class: c.verificationClass,
+        error: `Missing marking result when expectedMarks=${c.expectedMarks}`,
+      });
+    } else if (c.expectedMarks !== undefined && res.marking) {
       if (res.marking.marksAwarded !== c.expectedMarks) {
         st.markingMismatch++;
         discrepancies.push({
@@ -1354,6 +1422,18 @@ for (const c of cases) {
       const seenMarkIds = new Set<string>();
       let awardedWeightSum = 0;
       for (const md of res.marking.markDetails) {
+        if (typeof md.markId !== 'string' || !md.markId.trim() || !VALID_MARK_TYPES.has(md.type)) {
+          st.markingMismatch++;
+          discrepancies.push({ id: c.id, topic: c.topic, class: c.verificationClass, error: `Invalid markId/type in markDetails: ${JSON.stringify(md)}` });
+        }
+        if (typeof md.reason !== 'string' || !md.reason.trim()) {
+          st.markingMismatch++;
+          discrepancies.push({ id: c.id, topic: c.topic, class: c.verificationClass, error: `Empty marking reason for markId="${md.markId}"` });
+        }
+        if (md.awarded !== (md.points > 0)) {
+          st.markingMismatch++;
+          discrepancies.push({ id: c.id, topic: c.topic, class: c.verificationClass, error: `Inconsistent awarded/points for markId="${md.markId}"` });
+        }
         if (md.awarded) {
           if (seenMarkIds.has(md.markId)) st.duplicateMarks++;
           seenMarkIds.add(md.markId);

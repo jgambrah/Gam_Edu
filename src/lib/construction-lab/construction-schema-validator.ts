@@ -35,6 +35,7 @@ import {
 } from '@/lib/boolean-logic/circuit-engine';
 import { validateAtomBondBuilderConfig } from './atom-bond-schema-validator';
 import { validateGeometryConstructorConfig } from './geometry-schema-validator';
+import { validateMeasurementLabConfig } from './measurement-schema-validator';
 
 export type ConstructionLabKind =
   | 'boolean-circuit'
@@ -42,7 +43,8 @@ export type ConstructionLabKind =
   | 'electrical-circuit'
   | 'bio-sequence-builder'
   | 'atom-bond-builder'
-  | 'geometry-constructor';
+  | 'geometry-constructor'
+  | 'measurement-lab';
 
 export interface ConstructionPredictionDef {
   prompt: string;
@@ -234,9 +236,12 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (obj.labKind === 'measurement-lab') {
+    return '1.4.0';
   }
   if (obj.labKind === 'geometry-constructor') {
     return '1.3.0';
@@ -259,7 +264,8 @@ export function validateConstructionLabConfig(
     labKind !== 'electrical-circuit' &&
     labKind !== 'bio-sequence-builder' &&
     labKind !== 'atom-bond-builder' &&
-    labKind !== 'geometry-constructor'
+    labKind !== 'geometry-constructor' &&
+    labKind !== 'measurement-lab'
   ) {
     errors.push(`Unsupported construction-lab labKind "${String(labKind)}".`);
     return;
@@ -299,6 +305,12 @@ export function validateConstructionLabConfig(
   // Domain 6 (Step 4F): Geometry Construction Laboratory
   if (labKind === 'geometry-constructor') {
     validateGeometryConstructorConfig(obj, errors);
+    return;
+  }
+
+  // Domain 7 (Step 5C): Virtual Measuring Instruments Laboratory
+  if (labKind === 'measurement-lab') {
+    validateMeasurementLabConfig(obj, errors);
     return;
   }
 

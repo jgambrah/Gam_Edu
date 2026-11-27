@@ -63,6 +63,7 @@ import type { MathEvaluatorSpec, MathMisconceptionRule } from '@/lib/math-evalua
 import { validateMathEvaluatorConfig } from '@/lib/math-evaluator/math-eval-schema-validator';
 import type { SortClassifySpec } from '@/lib/sort-classify/sort-classify-engine';
 import { validateSortClassifyConfig } from '@/lib/sort-classify/sort-classify-schema-validator';
+import type { MeasurementLabSpec } from '@/lib/construction-lab/measurement-engine';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -137,11 +138,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.3.0',
+    engineVersion: '1.4.0',
     productionVersion: '1.3.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE; measurement-lab 1.4.0 preview/integration).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -370,13 +371,20 @@ export type GeometryConstructorConstructionConfig =
   | GeometryCoordinateConfig
   | GeometryCircleTheoremConfig;
 
+export interface MeasurementLabConstructionConfig
+  extends ConstructionLabSharedFields,
+    MeasurementLabSpec {
+  labKind: 'measurement-lab';
+}
+
 export type ConstructionLabInteractiveConfig =
   | BooleanCircuitConstructionConfig
   | EquationBalancerConstructionConfig
   | ElectricalCircuitConstructionConfig
   | BioSequenceConstructionConfig
   | AtomBondBuilderConstructionConfig
-  | GeometryConstructorConstructionConfig;
+  | GeometryConstructorConstructionConfig
+  | MeasurementLabConstructionConfig;
 
 export type RuleOperator = 'AND' | 'OR' | 'NOT' | 'XOR';
 
@@ -745,11 +753,13 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
     'subjectTag',
     'curriculumLevel',
     'mode',
+    'learningMode',
     'prediction',
     'successExplanation',
     'bins',
     'items',
     'allowMultipleBinsPerItem',
+    'explicitEmptyDecision',
     'leftItems',
     'rightItems',
     'expectedMatches',

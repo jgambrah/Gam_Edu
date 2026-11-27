@@ -46,6 +46,11 @@ const LazyGeometryConstructorLab = dynamic(
   { ssr: false, loading: DomainLoading },
 );
 
+const LazyMeasurementLab = dynamic(
+  () => import('./MeasurementLab').then((m) => m.MeasurementLab),
+  { ssr: false, loading: DomainLoading },
+);
+
 export interface ConstructionLabRouterProps {
   config: ConstructionLabInteractiveConfig;
   lessonId: string;
@@ -69,5 +74,7 @@ export function ConstructionLabRouter({ config, lessonId, slideId }: Constructio
       return <LazyAtomBondLab config={config} />;
     case 'geometry-constructor':
       return <LazyGeometryConstructorLab config={config} />;
+    case 'measurement-lab':
+      return <LazyMeasurementLab config={config} />;
   }
 }

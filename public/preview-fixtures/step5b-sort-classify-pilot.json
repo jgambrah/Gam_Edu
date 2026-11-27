@@ -461,6 +461,260 @@
           ]
         }
       ]
+    },
+    {
+      "id": "sc-s11",
+      "order": 11,
+      "title": "11. Early Years — Living vs Non-Living Picture Sort & Animal Habitats",
+      "purpose": "Early childhood visual classification with approved image assets and Ghanaian habitats.",
+      "onScreenText": ["Living things grow, breathe and need food", "Different animals live in rainforest, savanna, or river habitats"],
+      "visual": { "type": "svg", "altText": "Early childhood living and habitat sorting", "description": "Early years sorting.", "labels": ["Living", "Non-Living", "Habitats"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f0fdf4\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#14532d\">Early Years — Living Things &amp; Animal Habitats</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Look carefully at each picture and name, then sort living from non-living things and match animals to their habitats.", "estSeconds": 8, "ttsStyleInstruction": "Warm early years teacher.", "pauseCues": [] },
+      "keyIdeas": ["Living things grow and reproduce; non-living objects do not."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Living things and habitats", "keyTerms": ["Living", "Non-Living", "Habitat"], "commonMisconceptions": ["Clouds or fire are alive because they move"] },
+      "teacherNote": "Slide 11 of 15.",
+      "interactive": [
+        {
+          "id": "sc-11a-ey-pictures",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "early-years",
+          "learningMode": "explore",
+          "subjectTag": "Early Years · Science",
+          "mode": "category-bins",
+          "title": "Sort Pictures: Living or Non-Living?",
+          "instructions": "Drag or tap each picture card into Living Things or Non-Living Things.",
+          "accessibilityLabel": "Early childhood living vs non-living picture sort",
+          "fallbackText": "Living: Mango Tree, Goat; Non-Living: Clay Pot, Wooden Stool.",
+          "bins": [
+            { "id": "living", "label": "Living Things", "description": "Grow, breathe, and need food or water" },
+            { "id": "nonliving", "label": "Non-Living Things", "description": "Do not grow or breathe" }
+          ],
+          "items": [
+            { "id": "mango", "label": "Mango Tree", "validBinIds": ["living"], "visual": { "src": "images/mango-tree.webp", "alt": "Green mango tree with ripe fruits in sunlight" } },
+            { "id": "goat", "label": "Village Goat", "validBinIds": ["living"], "visual": { "src": "images/village-goat.webp", "alt": "Brown goat standing on green grass" } },
+            { "id": "pot", "label": "Clay Pot", "validBinIds": ["nonliving"], "visual": { "src": "images/clay-pot.webp", "alt": "Traditional brown clay water pot" } },
+            { "id": "stool", "label": "Wooden Stool", "validBinIds": ["nonliving"], "visual": { "src": "images/wooden-stool.webp", "alt": "Carved Ghanaian wooden stool" } }
+          ],
+          "successExplanation": "Plants and animals are living things; clay pots and wooden stools are non-living objects."
+        },
+        {
+          "id": "sc-11b-habitats",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "primary",
+          "learningMode": "practice",
+          "subjectTag": "Primary Science · Habitats",
+          "mode": "category-bins",
+          "title": "Sort Animals by Ghanaian Habitat",
+          "instructions": "Place each animal in its natural habitat.",
+          "accessibilityLabel": "Ghanaian animal habitats classification",
+          "fallbackText": "Rainforest: Mona Monkey; Savanna: African Elephant; River/Lake: Tilapia.",
+          "bins": [
+            { "id": "forest", "label": "Kakum Rainforest" },
+            { "id": "savanna", "label": "Mole Savanna" },
+            { "id": "water", "label": "Volta River & Lake" }
+          ],
+          "items": [
+            { "id": "monkey", "label": "Mona Monkey", "validBinIds": ["forest"] },
+            { "id": "elephant", "label": "Savanna Elephant", "validBinIds": ["savanna"] },
+            { "id": "tilapia", "label": "Tilapia Fish", "validBinIds": ["water"] },
+            { "id": "hornbill", "label": "Forest Hornbill", "validBinIds": ["forest"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s12",
+      "order": 12,
+      "title": "12. Mathematics — Geometric Shape Properties & Explicit Empty Set",
+      "purpose": "Classify quadrilaterals with overlapping properties and explicit empty-set decision.",
+      "onScreenText": ["A square is both a rectangle and a rhombus", "A kite with no parallel sides belongs to neither parallelogram set"],
+      "visual": { "type": "svg", "altText": "Quadrilateral properties", "description": "Overlapping shape sets.", "labels": ["Right Angles", "Equal Sides"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#eff6ff\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#1e3a8a\">Geometric Shape Properties &amp; Empty Set</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Some shapes belong to both sets, while a scalene triangle belongs to neither — mark it explicitly as None of these.", "estSeconds": 8, "ttsStyleInstruction": "Clear maths teacher.", "pauseCues": [] },
+      "keyIdeas": ["Squares satisfy both four right angles and four equal sides."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Quadrilateral hierarchy", "keyTerms": ["Square", "Rhombus", "Rectangle", "Empty Set"], "commonMisconceptions": ["Squares are not rectangles"] },
+      "teacherNote": "Slide 12 of 15.",
+      "interactive": [
+        {
+          "id": "sc-12-geo-shapes",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "learningMode": "practice",
+          "subjectTag": "Mathematics · Geometry",
+          "mode": "category-bins",
+          "allowMultipleBinsPerItem": true,
+          "explicitEmptyDecision": true,
+          "title": "Classify 2D Shapes by Properties (Overlapping & Empty Set)",
+          "instructions": "Assign each shape to all property sets it satisfies, or explicitly mark None of these sets.",
+          "accessibilityLabel": "Overlapping 2D geometric shape properties with explicit empty set",
+          "fallbackText": "Square: Both; Non-square Rectangle: Four Right Angles; Non-square Rhombus: Four Equal Sides; Scalene Triangle: None.",
+          "prediction": {
+            "prompt": "Which shape belongs to BOTH 'Four Right Angles' and 'Four Equal Sides'?",
+            "options": ["Square", "Scalene Triangle", "Trapezium"],
+            "correctIndex": 0,
+            "explanation": "A square is both a rectangle (four right angles) and a rhombus (four equal sides)."
+          },
+          "bins": [
+            { "id": "right_angles", "label": "Four Right Angles" },
+            { "id": "equal_sides", "label": "Four Equal Sides" }
+          ],
+          "items": [
+            { "id": "square", "label": "Square", "validBinIds": ["right_angles", "equal_sides"] },
+            { "id": "rect", "label": "Oblong Rectangle (6×3)", "validBinIds": ["right_angles"] },
+            { "id": "rhombus", "label": "Non-square Rhombus", "validBinIds": ["equal_sides"] },
+            { "id": "scalene", "label": "Scalene Triangle", "validBinIds": [] }
+          ],
+          "successExplanation": "Squares lie in the intersection, while a scalene triangle lies outside both sets (∅)."
+        }
+      ]
+    },
+    {
+      "id": "sc-s13",
+      "order": 13,
+      "title": "13. Chemistry — Particle Diagrams (Elements, Compounds & Mixtures)",
+      "purpose": "Match particle models to elements, compounds, and mixtures using approved visual cards.",
+      "onScreenText": ["Elements contain one type of atom", "Compounds have chemically bonded atoms in fixed ratios"],
+      "visual": { "type": "svg", "altText": "Chemistry particle diagrams", "description": "Elements, compounds, mixtures.", "labels": ["Element", "Compound", "Mixture"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#faf5ff\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#581c87\">Chemistry — Particle Diagrams</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Classify each particle diagram as an element, a compound, or a mixture.", "estSeconds": 7, "ttsStyleInstruction": "Clear chemistry teacher.", "pauseCues": [] },
+      "keyIdeas": ["Diatomic O2 is still an element because both atoms are identical."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Particle models", "keyTerms": ["Element", "Compound", "Mixture"], "commonMisconceptions": ["O2 is a compound because it has two atoms"] },
+      "teacherNote": "Slide 13 of 15.",
+      "interactive": [
+        {
+          "id": "sc-13-chem-particles",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "learningMode": "practice",
+          "subjectTag": "Chemistry · Particle Model",
+          "mode": "category-bins",
+          "title": "Classify Particle Models: Element, Compound, or Mixture",
+          "instructions": "Place each particle diagram into the correct chemical category.",
+          "accessibilityLabel": "Chemistry particle diagram classification",
+          "fallbackText": "Element: Oxygen gas (O2); Compound: Water (H2O); Mixture: Air (N2 + O2).",
+          "bins": [
+            { "id": "elem", "label": "Element" },
+            { "id": "comp", "label": "Compound" },
+            { "id": "mix", "label": "Mixture" }
+          ],
+          "items": [
+            { "id": "o2", "label": "Paired identical atoms (O₂)", "validBinIds": ["elem"], "misconceptionByBin": { "comp": "O₂ has two atoms, but they are the SAME element — so it is an element, not a compound!" }, "visual": { "src": "images/particle-o2.webp", "alt": "Pairs of identical red spheres representing oxygen molecules" } },
+            { "id": "h2o", "label": "Bonded 2:1 molecules (H₂O)", "validBinIds": ["comp"], "visual": { "src": "images/particle-h2o.webp", "alt": "Water molecules each with one red sphere bonded to two white spheres" } },
+            { "id": "air", "label": "Unbonded N₂ and O₂ mix", "validBinIds": ["mix"], "visual": { "src": "images/particle-air.webp", "alt": "Unbonded blue and red diatomic molecules mixed together" } }
+          ],
+          "successExplanation": "Compounds contain different elements chemically bonded; mixtures contain unbonded substances."
+        }
+      ]
+    },
+    {
+      "id": "sc-s14",
+      "order": 14,
+      "title": "14. Critical Reasoning — Odd-One-Out Classification",
+      "purpose": "Identify the odd one out in electrical conductors vs insulators.",
+      "onScreenText": ["Copper, aluminium and graphite conduct electricity", "Dry rubber is the odd one out (insulator)"],
+      "visual": { "type": "svg", "altText": "Odd one out reasoning", "description": "Conductor vs insulator.", "labels": ["Conductors", "Odd One Out"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#fff7ed\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#9a3412\">Odd-One-Out Scientific Reasoning</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Three of these materials conduct electricity and one is the odd one out. Sort them carefully!", "estSeconds": 7, "ttsStyleInstruction": "Clear physics teacher.", "pauseCues": [] },
+      "keyIdeas": ["Graphite is a non-metal that conducts electricity due to delocalised electrons."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Conductors vs insulators", "keyTerms": ["Conductor", "Insulator", "Graphite"], "commonMisconceptions": ["All non-metals are insulators"] },
+      "teacherNote": "Slide 14 of 15.",
+      "interactive": [
+        {
+          "id": "sc-14-odd-one-out",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "learningMode": "practice",
+          "subjectTag": "Physics · Odd-One-Out",
+          "mode": "category-bins",
+          "title": "Find the Odd One Out (Electrical Conductivity)",
+          "instructions": "Place the three electrical conductors together and isolate the single odd-one-out insulator.",
+          "accessibilityLabel": "Odd-one-out electrical conductivity classification",
+          "fallbackText": "Conductors: Copper wire, Aluminium foil, Graphite rod; Odd One Out (Insulator): Dry rubber.",
+          "bins": [
+            { "id": "group", "label": "Electrical Conductors (3 items)" },
+            { "id": "odd", "label": "Odd One Out — Insulator (1 item)" }
+          ],
+          "items": [
+            { "id": "cu", "label": "Copper wire", "validBinIds": ["group"] },
+            { "id": "al", "label": "Aluminium foil", "validBinIds": ["group"] },
+            { "id": "gr", "label": "Graphite rod", "validBinIds": ["group"], "misconceptionByBin": { "odd": "Graphite is a non-metal, yet it conducts electricity via delocalised electrons!" } },
+            { "id": "rub", "label": "Dry rubber sleeve", "validBinIds": ["odd"] }
+          ],
+          "successExplanation": "Dry rubber is the odd one out; copper, aluminium, and graphite all conduct electricity."
+        }
+      ]
+    },
+    {
+      "id": "sc-s15",
+      "order": 15,
+      "title": "15. Hierarchical Classification — Kingdom to Plant Division (Two-Stage)",
+      "purpose": "Demonstrate hierarchical classification through two successive activities on one slide.",
+      "onScreenText": ["Stage 1: Vascular vs Non-Vascular Plants", "Stage 2: Seed-Bearing vs Spore-Bearing Vascular Plants"],
+      "visual": { "type": "svg", "altText": "Hierarchical plant classification", "description": "Two-stage plant taxonomy.", "labels": ["Stage 1", "Stage 2"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#ecfdf5\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#065f46\">Hierarchical Plant Classification</text></svg>", "imagePrompt": null },
+      "narration": { "script": "First separate vascular from non-vascular plants, then further classify vascular plants into seed-bearing and spore-bearing groups.", "estSeconds": 9, "ttsStyleInstruction": "Clear biology teacher.", "pauseCues": [] },
+      "keyIdeas": ["Taxonomy narrows broad groups into progressively more specific subgroups."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Hierarchical taxonomy", "keyTerms": ["Vascular", "Non-vascular", "Angiosperm", "Fern"], "commonMisconceptions": ["Ferns produce seeds"] },
+      "teacherNote": "Slide 15 of 15.",
+      "interactive": [
+        {
+          "id": "sc-15a-hier-level1",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "learningMode": "explore",
+          "subjectTag": "Biology · Level 1 Hierarchy",
+          "mode": "category-bins",
+          "title": "Stage 1: Vascular vs Non-Vascular Plants",
+          "instructions": "First classify these plants by whether they have xylem and phloem transport tissues.",
+          "accessibilityLabel": "Level 1 plant classification: vascular vs non-vascular",
+          "fallbackText": "Vascular: Cocoa Tree, Fern; Non-Vascular: Moss.",
+          "bins": [
+            { "id": "vasc", "label": "Vascular Plants" },
+            { "id": "nonvasc", "label": "Non-Vascular Plants" }
+          ],
+          "items": [
+            { "id": "cocoa", "label": "Cocoa Tree", "validBinIds": ["vasc"] },
+            { "id": "fern", "label": "Forest Fern", "validBinIds": ["vasc"] },
+            { "id": "moss", "label": "Damp Wall Moss", "validBinIds": ["nonvasc"] }
+          ]
+        },
+        {
+          "id": "sc-15b-hier-level2",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "learningMode": "practice",
+          "subjectTag": "Biology · Level 2 Hierarchy",
+          "mode": "category-bins",
+          "title": "Stage 2: Subdivide Vascular Plants (Seed vs Spore)",
+          "instructions": "Now subdivide vascular plants into Seed-Bearing and Spore-Bearing.",
+          "accessibilityLabel": "Level 2 vascular plant classification: seed vs spore",
+          "fallbackText": "Seed-Bearing: Cocoa Tree, Maize; Spore-Bearing: Forest Fern.",
+          "bins": [
+            { "id": "seed", "label": "Seed-Bearing Vascular" },
+            { "id": "spore", "label": "Spore-Bearing Vascular" }
+          ],
+          "items": [
+            { "id": "cocoa2", "label": "Cocoa Tree", "validBinIds": ["seed"] },
+            { "id": "maize", "label": "Maize Plant", "validBinIds": ["seed"] },
+            { "id": "fern2", "label": "Forest Fern", "validBinIds": ["spore"] }
+          ]
+        }
+      ]
     }
   ],
   "checkpoints": [],

@@ -1,10 +1,10 @@
 {
   "seed": 20260503,
-  "generatedAt": "2026-11-27T20:58:40.255Z",
+  "generatedAt": "2026-11-27T21:14:32.526Z",
   "totalUniqueCases": 10000,
   "totalStructuralUniqueCases": 9248,
   "structuralDuplicateCount": 752,
-  "totalWallMs": 1525.39,
+  "totalWallMs": 2046.87,
   "totals": {
     "total": 10000,
     "correctAccept": 5217,
@@ -30,10 +30,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0683,
-      "p50Ms": 0.0437,
-      "p95Ms": 0.1201,
-      "maxMs": 6.5855
+      "avgMs": 0.0792,
+      "p50Ms": 0.0524,
+      "p95Ms": 0.1292,
+      "maxMs": 6.0159
     },
     {
       "topic": "algebra-polynomial-equivalence",
@@ -47,10 +47,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.1278,
-      "p50Ms": 0.1069,
-      "p95Ms": 0.2368,
-      "maxMs": 1.7538
+      "avgMs": 0.2018,
+      "p50Ms": 0.148,
+      "p95Ms": 0.4481,
+      "maxMs": 5.687
     },
     {
       "topic": "rational-expressions-domains",
@@ -64,10 +64,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.1272,
-      "p50Ms": 0.1203,
-      "p95Ms": 0.2459,
-      "maxMs": 1.1471
+      "avgMs": 0.2328,
+      "p50Ms": 0.1629,
+      "p95Ms": 0.6518,
+      "maxMs": 5.2509
     },
     {
       "topic": "equations-solution-sets",
@@ -81,10 +81,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0623,
-      "p50Ms": 0.0554,
-      "p95Ms": 0.1149,
-      "maxMs": 0.8395
+      "avgMs": 0.0943,
+      "p50Ms": 0.0785,
+      "p95Ms": 0.1838,
+      "maxMs": 1.6983
     },
     {
       "topic": "inequalities-intervals",
@@ -98,10 +98,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0644,
-      "p50Ms": 0.0587,
-      "p95Ms": 0.1044,
-      "maxMs": 0.8218
+      "avgMs": 0.0618,
+      "p50Ms": 0.0511,
+      "p95Ms": 0.1129,
+      "maxMs": 0.9235
     },
     {
       "topic": "surds-indices-logarithms",
@@ -115,10 +115,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0977,
-      "p50Ms": 0.1034,
-      "p95Ms": 0.1722,
-      "maxMs": 1.9268
+      "avgMs": 0.1643,
+      "p50Ms": 0.1558,
+      "p95Ms": 0.3546,
+      "maxMs": 1.2955
     },
     {
       "topic": "differentiation-integration",
@@ -132,10 +132,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.1337,
-      "p50Ms": 0.1254,
-      "p95Ms": 0.2504,
-      "maxMs": 1.0185
+      "avgMs": 0.1911,
+      "p50Ms": 0.1703,
+      "p95Ms": 0.4294,
+      "maxMs": 1.591
     },
     {
       "topic": "units-precision-finance",
@@ -149,10 +149,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.0556,
-      "p50Ms": 0.0475,
-      "p95Ms": 0.0988,
-      "maxMs": 1.4455
+      "avgMs": 0.0638,
+      "p50Ms": 0.055,
+      "p95Ms": 0.109,
+      "maxMs": 1.5351
     },
     {
       "topic": "multi-step-reasoning-marking",
@@ -166,10 +166,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.5549,
-      "p50Ms": 0.5153,
-      "p95Ms": 0.9901,
-      "maxMs": 3.778
+      "avgMs": 0.658,
+      "p50Ms": 0.6004,
+      "p95Ms": 1.1997,
+      "maxMs": 5.952
     },
     {
       "topic": "adversarial-resource-bounds",
@@ -183,10 +183,10 @@
       "markingMismatch": 0,
       "duplicateMarks": 0,
       "exceededMaxMarks": 0,
-      "avgMs": 0.088,
-      "p50Ms": 0.0625,
-      "p95Ms": 0.1782,
-      "maxMs": 0.9762
+      "avgMs": 0.0863,
+      "p50Ms": 0.0579,
+      "p95Ms": 0.1622,
+      "maxMs": 0.8594
     }
   ],
   "sampleDiscrepancies": []
