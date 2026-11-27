@@ -62,6 +62,7 @@ const MODE_KEYS: Record<string, ReadonlySet<string>> = {
     'seed',
     'targetEvent',
     'expectedAnswerKind',
+    'minRequiredTrials',
     'tolerance',
   ]),
   'descriptive-stats': new Set([
@@ -222,6 +223,20 @@ export function validateDataStatsLabConfig(
     }
     if (!obj.targetEvent || typeof obj.targetEvent !== 'object' || Array.isArray(obj.targetEvent)) {
       errors.push('probability-experiment requires a targetEvent object.');
+    } else {
+      const evt = obj.targetEvent as Record<string, unknown>;
+      if (evt.kind === 'outcome-equals' || evt.kind === 'at-least-one') {
+        if (typeof evt.outcomeId !== 'string' || !outcomeIds.has(evt.outcomeId)) {
+          errors.push(`targetEvent.outcomeId "${String(evt.outcomeId)}" is not a declared outcome.`);
+        }
+      } else if (evt.kind === 'exact-sequence') {
+        if (!Array.isArray(evt.sequence) || evt.sequence.length !== draws || evt.sequence.some((id) => typeof id !== 'string' || !outcomeIds.has(id))) {
+          errors.push(`targetEvent.sequence must have length ${draws} referencing declared outcome IDs.`);
+        }
+      }
+    }
+    if (obj.minRequiredTrials !== undefined && (!isFiniteBounded(obj.minRequiredTrials) || !Number.isInteger(obj.minRequiredTrials) || obj.minRequiredTrials < 1 || obj.minRequiredTrials > DATA_STATS_LIMITS.maxTrialsTotal)) {
+      errors.push(`minRequiredTrials must be an integer 1..${DATA_STATS_LIMITS.maxTrialsTotal}.`);
     }
     return;
   }
@@ -233,6 +248,9 @@ export function validateDataStatsLabConfig(
     }
     if (obj.varianceMode !== undefined && (typeof obj.varianceMode !== 'string' || !VALID_VARIANCE.has(obj.varianceMode))) {
       errors.push('descriptive-stats varianceMode must be "population" or "sample".');
+    }
+    if (obj.groupedTable !== undefined && obj.targetMeasure === 'mode') {
+      errors.push('Exact "mode" is not a supported targetMeasure for groupedTable data.');
     }
     const sources = [obj.data !== undefined, obj.frequencyTable !== undefined, obj.groupedTable !== undefined].filter(Boolean).length;
     if (sources !== 1) {
@@ -280,12 +298,21 @@ export function validateDataStatsLabConfig(
       if (!Array.isArray(cats) || cats.length < 2 || cats.length > DATA_STATS_LIMITS.maxCategories) {
         errors.push(`${obj.chartKind} requires 2..${DATA_STATS_LIMITS.maxCategories} categories.`);
       } else {
+        let total = 0;
         cats.forEach((c, i) => {
           const rec = c as Record<string, unknown>;
           if (typeof rec?.label !== 'string' || !rec.label.trim() || !isFiniteBounded(rec?.frequency) || rec.frequency < 0) {
             errors.push(`categories[${i}] requires non-empty label and non-negative finite frequency.`);
+          } else {
+            total += rec.frequency;
           }
         });
+        if (obj.chartKind === 'pie' && total <= 0) {
+          errors.push('pie chart requires a positive total frequency.');
+        }
+        if (obj.chartKind === 'pictogram' && obj.pictogramUnit !== undefined && (!isFiniteBounded(obj.pictogramUnit) || obj.pictogramUnit <= 0)) {
+          errors.push('pictogram pictogramUnit must be > 0.');
+        }
       }
     } else {
       const vals = obj.rawValues;

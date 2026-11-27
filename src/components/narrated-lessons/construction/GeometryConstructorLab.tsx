@@ -6,15 +6,20 @@ import type {
   GeometryCompassConfig,
   GeometryConstructorConstructionConfig,
   GeometryCoordinateConfig,
+  GeometryCubeNetConfig,
+  GeometryLociRegionConfig,
   GeometryTransformationConfig,
 } from '@/lib/narrated-lessons/interactive-schema';
 import {
   GEOMETRY_LIMITS,
   computeCircleTheoremGeometry,
+  computeCuboidMetrics,
   distance2D,
   evaluateCircleTheoremAnswer,
+  evaluateCombinedLocus,
   evaluateCompassConstruction,
   evaluateCoordinateGeometry,
+  evaluateCubeNet,
   evaluateTransformation,
   formatGradientLabel,
   intersectCircleCircle,
@@ -1081,6 +1086,173 @@ function CircleTheoremWorkbench({ config }: { config: GeometryCircleTheoremConfi
 }
 
 /* ========================================================================== */
+/* MODE 5 (Step 5E): CUBE NETS & 3D GEOMETRY                                  */
+/* ========================================================================== */
+
+function CubeNetWorkbench({ config }: { config: GeometryCubeNetConfig }) {
+  const [cells, setCells] = useState<Array<{ r: number; c: number }>>(config.initialCells ?? []);
+  const [status, setStatus] = useState<{ passed: boolean; feedback: string } | null>(null);
+
+  const toggleCell = (r: number, c: number) => {
+    setStatus(null);
+    setCells((prev) => {
+      const exists = prev.some((p) => p.r === r && p.c === c);
+      if (exists) return prev.filter((p) => !(p.r === r && p.c === c));
+      if (prev.length >= 12) return prev;
+      return [...prev, { r, c }];
+    });
+  };
+
+  const handleCheck = () => {
+    const res = evaluateCubeNet(cells);
+    setStatus({ passed: res.valid, feedback: res.reason });
+  };
+
+  const handleReset = () => {
+    setCells(config.initialCells ?? []);
+    setStatus(null);
+  };
+
+  const metrics = config.cuboidDimensions
+    ? computeCuboidMetrics(
+        config.cuboidDimensions.length,
+        config.cuboidDimensions.width,
+        config.cuboidDimensions.height,
+      )
+    : null;
+
+  return (
+    <ConstructionLabShell
+      id={config.id}
+      labKind={config.labKind}
+      title={config.title}
+      instructions={config.instructions}
+      accessibilityLabel={config.accessibilityLabel}
+      subjectTag={config.subjectTag}
+      hints={config.hints}
+      canUndo={false}
+      onUndo={() => undefined}
+      onReset={handleReset}
+      onCheck={handleCheck}
+      checkLabel="Test 3D Foldability"
+      feedback={status ? { passed: status.passed, message: status.feedback } : null}
+    >
+      <div className="space-y-3 text-xs">
+        <p className="font-semibold text-slate-700">
+          Select exactly 6 edge-connected squares ({cells.length}/6 selected) to form a valid cube net:
+        </p>
+        <div className="grid w-fit grid-cols-6 gap-1 rounded-xl border border-slate-200 bg-slate-50 p-2">
+          {Array.from({ length: 36 }).map((_, idx) => {
+            const r = Math.floor(idx / 6);
+            const c = idx % 6;
+            const active = cells.some((p) => p.r === r && p.c === c);
+            return (
+              <button
+                key={`${r}-${c}`}
+                type="button"
+                aria-pressed={active}
+                aria-label={`Grid cell row ${r + 1} col ${c + 1}`}
+                onClick={() => toggleCell(r, c)}
+                className={`h-11 w-11 rounded-lg border text-[11px] font-bold transition ${
+                  active
+                    ? 'border-indigo-600 bg-indigo-500 text-white'
+                    : 'border-slate-300 bg-white text-slate-500 hover:bg-slate-100'
+                }`}
+              >
+                {active ? '■' : ''}
+              </button>
+            );
+          })}
+        </div>
+        {metrics && (
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-[11px] text-slate-700">
+            <strong>Cuboid Reference ({config.cuboidDimensions!.length} × {config.cuboidDimensions!.width} × {config.cuboidDimensions!.height}):</strong>{' '}
+            {metrics.faces} faces, {metrics.edges} edges, {metrics.vertices} vertices · Surface Area = {metrics.surfaceArea} · Volume = {metrics.volume}.
+          </div>
+        )}
+      </div>
+    </ConstructionLabShell>
+  );
+}
+
+/* ========================================================================== */
+/* MODE 6 (Step 5E): LOCI & FEASIBLE REGIONS                                  */
+/* ========================================================================== */
+
+function LociRegionWorkbench({ config }: { config: GeometryLociRegionConfig }) {
+  const [px, setPx] = useState<string>('0');
+  const [py, setPy] = useState<string>('0');
+  const [status, setStatus] = useState<{ passed: boolean; feedback: string } | null>(null);
+
+  const handleCheck = () => {
+    const x = Number(px);
+    const y = Number(py);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      setStatus({ passed: false, feedback: 'Enter finite x and y coordinates.' });
+      return;
+    }
+    const res = evaluateCombinedLocus(config.locusConstraints, { x, y }, config.tolerance ?? 0.25);
+    setStatus({ passed: res.passed, feedback: res.feedback });
+  };
+
+  return (
+    <ConstructionLabShell
+      id={config.id}
+      labKind={config.labKind}
+      title={config.title}
+      instructions={config.instructions}
+      accessibilityLabel={config.accessibilityLabel}
+      subjectTag={config.subjectTag}
+      hints={config.hints}
+      canUndo={false}
+      onUndo={() => undefined}
+      onReset={() => {
+        setPx('0');
+        setPy('0');
+        setStatus(null);
+      }}
+      onCheck={handleCheck}
+      checkLabel="Test Locus Point"
+      feedback={status ? { passed: status.passed, message: status.feedback } : null}
+    >
+      <div className="space-y-3 text-xs">
+        <p className="font-bold text-slate-800">{config.targetPrompt}</p>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-1.5 font-semibold text-slate-700">
+            x:
+            <input
+              type="number"
+              step="0.5"
+              aria-label="Locus test point x"
+              value={px}
+              onChange={(e) => {
+                setPx(e.target.value);
+                setStatus(null);
+              }}
+              className="min-h-[44px] w-24 rounded-lg border border-slate-300 px-2 font-mono"
+            />
+          </label>
+          <label className="flex items-center gap-1.5 font-semibold text-slate-700">
+            y:
+            <input
+              type="number"
+              step="0.5"
+              aria-label="Locus test point y"
+              value={py}
+              onChange={(e) => {
+                setPy(e.target.value);
+                setStatus(null);
+              }}
+              className="min-h-[44px] w-24 rounded-lg border border-slate-300 px-2 font-mono"
+            />
+          </label>
+        </div>
+      </div>
+    </ConstructionLabShell>
+  );
+}
+
+/* ========================================================================== */
 /* MAIN EXPORT                                                                */
 /* ========================================================================== */
 
@@ -1094,5 +1266,9 @@ export function GeometryConstructorLab({ config }: { config: GeometryConstructor
       return <CoordinateWorkbench config={config} />;
     case 'circle-theorems':
       return <CircleTheoremWorkbench config={config} />;
+    case 'cube-nets':
+      return <CubeNetWorkbench config={config} />;
+    case 'loci-regions':
+      return <LociRegionWorkbench config={config} />;
   }
 }

@@ -238,7 +238,7 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' | '1.6.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
   }
@@ -249,6 +249,18 @@ export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown
     return '1.4.0';
   }
   if (obj.labKind === 'geometry-constructor') {
+    const mode = obj.mode;
+    const ct = obj.circleTheorem as Record<string, unknown> | undefined;
+    if (
+      mode === 'cube-nets' ||
+      mode === 'loci-regions' ||
+      (mode === 'circle-theorems' &&
+        (ct?.theorem === 'alternate-segment' ||
+          ct?.theorem === 'equal-tangents' ||
+          ct?.theorem === 'chord-perp-bisector'))
+    ) {
+      return '1.6.0';
+    }
     return '1.3.0';
   }
   if (obj.labKind === 'atom-bond-builder') {

@@ -26,8 +26,8 @@ import { DataStatsLab } from '@/components/narrated-lessons/construction/DataSta
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 5D — Probability & Statistics Lab (construction-lab: data-stats-lab 1.5.0)', () => {
-  it('extends construction-lab to engineVersion 1.5.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.5.0');
+  it('extends construction-lab to engineVersion 1.6.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.6.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
   });
 
@@ -166,6 +166,112 @@ describe('Step 5D — Probability & Statistics Lab (construction-lab: data-stats
       expect(degen.isDegenerate).toBe(true);
       expect(degen.pearsonR).toBeNull();
       expect(degen.slope).toBeNull();
+    });
+
+    it('verifies Step 5D close-out: multimodal & no-mode grading, experimental probability trial gating, genuine pie/pictogram/dot-plot/frequency-polygon/box-plot SVG geometry', () => {
+      // 1. Multimodal & no-mode grading
+      const bimodalSpec = {
+        mode: 'descriptive-stats' as const,
+        data: [1, 1, 2, 3, 3],
+        targetMeasure: 'mode' as const,
+      };
+      expect(evaluateDataStatsAnswer(bimodalSpec, '1').passed).toBe(false); // incomplete set rejected!
+      expect(evaluateDataStatsAnswer(bimodalSpec, '3, 1').passed).toBe(true); // unordered complete set accepted!
+      const noModeSpec = {
+        mode: 'descriptive-stats' as const,
+        data: [2, 4, 6, 8],
+        targetMeasure: 'mode' as const,
+      };
+      expect(evaluateDataStatsAnswer(noModeSpec, 'none').passed).toBe(true);
+      expect(evaluateDataStatsAnswer(noModeSpec, '2').passed).toBe(false);
+
+      // 2. Experimental probability requires minRequiredTrials and grades against live state
+      const expProbSpec: ProbabilityExperimentSpec = {
+        mode: 'probability-experiment',
+        experimentKind: 'coin',
+        outcomes: [{ id: 'H', label: 'Heads' }, { id: 'T', label: 'Tails' }],
+        targetEvent: { kind: 'outcome-equals', outcomeId: 'H', description: 'Heads' },
+        expectedAnswerKind: 'experimental-relative-frequency',
+        minRequiredTrials: 20,
+      };
+      expect(evaluateDataStatsAnswer(expProbSpec, '0.5', undefined, false, { totalTrials: 5, eventHits: 3 }).passed).toBe(false);
+      expect(evaluateDataStatsAnswer(expProbSpec, '0.6', undefined, false, { totalTrials: 20, eventHits: 12 }).passed).toBe(true);
+
+      // 3. Genuine Pie chart SVG sector angle (14/32 * 360 = 157.5°)
+      const { container: pieC } = render(
+        <DataStatsLab
+          config={{
+            id: 'gfx-pie',
+            engine: 'construction-lab',
+            labKind: 'data-stats-lab',
+            schemaVersion: 1,
+            minEngineVersion: '1.5.0',
+            curriculumLevel: 'primary',
+            mode: 'data-visualisation',
+            chartKind: 'pie',
+            categories: [
+              { label: 'A', frequency: 1 },
+              { label: 'B', frequency: 3 },
+            ],
+            expectedNumericAnswer: 1,
+            title: 'Pie GFX',
+            instructions: 'Inspect pie.',
+            accessibilityLabel: 'Pie GFX',
+            fallbackText: 'Fallback.',
+          }}
+        />,
+      );
+      expect(pieC.querySelector('[data-testid="pie-sector-0"]')?.getAttribute('data-angle-deg')).toBe('90');
+      expect(pieC.querySelector('[data-testid="pie-sector-1"]')?.getAttribute('data-angle-deg')).toBe('270');
+
+      // 4. Genuine Dot plot stacking (NEVER renders a box plot!)
+      const { container: dotC } = render(
+        <DataStatsLab
+          config={{
+            id: 'gfx-dot',
+            engine: 'construction-lab',
+            labKind: 'data-stats-lab',
+            schemaVersion: 1,
+            minEngineVersion: '1.5.0',
+            curriculumLevel: 'primary',
+            mode: 'data-visualisation',
+            chartKind: 'dot-plot',
+            rawValues: [2, 2, 2, 5],
+            expectedNumericAnswer: 2,
+            title: 'Dot GFX',
+            instructions: 'Inspect dot plot.',
+            accessibilityLabel: 'Dot GFX',
+            fallbackText: 'Fallback.',
+          }}
+        />,
+      );
+      expect(dotC.querySelector('[data-testid="svg-dot-plot"]')).toBeTruthy();
+      expect(dotC.querySelector('[data-testid="svg-box-plot"]')).toBeNull();
+      expect(dotC.querySelector('[data-dot-value="2"]')?.getAttribute('data-dot-stack')).toBe('3');
+
+      // 5. Genuine Box plot with Tukey 1.5-IQR outlier rendered separately
+      const { container: bpC } = render(
+        <DataStatsLab
+          config={{
+            id: 'gfx-bp',
+            engine: 'construction-lab',
+            labKind: 'data-stats-lab',
+            schemaVersion: 1,
+            minEngineVersion: '1.5.0',
+            curriculumLevel: 'as-a-level',
+            mode: 'data-visualisation',
+            chartKind: 'box-plot',
+            whiskerConvention: 'tukey-1.5-iqr',
+            rawValues: [1, 2, 3, 4, 5, 6, 7, 50],
+            expectedNumericAnswer: 4,
+            title: 'Box GFX',
+            instructions: 'Inspect box plot.',
+            accessibilityLabel: 'Box GFX',
+            fallbackText: 'Fallback.',
+          }}
+        />,
+      );
+      expect(bpC.querySelector('[data-testid="boxplot-outlier"]')?.getAttribute('data-outlier-val')).toBe('50');
     });
   });
 

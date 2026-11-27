@@ -76,7 +76,13 @@ export interface ProbabilityExperimentSpec {
   drawsPerTrial?: number;
   seed?: number;
   targetEvent: TargetProbabilityEvent;
-  expectedAnswerKind?: 'theoretical-probability' | 'experimental-observation';
+  expectedAnswerKind?:
+    | 'theoretical-probability'
+    | 'experimental-relative-frequency'
+    | 'observed-count'
+    | 'total-trials';
+  /** Minimum trials required before experimental answers can be graded (default 10 for experimental modes) */
+  minRequiredTrials?: number;
   tolerance?: number;
 }
 
@@ -605,6 +611,93 @@ export function buildCumulativeFrequency(
   return pts;
 }
 
+export interface PieSectorModel {
+  label: string;
+  frequency: number;
+  percentage: number;
+  startAngleDeg: number;
+  endAngleDeg: number;
+  isFullCircle: boolean;
+  color: string;
+}
+
+const PIE_PALETTE = ['#2563eb', '#0d9488', '#d97706', '#dc2626', '#7c3aed', '#059669', '#db2777', '#475569'];
+
+export function computePieChartModel(categories: ReadonlyArray<CategoryRow>): PieSectorModel[] | null {
+  const total = categories.reduce((s, c) => s + Math.max(0, c.frequency), 0);
+  if (total <= 0) return null;
+  const nonZeroCount = categories.filter((c) => c.frequency > 0).length;
+  let accDeg = 0;
+  return categories.map((c, idx) => {
+    const frac = c.frequency / total;
+    const sweep = frac * 360;
+    const startAngleDeg = roundClean(accDeg, 4);
+    const endAngleDeg = roundClean(accDeg + sweep, 4);
+    accDeg += sweep;
+    return {
+      label: c.label,
+      frequency: c.frequency,
+      percentage: roundClean(frac * 100, 2),
+      startAngleDeg,
+      endAngleDeg,
+      isFullCircle: nonZeroCount === 1 && c.frequency > 0,
+      color: c.color ?? PIE_PALETTE[idx % PIE_PALETTE.length],
+    };
+  });
+}
+
+export function computeDotPlotModel(values: ReadonlyArray<number>): Array<{ value: number; count: number }> {
+  const counts = new Map<number, number>();
+  for (const v of values) counts.set(v, (counts.get(v) ?? 0) + 1);
+  return Array.from(counts.entries())
+    .sort((a, b) => a[0] - b[0])
+    .map(([value, count]) => ({ value, count }));
+}
+
+export interface BoxPlotModel {
+  min: number;
+  q1: number;
+  median: number;
+  q3: number;
+  max: number;
+  iqr: number;
+  lowerWhisker: number;
+  upperWhisker: number;
+  outliers: number[];
+  isConstant: boolean;
+  quartileConvention: QuartileConvention;
+  whiskerConvention: 'min-max' | 'tukey-1.5-iqr';
+}
+
+export function computeBoxPlotModel(
+  values: ReadonlyArray<number>,
+  quartileConvention: QuartileConvention = 'tukey-exclusive',
+  whiskerConvention: 'min-max' | 'tukey-1.5-iqr' = 'min-max',
+): BoxPlotModel | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const st = computeDescriptiveStats(sorted, quartileConvention);
+  const min = sorted[0];
+  const max = sorted[sorted.length - 1];
+  const q1 = st.q1 ?? min;
+  const median = st.median ?? min;
+  const q3 = st.q3 ?? max;
+  const iqr = roundClean(q3 - q1, 6);
+  const isConstant = max === min;
+
+  if (whiskerConvention === 'tukey-1.5-iqr') {
+    const lowFence = q1 - 1.5 * iqr;
+    const highFence = q3 + 1.5 * iqr;
+    const inliers = sorted.filter((v) => v >= lowFence && v <= highFence);
+    const outliers = sorted.filter((v) => v < lowFence || v > highFence);
+    const lowerWhisker = inliers.length > 0 ? inliers[0] : q1;
+    const upperWhisker = inliers.length > 0 ? inliers[inliers.length - 1] : q3;
+    return { min, q1, median, q3, max, iqr, lowerWhisker, upperWhisker, outliers, isConstant, quartileConvention, whiskerConvention };
+  }
+
+  return { min, q1, median, q3, max, iqr, lowerWhisker: min, upperWhisker: max, outliers: [], isConstant, quartileConvention, whiskerConvention };
+}
+
 // ============================================================================
 // 4. SCATTERPLOT, PEARSON CORRELATION & SIMPLE LINEAR REGRESSION
 // ============================================================================
@@ -746,13 +839,74 @@ export function parseFractionOrDecimal(raw: string): number | null {
   return null;
 }
 
+export interface ExperimentLiveState {
+  totalTrials: number;
+  eventHits: number;
+}
+
 export function evaluateDataStatsAnswer(
   spec: DataStatsSpec,
   answerText: string,
   activeDatasetOverride?: number[],
   includeOutlier?: boolean,
+  experimentState?: ExperimentLiveState,
 ): DataStatsEvalResult {
-  const parsed = parseFractionOrDecimal(answerText);
+  const trimmed = answerText.trim();
+
+  // Special handling for mode (supports single mode, unordered multimodal sets, and "none" / "no mode")
+  if (spec.mode === 'descriptive-stats' && spec.targetMeasure === 'mode') {
+    if (spec.groupedTable) {
+      return { passed: false, expectedValue: null, feedback: 'Exact mode is undefined for grouped data (only modal class can be identified).' };
+    }
+    const vals =
+      activeDatasetOverride ??
+      (spec.frequencyTable ? expandFrequencyTable(spec.frequencyTable) : spec.data ?? []);
+    const stats = computeDescriptiveStats(vals, spec.quartileConvention);
+    const expectedModes = [...stats.modes].sort((a, b) => a - b);
+
+    if (/^(?:none|no\s*mode|null|∅)$/i.test(trimmed)) {
+      const ok = expectedModes.length === 0;
+      return {
+        passed: ok,
+        expectedValue: null,
+        feedback: ok
+          ? 'Verified! This dataset has no mode because no value repeats more often than the others.'
+          : `This dataset does have a mode (${expectedModes.join(', ')}).`,
+      };
+    }
+
+    const parts = trimmed.split(/[,;]+/).map((p) => p.trim()).filter(Boolean);
+    const parsedNums: number[] = [];
+    for (const p of parts) {
+      const num = parseFractionOrDecimal(p);
+      if (num === null) {
+        return { passed: false, expectedValue: null, feedback: 'Enter mode value(s) separated by commas, or "none" if there is no mode.' };
+      }
+      parsedNums.push(num);
+    }
+    if (parsedNums.length === 0) {
+      return { passed: false, expectedValue: null, feedback: 'Enter the mode value(s), or "none" if there is no mode.' };
+    }
+    const uniqueLearner = Array.from(new Set(parsedNums)).sort((a, b) => a - b);
+    const tol = spec.tolerance ?? 1e-6;
+    const ok =
+      expectedModes.length > 0 &&
+      uniqueLearner.length === expectedModes.length &&
+      expectedModes.every((m, idx) => Math.abs(uniqueLearner[idx] - m) <= tol);
+    return {
+      passed: ok,
+      expectedValue: expectedModes[0] ?? null,
+      feedback: ok
+        ? `Verified! Exact mode${expectedModes.length > 1 ? 's' : ''}: ${expectedModes.join(', ')}.`
+        : expectedModes.length === 0
+          ? 'This dataset has no mode — enter "none" or "no mode".'
+          : uniqueLearner.length < expectedModes.length
+            ? 'Incomplete mode set — this dataset is multimodal; list ALL modes separated by commas.'
+            : 'Recheck which value(s) occur with the highest frequency.',
+    };
+  }
+
+  const parsed = parseFractionOrDecimal(trimmed);
   if (parsed === null) {
     return {
       passed: false,
@@ -762,15 +916,45 @@ export function evaluateDataStatsAnswer(
   }
 
   if (spec.mode === 'probability-experiment') {
-    const expected = computeTheoreticalProbability(spec);
+    const kind = spec.expectedAnswerKind ?? 'theoretical-probability';
     const tol = spec.tolerance ?? 0.01;
-    const ok = Math.abs(parsed - expected) <= tol;
+
+    if (kind === 'theoretical-probability') {
+      const expected = computeTheoreticalProbability(spec);
+      const ok = Math.abs(parsed - expected) <= tol;
+      return {
+        passed: ok,
+        expectedValue: expected,
+        feedback: ok
+          ? `Verified! Theoretical probability is ${expected} (remember: experimental relative frequency fluctuates around the theoretical value).`
+          : `Not quite — check the sample space${spec.withReplacement === false ? ' (remember counts decrease without replacement!)' : ''}.`,
+      };
+    }
+
+    const minTrials = spec.minRequiredTrials ?? 10;
+    const totalTrials = experimentState?.totalTrials ?? 0;
+    const eventHits = experimentState?.eventHits ?? 0;
+    if (totalTrials < minTrials) {
+      return {
+        passed: false,
+        expectedValue: null,
+        feedback: `Run at least ${minTrials} simulated trials first (currently ${totalTrials}) before submitting an experimental result.`,
+      };
+    }
+    const expected =
+      kind === 'experimental-relative-frequency'
+        ? roundClean(eventHits / totalTrials, 6)
+        : kind === 'observed-count'
+          ? eventHits
+          : totalTrials;
+    const expTol = kind === 'experimental-relative-frequency' ? tol : 0;
+    const ok = Math.abs(parsed - expected) <= expTol;
     return {
       passed: ok,
       expectedValue: expected,
       feedback: ok
-        ? `Verified! Theoretical probability is ${expected} (remember: experimental relative frequency fluctuates around the theoretical value).`
-        : `Not quite — check the sample space${spec.withReplacement === false ? ' (remember counts decrease without replacement!)' : ''}.`,
+        ? `Verified! Matches your recorded experiment state (${expected}).`
+        : `Check your recorded experiment table (${eventHits} hits out of ${totalTrials} trials).`,
     };
   }
 
@@ -814,7 +998,7 @@ export function evaluateDataStatsAnswer(
   if (spec.mode === 'data-visualisation') {
     const expected = spec.expectedNumericAnswer ?? null;
     if (expected === null) {
-      return { passed: true, expectedValue: null, feedback: 'Exploration recorded.' };
+      return { passed: false, expectedValue: null, feedback: 'No numeric assessment target is configured for this exploration chart.' };
     }
     const tol = spec.tolerance ?? 0.1;
     const ok = Math.abs(parsed - expected) <= tol;

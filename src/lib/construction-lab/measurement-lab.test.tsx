@@ -20,8 +20,8 @@ import { MeasurementLab } from '@/components/narrated-lessons/construction/Measu
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 5C — Virtual Measuring Instruments (construction-lab: measurement-lab 1.4.0)', () => {
-  it('extends construction-lab to engineVersion 1.5.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.5.0');
+  it('extends construction-lab to engineVersion 1.6.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.6.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].supportedSchemaVersions).toEqual([1]);
   });

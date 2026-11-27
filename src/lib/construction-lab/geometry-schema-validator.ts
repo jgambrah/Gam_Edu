@@ -69,6 +69,21 @@ const CIRCLE_KEYS = new Set([
   'circleTheorem',
 ]);
 
+const CUBE_NET_KEYS = new Set([
+  ...SHARED_GEO_KEYS,
+  'initialCells',
+  'cuboidDimensions',
+  'targetTask',
+  'expectedValidNet',
+]);
+
+const LOCI_REGION_KEYS = new Set([
+  ...SHARED_GEO_KEYS,
+  'locusConstraints',
+  'targetPrompt',
+  'tolerance',
+]);
+
 const VALID_CURRICULUM_LEVELS = new Set(['introductory', 'igcse', 'as-a-level']);
 const VALID_COMPASS_GOALS = new Set<CompassGoalKind>([
   'perpendicular-bisector',
@@ -92,6 +107,9 @@ const VALID_THEOREMS = new Set<CircleTheoremKind>([
   'same-segment',
   'cyclic-quadrilateral',
   'tangent-radius',
+  'alternate-segment',
+  'equal-tangents',
+  'chord-perp-bisector',
 ]);
 
 function checkAllowed(
@@ -120,7 +138,9 @@ export function validateGeometryConstructorConfig(
     mode !== 'compass-straightedge' &&
     mode !== 'transformations' &&
     mode !== 'coordinate-geometry' &&
-    mode !== 'circle-theorems'
+    mode !== 'circle-theorems' &&
+    mode !== 'cube-nets' &&
+    mode !== 'loci-regions'
   ) {
     errors.push(
       'geometry-constructor "mode" must be compass-straightedge, transformations, coordinate-geometry, or circle-theorems.',
@@ -138,7 +158,7 @@ export function validateGeometryConstructorConfig(
   let xMax = 10;
   let yMin = -10;
   let yMax = 10;
-  if (mode !== 'circle-theorems') {
+  if (mode !== 'circle-theorems' && mode !== 'cube-nets') {
     const gb = obj.gridBounds as Record<string, unknown> | undefined;
     if (!gb || typeof gb !== 'object' || Array.isArray(gb)) {
       errors.push(`geometry-constructor(${mode}) requires a "gridBounds" object.`);
@@ -325,6 +345,42 @@ export function validateGeometryConstructorConfig(
       if (!gl || !isFiniteNum(gl.a) || !isFiniteNum(gl.b) || !isFiniteNum(gl.c) || Math.hypot(gl.a, gl.b) < GEO_EPS) {
         errors.push('coordinate-geometry line-from-equation requires finite targetGeneralLine { a, b, c } with a² + b² > 0.');
       }
+    }
+    return;
+  }
+
+  // MODE 5 (Step 5E): CUBE NETS & 3D EXPLORATION
+  if (mode === 'cube-nets') {
+    checkAllowed(obj, CUBE_NET_KEYS, 'geometry-constructor(cube-nets)', errors);
+    if (obj.initialCells !== undefined) {
+      if (!Array.isArray(obj.initialCells) || obj.initialCells.length > 12) {
+        errors.push('cube-nets initialCells must be an array of at most 12 grid cells.');
+      } else {
+        for (const c of obj.initialCells) {
+          const rec = c as Record<string, unknown>;
+          if (!rec || !Number.isInteger(rec.r) || !Number.isInteger(rec.c) || (rec.r as number) < 0 || (rec.r as number) > 5 || (rec.c as number) < 0 || (rec.c as number) > 5) {
+            errors.push('cube-nets initialCells entries must have integer r, c within 0..5.');
+          }
+        }
+      }
+    }
+    if (obj.cuboidDimensions !== undefined) {
+      const d = obj.cuboidDimensions as Record<string, unknown>;
+      if (!d || !isFiniteNum(d.length) || !isFiniteNum(d.width) || !isFiniteNum(d.height) || d.length <= 0 || d.width <= 0 || d.height <= 0) {
+        errors.push('cube-nets cuboidDimensions requires positive finite length, width, and height.');
+      }
+    }
+    return;
+  }
+
+  // MODE 6 (Step 5E): LOCI & BOUNDED FEASIBLE REGIONS
+  if (mode === 'loci-regions') {
+    checkAllowed(obj, LOCI_REGION_KEYS, 'geometry-constructor(loci-regions)', errors);
+    if (!Array.isArray(obj.locusConstraints) || obj.locusConstraints.length === 0 || obj.locusConstraints.length > 6) {
+      errors.push('loci-regions requires 1..6 locusConstraints.');
+    }
+    if (typeof obj.targetPrompt !== 'string' || !obj.targetPrompt.trim()) {
+      errors.push('loci-regions requires a non-empty targetPrompt.');
     }
     return;
   }

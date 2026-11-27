@@ -16,8 +16,11 @@ import {
   DATA_STATS_LIMITS,
   buildCumulativeFrequency,
   buildHistogramModel,
+  computeBoxPlotModel,
   computeDescriptiveStats,
+  computeDotPlotModel,
   computeGroupedStats,
+  computePieChartModel,
   computeScatterRegression,
   computeTheoreticalProbability,
   createSeededRng,
@@ -126,6 +129,7 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
         answerText,
         config.mode === 'descriptive-stats' && !config.groupedTable ? descValues : undefined,
         includeOutlier,
+        config.mode === 'probability-experiment' ? { totalTrials, eventHits } : undefined,
       ),
     );
   };
@@ -422,8 +426,31 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                           </g>
                         );
                       })}
+                    {config.chartKind === 'frequency-polygon' && (
+                      <g data-testid="svg-freq-polygon">
+                        <polyline
+                          data-testid="freq-polygon-line"
+                          fill="none"
+                          stroke="#7c3aed"
+                          strokeWidth="2.2"
+                          points={bins
+                            .map((b) => {
+                              const x = 42 + ((b.midpoint - minX) / Math.max(1e-9, maxX - minX)) * 290;
+                              const y = 120 - (b.frequencyDensity / maxFD) * 94;
+                              return `${x.toFixed(1)},${y.toFixed(1)}`;
+                            })
+                            .join(' ')}
+                        />
+                        {bins.map((b, i) => {
+                          const x = 42 + ((b.midpoint - minX) / Math.max(1e-9, maxX - minX)) * 290;
+                          const y = 120 - (b.frequencyDensity / maxFD) * 94;
+                          return <circle key={i} data-testid={`fp-pt-${i}`} cx={x} cy={y} r="3.5" fill="#7c3aed" />;
+                        })}
+                      </g>
+                    )}
                     {config.chartKind === 'cumulative-frequency' && (
                       <polyline
+                        data-testid="cum-freq-line"
                         fill="none"
                         stroke="#0f766e"
                         strokeWidth="2.2"
@@ -438,8 +465,10 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
                     )}
                     <text x="190" y="143" textAnchor="middle" fontSize="8.5" fill="#475569">
                       {config.chartKind === 'histogram'
-                        ? 'Continuous Histogram (Bar Height = Frequency Density; Area = Frequency)'
-                        : config.xLabel ?? 'Class Upper Bound'}
+                        ? 'Continuous Histogram (Y = Frequency Density; Area = Frequency)'
+                        : config.chartKind === 'frequency-polygon'
+                          ? 'Frequency Polygon (Midpoints · Y = Frequency Density)'
+                          : config.xLabel ?? 'Class Upper Bound'}
                     </text>
                   </svg>
                   <table className="w-full border-collapse bg-white text-left text-[11px]">
@@ -466,62 +495,162 @@ export function DataStatsLab({ config }: { config: DataStatsLabConstructionConfi
               );
             })()}
 
-          {(config.chartKind === 'bar' || config.chartKind === 'pictogram' || config.chartKind === 'pie') &&
-            config.categories && (() => {
-              const maxF = Math.max(...config.categories.map((c) => c.frequency), 1);
-              return (
-                <div className="space-y-2">
-                  <svg viewBox="0 0 360 140" role="img" aria-label={`${config.chartKind} chart`} className="h-auto w-full max-w-xl">
-                    <rect x="4" y="4" width="352" height="132" rx="8" fill="#ffffff" stroke="#cbd5e1" />
-                    {config.categories.map((cat, idx) => {
-                      const bw = 280 / config.categories!.length;
-                      const x = 44 + idx * bw + 6;
-                      const h = (cat.frequency / maxF) * 86;
-                      return (
-                        <g key={cat.label}>
-                          <rect x={x} y={110 - h} width={Math.max(12, bw - 12)} height={h} rx="3" fill="#0d9488" />
-                          <text x={x + Math.max(12, bw - 12) / 2} y="124" textAnchor="middle" fontSize="8" fill="#0f172a">
-                            {cat.label}
-                          </text>
-                          <text x={x + Math.max(12, bw - 12) / 2} y={106 - h} textAnchor="middle" fontSize="8" fontWeight="bold" fill="#0f172a">
-                            {cat.frequency}
-                          </text>
-                        </g>
-                      );
-                    })}
-                  </svg>
-                </div>
-              );
-            })()}
+          {/* GENUINE BAR CHART */}
+          {config.chartKind === 'bar' && config.categories && (() => {
+            const maxF = Math.max(...config.categories.map((c) => c.frequency), 1);
+            return (
+              <svg viewBox="0 0 360 140" role="img" aria-label="Categorical bar chart" data-testid="svg-bar" className="h-auto w-full max-w-xl">
+                <rect x="4" y="4" width="352" height="132" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+                {config.categories.map((cat, idx) => {
+                  const bw = 280 / config.categories!.length;
+                  const x = 44 + idx * bw + 6;
+                  const h = (cat.frequency / maxF) * 86;
+                  return (
+                    <g key={cat.label}>
+                      <rect x={x} y={110 - h} width={Math.max(12, bw - 12)} height={h} rx="3" fill="#0d9488" />
+                      <text x={x + Math.max(12, bw - 12) / 2} y="124" textAnchor="middle" fontSize="8" fill="#0f172a">{cat.label}</text>
+                      <text x={x + Math.max(12, bw - 12) / 2} y={106 - h} textAnchor="middle" fontSize="8" fontWeight="bold" fill="#0f172a">{cat.frequency}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            );
+          })()}
 
-          {(config.chartKind === 'box-plot' || config.chartKind === 'dot-plot') &&
-            config.rawValues && (() => {
-              const st = computeDescriptiveStats(config.rawValues, quartileConv);
-              const lo = st.min ?? 0;
-              const hi = st.max ?? 1;
-              const toX = (v: number) => 36 + ((v - lo) / Math.max(1e-9, hi - lo)) * 288;
-              return (
-                <div className="space-y-1.5">
-                  <svg viewBox="0 0 360 110" role="img" aria-label={`${config.chartKind} diagram`} className="h-auto w-full max-w-xl">
-                    <rect x="4" y="4" width="352" height="102" rx="8" fill="#ffffff" stroke="#cbd5e1" />
-                    {st.q1 !== null && st.median !== null && st.q3 !== null && (
-                      <g>
-                        <line x1={toX(lo)} y1="54" x2={toX(st.q1)} y2="54" stroke="#334155" strokeWidth="1.8" />
-                        <line x1={toX(st.q3)} y1="54" x2={toX(hi)} y2="54" stroke="#334155" strokeWidth="1.8" />
-                        <rect x={toX(st.q1)} y="36" width={Math.max(2, toX(st.q3) - toX(st.q1))} height="36" fill="#c7d2fe" stroke="#3730a3" strokeWidth="1.8" />
-                        <line x1={toX(st.median)} y1="36" x2={toX(st.median)} y2="72" stroke="#dc2626" strokeWidth="2.2" />
-                        <text x={toX(lo)} y="92" textAnchor="middle" fontSize="8">{lo}</text>
-                        <text x={toX(st.median)} y="92" textAnchor="middle" fontSize="8" fontWeight="bold">Med={st.median}</text>
-                        <text x={toX(hi)} y="92" textAnchor="middle" fontSize="8">{hi}</text>
-                      </g>
-                    )}
-                  </svg>
-                  <p className="text-[11px] text-slate-600">
-                    Box-plot convention: {quartileConv} · Whiskers: {config.whiskerConvention ?? 'min-max'}.
-                  </p>
+          {/* GENUINE PICTOGRAM WITH REPEATED SYMBOLS & VISIBLE KEY */}
+          {config.chartKind === 'pictogram' && config.categories && (() => {
+            const unit = config.pictogramUnit && config.pictogramUnit > 0 ? config.pictogramUnit : 1;
+            return (
+              <div className="space-y-2" data-testid="svg-pictogram">
+                <p className="font-bold text-slate-700">Key: ● = {unit} unit{unit === 1 ? '' : 's'} (◐ = {roundClean(unit / 2, 2)})</p>
+                <div className="space-y-1.5 rounded-lg border border-slate-200 bg-white p-2.5">
+                  {config.categories.map((cat) => {
+                    const exactSymbols = cat.frequency / unit;
+                    const fullCount = Math.floor(exactSymbols);
+                    const hasHalf = exactSymbols - fullCount >= 0.25;
+                    return (
+                      <div key={cat.label} className="flex items-center gap-2" data-picto-row={cat.label} data-full-symbols={fullCount}>
+                        <span className="w-24 font-bold text-slate-800">{cat.label}</span>
+                        <div className="flex flex-wrap items-center gap-1" aria-label={`${cat.label}: ${cat.frequency}`}>
+                          {Array.from({ length: Math.min(fullCount, 20) }).map((_, i) => (
+                            <span key={i} className="inline-block h-4 w-4 rounded-full bg-emerald-600" aria-hidden="true" />
+                          ))}
+                          {hasHalf && (
+                            <span className="inline-block h-4 w-2 rounded-l-full bg-emerald-600" aria-hidden="true" />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })()}
+              </div>
+            );
+          })()}
+
+          {/* GENUINE PIE CHART WITH CIRCULAR SECTORS & PERCENTAGE LEGEND */}
+          {config.chartKind === 'pie' && config.categories && (() => {
+            const sectors = computePieChartModel(config.categories);
+            if (!sectors) return <p className="text-rose-700">Pie chart undefined (all-zero total).</p>;
+            const cx = 96;
+            const cy = 72;
+            const r = 56;
+            const polar = (deg: number) => {
+              const rad = ((deg - 90) * Math.PI) / 180;
+              return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+            };
+            return (
+              <div className="flex flex-wrap items-center gap-4">
+                <svg viewBox="0 0 192 144" role="img" aria-label="Pie chart" data-testid="svg-pie" className="h-36 w-48">
+                  {sectors.map((s, idx) => {
+                    if (s.frequency <= 0) return null;
+                    if (s.isFullCircle) {
+                      return <circle key={idx} data-testid={`pie-sector-${idx}`} cx={cx} cy={cy} r={r} fill={s.color} />;
+                    }
+                    const p1 = polar(s.startAngleDeg);
+                    const p2 = polar(s.endAngleDeg);
+                    const largeArc = s.endAngleDeg - s.startAngleDeg > 180 ? 1 : 0;
+                    const d = `M ${cx} ${cy} L ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)} Z`;
+                    return (
+                      <path
+                        key={idx}
+                        data-testid={`pie-sector-${idx}`}
+                        data-angle-deg={roundClean(s.endAngleDeg - s.startAngleDeg, 2)}
+                        d={d}
+                        fill={s.color}
+                        stroke="#ffffff"
+                        strokeWidth="1.5"
+                      />
+                    );
+                  })}
+                </svg>
+                <ul className="space-y-1 text-[11px]">
+                  {sectors.map((s) => (
+                    <li key={s.label} className="flex items-center gap-2">
+                      <span className="inline-block h-3 w-3 rounded-sm" style={{ backgroundColor: s.color }} />
+                      <span className="font-bold text-slate-800">{s.label}:</span>
+                      <span className="font-mono text-slate-600">{s.frequency} ({s.percentage}%)</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })()}
+
+          {/* GENUINE DOT PLOT WITH GRADUATED AXIS & STACKED DOTS */}
+          {config.chartKind === 'dot-plot' && config.rawValues && (() => {
+            const stacks = computeDotPlotModel(config.rawValues);
+            const lo = stacks[0]?.value ?? 0;
+            const hi = stacks[stacks.length - 1]?.value ?? 1;
+            const toX = (v: number) => (hi === lo ? 180 : 36 + ((v - lo) / (hi - lo)) * 288);
+            return (
+              <svg viewBox="0 0 360 120" role="img" aria-label="Dot plot" data-testid="svg-dot-plot" className="h-auto w-full max-w-xl">
+                <rect x="4" y="4" width="352" height="112" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+                <line x1="28" y1="92" x2="332" y2="92" stroke="#334155" strokeWidth="1.4" />
+                {stacks.map((st) => {
+                  const x = toX(st.value);
+                  return (
+                    <g key={st.value} data-dot-value={st.value} data-dot-stack={st.count}>
+                      {Array.from({ length: Math.min(st.count, 10) }).map((_, k) => (
+                        <circle key={k} cx={x} cy={82 - k * 8} r="3.5" fill="#2563eb" />
+                      ))}
+                      <text x={x} y="106" textAnchor="middle" fontSize="8" fill="#0f172a">{st.value}</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            );
+          })()}
+
+          {/* GENUINE BOX PLOT WITH MIN-MAX & TUKEY 1.5-IQR WHISKERS + OUTLIERS */}
+          {config.chartKind === 'box-plot' && config.rawValues && (() => {
+            const bp = computeBoxPlotModel(config.rawValues, quartileConv, config.whiskerConvention ?? 'min-max');
+            if (!bp) return null;
+            const lo = bp.min;
+            const hi = bp.max;
+            const toX = (v: number) => (bp.isConstant ? 180 : 36 + ((v - lo) / (hi - lo)) * 288);
+            return (
+              <div className="space-y-1.5">
+                <svg viewBox="0 0 360 116" role="img" aria-label="Box plot diagram" data-testid="svg-box-plot" className="h-auto w-full max-w-xl">
+                  <rect x="4" y="4" width="352" height="108" rx="8" fill="#ffffff" stroke="#cbd5e1" />
+                  <line x1="36" y1="92" x2="324" y2="92" stroke="#64748b" strokeWidth="1" />
+                  <line x1={toX(bp.lowerWhisker)} y1="50" x2={toX(bp.q1)} y2="50" stroke="#334155" strokeWidth="1.8" />
+                  <line x1={toX(bp.q3)} y1="50" x2={toX(bp.upperWhisker)} y2="50" stroke="#334155" strokeWidth="1.8" />
+                  <rect x={toX(bp.q1)} y="32" width={Math.max(2, toX(bp.q3) - toX(bp.q1))} height="36" fill="#c7d2fe" stroke="#3730a3" strokeWidth="1.8" />
+                  <line x1={toX(bp.median)} y1="32" x2={toX(bp.median)} y2="68" stroke="#dc2626" strokeWidth="2.2" />
+                  {bp.outliers.map((o, idx) => (
+                    <circle key={idx} data-testid="boxplot-outlier" data-outlier-val={o} cx={toX(o)} cy="50" r="4" fill="#dc2626" />
+                  ))}
+                  <text x={toX(lo)} y="104" textAnchor="middle" fontSize="8">{lo}</text>
+                  <text x={toX(bp.median)} y="104" textAnchor="middle" fontSize="8" fontWeight="bold">Med={bp.median}</text>
+                  <text x={toX(hi)} y="104" textAnchor="middle" fontSize="8">{hi}</text>
+                </svg>
+                <p className="text-[11px] text-slate-600">
+                  Box-plot convention: {bp.quartileConvention} · Whiskers: {bp.whiskerConvention}
+                  {bp.outliers.length > 0 ? ` · Outliers outside 1.5×IQR fences: ${bp.outliers.join(', ')}` : ''}.
+                </p>
+              </div>
+            );
+          })()}
         </div>
       )}
 

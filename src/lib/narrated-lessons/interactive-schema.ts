@@ -139,11 +139,11 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   },
   'construction-lab': {
     id: 'construction-lab',
-    engineVersion: '1.5.0',
+    engineVersion: '1.6.0',
     productionVersion: '1.3.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE; measurement-lab 1.4.0; data-stats-lab 1.5.0).',
+    description: 'Shared ConstructionLabShell with independently lazy-loaded domain adapters (boolean-circuit 1.0.0; equation-balancer, electrical-circuit, bio-sequence-builder, declarative boolean-circuit 1.1.0; atom-bond-builder 1.2.0; geometry-constructor 1.3.0 LIVE + Step 5E 1.6.0 extensions; measurement-lab 1.4.0; data-stats-lab 1.5.0).',
   },
   'rule-explorer': {
     id: 'rule-explorer',
@@ -366,11 +366,29 @@ export interface GeometryCircleTheoremConfig extends GeometryConstructorBase {
   };
 }
 
+export interface GeometryCubeNetConfig extends GeometryConstructorBase {
+  mode: 'cube-nets';
+  initialCells?: Array<{ r: number; c: number }>;
+  cuboidDimensions?: { length: number; width: number; height: number };
+  targetTask?: 'build-valid-net' | 'classify-net' | 'surface-area' | 'volume';
+  expectedValidNet?: boolean;
+}
+
+export interface GeometryLociRegionConfig extends GeometryConstructorBase {
+  mode: 'loci-regions';
+  gridBounds: { xMin: number; xMax: number; yMin: number; yMax: number; step?: number };
+  locusConstraints: import('@/lib/construction-lab/geometry-step5e').LocusConstraintDef[];
+  targetPrompt: string;
+  tolerance?: number;
+}
+
 export type GeometryConstructorConstructionConfig =
   | GeometryCompassConfig
   | GeometryTransformationConfig
   | GeometryCoordinateConfig
-  | GeometryCircleTheoremConfig;
+  | GeometryCircleTheoremConfig
+  | GeometryCubeNetConfig
+  | GeometryLociRegionConfig;
 
 export interface MeasurementLabConstructionConfig
   extends ConstructionLabSharedFields,
