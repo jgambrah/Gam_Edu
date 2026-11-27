@@ -61,6 +61,8 @@ import type {
 } from '@/lib/construction-lab/geometry-engine';
 import type { MathEvaluatorSpec, MathMisconceptionRule } from '@/lib/math-evaluator/math-eval-engine';
 import { validateMathEvaluatorConfig } from '@/lib/math-evaluator/math-eval-schema-validator';
+import type { SortClassifySpec } from '@/lib/sort-classify/sort-classify-engine';
+import { validateSortClassifyConfig } from '@/lib/sort-classify/sort-classify-schema-validator';
 
 export type InteractiveEngineId =
   | 'code-playground'
@@ -69,7 +71,8 @@ export type InteractiveEngineId =
   | 'graph-slider'
   | 'process-stepper'
   | 'diagram-hotspots'
-  | 'math-evaluator';
+  | 'math-evaluator'
+  | 'sort-classify';
 
 export interface InteractiveEngineMeta {
   id: InteractiveEngineId;
@@ -175,10 +178,18 @@ export const SUPPORTED_INTERACTIVE_ENGINES: Record<InteractiveEngineId, Interact
   'math-evaluator': {
     id: 'math-evaluator',
     engineVersion: '1.1.0',
-    productionVersion: '1.0.0',
+    productionVersion: '1.1.0',
     supportedSchemaVersions: [1],
     implemented: true,
-    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, symbolic calculus evaluator (1.0.0) and multi-step working/marking workspace (1.1.0).',
+    description: 'Bounded exact rational, polynomial, surd, domain, equation, interval, SI-unit, symbolic calculus evaluator (1.0.0) and multi-step working/marking workspace (1.1.0 LIVE).',
+  },
+  'sort-classify': {
+    id: 'sort-classify',
+    engineVersion: '1.0.0',
+    productionVersion: null,
+    supportedSchemaVersions: [1],
+    implemented: true,
+    description: 'Cross-subject sorting, overlapping set classification, many-to-many matching, reusable cloze tiles, and multi-order sequencing (Step 5B).',
   },
 };
 
@@ -605,6 +616,15 @@ export type MathEvaluatorInteractiveConfig = SlideInteractiveBase &
     successExplanation?: string;
   };
 
+export type SortClassifyInteractiveConfig = SlideInteractiveBase &
+  SortClassifySpec & {
+    engine: 'sort-classify';
+    subjectTag?: string;
+    curriculumLevel: 'early-years' | 'primary' | 'lower-secondary' | 'igcse' | 'as-a-level';
+    prediction?: ConstructionPredictionDef;
+    successExplanation?: string;
+  };
+
 export type SlideInteractiveConfig =
   | CodePlaygroundInteractiveConfig
   | ConstructionLabInteractiveConfig
@@ -612,7 +632,8 @@ export type SlideInteractiveConfig =
   | GraphSliderInteractiveConfig
   | ProcessStepperInteractiveConfig
   | DiagramHotspotsInteractiveConfig
-  | MathEvaluatorInteractiveConfig;
+  | MathEvaluatorInteractiveConfig
+  | SortClassifyInteractiveConfig;
 
 const ALLOWED_RULE_OPS = new Set<RuleOperator>(['AND', 'OR', 'NOT', 'XOR']);
 const SEMVER_RE = /^(\d+)\.(\d+)\.(\d+)$/;
@@ -719,6 +740,25 @@ const ENGINE_EXTRA_KEYS: Record<InteractiveEngineId, ReadonlySet<string>> = {
     'maxWorkingSteps',
     'markingScheme',
     'workedSolutions',
+  ]),
+  'sort-classify': new Set([
+    'subjectTag',
+    'curriculumLevel',
+    'mode',
+    'prediction',
+    'successExplanation',
+    'bins',
+    'items',
+    'allowMultipleBinsPerItem',
+    'leftItems',
+    'rightItems',
+    'expectedMatches',
+    'allowManyToMany',
+    'template',
+    'blanks',
+    'tokens',
+    'reusableTokens',
+    'acceptedOrders',
   ]),
 };
 
@@ -2047,6 +2087,8 @@ export function validateSlideInteractiveConfig(
       }
     }
     validateMathEvaluatorConfig(obj, errors);
+  } else if (obj.engine === 'sort-classify') {
+    validateSortClassifyConfig(obj, errors);
   }
 
   return errors.length === 0

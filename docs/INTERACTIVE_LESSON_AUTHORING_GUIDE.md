@@ -16,7 +16,7 @@ Slides without `interactive` continue working identically as standard narrated s
 
 ## 2. Supported Engine Identifiers & Production Compatibility Manifest
 
-All seven engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/interactive-schema.ts`) are production-compatible on `fixed-version` (Steps 1–4F verified LIVE on `https://gam-it-service.app`; Step 5A.1 `math-evaluator` `1.0.0` integrated on `fixed-version` pending manual Vercel production promotion):
+All eight engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/interactive-schema.ts`): Steps 1–5A (`rule-explorer`, `code-playground`, `graph-slider`, `process-stepper`, `diagram-hotspots`, `construction-lab` `1.3.0`, and `math-evaluator` `1.1.0`) are verified **Production LIVE** on `https://gam-it-service.app`; Step 5B (`sort-classify` `1.0.0`) is integrated on `fixed-version` with `productionVersion: null` pending manual Vercel production promotion and live verification:
 
 | Engine ID | Status | Installed `engineVersion` | Configured `productionVersion` | Supported `schemaVersion` | Minimum `minEngineVersion` | Use Case |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
@@ -26,7 +26,8 @@ All seven engines in `SUPPORTED_INTERACTIVE_ENGINES` (`src/lib/narrated-lessons/
 | `process-stepper` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject linear & cyclic process/mechanism stepper with state snapshots, visual modes A/B/C, `reactionMeta`, predictions & sequencing |
 | `diagram-hotspots` | **Production LIVE** | `1.0.0` | `1.0.0` | `1` | `"1.0.0"` | Cross-subject interactive WebP/PNG diagram, point/rect hotspots, structure-to-function links, progressive disclosure, Identify challenges & `nonVisualQuestion` |
 | `construction-lab` | **Production LIVE** | `1.3.0` | `1.3.0` | `1` | `"1.0.0"` (legacy `boolean-circuit`) · `"1.1.0"` (Step 4D) · `"1.2.0"` (`atom-bond-builder`) · `"1.3.0"` (`geometry-constructor`) | Legacy & declarative `boolean-circuit`, `equation-balancer`, `electrical-circuit`, `bio-sequence-builder`, `atom-bond-builder`, and `geometry-constructor` (all Production LIVE) |
-| `math-evaluator` | **1.0.0 Integrated (`fixed-version`) · 1.1.0 Workspace Preview** | `1.1.0` | `1.0.0` (held until 1.1.0 live-verified) | `1` | `"1.0.0"` (single-answer) · `"1.1.0"` (`multi-step-working`) | Bounded exact rational, polynomial, surd, domain, equation, interval, 7-component SI unit, significant-figure, symbolic calculus evaluator (`1.0.0`), and multi-step working/marking workspace (`1.1.0`) |
+| `math-evaluator` | **Production LIVE (`1.1.0`)** | `1.1.0` | `1.1.0` | `1` | `"1.0.0"` (single-answer) · `"1.1.0"` (`multi-step-working`) | Bounded exact rational, polynomial, surd, domain, equation, interval, 7-component SI unit, significant-figure, symbolic calculus evaluator (`1.0.0`), and multi-step working/marking workspace (`1.1.0`) |
+| `sort-classify` | **Integrated (`fixed-version`) — Preview Gate** | `1.0.0` | `null` (pending manual Vercel promotion) | `1` | `"1.0.0"` | Cross-subject `category-bins` (with optional overlapping set membership), `pair-matching` (1:1 or many-to-many), `cloze-tiles` (word bank with reusable tokens), and `order-sequence` (with multiple valid orderings) |
 
 > **Version Distinction:** `engineVersion` is the version installed in the codebase; `productionVersion` is the highest version verified live on `https://gam-it-service.app` after manual Vercel promotion; `schemaVersion` is the JSON config schema format (`1`); `minEngineVersion` is the minimum engine version required by a specific slide activity.
 
@@ -185,6 +186,29 @@ Extra allowed top-level fields: `subjectTag`, `modelNote`, `diagram`, `defaultMo
   - Before checking, **all pin & list labels are concealed as `Region 1`, `Region 2`…** and `caption`/`altText` are concealed so answers never leak.
   - `nonVisualQuestion` *(optional, recommended for every Identify prompt)*: `{ prompt, options (2..4), correctIndex, explanation? }` — provides a genuinely equivalent conceptual text-only identification question toggleable for screen-reader and nonvisual learners.
 - **Deferred in v1.0:** Freeform polygon hitboxes, in-app diagram editing, 3D molecular viewers, and synchronised side-by-side diagram comparison.
+
+### G. `sort-classify` (Step 5B — Integrated on `fixed-version`, `productionVersion: null`)
+
+> **Production Status:** `sort-classify` (`engineVersion: "1.0.0"`, `productionVersion: null`) is integrated into `fixed-version` and previewable at `/narrated-lessons/sort-classify-pilot-preview` (which fails closed with `404` in production). It remains blocked at the production publish gate until manually promoted to Vercel and verified live.
+
+Extra allowed top-level fields: `subjectTag`, `curriculumLevel`, `mode`, `prediction`, `successExplanation`, `bins`, `items`, `allowMultipleBinsPerItem`, `leftItems`, `rightItems`, `expectedMatches`, `allowManyToMany`, `template`, `blanks`, `tokens`, `reusableTokens`, `acceptedOrders`.
+
+- **`mode: "category-bins"`**:
+  - `bins` *(2–6 items)*: `{ id, label, description? }`
+  - `items` *(2–24 items)*: `{ id, label, validBinIds: string[], misconceptionByBin?: Record<string, string> }`
+  - `allowMultipleBinsPerItem?` *(boolean, default `false`)*: when `true`, learners may place an item into multiple bins (e.g. overlapping sets / prime & even numbers / amphoteric oxides) and grading checks exact set equality against `validBinIds`.
+- **`mode: "pair-matching"`**:
+  - `leftItems` *(2–12)*, `rightItems` *(2–12)*: `{ id, label }`
+  - `expectedMatches` *(1–24)*: `{ leftId, rightId }`
+  - `allowManyToMany?` *(boolean, default `false`)*: supports 1:1 or many-to-many matching cleanly.
+- **`mode: "cloze-tiles"`**:
+  - `template` *(string with `{{blankId}}` placeholders)*
+  - `blanks` *(1–12 items)*: `{ id, acceptedTokenIds: string[], misconceptionByToken?: Record<string, string> }` (each blank may accept multiple valid tokens).
+  - `tokens` *(2–24 items)*: `{ id, label }`
+  - `reusableTokens?` *(boolean, default `false`)*: when `false`, each token can be used in at most one blank; when `true`, tokens can be reused across blanks.
+- **`mode: "order-sequence"`**:
+  - `items` *(3–12 items)*: `{ id, label }`
+  - `acceptedOrders` *(1–8)*: each a complete permutation of `items[].id` (supports multiple equally valid chronological, algorithmic, or experimental sequences).
 
 ---
 

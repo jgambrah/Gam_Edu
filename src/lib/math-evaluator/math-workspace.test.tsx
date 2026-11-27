@@ -17,13 +17,13 @@ import {
 import { MathWorkingWorkspace, getKeypadForProfile } from '@/components/narrated-lessons/MathWorkingWorkspace';
 
 describe('Step 5A.2 — Mathematical Working & Reasoning Workspace (math-evaluator 1.1.0)', () => {
-  it('extends math-evaluator to engineVersion 1.1.0 while holding productionVersion at 1.0.0 and preserving 7 engine families', () => {
-    expect(Object.keys(SUPPORTED_INTERACTIVE_ENGINES)).toHaveLength(7);
+  it('extends math-evaluator to live-verified productionVersion 1.1.0 within the 8 registered engine families', () => {
+    expect(Object.keys(SUPPORTED_INTERACTIVE_ENGINES)).toHaveLength(8);
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].engineVersion).toBe('1.1.0');
-    expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].productionVersion).toBe('1.0.0');
+    expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].productionVersion).toBe('1.1.0');
   });
 
-  it('validates all 20 curriculum pilot slides (step5a2-math-workspace-pilot.json) and blocks premature 1.1.0 production publish', () => {
+  it('validates all 20 curriculum pilot slides (step5a2-math-workspace-pilot.json) for both dev and live 1.1.0 production publish', () => {
     const fixturePath = path.resolve(process.cwd(), 'public/preview-fixtures/step5a2-math-workspace-pilot.json');
     const lesson = JSON.parse(fs.readFileSync(fixturePath, 'utf8')) as {
       lessonId: string;
@@ -31,8 +31,8 @@ describe('Step 5A.2 — Mathematical Working & Reasoning Workspace (math-evaluat
     };
     expect(lesson.slides).toHaveLength(20);
     expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: true })).not.toThrow();
-    // Must be blocked from production publishing while productionVersion is still 1.0.0!
-    expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).toThrow(/1\.1\.0|production/i);
+    // 1.1.0 is now verified live on https://gam-it-service.app, so 1.1.0 production publishing is permitted!
+    expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).not.toThrow();
   });
 
   it('verifies alternative valid methods, lost solutions, one-way implications, extraneous rejection, inequality sign reversal, calculus ops, units, and indeterminate steps', () => {

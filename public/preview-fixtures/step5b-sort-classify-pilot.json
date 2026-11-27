@@ -1,0 +1,468 @@
+{
+  "lessonId": "step5b-sort-classify-pilot",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 5B Pilot — Cross-Subject Sorting, Classification, Matching & Cloze (sort-classify 1.0.0)",
+    "subject": "Cross-Subject (Biology, Chemistry, Maths, Accounting, English, Phonics, Geography, Computing)",
+    "class": "Preview Pilot",
+    "topic": "SortClassifyEngine v1.0.0 Verification (10 slides, 12 activities)",
+    "contentStandard": "STEP5B.PILOT",
+    "indicators": ["STEP5B.1", "STEP5B.2", "STEP5B.3", "STEP5B.4"],
+    "term": 1,
+    "narrationWordCount": 320,
+    "estimatedNarrationMinutes": 3,
+    "estimatedTotalMinutes": 16
+  },
+  "slides": [
+    {
+      "id": "sc-s01",
+      "order": 1,
+      "title": "1. Biology — Vertebrate Classification",
+      "purpose": "Classify organisms into Mammals, Birds, and Reptiles with misconception-specific feedback.",
+      "onScreenText": ["Classify vertebrates by defining features", "Dolphins and bats are mammals, not fish or birds"],
+      "visual": { "type": "svg", "altText": "Vertebrate classification", "description": "Vertebrate groups.", "labels": ["Mammals", "Birds", "Reptiles"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Biology — Vertebrate Classification</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Classify each vertebrate into Mammals, Birds, or Reptiles based on its biological characteristics.", "estSeconds": 7, "ttsStyleInstruction": "Clear biology teacher.", "pauseCues": [] },
+      "keyIdeas": ["Warm-bloodedness, fur/hair, and milk production define mammals."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Vertebrates", "keyTerms": ["Mammal", "Bird", "Reptile"], "commonMisconceptions": ["Bat is a bird"] },
+      "teacherNote": "Slide 1 of 10.",
+      "interactive": [
+        {
+          "id": "sc-01-bio-vertebrates",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Biology · Classification",
+          "mode": "category-bins",
+          "title": "Classify Vertebrates into Their Biological Class",
+          "instructions": "Select each animal and place it in the correct vertebrate class.",
+          "accessibilityLabel": "Vertebrate biological classification bins",
+          "fallbackText": "Mammals: Bat, Dolphin; Birds: Eagle; Reptiles: Crocodile.",
+          "bins": [
+            { "id": "mammals", "label": "Mammals", "description": "Fur/hair, warm-blooded, feed young milk" },
+            { "id": "birds", "label": "Birds", "description": "Feathers, beak, lay hard-shelled eggs" },
+            { "id": "reptiles", "label": "Reptiles", "description": "Dry scaly skin, cold-blooded" }
+          ],
+          "items": [
+            { "id": "bat", "label": "Fruit Bat", "validBinIds": ["mammals"], "misconceptionByBin": { "birds": "Bats fly, but they have fur and nurse their young with milk — they are mammals!" } },
+            { "id": "dolphin", "label": "Dolphin", "validBinIds": ["mammals"] },
+            { "id": "eagle", "label": "Hawk / Eagle", "validBinIds": ["birds"] },
+            { "id": "croc", "label": "Nile Crocodile", "validBinIds": ["reptiles"] }
+          ],
+          "successExplanation": "Both bats and dolphins are mammals despite living in the air and sea."
+        }
+      ]
+    },
+    {
+      "id": "sc-s02",
+      "order": 2,
+      "title": "2. Mathematics — Overlapping Set Membership",
+      "purpose": "Assign integers to overlapping sets (Multiples of 2 and Multiples of 3).",
+      "onScreenText": ["Overlapping sets allow an element to belong to BOTH sets", "6 and 12 lie in the intersection A ∩ B"],
+      "visual": { "type": "svg", "altText": "Overlapping sets", "description": "Venn set membership.", "labels": ["Set A", "Set B"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Mathematics — Overlapping Set Membership</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Assign each number to all sets it belongs to. Remember a number like 6 belongs to both multiples of 2 and multiples of 3.", "estSeconds": 8, "ttsStyleInstruction": "Clear mathematics teacher.", "pauseCues": [] },
+      "keyIdeas": ["Intersection elements belong simultaneously to both sets."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Sets", "keyTerms": ["Intersection", "Multiple"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 2 of 10.",
+      "interactive": [
+        {
+          "id": "sc-02-math-overlapping-sets",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Mathematics · Sets",
+          "mode": "category-bins",
+          "allowMultipleBinsPerItem": true,
+          "title": "Assign Numbers to Overlapping Sets A (Even) & B (Multiples of 3)",
+          "instructions": "Place each number into EVERY set it belongs to (leave 5 unassigned if it belongs to neither).",
+          "accessibilityLabel": "Overlapping set membership classification",
+          "fallbackText": "4 -> Set A; 9 -> Set B; 6 -> both Set A and Set B; 5 -> neither.",
+          "bins": [
+            { "id": "setA", "label": "Set A (Multiples of 2)" },
+            { "id": "setB", "label": "Set B (Multiples of 3)" }
+          ],
+          "items": [
+            { "id": "n4", "label": "4", "validBinIds": ["setA"] },
+            { "id": "n9", "label": "9", "validBinIds": ["setB"] },
+            { "id": "n6", "label": "6", "validBinIds": ["setA", "setB"] },
+            { "id": "n5", "label": "5", "validBinIds": [] }
+          ],
+          "successExplanation": "6 ∈ A ∩ B because it is divisible by both 2 and 3; 5 ∈ (A ∪ B)'."
+        }
+      ]
+    },
+    {
+      "id": "sc-s03",
+      "order": 3,
+      "title": "3. Chemistry — Elements, Compounds & Mixtures",
+      "purpose": "Distinguish pure elements, chemically bonded compounds, and physical mixtures.",
+      "onScreenText": ["Elements contain one type of atom", "Compounds have chemically bonded elements", "Mixtures are physically combined"],
+      "visual": { "type": "svg", "altText": "Chemical classification", "description": "Elements, compounds, mixtures.", "labels": ["Element", "Compound", "Mixture"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Chemistry — Elements, Compounds &amp; Mixtures</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Classify each substance as an Element, a Compound, or a Mixture.", "estSeconds": 7, "ttsStyleInstruction": "Clear chemistry teacher.", "pauseCues": [] },
+      "keyIdeas": ["Air and salt water are mixtures; O₂ is an element; H₂O is a compound."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Matter classification", "keyTerms": ["Element", "Compound", "Mixture"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 3 of 10.",
+      "interactive": [
+        {
+          "id": "sc-03-chem-matter",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Chemistry · Matter",
+          "mode": "category-bins",
+          "title": "Classify Substances: Element, Compound, or Mixture",
+          "instructions": "Sort each substance into its correct chemical category.",
+          "accessibilityLabel": "Chemical matter classification",
+          "fallbackText": "Element: Oxygen gas (O₂); Compound: Water (H₂O), Sodium chloride (NaCl); Mixture: Air.",
+          "bins": [
+            { "id": "elem", "label": "Element" },
+            { "id": "comp", "label": "Compound" },
+            { "id": "mix", "label": "Mixture" }
+          ],
+          "items": [
+            { "id": "o2", "label": "Oxygen gas (O₂)", "validBinIds": ["elem"], "misconceptionByBin": { "comp": "O₂ has two atoms, but both are oxygen — it is still a single element." } },
+            { "id": "h2o", "label": "Water (H₂O)", "validBinIds": ["comp"] },
+            { "id": "nacl", "label": "Sodium chloride (NaCl)", "validBinIds": ["comp"] },
+            { "id": "air", "label": "Clean Air", "validBinIds": ["mix"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s04",
+      "order": 4,
+      "title": "4. Accounting — Assets, Liabilities & Equity + Debit/Credit (Multi-Activity Slide)",
+      "purpose": "Verify two independent Accounting classification activities on one slide.",
+      "onScreenText": ["Accounting Equation: Assets = Liabilities + Equity", "Debit increases Assets; Credit increases Liabilities & Equity"],
+      "visual": { "type": "svg", "altText": "Accounting classification", "description": "Balance sheet & debit/credit.", "labels": ["Assets", "Liabilities", "Equity"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">Accounting — Balance Sheet &amp; Debit/Credit</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Classify balance-sheet items into Assets, Liabilities, or Equity, and match normal account balances.", "estSeconds": 8, "ttsStyleInstruction": "Clear accounting teacher.", "pauseCues": [] },
+      "keyIdeas": ["Assets = Liabilities + Owner's Equity."],
+      "indicatorIds": ["STEP5B.2"],
+      "askTeacherContext": { "focus": "Accounting equation", "keyTerms": ["Asset", "Liability", "Equity"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 4 of 10 (Multi-activity).",
+      "interactive": [
+        {
+          "id": "sc-04a-acct-ale",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Accounting · Balance Sheet",
+          "mode": "category-bins",
+          "title": "Classify Accounts: Asset, Liability, or Equity",
+          "instructions": "Place each account in Assets, Liabilities, or Owner's Equity.",
+          "accessibilityLabel": "Accounting balance sheet classification",
+          "fallbackText": "Assets: Cash at Bank, Inventory; Liabilities: Trade Payables; Equity: Owner's Capital.",
+          "bins": [
+            { "id": "asset", "label": "Assets" },
+            { "id": "liab", "label": "Liabilities" },
+            { "id": "eq", "label": "Owner's Equity" }
+          ],
+          "items": [
+            { "id": "cash", "label": "Cash at Bank", "validBinIds": ["asset"] },
+            { "id": "inv", "label": "Inventory", "validBinIds": ["asset"] },
+            { "id": "pay", "label": "Trade Payables", "validBinIds": ["liab"] },
+            { "id": "cap", "label": "Owner's Capital", "validBinIds": ["eq"] }
+          ]
+        },
+        {
+          "id": "sc-04b-acct-dr-cr",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Accounting · Double Entry",
+          "mode": "pair-matching",
+          "allowManyToMany": true,
+          "title": "Match Account Categories to Normal Balance (Many-to-Many)",
+          "instructions": "Link each account type to its normal balance side (Debit or Credit).",
+          "accessibilityLabel": "Accounting normal balance matching",
+          "fallbackText": "Assets & Expenses -> Debit; Liabilities & Revenue -> Credit.",
+          "leftItems": [
+            { "id": "l-asset", "label": "Assets" },
+            { "id": "l-exp", "label": "Expenses" },
+            { "id": "l-liab", "label": "Liabilities" },
+            { "id": "l-rev", "label": "Revenue" }
+          ],
+          "rightItems": [
+            { "id": "r-dr", "label": "Normal Debit Balance" },
+            { "id": "r-cr", "label": "Normal Credit Balance" }
+          ],
+          "expectedMatches": [
+            { "leftId": "l-asset", "rightId": "r-dr" },
+            { "leftId": "l-exp", "rightId": "r-dr" },
+            { "leftId": "l-liab", "rightId": "r-cr" },
+            { "leftId": "l-rev", "rightId": "r-cr" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s05",
+      "order": 5,
+      "title": "5. English Grammar — Cloze Tiles (Reusable Tokens)",
+      "purpose": "Complete a sentence with reusable grammatical tokens.",
+      "onScreenText": ["Choose the correct preposition or auxiliary verb for each gap", "Tokens may be reused where enabled"],
+      "visual": { "type": "svg", "altText": "English cloze tiles", "description": "Cloze sentence completion.", "labels": ["Grammar"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">English Grammar — Reusable Cloze Tiles</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Select each blank and pick the correct grammatical token from the bank. You may reuse tokens.", "estSeconds": 7, "ttsStyleInstruction": "Clear English teacher.", "pauseCues": [] },
+      "keyIdeas": ["Subject-verb agreement governs 'is' vs 'are'."],
+      "indicatorIds": ["STEP5B.3"],
+      "askTeacherContext": { "focus": "Subject-verb agreement", "keyTerms": ["Singular", "Plural"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 5 of 10.",
+      "interactive": [
+        {
+          "id": "sc-05-eng-cloze-reusable",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "primary",
+          "subjectTag": "English · Grammar",
+          "mode": "cloze-tiles",
+          "reusableTokens": true,
+          "title": "Complete Subject–Verb Agreement (Reusable Tokens)",
+          "instructions": "Select each blank and fill it with 'is' or 'are'.",
+          "accessibilityLabel": "English subject verb agreement cloze tiles",
+          "fallbackText": "The mango is ripe, the oranges are sweet, and the basket is full.",
+          "template": "The mango {{b1}} ripe, the oranges {{b2}} sweet, and the basket {{b3}} full.",
+          "blanks": [
+            { "id": "b1", "acceptedTokenIds": ["is"] },
+            { "id": "b2", "acceptedTokenIds": ["are"] },
+            { "id": "b3", "acceptedTokenIds": ["is"] }
+          ],
+          "tokens": [
+            { "id": "is", "label": "is" },
+            { "id": "are", "label": "are" },
+            { "id": "were", "label": "were" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s06",
+      "order": 6,
+      "title": "6. Early Years Phonics — Short Vowel Sorting",
+      "purpose": "Sort CVC words by their middle short vowel sound.",
+      "onScreenText": ["Short /a/ as in cat", "Short /i/ as in pin"],
+      "visual": { "type": "svg", "altText": "Phonics vowel sorting", "description": "CVC short vowel sorting.", "labels": ["Short a", "Short i"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Phonics — Short Vowel Sound Sorting</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Sort each CVC word into Short a or Short i.", "estSeconds": 6, "ttsStyleInstruction": "Warm early years teacher.", "pauseCues": [] },
+      "keyIdeas": ["Middle vowel phonemes distinguish CVC word families."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Phonics", "keyTerms": ["Short vowel", "CVC"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 6 of 10.",
+      "interactive": [
+        {
+          "id": "sc-06-phonics-cvc",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "early-years",
+          "subjectTag": "Early Years · Phonics",
+          "mode": "category-bins",
+          "title": "Sort CVC Words by Short Vowel Sound",
+          "instructions": "Place each word in the Short 'a' or Short 'i' bin.",
+          "accessibilityLabel": "Phonics CVC short vowel sorting",
+          "fallbackText": "Short a: cat, map; Short i: pin, sit.",
+          "bins": [
+            { "id": "short-a", "label": "Short 'a' (/æ/)" },
+            { "id": "short-i", "label": "Short 'i' (/ɪ/)" }
+          ],
+          "items": [
+            { "id": "cat", "label": "cat", "validBinIds": ["short-a"] },
+            { "id": "map", "label": "map", "validBinIds": ["short-a"] },
+            { "id": "pin", "label": "pin", "validBinIds": ["short-i"] },
+            { "id": "sit", "label": "sit", "validBinIds": ["short-i"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s07",
+      "order": 7,
+      "title": "7. Geography — River Landform Matching",
+      "purpose": "Match river landforms to their dominant geomorphological process.",
+      "onScreenText": ["Upper course: erosion (waterfall)", "Lower course: deposition (delta, floodplain)"],
+      "visual": { "type": "svg", "altText": "Geography matching", "description": "River landforms.", "labels": ["Erosion", "Deposition"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Geography — River Landform Matching</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Match each river landform to the process that forms it.", "estSeconds": 7, "ttsStyleInstruction": "Clear geography teacher.", "pauseCues": [] },
+      "keyIdeas": ["Erosion dominates steep upper courses; deposition dominates flat lower courses."],
+      "indicatorIds": ["STEP5B.2"],
+      "askTeacherContext": { "focus": "Rivers", "keyTerms": ["Waterfall", "Delta", "Meander"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 7 of 10.",
+      "interactive": [
+        {
+          "id": "sc-07-geo-rivers",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Geography · Rivers",
+          "mode": "pair-matching",
+          "allowManyToMany": true,
+          "title": "Match River Landforms to Dominant Processes",
+          "instructions": "Link each landform to its primary formation process.",
+          "accessibilityLabel": "Geography river landform matching",
+          "fallbackText": "Waterfall -> Erosion; Delta -> Deposition; Ox-bow Lake -> Both Erosion & Deposition.",
+          "leftItems": [
+            { "id": "wf", "label": "Waterfall & Gorge" },
+            { "id": "delta", "label": "River Delta" },
+            { "id": "oxbow", "label": "Meander / Ox-bow Lake" }
+          ],
+          "rightItems": [
+            { "id": "ero", "label": "Erosion" },
+            { "id": "dep", "label": "Deposition" }
+          ],
+          "expectedMatches": [
+            { "leftId": "wf", "rightId": "ero" },
+            { "leftId": "delta", "rightId": "dep" },
+            { "leftId": "oxbow", "rightId": "ero" },
+            { "leftId": "oxbow", "rightId": "dep" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s08",
+      "order": 8,
+      "title": "8. Science — Scientific Method Sequencing (Multiple Valid Orders)",
+      "purpose": "Order experimental stages accurately.",
+      "onScreenText": ["Observation -> Hypothesis -> Experiment -> Conclusion"],
+      "visual": { "type": "svg", "altText": "Scientific method sequence", "description": "Order scientific steps.", "labels": ["Sequence"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Science — Ordering the Scientific Method</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Use the up and down arrows to place the stages of a scientific investigation in logical order.", "estSeconds": 7, "ttsStyleInstruction": "Clear science teacher.", "pauseCues": [] },
+      "keyIdeas": ["A testable hypothesis precedes controlled experimentation."],
+      "indicatorIds": ["STEP5B.4"],
+      "askTeacherContext": { "focus": "Scientific inquiry", "keyTerms": ["Hypothesis", "Conclusion"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 8 of 10.",
+      "interactive": [
+        {
+          "id": "sc-08-sci-order",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Science · Inquiry",
+          "mode": "order-sequence",
+          "title": "Order the Stages of a Scientific Investigation",
+          "instructions": "Arrange the 4 steps from first to last.",
+          "accessibilityLabel": "Order stages of a scientific investigation",
+          "fallbackText": "1. Observe a phenomenon, 2. Form a hypothesis, 3. Run a fair test, 4. Draw a conclusion.",
+          "items": [
+            { "id": "s3", "label": "Run a controlled experiment" },
+            { "id": "s1", "label": "Observe a phenomenon" },
+            { "id": "s4", "label": "Analyse data and draw a conclusion" },
+            { "id": "s2", "label": "Form a testable hypothesis" }
+          ],
+          "acceptedOrders": [["s1", "s2", "s3", "s4"]]
+        }
+      ]
+    },
+    {
+      "id": "sc-s09",
+      "order": 9,
+      "title": "9. Computer Science — Input, Output & Storage Devices",
+      "purpose": "Classify computer hardware peripherals.",
+      "onScreenText": ["Touchscreens can act as both input and output", "SSDs provide secondary storage"],
+      "visual": { "type": "svg", "altText": "CS hardware", "description": "Input, output, storage.", "labels": ["Input", "Output", "Storage"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"32\" font-weight=\"bold\" fill=\"#0f172a\">Computer Science — Hardware Classification</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Classify each hardware device as Input, Output, or Storage.", "estSeconds": 6, "ttsStyleInstruction": "Clear computing teacher.", "pauseCues": [] },
+      "keyIdeas": ["Touchscreen belongs to both Input and Output."],
+      "indicatorIds": ["STEP5B.1"],
+      "askTeacherContext": { "focus": "Hardware", "keyTerms": ["Input", "Output", "Storage"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 9 of 10.",
+      "interactive": [
+        {
+          "id": "sc-09-cs-hardware",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Computer Science · Hardware",
+          "mode": "category-bins",
+          "allowMultipleBinsPerItem": true,
+          "title": "Classify Hardware: Input, Output, or Storage",
+          "instructions": "Assign each device to all categories it serves (hint: touchscreen serves two!).",
+          "accessibilityLabel": "Computer hardware classification",
+          "fallbackText": "Keyboard -> Input; Printer -> Output; SSD -> Storage; Touchscreen -> Input & Output.",
+          "bins": [
+            { "id": "in", "label": "Input" },
+            { "id": "out", "label": "Output" },
+            { "id": "stor", "label": "Storage" }
+          ],
+          "items": [
+            { "id": "kb", "label": "Keyboard", "validBinIds": ["in"] },
+            { "id": "pr", "label": "Laser Printer", "validBinIds": ["out"] },
+            { "id": "ssd", "label": "Solid-State Drive (SSD)", "validBinIds": ["stor"] },
+            { "id": "ts", "label": "Touchscreen", "validBinIds": ["in", "out"] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sc-s10",
+      "order": 10,
+      "title": "10. Science Vocabulary — Non-Reusable Cloze & Multi-Activity Check",
+      "purpose": "Verify non-reusable cloze tiles and multiple valid synonym tokens.",
+      "onScreenText": ["Photosynthesis converts light energy into chemical energy"],
+      "visual": { "type": "svg", "altText": "Photosynthesis cloze", "description": "Photosynthesis terms.", "labels": ["Chlorophyll", "Glucose"], "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"225\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">Biology — Photosynthesis Definition Cloze</text></svg>", "imagePrompt": null },
+      "narration": { "script": "Complete the photosynthesis definition using each token at most once.", "estSeconds": 7, "ttsStyleInstruction": "Clear biology teacher.", "pauseCues": [] },
+      "keyIdeas": ["Chlorophyll absorbs light; glucose and oxygen are produced."],
+      "indicatorIds": ["STEP5B.3"],
+      "askTeacherContext": { "focus": "Photosynthesis", "keyTerms": ["Chlorophyll", "Glucose", "Oxygen"], "commonMisconceptions": [] },
+      "teacherNote": "Slide 10 of 10.",
+      "interactive": [
+        {
+          "id": "sc-10a-bio-cloze",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "lower-secondary",
+          "subjectTag": "Biology · Photosynthesis",
+          "mode": "cloze-tiles",
+          "reusableTokens": false,
+          "title": "Complete the Photosynthesis Summary",
+          "instructions": "Fill each blank using a token once.",
+          "accessibilityLabel": "Photosynthesis cloze summary",
+          "fallbackText": "Plants use chlorophyll to trap light energy and produce glucose and oxygen.",
+          "template": "Plants use {{p1}} to absorb light energy and produce {{p2}} and {{p3}}.",
+          "blanks": [
+            { "id": "p1", "acceptedTokenIds": ["chl"] },
+            { "id": "p2", "acceptedTokenIds": ["glu", "oxy"] },
+            { "id": "p3", "acceptedTokenIds": ["oxy", "glu"] }
+          ],
+          "tokens": [
+            { "id": "chl", "label": "chlorophyll" },
+            { "id": "glu", "label": "glucose" },
+            { "id": "oxy", "label": "oxygen" },
+            { "id": "nit", "label": "nitrogen" }
+          ]
+        },
+        {
+          "id": "sc-10b-econ-costs",
+          "engine": "sort-classify",
+          "schemaVersion": 1,
+          "minEngineVersion": "1.0.0",
+          "curriculumLevel": "igcse",
+          "subjectTag": "Economics · Costs",
+          "mode": "category-bins",
+          "title": "Classify Business Costs: Fixed vs Variable",
+          "instructions": "Classify each cost as Fixed or Variable.",
+          "accessibilityLabel": "Economics fixed vs variable costs",
+          "fallbackText": "Fixed: Factory Rent; Variable: Raw Materials, Packaging per unit.",
+          "bins": [
+            { "id": "fix", "label": "Fixed Cost" },
+            { "id": "var", "label": "Variable Cost" }
+          ],
+          "items": [
+            { "id": "rent", "label": "Monthly Factory Rent", "validBinIds": ["fix"] },
+            { "id": "raw", "label": "Raw Materials per Unit", "validBinIds": ["var"] },
+            { "id": "pack", "label": "Packaging per Unit", "validBinIds": ["var"] }
+          ]
+        }
+      ]
+    }
+  ],
+  "checkpoints": [],
+  "glossary": []
+}

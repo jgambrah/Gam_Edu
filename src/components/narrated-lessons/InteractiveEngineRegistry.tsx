@@ -53,6 +53,11 @@ const LazyMathEvaluatorEngine = dynamic(
   { ssr: false, loading: RegistryLoading },
 );
 
+const LazySortClassifyEngine = dynamic(
+  () => import('./SortClassifyEngine').then((m) => m.SortClassifyEngine),
+  { ssr: false, loading: RegistryLoading },
+);
+
 export interface InteractiveEngineRegistryProps {
   lesson: NarratedLesson;
   slide: LessonSlide;
@@ -173,6 +178,8 @@ function InteractiveItemRenderer({
       return <LazyConstructionLabRouter config={config} lessonId={lesson.lessonId} slideId={slideId} />;
     case 'math-evaluator':
       return <LazyMathEvaluatorEngine config={config} />;
+    case 'sort-classify':
+      return <LazySortClassifyEngine config={config} />;
     default: {
       const fallback = config as { title?: string; fallbackText?: string };
       return (

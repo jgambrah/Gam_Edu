@@ -95,10 +95,22 @@ type OracleCase = OracleSingleCase | OracleWorkspaceCase;
 
 const cases: OracleCase[] = [];
 const seenKeys = new Set<string>();
+const seenStructuralKeys = new Set<string>();
+let structuralDuplicateCount = 0;
 
 function addUnique(key: string, c: OracleCase): boolean {
   if (seenKeys.has(key)) return false;
   seenKeys.add(key);
+  const structKey = JSON.stringify(
+    c.kind === 'single'
+      ? { k: c.kind, s: c.spec, u: c.submission }
+      : { k: c.kind, s: c.spec, st: c.steps },
+  );
+  if (seenStructuralKeys.has(structKey)) {
+    structuralDuplicateCount += 1;
+  } else {
+    seenStructuralKeys.add(structKey);
+  }
   cases.push(c);
   return true;
 }
@@ -1340,11 +1352,23 @@ for (const c of cases) {
         st.exceededMaxMarks++;
       }
       const seenMarkIds = new Set<string>();
+      let awardedWeightSum = 0;
       for (const md of res.marking.markDetails) {
         if (md.awarded) {
           if (seenMarkIds.has(md.markId)) st.duplicateMarks++;
           seenMarkIds.add(md.markId);
+          awardedWeightSum += md.points;
+          if (md.points < 0 || md.points > md.maxPoints) st.exceededMaxMarks++;
         }
+      }
+      if (awardedWeightSum !== res.marking.marksAwarded || res.marking.marksAwarded < 0) {
+        st.markingMismatch++;
+        discrepancies.push({
+          id: c.id,
+          topic: c.topic,
+          class: c.verificationClass,
+          error: `Marking sum invariant failed: sum(markDetails)=${awardedWeightSum} !== marksAwarded=${res.marking.marksAwarded}`,
+        });
       }
     }
   }
@@ -1408,6 +1432,8 @@ const report = {
   seed: 20260503,
   generatedAt: new Date().toISOString(),
   totalUniqueCases: totals.total,
+  totalStructuralUniqueCases: seenStructuralKeys.size,
+  structuralDuplicateCount,
   totalWallMs: Number(totalMs.toFixed(2)),
   totals,
   byTopic: summaryRows,
