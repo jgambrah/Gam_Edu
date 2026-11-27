@@ -20,8 +20,8 @@ import { MeasurementLab } from '@/components/narrated-lessons/construction/Measu
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
 describe('Step 5C — Virtual Measuring Instruments (construction-lab: measurement-lab 1.4.0)', () => {
-  it('extends construction-lab to engineVersion 1.4.0 while holding productionVersion at 1.3.0', () => {
-    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.4.0');
+  it('extends construction-lab to engineVersion 1.5.0 while holding productionVersion at 1.3.0', () => {
+    expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].engineVersion).toBe('1.5.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].productionVersion).toBe('1.3.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['construction-lab'].supportedSchemaVersions).toEqual([1]);
   });
@@ -192,6 +192,150 @@ describe('Step 5C — Virtual Measuring Instruments (construction-lab: measureme
       expect(evaluateMeasurementSubmission(ammSpec, { valueText: '0.42', unitText: 'V' }).passed).toBe(false);
       expect(evaluateMeasurementSubmission(ammSpec, { valueText: 'abc', unitText: 'A' }).passed).toBe(false);
     });
+
+    it('verifies Step 5C scientific close-out: negative vernier/micrometer wraparound, over-range rejection, sig-figs across unit conversion, absolute vs differential temperature, zero/negative uncertainty rejection, incomplete trials & graphical SVG alignment', () => {
+      // 1. Negative vernier zero error does NOT clamp to 0 when inspecting closed jaws
+      const negVernier: MeasurementLabSpec = {
+        instrument: 'vernier-callipers',
+        curriculumLevel: 'igcse',
+        unit: 'mm',
+        minValue: 0,
+        maxValue: 50,
+        scaleDivision: 1,
+        mainScaleStep: 1,
+        vernierDivisions: 10,
+        leastCount: 0.1,
+        trueValue: 12.5,
+        zeroError: -0.3,
+      };
+      const closedVernier = computeInstrumentModel(negVernier, { inspectingZeroError: true });
+      expect(closedVernier.observedReading).toBe(-0.3);
+      expect(closedVernier.vernier?.isNegativeZeroView).toBe(true);
+      expect(closedVernier.vernier?.vernierZeroPos).toBe(-0.3);
+      expect(closedVernier.vernier?.alignedDivision).toBe(7);
+
+      // 2. Negative micrometer zero error (-0.03 mm on 50-div thimble) wraps to thimble mark 47
+      const negMicro: MeasurementLabSpec = {
+        instrument: 'micrometer',
+        curriculumLevel: 'igcse',
+        unit: 'mm',
+        minValue: 0,
+        maxValue: 25,
+        scaleDivision: 0.5,
+        pitchMm: 0.5,
+        thimbleDivisions: 50,
+        hasHalfMmSleeve: true,
+        leastCount: 0.01,
+        trueValue: 6.25,
+        zeroError: -0.03,
+      };
+      const closedMicro = computeInstrumentModel(negMicro, { inspectingZeroError: true });
+      expect(closedMicro.micrometer?.isNegativeZeroView).toBe(true);
+      expect(closedMicro.micrometer?.thimbleDivision).toBe(47);
+
+      // 3. Over-range rejection on ammeter (trueValue=1.8 A on 0-0.6 A range -> overRange=true, NEVER passes)
+      const overAmm: MeasurementLabSpec = {
+        instrument: 'ammeter',
+        curriculumLevel: 'igcse',
+        taskKind: 'select-range',
+        unit: 'A',
+        minValue: 0,
+        maxValue: 3,
+        scaleRanges: [0.6, 3],
+        activeRangeIndex: 0,
+        scaleDivision: 0.02,
+        leastCount: 0.02,
+        trueValue: 1.8,
+      };
+      expect(computeInstrumentModel(overAmm, { selectedRangeIndex: 0 }).overRange).toBe(true);
+      expect(
+        evaluateMeasurementSubmission(overAmm, { valueText: '1.8', unitText: 'A' }, { selectedRangeIndex: 0 }).passed,
+      ).toBe(false);
+      // Switching to 0-3 A range resolves over-range and scales leastCount by 3/0.6 = 5x -> 0.1 A
+      expect(computeInstrumentModel(overAmm, { selectedRangeIndex: 1 }).leastCount).toBe(0.1);
+      expect(
+        evaluateMeasurementSubmission(overAmm, { valueText: '1.8', unitText: 'A' }, { selectedRangeIndex: 1 }).passed,
+      ).toBe(true);
+
+      // 4. Significant figures STILL enforced across unit conversion (1.840 cm has 4 sf, required 3 sf -> rejected)
+      const sfSpec: MeasurementLabSpec = {
+        instrument: 'ruler',
+        curriculumLevel: 'as-a-level',
+        unit: 'mm',
+        minValue: 0,
+        maxValue: 100,
+        scaleDivision: 1,
+        leastCount: 1,
+        trueValue: 18.4,
+        requiredSigFigs: 3,
+        requireUnit: true,
+        requireUncertainty: true,
+      };
+      expect(evaluateMeasurementSubmission(sfSpec, { valueText: '1.840', unitText: 'cm', uncertaintyText: '0.5' }).passed).toBe(false);
+      expect(evaluateMeasurementSubmission(sfSpec, { valueText: '1.84', unitText: 'cm', uncertaintyText: '0.5' }).passed).toBe(true);
+      // Zero and negative uncertainty rejected
+      expect(evaluateMeasurementSubmission(sfSpec, { valueText: '18.4', unitText: 'mm', uncertaintyText: '0' }).passed).toBe(false);
+      expect(evaluateMeasurementSubmission(sfSpec, { valueText: '18.4', unitText: 'mm', uncertaintyText: '-0.5' }).passed).toBe(false);
+
+      // 5. Absolute vs differential temperature conversion (°C <-> K)
+      const absTemp: MeasurementLabSpec = {
+        instrument: 'thermometer',
+        curriculumLevel: 'igcse',
+        isTemperatureDifference: false,
+        unit: '°C',
+        minValue: 0,
+        maxValue: 100,
+        scaleDivision: 1,
+        leastCount: 1,
+        trueValue: 27,
+      };
+      expect(evaluateMeasurementSubmission(absTemp, { valueText: '300.15', unitText: 'K' }).passed).toBe(true);
+      const diffTemp: MeasurementLabSpec = { ...absTemp, isTemperatureDifference: true, trueValue: 10 };
+      expect(evaluateMeasurementSubmission(diffTemp, { valueText: '10', unitText: 'K' }).passed).toBe(true);
+
+      // 6. Incomplete repeated trials rejected
+      const repSpec: MeasurementLabSpec = {
+        instrument: 'stopwatch',
+        curriculumLevel: 'as-a-level',
+        displayMode: 'digital',
+        unit: 's',
+        minValue: 0,
+        maxValue: 30,
+        scaleDivision: 0.01,
+        leastCount: 0.01,
+        trueValue: 12.2,
+        repeatedTrials: [12.0, 12.2, 12.4],
+        uncertaintyConvention: 'half-range',
+        requireUncertainty: true,
+      };
+      const incRes = evaluateMeasurementSubmission(
+        repSpec,
+        { valueText: '12.2', unitText: 's', uncertaintyText: '0.2' },
+        { completedTrialCount: 1 },
+      );
+      expect(incRes.passed).toBe(false);
+      expect(incRes.diagnostics.incompleteTrials).toBe(true);
+
+      // 7. Graphical SVG alignment agrees with mathematical model (vernier & micrometer)
+      const { container } = render(
+        <MeasurementLab
+          config={{
+            ...negMicro,
+            id: 'gfx-micro-check',
+            engine: 'construction-lab',
+            labKind: 'measurement-lab',
+            schemaVersion: 1,
+            minEngineVersion: '1.4.0',
+            title: 'Micrometer GFX Check',
+            instructions: 'Read micrometer.',
+            accessibilityLabel: 'Micrometer GFX check',
+            fallbackText: 'Fallback.',
+          }}
+        />,
+      );
+      const microGroup = container.querySelector('[data-testid="svg-micrometer"]');
+      expect(microGroup?.getAttribute('data-thimble-div')).toBe('22'); // 6.25 + (-0.03) = 6.22 -> thimble 22
+    });
   });
 
   describe('2. Strict Schema Validation, Impossible Config Rejection & Pilot Fixture', () => {
@@ -280,7 +424,7 @@ describe('Step 5C — Virtual Measuring Instruments (construction-lab: measureme
       render(<MeasurementLab config={cfg} />);
 
       // SVG aria-label must NOT expose the expected numeric answer prematurely
-      const svg = screen.getByRole('img', { name: /Interactive ruler scale diagram/i });
+      const svg = screen.getByRole('img', { name: /Interactive graduated ruler scale/i });
       expect(svg.getAttribute('aria-label')).not.toMatch(/10\.0/);
 
       // Enter 10.0 and 0.05 -> Verified!

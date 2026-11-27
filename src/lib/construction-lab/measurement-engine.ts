@@ -6,16 +6,18 @@
  * Reuses `math-eval-units-precision.ts` for exact SI unit parsing, dimensional
  * compatibility, unit conversion, significant figures, and decimal places.
  *
- * Supported Instruments (9 bounded models + analogue/digital display modes):
- *  1. ruler                (cm / mm, object positioning, parallax, zero offset)
- *  2. vernier-callipers    (mm / cm, main scale + aligned vernier division, signed zero error)
- *  3. micrometer           (mm, sleeve with optional 0.5 mm ticks + thimble, signed zero error)
- *  4. measuring-cylinder   (mL / cm^3, concave/convex/flat meniscus, eye-level parallax)
- *  5. thermometer          (°C / K, liquid column, parallax)
- *  6. balance              (g / kg, mass vs weight distinction, tare/zero adjustment)
- *  7. stopwatch            (s, instrument resolution vs human reaction-time uncertainty, deterministic trials)
- *  8. ammeter              (A / mA, selectable scale ranges, current)
- *  9. voltmeter            (V / mV, selectable scale ranges, potential difference)
+ * Scientific Close-Out Guarantees:
+ * - Explicitly distinguishes: trueValue, rawObservedReading, quantisedReading,
+ *   correctedReading, reportedMeasurement, leastCount, and measurementUncertainty.
+ * - Supports explicit taskKind (`read-observed`, `determine-zero-error`,
+ *   `calculate-corrected`, `select-range`, `apply-tare-and-measure`, `repeated-mean`).
+ * - Active manipulation (`sliderValue` / jaw / thimble / object alignment, eyeOffsetDeg,
+ *   tareApplied, selectedRangeIndex, inspectingZeroError) feeds directly into the model
+ *   and grading validity checks (over-range, unaligned jaws, untared balance, incomplete trials).
+ * - Signed negative zero errors on vernier & micrometer never clamp to 0 (proper wraparound).
+ * - Preserves significant-figure checks across unit conversions, distinguishes absolute vs
+ *   differential temperatures, rejects zero/negative required uncertainties, and uses
+ *   scale-aware uncertainty tolerances.
  */
 
 import {
@@ -45,8 +47,17 @@ export type UncertaintyConvention =
   | 'half-range'
   | 'reaction-time';
 
+export type MeasurementTaskKind =
+  | 'read-observed'
+  | 'determine-zero-error'
+  | 'calculate-corrected'
+  | 'select-range'
+  | 'apply-tare-and-measure'
+  | 'repeated-mean';
+
 export const MEASUREMENT_LAB_LIMITS = {
-  maxDivisions: 500,
+  maxAnalogueDivisions: 500,
+  maxDigitalDivisions: 100000,
   minDivisions: 4,
   maxRepeatedTrials: 6,
   maxScaleRanges: 4,
@@ -77,20 +88,23 @@ export interface MeasurementLabSpec {
   curriculumLevel: 'primary' | 'lower-secondary' | 'igcse' | 'as-a-level';
   learningMode?: 'guided' | 'practice';
   displayMode?: MeasurementDisplayMode;
+  taskKind?: MeasurementTaskKind;
+  /** True if thermometer task measures a temperature difference (Δ°C == ΔK) rather than absolute temperature */
+  isTemperatureDifference?: boolean;
   unit: string;
   minValue: number;
   maxValue: number;
   scaleDivision: number;
-  /** Instrument least count / resolution in `unit`. For vernier/micrometer must match derived least count. */
   leastCount: number;
-  /** True physical quantity of the simulated object/sample in `unit`. */
   trueValue: number;
   /** Signed zero error in `unit` (positive = reads too high at zero; corrected = observed - zeroError). */
   zeroError?: number;
+  /** Optional object alignment offset for ruler / jaw positioning exercises (0 = properly aligned). */
+  initialAlignmentOffset?: number;
   /** Vernier callipers specifics */
   mainScaleStep?: number;
   vernierDivisions?: number;
-  /** Micrometer screw gauge specifics */
+  /** Micrometer screw gauge specifics (internal unit strictly mm) */
   pitchMm?: number;
   thimbleDivisions?: number;
   hasHalfMmSleeve?: boolean;
@@ -111,19 +125,19 @@ export interface MeasurementLabSpec {
   repeatedTrials?: number[];
   /** Assessment expectations */
   uncertaintyConvention?: UncertaintyConvention;
+  /** When true, half-range uncertainty is floored at half-least-count; otherwise pure (max-min)/2 is used. */
+  enforceMinHalfLeastCount?: boolean;
   requireUncertainty?: boolean;
   requireUnit?: boolean;
   requiredSigFigs?: number;
   requiredDecimalPlaces?: number;
   tolerance?: number;
-  /** Optional object label for contextual Ghana / Cambridge realism */
   objectLabel?: string;
-  /** Accessible nonvisual equivalent question (never exposes answer prematurely) */
   nonVisualQuestion?: NonVisualMeasurementQuestion;
 }
 
 export interface MeasurementInteractiveState {
-  /** Adjustable jaw/thimble/object reading position in `unit` (for interactive exploration) */
+  /** Bounded instrument manipulation offset (e.g. ruler/jaw alignment offset in `unit`, 0 = aligned with sample) */
   sliderValue: number;
   /** Eye vertical/horizontal offset angle in degrees (-30..+30; 0 = level, no parallax) */
   eyeOffsetDeg: number;
@@ -133,6 +147,8 @@ export interface MeasurementInteractiveState {
   selectedRangeIndex: number;
   /** Whether learner is inspecting closed-jaws zero error */
   inspectingZeroError: boolean;
+  /** Number of repeated trials the learner has recorded in the UI */
+  completedTrialCount: number;
 }
 
 export interface VernierBreakdown {
@@ -140,27 +156,44 @@ export interface VernierBreakdown {
   alignedDivision: number;
   leastCount: number;
   observedReading: number;
+  /** True when inspecting a negative zero error (vernier 0 sits left of main 0) */
+  isNegativeZeroView: boolean;
+  /** Exact graphical vernier-zero coordinate in `unit` (may be negative for negative zero error!) */
+  vernierZeroPos: number;
 }
 
 export interface MicrometerBreakdown {
   sleeveWholeMm: number;
   hasHalfMmVisible: boolean;
   sleeveReadingMm: number;
+  /** Graduated thimble division (0..thimbleDivisions-1) aligned with datum line (wraps for negative zero error) */
   thimbleDivision: number;
   leastCountMm: number;
   observedMm: number;
+  isNegativeZeroView: boolean;
 }
 
 export interface InstrumentModelOutput {
   trueValue: number;
   zeroError: number;
+  alignmentOffset: number;
   parallaxShift: number;
   tareOffset: number;
+  /** Physical liquid/sample level before apparent parallax shift */
+  physicalReading: number;
+  /** Raw observed reading including zero error, tare offset, alignment, and apparent parallax */
   observedReading: number;
+  /** Quantised reading snapped to active instrument resolution */
+  quantisedReading: number;
+  /** Corrected reading after removing signed zero error and tare */
   correctedReading: number;
+  /** Active resolution derived from selected range (electrical) or vernier/micrometer/scale */
   leastCount: number;
+  activeScaleDivision: number;
   expectedUncertainty: number;
   activeMaxRange: number;
+  /** True when trueValue + zeroError exceeds the currently selected electrical range */
+  overRange: boolean;
   vernier?: VernierBreakdown;
   micrometer?: MicrometerBreakdown;
 }
@@ -170,12 +203,27 @@ export function roundClean(v: number, decimals = 6): number {
   return Math.round((v + Number.EPSILON) * f) / f;
 }
 
-export function computeDerivedLeastCount(spec: MeasurementLabSpec): number {
+export function computeDerivedLeastCount(
+  spec: MeasurementLabSpec,
+  selectedRangeIndex?: number,
+): number {
   if (spec.instrument === 'vernier-callipers' && spec.mainScaleStep && spec.vernierDivisions) {
     return roundClean(spec.mainScaleStep / spec.vernierDivisions, 6);
   }
   if (spec.instrument === 'micrometer' && spec.pitchMm && spec.thimbleDivisions) {
     return roundClean(spec.pitchMm / spec.thimbleDivisions, 6);
+  }
+  if (
+    (spec.instrument === 'ammeter' || spec.instrument === 'voltmeter') &&
+    spec.scaleRanges &&
+    spec.scaleRanges.length > 0
+  ) {
+    const idx = selectedRangeIndex ?? spec.activeRangeIndex ?? 0;
+    const activeRange = spec.scaleRanges[idx] ?? spec.maxValue;
+    const baseRange = spec.scaleRanges[spec.activeRangeIndex ?? 0] ?? spec.maxValue;
+    if (baseRange > 0) {
+      return roundClean(spec.leastCount * (activeRange / baseRange), 6);
+    }
   }
   return spec.leastCount;
 }
@@ -183,8 +231,9 @@ export function computeDerivedLeastCount(spec: MeasurementLabSpec): number {
 export function computeExpectedUncertainty(
   spec: MeasurementLabSpec,
   readings?: ReadonlyArray<number>,
+  selectedRangeIndex?: number,
 ): number {
-  const lc = computeDerivedLeastCount(spec);
+  const lc = computeDerivedLeastCount(spec, selectedRangeIndex);
   const conv =
     spec.uncertaintyConvention ??
     (spec.instrument === 'stopwatch'
@@ -203,7 +252,10 @@ export function computeExpectedUncertainty(
     const arr = readings && readings.length >= 2 ? readings : spec.repeatedTrials ?? [];
     if (arr.length >= 2) {
       const spread = (Math.max(...arr) - Math.min(...arr)) / 2;
-      return roundClean(Math.max(spread, lc / 2), 6);
+      return roundClean(
+        spec.enforceMinHalfLeastCount ? Math.max(spread, lc / 2) : spread,
+        6,
+      );
     }
     return roundClean(lc / 2, 6);
   }
@@ -212,28 +264,38 @@ export function computeExpectedUncertainty(
 
 /**
  * Computes the exact deterministic physical/graphical instrument model so that
- * rendered SVG scales (vernier alignment, micrometer sleeve+thimble, meniscus
- * height, needle angle) agree identically with the numerical grading model.
+ * rendered SVG graduations (vernier alignment, micrometer sleeve+thimble wraparound,
+ * meniscus height, electrical needle angle) agree identically with the grading model.
  */
 export function computeInstrumentModel(
   spec: MeasurementLabSpec,
   state?: Partial<MeasurementInteractiveState>,
 ): InstrumentModelOutput {
   const zeroError = spec.zeroError ?? 0;
-  const lc = computeDerivedLeastCount(spec);
-  const eyeDeg = spec.enableParallax ? (state?.eyeOffsetDeg ?? spec.initialEyeOffsetDeg ?? 0) : 0;
   const activeRangeIdx = state?.selectedRangeIndex ?? spec.activeRangeIndex ?? 0;
+  const lc = computeDerivedLeastCount(spec, activeRangeIdx);
   const activeMaxRange =
     spec.scaleRanges && spec.scaleRanges[activeRangeIdx] !== undefined
       ? spec.scaleRanges[activeRangeIdx]
       : spec.maxValue;
+  const baseRange =
+    spec.scaleRanges && spec.scaleRanges[spec.activeRangeIndex ?? 0] !== undefined
+      ? spec.scaleRanges[spec.activeRangeIndex ?? 0]
+      : spec.maxValue;
+  const activeScaleDivision =
+    spec.scaleRanges && baseRange > 0
+      ? roundClean(spec.scaleDivision * (activeMaxRange / baseRange), 6)
+      : spec.scaleDivision;
 
-  // Deterministic parallax model: viewing from above (+deg) shifts apparent reading down on vertical cylinder/thermometer
+  const eyeDeg = spec.enableParallax ? (state?.eyeOffsetDeg ?? spec.initialEyeOffsetDeg ?? 0) : 0;
+  const alignmentOffset = roundClean(state?.sliderValue ?? spec.initialAlignmentOffset ?? 0, 6);
+
+  // Simplified educational parallax model (physical liquid level kept distinct from apparent shift)
   const parallaxScale =
     spec.instrument === 'measuring-cylinder' || spec.instrument === 'thermometer'
-      ? -0.04 * spec.scaleDivision * eyeDeg
+      ? -0.04 * activeScaleDivision * eyeDeg
       : spec.instrument === 'ruler' || spec.instrument === 'ammeter' || spec.instrument === 'voltmeter'
-        ? 0.03 * spec.scaleDivision * eyeDeg
+        ? 0.03 * activeScaleDivision * eyeDeg
         : 0;
   const parallaxShift = roundClean(parallaxScale, 4);
 
@@ -243,23 +305,32 @@ export function computeInstrumentModel(
       : 0;
 
   const baseReading = state?.inspectingZeroError ? 0 : spec.trueValue;
-  const rawObserved = roundClean(baseReading + zeroError + tareOffset + parallaxShift, 6);
-  const corrected = roundClean(rawObserved - zeroError - tareOffset, 6);
+  const physicalReading = roundClean(baseReading + zeroError + tareOffset + alignmentOffset, 6);
+  const rawObserved = roundClean(physicalReading + parallaxShift, 6);
+  const quantisedReading = roundClean(Math.round(rawObserved / lc) * lc, 6);
+  const corrected = roundClean(rawObserved - zeroError - tareOffset - alignmentOffset, 6);
+  const overRange =
+    (spec.instrument === 'ammeter' || spec.instrument === 'voltmeter') &&
+    !state?.inspectingZeroError &&
+    physicalReading > activeMaxRange + 1e-9;
 
   let vernier: VernierBreakdown | undefined;
   if (spec.instrument === 'vernier-callipers') {
     const mainStep = spec.mainScaleStep ?? 1;
     const vDivs = spec.vernierDivisions ?? 10;
-    const clampedObs = Math.max(0, rawObserved);
-    const totalSubSteps = Math.round(clampedObs / lc);
+    // Do NOT clamp negative zero-error graphical readings to 0!
+    const totalSubSteps = Math.round(rawObserved / lc);
+    const isNegativeZeroView = totalSubSteps < 0;
     const mainSteps = Math.floor(totalSubSteps / vDivs);
-    const alignedDivision = totalSubSteps % vDivs;
+    const alignedDivision = ((totalSubSteps % vDivs) + vDivs) % vDivs;
     const mainScaleReading = roundClean(mainSteps * mainStep, 6);
     vernier = {
       mainScaleReading,
       alignedDivision,
       leastCount: lc,
-      observedReading: roundClean(mainScaleReading + alignedDivision * lc, 6),
+      observedReading: roundClean(totalSubSteps * lc, 6),
+      isNegativeZeroView,
+      vernierZeroPos: roundClean(totalSubSteps * lc, 6),
     };
   }
 
@@ -267,34 +338,43 @@ export function computeInstrumentModel(
   if (spec.instrument === 'micrometer') {
     const pitch = spec.pitchMm ?? 0.5;
     const tDivs = spec.thimbleDivisions ?? 50;
-    const clampedObs = Math.max(0, rawObserved);
-    const totalTicks = Math.round(clampedObs / lc);
+    // Proper signed wraparound on the thimble for negative zero error (e.g. -0.03 mm -> division 47)
+    const totalTicks = Math.round(rawObserved / lc);
+    const isNegativeZeroView = totalTicks < 0;
     const fullPitches = Math.floor(totalTicks / tDivs);
-    const thimbleDivision = totalTicks % tDivs;
+    const thimbleDivision = ((totalTicks % tDivs) + tDivs) % tDivs;
     const sleeveReadingMm = roundClean(fullPitches * pitch, 6);
     const sleeveWholeMm = Math.floor(sleeveReadingMm + 1e-9);
     const hasHalfMmVisible =
-      (spec.hasHalfMmSleeve ?? pitch === 0.5) && sleeveReadingMm - sleeveWholeMm >= 0.49;
+      !isNegativeZeroView &&
+      (spec.hasHalfMmSleeve ?? pitch === 0.5) &&
+      sleeveReadingMm - sleeveWholeMm >= 0.49;
     micrometer = {
       sleeveWholeMm,
       hasHalfMmVisible,
       sleeveReadingMm,
       thimbleDivision,
       leastCountMm: lc,
-      observedMm: roundClean(sleeveReadingMm + thimbleDivision * lc, 6),
+      observedMm: roundClean(totalTicks * lc, 6),
+      isNegativeZeroView,
     };
   }
 
   return {
     trueValue: spec.trueValue,
     zeroError,
+    alignmentOffset,
     parallaxShift,
     tareOffset,
+    physicalReading,
     observedReading: rawObserved,
+    quantisedReading,
     correctedReading: corrected,
     leastCount: lc,
-    expectedUncertainty: computeExpectedUncertainty(spec),
+    activeScaleDivision,
+    expectedUncertainty: computeExpectedUncertainty(spec, undefined, activeRangeIdx),
     activeMaxRange,
+    overRange,
     vernier,
     micrometer,
   };
@@ -304,8 +384,6 @@ export interface MeasurementSubmission {
   valueText: string;
   unitText?: string;
   uncertaintyText?: string;
-  /** Optional learner-entered mean for repeatedTrials activities */
-  meanText?: string;
 }
 
 export interface MeasurementEvalResult {
@@ -316,9 +394,12 @@ export interface MeasurementEvalResult {
     unitOk: boolean;
     precisionOk: boolean;
     uncertaintyOk: boolean;
+    stateValid: boolean;
+    overRange: boolean;
     zeroErrorSignMistake: boolean;
     massWeightConfusion: boolean;
     parallaxNotLevel: boolean;
+    incompleteTrials: boolean;
   };
   expectedValue: number;
   expectedUnit: string;
@@ -333,15 +414,30 @@ export function evaluateMeasurementSubmission(
   state?: Partial<MeasurementInteractiveState>,
 ): MeasurementEvalResult {
   const model = computeInstrumentModel(spec, state);
+  const taskKind: MeasurementTaskKind =
+    spec.taskKind ??
+    (spec.repeatedTrials && spec.repeatedTrials.length >= 2
+      ? 'repeated-mean'
+      : (spec.zeroError ?? 0) !== 0
+        ? 'calculate-corrected'
+        : spec.instrument === 'balance' && (spec.initialTareOffset ?? 0) !== 0
+          ? 'apply-tare-and-measure'
+          : 'calculate-corrected');
+
   const expectedVal =
-    spec.repeatedTrials && spec.repeatedTrials.length >= 2
+    taskKind === 'repeated-mean' && spec.repeatedTrials && spec.repeatedTrials.length >= 2
       ? roundClean(
           spec.repeatedTrials.reduce((a, b) => a + b, 0) / spec.repeatedTrials.length,
           6,
         )
-      : spec.trueValue;
+      : taskKind === 'determine-zero-error'
+        ? roundClean(spec.zeroError ?? 0, 6)
+        : taskKind === 'read-observed'
+          ? roundClean(spec.trueValue + (spec.zeroError ?? 0), 6)
+          : spec.trueValue;
 
-  const expectedUnc = computeExpectedUncertainty(spec, spec.repeatedTrials);
+  const activeRangeIdx = state?.selectedRangeIndex ?? spec.activeRangeIndex ?? 0;
+  const expectedUnc = computeExpectedUncertainty(spec, spec.repeatedTrials, activeRangeIdx);
   const tol = spec.tolerance ?? Math.max(model.leastCount * 0.5001, 1e-6);
 
   const diag = {
@@ -349,10 +445,73 @@ export function evaluateMeasurementSubmission(
     unitOk: true,
     precisionOk: true,
     uncertaintyOk: true,
+    stateValid: true,
+    overRange: model.overRange,
     zeroErrorSignMistake: false,
     massWeightConfusion: false,
     parallaxNotLevel: Boolean(spec.enableParallax && Math.abs(state?.eyeOffsetDeg ?? 0) > 1),
+    incompleteTrials: false,
   };
+
+  // Validate instrument state before accepting any measurement!
+  if (model.overRange) {
+    diag.stateValid = false;
+    return {
+      passed: false,
+      feedback: `Over-range! The reading exceeds the selected 0–${model.activeMaxRange} ${spec.unit} range. Select a higher range before recording.`,
+      diagnostics: diag,
+      expectedValue: expectedVal,
+      expectedUnit: spec.unit,
+      expectedUncertainty: expectedUnc,
+    };
+  }
+
+  if (Math.abs(model.alignmentOffset) > model.leastCount * 0.5 && taskKind !== 'determine-zero-error') {
+    diag.stateValid = false;
+    return {
+      passed: false,
+      feedback: 'Instrument alignment is off-zero! Align the sample/jaws to 0 offset before recording your measurement.',
+      diagnostics: diag,
+      expectedValue: expectedVal,
+      expectedUnit: spec.unit,
+      expectedUncertainty: expectedUnc,
+    };
+  }
+
+  if (
+    taskKind === 'apply-tare-and-measure' &&
+    spec.instrument === 'balance' &&
+    (spec.initialTareOffset ?? 0) !== 0 &&
+    state?.tareApplied === false
+  ) {
+    diag.stateValid = false;
+    return {
+      passed: false,
+      feedback: 'Press Tare / Zero to zero out the empty container before recording the sample mass.',
+      diagnostics: diag,
+      expectedValue: expectedVal,
+      expectedUnit: spec.unit,
+      expectedUncertainty: expectedUnc,
+    };
+  }
+
+  if (
+    taskKind === 'repeated-mean' &&
+    spec.repeatedTrials &&
+    state?.completedTrialCount !== undefined &&
+    state.completedTrialCount < spec.repeatedTrials.length
+  ) {
+    diag.stateValid = false;
+    diag.incompleteTrials = true;
+    return {
+      passed: false,
+      feedback: `Complete all ${spec.repeatedTrials.length} repeated trials (${state.completedTrialCount}/${spec.repeatedTrials.length} recorded) before submitting the mean.`,
+      diagnostics: diag,
+      expectedValue: expectedVal,
+      expectedUnit: spec.unit,
+      expectedUncertainty: expectedUnc,
+    };
+  }
 
   if (!submission || typeof submission.valueText !== 'string') {
     return {
@@ -405,12 +564,12 @@ export function evaluateMeasurementSubmission(
     };
   }
 
+  let usedAlternativeUnit = false;
   if (rawUnit) {
     try {
       const learnerUnitParsed = parseUnitExpression(rawUnit);
       if (!dimensionsEqual(learnerUnitParsed.dim, expectedUnitParsed.dim)) {
         diag.unitOk = false;
-        // Detect classic mass vs weight confusion (N vs g/kg) on balance
         const isForceDim = dimensionsEqual(learnerUnitParsed.dim, [1, 1, -2, 0, 0, 0, 0]);
         if (spec.instrument === 'balance' && isForceDim) {
           diag.massWeightConfusion = true;
@@ -432,12 +591,20 @@ export function evaluateMeasurementSubmission(
           expectedUncertainty: expectedUnc,
         };
       }
-      // Convert learner value into spec.unit using base SI
-      const learnerBase = convertToBaseSI(learnerNum, learnerUnitParsed);
-      learnerInSpecUnit = roundClean(
-        (learnerBase - expectedUnitParsed.offsetK) / expectedUnitParsed.scale,
-        6,
-      );
+      usedAlternativeUnit = rawUnit !== spec.unit;
+      // Distinguish absolute temperature (°C <-> K with 273.15 offset) vs temperature difference (Δ°C == ΔK)
+      if (spec.isTemperatureDifference && spec.instrument === 'thermometer') {
+        learnerInSpecUnit = roundClean(
+          (learnerNum * learnerUnitParsed.scale) / expectedUnitParsed.scale,
+          6,
+        );
+      } else {
+        const learnerBase = convertToBaseSI(learnerNum, learnerUnitParsed);
+        learnerInSpecUnit = roundClean(
+          (learnerBase - expectedUnitParsed.offsetK) / expectedUnitParsed.scale,
+          6,
+        );
+      }
     } catch {
       diag.unitOk = false;
       return {
@@ -457,8 +624,7 @@ export function evaluateMeasurementSubmission(
     diag.numericOk = true;
   } else {
     const zErr = spec.zeroError ?? 0;
-    if (zErr !== 0) {
-      // Check if learner forgot to correct zero error OR applied the wrong sign
+    if (zErr !== 0 && taskKind === 'calculate-corrected') {
       const uncorrectedVal = roundClean(expectedVal + zErr, 6);
       const wrongSignVal = roundClean(expectedVal + 2 * zErr, 6);
       if (Math.abs(learnerInSpecUnit - uncorrectedVal) <= tol) {
@@ -488,7 +654,7 @@ export function evaluateMeasurementSubmission(
     if (diag.parallaxNotLevel && Math.abs(learnerInSpecUnit - model.observedReading) <= tol) {
       return {
         passed: false,
-        feedback: 'Your reading includes a parallax error! Move the eye-position slider to 0° (level with the scale/meniscus) before reading.',
+        feedback: 'Your reading includes a parallax error! Move the eye-position control to 0° (level with the scale/meniscus) before reading.',
         diagnostics: diag,
         expectedValue: expectedVal,
         expectedUnit: spec.unit,
@@ -498,7 +664,7 @@ export function evaluateMeasurementSubmission(
 
     return {
       passed: false,
-      feedback: `Reading ${learnerNum} ${rawUnit || spec.unit} is outside the accepted tolerance (±${tol} ${spec.unit}). Check the main scale, smallest division (${model.leastCount} ${spec.unit}), and any zero error.`,
+      feedback: `Reading ${learnerNum} ${rawUnit || spec.unit} is outside the accepted tolerance (±${tol} ${spec.unit}). Check the scale graduations, least count (${model.leastCount} ${spec.unit}), and any zero error.`,
       diagnostics: diag,
       expectedValue: expectedVal,
       expectedUnit: spec.unit,
@@ -506,28 +672,35 @@ export function evaluateMeasurementSubmission(
     };
   }
 
-  // Precision check (significant figures or decimal places) via math-eval-units-precision.ts
-  if (
-    (spec.requiredSigFigs !== undefined || spec.requiredDecimalPlaces !== undefined) &&
-    (!rawUnit || rawUnit === spec.unit)
-  ) {
-    const prec = inspectRawNumericPrecision(rawNumStr);
-    if (spec.requiredSigFigs !== undefined && prec.sigFigs !== spec.requiredSigFigs) {
-      diag.precisionOk = false;
-      return {
-        passed: false,
-        feedback: `Numeric value is right, but record it to ${spec.requiredSigFigs} significant figures (your entry "${rawNumStr}" has ${prec.sigFigs ?? 0}).`,
-        diagnostics: diag,
-        expectedValue: expectedVal,
-        expectedUnit: spec.unit,
-        expectedUncertainty: expectedUnc,
-      };
+  // Precision checks — significant figures ALWAYS checked (even across unit conversions!)
+  const prec = inspectRawNumericPrecision(rawNumStr);
+  if (spec.requiredSigFigs !== undefined && prec.sigFigs !== spec.requiredSigFigs) {
+    diag.precisionOk = false;
+    return {
+      passed: false,
+      feedback: `Numeric value is right, but record it to ${spec.requiredSigFigs} significant figures (your entry "${rawNumStr}" has ${prec.sigFigs ?? 0}).`,
+      diagnostics: diag,
+      expectedValue: expectedVal,
+      expectedUnit: spec.unit,
+      expectedUncertainty: expectedUnc,
+    };
+  }
+  if (spec.requiredDecimalPlaces !== undefined) {
+    // Decimal places apply in the reporting unit; if alternative unit used, adjust by power of 10 scale shift
+    let targetDp = spec.requiredDecimalPlaces;
+    if (usedAlternativeUnit && rawUnit) {
+      const learnerUnitParsed = parseUnitExpression(rawUnit);
+      const ratio = learnerUnitParsed.scale / expectedUnitParsed.scale;
+      const logShift = Math.round(Math.log10(ratio));
+      if (Math.abs(Math.pow(10, logShift) - ratio) < 1e-6) {
+        targetDp = Math.max(0, spec.requiredDecimalPlaces + logShift);
+      }
     }
-    if (spec.requiredDecimalPlaces !== undefined && prec.decimalPlaces !== spec.requiredDecimalPlaces) {
+    if (prec.decimalPlaces !== targetDp) {
       diag.precisionOk = false;
       return {
         passed: false,
-        feedback: `Numeric value is right, but match the instrument resolution by recording ${spec.requiredDecimalPlaces} decimal place(s) (your entry "${rawNumStr}" has ${prec.decimalPlaces}).`,
+        feedback: `Numeric value is right, but match the instrument resolution by recording ${targetDp} decimal place(s) in ${rawUnit || spec.unit} (your entry "${rawNumStr}" has ${prec.decimalPlaces}).`,
         diagnostics: diag,
         expectedValue: expectedVal,
         expectedUnit: spec.unit,
@@ -536,7 +709,7 @@ export function evaluateMeasurementSubmission(
     }
   }
 
-  // Uncertainty check
+  // Uncertainty check — reject negative or zero when positive uncertainty is required, scale-aware tolerance
   if (spec.requireUncertainty) {
     const uncStr = (submission.uncertaintyText ?? '').trim().replace(/^±/, '');
     if (!NUMERIC_RE.test(uncStr)) {
@@ -551,12 +724,34 @@ export function evaluateMeasurementSubmission(
       };
     }
     const learnerUnc = Number(uncStr);
-    const uncTol = Math.max(expectedUnc * 0.15, 0.005);
-    if (!Number.isFinite(learnerUnc) || Math.abs(learnerUnc - expectedUnc) > uncTol) {
+    if (!Number.isFinite(learnerUnc) || learnerUnc < 0) {
       diag.uncertaintyOk = false;
       return {
         passed: false,
-        feedback: `Reading is right, but check the uncertainty (±${expectedUnc} ${spec.unit} under this instrument's convention).`,
+        feedback: 'Measurement uncertainty must be a non-negative number.',
+        diagnostics: diag,
+        expectedValue: expectedVal,
+        expectedUnit: spec.unit,
+        expectedUncertainty: expectedUnc,
+      };
+    }
+    if (expectedUnc > 0 && learnerUnc === 0) {
+      diag.uncertaintyOk = false;
+      return {
+        passed: false,
+        feedback: `Measurement uncertainty cannot be zero when instrument/experimental uncertainty is ±${expectedUnc} ${spec.unit}.`,
+        diagnostics: diag,
+        expectedValue: expectedVal,
+        expectedUnit: spec.unit,
+        expectedUncertainty: expectedUnc,
+      };
+    }
+    const uncTol = Math.max(expectedUnc * 0.1, model.leastCount * 0.05);
+    if (Math.abs(learnerUnc - expectedUnc) > uncTol) {
+      diag.uncertaintyOk = false;
+      return {
+        passed: false,
+        feedback: `Reading is right, but check the uncertainty (±${expectedUnc} ${spec.unit} under the ${spec.uncertaintyConvention ?? 'configured'} convention).`,
         diagnostics: diag,
         expectedValue: expectedVal,
         expectedUnit: spec.unit,

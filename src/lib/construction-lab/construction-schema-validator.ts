@@ -36,6 +36,7 @@ import {
 import { validateAtomBondBuilderConfig } from './atom-bond-schema-validator';
 import { validateGeometryConstructorConfig } from './geometry-schema-validator';
 import { validateMeasurementLabConfig } from './measurement-schema-validator';
+import { validateDataStatsLabConfig } from './data-stats-schema-validator';
 
 export type ConstructionLabKind =
   | 'boolean-circuit'
@@ -44,7 +45,8 @@ export type ConstructionLabKind =
   | 'bio-sequence-builder'
   | 'atom-bond-builder'
   | 'geometry-constructor'
-  | 'measurement-lab';
+  | 'measurement-lab'
+  | 'data-stats-lab';
 
 export interface ConstructionPredictionDef {
   prompt: string;
@@ -236,9 +238,12 @@ function validatePrediction(raw: unknown, errors: string[]): void {
   }
 }
 
-export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' {
+export function getRequiredConstructionLabMinVersion(obj: Record<string, unknown>): '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0' | '1.5.0' {
   if (obj.labKind === 'boolean-circuit' && obj.circuitConfig === undefined) {
     return '1.0.0';
+  }
+  if (obj.labKind === 'data-stats-lab') {
+    return '1.5.0';
   }
   if (obj.labKind === 'measurement-lab') {
     return '1.4.0';
@@ -265,7 +270,8 @@ export function validateConstructionLabConfig(
     labKind !== 'bio-sequence-builder' &&
     labKind !== 'atom-bond-builder' &&
     labKind !== 'geometry-constructor' &&
-    labKind !== 'measurement-lab'
+    labKind !== 'measurement-lab' &&
+    labKind !== 'data-stats-lab'
   ) {
     errors.push(`Unsupported construction-lab labKind "${String(labKind)}".`);
     return;
@@ -311,6 +317,12 @@ export function validateConstructionLabConfig(
   // Domain 7 (Step 5C): Virtual Measuring Instruments Laboratory
   if (labKind === 'measurement-lab') {
     validateMeasurementLabConfig(obj, errors);
+    return;
+  }
+
+  // Domain 8 (Step 5D): Probability & Statistics Laboratory
+  if (labKind === 'data-stats-lab') {
+    validateDataStatsLabConfig(obj, errors);
     return;
   }
 

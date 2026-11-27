@@ -37,8 +37,16 @@ const VALID_UNCERTAINTY = new Set([
   'half-range',
   'reaction-time',
 ]);
+const VALID_TASK_KINDS = new Set([
+  'read-observed',
+  'determine-zero-error',
+  'calculate-corrected',
+  'select-range',
+  'apply-tare-and-measure',
+  'repeated-mean',
+]);
 
-const MEASUREMENT_LAB_ALLOWED_KEYS = new Set([
+const SHARED_MEASUREMENT_KEYS = [
   'id',
   'engine',
   'schemaVersion',
@@ -58,6 +66,7 @@ const MEASUREMENT_LAB_ALLOWED_KEYS = new Set([
   'curriculumLevel',
   'learningMode',
   'displayMode',
+  'taskKind',
   'unit',
   'minValue',
   'maxValue',
@@ -65,21 +74,12 @@ const MEASUREMENT_LAB_ALLOWED_KEYS = new Set([
   'leastCount',
   'trueValue',
   'zeroError',
-  'mainScaleStep',
-  'vernierDivisions',
-  'pitchMm',
-  'thimbleDivisions',
-  'hasHalfMmSleeve',
-  'meniscusType',
-  'liquidName',
-  'initialTareOffset',
-  'reactionTimeUncertainty',
-  'scaleRanges',
-  'activeRangeIndex',
+  'initialAlignmentOffset',
   'enableParallax',
   'initialEyeOffsetDeg',
   'repeatedTrials',
   'uncertaintyConvention',
+  'enforceMinHalfLeastCount',
   'requireUncertainty',
   'requireUnit',
   'requiredSigFigs',
@@ -87,7 +87,19 @@ const MEASUREMENT_LAB_ALLOWED_KEYS = new Set([
   'tolerance',
   'objectLabel',
   'nonVisualQuestion',
-]);
+] as const;
+
+const INSTRUMENT_EXTRA_KEYS: Record<MeasurementInstrumentKind, ReadonlySet<string>> = {
+  ruler: new Set([]),
+  'vernier-callipers': new Set(['mainScaleStep', 'vernierDivisions']),
+  micrometer: new Set(['pitchMm', 'thimbleDivisions', 'hasHalfMmSleeve']),
+  'measuring-cylinder': new Set(['meniscusType', 'liquidName']),
+  thermometer: new Set(['isTemperatureDifference']),
+  balance: new Set(['initialTareOffset']),
+  stopwatch: new Set(['reactionTimeUncertainty']),
+  ammeter: new Set(['scaleRanges', 'activeRangeIndex']),
+  voltmeter: new Set(['scaleRanges', 'activeRangeIndex']),
+};
 
 const NON_VISUAL_KEYS = new Set(['prompt', 'options', 'correctIndex', 'explanation']);
 
@@ -99,12 +111,6 @@ export function validateMeasurementLabConfig(
   obj: Record<string, unknown>,
   errors: string[],
 ): void {
-  for (const key of Object.keys(obj)) {
-    if (!MEASUREMENT_LAB_ALLOWED_KEYS.has(key)) {
-      errors.push(`Unknown field "${key}" in construction-lab(measurement-lab).`);
-    }
-  }
-
   const inst = obj.instrument as MeasurementInstrumentKind;
   if (typeof inst !== 'string' || !VALID_INSTRUMENTS.has(inst)) {
     errors.push(
@@ -113,35 +119,58 @@ export function validateMeasurementLabConfig(
     return;
   }
 
+  // Strict instrument-specific allowlist
+  const allowed = new Set<string>([...SHARED_MEASUREMENT_KEYS, ...INSTRUMENT_EXTRA_KEYS[inst]]);
+  for (const key of Object.keys(obj)) {
+    if (!allowed.has(key)) {
+      errors.push(`Field "${key}" is not permitted for measurement-lab instrument "${inst}".`);
+    }
+  }
+
   if (typeof obj.curriculumLevel !== 'string' || !VALID_LEVELS.has(obj.curriculumLevel)) {
     errors.push('measurement-lab "curriculumLevel" must be primary, lower-secondary, igcse, or as-a-level.');
   }
-
   if (obj.learningMode !== undefined && obj.learningMode !== 'guided' && obj.learningMode !== 'practice') {
     errors.push('measurement-lab "learningMode" must be "guided" or "practice".');
   }
-
   if (obj.displayMode !== undefined && (typeof obj.displayMode !== 'string' || !VALID_DISPLAY_MODES.has(obj.displayMode))) {
     errors.push('measurement-lab "displayMode" must be "analogue" or "digital".');
+  }
+  if (obj.taskKind !== undefined && (typeof obj.taskKind !== 'string' || !VALID_TASK_KINDS.has(obj.taskKind))) {
+    errors.push('measurement-lab "taskKind" is invalid.');
+  }
+
+  // Strict boolean checks
+  for (const bf of [
+    'requireUncertainty',
+    'requireUnit',
+    'enableParallax',
+    'hasHalfMmSleeve',
+    'isTemperatureDifference',
+    'enforceMinHalfLeastCount',
+  ] as const) {
+    if (obj[bf] !== undefined && typeof obj[bf] !== 'boolean') {
+      errors.push(`measurement-lab "${bf}" must be a strict boolean.`);
+    }
   }
 
   // Unit compatibility check via math-eval-units-precision.ts
   if (typeof obj.unit !== 'string' || !obj.unit.trim()) {
     errors.push('measurement-lab "unit" must be a non-empty SI unit string.');
+  } else if (inst === 'micrometer' && obj.unit.trim() !== 'mm') {
+    errors.push('micrometer internal unit must be "mm" to maintain pitchMm/thimble consistency.');
   } else {
     try {
       const parsed = parseUnitExpression(obj.unit);
       if (!dimensionsEqual(parsed.dim, INSTRUMENT_DIMENSIONS[inst])) {
-        errors.push(
-          `measurement-lab unit "${obj.unit}" is dimensionally incompatible with instrument "${inst}".`,
-        );
+        errors.push(`measurement-lab unit "${obj.unit}" is dimensionally incompatible with instrument "${inst}".`);
       }
     } catch {
       errors.push(`measurement-lab unit "${obj.unit}" is not a recognised SI unit.`);
     }
   }
 
-  // Range, division, least count, trueValue
+  // Range, integral/feasible division counts, least count, trueValue
   const minVal = obj.minValue;
   const maxVal = obj.maxValue;
   const div = obj.scaleDivision;
@@ -160,11 +189,16 @@ export function validateMeasurementLabConfig(
   if (isFiniteNum(minVal) && isFiniteNum(maxVal) && isFiniteNum(div) && div > 0) {
     const numDivs = (maxVal - minVal) / div;
     const maxAllowedDivs =
-      obj.displayMode === 'digital' ? 100000 : MEASUREMENT_LAB_LIMITS.maxDivisions;
+      obj.displayMode === 'digital'
+        ? MEASUREMENT_LAB_LIMITS.maxDigitalDivisions
+        : MEASUREMENT_LAB_LIMITS.maxAnalogueDivisions;
     if (numDivs < MEASUREMENT_LAB_LIMITS.minDivisions || numDivs > maxAllowedDivs) {
       errors.push(
         `measurement-lab scale divisions count (${numDivs.toFixed(1)}) must be between ${MEASUREMENT_LAB_LIMITS.minDivisions} and ${maxAllowedDivs}.`,
       );
+    }
+    if (Math.abs(numDivs - Math.round(numDivs)) > 1e-4) {
+      errors.push(`measurement-lab (maxValue - minValue) / scaleDivision (${numDivs.toFixed(4)}) must be an integer.`);
     }
   }
   if (isFiniteNum(lc) && isFiniteNum(div) && lc > div + 1e-9) {
@@ -176,7 +210,7 @@ export function validateMeasurementLabConfig(
     errors.push(`measurement-lab trueValue (${trueVal}) must lie within [minValue, maxValue] (${minVal}..${maxVal}).`);
   }
 
-  // Zero-error bounds & reading feasibility
+  // Signed zero-error bounds & reading feasibility
   const zErr = obj.zeroError ?? 0;
   if (!isFiniteNum(zErr)) {
     errors.push('measurement-lab zeroError must be a finite number.');
@@ -193,22 +227,37 @@ export function validateMeasurementLabConfig(
     }
   }
 
+  // Optional tare & reaction-time bounds
+  if (obj.initialTareOffset !== undefined) {
+    if (!isFiniteNum(obj.initialTareOffset) || obj.initialTareOffset < 0) {
+      errors.push('balance initialTareOffset must be a non-negative finite number.');
+    } else if (isFiniteNum(maxVal) && isFiniteNum(trueVal) && trueVal + obj.initialTareOffset > maxVal) {
+      errors.push('balance trueValue + initialTareOffset cannot exceed maxValue.');
+    }
+  }
+  if (obj.reactionTimeUncertainty !== undefined) {
+    if (!isFiniteNum(obj.reactionTimeUncertainty) || obj.reactionTimeUncertainty <= 0 || obj.reactionTimeUncertainty > 2) {
+      errors.push('stopwatch reactionTimeUncertainty must be within (0, 2] seconds.');
+    }
+  }
+  if (obj.initialAlignmentOffset !== undefined) {
+    if (!isFiniteNum(obj.initialAlignmentOffset) || Math.abs(obj.initialAlignmentOffset) > 5) {
+      errors.push('measurement-lab initialAlignmentOffset must be finite within [-5, 5].');
+    }
+  }
+
   // Instrument-specific graphical/numerical consistency
   if (inst === 'vernier-callipers') {
     const mStep = obj.mainScaleStep ?? 1;
     const vDivs = obj.vernierDivisions ?? 10;
-    if (!isFiniteNum(mStep) || mStep <= 0) {
-      errors.push('vernier-callipers mainScaleStep must be > 0.');
-    }
+    if (!isFiniteNum(mStep) || mStep <= 0) errors.push('vernier-callipers mainScaleStep must be > 0.');
     if (!isFiniteNum(vDivs) || !Number.isInteger(vDivs) || vDivs < 5 || vDivs > 50) {
       errors.push('vernier-callipers vernierDivisions must be an integer between 5 and 50.');
     }
     if (isFiniteNum(mStep) && isFiniteNum(vDivs) && isFiniteNum(lc)) {
       const derived = mStep / vDivs;
       if (Math.abs(derived - lc) > 1e-5) {
-        errors.push(
-          `vernier-callipers leastCount (${lc}) does not match mainScaleStep/vernierDivisions (${derived}).`,
-        );
+        errors.push(`vernier-callipers leastCount (${lc}) does not match mainScaleStep/vernierDivisions (${derived}).`);
       }
     }
   }
@@ -249,7 +298,7 @@ export function validateMeasurementLabConfig(
         const idx = obj.activeRangeIndex ?? 0;
         if (typeof idx !== 'number' || !Number.isInteger(idx) || idx < 0 || idx >= obj.scaleRanges.length) {
           errors.push(`${inst} activeRangeIndex must be a valid index into scaleRanges.`);
-        } else if (isFiniteNum(trueVal) && trueVal > obj.scaleRanges[idx]) {
+        } else if (isFiniteNum(trueVal) && obj.taskKind !== 'select-range' && trueVal > obj.scaleRanges[idx]) {
           errors.push(`${inst} trueValue (${trueVal}) exceeds active scaleRange (${obj.scaleRanges[idx]}).`);
         }
       }
@@ -276,18 +325,11 @@ export function validateMeasurementLabConfig(
   if (obj.uncertaintyConvention !== undefined) {
     if (typeof obj.uncertaintyConvention !== 'string' || !VALID_UNCERTAINTY.has(obj.uncertaintyConvention)) {
       errors.push('measurement-lab uncertaintyConvention must be half-least-count, one-least-count, half-range, or reaction-time.');
+    } else if (obj.uncertaintyConvention === 'half-range' && !Array.isArray(obj.repeatedTrials)) {
+      errors.push('uncertaintyConvention "half-range" requires repeatedTrials.');
     }
   }
 
-  if (obj.requireUncertainty !== undefined && typeof obj.requireUncertainty !== 'boolean') {
-    errors.push('measurement-lab requireUncertainty must be a strict boolean.');
-  }
-  if (obj.requireUnit !== undefined && typeof obj.requireUnit !== 'boolean') {
-    errors.push('measurement-lab requireUnit must be a strict boolean.');
-  }
-  if (obj.enableParallax !== undefined && typeof obj.enableParallax !== 'boolean') {
-    errors.push('measurement-lab enableParallax must be a strict boolean.');
-  }
   if (obj.initialEyeOffsetDeg !== undefined) {
     if (
       !isFiniteNum(obj.initialEyeOffsetDeg) ||
@@ -320,11 +362,16 @@ export function validateMeasurementLabConfig(
       for (const k of Object.keys(rec)) {
         if (!NON_VISUAL_KEYS.has(k)) errors.push(`Unknown field "${k}" in nonVisualQuestion.`);
       }
-      if (typeof rec.prompt !== 'string' || rec.prompt.trim().length < 4) {
-        errors.push('nonVisualQuestion.prompt must be a non-empty string.');
+      if (typeof rec.prompt !== 'string' || rec.prompt.trim().length < 4 || rec.prompt.length > 320) {
+        errors.push('nonVisualQuestion.prompt must be a string (4..320 chars).');
       }
-      if (!Array.isArray(rec.options) || rec.options.length < 2 || rec.options.length > 4) {
-        errors.push('nonVisualQuestion.options must contain 2..4 string options.');
+      if (
+        !Array.isArray(rec.options) ||
+        rec.options.length < 2 ||
+        rec.options.length > 4 ||
+        rec.options.some((o) => typeof o !== 'string' || !o.trim() || o.length > 160)
+      ) {
+        errors.push('nonVisualQuestion.options must contain 2..4 non-empty strings (<= 160 chars).');
       } else if (
         typeof rec.correctIndex !== 'number' ||
         !Number.isInteger(rec.correctIndex) ||
@@ -332,6 +379,9 @@ export function validateMeasurementLabConfig(
         rec.correctIndex >= rec.options.length
       ) {
         errors.push('nonVisualQuestion.correctIndex must be a valid index into options.');
+      }
+      if (rec.explanation !== undefined && (typeof rec.explanation !== 'string' || !rec.explanation.trim() || rec.explanation.length > 320)) {
+        errors.push('nonVisualQuestion.explanation must be a non-empty string (<= 320 chars).');
       }
     }
   }

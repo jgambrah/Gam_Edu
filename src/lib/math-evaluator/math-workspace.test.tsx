@@ -437,4 +437,82 @@ describe('Step 5A.2 — Mathematical Working & Reasoning Workspace (math-evaluat
     const realFactor = evaluateWorkingWorkspace(opEvidenceSpec, [{ math: '(x - 3)(x + 2) = 0', operation: 'factorise' }]);
     expect(realFactor.marking?.marksAwarded).toBe(1);
   });
+
+  it('Step 5A close-out: hand-verified fixtures verify exact individual markIds, M/A marks, per-step transition statuses, earliestErrorIndex, unresolvedExtraneous obligations, and independent final-answer correctness', () => {
+    // Fixture 1: Quadratic solved by factorisation — exact markIds M1 + A1, exact transitions, no errors
+    const quadSpec: MathMultiStepWorkingSpec = {
+      mode: 'multi-step-working',
+      learningMode: 'independent',
+      problemKind: 'equation-solving',
+      variables: ['x'],
+      initialStatement: 'x^2 - 5x + 6 = 0',
+      finalGoal: { mode: 'equation-solution', variable: 'x', originalEquation: 'x^2 - 5x + 6 = 0', equationClass: 'quadratic', expectedRoots: ['2', '3'] },
+      markingScheme: {
+        maxMarks: 2,
+        strategyGroups: [
+          {
+            id: 'factor',
+            label: 'Factorisation',
+            marks: [
+              { markId: 'M1', type: 'M', points: 1, description: 'Factorise quadratic', predicate: { kind: 'certified-transition', expectedOperation: 'factorise' } },
+              { markId: 'A1', type: 'A', points: 1, dependsOn: ['M1'], description: 'Exact roots', predicate: { kind: 'final-answer' } },
+            ],
+          },
+        ],
+      },
+      workedSolutions: [{ methodLabel: 'Factor', steps: [{ math: '(x - 2)(x - 3) = 0', operation: 'factorise', note: 'Factor.' }, { math: 'x = 2 or x = 3', note: 'Roots.' }] }],
+    };
+
+    const fullPass = evaluateWorkingWorkspace(quadSpec, [
+      { math: '(x - 2)(x - 3) = 0', operation: 'factorise' },
+      { math: 'x = 2 or x = 3' },
+    ]);
+    expect(fullPass.chain.stepResults.map((s) => s.status)).toEqual(['exact-equivalence', 'exact-equivalence']);
+    expect(fullPass.chain.earliestErrorIndex).toBeNull();
+    expect(fullPass.chain.unresolvedExtraneous).toEqual([]);
+    expect(fullPass.chain.finalAnswerResult.passed).toBe(true);
+    expect(fullPass.marking?.markDetails.filter((m) => m.awarded).map((m) => m.markId)).toEqual(['M1', 'A1']);
+    expect(fullPass.marking?.marksAwarded).toBe(2);
+
+    // Fixture 2: Lost solution on step 1 -> earliestErrorIndex=0, finalAnswerResult.passed=false, 0 marks
+    const lostSol = evaluateWorkingWorkspace(quadSpec, [
+      { math: 'x = 2' },
+    ]);
+    expect(lostSol.chain.stepResults[0].status).toBe('lost-solution-error');
+    expect(lostSol.chain.earliestErrorIndex).toBe(0);
+    expect(lostSol.chain.finalAnswerResult.passed).toBe(false);
+    expect(lostSol.chain.mathematicallyCorrect).toBe(false);
+    expect(lostSol.marking?.markDetails.filter((m) => m.awarded).map((m) => m.markId)).toEqual([]);
+
+    // Fixture 3: Radical equation squaring introduces extraneous root (-1) without rejecting it -> unresolvedExtraneous non-empty
+    const radSpec: MathMultiStepWorkingSpec = {
+      mode: 'multi-step-working',
+      learningMode: 'independent',
+      problemKind: 'equation-solving',
+      variables: ['x'],
+      initialStatement: 'sqrt(x + 2) = x',
+      finalGoal: { mode: 'equation-solution', variable: 'x', originalEquation: 'sqrt(x + 2) = x', equationClass: 'radical-single', expectedRoots: ['2'], extraneousCandidates: ['-1'] },
+      markingScheme: {
+        maxMarks: 1,
+        strategyGroups: [
+          {
+            id: 'sq',
+            label: 'Square both sides',
+            marks: [
+              { markId: 'A1', type: 'A', points: 1, description: 'Valid root only', predicate: { kind: 'final-answer' } },
+            ],
+          },
+        ],
+      },
+      workedSolutions: [{ methodLabel: 'Square', steps: [{ math: 'x + 2 = x^2', note: 'Square.' }, { math: 'x = 2', rejectedExtraneous: ['-1'], note: 'Reject -1.' }] }],
+    };
+    const unrejected = evaluateWorkingWorkspace(radSpec, [
+      { math: 'x + 2 = x^2' },
+      { math: 'x = 2 or x = -1' },
+    ]);
+    expect(unrejected.chain.stepResults[0].status).toBe('valid-implication-extraneous-risk');
+    expect(unrejected.chain.unresolvedExtraneous.length).toBeGreaterThan(0);
+    expect(unrejected.chain.finalAnswerResult.passed).toBe(false);
+    expect(unrejected.chain.mathematicallyCorrect).toBe(false);
+  });
 });

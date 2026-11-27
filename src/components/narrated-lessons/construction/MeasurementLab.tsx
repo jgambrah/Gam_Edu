@@ -2,6 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import {
+  AlertTriangle,
   CheckCircle2,
   Eye,
   Gauge,
@@ -21,6 +22,7 @@ import {
 } from '@/lib/construction-lab/measurement-engine';
 
 export function MeasurementLab({ config }: { config: MeasurementLabConstructionConfig }) {
+  const [sliderValue, setSliderValue] = useState<number>(config.initialAlignmentOffset ?? 0);
   const [eyeOffsetDeg, setEyeOffsetDeg] = useState<number>(config.initialEyeOffsetDeg ?? 0);
   const [tareApplied, setTareApplied] = useState<boolean>(false);
   const [selectedRangeIndex, setSelectedRangeIndex] = useState<number>(config.activeRangeIndex ?? 0);
@@ -41,18 +43,26 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
   const [nonVisualChoice, setNonVisualChoice] = useState<number | null>(null);
   const [nonVisualChecked, setNonVisualChecked] = useState<boolean>(false);
 
+  const isGuided = config.learningMode !== 'practice';
+
   const model = useMemo(
     () =>
       computeInstrumentModel(config, {
+        sliderValue,
         eyeOffsetDeg,
         tareApplied,
         selectedRangeIndex,
         inspectingZeroError,
+        completedTrialCount: recordedTrials.length,
       }),
-    [config, eyeOffsetDeg, tareApplied, selectedRangeIndex, inspectingZeroError],
+    [config, sliderValue, eyeOffsetDeg, tareApplied, selectedRangeIndex, inspectingZeroError, recordedTrials.length],
   );
 
+  // Invalidate stale feedback whenever learner alters instrument state or inputs
+  const clearStale = () => setResult(null);
+
   const handleReset = () => {
+    setSliderValue(config.initialAlignmentOffset ?? 0);
     setEyeOffsetDeg(config.initialEyeOffsetDeg ?? 0);
     setTareApplied(false);
     setSelectedRangeIndex(config.activeRangeIndex ?? 0);
@@ -72,7 +82,14 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
       evaluateMeasurementSubmission(
         config,
         { valueText, unitText, uncertaintyText },
-        { eyeOffsetDeg, tareApplied, selectedRangeIndex, inspectingZeroError },
+        {
+          sliderValue,
+          eyeOffsetDeg,
+          tareApplied,
+          selectedRangeIndex,
+          inspectingZeroError,
+          completedTrialCount: recordedTrials.length,
+        },
       ),
     );
   };
@@ -80,19 +97,19 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
   const handleRecordTrial = () => {
     const trials = config.repeatedTrials ?? [config.trueValue];
     if (stopwatchStep >= trials.length) return;
+    clearStale();
     setRecordedTrials((prev) => [...prev, trials[stopwatchStep]]);
     setStopwatchStep((s) => s + 1);
   };
 
-  const pct = Math.max(
-    0,
-    Math.min(
-      100,
-      ((model.observedReading - config.minValue) /
-        Math.max(1e-9, model.activeMaxRange - config.minValue)) *
-        100,
-    ),
-  );
+  const span = Math.max(1e-9, model.activeMaxRange - config.minValue);
+  const clampedPct = Math.max(0, Math.min(100, ((model.observedReading - config.minValue) / span) * 100));
+  const physicalPct = Math.max(0, Math.min(100, ((model.physicalReading - config.minValue) / span) * 100));
+
+  // Derive instrument-specific tick counts (never fixed 11-mark placeholder)
+  const totalDivs = Math.max(4, Math.round(span / Math.max(1e-9, model.activeScaleDivision)));
+  const minorTickCount = Math.min(totalDivs, 60);
+  const majorInterval = minorTickCount >= 40 ? 10 : minorTickCount >= 20 ? 5 : 2;
 
   return (
     <section
@@ -125,8 +142,13 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
               </span>
             )}
             <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-              Simulated instrument ({config.learningMode === 'practice' ? 'Independent practice' : 'Guided'})
+              Simulated ({isGuided ? 'Guided' : 'Independent practice'})
             </span>
+            {config.instrument === 'measuring-cylinder' && config.meniscusType === 'convex' && (
+              <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                Virtual mercury demonstration only
+              </span>
+            )}
           </div>
           <h3 className="mt-1.5 text-sm font-extrabold text-slate-900 sm:text-base">{config.title}</h3>
           <p className="mt-0.5 text-xs leading-relaxed text-slate-600">{config.instructions}</p>
@@ -176,7 +198,7 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
         </div>
       )}
 
-      {/* Accessible Non-Visual Equivalent Assessment Toggle */}
+      {/* Non-Visual Equivalent Toggle */}
       {config.nonVisualQuestion && (
         <div className="mt-3 flex items-center justify-between rounded-xl border border-indigo-100 bg-indigo-50/60 px-3 py-2 text-xs">
           <span className="font-semibold text-indigo-900">
@@ -226,7 +248,7 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
         </div>
       ) : (
         <>
-          {/* Interactive SVG Instrument Stage (does NOT reveal expected answer in aria-label) */}
+          {/* Interactive Graduated SVG Instrument Stage */}
           <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3">
             <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold text-slate-600">
               <span>
@@ -239,180 +261,433 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
               )}
             </div>
 
+            {model.overRange && (
+              <div
+                role="alert"
+                className="mb-2 flex items-center gap-1.5 rounded-lg border border-rose-300 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-800"
+              >
+                <AlertTriangle className="h-4 w-4 shrink-0" />
+                OVER-RANGE: Needle pinned past {model.activeMaxRange} {config.unit}. Select a higher scale range!
+              </div>
+            )}
+
             {config.displayMode === 'digital' ? (
               <div className="mx-auto flex max-w-xs flex-col items-center rounded-xl border-2 border-slate-700 bg-slate-900 px-5 py-4 text-center font-mono text-emerald-400">
                 <span className="text-[10px] uppercase tracking-widest text-slate-400">
                   Digital {config.instrument}
                 </span>
                 <span className="mt-1 text-3xl font-extrabold" data-testid="digital-readout">
-                  {model.observedReading.toFixed(
-                    Math.max(0, Math.min(3, Math.ceil(-Math.log10(model.leastCount + 1e-12)))),
-                  )}{' '}
-                  {config.unit}
+                  {model.overRange
+                    ? 'OL (OVER)'
+                    : `${model.quantisedReading.toFixed(
+                        Math.max(0, Math.min(3, Math.ceil(-Math.log10(model.leastCount + 1e-12)))),
+                      )} ${config.unit}`}
                 </span>
               </div>
             ) : (
               <svg
-                viewBox="0 0 360 130"
+                viewBox="0 0 360 150"
                 role="img"
-                aria-label={`Interactive ${config.instrument} scale diagram`}
+                aria-label={`Interactive graduated ${config.instrument} scale`}
+                data-observed-model={String(model.observedReading)}
                 className="h-auto w-full max-w-xl motion-reduce:transition-none"
               >
-                <rect x="4" y="4" width="352" height="122" rx="10" fill="#ffffff" stroke="#cbd5e1" />
+                <rect x="4" y="4" width="352" height="142" rx="10" fill="#ffffff" stroke="#cbd5e1" />
 
-                {/* RULER / THERMOMETER / LINEAR SCALE */}
-                {(config.instrument === 'ruler' ||
-                  config.instrument === 'thermometer' ||
-                  config.instrument === 'balance' ||
-                  config.instrument === 'stopwatch') && (
-                  <g>
-                    <rect x="24" y="54" width="312" height="28" rx="4" fill="#fef9c3" stroke="#ca8a04" />
+                {/* 1. RULER (actual instrument graduations + movable object alignment) */}
+                {config.instrument === 'ruler' && (
+                  <g data-testid="svg-ruler">
                     <rect
-                      x="24"
-                      y="26"
-                      width={Math.max(4, (pct / 100) * 312)}
-                      height="20"
+                      x={24 + (sliderValue / span) * 312}
+                      y="24"
+                      width={Math.max(4, ((model.physicalReading - config.minValue - sliderValue) / span) * 312)}
+                      height="24"
                       rx="3"
-                      fill={config.instrument === 'thermometer' ? '#ef4444' : '#3b82f6'}
+                      fill="#2563eb"
                       opacity="0.85"
                     />
-                    {Array.from({ length: 11 }).map((_, idx) => {
-                      const x = 24 + idx * 31.2;
-                      const lbl = roundClean(
-                        config.minValue + (idx / 10) * (model.activeMaxRange - config.minValue),
-                        2,
-                      );
+                    <rect x="24" y="54" width="312" height="36" rx="3" fill="#fef9c3" stroke="#ca8a04" />
+                    {Array.from({ length: minorTickCount + 1 }).map((_, idx) => {
+                      const x = 24 + (idx / minorTickCount) * 312;
+                      const isMajor = idx % majorInterval === 0;
+                      const val = roundClean(config.minValue + (idx / minorTickCount) * span, 2);
                       return (
                         <g key={idx}>
-                          <line x1={x} y1="54" x2={x} y2="70" stroke="#0f172a" strokeWidth="1.5" />
-                          <text x={x} y="96" textAnchor="middle" fontSize="9" fill="#334155">
-                            {lbl}
-                          </text>
-                        </g>
-                      );
-                    })}
-                    <text x="180" y="116" textAnchor="middle" fontSize="10" fill="#475569">
-                      Scale ({config.unit}){inspectingZeroError ? ' — Closed / Zero Check' : ''}
-                    </text>
-                  </g>
-                )}
-
-                {/* VERNIER CALLIPERS */}
-                {config.instrument === 'vernier-callipers' && model.vernier && (
-                  <g>
-                    <rect x="20" y="24" width="320" height="32" rx="3" fill="#e2e8f0" stroke="#475569" />
-                    {Array.from({ length: 11 }).map((_, idx) => {
-                      const x = 30 + idx * 28;
-                      return (
-                        <g key={idx}>
-                          <line x1={x} y1="38" x2={x} y2="56" stroke="#0f172a" strokeWidth="1.4" />
-                          <text x={x} y="34" textAnchor="middle" fontSize="9" fill="#0f172a">
-                            {roundClean(model.vernier!.mainScaleReading + (idx - 2) * (config.mainScaleStep ?? 1), 1)}
-                          </text>
-                        </g>
-                      );
-                    })}
-                    <rect x="86" y="58" width="170" height="30" rx="3" fill="#dbeafe" stroke="#1d4ed8" />
-                    <text x="171" y="76" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#1e3a8a">
-                      Main: {model.vernier.mainScaleReading} {config.unit} · Aligned div: {model.vernier.alignedDivision}
-                    </text>
-                    <text x="180" y="112" textAnchor="middle" fontSize="10" fill="#475569">
-                      {inspectingZeroError
-                        ? `Jaws closed — Zero error: ${model.zeroError >= 0 ? '+' : ''}${model.zeroError} ${config.unit}`
-                        : `Vernier LC = ${model.vernier.leastCount} ${config.unit}`}
-                    </text>
-                  </g>
-                )}
-
-                {/* MICROMETER SCREW GAUGE */}
-                {config.instrument === 'micrometer' && model.micrometer && (
-                  <g>
-                    <rect x="24" y="34" width="165" height="44" rx="4" fill="#e2e8f0" stroke="#334155" />
-                    <line x1="24" y1="56" x2="189" y2="56" stroke="#0f172a" strokeWidth="1.5" />
-                    <text x="106" y="28" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#0f172a">
-                      Sleeve: {model.micrometer.sleeveReadingMm} mm {model.micrometer.hasHalfMmVisible ? '(+0.5 visible)' : ''}
-                    </text>
-                    <rect x="189" y="22" width="130" height="68" rx="6" fill="#fef3c7" stroke="#b45309" />
-                    <line x1="189" y1="56" x2="215" y2="56" stroke="#b45309" strokeWidth="2" />
-                    <text x="256" y="60" textAnchor="middle" fontSize="12" fontWeight="bold" fill="#78350f">
-                      Thimble: {model.micrometer.thimbleDivision}
-                    </text>
-                    <text x="180" y="112" textAnchor="middle" fontSize="10" fill="#475569">
-                      {inspectingZeroError
-                        ? `Anvil closed — Zero error: ${model.zeroError >= 0 ? '+' : ''}${model.zeroError} mm`
-                        : `Pitch = ${config.pitchMm ?? 0.5} mm · LC = ${model.micrometer.leastCountMm} mm`}
-                    </text>
-                  </g>
-                )}
-
-                {/* MEASURING CYLINDER WITH CONCAVE/CONVEX MENISCUS */}
-                {config.instrument === 'measuring-cylinder' && (
-                  <g>
-                    <rect x="135" y="16" width="90" height="96" rx="4" fill="#f8fafc" stroke="#475569" strokeWidth="1.8" />
-                    {(() => {
-                      const liquidTop = 104 - (pct / 100) * 76;
-                      const curve =
-                        config.meniscusType === 'convex'
-                          ? `M 136 ${liquidTop + 5} Q 180 ${liquidTop - 6} 224 ${liquidTop + 5}`
-                          : config.meniscusType === 'flat'
-                            ? `M 136 ${liquidTop} L 224 ${liquidTop}`
-                            : `M 136 ${liquidTop - 5} Q 180 ${liquidTop + 6} 224 ${liquidTop - 5}`;
-                      return (
-                        <>
-                          <path
-                            d={`${curve} L 224 111 L 136 111 Z`}
-                            fill={config.meniscusType === 'convex' ? '#94a3b8' : '#38bdf8'}
-                            opacity="0.7"
+                          <line
+                            x1={x}
+                            y1="54"
+                            x2={x}
+                            y2={isMajor ? '74' : '64'}
+                            stroke="#0f172a"
+                            strokeWidth={isMajor ? '1.5' : '0.8'}
                           />
-                          <path d={curve} fill="none" stroke="#0369a1" strokeWidth="2" />
-                          <line x1="230" y1={liquidTop} x2="270" y2={liquidTop - eyeOffsetDeg * 0.6} stroke="#dc2626" strokeDasharray="3 2" />
-                        </>
+                          {isMajor && (
+                            <text x={x} y="86" textAnchor="middle" fontSize="8" fill="#0f172a">
+                              {val}
+                            </text>
+                          )}
+                        </g>
                       );
-                    })()}
-                    <text x="72" y="58" textAnchor="middle" fontSize="10" fontWeight="bold" fill="#0f172a">
-                      {config.liquidName ?? 'Liquid'}
-                    </text>
-                    <text x="72" y="72" textAnchor="middle" fontSize="9" fill="#475569">
-                      Meniscus: {config.meniscusType ?? 'concave'}
-                    </text>
-                    <text x="298" y="64" textAnchor="middle" fontSize="9" fill="#475569">
-                      Eye: {eyeOffsetDeg > 0 ? `+${eyeOffsetDeg}° (high)` : eyeOffsetDeg < 0 ? `${eyeOffsetDeg}° (low)` : '0° (level)'}
+                    })}
+                    <text x="180" y="114" textAnchor="middle" fontSize="9.5" fill="#475569">
+                      Ruler Scale ({config.unit}){config.enableParallax ? ` · Simplified parallax eye: ${eyeOffsetDeg}°` : ''}
                     </text>
                   </g>
                 )}
 
-                {/* ANALOGUE AMMETER / VOLTMETER */}
-                {(config.instrument === 'ammeter' || config.instrument === 'voltmeter') && (
-                  <g>
-                    <path d="M 70 102 A 110 86 0 0 1 290 102" fill="none" stroke="#334155" strokeWidth="2" />
-                    {(() => {
-                      const angleRad = Math.PI - (pct / 100) * Math.PI;
-                      const nx = 180 + Math.cos(angleRad) * 76;
-                      const ny = 102 - Math.sin(angleRad) * 76;
-                      return <line x1="180" y1="102" x2={nx} y2={ny} stroke="#dc2626" strokeWidth="2.5" />;
-                    })()}
-                    <circle cx="180" cy="102" r="5" fill="#0f172a" />
-                    <text x="180" y="74" textAnchor="middle" fontSize="16" fontWeight="bold" fill="#0f172a">
-                      {config.instrument === 'ammeter' ? 'A' : 'V'}
-                    </text>
-                    <text x="70" y="116" textAnchor="middle" fontSize="9" fill="#334155">
-                      {config.minValue}
-                    </text>
-                    <text x="290" y="116" textAnchor="middle" fontSize="9" fill="#334155">
-                      {model.activeMaxRange} {config.unit}
+                {/* 2. THERMOMETER (bulb + graduated vertical/horizontal stem) */}
+                {config.instrument === 'thermometer' && (
+                  <g data-testid="svg-thermometer">
+                    <circle cx="34" cy="64" r="14" fill="#dc2626" stroke="#7f1d1d" strokeWidth="1.5" />
+                    <rect x="46" y="56" width="290" height="16" rx="8" fill="#f1f5f9" stroke="#64748b" />
+                    <rect
+                      x="46"
+                      y="59"
+                      width={Math.max(4, (clampedPct / 100) * 284)}
+                      height="10"
+                      rx="4"
+                      fill="#ef4444"
+                    />
+                    {Array.from({ length: minorTickCount + 1 }).map((_, idx) => {
+                      const x = 46 + (idx / minorTickCount) * 284;
+                      const isMajor = idx % majorInterval === 0;
+                      const val = roundClean(config.minValue + (idx / minorTickCount) * span, 1);
+                      return (
+                        <g key={idx}>
+                          <line
+                            x1={x}
+                            y1="74"
+                            x2={x}
+                            y2={isMajor ? '88' : '81'}
+                            stroke="#0f172a"
+                            strokeWidth={isMajor ? '1.3' : '0.7'}
+                          />
+                          {isMajor && (
+                            <text x={x} y="100" textAnchor="middle" fontSize="8" fill="#0f172a">
+                              {val}
+                            </text>
+                          )}
+                        </g>
+                      );
+                    })}
+                    <text x="180" y="124" textAnchor="middle" fontSize="9.5" fill="#475569">
+                      Liquid-in-Glass Thermometer ({config.unit})
                     </text>
                   </g>
                 )}
+
+                {/* 3. VERNIER CALLIPERS (actual main-scale & vernier-scale graduations, positioned vernier zero & coinciding mark) */}
+                {config.instrument === 'vernier-callipers' && model.vernier && (() => {
+                  const mStep = config.mainScaleStep ?? 1;
+                  const vDivs = config.vernierDivisions ?? 10;
+                  const windowStart = Math.floor(model.vernier.vernierZeroPos) - 3;
+                  const pxPerUnit = 18;
+                  const toX = (u: number) => 40 + (u - windowStart) * pxPerUnit;
+                  const vernierZeroX = toX(model.vernier.vernierZeroPos);
+                  const vernierStep = mStep * (1 - 1 / vDivs); // e.g. 0.9 mm per vernier division
+                  return (
+                    <g data-testid="svg-vernier" data-vernier-zero-x={vernierZeroX.toFixed(2)} data-aligned-div={model.vernier.alignedDivision}>
+                      {/* Main scale */}
+                      <rect x="18" y="20" width="324" height="34" rx="2" fill="#e2e8f0" stroke="#475569" />
+                      {Array.from({ length: 18 }).map((_, i) => {
+                        const u = windowStart + i * mStep;
+                        const x = toX(u);
+                        if (x < 22 || x > 338) return null;
+                        const isMajor = u % 5 === 0;
+                        return (
+                          <g key={i}>
+                            <line
+                              x1={x}
+                              y1={isMajor ? '34' : '42'}
+                              x2={x}
+                              y2="54"
+                              stroke="#0f172a"
+                              strokeWidth={isMajor ? '1.4' : '0.9'}
+                            />
+                            {isMajor && (
+                              <text x={x} y="31" textAnchor="middle" fontSize="8" fontWeight="bold" fill="#0f172a">
+                                {u}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                      {/* Vernier sliding scale */}
+                      <rect x={Math.max(18, vernierZeroX - 8)} y="55" width={vDivs * vernierStep * pxPerUnit + 16} height="34" rx="2" fill="#dbeafe" stroke="#1d4ed8" />
+                      {Array.from({ length: vDivs + 1 }).map((_, j) => {
+                        const vx = vernierZeroX + j * vernierStep * pxPerUnit;
+                        if (vx < 20 || vx > 340) return null;
+                        const isCoinciding = j === model.vernier!.alignedDivision;
+                        return (
+                          <g key={j}>
+                            <line
+                              x1={vx}
+                              y1="55"
+                              x2={vx}
+                              y2={j % 5 === 0 ? '74' : '67'}
+                              stroke={isCoinciding && isGuided ? '#dc2626' : '#1e3a8a'}
+                              strokeWidth={isCoinciding && isGuided ? '1.8' : '1'}
+                            />
+                            {(j === 0 || j === vDivs || j === 5) && (
+                              <text x={vx} y="84" textAnchor="middle" fontSize="7.5" fill="#1e3a8a">
+                                {j}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                      <text x="180" y="112" textAnchor="middle" fontSize="9.5" fill="#334155">
+                        {inspectingZeroError
+                          ? 'Jaws closed — inspect vernier 0 relative to main 0'
+                          : isGuided
+                            ? `Guided view: Main = ${model.vernier.mainScaleReading} ${config.unit}, coinciding vernier mark = ${model.vernier.alignedDivision} (LC ${model.vernier.leastCount})`
+                            : `Read main scale before vernier 0 + coinciding vernier division (LC = ${model.vernier.leastCount} ${config.unit})`}
+                      </text>
+                    </g>
+                  );
+                })()}
+
+                {/* 4. MICROMETER SCREW GAUGE (graduated sleeve with whole & 0.5 mm marks + graduated rotating thimble) */}
+                {config.instrument === 'micrometer' && model.micrometer && (() => {
+                  const tDivs = config.thimbleDivisions ?? 50;
+                  const pitch = config.pitchMm ?? 0.5;
+                  const sleeveStart = Math.max(0, model.micrometer.sleeveWholeMm - 4);
+                  const thimbleEdgeX = 200;
+                  const pxPerMm = 26;
+                  return (
+                    <g data-testid="svg-micrometer" data-thimble-div={model.micrometer.thimbleDivision}>
+                      {/* Sleeve */}
+                      <rect x="24" y="34" width={thimbleEdgeX - 24} height="56" rx="3" fill="#e2e8f0" stroke="#334155" />
+                      <line x1="24" y1="62" x2={thimbleEdgeX} y2="62" stroke="#0f172a" strokeWidth="1.5" />
+                      {Array.from({ length: 7 }).map((_, i) => {
+                        const mm = sleeveStart + i;
+                        const x = 36 + i * pxPerMm;
+                        if (x > thimbleEdgeX - 4) return null;
+                        const halfX = x + pxPerMm * 0.5;
+                        return (
+                          <g key={i}>
+                            <line x1={x} y1="42" x2={x} y2="62" stroke="#0f172a" strokeWidth="1.3" />
+                            <text x={x} y="39" textAnchor="middle" fontSize="8" fill="#0f172a">
+                              {mm}
+                            </text>
+                            {(config.hasHalfMmSleeve ?? pitch === 0.5) && halfX <= thimbleEdgeX - 2 && (
+                              <line x1={halfX} y1="62" x2={halfX} y2="76" stroke="#0f172a" strokeWidth="1.1" />
+                            )}
+                          </g>
+                        );
+                      })}
+                      {/* Graduated rotating thimble */}
+                      <rect x={thimbleEdgeX} y="20" width="124" height="84" rx="5" fill="#fef3c7" stroke="#b45309" />
+                      {[-3, -2, -1, 0, 1, 2, 3].map((offset) => {
+                        const mark = ((model.micrometer!.thimbleDivision + offset) % tDivs + tDivs) % tDivs;
+                        const y = 62 - offset * 10;
+                        const isMajor = mark % 5 === 0;
+                        return (
+                          <g key={offset}>
+                            <line
+                              x1={thimbleEdgeX}
+                              y1={y}
+                              x2={thimbleEdgeX + (isMajor ? 22 : 12)}
+                              y2={y}
+                              stroke={offset === 0 ? '#dc2626' : '#78350f'}
+                              strokeWidth={offset === 0 ? '1.8' : '1'}
+                            />
+                            {(isMajor || offset === 0) && (
+                              <text x={thimbleEdgeX + 28} y={y + 3} fontSize="8.5" fontWeight={offset === 0 ? 'bold' : 'normal'} fill="#78350f">
+                                {mark}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                      <text x="180" y="124" textAnchor="middle" fontSize="9.5" fill="#334155">
+                        {inspectingZeroError
+                          ? `Anvil closed — datum aligns with thimble mark ${model.micrometer.thimbleDivision}`
+                          : isGuided
+                            ? `Guided view: Sleeve = ${model.micrometer.sleeveReadingMm} mm${model.micrometer.hasHalfMmVisible ? ' (0.5 mm visible)' : ''} · Thimble = ${model.micrometer.thimbleDivision}`
+                            : `Read sleeve (pitch ${pitch} mm) + thimble mark at datum line (LC = ${model.micrometer.leastCountMm} mm)`}
+                      </text>
+                    </g>
+                  );
+                })()}
+
+                {/* 5. MEASURING CYLINDER (graduated ticks, physical meniscus distinct from apparent parallax line) */}
+                {config.instrument === 'measuring-cylinder' && (() => {
+                  const physY = 122 - (physicalPct / 100) * 96;
+                  const appY = 122 - (clampedPct / 100) * 96;
+                  const curve =
+                    config.meniscusType === 'convex'
+                      ? `M 136 ${physY + 6} Q 180 ${physY - 6} 224 ${physY + 6}`
+                      : config.meniscusType === 'flat'
+                        ? `M 136 ${physY} L 224 ${physY}`
+                        : `M 136 ${physY - 6} Q 180 ${physY + 6} 224 ${physY - 6}`;
+                  const cylTicks = Math.min(totalDivs, 40);
+                  const cylMajor = cylTicks >= 20 ? 5 : 2;
+                  return (
+                    <g data-testid="svg-cylinder" data-phys-y={physY.toFixed(2)} data-app-y={appY.toFixed(2)}>
+                      <rect x="135" y="18" width="90" height="106" rx="3" fill="#f8fafc" stroke="#475569" strokeWidth="1.6" />
+                      <path
+                        d={`${curve} L 224 123 L 136 123 Z`}
+                        fill={config.meniscusType === 'convex' ? '#94a3b8' : '#38bdf8'}
+                        opacity="0.65"
+                      />
+                      <path d={curve} fill="none" stroke="#0369a1" strokeWidth="2" />
+                      {Array.from({ length: cylTicks + 1 }).map((_, idx) => {
+                        const y = 122 - (idx / cylTicks) * 96;
+                        const isMajor = idx % cylMajor === 0;
+                        const val = roundClean(config.minValue + (idx / cylTicks) * span, 1);
+                        return (
+                          <g key={idx}>
+                            <line
+                              x1="135"
+                              y1={y}
+                              x2={isMajor ? '151' : '144'}
+                              y2={y}
+                              stroke="#0f172a"
+                              strokeWidth={isMajor ? '1.2' : '0.7'}
+                            />
+                            {isMajor && (
+                              <text x="129" y={y + 3} textAnchor="end" fontSize="7.5" fill="#0f172a">
+                                {val}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                      {/* Apparent eye-line vs physical level */}
+                      <line x1="226" y1={appY} x2="274" y2={physY - eyeOffsetDeg * 0.7} stroke="#dc2626" strokeDasharray="3 2" />
+                      <text x="296" y="42" textAnchor="middle" fontSize="8.5" fontWeight="bold" fill="#0f172a">
+                        {config.liquidName ?? 'Liquid'}
+                      </text>
+                      <text x="296" y="56" textAnchor="middle" fontSize="8" fill="#475569">
+                        Meniscus: {config.meniscusType ?? 'concave'}
+                      </text>
+                      <text x="296" y="72" textAnchor="middle" fontSize="8" fill="#dc2626">
+                        Eye: {eyeOffsetDeg > 0 ? `+${eyeOffsetDeg}°` : `${eyeOffsetDeg}°`}
+                      </text>
+                      <text x="296" y="86" textAnchor="middle" fontSize="7.5" fill="#64748b">
+                        (Simplified parallax model)
+                      </text>
+                    </g>
+                  );
+                })()}
+
+                {/* 6. ANALOGUE AMMETER & VOLTMETER (actual intermediate arc graduations + needle angle) */}
+                {(config.instrument === 'ammeter' || config.instrument === 'voltmeter') && (() => {
+                  const needlePct = model.overRange ? 104 : clampedPct;
+                  const angleRad = Math.PI - (needlePct / 100) * Math.PI;
+                  const nx = 180 + Math.cos(angleRad) * 82;
+                  const ny = 114 - Math.sin(angleRad) * 82;
+                  const arcTicks = Math.min(totalDivs, 30);
+                  const arcMajor = arcTicks >= 20 ? 5 : 2;
+                  return (
+                    <g data-testid="svg-meter" data-needle-deg={((angleRad * 180) / Math.PI).toFixed(1)}>
+                      <path d="M 74 114 A 106 94 0 0 1 286 114" fill="none" stroke="#334155" strokeWidth="1.8" />
+                      {Array.from({ length: arcTicks + 1 }).map((_, idx) => {
+                        const a = Math.PI - (idx / arcTicks) * Math.PI;
+                        const isMajor = idx % arcMajor === 0;
+                        const rOuter = 106;
+                        const rInner = isMajor ? 92 : 98;
+                        const x1 = 180 + Math.cos(a) * rOuter;
+                        const y1 = 114 - Math.sin(a) * rOuter;
+                        const x2 = 180 + Math.cos(a) * rInner;
+                        const y2 = 114 - Math.sin(a) * rInner;
+                        const lx = 180 + Math.cos(a) * 78;
+                        const ly = 114 - Math.sin(a) * 78;
+                        const val = roundClean(config.minValue + (idx / arcTicks) * span, 2);
+                        return (
+                          <g key={idx}>
+                            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#0f172a" strokeWidth={isMajor ? '1.4' : '0.8'} />
+                            {isMajor && (
+                              <text x={lx} y={ly + 3} textAnchor="middle" fontSize="7.5" fill="#334155">
+                                {val}
+                              </text>
+                            )}
+                          </g>
+                        );
+                      })}
+                      <line x1="180" y1="114" x2={nx} y2={ny} stroke="#dc2626" strokeWidth="2.4" />
+                      <circle cx="180" cy="114" r="5" fill="#0f172a" />
+                      <text x="180" y="96" textAnchor="middle" fontSize="14" fontWeight="bold" fill="#0f172a">
+                        {config.instrument === 'ammeter' ? 'A' : 'V'}
+                      </text>
+                    </g>
+                  );
+                })()}
+
+                {/* 7. ANALOGUE BALANCE & STOPWATCH */}
+                {(config.instrument === 'balance' || config.instrument === 'stopwatch') && (() => {
+                  const angleRad = -Math.PI / 2 + (clampedPct / 100) * Math.PI * 1.8;
+                  const nx = 180 + Math.cos(angleRad) * 44;
+                  const ny = 74 + Math.sin(angleRad) * 44;
+                  return (
+                    <g data-testid={`svg-${config.instrument}`}>
+                      <circle cx="180" cy="74" r="52" fill="#f8fafc" stroke="#334155" strokeWidth="2" />
+                      {Array.from({ length: 12 }).map((_, idx) => {
+                        const a = -Math.PI / 2 + (idx / 12) * Math.PI * 2;
+                        const x1 = 180 + Math.cos(a) * 52;
+                        const y1 = 74 + Math.sin(a) * 52;
+                        const x2 = 180 + Math.cos(a) * 44;
+                        const y2 = 74 + Math.sin(a) * 44;
+                        return <line key={idx} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#0f172a" strokeWidth="1.3" />;
+                      })}
+                      <line x1="180" y1="74" x2={nx} y2={ny} stroke="#dc2626" strokeWidth="2.2" />
+                      <circle cx="180" cy="74" r="4" fill="#0f172a" />
+                      <text x="180" y="138" textAnchor="middle" fontSize="9.5" fill="#475569">
+                        {config.instrument === 'balance' ? 'Analogue Mass Balance (g/kg, not weight N)' : 'Analogue Stopwatch (s)'}
+                      </text>
+                    </g>
+                  );
+                })()}
               </svg>
             )}
 
-            {/* Instrument Interactive Controls */}
+            {/* Instrument Interactive Manipulation Controls */}
             <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+              {config.initialAlignmentOffset !== undefined && (
+                <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5">
+                  <span className="font-bold text-slate-700">Align offset ({sliderValue} {config.unit}):</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearStale();
+                      setSliderValue((v) => roundClean(v - model.activeScaleDivision, 4));
+                    }}
+                    className="min-h-[44px] rounded border border-slate-300 px-2 font-bold"
+                  >
+                    −Step
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearStale();
+                      setSliderValue(0);
+                    }}
+                    className="min-h-[44px] rounded bg-slate-100 px-2 font-bold text-slate-800 hover:bg-slate-200"
+                  >
+                    Align to 0
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearStale();
+                      setSliderValue((v) => roundClean(v + model.activeScaleDivision, 4));
+                    }}
+                    className="min-h-[44px] rounded border border-slate-300 px-2 font-bold"
+                  >
+                    +Step
+                  </button>
+                </div>
+              )}
+
               {(config.zeroError ?? 0) !== 0 && (
                 <button
                   type="button"
                   aria-pressed={inspectingZeroError}
-                  onClick={() => setInspectingZeroError((v) => !v)}
+                  onClick={() => {
+                    clearStale();
+                    setInspectingZeroError((v) => !v);
+                  }}
                   className={`min-h-[44px] rounded-lg border px-3 py-1.5 font-bold ${
                     inspectingZeroError
                       ? 'border-amber-600 bg-amber-100 text-amber-950'
@@ -427,7 +702,10 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                 <button
                   type="button"
                   aria-pressed={tareApplied}
-                  onClick={() => setTareApplied((v) => !v)}
+                  onClick={() => {
+                    clearStale();
+                    setTareApplied((v) => !v);
+                  }}
                   className={`min-h-[44px] rounded-lg border px-3 py-1.5 font-bold ${
                     tareApplied
                       ? 'border-emerald-600 bg-emerald-50 text-emerald-900'
@@ -446,7 +724,10 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                       key={r}
                       type="button"
                       aria-pressed={selectedRangeIndex === idx}
-                      onClick={() => setSelectedRangeIndex(idx)}
+                      onClick={() => {
+                        clearStale();
+                        setSelectedRangeIndex(idx);
+                      }}
                       className={`min-h-[44px] rounded-lg border px-2.5 py-1 font-bold ${
                         selectedRangeIndex === idx
                           ? 'border-indigo-600 bg-indigo-50 text-indigo-950'
@@ -468,7 +749,10 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                   <button
                     type="button"
                     aria-label="Lower eye position by 5 degrees"
-                    onClick={() => setEyeOffsetDeg((d) => Math.max(-30, d - 5))}
+                    onClick={() => {
+                      clearStale();
+                      setEyeOffsetDeg((d) => Math.max(-30, d - 5));
+                    }}
                     className="min-h-[44px] rounded border border-slate-300 px-2 font-bold"
                   >
                     −5°
@@ -480,20 +764,29 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                     max={30}
                     step={5}
                     value={eyeOffsetDeg}
-                    onChange={(e) => setEyeOffsetDeg(Number(e.target.value))}
+                    onChange={(e) => {
+                      clearStale();
+                      setEyeOffsetDeg(Number(e.target.value));
+                    }}
                     className="w-24"
                   />
                   <button
                     type="button"
                     aria-label="Raise eye position by 5 degrees"
-                    onClick={() => setEyeOffsetDeg((d) => Math.min(30, d + 5))}
+                    onClick={() => {
+                      clearStale();
+                      setEyeOffsetDeg((d) => Math.min(30, d + 5));
+                    }}
                     className="min-h-[44px] rounded border border-slate-300 px-2 font-bold"
                   >
                     +5°
                   </button>
                   <button
                     type="button"
-                    onClick={() => setEyeOffsetDeg(0)}
+                    onClick={() => {
+                      clearStale();
+                      setEyeOffsetDeg(0);
+                    }}
                     className="min-h-[44px] rounded bg-slate-100 px-2 font-bold text-slate-800 hover:bg-slate-200"
                   >
                     Level (0°)
@@ -532,7 +825,10 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                 type="text"
                 inputMode="decimal"
                 value={valueText}
-                onChange={(e) => setValueText(e.target.value)}
+                onChange={(e) => {
+                  clearStale();
+                  setValueText(e.target.value);
+                }}
                 placeholder="e.g. 12.4"
                 className="mt-1 min-h-[44px] w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
               />
@@ -545,7 +841,10 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                 id={`${config.id}-unit`}
                 type="text"
                 value={unitText}
-                onChange={(e) => setUnitText(e.target.value)}
+                onChange={(e) => {
+                  clearStale();
+                  setUnitText(e.target.value);
+                }}
                 placeholder={config.unit}
                 className="mt-1 min-h-[44px] w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
               />
@@ -560,7 +859,10 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
                   type="text"
                   inputMode="decimal"
                   value={uncertaintyText}
-                  onChange={(e) => setUncertaintyText(e.target.value)}
+                  onChange={(e) => {
+                    clearStale();
+                    setUncertaintyText(e.target.value);
+                  }}
                   placeholder="e.g. 0.05"
                   className="mt-1 min-h-[44px] w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-slate-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                 />
@@ -576,7 +878,7 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
             >
               Check Measurement
             </button>
-            {config.hints && config.hints.length > 0 && (
+            {config.hints && config.hints.length > 0 && isGuided && (
               <button
                 type="button"
                 onClick={() => setShowHints((s) => !s)}
@@ -588,7 +890,7 @@ export function MeasurementLab({ config }: { config: MeasurementLabConstructionC
             )}
           </div>
 
-          {showHints && config.hints && (
+          {showHints && config.hints && isGuided && (
             <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-slate-600">
               {config.hints.map((h, i) => (
                 <li key={i}>{h}</li>
