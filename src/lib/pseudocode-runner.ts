@@ -493,6 +493,18 @@ class Runtime {
       }
       case 'RANDOM':
         return Math.random();
+      case 'DIV': {
+        if (args.length < 2) throw new Error('DIV requires two arguments: DIV(A, B).');
+        const divisor = Number(args[1]);
+        if (divisor === 0) throw new Error('Division by zero in DIV.');
+        return Math.trunc(Number(args[0]) / divisor);
+      }
+      case 'MOD': {
+        if (args.length < 2) throw new Error('MOD requires two arguments: MOD(A, B).');
+        const divisor = Number(args[1]);
+        if (divisor === 0) throw new Error('Division by zero in MOD.');
+        return Number(args[0]) % divisor;
+      }
       case 'INT':
         return Math.trunc(Number(args[0] ?? 0));
       case 'REAL':

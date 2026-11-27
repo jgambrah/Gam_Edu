@@ -17,6 +17,26 @@ describe('Cambridge IGCSE 0478 Pseudocode Runner', () => {
     expect(res.output).toEqual(['4', '3']);
   });
 
+  it('supports Cambridge function-call DIV(A, B), MOD(A, B), and power ^ operator', () => {
+    const code = `
+      DECLARE A : INTEGER
+      DECLARE B : INTEGER
+      OUTPUT "Enter values for A and B"
+      INPUT A
+      INPUT B
+      quot ← DIV(A, B)
+      rem ← MOD(A, B)
+      pow ← A ^ B
+      OUTPUT quot, rem, pow
+    `;
+    const res = runPseudocode(code, '18\n3');
+    expect(res.ok).toBe(true);
+    expect(res.output).toEqual(['Enter values for A and B', '6 0 5832']);
+
+    expect(runPseudocode('OUTPUT DIV(10, 0)').ok).toBe(false);
+    expect(runPseudocode('OUTPUT MOD(10, 0)').ok).toBe(false);
+  });
+
   it('runs IF/ELSE, FOR loop, WHILE sentinel, and REPEAT...UNTIL', () => {
     const code = `
       DECLARE Total, Count : INTEGER
