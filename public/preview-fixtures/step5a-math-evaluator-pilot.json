@@ -1,15 +1,66 @@
 {
   "lessonId": "step5a-math-evaluator-pilot",
-  "title": "Step 5A Preview: Mathematical Evaluator Pilots (v1.0.0)",
-  "subject": "Mathematics, Science, Accounting & Economics",
-  "level": "Primary (Basic 4 / 0096) to AS & A Level (9709 / 9702 / 9701)",
-  "description": "Preview-only validation fixture exercising all five discriminated math-evaluator modes across 15 slides and 18 independent activities.",
+  "schemaVersion": "0.3",
+  "meta": {
+    "title": "Step 5A Preview Pilot — Mathematical Evaluator (v1.0.0)",
+    "subject": "Mathematics, Science, Accounting & Economics",
+    "class": "Preview Pilot",
+    "topic": "MathEvaluatorEngine v1.0.0 Verification (15 slides, 18 activities)",
+    "contentStandard": "STEP5A.PILOT",
+    "indicators": [
+      "STEP5A.1",
+      "STEP5A.2",
+      "STEP5A.3",
+      "STEP5A.4",
+      "STEP5A.5"
+    ],
+    "term": 1,
+    "narrationWordCount": 420,
+    "estimatedNarrationMinutes": 4,
+    "estimatedTotalMinutes": 20
+  },
   "slides": [
     {
       "id": "me-s01",
+      "order": 1,
       "title": "1. Primary Equivalent & Reduced Fractions",
-      "narration": "Simplify 6/8 to its lowest reduced fraction.",
-      "visual": { "type": "diagram", "caption": "Equivalent fractions in lowest terms." },
+      "purpose": "Simplify 6/8 to its lowest reduced fraction.",
+      "onScreenText": [
+        "1. Primary Equivalent & Reduced Fractions",
+        "Simplify 6/8 to its lowest reduced fraction."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "1. Primary Equivalent & Reduced Fractions",
+        "description": "Simplify 6/8 to its lowest reduced fraction.",
+        "labels": [
+          "1. Primary Equivalent & Reduced Fractions"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">1. Primary Equivalent &amp; Reduced Fractions</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Simplify 6/8 to its lowest reduced fraction.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Simplify 6/8 to its lowest reduced fraction.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Simplify 6/8 to its lowest reduced fraction."
+      ],
+      "indicatorIds": [
+        "STEP5A.1"
+      ],
+      "askTeacherContext": {
+        "focus": "1. Primary Equivalent & Reduced Fractions",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 1 of 15.",
       "interactive": [
         {
           "id": "me-01-reduced-fraction",
@@ -25,18 +76,58 @@
           "accessibilityLabel": "Reduce fraction six eighths to lowest terms",
           "fallbackText": "Divide numerator and denominator by their highest common factor 2: 6/8 = 3/4.",
           "expectedValue": "3/4",
-          "precisionRule": { "kind": "exact" },
+          "precisionRule": {
+            "kind": "exact"
+          },
           "requiredForm": "reduced-fraction",
-          "hints": ["Both 6 and 8 are divisible by 2."],
+          "hints": [
+            "Both 6 and 8 are divisible by 2."
+          ],
           "successExplanation": "3 and 4 share no common factor greater than 1, so 3/4 is in lowest terms."
         }
       ]
     },
     {
       "id": "me-s02",
+      "order": 2,
       "title": "2. Exact Decimal Rounding (Half-Up Carry-Over)",
-      "narration": "Round 9.995 to exactly two decimal places using standard half-up rounding.",
-      "visual": { "type": "diagram", "caption": "Decimal rounding with carry-over." },
+      "purpose": "Round 9.995 to exactly two decimal places using standard half-up rounding.",
+      "onScreenText": [
+        "2. Exact Decimal Rounding (Half-Up Carry-Over)",
+        "Round 9.995 to exactly two decimal places using standard half-up rounding."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "2. Exact Decimal Rounding (Half-Up Carry-Over)",
+        "description": "Round 9.995 to exactly two decimal places using standard half-up rounding.",
+        "labels": [
+          "2. Exact Decimal Rounding (Half-Up Carry-Over)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">2. Exact Decimal Rounding (Half-Up Carry-Over)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Round 9.995 to exactly two decimal places using standard half-up rounding.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Round 9.995 to exactly two decimal places using standard half-up rounding.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Round 9.995 to exactly two decimal places using standard half-up rounding."
+      ],
+      "indicatorIds": [
+        "STEP5A.2"
+      ],
+      "askTeacherContext": {
+        "focus": "2. Exact Decimal Rounding (Half-Up Carry-Over)",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 2 of 15.",
       "interactive": [
         {
           "id": "me-02-decimal-rounding",
@@ -52,16 +143,56 @@
           "accessibilityLabel": "Round 9.995 to two decimal places",
           "fallbackText": "The third decimal digit is 5, so 9.995 rounds up with carry-over to 10.00.",
           "expectedValue": "9.995",
-          "precisionRule": { "kind": "decimal-places", "count": 2, "rounding": "half-up" },
+          "precisionRule": {
+            "kind": "decimal-places",
+            "count": 2,
+            "rounding": "half-up"
+          },
           "successExplanation": "Exact BigInt decimal arithmetic avoids binary float drift: 9.995 -> 10.00."
         }
       ]
     },
     {
       "id": "me-s03",
+      "order": 3,
       "title": "3. Expansion & Factorisation (Multi-Activity Slide)",
-      "narration": "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide.",
-      "visual": { "type": "diagram", "caption": "Expanding and factorising algebra." },
+      "purpose": "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide.",
+      "onScreenText": [
+        "3. Expansion & Factorisation (Multi-Activity Slide)",
+        "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "3. Expansion & Factorisation (Multi-Activity Slide)",
+        "description": "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide.",
+        "labels": [
+          "3. Expansion & Factorisation (Multi-Activity Slide)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">3. Expansion &amp; Factorisation (Multi-Activity Slide)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Practise expanding brackets and factorising a difference of two squares in two independe</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Practise expanding brackets and factorising a difference of two squares in two independent activities on the same slide."
+      ],
+      "indicatorIds": [
+        "STEP5A.3"
+      ],
+      "askTeacherContext": {
+        "focus": "3. Expansion & Factorisation (Multi-Activity Slide)",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 3 of 15.",
       "interactive": [
         {
           "id": "me-03a-expand",
@@ -76,11 +207,16 @@
           "promptMath": "Expand: 2(x + 3)",
           "accessibilityLabel": "Expand 2 times x plus 3",
           "fallbackText": "2(x + 3) = 2x + 6.",
-          "variables": ["x"],
+          "variables": [
+            "x"
+          ],
           "expectedExpr": "2x + 6",
           "requiredForm": "expanded-polynomial",
           "misconceptionChecks": [
-            { "matchExpr": "2x + 3", "feedback": "Remember to multiply BOTH terms inside the bracket by 2 (2 × 3 = 6)." }
+            {
+              "matchExpr": "2x + 3",
+              "feedback": "Remember to multiply BOTH terms inside the bracket by 2 (2 × 3 = 6)."
+            }
           ],
           "successExplanation": "2(x + 3) expands to 2x + 6."
         },
@@ -97,7 +233,9 @@
           "promptMath": "Factorise: x² − 9",
           "accessibilityLabel": "Factorise x squared minus 9",
           "fallbackText": "Difference of two squares: x² − 9 = (x − 3)(x + 3).",
-          "variables": ["x"],
+          "variables": [
+            "x"
+          ],
           "expectedExpr": "(x - 3)(x + 3)",
           "requiredForm": "factored-form",
           "successExplanation": "(x − 3)(x + 3) and (x + 3)(x − 3) are both accepted."
@@ -106,9 +244,45 @@
     },
     {
       "id": "me-s04",
+      "order": 4,
       "title": "4. Collecting Like Terms",
-      "narration": "Combine like terms in a two-variable linear expression.",
-      "visual": { "type": "diagram", "caption": "Collecting like terms." },
+      "purpose": "Combine like terms in a two-variable linear expression.",
+      "onScreenText": [
+        "4. Collecting Like Terms",
+        "Combine like terms in a two-variable linear expression."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "4. Collecting Like Terms",
+        "description": "Combine like terms in a two-variable linear expression.",
+        "labels": [
+          "4. Collecting Like Terms"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">4. Collecting Like Terms</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Combine like terms in a two-variable linear expression.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Combine like terms in a two-variable linear expression.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Combine like terms in a two-variable linear expression."
+      ],
+      "indicatorIds": [
+        "STEP5A.4"
+      ],
+      "askTeacherContext": {
+        "focus": "4. Collecting Like Terms",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 4 of 15.",
       "interactive": [
         {
           "id": "me-04-like-terms",
@@ -123,7 +297,10 @@
           "promptMath": "Simplify: 3x + 2y − x + 5y",
           "accessibilityLabel": "Collect like terms in 3x plus 2y minus x plus 5y",
           "fallbackText": "(3x − x) + (2y + 5y) = 2x + 7y.",
-          "variables": ["x", "y"],
+          "variables": [
+            "x",
+            "y"
+          ],
           "expectedExpr": "2x + 7y",
           "requiredForm": "collected-like-terms",
           "successExplanation": "3x − x = 2x and 2y + 5y = 7y."
@@ -132,9 +309,45 @@
     },
     {
       "id": "me-s05",
+      "order": 5,
       "title": "5. Rational Expression with Excluded Value",
-      "narration": "Simplify a rational algebraic expression while preserving the excluded value from the original denominator.",
-      "visual": { "type": "diagram", "caption": "Removable discontinuity at x = 3." },
+      "purpose": "Simplify a rational algebraic expression while preserving the excluded value from the original denominator.",
+      "onScreenText": [
+        "5. Rational Expression with Excluded Value",
+        "Simplify a rational algebraic expression while preserving the excluded value from the original denominator."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "5. Rational Expression with Excluded Value",
+        "description": "Simplify a rational algebraic expression while preserving the excluded value from the original denominator.",
+        "labels": [
+          "5. Rational Expression with Excluded Value"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">5. Rational Expression with Excluded Value</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Simplify a rational algebraic expression while preserving the excluded value from the or</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Simplify a rational algebraic expression while preserving the excluded value from the original denominator.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Simplify a rational algebraic expression while preserving the excluded value from the original denominator."
+      ],
+      "indicatorIds": [
+        "STEP5A.5"
+      ],
+      "askTeacherContext": {
+        "focus": "5. Rational Expression with Excluded Value",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 5 of 15.",
       "interactive": [
         {
           "id": "me-05-rational-domain",
@@ -149,13 +362,17 @@
           "promptMath": "(x² − 9) / (x − 3)",
           "accessibilityLabel": "Simplify x squared minus 9 over x minus 3 with domain restriction",
           "fallbackText": "(x² − 9)/(x − 3) = x + 3, with x ≠ 3 because the original denominator vanishes at x = 3.",
-          "variables": ["x"],
+          "variables": [
+            "x"
+          ],
           "sourceExpr": "(x^2 - 9)/(x - 3)",
           "expectedExpr": "x + 3",
           "requiredForm": "expanded-polynomial",
           "domainRestrictions": {
             "requireLearnerDomain": true,
-            "expectedExcluded": ["3"]
+            "expectedExcluded": [
+              "3"
+            ]
           },
           "successExplanation": "Cancelling (x − 3) removes the factor algebraically, but x ≠ 3 remains excluded from the original domain."
         }
@@ -163,9 +380,45 @@
     },
     {
       "id": "me-s06",
+      "order": 6,
       "title": "6. Linear Equation Solution",
-      "narration": "Solve a linear equation in one unknown.",
-      "visual": { "type": "diagram", "caption": "Solving 3x − 7 = 11." },
+      "purpose": "Solve a linear equation in one unknown.",
+      "onScreenText": [
+        "6. Linear Equation Solution",
+        "Solve a linear equation in one unknown."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "6. Linear Equation Solution",
+        "description": "Solve a linear equation in one unknown.",
+        "labels": [
+          "6. Linear Equation Solution"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">6. Linear Equation Solution</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Solve a linear equation in one unknown.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve a linear equation in one unknown.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve a linear equation in one unknown."
+      ],
+      "indicatorIds": [
+        "STEP5A.1"
+      ],
+      "askTeacherContext": {
+        "focus": "6. Linear Equation Solution",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 6 of 15.",
       "interactive": [
         {
           "id": "me-06-linear-eq",
@@ -183,16 +436,54 @@
           "variable": "x",
           "originalEquation": "3x - 7 = 11",
           "equationClass": "linear",
-          "expectedRoots": ["6"],
+          "expectedRoots": [
+            "6"
+          ],
           "successExplanation": "3(6) − 7 = 18 − 7 = 11."
         }
       ]
     },
     {
       "id": "me-s07",
+      "order": 7,
       "title": "7. Quadratic Equation — Complete Solution Set",
-      "narration": "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete.",
-      "visual": { "type": "diagram", "caption": "Quadratic roots {2, 3}." },
+      "purpose": "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete.",
+      "onScreenText": [
+        "7. Quadratic Equation — Complete Solution Set",
+        "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "7. Quadratic Equation — Complete Solution Set",
+        "description": "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete.",
+        "labels": [
+          "7. Quadratic Equation — Complete Solution Set"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">7. Quadratic Equation — Complete Solution Set</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Find all real roots of a quadratic equation. Submitting only one root is detected as inc</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Find all real roots of a quadratic equation. Submitting only one root is detected as incomplete."
+      ],
+      "indicatorIds": [
+        "STEP5A.2"
+      ],
+      "askTeacherContext": {
+        "focus": "7. Quadratic Equation — Complete Solution Set",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 7 of 15.",
       "interactive": [
         {
           "id": "me-07-quadratic-roots",
@@ -210,7 +501,10 @@
           "variable": "x",
           "originalEquation": "x^2 - 5x + 6 = 0",
           "equationClass": "quadratic",
-          "expectedRoots": ["2", "3"],
+          "expectedRoots": [
+            "2",
+            "3"
+          ],
           "requireCompleteSet": true,
           "successExplanation": "Both x = 2 and x = 3 satisfy the quadratic."
         }
@@ -218,9 +512,45 @@
     },
     {
       "id": "me-s08",
+      "order": 8,
       "title": "8. Radical Equation & Extraneous-Root Rejection",
-      "narration": "Solve a radical equation and reject any extraneous root introduced by squaring both sides.",
-      "visual": { "type": "diagram", "caption": "Checking roots in the original equation." },
+      "purpose": "Solve a radical equation and reject any extraneous root introduced by squaring both sides.",
+      "onScreenText": [
+        "8. Radical Equation & Extraneous-Root Rejection",
+        "Solve a radical equation and reject any extraneous root introduced by squaring both sides."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "8. Radical Equation & Extraneous-Root Rejection",
+        "description": "Solve a radical equation and reject any extraneous root introduced by squaring both sides.",
+        "labels": [
+          "8. Radical Equation & Extraneous-Root Rejection"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">8. Radical Equation &amp; Extraneous-Root Rejection</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Solve a radical equation and reject any extraneous root introduced by squaring both side</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Solve a radical equation and reject any extraneous root introduced by squaring both sides.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Solve a radical equation and reject any extraneous root introduced by squaring both sides."
+      ],
+      "indicatorIds": [
+        "STEP5A.3"
+      ],
+      "askTeacherContext": {
+        "focus": "8. Radical Equation & Extraneous-Root Rejection",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 8 of 15.",
       "interactive": [
         {
           "id": "me-08-extraneous-root",
@@ -238,17 +568,57 @@
           "variable": "x",
           "originalEquation": "sqrt(x + 2) = x",
           "equationClass": "radical-single",
-          "expectedRoots": ["2"],
-          "extraneousCandidates": ["-1"],
+          "expectedRoots": [
+            "2"
+          ],
+          "extraneousCandidates": [
+            "-1"
+          ],
           "successExplanation": "x = −1 is extraneous because the principal square root is non-negative."
         }
       ]
     },
     {
       "id": "me-s09",
+      "order": 9,
       "title": "9. Inequalities & Interval Notation",
-      "narration": "Express the solution set of a compound inequality as a disjoint union of intervals.",
-      "visual": { "type": "diagram", "caption": "Interval union (-∞, -2) ∪ [5, ∞)." },
+      "purpose": "Express the solution set of a compound inequality as a disjoint union of intervals.",
+      "onScreenText": [
+        "9. Inequalities & Interval Notation",
+        "Express the solution set of a compound inequality as a disjoint union of intervals."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "9. Inequalities & Interval Notation",
+        "description": "Express the solution set of a compound inequality as a disjoint union of intervals.",
+        "labels": [
+          "9. Inequalities & Interval Notation"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">9. Inequalities &amp; Interval Notation</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Express the solution set of a compound inequality as a disjoint union of intervals.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Express the solution set of a compound inequality as a disjoint union of intervals.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Express the solution set of a compound inequality as a disjoint union of intervals."
+      ],
+      "indicatorIds": [
+        "STEP5A.4"
+      ],
+      "askTeacherContext": {
+        "focus": "9. Inequalities & Interval Notation",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 9 of 15.",
       "interactive": [
         {
           "id": "me-09-interval-union",
@@ -265,8 +635,18 @@
           "fallbackText": "In interval notation: (−∞, −2) ∪ [5, ∞).",
           "variable": "x",
           "expectedIntervals": [
-            { "low": "-inf", "lowInclusive": false, "high": "-2", "highInclusive": false },
-            { "low": "5", "lowInclusive": true, "high": "inf", "highInclusive": false }
+            {
+              "low": "-inf",
+              "lowInclusive": false,
+              "high": "-2",
+              "highInclusive": false
+            },
+            {
+              "low": "5",
+              "lowInclusive": true,
+              "high": "inf",
+              "highInclusive": false
+            }
           ],
           "acceptedInputStyle": "either",
           "successExplanation": "Open '(' excludes −2 and ±∞; closed '[' includes 5."
@@ -275,9 +655,45 @@
     },
     {
       "id": "me-s10",
+      "order": 10,
       "title": "10. Surds & Indices Simplification",
-      "narration": "Extract perfect square factors and combine like surds.",
-      "visual": { "type": "diagram", "caption": "Simplifying √12 + √27." },
+      "purpose": "Extract perfect square factors and combine like surds.",
+      "onScreenText": [
+        "10. Surds & Indices Simplification",
+        "Extract perfect square factors and combine like surds."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "10. Surds & Indices Simplification",
+        "description": "Extract perfect square factors and combine like surds.",
+        "labels": [
+          "10. Surds & Indices Simplification"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">10. Surds &amp; Indices Simplification</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Extract perfect square factors and combine like surds.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Extract perfect square factors and combine like surds.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Extract perfect square factors and combine like surds."
+      ],
+      "indicatorIds": [
+        "STEP5A.5"
+      ],
+      "askTeacherContext": {
+        "focus": "10. Surds & Indices Simplification",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 10 of 15.",
       "interactive": [
         {
           "id": "me-10-surds",
@@ -292,7 +708,9 @@
           "promptMath": "√12 + √27",
           "accessibilityLabel": "Simplify square root of 12 plus square root of 27",
           "fallbackText": "√12 = 2√3 and √27 = 3√3, so √12 + √27 = 5√3.",
-          "variables": ["x"],
+          "variables": [
+            "x"
+          ],
           "expectedExpr": "5sqrt(3)",
           "requiredForm": "simplified-surd",
           "successExplanation": "2√3 + 3√3 = 5√3."
@@ -301,9 +719,45 @@
     },
     {
       "id": "me-s11",
+      "order": 11,
       "title": "11. Logarithmic Identity & Domain Restriction",
-      "narration": "Combine two natural logarithms while preserving the stricter original domain x > 2.",
-      "visual": { "type": "diagram", "caption": "Logarithm domain preservation x > 2." },
+      "purpose": "Combine two natural logarithms while preserving the stricter original domain x > 2.",
+      "onScreenText": [
+        "11. Logarithmic Identity & Domain Restriction",
+        "Combine two natural logarithms while preserving the stricter original domain x > 2."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "11. Logarithmic Identity & Domain Restriction",
+        "description": "Combine two natural logarithms while preserving the stricter original domain x > 2.",
+        "labels": [
+          "11. Logarithmic Identity & Domain Restriction"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">11. Logarithmic Identity &amp; Domain Restriction</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Combine two natural logarithms while preserving the stricter original domain x &gt; 2.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Combine two natural logarithms while preserving the stricter original domain x > 2.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Combine two natural logarithms while preserving the stricter original domain x > 2."
+      ],
+      "indicatorIds": [
+        "STEP5A.1"
+      ],
+      "askTeacherContext": {
+        "focus": "11. Logarithmic Identity & Domain Restriction",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 11 of 15.",
       "interactive": [
         {
           "id": "me-11-log-domain",
@@ -318,13 +772,17 @@
           "promptMath": "ln(x) + ln(x − 2)",
           "accessibilityLabel": "Combine natural log of x plus natural log of x minus 2 with domain",
           "fallbackText": "ln(x) + ln(x − 2) = ln(x(x − 2)) for x > 2 (both x > 0 and x − 2 > 0 must hold).",
-          "variables": ["x"],
+          "variables": [
+            "x"
+          ],
           "sourceExpr": "ln(x) + ln(x - 2)",
           "expectedExpr": "ln(x*(x - 2))",
           "domainRestrictions": {
             "requireLearnerDomain": true,
             "expectedDomainInterval": "x > 2",
-            "variableAssumptions": { "x": "positive" }
+            "variableAssumptions": {
+              "x": "positive"
+            }
           },
           "verificationPolicy": "exact-or-symbolic",
           "successExplanation": "Although x(x − 2) > 0 also holds for x < 0, the original expression requires both x > 0 and x > 2, so x > 2."
@@ -333,9 +791,45 @@
     },
     {
       "id": "me-s12",
+      "order": 12,
       "title": "12. Physics Quantities, Equivalent Units & Sig Figs (Multi-Activity Slide)",
-      "narration": "Practise equivalent SI unit conversion and scientific notation with exact significant figures.",
-      "visual": { "type": "diagram", "caption": "Physics units and significant figures." },
+      "purpose": "Practise equivalent SI unit conversion and scientific notation with exact significant figures.",
+      "onScreenText": [
+        "12. Physics Quantities, Equivalent Units & Sig Figs (Multi-Activity Slide)",
+        "Practise equivalent SI unit conversion and scientific notation with exact significant figures."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "12. Physics Quantities, Equivalent Units & Sig Figs (Multi-Activity Slide)",
+        "description": "Practise equivalent SI unit conversion and scientific notation with exact significant figures.",
+        "labels": [
+          "12. Physics Quantities, Equivalent Units & Sig Figs (Multi-Activity Slide)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">12. Physics Quantities, Equivalent Units &amp; Sig Figs (Multi-Activity Slide)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Practise equivalent SI unit conversion and scientific notation with exact significant fi</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Practise equivalent SI unit conversion and scientific notation with exact significant figures.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Practise equivalent SI unit conversion and scientific notation with exact significant figures."
+      ],
+      "indicatorIds": [
+        "STEP5A.2"
+      ],
+      "askTeacherContext": {
+        "focus": "12. Physics Quantities, Equivalent Units & Sig Figs (Multi-Activity Slide)",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 12 of 15.",
       "interactive": [
         {
           "id": "me-12a-physics-units",
@@ -371,18 +865,61 @@
           "accessibilityLabel": "Enter speed of light to 3 significant figures in scientific notation",
           "fallbackText": "3.00 × 10^8 m/s (3 significant figures).",
           "expectedValue": "299792458",
-          "precisionRule": { "kind": "sig-figs", "count": 3, "rounding": "half-up" },
+          "precisionRule": {
+            "kind": "sig-figs",
+            "count": 3,
+            "rounding": "half-up"
+          },
           "requiredForm": "scientific",
-          "unitSpec": { "expectedUnit": "m/s", "allowEquivalentUnits": false },
+          "unitSpec": {
+            "expectedUnit": "m/s",
+            "allowEquivalentUnits": false
+          },
           "successExplanation": "3.00 × 10^8 clearly displays all 3 significant figures."
         }
       ]
     },
     {
       "id": "me-s13",
+      "order": 13,
       "title": "13. Chemistry Concentration & Accounting Margin (Multi-Activity Slide)",
-      "narration": "Apply exact numerical and unit evaluation across Chemistry and Accounting.",
-      "visual": { "type": "diagram", "caption": "Cross-subject quantitative reasoning." },
+      "purpose": "Apply exact numerical and unit evaluation across Chemistry and Accounting.",
+      "onScreenText": [
+        "13. Chemistry Concentration & Accounting Margin (Multi-Activity Slide)",
+        "Apply exact numerical and unit evaluation across Chemistry and Accounting."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "13. Chemistry Concentration & Accounting Margin (Multi-Activity Slide)",
+        "description": "Apply exact numerical and unit evaluation across Chemistry and Accounting.",
+        "labels": [
+          "13. Chemistry Concentration & Accounting Margin (Multi-Activity Slide)"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">13. Chemistry Concentration &amp; Accounting Margin (Multi-Activity Slide)</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Apply exact numerical and unit evaluation across Chemistry and Accounting.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Apply exact numerical and unit evaluation across Chemistry and Accounting.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Apply exact numerical and unit evaluation across Chemistry and Accounting."
+      ],
+      "indicatorIds": [
+        "STEP5A.3"
+      ],
+      "askTeacherContext": {
+        "focus": "13. Chemistry Concentration & Accounting Margin (Multi-Activity Slide)",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 13 of 15.",
       "interactive": [
         {
           "id": "me-13a-chemistry-molarity",
@@ -398,7 +935,10 @@
           "accessibilityLabel": "Calculate molar concentration with units",
           "fallbackText": "c = 0.125 / 0.50 = 0.25 mol/dm³ (250 mol/m³).",
           "expectedValue": "0.25",
-          "unitSpec": { "expectedUnit": "mol/dm^3", "allowEquivalentUnits": true },
+          "unitSpec": {
+            "expectedUnit": "mol/dm^3",
+            "allowEquivalentUnits": true
+          },
           "successExplanation": "0.25 mol/dm³ equals 250 mol/m³."
         },
         {
@@ -415,16 +955,55 @@
           "accessibilityLabel": "Calculate gross profit margin percentage",
           "fallbackText": "Gross profit = 300; Margin = 300/800 = 37.5%.",
           "expectedValue": "37.5",
-          "unitSpec": { "expectedUnit": "%", "allowEquivalentUnits": true },
+          "unitSpec": {
+            "expectedUnit": "%",
+            "allowEquivalentUnits": true
+          },
           "successExplanation": "Gross Profit Margin is 37.5% (distinct from mark-up, which is 300/500 = 60%)."
         }
       ]
     },
     {
       "id": "me-s14",
+      "order": 14,
       "title": "14. Supported Symbolic Differentiation",
-      "narration": "Differentiate a combined polynomial and trigonometric function (with angles in radians).",
-      "visual": { "type": "diagram", "caption": "Differentiation in radians." },
+      "purpose": "Differentiate a combined polynomial and trigonometric function (with angles in radians).",
+      "onScreenText": [
+        "14. Supported Symbolic Differentiation",
+        "Differentiate a combined polynomial and trigonometric function (with angles in radians)."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "14. Supported Symbolic Differentiation",
+        "description": "Differentiate a combined polynomial and trigonometric function (with angles in radians).",
+        "labels": [
+          "14. Supported Symbolic Differentiation"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">14. Supported Symbolic Differentiation</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Differentiate a combined polynomial and trigonometric function (with angles in radians).</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Differentiate a combined polynomial and trigonometric function (with angles in radians).",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Differentiate a combined polynomial and trigonometric function (with angles in radians)."
+      ],
+      "indicatorIds": [
+        "STEP5A.4"
+      ],
+      "askTeacherContext": {
+        "focus": "14. Supported Symbolic Differentiation",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 14 of 15.",
       "interactive": [
         {
           "id": "me-14-derivative",
@@ -449,9 +1028,45 @@
     },
     {
       "id": "me-s15",
+      "order": 15,
       "title": "15. Supported Antiderivative Verification",
-      "narration": "Find the general indefinite integral and include the constant of integration + C.",
-      "visual": { "type": "diagram", "caption": "Indefinite integration verified by exact differentiation." },
+      "purpose": "Find the general indefinite integral and include the constant of integration + C.",
+      "onScreenText": [
+        "15. Supported Antiderivative Verification",
+        "Find the general indefinite integral and include the constant of integration + C."
+      ],
+      "visual": {
+        "type": "svg",
+        "altText": "15. Supported Antiderivative Verification",
+        "description": "Find the general indefinite integral and include the constant of integration + C.",
+        "labels": [
+          "15. Supported Antiderivative Verification"
+        ],
+        "svgCode": "<svg viewBox=\"0 0 800 450\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"800\" height=\"450\" fill=\"#f8fafc\"/><text x=\"400\" y=\"205\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"30\" font-weight=\"bold\" fill=\"#0f172a\">15. Supported Antiderivative Verification</text><text x=\"400\" y=\"255\" text-anchor=\"middle\" font-family=\"sans-serif\" font-size=\"18\" fill=\"#4338ca\">Find the general indefinite integral and include the constant of integration + C.</text></svg>",
+        "imagePrompt": null
+      },
+      "narration": {
+        "script": "Find the general indefinite integral and include the constant of integration + C.",
+        "estSeconds": 8,
+        "ttsStyleInstruction": "Clear mathematics and science teacher.",
+        "pauseCues": []
+      },
+      "keyIdeas": [
+        "Find the general indefinite integral and include the constant of integration + C."
+      ],
+      "indicatorIds": [
+        "STEP5A.5"
+      ],
+      "askTeacherContext": {
+        "focus": "15. Supported Antiderivative Verification",
+        "keyTerms": [
+          "Exact equivalence",
+          "Domain restriction",
+          "Units & precision"
+        ],
+        "commonMisconceptions": []
+      },
+      "teacherNote": "Step 5A Preview Pilot slide 15 of 15.",
       "interactive": [
         {
           "id": "me-15-antiderivative",
@@ -475,5 +1090,7 @@
         }
       ]
     }
-  ]
+  ],
+  "checkpoints": [],
+  "glossary": []
 }
