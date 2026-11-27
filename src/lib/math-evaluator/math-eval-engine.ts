@@ -2,9 +2,11 @@
  * GAM EDU — Step 5A Pure Module 6: Unified Mathematical Evaluator Engine
  *
  * Pure TypeScript, deterministic, zero React/DOM dependencies, zero eval().
- * Explicitly distinguishes 8 verdict classes so syntax errors, unsupported notation,
- * wrong form, wrong units/precision, and bounded numerical agreement are NEVER conflated
- * with exact symbolic mastery or incorrect mathematical reasoning.
+ * Strict Verification Integrity:
+ * - Numerical agreement NEVER produces `exact-equivalent` or `symbolic-domain-equivalent`.
+ * - Correctness is ALWAYS evaluated BEFORE misconception rules.
+ * - Exact rational & exact unit conversions have ZERO hidden 1e-9 float tolerances.
+ * - Arbitrary constant of integration C is verified via `d/dC !== 0` (independent of x).
  */
 
 export * from './math-eval-limits';
@@ -17,38 +19,46 @@ import { EvalOpBudget, MATH_EVAL_LIMITS, MathEvalLimitError } from './math-eval-
 import { parseEvalExpr, type EvalAstNode } from './math-eval-parser';
 import {
   RAT_ZERO,
-  astToExactSurd,
   astToRationalPoly,
   checkBoundedNumericAgreement,
-  decimalStringToBigRat,
+  checkSymbolicEquivalence,
   differentiateAst,
   evalAstNumeric,
   hasCollectedLikeTermsAst,
+  isDecimalLiteralAst,
   isExpandedPolynomialAst,
-  isFactoredFormAst,
+  isFullyFactoredFormAst,
   isReducedFractionAst,
+  isSimplifiedFractionAst,
   isSimplifiedSurdAst,
+  polyDegree,
+  polyIsZero,
   ratDiv,
   ratEq,
   ratToNumber,
-  rationalPolyEqual,
   roundBigRatToDecimalPlaces,
   roundBigRatToSigFigs,
-  surdEqual,
   type BigRat,
 } from './math-eval-exact';
 import {
+  areExcludedSetsEqual,
   areIntervalUnionsEqual,
+  exactRootEqual,
+  exactRootToNumber,
   extractOriginalDomain,
   parseEndpoint,
+  parseExactRoot,
+  parseExcludedValuesSet,
   parseIntervalOrInequality,
   splitEquation,
   testCandidateAgainstOriginalEquation,
   type EquationClass,
   type ExactInterval,
+  type ExactRoot,
 } from './math-eval-domain-solutions';
 import {
   DIM_NONE,
+  convertExactRatToUnit,
   convertToBaseSI,
   dimensionsEqual,
   inspectRawNumericPrecision,
@@ -80,13 +90,9 @@ export interface MathEvalResult {
 }
 
 export interface MathEvalSubmission {
-  /** Primary expression / numeric / interval input */
   expression: string;
-  /** Optional unit string (for numeric-quantity) */
   unit?: string;
-  /** Optional learner-entered domain restriction (e.g. "x != 3" or "x > 2") */
   domainInput?: string;
-  /** Optional comma/semicolon-separated roots or special token "empty" / "all reals" (for equation-solution) */
   rootsInput?: string;
 }
 
@@ -108,7 +114,6 @@ export interface MathNumericQuantitySpec {
   unitSpec?: {
     expectedUnit: string;
     allowEquivalentUnits?: boolean;
-    /** Optional allowlist of conventional unit strings (e.g. ['J', 'kJ'] to disallow 'N m' for energy) */
     allowedUnits?: string[];
     temperatureMode?: 'absolute' | 'difference';
   };
@@ -118,7 +123,6 @@ export interface MathNumericQuantitySpec {
 export interface MathAlgebraicExpressionSpec {
   mode: 'algebraic-expression';
   variables: string[];
-  /** Optional original un-simplified source expression (used to preserve cancelled domain restrictions!) */
   sourceExpr?: string;
   expectedExpr: string;
   requiredForm?:
@@ -167,9 +171,7 @@ export interface MathCalculusCheckSpec {
   calculusKind: 'derivative' | 'antiderivative';
   sourceExpr: string;
   expectedExpr: string;
-  /** True when general indefinite integral `+ C` is required; false accepts a particular antiderivative */
   requireConstantOfIntegration?: boolean;
-  /** Optional: allow both ln|x| and ln(x) on positive domains, or require ln|x| */
   requireAbsInLog?: boolean;
 }
 
@@ -185,59 +187,40 @@ function parseExactNumberOrRat(raw: string, budget: EvalOpBudget): BigRat | null
     const parsed = parseEvalExpr(raw, { allowedVariables: [] });
     const rp = astToRationalPoly(parsed.ast, budget);
     if (!rp || rp.num.size > 1 || rp.den.size !== 1 || !rp.den.has('')) return null;
-    const num = rp.num.get('') ?? RAT_ZERO;
-    const den = rp.den.get('')!;
-    return ratDiv(num, den);
+    return ratDiv(rp.num.get('') ?? RAT_ZERO, rp.den.get('')!);
   } catch {
     return null;
   }
 }
 
-function checkUnitCompatibility(
-  learnerVal: number,
-  learnerUnitRaw: string,
-  expectedVal: number,
-  unitSpec: NonNullable<MathNumericQuantitySpec['unitSpec']>,
-): { ok: boolean; convertedLearnerVal: number; convertedExpectedVal: number; message?: string } {
-  const expUnit = parseUnitExpression(unitSpec.expectedUnit);
-  const lrnUnit = parseUnitExpression(learnerUnitRaw);
-
-  if (!dimensionsEqual(lrnUnit.dim, expUnit.dim)) {
-    return {
-      ok: false,
-      convertedLearnerVal: learnerVal,
-      convertedExpectedVal: expectedVal,
-      message: `Unit dimension mismatch: "${learnerUnitRaw || '(none)'}" is not dimensionally compatible with "${unitSpec.expectedUnit}".`,
-    };
-  }
-
-  // Conventional unit allowlist (e.g. distinguish J vs N m even though dimensions match!)
-  if (unitSpec.allowedUnits && unitSpec.allowedUnits.length > 0) {
-    const normLrn = lrnUnit.canonicalRaw;
-    const allowedNorms = unitSpec.allowedUnits.map((u) => parseUnitExpression(u).canonicalRaw);
-    if (!allowedNorms.includes(normLrn)) {
-      return {
-        ok: false,
-        convertedLearnerVal: learnerVal,
-        convertedExpectedVal: expectedVal,
-        message: `Dimensionally compatible, but conventional unit required is one of: ${unitSpec.allowedUnits.join(', ')} (got "${learnerUnitRaw}").`,
-      };
-    }
-  } else if (unitSpec.allowEquivalentUnits === false && lrnUnit.canonicalRaw !== expUnit.canonicalRaw) {
-    return {
-      ok: false,
-      convertedLearnerVal: learnerVal,
-      convertedExpectedVal: expectedVal,
-      message: `Please express your answer in "${unitSpec.expectedUnit}" (got "${learnerUnitRaw}").`,
-    };
-  }
-
-  const tMode = unitSpec.temperatureMode ?? 'difference';
-  return {
-    ok: true,
-    convertedLearnerVal: convertToBaseSI(learnerVal, lrnUnit, tMode),
-    convertedExpectedVal: convertToBaseSI(expectedVal, expUnit, tMode),
+/** Verifies specifically that every ln(...) node referencing `variable` wraps `abs(...)` (not merely `abs()` elsewhere!). */
+function hasAbsInsideLnOfVar(node: EvalAstNode, variable: string): boolean {
+  let foundLnOfVar = false;
+  let allWrapAbs = true;
+  const usesVar = (n: EvalAstNode): boolean => {
+    if (n.type === 'var') return n.name === variable;
+    if (n.type === 'unary') return usesVar(n.arg);
+    if (n.type === 'call') return usesVar(n.arg);
+    if (n.type === 'binary') return usesVar(n.left) || usesVar(n.right);
+    return false;
   };
+  const walk = (n: EvalAstNode) => {
+    if (n.type === 'call' && n.name === 'ln' && usesVar(n.arg)) {
+      foundLnOfVar = true;
+      if (!(n.arg.type === 'call' && n.arg.name === 'abs')) {
+        allWrapAbs = false;
+      }
+      return;
+    }
+    if (n.type === 'unary') walk(n.arg);
+    else if (n.type === 'call') walk(n.arg);
+    else if (n.type === 'binary') {
+      walk(n.left);
+      walk(n.right);
+    }
+  };
+  walk(node);
+  return foundLnOfVar && allWrapAbs;
 }
 
 export function evaluateMathSubmission(
@@ -251,24 +234,28 @@ export function evaluateMathSubmission(
     if (spec.mode === 'numeric-quantity') {
       const rawExpr = submission.expression.trim();
       const parsed = parseEvalExpr(rawExpr, { allowedVariables: [] });
-      const lrnRat = astToRationalPoly(parsed.ast, budget);
-      const expRat = parseExactNumberOrRat(spec.expectedValue, budget);
+      const lrnExactRat = parseExactNumberOrRat(rawExpr, budget);
+      const expExactRat = parseExactNumberOrRat(spec.expectedValue, budget);
       const lrnNum = evalAstNumeric(parsed.ast, {}, budget);
-      const expNum = expRat ? ratToNumber(expRat) : evalAstNumeric(parseEvalExpr(spec.expectedValue).ast, {}, budget);
+      const expNum = expExactRat
+        ? ratToNumber(expExactRat)
+        : evalAstNumeric(parseEvalExpr(spec.expectedValue).ast, {}, budget);
 
       if (lrnNum === null || expNum === null) {
         return { passed: false, verdict: 'unsupported-or-indeterminate', feedback: 'Value is undefined or non-finite.', opsUsed: budget.used };
       }
 
-      // 1. Unit check (if unitSpec declared)
-      let cmpLrn = lrnNum;
-      let cmpExp = expNum;
-      let sameUnit = true;
+      // 1. Unit check & exact target conversion into LEARNER'S accepted unit!
+      let targetRatInLearnerUnit: BigRat | null = expExactRat;
+      let cmpLrnSI = lrnNum;
+      let cmpExpSI = expNum;
+      let unitConversionIsExact = true;
+
       if (spec.unitSpec) {
         const lrnUnitStr = (submission.unit ?? '').trim();
-        const expParsedUnit = parseUnitExpression(spec.unitSpec.expectedUnit);
+        const expUnit = parseUnitExpression(spec.unitSpec.expectedUnit);
         const isDimensionlessAllowedEmpty =
-          dimensionsEqual(expParsedUnit.dim, DIM_NONE) && spec.unitSpec.allowEquivalentUnits !== false;
+          dimensionsEqual(expUnit.dim, DIM_NONE) && spec.unitSpec.allowEquivalentUnits !== false;
         if (!lrnUnitStr && spec.unitSpec.expectedUnit.trim() !== '' && !isDimensionlessAllowedEmpty) {
           return {
             passed: false,
@@ -277,39 +264,62 @@ export function evaluateMathSubmission(
             opsUsed: budget.used,
           };
         }
-        const uRes = checkUnitCompatibility(lrnNum, lrnUnitStr, expNum, spec.unitSpec);
-        if (!uRes.ok) {
+        const lrnUnit = parseUnitExpression(lrnUnitStr);
+        if (!dimensionsEqual(lrnUnit.dim, expUnit.dim)) {
           return {
             passed: false,
             verdict: 'wrong-unit-or-precision',
-            feedback: uRes.message ?? 'Incorrect unit.',
+            feedback: `Unit dimension mismatch: "${lrnUnitStr || '(none)'}" is not dimensionally compatible with "${spec.unitSpec.expectedUnit}".`,
             opsUsed: budget.used,
           };
         }
-        cmpLrn = uRes.convertedLearnerVal;
-        cmpExp = uRes.convertedExpectedVal;
-        sameUnit =
-          parseUnitExpression(lrnUnitStr).canonicalRaw === parseUnitExpression(spec.unitSpec.expectedUnit).canonicalRaw;
+        if (spec.unitSpec.allowedUnits && spec.unitSpec.allowedUnits.length > 0) {
+          const allowedNorms = spec.unitSpec.allowedUnits.map((u) => parseUnitExpression(u).canonicalRaw);
+          if (!allowedNorms.includes(lrnUnit.canonicalRaw)) {
+            return {
+              passed: false,
+              verdict: 'wrong-unit-or-precision',
+              feedback: `Dimensionally compatible, but conventional unit required is one of: ${spec.unitSpec.allowedUnits.join(', ')} (got "${lrnUnitStr}").`,
+              opsUsed: budget.used,
+            };
+          }
+        } else if (spec.unitSpec.allowEquivalentUnits === false && lrnUnit.canonicalRaw !== expUnit.canonicalRaw) {
+          return {
+            passed: false,
+            verdict: 'wrong-unit-or-precision',
+            feedback: `Please express your answer in "${spec.unitSpec.expectedUnit}" (got "${lrnUnitStr}").`,
+            opsUsed: budget.used,
+          };
+        }
+
+        const tMode = spec.unitSpec.temperatureMode ?? 'difference';
+        cmpLrnSI = convertToBaseSI(lrnNum, lrnUnit, tMode);
+        cmpExpSI = convertToBaseSI(expNum, expUnit, tMode);
+        if (expExactRat) {
+          targetRatInLearnerUnit = convertExactRatToUnit(expExactRat, expUnit, lrnUnit, tMode);
+          unitConversionIsExact = targetRatInLearnerUnit !== null;
+        } else {
+          targetRatInLearnerUnit = null;
+          unitConversionIsExact = false;
+        }
       }
 
-      // 2. Value comparison (exact BigRat when possible & no tolerance, or exact rounded target, or abs/rel tolerance)
+      // 2. Value & precision comparison (NO hidden 1e-9 tolerance!)
       const prec = spec.precisionRule;
-      const lrnExactRat =
-        lrnRat && lrnRat.num.size <= 1 && lrnRat.den.size === 1 && lrnRat.den.has('')
-          ? ratDiv(lrnRat.num.get('') ?? RAT_ZERO, lrnRat.den.get('')!)
-          : null;
-
       let valueMatched = false;
-      let exactMatch = false;
+      let isExact = false;
 
-      if (prec?.kind === 'decimal-places' && prec.count !== undefined && expRat && sameUnit) {
-        const { roundedRat, formatted } = roundBigRatToDecimalPlaces(expRat, prec.count, prec.rounding ?? 'half-up');
+      if (prec?.kind === 'decimal-places' && prec.count !== undefined && targetRatInLearnerUnit) {
+        const { roundedRat, formatted } = roundBigRatToDecimalPlaces(
+          targetRatInLearnerUnit,
+          prec.count,
+          prec.rounding ?? 'half-up',
+        );
         if (lrnExactRat && ratEq(lrnExactRat, roundedRat)) {
           valueMatched = true;
-          exactMatch = true;
+          isExact = unitConversionIsExact;
         } else {
-          // Check if close to unrounded but wrong rounding!
-          const closeUnrounded = Math.abs(cmpLrn - cmpExp) <= Math.pow(10, -prec.count);
+          const closeUnrounded = Math.abs(lrnNum - ratToNumber(targetRatInLearnerUnit)) <= Math.pow(10, -prec.count);
           return {
             passed: false,
             verdict: closeUnrounded ? 'wrong-unit-or-precision' : 'incorrect',
@@ -319,7 +329,6 @@ export function evaluateMathSubmission(
             opsUsed: budget.used,
           };
         }
-        // Also check written decimal places!
         const rawPrec = inspectRawNumericPrecision(rawExpr);
         if (rawPrec.decimalPlaces !== prec.count) {
           return {
@@ -329,11 +338,11 @@ export function evaluateMathSubmission(
             opsUsed: budget.used,
           };
         }
-      } else if (prec?.kind === 'sig-figs' && prec.count !== undefined && expRat && sameUnit) {
-        const { roundedRat } = roundBigRatToSigFigs(expRat, prec.count, prec.rounding ?? 'half-up');
+      } else if (prec?.kind === 'sig-figs' && prec.count !== undefined && targetRatInLearnerUnit) {
+        const { roundedRat } = roundBigRatToSigFigs(targetRatInLearnerUnit, prec.count, prec.rounding ?? 'half-up');
         if (lrnExactRat && ratEq(lrnExactRat, roundedRat)) {
           valueMatched = true;
-          exactMatch = true;
+          isExact = unitConversionIsExact;
         } else {
           return {
             passed: false,
@@ -347,7 +356,7 @@ export function evaluateMathSubmission(
           return {
             passed: false,
             verdict: 'wrong-unit-or-precision',
-            feedback: `Trailing zeros in "${rawExpr}" are ambiguous for ${prec.count} s.f. — use scientific notation (e.g. a × 10^n).`,
+            feedback: `Trailing zeros in "${rawExpr}" are ambiguous for ${prec.count} s.f. — use normalised scientific notation (e.g. a × 10^n).`,
             opsUsed: budget.used,
           };
         }
@@ -360,17 +369,25 @@ export function evaluateMathSubmission(
           };
         }
       } else if (spec.tolerance && (spec.tolerance.abs !== undefined || spec.tolerance.rel !== undefined)) {
-        const diff = Math.abs(cmpLrn - cmpExp);
+        const diff = Math.abs(cmpLrnSI - cmpExpSI);
         const okAbs = spec.tolerance.abs !== undefined && diff <= spec.tolerance.abs;
-        const okRel = spec.tolerance.rel !== undefined && diff <= spec.tolerance.rel * Math.max(1e-12, Math.abs(cmpExp));
+        // Relative tolerance near zero: if expected === 0, relative tolerance only matches exact 0 unless abs is also supplied
+        const okRel =
+          spec.tolerance.rel !== undefined &&
+          (cmpExpSI === 0 ? diff === 0 : diff <= spec.tolerance.rel * Math.abs(cmpExpSI));
         valueMatched = okAbs || okRel;
-      } else if (sameUnit && lrnExactRat && expRat) {
-        valueMatched = ratEq(lrnExactRat, expRat);
-        exactMatch = valueMatched;
+        isExact = false; // Explicitly NEVER label tolerance-based matches as exact!
+      } else if (lrnExactRat && targetRatInLearnerUnit) {
+        // Pure EXACT rational comparison (zero hidden tolerance: 1.0000000001 !== 1!)
+        valueMatched = ratEq(lrnExactRat, targetRatInLearnerUnit);
+        isExact = valueMatched;
       } else {
-        const scale = Math.max(1, Math.abs(cmpExp));
-        valueMatched = Math.abs(cmpLrn - cmpExp) <= 1e-9 * scale;
-        exactMatch = valueMatched;
+        return {
+          passed: false,
+          verdict: 'unsupported-or-indeterminate',
+          feedback: 'Irrational numeric quantity requires an explicit authoring tolerance.',
+          opsUsed: budget.used,
+        };
       }
 
       if (!valueMatched) {
@@ -382,7 +399,7 @@ export function evaluateMathSubmission(
         };
       }
 
-      // 3. Required form checks (reduced-fraction, scientific, decimal)
+      // 3. Required form checks
       if (spec.requiredForm === 'reduced-fraction' && !isReducedFractionAst(parsed.ast)) {
         return {
           passed: false,
@@ -391,21 +408,29 @@ export function evaluateMathSubmission(
           opsUsed: budget.used,
         };
       }
-      if (spec.requiredForm === 'scientific' && !inspectRawNumericPrecision(rawExpr).isScientific) {
+      if (spec.requiredForm === 'decimal' && !isDecimalLiteralAst(parsed.ast)) {
         return {
           passed: false,
           verdict: 'wrong-form',
-          feedback: 'Your value is correct, but write it in standard scientific notation (e.g. 3.00 × 10^8 or 3.00e8).',
+          feedback: 'Your value is mathematically equivalent, but write it in decimal form (not as a fraction or scientific notation).',
+          opsUsed: budget.used,
+        };
+      }
+      if (spec.requiredForm === 'scientific' && !inspectRawNumericPrecision(rawExpr).isNormalisedScientific) {
+        return {
+          passed: false,
+          verdict: 'wrong-form',
+          feedback: 'Your value is correct, but write it in normalised scientific notation a × 10^n with 1 ≤ |a| < 10 (e.g. 3.00e8).',
           opsUsed: budget.used,
         };
       }
 
       return {
         passed: true,
-        verdict: exactMatch ? 'exact-equivalent' : 'bounded-numeric-match',
-        feedback: exactMatch
+        verdict: isExact ? 'exact-equivalent' : 'bounded-numeric-match',
+        feedback: isExact
           ? 'Exact match verified!'
-          : 'Verified within the specified numerical tolerance.',
+          : 'Verified within the specified numerical tolerance (approximate numerical match).',
         opsUsed: budget.used,
       };
     }
@@ -415,66 +440,51 @@ export function evaluateMathSubmission(
       const lrnParsed = parseEvalExpr(submission.expression, { allowedVariables: spec.variables });
       const expParsed = parseEvalExpr(spec.expectedExpr, { allowedVariables: spec.variables });
 
-      // Check misconception rules first for targeted diagnostics
-      if (spec.misconceptionChecks) {
-        for (const rule of spec.misconceptionChecks) {
-          try {
-            const mAst = parseEvalExpr(rule.matchExpr, { allowedVariables: spec.variables }).ast;
-            const lrnRp = astToRationalPoly(lrnParsed.ast, budget);
-            const mRp = astToRationalPoly(mAst, budget);
-            if (lrnRp && mRp && rationalPolyEqual(lrnRp, mRp, budget)) {
-              return { passed: false, verdict: 'incorrect', feedback: rule.feedback, opsUsed: budget.used };
-            }
-          } catch {
-            // ignore non-matching misconception rule
-          }
-        }
+      const posVars = new Set<string>();
+      for (const [v, a] of Object.entries(spec.domainRestrictions?.variableAssumptions ?? {})) {
+        if (a === 'positive') posVars.add(v);
       }
 
-      // 1. Try Tier 1 Exact Verification (Rational Polynomial OR Exact Quadratic Surd)
+      // 1. Verify mathematical equivalence FIRST (before misconception checks!)
+      const symResult = checkSymbolicEquivalence(lrnParsed.ast, expParsed.ast, budget, posVars);
       let matchedTier: 'exact-equivalent' | 'symbolic-domain-equivalent' | 'bounded-numeric-match' | null = null;
-      const lrnRp = astToRationalPoly(lrnParsed.ast, budget);
-      const expRp = astToRationalPoly(expParsed.ast, budget);
 
-      if (lrnRp && expRp) {
-        if (rationalPolyEqual(lrnRp, expRp, budget)) {
-          matchedTier = 'exact-equivalent';
-        }
-      } else {
-        const lrnSurd = astToExactSurd(lrnParsed.ast, budget);
-        const expSurd = astToExactSurd(expParsed.ast, budget);
-        if (lrnSurd && expSurd) {
-          if (surdEqual(lrnSurd, expSurd)) {
-            matchedTier = 'exact-equivalent';
+      if (symResult === 'exact') {
+        matchedTier = 'exact-equivalent';
+      } else if (symResult === 'symbolic') {
+        matchedTier = 'symbolic-domain-equivalent';
+      } else if (symResult === 'unsupported') {
+        // ONLY allow numerical sampling when explicitly authorised by `allow-bounded-numeric`!
+        if (spec.verificationPolicy === 'allow-bounded-numeric') {
+          const numRes = checkBoundedNumericAgreement(lrnParsed.ast, expParsed.ast, spec.variables, budget, posVars);
+          if (numRes.agreed) {
+            matchedTier = 'bounded-numeric-match';
           }
-        }
-      }
-
-      // 2. If not exact polynomial/surd, check symbolic-domain or opt-in bounded numeric
-      if (!matchedTier) {
-        const policy = spec.verificationPolicy ?? 'exact-or-symbolic';
-        const posVars = new Set<string>();
-        for (const [v, a] of Object.entries(spec.domainRestrictions?.variableAssumptions ?? {})) {
-          if (a === 'positive') posVars.add(v);
-        }
-        if (policy === 'exact-only') {
+        } else {
           return {
             passed: false,
-            verdict: lrnRp && expRp ? 'incorrect' : 'unsupported-or-indeterminate',
-            feedback:
-              lrnRp && expRp
-                ? 'Your expression is not algebraically equivalent to the target.'
-                : 'Exact symbolic verification is required for this activity and could not be established for your expression.',
+            verdict: 'unsupported-or-indeterminate',
+            feedback: 'This expression lies outside the supported exact/symbolic equivalence rules and cannot be certified automatically.',
             opsUsed: budget.used,
           };
         }
-        const numRes = checkBoundedNumericAgreement(lrnParsed.ast, expParsed.ast, spec.variables, budget, posVars);
-        if (numRes.agreed) {
-          matchedTier = policy === 'allow-bounded-numeric' ? 'bounded-numeric-match' : 'symbolic-domain-equivalent';
-        }
       }
 
+      // 2. If NOT equivalent, check misconception rules for targeted diagnostic feedback
       if (!matchedTier) {
+        if (spec.misconceptionChecks) {
+          for (const rule of spec.misconceptionChecks) {
+            try {
+              const mAst = parseEvalExpr(rule.matchExpr, { allowedVariables: spec.variables }).ast;
+              const mRes = checkSymbolicEquivalence(lrnParsed.ast, mAst, budget, posVars);
+              if (mRes === 'exact' || mRes === 'symbolic') {
+                return { passed: false, verdict: 'incorrect', feedback: rule.feedback, opsUsed: budget.used };
+              }
+            } catch {
+              // ignore non-matching rule
+            }
+          }
+        }
         return {
           passed: false,
           verdict: 'incorrect',
@@ -483,7 +493,38 @@ export function evaluateMathSubmission(
         };
       }
 
-      // 3. Domain restriction check (preserving restrictions lost by cancellation!)
+      // 3. Domain certification (parsed exact sets & intervals — ZERO substring matching!)
+      if (spec.sourceExpr) {
+        if (spec.variables.length !== 1) {
+          // Unsupported multivariate denominator domain check
+          const srcAst = parseEvalExpr(spec.sourceExpr, { allowedVariables: spec.variables }).ast;
+          const hasDiv = (n: EvalAstNode): boolean =>
+            (n.type === 'binary' && n.op === '/') ||
+            (n.type === 'unary' && hasDiv(n.arg)) ||
+            (n.type === 'call' && hasDiv(n.arg)) ||
+            (n.type === 'binary' && (hasDiv(n.left) || hasDiv(n.right)));
+          if (hasDiv(srcAst)) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'Multivariate rational denominator domain certification is unsupported.',
+              opsUsed: budget.used,
+            };
+          }
+        } else {
+          const srcAst = parseEvalExpr(spec.sourceExpr, { allowedVariables: spec.variables }).ast;
+          const srcDom = extractOriginalDomain(srcAst, spec.variables[0], budget);
+          if (!srcDom.certifiable) {
+            return {
+              passed: false,
+              verdict: 'unsupported-or-indeterminate',
+              feedback: 'Domain equivalence could not be certified for this denominator class.',
+              opsUsed: budget.used,
+            };
+          }
+        }
+      }
+
       if (spec.domainRestrictions?.requireLearnerDomain) {
         const rawDom = (submission.domainInput ?? '').trim();
         if (!rawDom) {
@@ -494,50 +535,38 @@ export function evaluateMathSubmission(
             opsUsed: budget.used,
           };
         }
+        const v = spec.variables[0];
         if (spec.domainRestrictions.expectedExcluded && spec.domainRestrictions.expectedExcluded.length > 0) {
-          const v = spec.variables[0];
-          const normDom = rawDom.replace(/\u2260/g, '!=').replace(/\s+/g, '');
-          const missing = spec.domainRestrictions.expectedExcluded.filter((ex) => {
-            const target = `${v}!=${ex.replace(/\s+/g, '')}`;
-            return !normDom.includes(target);
-          });
-          if (missing.length > 0) {
+          const expectedSet: BigRat[] = [];
+          for (const ex of spec.domainRestrictions.expectedExcluded) {
+            const parsedEx = parseExactRoot(ex, budget);
+            if (parsedEx && parsedEx.kind === 'rat') expectedSet.push(parsedEx.value);
+          }
+          const learnerSet = parseExcludedValuesSet(rawDom, v, budget);
+          if (!areExcludedSetsEqual(expectedSet, learnerSet)) {
             return {
               passed: false,
               verdict: 'wrong-form',
-              feedback: `Check your excluded value(s): remember the original denominator cannot be zero (e.g. ${v} ≠ ${missing[0]}).`,
+              feedback: `Check your excluded value(s): state the exact set of values where the original expression is undefined (no missing or extra exclusions).`,
               opsUsed: budget.used,
             };
           }
         }
         if (spec.domainRestrictions.expectedDomainInterval) {
-          const v = spec.variables[0];
           const expIv = parseIntervalOrInequality(spec.domainRestrictions.expectedDomainInterval, v);
           const lrnIv = parseIntervalOrInequality(rawDom, v);
           if (!areIntervalUnionsEqual(expIv, lrnIv)) {
             return {
               passed: false,
               verdict: 'wrong-form',
-              feedback: `Your expression is equivalent, but check the restricted domain (all original logarithms/roots must remain defined).`,
+              feedback: 'Your expression is equivalent, but check the exact restricted domain interval.',
               opsUsed: budget.used,
             };
           }
         }
-      } else if (spec.sourceExpr && spec.variables.length === 1) {
-        // Verify source domain is certifiable when claiming exact rational equivalence
-        const srcParsed = parseEvalExpr(spec.sourceExpr, { allowedVariables: spec.variables });
-        const srcDom = extractOriginalDomain(srcParsed.ast, spec.variables[0], budget);
-        if (!srcDom.certifiable && matchedTier === 'exact-equivalent') {
-          return {
-            passed: false,
-            verdict: 'unsupported-or-indeterminate',
-            feedback: 'Domain equivalence could not be certified for this denominator class.',
-            opsUsed: budget.used,
-          };
-        }
       }
 
-      // 4. Required answer form check (AFTER confirming equivalence!)
+      // 4. Required answer form checks (AFTER confirming equivalence!)
       if (spec.requiredForm === 'expanded-polynomial' && !isExpandedPolynomialAst(lrnParsed.ast)) {
         return {
           passed: false,
@@ -554,11 +583,19 @@ export function evaluateMathSubmission(
           opsUsed: budget.used,
         };
       }
-      if (spec.requiredForm === 'factored-form' && !isFactoredFormAst(lrnParsed.ast)) {
+      if (spec.requiredForm === 'factored-form' && !isFullyFactoredFormAst(lrnParsed.ast, spec.variables, budget)) {
         return {
           passed: false,
           verdict: 'wrong-form',
-          feedback: 'Your expression is mathematically equivalent, but write it in fully factorised form.',
+          feedback: 'Your expression is mathematically equivalent, but factorise it completely (check for remaining quadratic factors).',
+          opsUsed: budget.used,
+        };
+      }
+      if (spec.requiredForm === 'simplified-fraction' && !isSimplifiedFractionAst(lrnParsed.ast, expParsed.ast, budget)) {
+        return {
+          passed: false,
+          verdict: 'wrong-form',
+          feedback: 'Your rational expression is equivalent, but cancel common factors to simplify the fraction.',
           opsUsed: budget.used,
         };
       }
@@ -593,7 +630,7 @@ export function evaluateMathSubmission(
           verdict: isEmptyInput ? 'exact-equivalent' : 'incorrect',
           feedback: isEmptyInput
             ? 'Verified: this equation has no real solution (empty set ∅).'
-            : 'Check whether any real value can actually satisfy the original equation (watch for contradictions or domain violations).',
+            : 'Check whether any real value can actually satisfy the original equation.',
           opsUsed: budget.used,
         };
       }
@@ -604,8 +641,8 @@ export function evaluateMathSubmission(
           passed: isAll,
           verdict: isAll ? 'exact-equivalent' : 'incorrect',
           feedback: isAll
-            ? 'Verified: this equation is an identity satisfied by all permitted real numbers.'
-            : 'Simplify both sides — is this equation true for every permitted value of the variable?',
+            ? 'Verified: this equation is an identity over all real numbers.'
+            : 'Simplify both sides — is this equation true for every real number?',
           opsUsed: budget.used,
         };
       }
@@ -624,50 +661,46 @@ export function evaluateMathSubmission(
         return { passed: false, verdict: 'syntax-error', feedback: 'Enter at least one root value.', opsUsed: budget.used };
       }
       if (tokens.length > MATH_EVAL_LIMITS.maxCandidateRoots) {
-        return {
-          passed: false,
-          verdict: 'syntax-error',
-          feedback: `Too many candidate roots (max ${MATH_EVAL_LIMITS.maxCandidateRoots}).`,
-          opsUsed: budget.used,
-        };
+        return { passed: false, verdict: 'syntax-error', feedback: `Too many candidate roots (max ${MATH_EVAL_LIMITS.maxCandidateRoots}).`, opsUsed: budget.used };
       }
 
-      const learnerVals: Array<{ raw: string; val: number }> = [];
+      // Exact root parsing & deduplication (ZERO 1e-6 merging!)
+      const learnerRoots: Array<{ raw: string; exact: ExactRoot }> = [];
       for (const tok of tokens) {
-        const ast = parseEvalExpr(tok, { allowedVariables: [] }).ast;
-        const val = evalAstNumeric(ast, {}, budget);
-        if (val === null) {
-          return { passed: false, verdict: 'syntax-error', feedback: `Invalid root "${tok}".`, opsUsed: budget.used };
+        const exact = parseExactRoot(tok, budget);
+        if (!exact) {
+          return { passed: false, verdict: 'syntax-error', feedback: `Root "${tok}" must be an exact rational or supported surd.`, opsUsed: budget.used };
         }
-        // Deduplicate repeated root notation (e.g. "3, 3" -> {3})
-        if (!learnerVals.some((x) => Math.abs(x.val - val) < 1e-6)) {
-          learnerVals.push({ raw: tok, val });
+        if (!learnerRoots.some((x) => exactRootEqual(x.exact, exact))) {
+          learnerRoots.push({ raw: tok, exact });
         }
       }
 
-      // 1. Validate EVERY candidate root against the ORIGINAL equation (catches extraneous roots!)
-      for (const cand of learnerVals) {
-        const check = testCandidateAgainstOriginalEquation(lhsAst, rhsAst, spec.variable, cand.val, budget);
-        if (!check.satisfies) {
+      // 1. Validate EVERY candidate root against the ORIGINAL equation
+      const expectedExactRoots: ExactRoot[] = spec.expectedRoots.map((r) => parseExactRoot(r, budget)!);
+      for (const cand of learnerRoots) {
+        const matchesCertified = expectedExactRoots.some((er) => exactRootEqual(er, cand.exact));
+        if (!matchesCertified) {
+          const check = testCandidateAgainstOriginalEquation(lhsAst, rhsAst, spec.variable, exactRootToNumber(cand.exact), budget);
           const isKnownExtraneous = (spec.extraneousCandidates ?? []).some((ex) => {
-            const ev = evalAstNumeric(parseEvalExpr(ex).ast, {}, budget);
-            return ev !== null && Math.abs(ev - cand.val) < 1e-5;
+            const exRoot = parseExactRoot(ex, budget);
+            return exRoot !== null && exactRootEqual(exRoot, cand.exact);
           });
           return {
             passed: false,
             verdict: 'incorrect',
-            feedback: isKnownExtraneous || check.domainError
-              ? `Extraneous root detected: ${spec.variable} = ${cand.raw} does NOT satisfy the original equation (${spec.originalEquation}). Always substitute back into the original equation!`
-              : `${spec.variable} = ${cand.raw} does not satisfy ${spec.originalEquation}.`,
+            feedback:
+              isKnownExtraneous || check.domainError
+                ? `Extraneous root detected: ${spec.variable} = ${cand.raw} does NOT satisfy the original equation (${spec.originalEquation}).`
+                : `${spec.variable} = ${cand.raw} does not satisfy ${spec.originalEquation}.`,
             opsUsed: budget.used,
           };
         }
       }
 
-      // 2. Check solution-set completeness against certified expectedRoots
-      const expectedVals = spec.expectedRoots.map((r) => evalAstNumeric(parseEvalExpr(r).ast, {}, budget)!);
+      // 2. Check completeness using exactRootEqual (ZERO 1e-5 tolerance!)
       const requireComplete = spec.requireCompleteSet !== false;
-      const missing = expectedVals.filter((ev) => !learnerVals.some((lv) => Math.abs(lv.val - ev) < 1e-5));
+      const missing = expectedExactRoots.filter((er) => !learnerRoots.some((lr) => exactRootEqual(lr.exact, er)));
 
       if (requireComplete && missing.length > 0) {
         return {
@@ -681,7 +714,9 @@ export function evaluateMathSubmission(
       return {
         passed: true,
         verdict: 'exact-equivalent',
-        feedback: `Verified: complete solution set confirmed against the original equation ${spec.originalEquation}.`,
+        feedback: requireComplete
+          ? `Verified: complete solution set confirmed against the original equation ${spec.originalEquation}.`
+          : `Verified: your submitted root(s) satisfy the original equation ${spec.originalEquation}.`,
         opsUsed: budget.used,
       };
     }
@@ -694,7 +729,11 @@ export function evaluateMathSubmission(
         high: parseEndpoint(iv.high),
         highInclusive: iv.highInclusive,
       }));
-      const learner = parseIntervalOrInequality(submission.expression, spec.variable);
+      const learner = parseIntervalOrInequality(
+        submission.expression,
+        spec.variable,
+        spec.acceptedInputStyle ?? 'either',
+      );
       const eq = areIntervalUnionsEqual(expected, learner);
       return {
         passed: eq,
@@ -713,98 +752,100 @@ export function evaluateMathSubmission(
         const derivedAst = differentiateAst(srcAst, spec.variable, budget);
         const lrnAst = parseEvalExpr(submission.expression, { allowedVariables: [spec.variable] }).ast;
 
-        // Try exact rational-polynomial comparison first
-        const dRp = astToRationalPoly(derivedAst, budget);
-        const lRp = astToRationalPoly(lrnAst, budget);
-        if (dRp && lRp) {
-          const ok = rationalPolyEqual(dRp, lRp, budget);
+        // Genuine symbolic comparison ONLY (NEVER numerical sampling claiming symbolic!)
+        const sym = checkSymbolicEquivalence(derivedAst, lrnAst, budget);
+        if (sym === 'exact' || sym === 'symbolic') {
           return {
-            passed: ok,
-            verdict: ok ? 'exact-equivalent' : 'incorrect',
-            feedback: ok
-              ? 'Verified: exact symbolic derivative confirmed!'
-              : 'Check your differentiation rules (power, product, quotient, or chain rule).',
+            passed: true,
+            verdict: sym === 'exact' ? 'exact-equivalent' : 'symbolic-domain-equivalent',
+            feedback:
+              sym === 'exact'
+                ? 'Verified: exact symbolic derivative confirmed!'
+                : 'Verified: symbolic derivative confirmed (trigonometric functions in radians).',
             opsUsed: budget.used,
           };
         }
-        // Symbolic/trig/exp/ln comparison over valid domain (radians)
-        const numRes = checkBoundedNumericAgreement(derivedAst, lrnAst, [spec.variable], budget, new Set([spec.variable]));
+        if (sym === 'unsupported') {
+          return {
+            passed: false,
+            verdict: 'unsupported-or-indeterminate',
+            feedback: 'This derivative form cannot be certified symbolically within supported rules.',
+            opsUsed: budget.used,
+          };
+        }
         return {
-          passed: numRes.agreed,
-          verdict: numRes.agreed ? 'symbolic-domain-equivalent' : 'incorrect',
-          feedback: numRes.agreed
-            ? 'Verified: derivative matches symbolic differentiation (trigonometric functions in radians).'
-            : 'Check your derivative rules (remember trigonometric derivatives use radians).',
+          passed: false,
+          verdict: 'incorrect',
+          feedback: 'Check your differentiation rules (power, product, quotient, or chain rule; trig uses radians).',
           opsUsed: budget.used,
         };
       }
 
-      // Antiderivative verification: differentiate learner's F(x) and verify F'(x) === f(x)!
+      // Antiderivative verification via exact differentiation of learner's F(x)
       const requireC = Boolean(spec.requireConstantOfIntegration);
       const lrnParsed = parseEvalExpr(submission.expression, {
         allowedVariables: [spec.variable],
         allowConstantC: true,
       });
-      const hasC = lrnParsed.usedVariables.includes('C');
       const srcAst = parseEvalExpr(spec.sourceExpr, { allowedVariables: [spec.variable] }).ast;
-      const lrnDerivAst = differentiateAst(lrnParsed.ast, spec.variable, budget);
+      const lrnDerivX = differentiateAst(lrnParsed.ast, spec.variable, budget);
 
-      // Compare lrnDerivAst vs srcAst (exact rational-poly first, then bounded domain)
-      let derivMatches = false;
-      let exactPoly = false;
-      const dRp = astToRationalPoly(lrnDerivAst, budget);
-      const sRp = astToRationalPoly(srcAst, budget);
-      if (dRp && sRp) {
-        derivMatches = rationalPolyEqual(dRp, sRp, budget);
-        exactPoly = derivMatches;
-      } else {
-        const numRes = checkBoundedNumericAgreement(lrnDerivAst, srcAst, [spec.variable], budget, new Set([spec.variable]));
-        derivMatches = numRes.agreed;
+      // Step 1: Verify d/dx(F) === sourceExpr symbolically!
+      // Note: if learner wrote x^2 + C*x, d/dx = 2x + C !== 2x -> fails immediately!
+      const sym = checkSymbolicEquivalence(lrnDerivX, srcAst, budget);
+      if (sym === 'unsupported') {
+        return {
+          passed: false,
+          verdict: 'unsupported-or-indeterminate',
+          feedback: 'This antiderivative cannot be certified symbolically within supported rules.',
+          opsUsed: budget.used,
+        };
       }
-
-      if (!derivMatches) {
+      if (sym === 'not-equal') {
         return {
           passed: false,
           verdict: 'incorrect',
-          feedback: 'Differentiating your answer does not recover the original integrand. Check powers and coefficients.',
+          feedback: 'Differentiating your answer with respect to ' + spec.variable + ' does not recover the original integrand.',
           opsUsed: budget.used,
         };
       }
 
-      // Check ln|x| vs ln(x) when requireAbsInLog is set
-      if (spec.requireAbsInLog) {
-        const containsAbs = (n: EvalAstNode): boolean => {
-          if (n.type === 'call' && n.name === 'abs') return true;
-          if (n.type === 'unary') return containsAbs(n.arg);
-          if (n.type === 'call') return containsAbs(n.arg);
-          if (n.type === 'binary') return containsAbs(n.left) || containsAbs(n.right);
-          return false;
+      // Step 2: Check ln|x| specifically on ln(abs(x)) when requireAbsInLog is set
+      if (spec.requireAbsInLog && !hasAbsInsideLnOfVar(lrnParsed.ast, spec.variable)) {
+        return {
+          passed: false,
+          verdict: 'wrong-form',
+          feedback: `Your antiderivative works for ${spec.variable} > 0, but write ln|${spec.variable}| (with absolute value bars inside ln) to cover all ${spec.variable} ≠ 0.`,
+          opsUsed: budget.used,
         };
-        if (!containsAbs(lrnParsed.ast)) {
+      }
+
+      // Step 3: Verify arbitrary constant of integration C via exact d/dC(F) === non-zero constant!
+      // Rejects x^2+7 (d/dC=0), x^2+0C (d/dC=0), x^2+C-C (d/dC=0); accepts x^2+C (d/dC=1) and x^2+2C (d/dC=2)!
+      if (requireC) {
+        const dFdC = differentiateAst(lrnParsed.ast, 'C', budget);
+        const dFdCRp = astToRationalPoly(dFdC, budget);
+        const isValidNonZeroConst =
+          dFdCRp !== null &&
+          !polyIsZero(dFdCRp.num) &&
+          polyDegree(dFdCRp.num) === 0 &&
+          polyDegree(dFdCRp.den) === 0;
+        if (!isValidNonZeroConst) {
           return {
             passed: false,
             verdict: 'wrong-form',
-            feedback: 'Your antiderivative works for x > 0, but write ln|x| (with absolute value bars) to cover all x ≠ 0.',
+            feedback: 'You found a particular antiderivative, but the general indefinite integral requires a meaningful arbitrary constant "+ C" (not 0C or C − C).',
             opsUsed: budget.used,
           };
         }
       }
 
-      if (requireC && !hasC) {
-        return {
-          passed: false,
-          verdict: 'wrong-form',
-          feedback: 'You found a valid particular antiderivative, but the general indefinite integral requires "+ C".',
-          opsUsed: budget.used,
-        };
-      }
-
       return {
         passed: true,
-        verdict: exactPoly ? 'exact-equivalent' : 'symbolic-domain-equivalent',
+        verdict: sym === 'exact' ? 'exact-equivalent' : 'symbolic-domain-equivalent',
         feedback: requireC
-          ? 'Verified: general indefinite integral confirmed via exact differentiation (including + C)!'
-          : 'Verified: valid particular antiderivative confirmed via exact differentiation!',
+          ? 'Verified: general indefinite integral confirmed via exact symbolic differentiation (including valid arbitrary constant C)!'
+          : 'Verified: valid particular antiderivative confirmed via exact symbolic differentiation!',
         opsUsed: budget.used,
       };
     }

@@ -1,21 +1,23 @@
 /**
- * GAM EDU — Step 5A Pure Module 7: Strict Discriminated Schema & Authoring-Time
- * Mathematical Self-Consistency Validator for `engine: 'math-evaluator'` (`1.0.0`).
+ * GAM EDU — Step 5A Pure Module 7: Strict Nested Discriminated Schema &
+ * Authoring-Time Mathematical Self-Consistency Validator for `engine: 'math-evaluator'` (`1.0.0`).
  *
- * Pure TypeScript, zero React/DOM dependencies.
+ * Enforces strict nested allowlists, ZERO string-to-boolean coercion, duplicate-variable rejection,
+ * misconception-vs-expected conflict detection, and independent mathematical certification.
  */
 
-import { MATH_EVAL_LIMITS } from './math-eval-limits';
+import { EvalOpBudget, MATH_EVAL_LIMITS } from './math-eval-limits';
 import { parseEvalExpr } from './math-eval-parser';
 import {
   certifyEquationAuthorConfig,
   normaliseIntervalUnion,
   parseEndpoint,
+  parseExactRoot,
+  parseIntervalOrInequality,
   type EquationClass,
 } from './math-eval-domain-solutions';
 import { parseUnitExpression } from './math-eval-units-precision';
-import { differentiateAst } from './math-eval-exact';
-import { EvalOpBudget } from './math-eval-limits';
+import { checkSymbolicEquivalence, differentiateAst } from './math-eval-exact';
 
 const SHARED_MATH_EVAL_KEYS = [
   'id',
@@ -84,6 +86,14 @@ const CALCULUS_KEYS = new Set([
   'requireAbsInLog',
 ]);
 
+const TOLERANCE_KEYS = new Set(['abs', 'rel']);
+const PRECISION_KEYS = new Set(['kind', 'count', 'rounding']);
+const UNIT_SPEC_KEYS = new Set(['expectedUnit', 'allowEquivalentUnits', 'allowedUnits', 'temperatureMode']);
+const DOMAIN_KEYS = new Set(['requireLearnerDomain', 'expectedExcluded', 'expectedDomainInterval', 'variableAssumptions']);
+const INTERVAL_ITEM_KEYS = new Set(['low', 'lowInclusive', 'high', 'highInclusive']);
+const MISCONCEPTION_KEYS = new Set(['matchExpr', 'feedback']);
+const PREDICTION_KEYS = new Set(['prompt', 'options', 'correctIndex', 'explanation']);
+
 const VALID_LEVELS = new Set(['primary', 'lower-secondary', 'igcse', 'as-a-level']);
 const VALID_EQ_CLASSES = new Set<EquationClass>([
   'linear',
@@ -92,11 +102,32 @@ const VALID_EQ_CLASSES = new Set<EquationClass>([
   'rational-linear-quadratic',
   'radical-single',
 ]);
+const VALID_NUMERIC_FORMS = new Set(['any', 'reduced-fraction', 'decimal', 'scientific']);
+const VALID_ALGEBRA_FORMS = new Set([
+  'any-equivalent',
+  'expanded-polynomial',
+  'collected-like-terms',
+  'factored-form',
+  'simplified-fraction',
+  'simplified-surd',
+]);
+const VALID_ASSUMPTIONS = new Set(['real', 'positive', 'nonzero', 'integer']);
+const VALID_VERIFY_POLICIES = new Set(['exact-only', 'exact-or-symbolic', 'allow-bounded-numeric']);
+const VALID_SOL_TYPES = new Set(['finite-set', 'empty-set', 'all-reals']);
+const VALID_INPUT_STYLES = new Set(['inequality', 'interval', 'either']);
 
 function checkAllowed(rec: Record<string, unknown>, allowed: ReadonlySet<string>, ctx: string, errors: string[]) {
   for (const k of Object.keys(rec)) {
     if (!allowed.has(k)) errors.push(`Unknown field "${k}" in ${ctx}.`);
   }
+}
+
+function isPlainObj(v: unknown): v is Record<string, unknown> {
+  return Boolean(v) && typeof v === 'object' && !Array.isArray(v);
+}
+
+function isFiniteNonNeg(v: unknown): v is number {
+  return typeof v === 'number' && Number.isFinite(v) && v >= 0;
 }
 
 export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors: string[]): void {
@@ -118,6 +149,35 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     errors.push('math-evaluator "curriculumLevel" must be primary, lower-secondary, igcse, or as-a-level.');
   }
 
+  if (obj.prediction !== undefined) {
+    if (!isPlainObj(obj.prediction)) {
+      errors.push('math-evaluator "prediction" must be an object.');
+    } else {
+      checkAllowed(obj.prediction, PREDICTION_KEYS, 'prediction', errors);
+      if (typeof obj.prediction.prompt !== 'string' || obj.prediction.prompt.trim().length < 4) {
+        errors.push('prediction.prompt must be a non-empty string.');
+      }
+      if (
+        !Array.isArray(obj.prediction.options) ||
+        obj.prediction.options.length < 2 ||
+        obj.prediction.options.length > 4 ||
+        obj.prediction.options.some((o) => typeof o !== 'string' || !o.trim())
+      ) {
+        errors.push('prediction.options must contain 2..4 non-empty strings.');
+      } else if (
+        typeof obj.prediction.correctIndex !== 'number' ||
+        !Number.isInteger(obj.prediction.correctIndex) ||
+        obj.prediction.correctIndex < 0 ||
+        obj.prediction.correctIndex >= obj.prediction.options.length
+      ) {
+        errors.push('prediction.correctIndex must be a valid option index.');
+      }
+      if (typeof obj.prediction.explanation !== 'string' || !obj.prediction.explanation.trim()) {
+        errors.push('prediction.explanation must be a non-empty string.');
+      }
+    }
+  }
+
   // MODE 1: NUMERIC QUANTITY
   if (mode === 'numeric-quantity') {
     checkAllowed(obj, NUMERIC_KEYS, 'math-evaluator(numeric-quantity)', errors);
@@ -130,18 +190,83 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
         errors.push(`numeric-quantity expectedValue invalid: ${e instanceof Error ? e.message : String(e)}`);
       }
     }
-    if (obj.unitSpec !== undefined) {
-      const us = obj.unitSpec as Record<string, unknown>;
-      if (!us || typeof us !== 'object' || typeof us.expectedUnit !== 'string') {
-        errors.push('numeric-quantity unitSpec requires string "expectedUnit".');
+    if (obj.requiredForm !== undefined && (typeof obj.requiredForm !== 'string' || !VALID_NUMERIC_FORMS.has(obj.requiredForm))) {
+      errors.push('numeric-quantity requiredForm must be any, reduced-fraction, decimal, or scientific.');
+    }
+    if (obj.tolerance !== undefined) {
+      if (!isPlainObj(obj.tolerance)) {
+        errors.push('numeric-quantity tolerance must be an object.');
       } else {
-        try {
-          const parsed = parseUnitExpression(us.expectedUnit);
-          if ((us.expectedUnit.includes('°C') || us.expectedUnit.trim() === 'K') && !parsed.isCompound && !us.temperatureMode) {
-            errors.push('numeric-quantity unitSpec using standalone °C or K must declare "temperatureMode" ("absolute" or "difference").');
+        checkAllowed(obj.tolerance, TOLERANCE_KEYS, 'tolerance', errors);
+        if (obj.tolerance.abs !== undefined && !isFiniteNonNeg(obj.tolerance.abs)) {
+          errors.push('tolerance.abs must be a finite non-negative number.');
+        }
+        if (obj.tolerance.rel !== undefined && !isFiniteNonNeg(obj.tolerance.rel)) {
+          errors.push('tolerance.rel must be a finite non-negative number.');
+        }
+      }
+    }
+    if (obj.precisionRule !== undefined) {
+      if (!isPlainObj(obj.precisionRule)) {
+        errors.push('numeric-quantity precisionRule must be an object.');
+      } else {
+        checkAllowed(obj.precisionRule, PRECISION_KEYS, 'precisionRule', errors);
+        const pk = obj.precisionRule.kind;
+        if (pk !== 'exact' && pk !== 'sig-figs' && pk !== 'decimal-places') {
+          errors.push('precisionRule.kind must be exact, sig-figs, or decimal-places.');
+        }
+        if (pk === 'sig-figs' || pk === 'decimal-places') {
+          const cnt = obj.precisionRule.count;
+          if (typeof cnt !== 'number' || !Number.isInteger(cnt) || cnt < (pk === 'sig-figs' ? 1 : 0) || cnt > 12) {
+            errors.push(`precisionRule.count for ${pk} must be an integer in range.`);
           }
-        } catch (e) {
-          errors.push(`numeric-quantity unitSpec invalid: ${e instanceof Error ? e.message : String(e)}`);
+        }
+        if (
+          obj.precisionRule.rounding !== undefined &&
+          obj.precisionRule.rounding !== 'half-up' &&
+          obj.precisionRule.rounding !== 'half-even'
+        ) {
+          errors.push('precisionRule.rounding must be "half-up" or "half-even".');
+        }
+      }
+    }
+    if (obj.unitSpec !== undefined) {
+      if (!isPlainObj(obj.unitSpec)) {
+        errors.push('numeric-quantity unitSpec must be an object.');
+      } else {
+        checkAllowed(obj.unitSpec, UNIT_SPEC_KEYS, 'unitSpec', errors);
+        if (typeof obj.unitSpec.expectedUnit !== 'string') {
+          errors.push('unitSpec.expectedUnit must be a string.');
+        } else {
+          try {
+            const parsed = parseUnitExpression(obj.unitSpec.expectedUnit);
+            if (
+              (obj.unitSpec.expectedUnit.includes('°C') || obj.unitSpec.expectedUnit.trim() === 'K') &&
+              !parsed.isCompound &&
+              obj.unitSpec.temperatureMode !== 'absolute' &&
+              obj.unitSpec.temperatureMode !== 'difference'
+            ) {
+              errors.push('unitSpec using standalone °C or K must declare temperatureMode ("absolute" or "difference").');
+            }
+          } catch (e) {
+            errors.push(`unitSpec.expectedUnit invalid: ${e instanceof Error ? e.message : String(e)}`);
+          }
+        }
+        if (obj.unitSpec.allowEquivalentUnits !== undefined && typeof obj.unitSpec.allowEquivalentUnits !== 'boolean') {
+          errors.push('unitSpec.allowEquivalentUnits must be a strict boolean.');
+        }
+        if (obj.unitSpec.allowedUnits !== undefined) {
+          if (!Array.isArray(obj.unitSpec.allowedUnits) || obj.unitSpec.allowedUnits.some((u) => typeof u !== 'string')) {
+            errors.push('unitSpec.allowedUnits must be an array of unit strings.');
+          } else {
+            for (const u of obj.unitSpec.allowedUnits) {
+              try {
+                parseUnitExpression(u);
+              } catch (e) {
+                errors.push(`unitSpec.allowedUnits item "${u}" invalid: ${e instanceof Error ? e.message : String(e)}`);
+              }
+            }
+          }
         }
       }
     }
@@ -161,17 +286,114 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
       errors.push(`algebraic-expression "variables" must be 1..${MATH_EVAL_LIMITS.maxVariables} single-letter strings.`);
       return;
     }
+    if (new Set(vars).size !== vars.length) {
+      errors.push('algebraic-expression "variables" must not contain duplicates.');
+      return;
+    }
+    if (obj.requiredForm !== undefined && (typeof obj.requiredForm !== 'string' || !VALID_ALGEBRA_FORMS.has(obj.requiredForm))) {
+      errors.push('algebraic-expression requiredForm is invalid.');
+    }
+    if (
+      obj.verificationPolicy !== undefined &&
+      (typeof obj.verificationPolicy !== 'string' || !VALID_VERIFY_POLICIES.has(obj.verificationPolicy))
+    ) {
+      errors.push('algebraic-expression verificationPolicy must be exact-only, exact-or-symbolic, or allow-bounded-numeric.');
+    }
     if (typeof obj.expectedExpr !== 'string' || !obj.expectedExpr.trim()) {
       errors.push('algebraic-expression requires non-empty string "expectedExpr".');
       return;
     }
+    let expAst;
     try {
-      parseEvalExpr(obj.expectedExpr, { allowedVariables: vars });
+      expAst = parseEvalExpr(obj.expectedExpr, { allowedVariables: vars }).ast;
       if (typeof obj.sourceExpr === 'string' && obj.sourceExpr.trim()) {
         parseEvalExpr(obj.sourceExpr, { allowedVariables: vars });
       }
     } catch (e) {
       errors.push(`algebraic-expression syntax invalid: ${e instanceof Error ? e.message : String(e)}`);
+      return;
+    }
+
+    if (obj.domainRestrictions !== undefined) {
+      if (!isPlainObj(obj.domainRestrictions)) {
+        errors.push('domainRestrictions must be an object.');
+      } else {
+        checkAllowed(obj.domainRestrictions, DOMAIN_KEYS, 'domainRestrictions', errors);
+        if (
+          obj.domainRestrictions.requireLearnerDomain !== undefined &&
+          typeof obj.domainRestrictions.requireLearnerDomain !== 'boolean'
+        ) {
+          errors.push('domainRestrictions.requireLearnerDomain must be a strict boolean.');
+        }
+        if (obj.domainRestrictions.expectedExcluded !== undefined) {
+          if (
+            !Array.isArray(obj.domainRestrictions.expectedExcluded) ||
+            obj.domainRestrictions.expectedExcluded.some((x) => typeof x !== 'string')
+          ) {
+            errors.push('domainRestrictions.expectedExcluded must be an array of exact number strings.');
+          } else {
+            const b = new EvalOpBudget();
+            for (const ex of obj.domainRestrictions.expectedExcluded) {
+              if (!parseExactRoot(ex, b)) {
+                errors.push(`domainRestrictions.expectedExcluded value "${ex}" is invalid.`);
+              }
+            }
+          }
+        }
+        if (obj.domainRestrictions.expectedDomainInterval !== undefined) {
+          if (typeof obj.domainRestrictions.expectedDomainInterval !== 'string') {
+            errors.push('domainRestrictions.expectedDomainInterval must be a string.');
+          } else {
+            try {
+              parseIntervalOrInequality(obj.domainRestrictions.expectedDomainInterval, vars[0]);
+            } catch (e) {
+              errors.push(`domainRestrictions.expectedDomainInterval invalid: ${e instanceof Error ? e.message : String(e)}`);
+            }
+          }
+        }
+        if (obj.domainRestrictions.variableAssumptions !== undefined) {
+          if (!isPlainObj(obj.domainRestrictions.variableAssumptions)) {
+            errors.push('domainRestrictions.variableAssumptions must be an object.');
+          } else {
+            for (const [vk, vv] of Object.entries(obj.domainRestrictions.variableAssumptions)) {
+              if (!vars.includes(vk)) errors.push(`variableAssumptions references undeclared variable "${vk}".`);
+              if (typeof vv !== 'string' || !VALID_ASSUMPTIONS.has(vv)) {
+                errors.push(`Invalid variableAssumption "${String(vv)}" for "${vk}".`);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Validate misconceptionChecks & reject any rule equivalent to expectedExpr!
+    if (obj.misconceptionChecks !== undefined) {
+      if (!Array.isArray(obj.misconceptionChecks)) {
+        errors.push('misconceptionChecks must be an array.');
+      } else {
+        const b = new EvalOpBudget();
+        for (let i = 0; i < obj.misconceptionChecks.length; i++) {
+          const item = obj.misconceptionChecks[i];
+          if (!isPlainObj(item)) {
+            errors.push(`misconceptionChecks[${i}] must be an object.`);
+            continue;
+          }
+          checkAllowed(item, MISCONCEPTION_KEYS, `misconceptionChecks[${i}]`, errors);
+          if (typeof item.matchExpr !== 'string' || typeof item.feedback !== 'string' || !item.feedback.trim()) {
+            errors.push(`misconceptionChecks[${i}] requires string matchExpr and feedback.`);
+            continue;
+          }
+          try {
+            const mAst = parseEvalExpr(item.matchExpr, { allowedVariables: vars }).ast;
+            const eq = checkSymbolicEquivalence(mAst, expAst, b);
+            if (eq === 'exact' || eq === 'symbolic') {
+              errors.push(`misconceptionChecks[${i}].matchExpr "${item.matchExpr}" conflicts with expectedExpr "${obj.expectedExpr}".`);
+            }
+          } catch (e) {
+            errors.push(`misconceptionChecks[${i}].matchExpr invalid: ${e instanceof Error ? e.message : String(e)}`);
+          }
+        }
+      }
     }
     return;
   }
@@ -188,12 +410,25 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
       return;
     }
     if (typeof obj.equationClass !== 'string' || !VALID_EQ_CLASSES.has(obj.equationClass as EquationClass)) {
-      errors.push('equation-solution "equationClass" must be linear, quadratic, factored-polynomial, rational-linear-quadratic, or radical-single.');
+      errors.push('equation-solution "equationClass" is invalid.');
       return;
+    }
+    if (obj.solutionType !== undefined && (typeof obj.solutionType !== 'string' || !VALID_SOL_TYPES.has(obj.solutionType))) {
+      errors.push('equation-solution "solutionType" must be finite-set, empty-set, or all-reals.');
+      return;
+    }
+    if (obj.requireCompleteSet !== undefined && typeof obj.requireCompleteSet !== 'boolean') {
+      errors.push('equation-solution "requireCompleteSet" must be a strict boolean.');
     }
     if (!Array.isArray(obj.expectedRoots) || obj.expectedRoots.some((r) => typeof r !== 'string')) {
       errors.push('equation-solution "expectedRoots" must be an array of root strings.');
       return;
+    }
+    if (
+      obj.extraneousCandidates !== undefined &&
+      (!Array.isArray(obj.extraneousCandidates) || obj.extraneousCandidates.some((r) => typeof r !== 'string'))
+    ) {
+      errors.push('equation-solution "extraneousCandidates" must be an array of strings.');
     }
     const certErrors = certifyEquationAuthorConfig(
       obj.originalEquation,
@@ -213,21 +448,50 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
       errors.push('inequality-interval "variable" must be a single-letter string.');
       return;
     }
+    if (
+      obj.acceptedInputStyle !== undefined &&
+      (typeof obj.acceptedInputStyle !== 'string' || !VALID_INPUT_STYLES.has(obj.acceptedInputStyle))
+    ) {
+      errors.push('inequality-interval "acceptedInputStyle" must be inequality, interval, or either.');
+    }
     const ivs = obj.expectedIntervals;
     if (!Array.isArray(ivs) || ivs.length > MATH_EVAL_LIMITS.maxIntervals) {
       errors.push(`inequality-interval "expectedIntervals" must be an array of 0..${MATH_EVAL_LIMITS.maxIntervals} intervals.`);
       return;
     }
-    try {
-      const parsed = ivs.map((iv: Record<string, unknown>) => ({
-        low: parseEndpoint(String(iv.low)),
-        lowInclusive: Boolean(iv.lowInclusive),
-        high: parseEndpoint(String(iv.high)),
-        highInclusive: Boolean(iv.highInclusive),
-      }));
-      normaliseIntervalUnion(parsed);
-    } catch (e) {
-      errors.push(`inequality-interval expectedIntervals invalid: ${e instanceof Error ? e.message : String(e)}`);
+    const parsedIvs = [];
+    for (let i = 0; i < ivs.length; i++) {
+      const iv = ivs[i];
+      if (!isPlainObj(iv)) {
+        errors.push(`expectedIntervals[${i}] must be an object.`);
+        continue;
+      }
+      checkAllowed(iv, INTERVAL_ITEM_KEYS, `expectedIntervals[${i}]`, errors);
+      if (typeof iv.low !== 'string' || typeof iv.high !== 'string') {
+        errors.push(`expectedIntervals[${i}] low and high must be strings.`);
+        continue;
+      }
+      if (typeof iv.lowInclusive !== 'boolean' || typeof iv.highInclusive !== 'boolean') {
+        errors.push(`expectedIntervals[${i}] lowInclusive and highInclusive must be strict booleans (no string coercion).`);
+        continue;
+      }
+      try {
+        parsedIvs.push({
+          low: parseEndpoint(iv.low),
+          lowInclusive: iv.lowInclusive,
+          high: parseEndpoint(iv.high),
+          highInclusive: iv.highInclusive,
+        });
+      } catch (e) {
+        errors.push(`expectedIntervals[${i}] endpoint invalid: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+    if (errors.length === 0) {
+      try {
+        normaliseIntervalUnion(parsedIvs);
+      } catch (e) {
+        errors.push(`expectedIntervals invalid: ${e instanceof Error ? e.message : String(e)}`);
+      }
     }
     return;
   }
@@ -242,6 +506,12 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     errors.push('calculus-check "calculusKind" must be "derivative" or "antiderivative".');
     return;
   }
+  if (obj.requireConstantOfIntegration !== undefined && typeof obj.requireConstantOfIntegration !== 'boolean') {
+    errors.push('calculus-check "requireConstantOfIntegration" must be a strict boolean.');
+  }
+  if (obj.requireAbsInLog !== undefined && typeof obj.requireAbsInLog !== 'boolean') {
+    errors.push('calculus-check "requireAbsInLog" must be a strict boolean.');
+  }
   if (typeof obj.sourceExpr !== 'string' || typeof obj.expectedExpr !== 'string') {
     errors.push('calculus-check requires string "sourceExpr" and "expectedExpr".');
     return;
@@ -251,9 +521,17 @@ export function validateMathEvaluatorConfig(obj: Record<string, unknown>, errors
     const exp = parseEvalExpr(obj.expectedExpr, { allowedVariables: [obj.variable], allowConstantC: true });
     const budget = new EvalOpBudget();
     if (obj.calculusKind === 'derivative') {
-      differentiateAst(src.ast, obj.variable, budget);
+      const derived = differentiateAst(src.ast, obj.variable, budget);
+      const eq = checkSymbolicEquivalence(derived, exp.ast, budget);
+      if (eq !== 'exact' && eq !== 'symbolic') {
+        errors.push(`calculus-check expectedExpr "${obj.expectedExpr}" does not match symbolic derivative of "${obj.sourceExpr}".`);
+      }
     } else {
-      differentiateAst(exp.ast, obj.variable, budget);
+      const dExp = differentiateAst(exp.ast, obj.variable, budget);
+      const eq = checkSymbolicEquivalence(dExp, src.ast, budget);
+      if (eq !== 'exact' && eq !== 'symbolic') {
+        errors.push(`calculus-check expectedExpr "${obj.expectedExpr}" does not differentiate back to "${obj.sourceExpr}".`);
+      }
     }
   } catch (e) {
     errors.push(`calculus-check expression unsupported or invalid: ${e instanceof Error ? e.message : String(e)}`);

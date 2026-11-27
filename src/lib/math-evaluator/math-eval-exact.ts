@@ -1,8 +1,8 @@
 /**
  * GAM EDU — Step 5A Pure Module 3: Exact Rational, Polynomial, Rational-Function,
- * Quadratic Surd, Bounded Symbolic Calculus & Deterministic Numeric Sampling Engine
+ * Quadratic Surd, Bounded Symbolic Equivalence, Symbolic Calculus & Opt-In Numeric Sampling
  *
- * Pure TypeScript, zero React/DOM dependencies, zero eval().
+ * Pure TypeScript, zero React/DOM dependencies, zero eval(), ES2017-clean BigInt.
  *
  * Negative-number rounding convention (explicitly documented):
  * - `'half-up'`: rounds ties (exact .5) AWAY from zero (`-2.5 -> -3`, `2.5 -> 3`, `9.995 -> 10.00`).
@@ -22,31 +22,35 @@ import { type EvalAstNode } from './math-eval-parser';
 /* ========================================================================== */
 
 export interface BigRat {
-  n: bigint; // numerator
-  d: bigint; // denominator > 0, gcd(|n|, d) === 1
+  n: bigint;
+  d: bigint; // > 0, gcd(|n|, d) === 1
 }
 
+const B0 = BigInt(0);
+const B1 = BigInt(1);
+const B2 = BigInt(2);
+
 export function bigAbs(a: bigint): bigint {
-  return a < BigInt(0) ? -a : a;
+  return a < B0 ? -a : a;
 }
 
 export function bigGcd(a: bigint, b: bigint): bigint {
   let x = bigAbs(a);
   let y = bigAbs(b);
-  while (y !== BigInt(0)) {
+  while (y !== B0) {
     const t = x % y;
     x = y;
     y = t;
   }
-  return x === BigInt(0) ? BigInt(1) : x;
+  return x === B0 ? B1 : x;
 }
 
-export function makeRat(n: bigint, d: bigint = BigInt(1)): BigRat {
-  if (d === BigInt(0)) throw new MathEvalLimitError('UNSUPPORTED', 'Division by zero in exact arithmetic.');
-  if (n === BigInt(0)) return { n: BigInt(0), d: BigInt(1) };
+export function makeRat(n: bigint, d: bigint = B1): BigRat {
+  if (d === B0) throw new MathEvalLimitError('UNSUPPORTED', 'Division by zero in exact arithmetic.');
+  if (n === B0) return { n: B0, d: B1 };
   let num = n;
   let den = d;
-  if (den < BigInt(0)) {
+  if (den < B0) {
     num = -num;
     den = -den;
   }
@@ -58,8 +62,8 @@ export function makeRat(n: bigint, d: bigint = BigInt(1)): BigRat {
   return { n: num, d: den };
 }
 
-export const RAT_ZERO: BigRat = { n: BigInt(0), d: BigInt(1) };
-export const RAT_ONE: BigRat = { n: BigInt(1), d: BigInt(1) };
+export const RAT_ZERO: BigRat = { n: B0, d: B1 };
+export const RAT_ONE: BigRat = { n: B1, d: B1 };
 
 export function ratAdd(a: BigRat, b: BigRat): BigRat {
   return makeRat(a.n * b.d + b.n * a.d, a.d * b.d);
@@ -71,7 +75,7 @@ export function ratMul(a: BigRat, b: BigRat): BigRat {
   return makeRat(a.n * b.n, a.d * b.d);
 }
 export function ratDiv(a: BigRat, b: BigRat): BigRat {
-  if (b.n === BigInt(0)) throw new MathEvalLimitError('UNSUPPORTED', 'Division by zero.');
+  if (b.n === B0) throw new MathEvalLimitError('UNSUPPORTED', 'Division by zero.');
   return makeRat(a.n * b.d, a.d * b.n);
 }
 export function ratNeg(a: BigRat): BigRat {
@@ -90,7 +94,7 @@ export function ratPowInt(a: BigRat, exp: number): BigRat {
     throw new MathEvalLimitError('LIMIT_EXCEEDED', `Exponent ${exp} exceeds safe exact bounds.`);
   }
   if (exp === 0) {
-    if (a.n === BigInt(0)) throw new MathEvalLimitError('UNSUPPORTED', '0^0 is indeterminate.');
+    if (a.n === B0) throw new MathEvalLimitError('UNSUPPORTED', '0^0 is indeterminate.');
     return RAT_ONE;
   }
   const neg = exp < 0;
@@ -104,12 +108,11 @@ export function ratPowInt(a: BigRat, exp: number): BigRat {
   }
   return res;
 }
-
 export function ratToNumber(r: BigRat): number {
   return Number(r.n) / Number(r.d);
 }
 
-/** Exact conversion of a decimal or scientific-notation literal string (e.g. "-9.995", "3.00e8") to BigRat. */
+/** Exact conversion of a decimal or scientific-notation literal string to BigRat. */
 export function decimalStringToBigRat(raw: string): BigRat {
   const s = raw.trim().replace(/^\+/, '');
   const m = /^(-?)(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?$/.exec(s);
@@ -127,55 +130,48 @@ export function decimalStringToBigRat(raw: string): BigRat {
   const netExp = exp10 - fracPart.length;
   const signed = neg ? -digits : digits;
   if (netExp >= 0) {
-    return makeRat(signed * BigInt('1' + '0'.repeat(netExp)), BigInt(1));
+    return makeRat(signed * BigInt('1' + '0'.repeat(netExp)), B1);
   }
   return makeRat(signed, BigInt('1' + '0'.repeat(-netExp)));
 }
 
-/** Exact BigInt decimal rounding without binary floating-point errors (`9.995` to 2 d.p. half-up === `10.00`). */
 export function roundBigRatToDecimalPlaces(
   val: BigRat,
   dp: number,
   mode: 'half-up' | 'half-even' = 'half-up',
 ): { roundedRat: BigRat; formatted: string } {
   const factor = BigInt('1' + '0'.repeat(Math.max(0, dp)));
-  const scaled = ratMul(val, { n: factor, d: BigInt(1) });
-  const neg = scaled.n < BigInt(0);
+  const scaled = ratMul(val, { n: factor, d: B1 });
+  const neg = scaled.n < B0;
   const absN = bigAbs(scaled.n);
   const q = absN / scaled.d;
   const rem = absN % scaled.d;
-  const twiceRem = rem * BigInt(2);
+  const twiceRem = rem * B2;
 
   let roundedAbs = q;
   if (twiceRem > scaled.d) {
-    roundedAbs = q + BigInt(1);
+    roundedAbs = q + B1;
   } else if (twiceRem === scaled.d) {
-    if (mode === 'half-up') {
-      roundedAbs = q + BigInt(1); // ties away from zero
-    } else if (q % BigInt(2) === BigInt(1)) {
-      roundedAbs = q + BigInt(1); // half-to-even
-    }
+    if (mode === 'half-up') roundedAbs = q + B1;
+    else if (q % B2 === B1) roundedAbs = q + B1;
   }
 
-  const finalInt = neg && roundedAbs !== BigInt(0) ? -roundedAbs : roundedAbs;
+  const finalInt = neg && roundedAbs !== B0 ? -roundedAbs : roundedAbs;
   const roundedRat = makeRat(finalInt, factor);
-
-  // Format with exact dp digits
   const strAbs = roundedAbs.toString().padStart(dp + 1, '0');
   const formatted =
     dp === 0
-      ? `${finalInt < BigInt(0) ? '-' : ''}${strAbs}`
-      : `${finalInt < BigInt(0) ? '-' : ''}${strAbs.slice(0, -dp)}.${strAbs.slice(-dp)}`;
+      ? `${finalInt < B0 ? '-' : ''}${strAbs}`
+      : `${finalInt < B0 ? '-' : ''}${strAbs.slice(0, -dp)}.${strAbs.slice(-dp)}`;
   return { roundedRat, formatted };
 }
 
-/** Exact BigRat rounding to `sf` significant figures (`half-up` or `half-even`). */
 export function roundBigRatToSigFigs(
   val: BigRat,
   sf: number,
   mode: 'half-up' | 'half-even' = 'half-up',
 ): { roundedRat: BigRat; orderOfMagnitude: number } {
-  if (val.n === BigInt(0)) return { roundedRat: RAT_ZERO, orderOfMagnitude: 0 };
+  if (val.n === B0) return { roundedRat: RAT_ZERO, orderOfMagnitude: 0 };
   const approx = Math.abs(ratToNumber(val));
   const mag = Math.floor(Math.log10(approx));
   const dp = sf - 1 - mag;
@@ -184,16 +180,15 @@ export function roundBigRatToSigFigs(
     return { roundedRat, orderOfMagnitude: mag };
   }
   const shift = BigInt('1' + '0'.repeat(-dp));
-  const shifted = ratDiv(val, { n: shift, d: BigInt(1) });
+  const shifted = ratDiv(val, { n: shift, d: B1 });
   const { roundedRat } = roundBigRatToDecimalPlaces(shifted, 0, mode);
-  return { roundedRat: ratMul(roundedRat, { n: shift, d: BigInt(1) }), orderOfMagnitude: mag };
+  return { roundedRat: ratMul(roundedRat, { n: shift, d: B1 }), orderOfMagnitude: mag };
 }
 
 /* ========================================================================== */
 /* 2. EXACT MULTIVARIATE POLYNOMIALS & RATIONAL FUNCTIONS                     */
 /* ========================================================================== */
 
-/** Canonical monomial key: e.g. "" for constant, "x^2*y^1" sorted alphabetically */
 export type PolyMap = Map<string, BigRat>;
 
 function parseMonoKey(key: string): Array<[string, number]> {
@@ -212,7 +207,7 @@ function buildMonoKey(entries: Array<[string, number]>): string {
 export function polyDegree(p: PolyMap): number {
   let max = 0;
   for (const [k, c] of p.entries()) {
-    if (c.n === BigInt(0)) continue;
+    if (c.n === B0) continue;
     const deg = parseMonoKey(k).reduce((acc, [, e]) => acc + e, 0);
     if (deg > max) max = deg;
   }
@@ -221,7 +216,7 @@ export function polyDegree(p: PolyMap): number {
 
 export function polyConst(c: BigRat): PolyMap {
   const m = new Map<string, BigRat>();
-  if (c.n !== BigInt(0)) m.set('', c);
+  if (c.n !== B0) m.set('', c);
   return m;
 }
 
@@ -233,7 +228,7 @@ export function polyVar(v: string): PolyMap {
 
 export function polyIsZero(p: PolyMap): boolean {
   for (const c of p.values()) {
-    if (c.n !== BigInt(0)) return false;
+    if (c.n !== B0) return false;
   }
   return true;
 }
@@ -244,7 +239,7 @@ export function polyAdd(a: PolyMap, b: PolyMap, budget: EvalOpBudget): PolyMap {
     budget.tick();
     const cur = res.get(k);
     const next = cur ? ratAdd(cur, c) : c;
-    if (next.n === BigInt(0)) res.delete(k);
+    if (next.n === B0) res.delete(k);
     else res.set(k, next);
   }
   if (res.size > MATH_EVAL_LIMITS.maxPolyTerms) {
@@ -278,7 +273,7 @@ export function polyMul(a: PolyMap, b: PolyMap, budget: EvalOpBudget): PolyMap {
       const prod = ratMul(ca, cb);
       const cur = res.get(key);
       const next = cur ? ratAdd(cur, prod) : prod;
-      if (next.n === BigInt(0)) res.delete(key);
+      if (next.n === B0) res.delete(key);
       else res.set(key, next);
       if (res.size > MATH_EVAL_LIMITS.maxPolyTerms) {
         throw new MathEvalLimitError('LIMIT_EXCEEDED', `Polynomial expansion exceeded ${MATH_EVAL_LIMITS.maxPolyTerms} terms.`);
@@ -312,7 +307,6 @@ export interface RationalPoly {
   den: PolyMap;
 }
 
-/** Converts an AST to an exact RationalPoly `num / den` if purely rational/polynomial; returns null otherwise. */
 export function astToRationalPoly(node: EvalAstNode, budget: EvalOpBudget): RationalPoly | null {
   budget.tick();
   switch (node.type) {
@@ -354,14 +348,12 @@ export function astToRationalPoly(node: EvalAstNode, budget: EvalOpBudget): Rati
         return { num: polyMul(L.num, R.den, budget), den: polyMul(L.den, R.num, budget) };
       }
       if (node.op === '^') {
-        // Exponent must be a constant integer
         if (R.den.size !== 1 || !R.den.has('') || R.num.size > 1 || (R.num.size === 1 && !R.num.has(''))) {
           return null;
         }
         const expRat = R.num.get('') ?? RAT_ZERO;
-        if (expRat.d !== BigInt(1)) return null;
+        if (expRat.d !== B1) return null;
         const expNum = Number(expRat.n);
-        // Constant numeric base (degree 0): allow up to maxNumericExponentAbs (e.g. 2^3^2 = 512)!
         const isConstBase =
           L.num.size <= 1 && (L.num.size === 0 || L.num.has('')) && L.den.size === 1 && L.den.has('');
         if (isConstBase) {
@@ -376,15 +368,9 @@ export function astToRationalPoly(node: EvalAstNode, budget: EvalOpBudget): Rati
         }
         if (expNum < 0) {
           if (polyIsZero(L.num)) throw new MathEvalLimitError('UNSUPPORTED', 'Negative power of zero.');
-          return {
-            num: polyPow(L.den, -expNum, budget),
-            den: polyPow(L.num, -expNum, budget),
-          };
+          return { num: polyPow(L.den, -expNum, budget), den: polyPow(L.num, -expNum, budget) };
         }
-        return {
-          num: polyPow(L.num, expNum, budget),
-          den: polyPow(L.den, expNum, budget),
-        };
+        return { num: polyPow(L.num, expNum, budget), den: polyPow(L.den, expNum, budget) };
       }
       return null;
     }
@@ -397,11 +383,22 @@ export function rationalPolyEqual(a: RationalPoly, b: RationalPoly, budget: Eval
   return polyIsZero(polySub(lhs, rhs, budget));
 }
 
+export function polyToCanonicalString(p: PolyMap): string {
+  const keys = Array.from(p.keys()).sort();
+  if (keys.length === 0) return '0';
+  return keys
+    .map((k) => {
+      const c = p.get(k)!;
+      const cs = c.d === B1 ? c.n.toString() : `${c.n}/${c.d}`;
+      return k ? `${cs}*${k}` : cs;
+    })
+    .join('+');
+}
+
 /* ========================================================================== */
 /* 3. EXACT QUADRATIC SURD CANONICALISER (a + b√d)                            */
 /* ========================================================================== */
 
-/** Maps square-free radicand d >= 1 (d=1 is rational part) -> exact BigRat coefficient */
 export type SurdSum = Map<number, BigRat>;
 
 export function extractSquareFactor(n: number): { outside: number; inside: number } {
@@ -426,7 +423,7 @@ function surdAdd(a: SurdSum, b: SurdSum, sign: 1 | -1 = 1): SurdSum {
     const delta = sign === 1 ? c : ratNeg(c);
     const cur = res.get(d);
     const next = cur ? ratAdd(cur, delta) : delta;
-    if (next.n === BigInt(0)) res.delete(d);
+    if (next.n === B0) res.delete(d);
     else res.set(d, next);
   }
   return res;
@@ -440,7 +437,7 @@ function surdMul(a: SurdSum, b: SurdSum): SurdSum {
       const coeff = ratMul(ratMul(c1, c2), makeRat(BigInt(outside)));
       const cur = res.get(inside);
       const next = cur ? ratAdd(cur, coeff) : coeff;
-      if (next.n === BigInt(0)) res.delete(inside);
+      if (next.n === B0) res.delete(inside);
       else res.set(inside, next);
     }
   }
@@ -452,7 +449,7 @@ export function astToExactSurd(node: EvalAstNode, budget: EvalOpBudget): SurdSum
   if (node.type === 'number') {
     const r = decimalStringToBigRat(node.raw);
     const m: SurdSum = new Map();
-    if (r.n !== BigInt(0)) m.set(1, r);
+    if (r.n !== B0) m.set(1, r);
     return m;
   }
   if (node.type === 'unary') {
@@ -467,9 +464,8 @@ export function astToExactSurd(node: EvalAstNode, budget: EvalOpBudget): SurdSum
     const inner = astToExactSurd(node.arg, budget);
     if (!inner || inner.size > 1 || (inner.size === 1 && !inner.has(1))) return null;
     const r = inner.get(1) ?? RAT_ZERO;
-    if (r.n < BigInt(0)) throw new MathEvalLimitError('UNSUPPORTED', 'Square root of a negative number is not real.');
-    if (r.n === BigInt(0)) return new Map();
-    // sqrt(p/q) = sqrt(p*q)/q
+    if (r.n < B0) throw new MathEvalLimitError('UNSUPPORTED', 'Square root of a negative number is not real.');
+    if (r.n === B0) return new Map();
     const prod = Number(r.n * r.d);
     if (!Number.isSafeInteger(prod) || prod > MATH_EVAL_LIMITS.maxSurdRadicand) return null;
     const { outside, inside } = extractSquareFactor(prod);
@@ -485,11 +481,9 @@ export function astToExactSurd(node: EvalAstNode, budget: EvalOpBudget): SurdSum
     if (node.op === '-') return surdAdd(L, R, -1);
     if (node.op === '*') return surdMul(L, R);
     if (node.op === '/') {
-      // Support division by rational or single surd c*sqrt(d)
       if (R.size === 0) throw new MathEvalLimitError('UNSUPPORTED', 'Division by zero.');
       if (R.size === 1) {
         const [[d, c]] = Array.from(R.entries());
-        // 1 / (c * sqrt(d)) = sqrt(d) / (c * d)
         const inv: SurdSum = new Map([[d, ratDiv(RAT_ONE, ratMul(c, makeRat(BigInt(d))))]]);
         return surdMul(L, inv);
       }
@@ -498,15 +492,14 @@ export function astToExactSurd(node: EvalAstNode, budget: EvalOpBudget): SurdSum
     if (node.op === '^') {
       if (R.size > 1 || (R.size === 1 && !R.has(1))) return null;
       const exp = R.get(1) ?? RAT_ZERO;
-      if (exp.d === BigInt(1)) {
+      if (exp.d === B1) {
         const e = Number(exp.n);
         if (e < 0 || e > 4) return null;
         let res: SurdSum = new Map([[1, RAT_ONE]]);
         for (let k = 0; k < e; k++) res = surdMul(res, L);
         return res;
       }
-      // Support rational^(1/2)
-      if (exp.n === BigInt(1) && exp.d === BigInt(2)) {
+      if (exp.n === B1 && exp.d === B2) {
         return astToExactSurd({ type: 'call', name: 'sqrt', arg: node.left }, budget);
       }
     }
@@ -524,7 +517,259 @@ export function surdEqual(a: SurdSum, b: SurdSum): boolean {
 }
 
 /* ========================================================================== */
-/* 4. BOUNDED SYMBOLIC DIFFERENTIATION (RADIANS FOR TRIG)                     */
+/* 4. GENUINE BOUNDED SYMBOLIC EQUIVALENCE (ZERO NUMERICAL SAMPLING!)         */
+/* ========================================================================== */
+
+/**
+ * Represents a finite linear combination of elementary symbolic basis atoms with
+ * exact RationalPoly coefficients: e.g. `6x * [1] + 1 * [cos(x)]`.
+ * Supports:
+ * - Polynomial & rational expressions
+ * - Elementary trig/exp/log/abs basis terms (sin, cos, tan, exp, ln, log10, abs)
+ * - Logarithm product/quotient/power rules: `ln(A) + ln(B) -> ln(A*B)`, `k*ln(A) -> ln(A^k)`
+ * - Square-root square rule: `sqrt(u^2) -> abs(u)` (or `u` ONLY when `u` is declared positive!)
+ * - Pythagorean trig rule: `cos(u)^2 -> 1 - sin(u)^2`
+ */
+type SymBasisMap = Map<string, RationalPoly>;
+
+function symAdd(a: SymBasisMap, b: SymBasisMap, sign: 1 | -1, budget: EvalOpBudget): SymBasisMap {
+  const res = new Map(a);
+  for (const [k, rp] of b.entries()) {
+    budget.tick();
+    const term = sign === 1 ? rp : { num: polySub(new Map(), rp.num, budget), den: rp.den };
+    const cur = res.get(k);
+    if (!cur) {
+      if (!polyIsZero(term.num)) res.set(k, term);
+    } else {
+      const sum: RationalPoly = {
+        num: polyAdd(polyMul(cur.num, term.den, budget), polyMul(term.num, cur.den, budget), budget),
+        den: polyMul(cur.den, term.den, budget),
+      };
+      if (polyIsZero(sum.num)) res.delete(k);
+      else res.set(k, sum);
+    }
+  }
+  return res;
+}
+
+function canonicalAtomKey(node: EvalAstNode, budget: EvalOpBudget, positiveVars: Set<string>): string | null {
+  budget.tick();
+  const rp = astToRationalPoly(node, budget);
+  if (rp && rp.den.size === 1 && rp.den.has('')) {
+    const d = rp.den.get('')!;
+    const scaled = new Map<string, BigRat>();
+    for (const [k, v] of rp.num.entries()) scaled.set(k, ratDiv(v, d));
+    return polyToCanonicalString(scaled);
+  }
+  if (node.type === 'call') {
+    const inner = canonicalAtomKey(node.arg, budget, positiveVars);
+    if (!inner) return null;
+    if (node.name === 'abs' && node.arg.type === 'var' && positiveVars.has(node.arg.name)) {
+      return node.arg.name;
+    }
+    return `${node.name}(${inner})`;
+  }
+  return null;
+}
+
+/** Checks if `ast` is a sum/difference of `ln(...)` terms and combines them into a single canonical `ln(prod/quot)` rational poly! */
+function tryCombineLogSum(
+  node: EvalAstNode,
+  fnName: 'ln' | 'log10',
+  budget: EvalOpBudget,
+): RationalPoly | null {
+  if (node.type === 'call' && node.name === fnName) {
+    return astToRationalPoly(node.arg, budget);
+  }
+  if (node.type === 'binary' && (node.op === '+' || node.op === '-')) {
+    const L = tryCombineLogSum(node.left, fnName, budget);
+    const R = tryCombineLogSum(node.right, fnName, budget);
+    if (!L || !R) return null;
+    if (node.op === '+') {
+      return { num: polyMul(L.num, R.num, budget), den: polyMul(L.den, R.den, budget) };
+    }
+    if (polyIsZero(R.num)) return null;
+    return { num: polyMul(L.num, R.den, budget), den: polyMul(L.den, R.num, budget) };
+  }
+  if (node.type === 'binary' && node.op === '*' && node.left.type === 'number' && Number.isInteger(node.left.value)) {
+    const k = node.left.value;
+    if (k < 1 || k > 4) return null;
+    const inner = tryCombineLogSum(node.right, fnName, budget);
+    if (!inner) return null;
+    return { num: polyPow(inner.num, k, budget), den: polyPow(inner.den, k, budget) };
+  }
+  return null;
+}
+
+function astToSymBasis(
+  node: EvalAstNode,
+  budget: EvalOpBudget,
+  positiveVars: Set<string>,
+): SymBasisMap | null {
+  budget.tick();
+  // Pure rational polynomial -> basis key "1"
+  const rp = astToRationalPoly(node, budget);
+  if (rp) {
+    const m: SymBasisMap = new Map();
+    if (!polyIsZero(rp.num)) m.set('1', rp);
+    return m;
+  }
+
+  // Unary
+  if (node.type === 'unary') {
+    const inner = astToSymBasis(node.arg, budget, positiveVars);
+    if (!inner) return null;
+    return node.op === '+' ? inner : symAdd(new Map(), inner, -1, budget);
+  }
+
+  // Function call
+  if (node.type === 'call') {
+    // Rule: sqrt(u^2) -> abs(u) (or u if positive!)
+    if (node.name === 'sqrt' && node.arg.type === 'binary' && node.arg.op === '^' && node.arg.right.type === 'number' && node.arg.right.value === 2) {
+      const base = node.arg.left;
+      if (base.type === 'var' && positiveVars.has(base.name)) {
+        return new Map([['1', { num: polyVar(base.name), den: polyConst(RAT_ONE) }]]);
+      }
+      const key = canonicalAtomKey(base, budget, positiveVars);
+      if (key) return new Map([[`abs(${key})`, { num: polyConst(RAT_ONE), den: polyConst(RAT_ONE) }]]);
+    }
+    const key = canonicalAtomKey(node, budget, positiveVars);
+    if (key) {
+      // If abs(x) simplified to x under positive assumption
+      if (node.name === 'abs' && node.arg.type === 'var' && positiveVars.has(node.arg.name)) {
+        return new Map([['1', { num: polyVar(node.arg.name), den: polyConst(RAT_ONE) }]]);
+      }
+      return new Map([[key, { num: polyConst(RAT_ONE), den: polyConst(RAT_ONE) }]]);
+    }
+    return null;
+  }
+
+  // Binary
+  if (node.type === 'binary') {
+    if (node.op === '+' || node.op === '-') {
+      const L = astToSymBasis(node.left, budget, positiveVars);
+      const R = astToSymBasis(node.right, budget, positiveVars);
+      if (!L || !R) return null;
+      return symAdd(L, R, node.op === '+' ? 1 : -1, budget);
+    }
+    if (node.op === '*') {
+      const Lrp = astToRationalPoly(node.left, budget);
+      const Rrp = astToRationalPoly(node.right, budget);
+      if (Lrp) {
+        const R = astToSymBasis(node.right, budget, positiveVars);
+        if (!R) return null;
+        const out: SymBasisMap = new Map();
+        for (const [k, v] of R.entries()) {
+          const prod = { num: polyMul(Lrp.num, v.num, budget), den: polyMul(Lrp.den, v.den, budget) };
+          if (!polyIsZero(prod.num)) out.set(k, prod);
+        }
+        return out;
+      }
+      if (Rrp) {
+        const L = astToSymBasis(node.left, budget, positiveVars);
+        if (!L) return null;
+        const out: SymBasisMap = new Map();
+        for (const [k, v] of L.entries()) {
+          const prod = { num: polyMul(Rrp.num, v.num, budget), den: polyMul(Rrp.den, v.den, budget) };
+          if (!polyIsZero(prod.num)) out.set(k, prod);
+        }
+        return out;
+      }
+      return null;
+    }
+    if (node.op === '/') {
+      const Rrp = astToRationalPoly(node.right, budget);
+      if (Rrp && !polyIsZero(Rrp.num)) {
+        const L = astToSymBasis(node.left, budget, positiveVars);
+        if (!L) return null;
+        const out: SymBasisMap = new Map();
+        for (const [k, v] of L.entries()) {
+          const quot = { num: polyMul(v.num, Rrp.den, budget), den: polyMul(v.den, Rrp.num, budget) };
+          if (!polyIsZero(quot.num)) out.set(k, quot);
+        }
+        return out;
+      }
+      // Handle 1 / cos(u)^2 (from d/dx tan(u))
+      const Lrp = astToRationalPoly(node.left, budget);
+      if (Lrp && node.right.type === 'binary' && node.right.op === '^' && node.right.right.type === 'number' && node.right.right.value === 2) {
+        const bKey = canonicalAtomKey(node.right.left, budget, positiveVars);
+        if (bKey) return new Map([[`1/(${bKey})^2`, Lrp]]);
+      }
+      return null;
+    }
+    if (node.op === '^') {
+      // Handle e^u -> exp(u)
+      if (node.left.type === 'const' && node.left.name === 'e') {
+        const inner = canonicalAtomKey(node.right, budget, positiveVars);
+        if (inner) return new Map([[`exp(${inner})`, { num: polyConst(RAT_ONE), den: polyConst(RAT_ONE) }]]);
+      }
+      // Handle sin(u)^2 and Pythagorean identity cos(u)^2 -> 1 - sin(u)^2!
+      if (node.left.type === 'call' && node.right.type === 'number' && node.right.value === 2) {
+        const argKey = canonicalAtomKey(node.left.arg, budget, positiveVars);
+        if (argKey) {
+          if (node.left.name === 'sin') {
+            return new Map([[`sin(${argKey})^2`, { num: polyConst(RAT_ONE), den: polyConst(RAT_ONE) }]]);
+          }
+          if (node.left.name === 'cos') {
+            return new Map([
+              ['1', { num: polyConst(RAT_ONE), den: polyConst(RAT_ONE) }],
+              [`sin(${argKey})^2`, { num: polyConst({ n: BigInt(-1), d: B1 }), den: polyConst(RAT_ONE) }],
+            ]);
+          }
+        }
+      }
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Genuine bounded symbolic equivalence check (ZERO numerical sampling!).
+ * Returns `'exact'`, `'symbolic'`, `'not-equal'`, or `'unsupported'`.
+ */
+export function checkSymbolicEquivalence(
+  astA: EvalAstNode,
+  astB: EvalAstNode,
+  budget: EvalOpBudget,
+  positiveVars: Set<string> = new Set(),
+): 'exact' | 'symbolic' | 'not-equal' | 'unsupported' {
+  // 1. Exact rational-polynomial check
+  const rpA = astToRationalPoly(astA, budget);
+  const rpB = astToRationalPoly(astB, budget);
+  if (rpA && rpB) {
+    return rationalPolyEqual(rpA, rpB, budget) ? 'exact' : 'not-equal';
+  }
+
+  // 2. Exact quadratic surd check
+  const surdA = astToExactSurd(astA, budget);
+  const surdB = astToExactSurd(astB, budget);
+  if (surdA && surdB) {
+    return surdEqual(surdA, surdB) ? 'exact' : 'not-equal';
+  }
+
+  // 3. Logarithm product/quotient/power rule check (ln and log10)
+  for (const fn of ['ln', 'log10'] as const) {
+    const logA = tryCombineLogSum(astA, fn, budget);
+    const logB = tryCombineLogSum(astB, fn, budget);
+    if (logA && logB) {
+      return rationalPolyEqual(logA, logB, budget) ? 'symbolic' : 'not-equal';
+    }
+  }
+
+  // 4. Symbolic elementary-basis linear-combination check (trig, exp, abs, sqrt(u^2), Pythagorean)
+  const symA = astToSymBasis(astA, budget, positiveVars);
+  const symB = astToSymBasis(astB, budget, positiveVars);
+  if (symA && symB) {
+    const diff = symAdd(symA, symB, -1, budget);
+    return diff.size === 0 ? 'symbolic' : 'not-equal';
+  }
+
+  return 'unsupported';
+}
+
+/* ========================================================================== */
+/* 5. BOUNDED SYMBOLIC DIFFERENTIATION (RADIANS FOR TRIG)                     */
 /* ========================================================================== */
 
 export function differentiateAst(node: EvalAstNode, variable: string, budget: EvalOpBudget): EvalAstNode {
@@ -548,7 +793,6 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
         return { type: 'binary', op: node.op, left: du, right: dv };
       }
       if (node.op === '*') {
-        // Product rule: u'v + uv'
         return {
           type: 'binary',
           op: '+',
@@ -557,7 +801,6 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
         };
       }
       if (node.op === '/') {
-        // Quotient rule: (u'v - uv') / v^2
         return {
           type: 'binary',
           op: '/',
@@ -571,7 +814,6 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
         };
       }
       if (node.op === '^') {
-        // Power rule when exponent is constant w.r.t. variable: v * u^(v-1) * u'
         if (v.type === 'number') {
           return {
             type: 'binary',
@@ -585,7 +827,6 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
             right: du,
           };
         }
-        // Exponential rule e^v: e^v * v'
         if (u.type === 'const' && u.name === 'e') {
           return { type: 'binary', op: '*', left: node, right: dv };
         }
@@ -596,10 +837,20 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
     case 'call': {
       const g = node.arg;
       if (node.name === 'ln') {
-        // Handles both ln(g) and ln|g| (ln(abs(g))) -> g'/g WITHOUT differentiating abs()!
         const inner = g.type === 'call' && g.name === 'abs' ? g.arg : g;
         const dInner = differentiateAst(inner, variable, budget);
+        if (dInner.type === 'number' && dInner.value === 0) return numNode(0);
         return { type: 'binary', op: '/', left: dInner, right: inner };
+      }
+      if (node.name === 'abs') {
+        // Constant abs(c) differentiates to 0; abs(g(x)) is non-differentiable at g=0 -> unsupported
+        const usesV = (n: EvalAstNode): boolean =>
+          (n.type === 'var' && n.name === variable) ||
+          (n.type === 'unary' && usesV(n.arg)) ||
+          (n.type === 'call' && usesV(n.arg)) ||
+          (n.type === 'binary' && (usesV(n.left) || usesV(n.right)));
+        if (!usesV(g)) return numNode(0);
+        throw new MathEvalLimitError('UNSUPPORTED', 'Symbolic differentiation of abs(x) is not supported.');
       }
       const dg = differentiateAst(g, variable, budget);
       if (node.name === 'sin') {
@@ -614,7 +865,6 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
         };
       }
       if (node.name === 'tan') {
-        // sec^2(g) * g' = g' / cos(g)^2
         return {
           type: 'binary',
           op: '/',
@@ -639,11 +889,10 @@ export function differentiateAst(node: EvalAstNode, variable: string, budget: Ev
 }
 
 /* ========================================================================== */
-/* 5. ANSWER FORM CHECKERS (SEPARATE FROM EQUIVALENCE)                        */
+/* 6. ANSWER FORM CHECKERS (STRENGTHENED, SEPARATE FROM EQUIVALENCE)          */
 /* ========================================================================== */
 
 export function isExpandedPolynomialAst(node: EvalAstNode): boolean {
-  // Rejects unexpanded products containing sums like 2(x+3) or (x+1)^2
   const containsAddSub = (n: EvalAstNode): boolean => {
     if (n.type === 'binary') {
       if (n.op === '+' || n.op === '-') return true;
@@ -667,7 +916,6 @@ export function isExpandedPolynomialAst(node: EvalAstNode): boolean {
 
 export function hasCollectedLikeTermsAst(node: EvalAstNode, budget: EvalOpBudget): boolean {
   if (!isExpandedPolynomialAst(node)) return false;
-  // Count additive terms in the AST vs canonical polynomial term count
   const terms: EvalAstNode[] = [];
   const split = (n: EvalAstNode) => {
     if (n.type === 'binary' && (n.op === '+' || n.op === '-')) {
@@ -683,27 +931,75 @@ export function hasCollectedLikeTermsAst(node: EvalAstNode, budget: EvalOpBudget
   return terms.length <= Math.max(1, rp.num.size);
 }
 
-export function isFactoredFormAst(node: EvalAstNode): boolean {
-  // Top-level must be a product (or power of a binomial/factor) — not an unfactored top-level sum
-  if (node.type === 'unary') return isFactoredFormAst(node.arg);
-  if (node.type === 'binary' && (node.op === '*' || node.op === '^')) return true;
-  return false;
+/** Checks fully factorised form: top-level product/power AND no univariate quadratic factor with rational roots left unfactored (rejects `2(x^2-9)`!). */
+export function isFullyFactoredFormAst(node: EvalAstNode, variables: string[], budget: EvalOpBudget): boolean {
+  const core = node.type === 'unary' ? node.arg : node;
+  if (core.type !== 'binary' || (core.op !== '*' && core.op !== '^')) return false;
+
+  const factors: EvalAstNode[] = [];
+  const collect = (n: EvalAstNode) => {
+    if (n.type === 'binary' && n.op === '*') {
+      collect(n.left);
+      collect(n.right);
+    } else if (n.type === 'binary' && n.op === '^') {
+      collect(n.left);
+    } else {
+      factors.push(n);
+    }
+  };
+  collect(core);
+
+  if (variables.length === 1) {
+    const v = variables[0];
+    for (const f of factors) {
+      const rp = astToRationalPoly(f, budget);
+      if (!rp || rp.den.size !== 1 || !rp.den.has('')) continue;
+      if (polyDegree(rp.num) === 2) {
+        // Check if discriminant is a perfect rational square -> factorable over Q!
+        const c2 = rp.num.get(`${v}^2`) ?? RAT_ZERO;
+        const c1 = rp.num.get(`${v}^1`) ?? RAT_ZERO;
+        const c0 = rp.num.get('') ?? RAT_ZERO;
+        const numD = c1.n * c1.n * c2.d * c0.d - BigInt(4) * c2.n * c0.n * c1.d * c1.d;
+        const denD = c1.d * c1.d * c2.d * c0.d;
+        if (numD >= B0) {
+          const sn = BigInt(Math.round(Math.sqrt(Number(numD))));
+          const sd = BigInt(Math.round(Math.sqrt(Number(denD))));
+          if (sn * sn === numD && sd * sd === denD) {
+            return false; // Partially factorised (e.g. 2(x^2 - 9))!
+          }
+        }
+      }
+    }
+  }
+  return true;
+}
+
+export function isSimplifiedFractionAst(learnerAst: EvalAstNode, expectedAst: EvalAstNode, budget: EvalOpBudget): boolean {
+  const lrnRp = astToRationalPoly(learnerAst, budget);
+  const expRp = astToRationalPoly(expectedAst, budget);
+  if (!lrnRp || !expRp) return false;
+  // Denominator degree must not exceed expected simplified denominator degree
+  return polyDegree(lrnRp.den) <= polyDegree(expRp.den);
 }
 
 export function isReducedFractionAst(node: EvalAstNode): boolean {
   const core = node.type === 'unary' ? node.arg : node;
-  if (core.type === 'number') return /^\d+$/.test(core.raw); // integer is already reduced
+  if (core.type === 'number') return /^\d+$/.test(core.raw);
   if (core.type === 'binary' && core.op === '/' && core.left.type === 'number' && core.right.type === 'number') {
     if (!/^\d+$/.test(core.left.raw) || !/^\d+$/.test(core.right.raw)) return false;
     const p = BigInt(core.left.raw);
     const q = BigInt(core.right.raw);
-    return q > BigInt(1) && bigGcd(p, q) === BigInt(1);
+    return q > B1 && bigGcd(p, q) === B1;
   }
   return false;
 }
 
+export function isDecimalLiteralAst(node: EvalAstNode): boolean {
+  const core = node.type === 'unary' ? node.arg : node;
+  return core.type === 'number' && !/[eE]/.test(core.raw);
+}
+
 export function isSimplifiedSurdAst(node: EvalAstNode): boolean {
-  // Every sqrt(n) must have square-free integer n > 1, and no duplicate radicands in sums
   const seenRadicands = new Set<number>();
   let ok = true;
   const walk = (n: EvalAstNode) => {
@@ -714,11 +1010,7 @@ export function isSimplifiedSurdAst(node: EvalAstNode): boolean {
         return;
       }
       const { outside } = extractSquareFactor(n.arg.value);
-      if (outside > 1) {
-        ok = false;
-        return;
-      }
-      if (seenRadicands.has(n.arg.value)) {
+      if (outside > 1 || seenRadicands.has(n.arg.value)) {
         ok = false;
         return;
       }
@@ -736,12 +1028,11 @@ export function isSimplifiedSurdAst(node: EvalAstNode): boolean {
 }
 
 /* ========================================================================== */
-/* 6. BOUNDED DETERMINISTIC NUMERIC EVALUATION (NEVER UNIVERSAL PROOF!)       */
+/* 7. OPT-IN BOUNDED NUMERIC SAMPLING (NEVER EXACT / NEVER SYMBOLIC PROOF!)   */
 /* ========================================================================== */
 
-/** Deterministic irrational/prime-offset sampling points to defeat integer traps like sin(pi*x) === 0! */
 const DETERMINISTIC_SAMPLES = [
-  0.3719, 1.41421, 2.71828, -0.61803, 3.14159 / 2 + 0.13, 4.23607, -1.73205, 0.86602,
+  0.3719, 1.41421, 2.71828, -0.61803, 1.70079, 4.23607, -1.73205, 0.86602,
   5.19615, -2.23606, 0.27182, 1.83928, -3.30277, 6.40312, 0.57721, -0.41421,
 ];
 
@@ -772,38 +1063,15 @@ export function evalAstNumeric(
       if (a === null || !Number.isFinite(a)) return null;
       let res: number;
       switch (node.name) {
-        case 'abs':
-          res = Math.abs(a);
-          break;
-        case 'sqrt':
-          if (a < -1e-12) return null;
-          res = Math.sqrt(Math.max(0, a));
-          break;
-        case 'cbrt':
-          res = Math.cbrt(a);
-          break;
-        case 'sin':
-          res = Math.sin(a);
-          break;
-        case 'cos':
-          res = Math.cos(a);
-          break;
-        case 'tan':
-          if (Math.abs(Math.cos(a)) < 1e-9) return null;
-          res = Math.tan(a);
-          break;
-        case 'ln':
-          if (a <= 1e-12) return null;
-          res = Math.log(a);
-          break;
-        case 'log10':
-          if (a <= 1e-12) return null;
-          res = Math.log10(a);
-          break;
-        case 'exp':
-          if (a > 50) return null;
-          res = Math.exp(a);
-          break;
+        case 'abs': res = Math.abs(a); break;
+        case 'sqrt': if (a < -1e-12) return null; res = Math.sqrt(Math.max(0, a)); break;
+        case 'cbrt': res = Math.cbrt(a); break;
+        case 'sin': res = Math.sin(a); break;
+        case 'cos': res = Math.cos(a); break;
+        case 'tan': if (Math.abs(Math.cos(a)) < 1e-9) return null; res = Math.tan(a); break;
+        case 'ln': if (a <= 1e-12) return null; res = Math.log(a); break;
+        case 'log10': if (a <= 1e-12) return null; res = Math.log10(a); break;
+        case 'exp': if (a > 50) return null; res = Math.exp(a); break;
       }
       return Number.isFinite(res) ? res : null;
     }
@@ -813,19 +1081,10 @@ export function evalAstNumeric(
       if (l === null || r === null) return null;
       let res: number;
       switch (node.op) {
-        case '+':
-          res = l + r;
-          break;
-        case '-':
-          res = l - r;
-          break;
-        case '*':
-          res = l * r;
-          break;
-        case '/':
-          if (Math.abs(r) < 1e-12) return null;
-          res = l / r;
-          break;
+        case '+': res = l + r; break;
+        case '-': res = l - r; break;
+        case '*': res = l * r; break;
+        case '/': if (Math.abs(r) < 1e-12) return null; res = l / r; break;
         case '^':
           if (Math.abs(r) > MATH_EVAL_LIMITS.maxNumericExponentAbs) return null;
           if (l === 0 && r <= 0) return null;
@@ -860,9 +1119,7 @@ export function checkBoundedNumericAgreement(
     if (va === null && vb === null) continue;
     if (va === null || vb === null) return { agreed: false, validSamples };
     const scale = Math.max(1, Math.abs(va), Math.abs(vb));
-    if (Math.abs(va - vb) > tol * scale) {
-      return { agreed: false, validSamples };
-    }
+    if (Math.abs(va - vb) > tol * scale) return { agreed: false, validSamples };
     validSamples += 1;
   }
   return { agreed: validSamples >= 4, validSamples };

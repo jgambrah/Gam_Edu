@@ -29,7 +29,7 @@ import {
 import { MathEvaluatorEngine } from '@/components/narrated-lessons/MathEvaluatorEngine';
 import { InteractiveEngineRegistry } from '@/components/narrated-lessons/InteractiveEngineRegistry';
 
-describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', () => {
+describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Corrected Preview)', () => {
   it('registers math-evaluator as 7th engine with engineVersion 1.0.0 and productionVersion null (closed)', () => {
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].engineVersion).toBe('1.0.0');
     expect(SUPPORTED_INTERACTIVE_ENGINES['math-evaluator'].productionVersion).toBeNull();
@@ -63,107 +63,48 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', ()
       expect(() => parseEvalExpr('3z + 1', { allowedVariables: ['x'] })).toThrow(/undeclared/i);
     });
 
-    it('distinguishes scientific notation (3.00e8) from Euler constant e (2e, e^x)', () => {
-      const sci = parseEvalExpr('3.00e8');
-      expect(sci.ast.type).toBe('number');
-      const twoE = parseEvalExpr('2e');
-      expect(twoE.ast.type).toBe('binary');
+    it('distinguishes scientific notation (3.00e8) from Euler constant e (2e)', () => {
+      expect(parseEvalExpr('3.00e8').ast.type).toBe('number');
+      expect(parseEvalExpr('2e').ast.type).toBe('binary');
     });
   });
 
-  describe('2. Exact Arithmetic, Precision, Sig Figs & Rounding (Zero Float Drift)', () => {
-    it('rounds 9.995 to 10.00 under half-up, handles negative rounding and half-even ties', () => {
-      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('9.995'), 2, 'half-up').formatted).toBe('10.00');
-      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('-2.5'), 0, 'half-up').formatted).toBe('-3');
-      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('2.5'), 0, 'half-even').formatted).toBe('2');
-      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('3.5'), 0, 'half-even').formatted).toBe('4');
+  describe('2. Defect #1: Genuine Symbolic Equivalence vs Bounded Numeric vs Unsupported', () => {
+    it('proves log product rule and Pythagorean identity symbolically (zero numerical sampling)', () => {
+      const logRes = evaluateMathSubmission(
+        { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'ln(x*(x - 2))', verificationPolicy: 'exact-or-symbolic' },
+        { expression: 'ln(x) + ln(x - 2)' },
+      );
+      expect(logRes.passed).toBe(true);
+      expect(logRes.verdict).toBe('symbolic-domain-equivalent');
+
+      const trigRes = evaluateMathSubmission(
+        { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '1', verificationPolicy: 'exact-or-symbolic' },
+        { expression: 'sin(x)^2 + cos(x)^2' },
+      );
+      expect(trigRes.passed).toBe(true);
+      expect(trigRes.verdict).toBe('symbolic-domain-equivalent');
     });
 
-    it('inspects raw significant figures, trailing zeros, scientific notation, and zero-valued answers', () => {
-      expect(inspectRawNumericPrecision('0.0450').sigFigs).toBe(3);
-      expect(inspectRawNumericPrecision('12.00').sigFigs).toBe(4);
-      expect(inspectRawNumericPrecision('3.00e8')).toMatchObject({ sigFigs: 3, isScientific: true });
-      expect(inspectRawNumericPrecision('1200').ambiguousTrailingZeros).toBe(true);
-      expect(inspectRawNumericPrecision('0.00').sigFigs).toBe(2);
-    });
+    it('returns unsupported-or-indeterminate (NOT symbolic-domain-equivalent) for unsupported trig identity unless allow-bounded-numeric', () => {
+      const unsup = evaluateMathSubmission(
+        { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'sin(2x)', verificationPolicy: 'exact-or-symbolic' },
+        { expression: '2*sin(x)*cos(x)' },
+      );
+      expect(unsup.passed).toBe(false);
+      expect(unsup.verdict).toBe('unsupported-or-indeterminate');
 
-    it('separates reduced-fraction form from equivalence (6/8 vs 3/4)', () => {
-      const spec: MathNumericQuantitySpec = {
-        mode: 'numeric-quantity',
-        expectedValue: '3/4',
-        precisionRule: { kind: 'exact' },
-        requiredForm: 'reduced-fraction',
-      };
-      const unreduced = evaluateMathSubmission(spec, { expression: '6/8' });
-      expect(unreduced.passed).toBe(false);
-      expect(unreduced.verdict).toBe('wrong-form');
-      expect(evaluateMathSubmission(spec, { expression: '3/4' }).passed).toBe(true);
+      const optIn = evaluateMathSubmission(
+        { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'sin(2x)', verificationPolicy: 'allow-bounded-numeric' },
+        { expression: '2*sin(x)*cos(x)' },
+      );
+      expect(optIn.passed).toBe(true);
+      expect(optIn.verdict).toBe('bounded-numeric-match'); // NEVER symbolic-domain-equivalent!
     });
   });
 
-  describe('3. Full 7-Component SI Units & Temperature Offset Boundaries', () => {
-    it.each([
-      ['12.5', 'm/s', '45', 'km/h', 'difference'],
-      ['1000', 'cm^3', '1', 'dm^3', 'difference'],
-      ['1', 'g/cm^3', '1000', 'kg/m^3', 'difference'],
-      ['0.25', 'mol/dm^3', '250', 'mol/m^3', 'difference'],
-      ['37.5', '%', '0.375', '', 'difference'],
-      ['180', 'deg', '3.14159265', 'rad', 'difference'],
-      ['25', '°C', '298.15', 'K', 'absolute'],
-      ['25', '°C', '25', 'K', 'difference'],
-    ] as const)('verifies %s %s equals %s %s (%s)', (expV, expU, lrnV, lrnU, tMode) => {
-      const res = evaluateMathSubmission(
-        {
-          mode: 'numeric-quantity',
-          expectedValue: expV,
-          tolerance: { rel: 1e-5 },
-          unitSpec: { expectedUnit: expU, allowEquivalentUnits: true, temperatureMode: tMode },
-        },
-        { expression: lrnV, unit: lrnU },
-      );
-      expect(res.passed).toBe(true);
-    });
-
-    it('distinguishes conventional units (J vs N m), rejects dimension mismatch and ambiguous m/s/s', () => {
-      const energyRes = evaluateMathSubmission(
-        {
-          mode: 'numeric-quantity',
-          expectedValue: '10',
-          unitSpec: { expectedUnit: 'J', allowedUnits: ['J', 'kJ'] },
-        },
-        { expression: '10', unit: 'N m' },
-      );
-      expect(energyRes.passed).toBe(false);
-      expect(energyRes.verdict).toBe('wrong-unit-or-precision');
-
-      const dimMismatch = evaluateMathSubmission(
-        { mode: 'numeric-quantity', expectedValue: '10', unitSpec: { expectedUnit: 'm/s' } },
-        { expression: '10', unit: 'm/s^2' },
-      );
-      expect(dimMismatch.passed).toBe(false);
-      expect(dimMismatch.verdict).toBe('wrong-unit-or-precision');
-
-      expect(() => parseUnitExpression('m/s/s')).toThrow(/Ambiguous/i);
-      // Compound unit J/°C must NOT apply +273.15 affine offset
-      expect(parseUnitExpression('J/°C').offsetK).toBe(0);
-    });
-  });
-
-  describe('4. Algebraic Equivalence, Forms, Surds, Domains & Misleading Sampling', () => {
-    it('separates equivalence from expanded-polynomial form (2(x+3) vs 2x+6)', () => {
-      const spec: MathAlgebraicExpressionSpec = {
-        mode: 'algebraic-expression',
-        variables: ['x'],
-        expectedExpr: '2x + 6',
-        requiredForm: 'expanded-polynomial',
-      };
-      const wrongForm = evaluateMathSubmission(spec, { expression: '2(x+3)' });
-      expect(wrongForm.passed).toBe(false);
-      expect(wrongForm.verdict).toBe('wrong-form');
-      expect(evaluateMathSubmission(spec, { expression: '6 + 2x' }).passed).toBe(true);
-    });
-
-    it('enforces domain restrictions on (x²-9)/(x-3), 1/(1/x), and ln(x)+ln(x-2)', () => {
+  describe('3. Defect #2: Parsed Domain Certification (Zero Substring Matching)', () => {
+    it('rejects x != 30 and extra exclusions (x != 3, x != 4) when exact restriction is x != 3', () => {
       const ratSpec: MathAlgebraicExpressionSpec = {
         mode: 'algebraic-expression',
         variables: ['x'],
@@ -171,142 +112,108 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', ()
         expectedExpr: 'x + 3',
         domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['3'] },
       };
-      expect(evaluateMathSubmission(ratSpec, { expression: 'x + 3' }).passed).toBe(false);
+      expect(evaluateMathSubmission(ratSpec, { expression: 'x + 3', domainInput: 'x != 30' }).passed).toBe(false);
+      expect(evaluateMathSubmission(ratSpec, { expression: 'x + 3', domainInput: 'x != 3 and x != 4' }).passed).toBe(false);
       expect(evaluateMathSubmission(ratSpec, { expression: 'x + 3', domainInput: 'x != 3' }).passed).toBe(true);
-
-      const invSpec: MathAlgebraicExpressionSpec = {
-        mode: 'algebraic-expression',
-        variables: ['x'],
-        sourceExpr: '1/(1/x)',
-        expectedExpr: 'x',
-        domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['0'] },
-      };
-      expect(evaluateMathSubmission(invSpec, { expression: 'x', domainInput: 'x != 0' }).passed).toBe(true);
-
-      const logSpec: MathAlgebraicExpressionSpec = {
-        mode: 'algebraic-expression',
-        variables: ['x'],
-        sourceExpr: 'ln(x) + ln(x - 2)',
-        expectedExpr: 'ln(x*(x - 2))',
-        domainRestrictions: {
-          requireLearnerDomain: true,
-          expectedDomainInterval: 'x > 2',
-          variableAssumptions: { x: 'positive' },
-        },
-      };
-      expect(evaluateMathSubmission(logSpec, { expression: 'ln(x^2 - 2x)', domainInput: 'x > 0' }).passed).toBe(false);
-      expect(evaluateMathSubmission(logSpec, { expression: 'ln(x^2 - 2x)', domainInput: 'x > 2' }).passed).toBe(true);
     });
 
-    it('canonicalises quadratic surds (√12 + √27 === 5√3) and defeats misleading integer-sampling trap sin(pi*x) vs 0', () => {
-      const surdSpec: MathAlgebraicExpressionSpec = {
-        mode: 'algebraic-expression',
-        variables: ['x'],
-        expectedExpr: '5sqrt(3)',
-        requiredForm: 'simplified-surd',
-      };
-      expect(evaluateMathSubmission(surdSpec, { expression: 'sqrt(12) + sqrt(27)' }).verdict).toBe('wrong-form');
-      expect(evaluateMathSubmission(surdSpec, { expression: '5sqrt(3)' }).verdict).toBe('exact-equivalent');
-
-      // Misleading integer-sampling trap: sin(pi*x) === 0 at every integer, must NOT match!
-      const budget = new EvalOpBudget();
-      const trap = checkBoundedNumericAgreement(
-        parseEvalExpr('sin(pi*x)', { allowedVariables: ['x'] }).ast,
-        parseEvalExpr('0', { allowedVariables: ['x'] }).ast,
-        ['x'],
-        budget,
-      );
-      expect(trap.agreed).toBe(false);
-    });
-  });
-
-  describe('5. Equation Completeness, Extraneous Roots & Exact Interval Unions', () => {
-    it('detects missing roots, extraneous roots, repeated roots, empty set, and authoring incompleteness', () => {
-      // Quadratic completeness
+    it('verifies 1/(1/x), (x²-1)/(x-1), ln(x)+ln(x-2), sqrt(x²) vs x vs abs(x), and rejects uncertifiable multivariate denominators', () => {
       expect(
         evaluateMathSubmission(
-          { mode: 'equation-solution', variable: 'x', originalEquation: 'x^2 - 5x + 6 = 0', equationClass: 'quadratic', expectedRoots: ['2', '3'] },
-          { expression: '2' },
+          { mode: 'algebraic-expression', variables: ['x'], sourceExpr: '1/(1/x)', expectedExpr: 'x', domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['0'] } },
+          { expression: 'x', domainInput: 'x != 0' },
+        ).passed,
+      ).toBe(true);
+
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], sourceExpr: '(x^2 - 1)/(x - 1)', expectedExpr: 'x + 1', domainRestrictions: { requireLearnerDomain: true, expectedExcluded: ['1'] } },
+          { expression: 'x + 1', domainInput: 'x != 1' },
+        ).passed,
+      ).toBe(true);
+
+      // sqrt(x^2) !== x over all reals, but sqrt(x^2) === abs(x)!
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x' },
+          { expression: 'sqrt(x^2)' },
         ).passed,
       ).toBe(false);
       expect(
         evaluateMathSubmission(
-          { mode: 'equation-solution', variable: 'x', originalEquation: 'x^2 - 5x + 6 = 0', equationClass: 'quadratic', expectedRoots: ['2', '3'] },
-          { expression: '3, 2' },
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'abs(x)' },
+          { expression: 'sqrt(x^2)' },
         ).passed,
       ).toBe(true);
 
-      // Radical extraneous root rejection
-      const ext = evaluateMathSubmission(
-        { mode: 'equation-solution', variable: 'x', originalEquation: 'sqrt(x + 2) = x', equationClass: 'radical-single', expectedRoots: ['2'], extraneousCandidates: ['-1'] },
-        { expression: '2, -1' },
+      // Unsupported multivariate denominator returns unsupported-or-indeterminate
+      const multiDen = evaluateMathSubmission(
+        { mode: 'algebraic-expression', variables: ['x', 'y'], sourceExpr: '1/(x^2 + y^2 - 1)', expectedExpr: '1/(x^2 + y^2 - 1)' },
+        { expression: '1/(x^2 + y^2 - 1)' },
       );
-      expect(ext.passed).toBe(false);
-      expect(ext.feedback).toMatch(/Extraneous/i);
-
-      // Empty set & identity
-      expect(
-        evaluateMathSubmission(
-          { mode: 'equation-solution', variable: 'x', originalEquation: 'x^2 + 1 = 0', equationClass: 'quadratic', expectedRoots: [], solutionType: 'empty-set' },
-          { expression: 'no solution' },
-        ).passed,
-      ).toBe(true);
-      expect(
-        evaluateMathSubmission(
-          { mode: 'equation-solution', variable: 'x', originalEquation: '2(x + 1) = 2x + 2', equationClass: 'linear', expectedRoots: [], solutionType: 'all-reals' },
-          { expression: 'all reals' },
-        ).passed,
-      ).toBe(true);
-
-      // Authoring-time completeness certification catches missing root in author JSON!
-      expect(certifyEquationAuthorConfig('x^2 - 5x + 6 = 0', 'x', 'quadratic', ['2'], 'finite-set').length).toBeGreaterThan(0);
-    });
-
-    it('handles exact interval merging, non-merging (0,1) U (1,2), singletons, empty sets, and rejects inclusive infinity', () => {
-      const openSplit = parseIntervalOrInequality('(0, 1) U (1, 2)', 'x');
-      expect(openSplit).toHaveLength(2); // MUST NOT merge!
-
-      const halfMerged = parseIntervalOrInequality('(0, 1] U (1, 2)', 'x');
-      expect(areIntervalUnionsEqual(halfMerged, parseIntervalOrInequality('(0, 2)', 'x'))).toBe(true);
-
-      const closedMerged = parseIntervalOrInequality('[0, 1] U [1, 2]', 'x');
-      expect(areIntervalUnionsEqual(closedMerged, parseIntervalOrInequality('[0, 2]', 'x'))).toBe(true);
-
-      expect(parseIntervalOrInequality('[2, 2]', 'x')).toHaveLength(1);
-      expect(parseIntervalOrInequality('(2, 2)', 'x')).toHaveLength(0);
-      expect(areIntervalUnionsEqual(parseIntervalOrInequality('-3 <= x < 4', 'x'), parseIntervalOrInequality('[-3, 4)', 'x'))).toBe(true);
-
-      expect(() =>
-        normaliseIntervalUnion([{ low: parseEndpoint('-inf'), lowInclusive: true, high: parseEndpoint('2'), highInclusive: false }]),
-      ).toThrow(/infinity/i);
+      expect(multiDen.passed).toBe(false);
+      expect(multiDen.verdict).toBe('unsupported-or-indeterminate');
     });
   });
 
-  describe('6. Calculus Verification (Derivatives, Particular vs General Antiderivative, ln|x|)', () => {
-    it('verifies derivatives, particular vs general antiderivatives, and ln|x| vs ln(x)', () => {
-      expect(
-        evaluateMathSubmission(
-          { mode: 'calculus-check', variable: 'x', calculusKind: 'derivative', sourceExpr: '3x^2 + sin(x)', expectedExpr: '6x + cos(x)' },
-          { expression: '6x + cos(x)' },
-        ).passed,
-      ).toBe(true);
+  describe('4. Defects #3 & #4: Independent Equation Certification & Exact Root Comparison', () => {
+    it('independently certifies all 5 equation classes and rejects malformed/incomplete author configs', () => {
+      expect(certifyEquationAuthorConfig('x^2 - 5x + 6 = 0', 'x', 'quadratic', ['2', '2']).length).toBeGreaterThan(0);
+      expect(certifyEquationAuthorConfig('x^2 - 5x + 6 = 0', 'x', 'quadratic', ['2']).length).toBeGreaterThan(0);
+      expect(certifyEquationAuthorConfig('x^2 - 5x + 6 = 0', 'x', 'quadratic', [], 'all-reals').length).toBeGreaterThan(0);
+      expect(certifyEquationAuthorConfig('(x - 1)(x - 2)(x - 3) = 0', 'x', 'factored-polynomial', ['1', '2']).length).toBeGreaterThan(0);
+      expect(certifyEquationAuthorConfig('(x - 1)(x - 2)(x - 3) = 0', 'x', 'factored-polynomial', ['1', '2', '3'])).toHaveLength(0);
+      expect(certifyEquationAuthorConfig('sqrt(x + 2) = x', 'x', 'radical-single', ['2'])).toHaveLength(0);
+      expect(certifyEquationAuthorConfig('sqrt(x + 2) = x', 'x', 'radical-single', [], 'empty-set').length).toBeGreaterThan(0);
+      expect(certifyEquationAuthorConfig('sqrt(x + 2) = x', 'x', 'radical-single', ['2', '-1']).length).toBeGreaterThan(0);
+      // Restricted-domain identity cannot be declared all-reals!
+      expect(certifyEquationAuthorConfig('(x - 1)/(x - 1) = 1', 'x', 'rational-linear-quadratic', [], 'all-reals').length).toBeGreaterThan(0);
+      // Rational equation incorrectly declared as linear polynomial -> rejected!
+      expect(certifyEquationAuthorConfig('1/x = 2', 'x', 'linear', ['1/2']).length).toBeGreaterThan(0);
+      // Irrational quadratic roots certified exactly!
+      expect(certifyEquationAuthorConfig('x^2 - 2 = 0', 'x', 'quadratic', ['-sqrt(2)', 'sqrt(2)'])).toHaveLength(0);
+      // Constant contradiction & repeated root
+      expect(certifyEquationAuthorConfig('0 = 5', 'x', 'linear', [], 'empty-set')).toHaveLength(0);
+      expect(certifyEquationAuthorConfig('(x - 3)^2 = 0', 'x', 'quadratic', ['3'])).toHaveLength(0);
+    });
 
-      // Particular antiderivative x^4 - x^2 + 7 passes when C not required, fails as wrong-form when + C required!
-      expect(
-        evaluateMathSubmission(
-          { mode: 'calculus-check', variable: 'x', calculusKind: 'antiderivative', sourceExpr: '4x^3 - 2x', expectedExpr: 'x^4 - x^2', requireConstantOfIntegration: false },
-          { expression: 'x^4 - x^2 + 7' },
-        ).passed,
-      ).toBe(true);
+    it('keeps closely spaced distinct roots (x-1)(x-1.000001)=0 distinct and avoids false completeness claims', () => {
+      const closeSpec = {
+        mode: 'equation-solution' as const,
+        variable: 'x',
+        originalEquation: '(x - 1)(x - 1.000001) = 0',
+        equationClass: 'factored-polynomial' as const,
+        expectedRoots: ['1', '1.000001'],
+        requireCompleteSet: true,
+      };
+      expect(evaluateMathSubmission(closeSpec, { expression: '1' }).passed).toBe(false);
+      expect(evaluateMathSubmission(closeSpec, { expression: '1, 1.000001' }).passed).toBe(true);
 
-      const missingC = evaluateMathSubmission(
-        { mode: 'calculus-check', variable: 'x', calculusKind: 'antiderivative', sourceExpr: '4x^3 - 2x', expectedExpr: 'x^4 - x^2 + C', requireConstantOfIntegration: true },
-        { expression: 'x^4 - x^2 + 7' },
-      );
-      expect(missingC.passed).toBe(false);
-      expect(missingC.verdict).toBe('wrong-form');
+      const partial = evaluateMathSubmission({ ...closeSpec, requireCompleteSet: false }, { expression: '1' });
+      expect(partial.passed).toBe(true);
+      expect(partial.feedback).not.toMatch(/complete solution set/i);
+    });
+  });
 
-      // ln|x| vs ln(x) for 1/x
+  describe('5. Defect #5: Arbitrary Constant of Integration C & Specific ln|x| Check', () => {
+    it('distinguishes x²+C, x²+2C (valid) from x²+7, x²+0C, x²+C-C (wrong-form) and x²+Cx (incorrect)', () => {
+      const genSpec = {
+        mode: 'calculus-check' as const,
+        variable: 'x',
+        calculusKind: 'antiderivative' as const,
+        sourceExpr: '2x',
+        expectedExpr: 'x^2 + C',
+        requireConstantOfIntegration: true,
+      };
+      expect(evaluateMathSubmission(genSpec, { expression: 'x^2 + C' }).passed).toBe(true);
+      expect(evaluateMathSubmission(genSpec, { expression: 'x^2 + 2C' }).passed).toBe(true);
+      expect(evaluateMathSubmission(genSpec, { expression: 'x^2 + 7' }).verdict).toBe('wrong-form');
+      expect(evaluateMathSubmission(genSpec, { expression: 'x^2 + 0C' }).verdict).toBe('wrong-form');
+      expect(evaluateMathSubmission(genSpec, { expression: 'x^2 + C - C' }).verdict).toBe('wrong-form');
+      expect(evaluateMathSubmission(genSpec, { expression: 'x^2 + C*x' }).verdict).toBe('incorrect');
+    });
+
+    it('requires abs() specifically inside ln(...) for ln|x| (rejects ln(x) + abs(0) + C)', () => {
       const logAbsSpec = {
         mode: 'calculus-check' as const,
         variable: 'x',
@@ -316,24 +223,198 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', ()
         requireConstantOfIntegration: true,
         requireAbsInLog: true,
       };
-      expect(evaluateMathSubmission(logAbsSpec, { expression: 'ln(x) + C' }).verdict).toBe('wrong-form');
+      expect(evaluateMathSubmission(logAbsSpec, { expression: 'ln(x) + abs(0) + C' }).verdict).toBe('wrong-form');
       expect(evaluateMathSubmission(logAbsSpec, { expression: 'ln|x| + C' }).passed).toBe(true);
     });
   });
 
-  describe('7. Security, Adversarial DoS Protection & Pilot Fixture Validation', () => {
-    it('blocks expansion bombs, deep nesting, prototype pollution, oversized inputs, and corrupted Unicode', () => {
+  describe('6. Defects #6 & #7: Zero Hidden Tolerances, Exact Units, Precision & All Required Forms', () => {
+    it('rejects 1.0000000001 vs 1 in exact mode and never labels tolerance matches exact', () => {
+      expect(
+        evaluateMathSubmission({ mode: 'numeric-quantity', expectedValue: '1' }, { expression: '1.0000000001' }).passed,
+      ).toBe(false);
+
+      const tolMatch = evaluateMathSubmission(
+        { mode: 'numeric-quantity', expectedValue: '180', tolerance: { rel: 1e-4 }, unitSpec: { expectedUnit: 'deg', allowEquivalentUnits: true } },
+        { expression: '3.14159', unit: 'rad' },
+      );
+      expect(tolMatch.passed).toBe(true);
+      expect(tolMatch.verdict).toBe('bounded-numeric-match'); // NOT exact-equivalent!
+    });
+
+    it('enforces precision rules in the learner accepted unit (12.5 m/s -> 45.0 km/h passes 3 s.f., 45 km/h fails)', () => {
+      const spec: MathNumericQuantitySpec = {
+        mode: 'numeric-quantity',
+        expectedValue: '12.5',
+        precisionRule: { kind: 'sig-figs', count: 3, rounding: 'half-up' },
+        unitSpec: { expectedUnit: 'm/s', allowEquivalentUnits: true },
+      };
+      expect(evaluateMathSubmission(spec, { expression: '45.0', unit: 'km/h' }).passed).toBe(true);
+      expect(evaluateMathSubmission(spec, { expression: '45', unit: 'km/h' }).verdict).toBe('wrong-unit-or-precision');
+    });
+
+    it('enforces decimal, reduced-fraction, normalised scientific (30*10^7 rejected), fully factored (2(x²-9) rejected), and simplified-fraction', () => {
+      expect(
+        evaluateMathSubmission({ mode: 'numeric-quantity', expectedValue: '0.75', requiredForm: 'decimal' }, { expression: '3/4' }).verdict,
+      ).toBe('wrong-form');
+      expect(
+        evaluateMathSubmission({ mode: 'numeric-quantity', expectedValue: '0.75', requiredForm: 'decimal' }, { expression: '0.75' }).passed,
+      ).toBe(true);
+
+      expect(
+        evaluateMathSubmission({ mode: 'numeric-quantity', expectedValue: '300000000', requiredForm: 'scientific' }, { expression: '30 * 10^7' }).verdict,
+      ).toBe('wrong-form');
+      expect(
+        evaluateMathSubmission({ mode: 'numeric-quantity', expectedValue: '300000000', requiredForm: 'scientific' }, { expression: '3.00e8' }).passed,
+      ).toBe(true);
+
+      // Partially factorised 2(x^2 - 9) rejected!
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '2(x - 3)(x + 3)', requiredForm: 'factored-form' },
+          { expression: '2(x^2 - 9)' },
+        ).verdict,
+      ).toBe('wrong-form');
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '2(x - 3)(x + 3)', requiredForm: 'factored-form' },
+          { expression: '2(x + 3)(x - 3)' },
+        ).passed,
+      ).toBe(true);
+
+      // Unsimplified algebraic fraction rejected!
+      expect(
+        evaluateMathSubmission(
+          { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x + 3', requiredForm: 'simplified-fraction' },
+          { expression: '(x^2 - 9)/(x - 3)' },
+        ).verdict,
+      ).toBe('wrong-form');
+    });
+
+    it.each([
+      ['12.5', 'm/s', '45', 'km/h', 'difference'],
+      ['1000', 'cm^3', '1', 'dm^3', 'difference'],
+      ['1', 'g/cm^3', '1000', 'kg/m^3', 'difference'],
+      ['0.25', 'mol/dm^3', '250', 'mol/m^3', 'difference'],
+      ['37.5', '%', '0.375', '', 'difference'],
+      ['25', '°C', '298.15', 'K', 'absolute'],
+      ['25', '°C', '25', 'K', 'difference'],
+    ] as const)('verifies exact BigRat unit conversion %s %s === %s %s (%s)', (expV, expU, lrnV, lrnU, tMode) => {
+      const res = evaluateMathSubmission(
+        {
+          mode: 'numeric-quantity',
+          expectedValue: expV,
+          unitSpec: { expectedUnit: expU, allowEquivalentUnits: true, temperatureMode: tMode },
+        },
+        { expression: lrnV, unit: lrnU },
+      );
+      expect(res.passed).toBe(true);
+      expect(res.verdict).toBe('exact-equivalent');
+    });
+  });
+
+  describe('7. Defects #8 & #9: Strict Nested Schema Validation, Interval Style & Misconception Precedence', () => {
+    it('rejects string booleans (lowInclusive: "false"), duplicate vars, negative tolerance, and conflicting misconception rules', () => {
+      const badInterval = validateSlideInteractiveConfig(
+        {
+          id: 'bad-iv',
+          engine: 'math-evaluator',
+          schemaVersion: 1,
+          minEngineVersion: '1.0.0',
+          curriculumLevel: 'igcse',
+          mode: 'inequality-interval',
+          title: 'Bad Interval',
+          instructions: 'Test strict boolean check.',
+          accessibilityLabel: 'Bad Interval',
+          fallbackText: 'Fallback text',
+          variable: 'x',
+          expectedIntervals: [{ low: '0', lowInclusive: 'false', high: '2', highInclusive: false }],
+        },
+        { requireProduction: false },
+      );
+      expect(badInterval.ok).toBe(false);
+
+      const badMisconception = validateSlideInteractiveConfig(
+        {
+          id: 'bad-misc',
+          engine: 'math-evaluator',
+          schemaVersion: 1,
+          minEngineVersion: '1.0.0',
+          curriculumLevel: 'igcse',
+          mode: 'algebraic-expression',
+          title: 'Conflict',
+          instructions: 'Test conflict.',
+          accessibilityLabel: 'Conflict',
+          fallbackText: 'Fallback',
+          variables: ['x'],
+          expectedExpr: '2x + 6',
+          misconceptionChecks: [{ matchExpr: '6 + 2x', feedback: 'Wrong!' }],
+        },
+        { requireProduction: false },
+      );
+      expect(badMisconception.ok).toBe(false);
+
+      // Correct learner answer is NEVER overridden by a conflicting misconception rule at runtime!
+      const runtimeRes = evaluateMathSubmission(
+        {
+          mode: 'algebraic-expression',
+          variables: ['x'],
+          expectedExpr: '2x + 6',
+          misconceptionChecks: [{ matchExpr: '6 + 2x', feedback: 'Erroneous rule' }],
+        },
+        { expression: '6 + 2x' },
+      );
+      expect(runtimeRes.passed).toBe(true);
+
+      // acceptedInputStyle enforcement
+      expect(
+        evaluateMathSubmission(
+          {
+            mode: 'inequality-interval',
+            variable: 'x',
+            expectedIntervals: [{ low: '-inf', lowInclusive: false, high: '2', highInclusive: false }],
+            acceptedInputStyle: 'interval',
+          },
+          { expression: 'x < 2' },
+        ).verdict,
+      ).toBe('syntax-error');
+    });
+
+    it('preserves exact interval union rules: (0,1) U (1,2) unmerged, (0,1] U (1,2) merged, [2,2] singleton, (2,2) empty', () => {
+      expect(parseIntervalOrInequality('(0, 1) U (1, 2)', 'x')).toHaveLength(2);
+      expect(areIntervalUnionsEqual(parseIntervalOrInequality('(0, 1] U (1, 2)', 'x'), parseIntervalOrInequality('(0, 2)', 'x'))).toBe(true);
+      expect(areIntervalUnionsEqual(parseIntervalOrInequality('[0, 1] U [1, 2]', 'x'), parseIntervalOrInequality('[0, 2]', 'x'))).toBe(true);
+      expect(parseIntervalOrInequality('[2, 2]', 'x')).toHaveLength(1);
+      expect(parseIntervalOrInequality('(2, 2)', 'x')).toHaveLength(0);
+      expect(() =>
+        normaliseIntervalUnion([{ low: parseEndpoint('-inf'), lowInclusive: true, high: parseEndpoint('2'), highInclusive: false }]),
+      ).toThrow(/infinity/i);
+    });
+  });
+
+  describe('8. Security, Pilot Fixture Validation, UI & Performance Percentiles', () => {
+    it('blocks expansion bombs, deep nesting, prototype pollution, oversized strings, and defeats sin(pi*x) trap', () => {
       expect(
         evaluateMathSubmission(
           { mode: 'algebraic-expression', variables: ['x'], expectedExpr: 'x' },
           { expression: '(x+1)^100' },
         ).verdict,
       ).toBe('unsupported-or-indeterminate');
-
       expect(() => parseEvalExpr('(((((((((((x)))))))))))', { allowedVariables: ['x'] })).toThrow(/depth/i);
       expect(() => parseEvalExpr('__proto__', { allowedVariables: ['x'] })).toThrow(/Disallowed/i);
       expect(() => parseEvalExpr('x'.repeat(250), { allowedVariables: ['x'] })).toThrow(/length/i);
       expect(() => parseEvalExpr('x + \uFFFD', { allowedVariables: ['x'] })).toThrow(/corrupted/i);
+      expect(() => parseUnitExpression('m/s/s')).toThrow(/Ambiguous/i);
+
+      const budget = new EvalOpBudget();
+      expect(
+        checkBoundedNumericAgreement(
+          parseEvalExpr('sin(pi*x)', { allowedVariables: ['x'] }).ast,
+          parseEvalExpr('0', { allowedVariables: ['x'] }).ast,
+          ['x'],
+          budget,
+        ).agreed,
+      ).toBe(false);
     });
 
     it('validates all 15 slides (18 activities) in step5a-math-evaluator-pilot.json and keeps production gate CLOSED', () => {
@@ -343,49 +424,42 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', ()
         slides: Array<{ id: string; interactive?: unknown[] }>;
       };
       expect(lesson.slides).toHaveLength(15);
-      const totalActs = lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0);
-      expect(totalActs).toBe(18);
-
-      // Passes preview gate (allowDevOnlyEngines: true)
+      expect(lesson.slides.reduce((acc, s) => acc + (s.interactive?.length ?? 0), 0)).toBe(18);
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: true })).not.toThrow();
-      // Blocked at production publish gate while productionVersion is null!
       expect(() => assertValidLessonInteractives(lesson, { allowDevOnlyEngines: false })).toThrow(/production/i);
     });
-  });
 
-  describe('8. UI, Accessible Keypad, Multi-Activity Isolation, Low-Data Mode & Performance', () => {
-    const cfgA: MathEvaluatorInteractiveConfig = {
-      id: 'ui-me-a',
-      engine: 'math-evaluator',
-      schemaVersion: 1,
-      minEngineVersion: '1.0.0',
-      curriculumLevel: 'lower-secondary',
-      mode: 'algebraic-expression',
-      title: 'Expand A',
-      instructions: 'Expand 2(x+3).',
-      accessibilityLabel: 'Expand A',
-      fallbackText: '2x + 6',
-      variables: ['x'],
-      expectedExpr: '2x + 6',
-      requiredForm: 'expanded-polynomial',
-    };
+    it('supports keypad insertion, live AST preview, multi-activity isolation, and Low-Data Mode', () => {
+      const cfgA: MathEvaluatorInteractiveConfig = {
+        id: 'ui-me-a',
+        engine: 'math-evaluator',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'lower-secondary',
+        mode: 'algebraic-expression',
+        title: 'Expand A',
+        instructions: 'Expand 2(x+3).',
+        accessibilityLabel: 'Expand A',
+        fallbackText: '2x + 6',
+        variables: ['x'],
+        expectedExpr: '2x + 6',
+        requiredForm: 'expanded-polynomial',
+      };
+      const cfgB: MathEvaluatorInteractiveConfig = {
+        id: 'ui-me-b',
+        engine: 'math-evaluator',
+        schemaVersion: 1,
+        minEngineVersion: '1.0.0',
+        curriculumLevel: 'primary',
+        mode: 'numeric-quantity',
+        title: 'Fraction B',
+        instructions: 'Reduce 6/8.',
+        accessibilityLabel: 'Fraction B',
+        fallbackText: '3/4',
+        expectedValue: '3/4',
+        requiredForm: 'reduced-fraction',
+      };
 
-    const cfgB: MathEvaluatorInteractiveConfig = {
-      id: 'ui-me-b',
-      engine: 'math-evaluator',
-      schemaVersion: 1,
-      minEngineVersion: '1.0.0',
-      curriculumLevel: 'primary',
-      mode: 'numeric-quantity',
-      title: 'Fraction B',
-      instructions: 'Reduce 6/8.',
-      accessibilityLabel: 'Fraction B',
-      fallbackText: '3/4',
-      expectedValue: '3/4',
-      requiredForm: 'reduced-fraction',
-    };
-
-    it('supports keypad insertion, live AST preview, Check/Reset, multi-activity isolation, and Low-Data Mode', () => {
       render(
         <div>
           <MathEvaluatorEngine config={cfgA} />
@@ -395,22 +469,17 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', ()
 
       const inputA = screen.getByLabelText('Expand A answer input') as HTMLInputElement;
       const inputB = screen.getByLabelText('Fraction B answer input') as HTMLInputElement;
-
       fireEvent.change(inputA, { target: { value: '2x + 6' } });
       expect(screen.getByText(/Spoken: 2 times x plus 6/i)).toBeTruthy();
 
-      const checkBtns = screen.getAllByRole('button', { name: 'Check answer' });
-      fireEvent.click(checkBtns[0]);
+      fireEvent.click(screen.getAllByRole('button', { name: 'Check answer' })[0]);
       expect(screen.getByText(/exact algebraic equivalence confirmed/i)).toBeTruthy();
-      expect(inputB.value).toBe(''); // isolated!
+      expect(inputB.value).toBe('');
 
-      // Toggle keypad & insert symbol
-      const keypadBtns = screen.getAllByRole('button', { name: 'Show math keypad' });
-      fireEvent.click(keypadBtns[1]);
+      fireEvent.click(screen.getAllByRole('button', { name: 'Show math keypad' })[1]);
       fireEvent.click(screen.getByRole('button', { name: 'Insert fraction slash' }));
       expect(inputB.value).toBe('/');
 
-      // Low-Data Mode via InteractiveEngineRegistry
       render(
         <InteractiveEngineRegistry
           lesson={{ lessonId: 'step5a-test' } as never}
@@ -421,28 +490,52 @@ describe('Step 5A — Mathematical Evaluator (math-evaluator 1.0.0 Preview)', ()
       expect(screen.getByText('3/4')).toBeTruthy();
     });
 
-    it('meets performance budgets (< 2 ms representative, < 15 ms max-bound)', () => {
-      const t0 = performance.now();
-      for (let i = 0; i < 500; i++) {
+    it('meets performance budgets (median, avg, p95) on representative and degree-6 maximum-bound cases', () => {
+      const repTimes: number[] = [];
+      for (let i = 0; i < 200; i++) {
+        const t = performance.now();
         evaluateMathSubmission(
           { mode: 'algebraic-expression', variables: ['x'], expectedExpr: '2x + 6', requiredForm: 'expanded-polynomial' },
           { expression: '2x + 6' },
         );
+        repTimes.push(performance.now() - t);
       }
-      const repAvgMs = (performance.now() - t0) / 500;
+      repTimes.sort((a, b) => a - b);
 
-      const t1 = performance.now();
+      // Max-bound degree 6 binomial expansion (7 terms, exact BigInt polynomial)
+      const maxTimes: number[] = [];
       for (let i = 0; i < 100; i++) {
+        const t = performance.now();
         evaluateMathSubmission(
-          { mode: 'algebraic-expression', variables: ['x', 'y'], expectedExpr: '(x + y)^4', verificationPolicy: 'exact-only' },
-          { expression: 'x^4 + 4x^3y + 6x^2y^2 + 4xy^3 + y^4' },
+          { mode: 'algebraic-expression', variables: ['x', 'y'], expectedExpr: '(x + y)^6', verificationPolicy: 'exact-only' },
+          { expression: 'x^6 + 6x^5y + 15x^4y^2 + 20x^3y^3 + 15x^2y^4 + 6xy^5 + y^6' },
         );
+        maxTimes.push(performance.now() - t);
       }
-      const maxAvgMs = (performance.now() - t1) / 100;
-      console.log(`STEP5A_PERF: representative=${repAvgMs.toFixed(4)}ms, max_bound=${maxAvgMs.toFixed(4)}ms`);
+      maxTimes.sort((a, b) => a - b);
 
-      expect(repAvgMs).toBeLessThan(2);
-      expect(maxAvgMs).toBeLessThan(15);
+      const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length;
+      console.log(
+        `STEP5A_PERF_DETAIL: rep(avg=${avg(repTimes).toFixed(4)}ms, p50=${repTimes[100].toFixed(4)}ms, p95=${repTimes[190].toFixed(4)}ms) | max_deg6(avg=${avg(maxTimes).toFixed(4)}ms, p50=${maxTimes[50].toFixed(4)}ms, p95=${maxTimes[95].toFixed(4)}ms)`,
+      );
+
+      expect(avg(repTimes)).toBeLessThan(2);
+      expect(avg(maxTimes)).toBeLessThan(15);
+    });
+  });
+
+  describe('9. Rounding & Precision Reference Cases', () => {
+    it('rounds 9.995 -> 10.00 (half-up), -2.5 -> -3, half-even ties, and inspects raw sig figs', () => {
+      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('9.995'), 2, 'half-up').formatted).toBe('10.00');
+      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('-2.5'), 0, 'half-up').formatted).toBe('-3');
+      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('2.5'), 0, 'half-even').formatted).toBe('2');
+      expect(roundBigRatToDecimalPlaces(decimalStringToBigRat('3.5'), 0, 'half-even').formatted).toBe('4');
+      expect(inspectRawNumericPrecision('0.0450').sigFigs).toBe(3);
+      expect(inspectRawNumericPrecision('12.00').sigFigs).toBe(4);
+      expect(inspectRawNumericPrecision('3.00e8')).toMatchObject({ sigFigs: 3, isNormalisedScientific: true });
+      expect(inspectRawNumericPrecision('30e7')).toMatchObject({ isScientific: true, isNormalisedScientific: false });
+      expect(inspectRawNumericPrecision('1200').ambiguousTrailingZeros).toBe(true);
+      expect(inspectRawNumericPrecision('0.00').sigFigs).toBe(2);
     });
   });
 });

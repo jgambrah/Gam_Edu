@@ -2,86 +2,93 @@
  * GAM EDU — Step 5A Pure Module 5: Full 7-Component SI Dimensional Units & Precision/Sig-Fig Model
  *
  * Dimensional vector: [M, L, T, I, Θ, N, J]
- *   M = Mass (kg)
- *   L = Length (m)
- *   T = Time (s)
- *   I = Electric Current (A)
- *   Θ = Thermodynamic Temperature (K)
- *   N = Amount of Substance (mol)
- *   J = Luminous Intensity (cd)
+ *   M = Mass (kg), L = Length (m), T = Time (s), I = Current (A),
+ *   Θ = Thermodynamic Temperature (K), N = Amount (mol), J = Luminous Intensity (cd)
  *
- * Explicitly separates:
- * - Dimensional compatibility vs conventional unit choice (e.g. J vs N·m)
- * - Absolute temperature offset (25 °C === 298.15 K) vs temperature difference (Δ25 °C === Δ25 K)
- * - Affine temperature offsets are NEVER applied to compound units!
+ * Uses EXACT BigInt rational scale factors for all rational SI/metric/time/volume/temp conversions
+ * (zero hidden 1e-9 float tolerances!). Irrational conversions (deg <-> rad) are explicitly flagged
+ * `exactScale: null` so they never falsely claim exact rational equivalence.
  */
 
 import { MATH_EVAL_LIMITS, MathEvalLimitError } from './math-eval-limits';
+import {
+  RAT_ONE,
+  RAT_ZERO,
+  makeRat,
+  ratAdd,
+  ratDiv,
+  ratMul,
+  ratPowInt,
+  ratSub,
+  type BigRat,
+} from './math-eval-exact';
 
 export type DimVec = readonly [number, number, number, number, number, number, number];
-
 export const DIM_NONE: DimVec = [0, 0, 0, 0, 0, 0, 0];
+
+const B1 = BigInt(1);
 
 interface UnitAtomDef {
   dim: DimVec;
-  scale: number; // multiplier to base SI
-  offsetK?: number; // only for °C when temperatureMode === 'absolute'
+  scale: number;
+  exactScale: BigRat | null; // null only for irrational scale (deg -> pi/180 rad)
+  exactOffsetK?: BigRat; // 27315/100 for standalone °C
   allowPrefix?: boolean;
 }
 
-const SI_PREFIXES: Record<string, number> = {
-  n: 1e-9,
-  u: 1e-6,
-  'µ': 1e-6,
-  μ: 1e-6,
-  m: 1e-3,
-  c: 1e-2,
-  d: 1e-1,
-  k: 1e3,
-  M: 1e6,
-  G: 1e9,
+const SI_PREFIXES: Record<string, { num: number; rat: BigRat }> = {
+  n: { num: 1e-9, rat: makeRat(B1, BigInt('1000000000')) },
+  u: { num: 1e-6, rat: makeRat(B1, BigInt('1000000')) },
+  'µ': { num: 1e-6, rat: makeRat(B1, BigInt('1000000')) },
+  μ: { num: 1e-6, rat: makeRat(B1, BigInt('1000000')) },
+  m: { num: 1e-3, rat: makeRat(B1, BigInt(1000)) },
+  c: { num: 1e-2, rat: makeRat(B1, BigInt(100)) },
+  d: { num: 1e-1, rat: makeRat(B1, BigInt(10)) },
+  k: { num: 1e3, rat: makeRat(BigInt(1000), B1) },
+  M: { num: 1e6, rat: makeRat(BigInt('1000000'), B1) },
+  G: { num: 1e9, rat: makeRat(BigInt('1000000000'), B1) },
 };
 
+const OFFSET_CELSIUS_K: BigRat = makeRat(BigInt(27315), BigInt(100));
+
 const BASE_UNITS: Record<string, UnitAtomDef> = {
-  // 7 SI base units
-  g: { dim: [1, 0, 0, 0, 0, 0, 0], scale: 1e-3, allowPrefix: true }, // kg = 1
-  m: { dim: [0, 1, 0, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  s: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  A: { dim: [0, 0, 0, 1, 0, 0, 0], scale: 1, allowPrefix: true },
-  K: { dim: [0, 0, 0, 0, 1, 0, 0], scale: 1, allowPrefix: false },
-  mol: { dim: [0, 0, 0, 0, 0, 1, 0], scale: 1, allowPrefix: true },
-  cd: { dim: [0, 0, 0, 0, 0, 0, 1], scale: 1, allowPrefix: true },
+  g: { dim: [1, 0, 0, 0, 0, 0, 0], scale: 1e-3, exactScale: makeRat(B1, BigInt(1000)), allowPrefix: true },
+  m: { dim: [0, 1, 0, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  s: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  A: { dim: [0, 0, 0, 1, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  K: { dim: [0, 0, 0, 0, 1, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: false },
+  mol: { dim: [0, 0, 0, 0, 0, 1, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  cd: { dim: [0, 0, 0, 0, 0, 0, 1], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
 
-  // Common non-SI time / volume / temp / angle / dimensionless
-  min: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 60 },
-  h: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 3600 },
-  hr: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 3600 },
-  L: { dim: [0, 3, 0, 0, 0, 0, 0], scale: 1e-3, allowPrefix: true },
-  l: { dim: [0, 3, 0, 0, 0, 0, 0], scale: 1e-3, allowPrefix: true },
-  '°C': { dim: [0, 0, 0, 0, 1, 0, 0], scale: 1, offsetK: 273.15 },
-  C_deg: { dim: [0, 0, 0, 0, 1, 0, 0], scale: 1, offsetK: 273.15 },
-  '%': { dim: DIM_NONE, scale: 0.01 },
-  rad: { dim: DIM_NONE, scale: 1 },
-  deg: { dim: DIM_NONE, scale: Math.PI / 180 },
-  '°': { dim: DIM_NONE, scale: Math.PI / 180 },
+  min: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 60, exactScale: makeRat(BigInt(60), B1) },
+  h: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 3600, exactScale: makeRat(BigInt(3600), B1) },
+  hr: { dim: [0, 0, 1, 0, 0, 0, 0], scale: 3600, exactScale: makeRat(BigInt(3600), B1) },
+  L: { dim: [0, 3, 0, 0, 0, 0, 0], scale: 1e-3, exactScale: makeRat(B1, BigInt(1000)), allowPrefix: true },
+  l: { dim: [0, 3, 0, 0, 0, 0, 0], scale: 1e-3, exactScale: makeRat(B1, BigInt(1000)), allowPrefix: true },
+  '°C': { dim: [0, 0, 0, 0, 1, 0, 0], scale: 1, exactScale: RAT_ONE, exactOffsetK: OFFSET_CELSIUS_K },
+  '%': { dim: DIM_NONE, scale: 0.01, exactScale: makeRat(B1, BigInt(100)) },
+  rad: { dim: DIM_NONE, scale: 1, exactScale: RAT_ONE },
+  deg: { dim: DIM_NONE, scale: Math.PI / 180, exactScale: null },
+  '°': { dim: DIM_NONE, scale: Math.PI / 180, exactScale: null },
 
-  // Derived SI units
-  N: { dim: [1, 1, -2, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  J: { dim: [1, 2, -2, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  W: { dim: [1, 2, -3, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  Pa: { dim: [1, -1, -2, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  Hz: { dim: [0, 0, -1, 0, 0, 0, 0], scale: 1, allowPrefix: true },
-  C: { dim: [0, 0, 1, 1, 0, 0, 0], scale: 1, allowPrefix: true },
-  V: { dim: [1, 2, -3, -1, 0, 0, 0], scale: 1, allowPrefix: true },
-  ohm: { dim: [1, 2, -3, -2, 0, 0, 0], scale: 1, allowPrefix: true },
-  'Ω': { dim: [1, 2, -3, -2, 0, 0, 0], scale: 1, allowPrefix: true },
+  N: { dim: [1, 1, -2, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  J: { dim: [1, 2, -2, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  W: { dim: [1, 2, -3, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  Pa: { dim: [1, -1, -2, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  Hz: { dim: [0, 0, -1, 0, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  C: { dim: [0, 0, 1, 1, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  V: { dim: [1, 2, -3, -1, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  ohm: { dim: [1, 2, -3, -2, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
+  'Ω': { dim: [1, 2, -3, -2, 0, 0, 0], scale: 1, exactScale: RAT_ONE, allowPrefix: true },
 };
 
 export interface ParsedUnit {
   canonicalRaw: string;
   dim: DimVec;
   scale: number;
-  offsetK: number; // non-zero ONLY for standalone °C (never compound units!)
+  exactScale: BigRat | null;
+  offsetK: number;
+  exactOffsetK: BigRat;
   isCompound: boolean;
 }
 
@@ -98,7 +105,12 @@ function lookupUnitAtom(sym: string): UnitAtomDef | null {
       BASE_UNITS[base].allowPrefix
     ) {
       const def = BASE_UNITS[base];
-      return { dim: def.dim, scale: def.scale * SI_PREFIXES[pfx] };
+      const pDef = SI_PREFIXES[pfx];
+      return {
+        dim: def.dim,
+        scale: def.scale * pDef.num,
+        exactScale: def.exactScale ? ratMul(def.exactScale, pDef.rat) : null,
+      };
     }
   }
   return null;
@@ -117,10 +129,17 @@ export function parseUnitExpression(raw: string): ParsedUnit {
     .replace(/\s+/g, ' ');
 
   if (!cleaned) {
-    return { canonicalRaw: '', dim: DIM_NONE, scale: 1, offsetK: 0, isCompound: false };
+    return {
+      canonicalRaw: '',
+      dim: DIM_NONE,
+      scale: 1,
+      exactScale: RAT_ONE,
+      offsetK: 0,
+      exactOffsetK: RAT_ZERO,
+      isCompound: false,
+    };
   }
 
-  // Reject multiple `/` (ambiguous compound denominator like m/s/s)
   const slashParts = cleaned.split('/');
   if (slashParts.length > 2) {
     throw new MathEvalLimitError(
@@ -131,8 +150,9 @@ export function parseUnitExpression(raw: string): ParsedUnit {
 
   const dim = [0, 0, 0, 0, 0, 0, 0];
   let scale = 1;
+  let exactScale: BigRat | null = RAT_ONE;
   let totalAtoms = 0;
-  let offsetK = 0;
+  let exactOffsetK: BigRat = RAT_ZERO;
 
   const processSide = (side: string, sign: 1 | -1) => {
     const tokens = side.trim().split(/\s+/).filter(Boolean);
@@ -155,7 +175,12 @@ export function parseUnitExpression(raw: string): ParsedUnit {
       }
       for (let i = 0; i < 7; i++) dim[i] += atom.dim[i] * exp;
       scale *= Math.pow(atom.scale, exp);
-      if (atom.offsetK) offsetK = atom.offsetK;
+      if (exactScale && atom.exactScale) {
+        exactScale = ratMul(exactScale, ratPowInt(atom.exactScale, exp));
+      } else {
+        exactScale = null;
+      }
+      if (atom.exactOffsetK) exactOffsetK = atom.exactOffsetK;
     }
   };
 
@@ -168,16 +193,17 @@ export function parseUnitExpression(raw: string): ParsedUnit {
   }
 
   const isCompound = totalAtoms > 1 || slashParts.length > 1;
-  // NEVER apply affine temperature offsets to compound units!
-  if (isCompound && offsetK !== 0) {
-    offsetK = 0;
+  if (isCompound && exactOffsetK.n !== BigInt(0)) {
+    exactOffsetK = RAT_ZERO;
   }
 
   return {
     canonicalRaw: cleaned,
     dim: dim as unknown as DimVec,
     scale,
-    offsetK,
+    exactScale,
+    offsetK: Number(exactOffsetK.n) / Number(exactOffsetK.d),
+    exactOffsetK,
     isCompound,
   };
 }
@@ -200,8 +226,25 @@ export function convertToBaseSI(
   return value * unit.scale;
 }
 
+export function convertExactRatToUnit(
+  value: BigRat,
+  fromUnit: ParsedUnit,
+  toUnit: ParsedUnit,
+  temperatureMode: 'absolute' | 'difference' = 'difference',
+): BigRat | null {
+  if (!fromUnit.exactScale || !toUnit.exactScale) return null;
+  let siVal = ratMul(value, fromUnit.exactScale);
+  if (!fromUnit.isCompound && fromUnit.exactOffsetK.n !== BigInt(0) && temperatureMode === 'absolute') {
+    siVal = ratAdd(siVal, fromUnit.exactOffsetK);
+  }
+  if (!toUnit.isCompound && toUnit.exactOffsetK.n !== BigInt(0) && temperatureMode === 'absolute') {
+    siVal = ratSub(siVal, toUnit.exactOffsetK);
+  }
+  return ratDiv(siVal, toUnit.exactScale);
+}
+
 /* ========================================================================== */
-/* SIGNIFICANT FIGURES & DECIMAL PLACES (FROM RAW LEARNER STRING!)            */
+/* SIGNIFICANT FIGURES, DECIMAL PLACES & NORMALISED SCIENTIFIC NOTATION       */
 /* ========================================================================== */
 
 export interface PrecisionInspection {
@@ -209,9 +252,9 @@ export interface PrecisionInspection {
   ambiguousTrailingZeros: boolean;
   decimalPlaces: number;
   isScientific: boolean;
+  isNormalisedScientific: boolean;
 }
 
-/** Analyses a raw numeric string (e.g. "0.0450", "12.00", "3.00e8", "1200") preserving exact written precision. */
 export function inspectRawNumericPrecision(rawInput: string): PrecisionInspection {
   const s = rawInput
     .trim()
@@ -222,36 +265,37 @@ export function inspectRawNumericPrecision(rawInput: string): PrecisionInspectio
 
   const m = /^-?(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?$/.exec(s);
   if (!m || (m[1] === '' && (!m[2] || m[2] === ''))) {
-    return { sigFigs: null, ambiguousTrailingZeros: false, decimalPlaces: 0, isScientific: false };
+    return { sigFigs: null, ambiguousTrailingZeros: false, decimalPlaces: 0, isScientific: false, isNormalisedScientific: false };
   }
 
   const intPart = m[1] || '0';
   const fracPart = m[2] ?? '';
   const hasDecimal = s.includes('.');
   const isScientific = /[eE]/.test(s);
+  const mantissaAbs = Number(`${intPart}.${fracPart || '0'}`);
+  const isNormalisedScientific = isScientific && mantissaAbs >= 1 && mantissaAbs < 10;
   const decimalPlaces = hasDecimal ? fracPart.length : 0;
 
   const combined = intPart + fracPart;
-  // Zero-valued answers (e.g. "0", "0.00"): significant digits after first zero or 1
   if (/^0+$/.test(combined)) {
     return {
       sigFigs: hasDecimal ? Math.max(1, fracPart.length) : 1,
       ambiguousTrailingZeros: false,
       decimalPlaces,
       isScientific,
+      isNormalisedScientific: false,
     };
   }
 
-  // Strip leading zeros
   const strippedLeading = combined.replace(/^0+/, '');
   if (!hasDecimal && /0+$/.test(strippedLeading)) {
-    // Ambiguous integer trailing zeros (e.g. "1200"): count non-trailing digits and flag ambiguity
     const minSf = strippedLeading.replace(/0+$/, '').length;
     return {
       sigFigs: minSf,
       ambiguousTrailingZeros: true,
       decimalPlaces: 0,
       isScientific,
+      isNormalisedScientific,
     };
   }
 
@@ -260,5 +304,6 @@ export function inspectRawNumericPrecision(rawInput: string): PrecisionInspectio
     ambiguousTrailingZeros: false,
     decimalPlaces,
     isScientific,
+    isNormalisedScientific,
   };
 }

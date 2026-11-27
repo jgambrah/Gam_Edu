@@ -1,8 +1,8 @@
 /**
- * GAM EDU — Step 5A Pure Module 4: Domain Restrictions, Equation Solution-Set Completeness
- * & Exact Interval-Union Verification
+ * GAM EDU — Step 5A Pure Module 4: Parsed Domain Constraints, Independent Complete
+ * Equation Certification, Exact Root Comparison & Exact Interval-Union Engine
  *
- * Pure TypeScript, zero React/DOM dependencies.
+ * Pure TypeScript, zero React/DOM dependencies, ES2017-clean BigInt.
  */
 
 import {
@@ -12,22 +12,75 @@ import {
 } from './math-eval-limits';
 import { parseEvalExpr, type EvalAstNode } from './math-eval-parser';
 import {
+  RAT_ONE,
   RAT_ZERO,
+  astToExactSurd,
   astToRationalPoly,
   evalAstNumeric,
+  extractSquareFactor,
+  makeRat,
   polyDegree,
+  polyIsZero,
+  polyMul,
   polySub,
   ratCmp,
   ratDiv,
   ratEq,
   ratNeg,
   ratToNumber,
+  surdEqual,
   type BigRat,
   type PolyMap,
+  type SurdSum,
 } from './math-eval-exact';
 
+const B0 = BigInt(0);
+const B1 = BigInt(1);
+const B2 = BigInt(2);
+const B4 = BigInt(4);
+
 /* ========================================================================== */
-/* 1. EXACT INTERVAL-UNION ENGINE                                             */
+/* 1. EXACT ROOT REPRESENTATION (ZERO 1e-6 / 1e-5 FLOATING-POINT MERGING!)    */
+/* ========================================================================== */
+
+export type ExactRoot =
+  | { kind: 'rat'; value: BigRat }
+  | { kind: 'surd'; value: SurdSum };
+
+export function parseExactRoot(raw: string, budget: EvalOpBudget): ExactRoot | null {
+  const ast = parseEvalExpr(raw, { allowedVariables: [] }).ast;
+  const rp = astToRationalPoly(ast, budget);
+  if (rp && rp.num.size <= 1 && rp.den.size === 1 && rp.den.has('')) {
+    const num = rp.num.get('') ?? RAT_ZERO;
+    const den = rp.den.get('')!;
+    return { kind: 'rat', value: ratDiv(num, den) };
+  }
+  const surd = astToExactSurd(ast, budget);
+  if (surd) {
+    if (surd.size === 0) return { kind: 'rat', value: RAT_ZERO };
+    if (surd.size === 1 && surd.has(1)) return { kind: 'rat', value: surd.get(1)! };
+    return { kind: 'surd', value: surd };
+  }
+  return null;
+}
+
+export function exactRootEqual(a: ExactRoot, b: ExactRoot): boolean {
+  if (a.kind === 'rat' && b.kind === 'rat') return ratEq(a.value, b.value);
+  if (a.kind === 'surd' && b.kind === 'surd') return surdEqual(a.value, b.value);
+  return false;
+}
+
+export function exactRootToNumber(r: ExactRoot): number {
+  if (r.kind === 'rat') return ratToNumber(r.value);
+  let sum = 0;
+  for (const [d, c] of r.value.entries()) {
+    sum += ratToNumber(c) * Math.sqrt(d);
+  }
+  return sum;
+}
+
+/* ========================================================================== */
+/* 2. EXACT INTERVAL-UNION ENGINE                                             */
 /* ========================================================================== */
 
 export type ExactEndpoint = { kind: 'neg-inf' } | { kind: 'pos-inf' } | { kind: 'rat'; value: BigRat };
@@ -63,16 +116,6 @@ export function parseEndpoint(raw: string): ExactEndpoint {
   return { kind: 'rat', value: ratDiv(num, den) };
 }
 
-/**
- * Normalises a list of intervals into canonical sorted disjoint form.
- * CRITICAL RULES:
- * - Infinity endpoints MUST NEVER be inclusive (throws SYNTAX_ERROR).
- * - `(2, 2)` or `high < low` -> empty (dropped).
- * - `[2, 2]` -> singleton interval (preserved).
- * - `(0, 1) U (1, 2)` -> DOES NOT merge (both exclude 1!).
- * - `(0, 1] U (1, 2)` -> MERGES into `(0, 2)`.
- * - `[0, 1] U [1, 2]` -> MERGES into `[0, 2]`.
- */
 export function normaliseIntervalUnion(rawIntervals: ExactInterval[]): ExactInterval[] {
   const valid: ExactInterval[] = [];
   for (const iv of rawIntervals) {
@@ -83,8 +126,8 @@ export function normaliseIntervalUnion(rawIntervals: ExactInterval[]): ExactInte
       throw new MathEvalLimitError('SYNTAX_ERROR', 'Infinity endpoints cannot be inclusive (use "(" or ")").');
     }
     const c = cmpEndpoint(iv.low, iv.high);
-    if (c > 0) continue; // empty
-    if (c === 0 && !(iv.lowInclusive && iv.highInclusive)) continue; // (a, a), [a, a), (a, a] are empty!
+    if (c > 0) continue;
+    if (c === 0 && !(iv.lowInclusive && iv.highInclusive)) continue;
     valid.push({ ...iv });
   }
 
@@ -103,7 +146,6 @@ export function normaliseIntervalUnion(rawIntervals: ExactInterval[]): ExactInte
     }
     const prev = merged[merged.length - 1];
     const cmp = cmpEndpoint(cur.low, prev.high);
-    // Overlap strictly (cur.low < prev.high) OR touch with at least one inclusive endpoint!
     if (cmp < 0 || (cmp === 0 && (prev.highInclusive || cur.lowInclusive))) {
       const highCmp = cmpEndpoint(cur.high, prev.high);
       if (highCmp > 0) {
@@ -136,8 +178,11 @@ export function areIntervalUnionsEqual(a: ExactInterval[], b: ExactInterval[]): 
   return true;
 }
 
-/** Parses learner interval notation `(-inf, -2) U [5, inf)` OR inequality notation `x < -2 or x >= 5`, `-3 <= x < 4`, `empty`, `all reals`. */
-export function parseIntervalOrInequality(raw: string, variable: string): ExactInterval[] {
+export function parseIntervalOrInequality(
+  raw: string,
+  variable: string,
+  acceptedStyle: 'inequality' | 'interval' | 'either' = 'either',
+): ExactInterval[] {
   const trimmed = raw
     .trim()
     .replace(/[\u2212\u2013]/g, '-')
@@ -154,7 +199,6 @@ export function parseIntervalOrInequality(raw: string, variable: string): ExactI
     return [{ low: { kind: 'neg-inf' }, lowInclusive: false, high: { kind: 'pos-inf' }, highInclusive: false }];
   }
 
-  // Split by union `U` or `or`
   const parts = trimmed.split(/\s+(?:U|u|or)\s+|∪/).map((p) => p.trim()).filter(Boolean);
   if (parts.length === 0 || parts.length > MATH_EVAL_LIMITS.maxIntervals) {
     throw new MathEvalLimitError('LIMIT_EXCEEDED', `Expected 1..${MATH_EVAL_LIMITS.maxIntervals} interval components.`);
@@ -162,9 +206,11 @@ export function parseIntervalOrInequality(raw: string, variable: string): ExactI
 
   const out: ExactInterval[] = [];
   for (const part of parts) {
-    // 1. Interval syntax: [a, b) or (a, b]
     const ivMatch = /^([(\[])\s*([^,]+)\s*,\s*([^)\]]+)\s*([)\]])$/.exec(part);
     if (ivMatch) {
+      if (acceptedStyle === 'inequality') {
+        throw new MathEvalLimitError('SYNTAX_ERROR', 'Use inequality notation (e.g. x < 2) rather than interval notation.');
+      }
       out.push({
         low: parseEndpoint(ivMatch[2]),
         lowInclusive: ivMatch[1] === '[',
@@ -174,9 +220,11 @@ export function parseIntervalOrInequality(raw: string, variable: string): ExactI
       continue;
     }
 
-    // 2. Chained inequality: a <= x < b
     const chainMatch = /^(.+?)\s*(<=|<)\s*([a-zA-Z])\s*(<=|<)\s*(.+)$/.exec(part);
     if (chainMatch) {
+      if (acceptedStyle === 'interval') {
+        throw new MathEvalLimitError('SYNTAX_ERROR', 'Use interval notation (e.g. [-3, 4)) rather than inequality notation.');
+      }
       if (chainMatch[3] !== variable) {
         throw new MathEvalLimitError('SYNTAX_ERROR', `Expected variable "${variable}", found "${chainMatch[3]}".`);
       }
@@ -189,9 +237,11 @@ export function parseIntervalOrInequality(raw: string, variable: string): ExactI
       continue;
     }
 
-    // 3. Single inequality: x <= 5, x > 2, 5 >= x
     const singleVarLeft = /^([a-zA-Z])\s*(<=|>=|<|>|=)\s*(.+)$/.exec(part);
     if (singleVarLeft) {
+      if (acceptedStyle === 'interval') {
+        throw new MathEvalLimitError('SYNTAX_ERROR', 'Use interval notation (e.g. (-inf, 5]) rather than inequality notation.');
+      }
       if (singleVarLeft[1] !== variable) {
         throw new MathEvalLimitError('SYNTAX_ERROR', `Expected variable "${variable}", found "${singleVarLeft[1]}".`);
       }
@@ -214,23 +264,53 @@ export function parseIntervalOrInequality(raw: string, variable: string): ExactI
 }
 
 /* ========================================================================== */
-/* 2. DOMAIN EXTRACTION (PRESERVING ORIGINAL RESTRICTIONS)                    */
+/* 3. PARSED MATHEMATICAL DOMAIN CONSTRAINTS (NO SUBSTRING MATCHING!)         */
 /* ========================================================================== */
+
+/**
+ * Parses learner excluded-value statements such as `x != 3`, `x ≠ 3, x ≠ 4`, `x != 3 and x != -2`
+ * into a canonical exact BigRat set (rejecting malformed or contradictory entries).
+ */
+export function parseExcludedValuesSet(raw: string, variable: string, budget: EvalOpBudget): BigRat[] {
+  const norm = raw.trim().replace(/\u2260/g, '!=').replace(/[\u2212\u2013]/g, '-');
+  if (!norm) return [];
+  const clauses = norm.split(/,|;|\band\b/i).map((c) => c.trim()).filter(Boolean);
+  const out: BigRat[] = [];
+  for (const clause of clauses) {
+    const m = /^([a-zA-Z])\s*!=\s*(.+)$/.exec(clause);
+    if (!m) {
+      throw new MathEvalLimitError('SYNTAX_ERROR', `Invalid domain exclusion "${clause}". Write e.g. ${variable} != 3.`);
+    }
+    if (m[1] !== variable) {
+      throw new MathEvalLimitError('SYNTAX_ERROR', `Domain exclusion variable "${m[1]}" does not match "${variable}".`);
+    }
+    const root = parseExactRoot(m[2], budget);
+    if (!root || root.kind !== 'rat') {
+      throw new MathEvalLimitError('SYNTAX_ERROR', `Excluded value "${m[2]}" must be an exact rational number.`);
+    }
+    if (!out.some((r) => ratEq(r, root.value))) out.push(root.value);
+  }
+  return out;
+}
+
+export function areExcludedSetsEqual(a: BigRat[], b: BigRat[]): boolean {
+  if (a.length !== b.length) return false;
+  return a.every((ra) => b.some((rb) => ratEq(ra, rb)));
+}
 
 export interface ExtractedDomain {
   certifiable: boolean;
   excludedRats: BigRat[];
-  /** For univariate inequalities from ln/sqrt (e.g. x > 2), exact allowed interval */
   restrictedInterval?: ExactInterval;
-  reason?: string;
 }
 
-/** Extracts exact rational roots of a univariate linear or quadratic polynomial. */
 export function solveUnivariatePolyExact(
   poly: PolyMap,
   variable: string,
-): { status: 'finite'; roots: BigRat[]; hasIrrational: boolean; numericRoots: number[] } | { status: 'identity' } | { status: 'unsupported' } {
-  // Check polynomial is purely in `variable`
+):
+  | { status: 'finite'; roots: ExactRoot[] }
+  | { status: 'identity' }
+  | { status: 'unsupported' } {
   for (const k of poly.keys()) {
     if (!k) continue;
     const parts = k.split('*');
@@ -242,45 +322,48 @@ export function solveUnivariatePolyExact(
   const c2 = poly.get(`${variable}^2`) ?? RAT_ZERO;
 
   if (deg === 0) {
-    return c0.n === BigInt(0) ? { status: 'identity' } : { status: 'finite', roots: [], hasIrrational: false, numericRoots: [] };
+    return c0.n === B0 ? { status: 'identity' } : { status: 'finite', roots: [] };
   }
   if (deg === 1) {
-    const r = ratDiv(ratNeg(c0), c1);
-    return { status: 'finite', roots: [r], hasIrrational: false, numericRoots: [ratToNumber(r)] };
+    return { status: 'finite', roots: [{ kind: 'rat', value: ratDiv(ratNeg(c0), c1) }] };
   }
   if (deg === 2) {
-    const a = ratToNumber(c2);
-    const b = ratToNumber(c1);
-    const c = ratToNumber(c0);
-    const disc = b * b - 4 * a * c;
-    if (disc < -1e-12) return { status: 'finite', roots: [], hasIrrational: false, numericRoots: [] };
-    if (Math.abs(disc) <= 1e-12) {
-      const r = ratDiv(ratNeg(c1), { n: c2.n * BigInt(2), d: c2.d });
-      return { status: 'finite', roots: [r], hasIrrational: false, numericRoots: [ratToNumber(r)] };
+    // Exact BigRat discriminant: D = c1^2 - 4*c2*c0
+    const disc = makeRat(
+      c1.n * c1.n * c2.d * c0.d - B4 * c2.n * c0.n * c1.d * c1.d,
+      c1.d * c1.d * c2.d * c0.d,
+    );
+    if (disc.n < B0) return { status: 'finite', roots: [] };
+    const twoA = makeRat(c2.n * B2, c2.d);
+    if (disc.n === B0) {
+      return { status: 'finite', roots: [{ kind: 'rat', value: ratDiv(ratNeg(c1), twoA) }] };
     }
-    const sqrtD = Math.sqrt(disc);
-    const r1 = (-b - sqrtD) / (2 * a);
-    const r2 = (-b + sqrtD) / (2 * a);
-    // Check if discriminant is a perfect rational square
-    const numDisc = c1.n * c1.n * c2.d * c0.d - BigInt(4) * c2.n * c0.n * c1.d * c1.d;
-    const denDisc = c1.d * c1.d * c2.d * c0.d;
-    if (numDisc >= BigInt(0)) {
-      const sn = BigInt(Math.round(Math.sqrt(Number(numDisc))));
-      const sd = BigInt(Math.round(Math.sqrt(Number(denDisc))));
-      if (sn * sn === numDisc && sd * sd === denDisc) {
-        const twoA = { n: c2.n * BigInt(2), d: c2.d };
-        const discSqrtRat = { n: sn, d: sd };
-        const q1 = ratDiv(ratNeg({ n: c1.n * sd + sn * c1.d, d: c1.d * sd }), twoA);
-        const q2 = ratDiv({ n: -c1.n * sd + sn * c1.d, d: c1.d * sd }, twoA);
-        return { status: 'finite', roots: [q1, q2], hasIrrational: false, numericRoots: [ratToNumber(q1), ratToNumber(q2)] };
-      }
+    // Check if disc = p/q has exact integer sqrt(p*q)/q -> exact rational or exact quadratic surd!
+    const prod = Number(disc.n * disc.d);
+    if (!Number.isSafeInteger(prod) || prod > MATH_EVAL_LIMITS.maxSurdRadicand) {
+      return { status: 'unsupported' };
     }
-    return { status: 'finite', roots: [], hasIrrational: true, numericRoots: [r1, r2].sort((x, y) => x - y) };
+    const { outside, inside } = extractSquareFactor(prod);
+    const sqrtCoeff = makeRat(BigInt(outside), disc.d);
+    const negBOver2A = ratDiv(ratNeg(c1), twoA);
+    const surdOver2A = ratDiv(sqrtCoeff, twoA);
+    if (inside === 1) {
+      const r1 = makeRat(negBOver2A.n * surdOver2A.d - surdOver2A.n * negBOver2A.d, negBOver2A.d * surdOver2A.d);
+      const r2 = makeRat(negBOver2A.n * surdOver2A.d + surdOver2A.n * negBOver2A.d, negBOver2A.d * surdOver2A.d);
+      return { status: 'finite', roots: [{ kind: 'rat', value: r1 }, { kind: 'rat', value: r2 }] };
+    }
+    const s1: SurdSum = new Map();
+    if (negBOver2A.n !== B0) s1.set(1, negBOver2A);
+    s1.set(inside, ratNeg(surdOver2A));
+    const s2: SurdSum = new Map();
+    if (negBOver2A.n !== B0) s2.set(1, negBOver2A);
+    s2.set(inside, surdOver2A);
+    return { status: 'finite', roots: [{ kind: 'surd', value: s1 }, { kind: 'surd', value: s2 }] };
   }
   return { status: 'unsupported' };
 }
 
-/** Walks the ORIGINAL AST (before cancellation!) to extract denominator poles, log > 0, and sqrt >= 0 restrictions. */
+/** Walks the ORIGINAL AST (preserving nested denominators like `1/(1/x)`) to extract domain restrictions. */
 export function extractOriginalDomain(node: EvalAstNode, variable: string, budget: EvalOpBudget): ExtractedDomain {
   const excluded: BigRat[] = [];
   let certifiable = true;
@@ -317,7 +400,11 @@ export function extractOriginalDomain(node: EvalAstNode, variable: string, budge
         if (solved.status === 'unsupported') certifiable = false;
         else if (solved.status === 'finite') {
           for (const r of solved.roots) {
-            if (!excluded.some((e) => ratEq(e, r))) excluded.push(r);
+            if (r.kind === 'rat' && !excluded.some((e) => ratEq(e, r.value))) {
+              excluded.push(r.value);
+            } else if (r.kind === 'surd') {
+              certifiable = false;
+            }
           }
         }
       }
@@ -327,9 +414,8 @@ export function extractOriginalDomain(node: EvalAstNode, variable: string, budge
       if (argRp && polyDegree(argRp.num) === 1 && argRp.den.size === 1 && argRp.den.has('')) {
         const c1 = argRp.num.get(`${variable}^1`) ?? RAT_ZERO;
         const c0 = argRp.num.get('') ?? RAT_ZERO;
-        if (c1.n > BigInt(0)) {
-          const bound = ratDiv(ratNeg(c0), c1);
-          intersectLow(bound, n.name === 'sqrt');
+        if (c1.n > B0) {
+          intersectLow(ratDiv(ratNeg(c0), c1), n.name === 'sqrt');
         }
       }
     }
@@ -346,7 +432,7 @@ export function extractOriginalDomain(node: EvalAstNode, variable: string, budge
 }
 
 /* ========================================================================== */
-/* 3. EQUATION SOLUTION-SET VERIFICATION (AGAINST ORIGINAL EQUATION!)         */
+/* 4. INDEPENDENT COMPLETE EQUATION CERTIFICATION (ALL 5 CLASSES!)            */
 /* ========================================================================== */
 
 export type EquationClass =
@@ -356,14 +442,6 @@ export type EquationClass =
   | 'rational-linear-quadratic'
   | 'radical-single';
 
-export interface EquationEvalResult {
-  passed: boolean;
-  verdict: 'exact-equivalent' | 'incorrect' | 'syntax-error' | 'unsupported-or-indeterminate';
-  feedback: string;
-  extraneousDetected?: string[];
-  missingCount?: number;
-}
-
 export function splitEquation(eq: string): { lhs: string; rhs: string } {
   const parts = eq.split('=');
   if (parts.length !== 2 || !parts[0].trim() || !parts[1].trim()) {
@@ -372,7 +450,6 @@ export function splitEquation(eq: string): { lhs: string; rhs: string } {
   return { lhs: parts[0].trim(), rhs: parts[1].trim() };
 }
 
-/** Independently verifies a numeric/exact candidate root against the ORIGINAL equation (preserving all domain restrictions!). */
 export function testCandidateAgainstOriginalEquation(
   lhsAst: EvalAstNode,
   rhsAst: EvalAstNode,
@@ -382,14 +459,146 @@ export function testCandidateAgainstOriginalEquation(
 ): { satisfies: boolean; domainError: boolean } {
   const lv = evalAstNumeric(lhsAst, { [variable]: candidateVal }, budget);
   const rv = evalAstNumeric(rhsAst, { [variable]: candidateVal }, budget);
-  if (lv === null || rv === null) {
-    return { satisfies: false, domainError: true };
-  }
+  if (lv === null || rv === null) return { satisfies: false, domainError: true };
   const scale = Math.max(1, Math.abs(lv), Math.abs(rv));
-  return { satisfies: Math.abs(lv - rv) <= 1e-6 * scale, domainError: false };
+  return { satisfies: Math.abs(lv - rv) <= 1e-9 * scale, domainError: false };
 }
 
-/** Authoring-time certification: verifies declared expectedRoots against originalEquation & certifies completeness for linear/quadratic! */
+function addDistinctRoot(list: ExactRoot[], root: ExactRoot): void {
+  if (!list.some((r) => exactRootEqual(r, root))) list.push(root);
+}
+
+/** Independently derives the complete distinct solution set for ALL 5 bounded equation classes. */
+export function deriveCompleteEquationSolutions(
+  originalEquation: string,
+  variable: string,
+  equationClass: EquationClass,
+  budget: EvalOpBudget,
+):
+  | { status: 'finite'; roots: ExactRoot[] }
+  | { status: 'all-reals' }
+  | { status: 'restricted-identity'; excludedRats: BigRat[] }
+  | { status: 'invalid-class'; reason: string } {
+  const { lhs, rhs } = splitEquation(originalEquation);
+  const lAst = parseEvalExpr(lhs, { allowedVariables: [variable] }).ast;
+  const rAst = parseEvalExpr(rhs, { allowedVariables: [variable] }).ast;
+
+  const lDom = extractOriginalDomain(lAst, variable, budget);
+  const rDom = extractOriginalDomain(rAst, variable, budget);
+  const allExcluded: BigRat[] = [...lDom.excludedRats];
+  for (const e of rDom.excludedRats) {
+    if (!allExcluded.some((x) => ratEq(x, e))) allExcluded.push(e);
+  }
+
+  if (equationClass === 'linear' || equationClass === 'quadratic') {
+    const lRp = astToRationalPoly(lAst, budget);
+    const rRp = astToRationalPoly(rAst, budget);
+    if (!lRp || !rRp || polyDegree(lRp.den) > 0 || polyDegree(rRp.den) > 0 || allExcluded.length > 0) {
+      return {
+        status: 'invalid-class',
+        reason: `Equation "${originalEquation}" contains a variable denominator and cannot be declared as "${equationClass}".`,
+      };
+    }
+    const diff = polySub(polyMul(lRp.num, rRp.den, budget), polyMul(rRp.num, lRp.den, budget), budget);
+    const deg = polyDegree(diff);
+    if (equationClass === 'linear' && deg > 1) {
+      return { status: 'invalid-class', reason: `Equation "${originalEquation}" has degree ${deg} (exceeds linear).` };
+    }
+    if (equationClass === 'quadratic' && deg > 2) {
+      return { status: 'invalid-class', reason: `Equation "${originalEquation}" has degree ${deg} (exceeds quadratic).` };
+    }
+    const solved = solveUnivariatePolyExact(diff, variable);
+    if (solved.status === 'identity') return { status: 'all-reals' };
+    if (solved.status === 'unsupported') return { status: 'invalid-class', reason: 'Could not derive exact roots.' };
+    return { status: 'finite', roots: solved.roots };
+  }
+
+  if (equationClass === 'factored-polynomial') {
+    const rRp = astToRationalPoly(rAst, budget);
+    if (!rRp || !polyIsZero(rRp.num) || allExcluded.length > 0) {
+      return { status: 'invalid-class', reason: 'factored-polynomial requires RHS = 0 and purely polynomial factors.' };
+    }
+    const factors: EvalAstNode[] = [];
+    const collect = (n: EvalAstNode) => {
+      if (n.type === 'binary' && n.op === '*') {
+        collect(n.left);
+        collect(n.right);
+      } else if (n.type === 'binary' && n.op === '^') {
+        collect(n.left);
+      } else {
+        factors.push(n);
+      }
+    };
+    collect(lAst);
+    const roots: ExactRoot[] = [];
+    for (const f of factors) {
+      const fRp = astToRationalPoly(f, budget);
+      if (!fRp || polyDegree(fRp.den) > 0) return { status: 'invalid-class', reason: 'Non-polynomial factor.' };
+      const solved = solveUnivariatePolyExact(fRp.num, variable);
+      if (solved.status === 'unsupported') {
+        return { status: 'invalid-class', reason: 'Factor degree exceeds quadratic in factored-polynomial.' };
+      }
+      if (solved.status === 'identity') return { status: 'all-reals' };
+      for (const r of solved.roots) addDistinctRoot(roots, r);
+    }
+    return { status: 'finite', roots };
+  }
+
+  if (equationClass === 'rational-linear-quadratic') {
+    if (!lDom.certifiable || !rDom.certifiable) {
+      return { status: 'invalid-class', reason: 'Denominator domain is not certifiable.' };
+    }
+    const lRp = astToRationalPoly(lAst, budget);
+    const rRp = astToRationalPoly(rAst, budget);
+    if (!lRp || !rRp) return { status: 'invalid-class', reason: 'Not a rational algebraic equation.' };
+    const diff = polySub(polyMul(lRp.num, rRp.den, budget), polyMul(rRp.num, lRp.den, budget), budget);
+    const solved = solveUnivariatePolyExact(diff, variable);
+    if (solved.status === 'unsupported') {
+      return { status: 'invalid-class', reason: 'Cleared numerator exceeds quadratic degree.' };
+    }
+    if (solved.status === 'identity') {
+      return allExcluded.length > 0
+        ? { status: 'restricted-identity', excludedRats: allExcluded }
+        : { status: 'all-reals' };
+    }
+    const filtered = solved.roots.filter(
+      (r) => !(r.kind === 'rat' && allExcluded.some((ex) => ratEq(ex, r.value))),
+    );
+    return { status: 'finite', roots: filtered };
+  }
+
+  // radical-single: isolate sqrt(A) = B (or B = sqrt(A)) with polynomial A, B -> square A - B^2 = 0 and filter!
+  let radArg: EvalAstNode | null = null;
+  let otherSide: EvalAstNode | null = null;
+  if (lAst.type === 'call' && lAst.name === 'sqrt') {
+    radArg = lAst.arg;
+    otherSide = rAst;
+  } else if (rAst.type === 'call' && rAst.name === 'sqrt') {
+    radArg = rAst.arg;
+    otherSide = lAst;
+  }
+  if (!radArg || !otherSide) {
+    return { status: 'invalid-class', reason: 'radical-single requires isolated sqrt(A) = B form.' };
+  }
+  const aRp = astToRationalPoly(radArg, budget);
+  const bRp = astToRationalPoly(otherSide, budget);
+  if (!aRp || !bRp || polyDegree(aRp.den) > 0 || polyDegree(bRp.den) > 0) {
+    return { status: 'invalid-class', reason: 'radical-single requires polynomial radicand and right-hand side.' };
+  }
+  const bSq = polyMul(bRp.num, bRp.num, budget);
+  const diff = polySub(aRp.num, bSq, budget);
+  const solved = solveUnivariatePolyExact(diff, variable);
+  if (solved.status !== 'finite') {
+    return { status: 'invalid-class', reason: 'Squared radical equation exceeds quadratic degree or is degenerate.' };
+  }
+  const validRoots = solved.roots.filter((r) => {
+    const val = exactRootToNumber(r);
+    return testCandidateAgainstOriginalEquation(lAst, rAst, variable, val, budget).satisfies;
+  });
+  return { status: 'finite', roots: validRoots };
+}
+
+/** Authoring-time certification: independently derives and verifies the COMPLETE DISTINCT root set! */
 export function certifyEquationAuthorConfig(
   originalEquation: string,
   variable: string,
@@ -400,51 +609,59 @@ export function certifyEquationAuthorConfig(
   const errors: string[] = [];
   const budget = new EvalOpBudget();
   try {
-    const { lhs, rhs } = splitEquation(originalEquation);
-    const lParsed = parseEvalExpr(lhs, { allowedVariables: [variable] });
-    const rParsed = parseEvalExpr(rhs, { allowedVariables: [variable] });
-
-    // For linear / quadratic polynomial equations, independently derive the complete solution set!
-    if (equationClass === 'linear' || equationClass === 'quadratic') {
-      const lRp = astToRationalPoly(lParsed.ast, budget);
-      const rRp = astToRationalPoly(rParsed.ast, budget);
-      if (!lRp || !rRp) {
-        errors.push(`Equation "${originalEquation}" is not a valid ${equationClass} polynomial.`);
-        return errors;
-      }
-      const diff = polySub(lRp.num, rRp.num, budget);
-      const solved = solveUnivariatePolyExact(diff, variable);
-      if (solved.status === 'identity') {
-        if (solutionType !== 'all-reals') {
-          errors.push(`Equation "${originalEquation}" is an identity (all reals), but solutionType is "${solutionType}".`);
-        }
-        return errors;
-      }
-      if (solved.status === 'finite') {
-        if (solutionType === 'empty-set' && solved.numericRoots.length > 0) {
-          errors.push(`Equation "${originalEquation}" has real root(s), conflicting with solutionType "empty-set".`);
-        } else if (solutionType === 'finite-set' && solved.numericRoots.length !== expectedRoots.length) {
-          errors.push(
-            `Author expectedRoots count (${expectedRoots.length}) does not match independently derived complete root count (${solved.numericRoots.length}) for "${originalEquation}".`,
-          );
-        }
-      }
-    }
-
-    // Verify EVERY declared expectedRoot actually satisfies the ORIGINAL equation!
+    // Parse & check for duplicate author roots (e.g. ["2", "2"] rejected!)
+    const authorRoots: ExactRoot[] = [];
     for (const rStr of expectedRoots) {
-      const rAst = parseEvalExpr(rStr, { allowedVariables: [] }).ast;
-      const rVal = evalAstNumeric(rAst, {}, budget);
-      if (rVal === null) {
-        errors.push(`Declared expectedRoot "${rStr}" is not a finite real value.`);
+      const parsed = parseExactRoot(rStr, budget);
+      if (!parsed) {
+        errors.push(`Author expectedRoot "${rStr}" must be an exact rational or supported quadratic surd.`);
         continue;
       }
-      const check = testCandidateAgainstOriginalEquation(lParsed.ast, rParsed.ast, variable, rVal, budget);
-      if (!check.satisfies) {
-        errors.push(
-          `Declared expectedRoot "${rStr}" fails the original equation "${originalEquation}"${check.domainError ? ' (domain violation)' : ''}.`,
-        );
+      if (authorRoots.some((existing) => exactRootEqual(existing, parsed))) {
+        errors.push(`Duplicate root "${rStr}" in expectedRoots — list distinct roots only.`);
+      } else {
+        authorRoots.push(parsed);
       }
+    }
+    if (errors.length > 0) return errors;
+
+    const derived = deriveCompleteEquationSolutions(originalEquation, variable, equationClass, budget);
+    if (derived.status === 'invalid-class') {
+      errors.push(derived.reason);
+      return errors;
+    }
+    if (derived.status === 'restricted-identity') {
+      errors.push(
+        `Equation "${originalEquation}" is a restricted-domain identity (excludes ${derived.excludedRats.length} pole(s)) and cannot be certified as solutionType "${solutionType}".`,
+      );
+      return errors;
+    }
+    if (derived.status === 'all-reals') {
+      if (solutionType !== 'all-reals') {
+        errors.push(`Equation "${originalEquation}" is an identity over all real numbers, conflicting with solutionType "${solutionType}".`);
+      }
+      return errors;
+    }
+
+    // derived.status === 'finite'
+    if (solutionType === 'all-reals') {
+      errors.push(`Equation "${originalEquation}" has a finite solution set, conflicting with solutionType "all-reals".`);
+      return errors;
+    }
+    if (solutionType === 'empty-set') {
+      if (derived.roots.length > 0 || authorRoots.length > 0) {
+        errors.push(`Equation "${originalEquation}" has ${derived.roots.length} real root(s), conflicting with solutionType "empty-set".`);
+      }
+      return errors;
+    }
+
+    // Compare exact complete distinct root sets!
+    const allDerivedPresent = derived.roots.every((dr) => authorRoots.some((ar) => exactRootEqual(dr, ar)));
+    const allAuthorValid = authorRoots.every((ar) => derived.roots.some((dr) => exactRootEqual(ar, dr)));
+    if (!allDerivedPresent || !allAuthorValid || authorRoots.length !== derived.roots.length) {
+      errors.push(
+        `Author expectedRoots [${expectedRoots.join(', ')}] do not match the independently certified complete distinct solution set (${derived.roots.length} root(s)) for "${originalEquation}".`,
+      );
     }
   } catch (err) {
     errors.push(err instanceof Error ? err.message : 'Invalid equation configuration.');
