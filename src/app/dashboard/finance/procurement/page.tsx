@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser, useDoc } from '@/firebase';
 import { useRole } from '@/context/role-context';
-import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc, orderBy, getDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, serverTimestamp, updateDoc, writeBatch, query, where, addDoc, orderBy, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
@@ -1061,6 +1061,7 @@ function PurchaseOrderView({ po, vendors, schoolProfile, onStatusUpdate }: POVie
 // --- MAIN PAGE ---
 export default function AccountsPayablePage() {
     const { role } = useRole();
+    const { toast } = useToast();
     const firestore = useFirestore();
     const { schoolId, loading: schoolLoading } = useCurrentSchool();
     

@@ -165,9 +165,9 @@ function QuizComponent() {
     };
 
 
-    const { data: studentRecord } = useCollection<Student>(
-        useMemoFirebase(() => (user && firestore) ? query(collection(firestore, 'students'), where('uid', '==', user.uid)) : null, [user, firestore])
-    );
+    // `studentData` is read at the top of the component (hooks must never run inside an event handler).
+    const studentRecord = studentData;
+    const resultsCollection = collection(firestore, 'user_results');
 
     try {
         await setDoc(leaderboardRef, leaderboardData, { merge: true });

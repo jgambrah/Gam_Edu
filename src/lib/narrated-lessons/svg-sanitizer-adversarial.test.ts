@@ -97,5 +97,5 @@ describe('SVG sanitizer — extra adversarial vectors', () => {
     }
     if (process.env.FUZZ_DUMP) require('node:fs').writeFileSync(process.env.FUZZ_DUMP, failures.join('\n'));
     expect(failures.slice(0, 5)).toEqual([]);
-  });
+  }, 60_000); // generous: under a fully parallel CI/clean-checkout run this took >5 s of wall clock (it needs ~2 s alone)
 });

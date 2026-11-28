@@ -87,8 +87,11 @@ describe('spoken script', () => {
     expect(b.map((x) => x.entryId).sort()).toEqual(['efua', 'kwame']);
   });
   it('finds proper nouns missing from the dictionary', () => {
-    const found = unknownProperNouns(['She met Kwame and Quartey at Tema.'], DICT, new Set(['she']));
-    expect(found).toEqual(['Quartey', 'Tema']);
+    // Uses invented names that can never enter the real dictionary. The old sentence ("Quartey", "Tema") started failing
+    // once content batches 61-65 added real Ghanaian names such as Quartey to the dictionary (audit D-015: the test, not
+    // the detector, was stale - it fails identically on a clean checkout of the committed code).
+    const found = unknownProperNouns(['She met Kwame and Zorbaxu at Qwintheli.'], DICT, new Set(['she']));
+    expect(found).toEqual(['Qwintheli', 'Zorbaxu']);
   });
 });
 

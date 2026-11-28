@@ -5,6 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Code, Bot, Puzzle, ExternalLink, Activity, Rabbit, GraduationCap, Rocket, BrainCircuit, Sigma, FlaskConical, BookOpenCheck, Gamepad2, Clapperboard } from 'lucide-react';
 import Link from 'next/link';
+import { Construction } from 'lucide-react';
+import { useUser } from '@/firebase';
+import { useRole } from '@/context/role-context';
+import { evaluateStudentEnrichmentAccess } from '@/lib/student-enrichment-release';
 
 const clubModules = [
   {
@@ -69,7 +73,20 @@ const clubModules = [
   },
 ];
 
+/** Hub entries that are not part of Student Enrichment (general school functions) are never marked or restricted. */
+const NON_ENRICHMENT_PATHS = new Set(['/dashboard/live-classroom']);
+
 export default function CodingClubPage() {
+  // This page is a navigation hub (not itself restricted). While Student Enrichment is Under Construction, each
+  // enrichment card says so before the user clicks; the destination routes enforce the actual release gate.
+  const { user, isUserLoading } = useUser();
+  const { role, loading: isRoleLoading } = useRole();
+  const decision = evaluateStudentEnrichmentAccess({
+    role: user ? role : null,
+    isAuthenticated: Boolean(user),
+    isLoading: isUserLoading || isRoleLoading,
+  });
+  const underConstruction = decision.status !== 'released';
   return (
     <div className="space-y-6">
        <Card className="border-t-4 border-t-purple-600 shadow-sm">
@@ -95,6 +112,15 @@ export default function CodingClubPage() {
                     </div>
                     <CardTitle>{mod.title}</CardTitle>
                   </div>
+                  {underConstruction && !NON_ENRICHMENT_PATHS.has(mod.path) && (
+                    <span
+                      data-testid="under-construction-badge"
+                      className="mt-2 inline-flex w-fit items-center gap-1 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-900"
+                    >
+                      <Construction className="h-3 w-3" aria-hidden="true" />
+                      {decision.allowed ? 'Under construction · staff preview' : 'Under construction'}
+                    </span>
+                  )}
               </CardHeader>
               <CardContent className="flex-grow">
                 <CardDescription>{mod.description}</CardDescription>

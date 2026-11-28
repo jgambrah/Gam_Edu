@@ -27,7 +27,7 @@ export type EngineInstruction =
   /** SSML <phoneme alphabet="ipa" ph="…">. Only valid once the IPA is verified. */
   | { kind: 'ssml-phoneme'; ph: string };
 
-export type EntryKind = 'personal-name' | 'place' | 'word' | 'expression' | 'food';
+export type EntryKind = 'personal-name' | 'place' | 'word' | 'expression' | 'food' | 'place-or-people';
 
 export interface PronunciationEntry {
   id: string;
