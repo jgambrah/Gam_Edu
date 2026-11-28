@@ -19,7 +19,7 @@ Single status page for the Student Enrichment foundation. Detail lives in the li
 ## Roadmap position
 - **Last reported development commit**: `512fca19` (Steps 1–5F implemented; Step 5E-A independent browser accessibility verification outstanding; Step 5E-B, 5E-C, and 5F implemented).
 - **Next foundation development assignment**: Step 5G (Physics Workbench); Step 5H (Visual Programming, Art Studio and Game Zone) and Step 6 (Final Foundation Integration) remain planned.
-- **Temporary assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**).
+- **Temporary assignment**: Practical Curriculum Validation — Pilot 1 (**PCV-1**): Discovery (`1bd9eaab`) and 2-lesson Implementation published via `--skip-media` (catalogue `v98`: Hydrocarbons `739c1252e89e` → `f1e9f251f1d5`; Basic 8 Atoms `15080192a16a` → `f981f2d51c63`), awaiting owner practical testing & ChatGPT review.
 - **Claude (audit)**: Checkpoint 3 remains temporarily paused at its previously recorded position (`baba1cdd`); no audit findings are marked independently verified by Gemini. See the two roadmaps and progress files.
 
 ## Quality gates (all in `.github/workflows/foundation-verification.yml`)
